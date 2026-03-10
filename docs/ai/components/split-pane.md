@@ -1,6 +1,6 @@
 # snice-split-pane
 
-Resizable split pane layout.
+Resizable split pane layout with draggable divider.
 
 ## Properties
 
@@ -13,30 +13,30 @@ snapSize: number = 0;             // attr: snap-size, percentage, 0 = no snap
 disabled: boolean = false;
 ```
 
-## Slots
+## Methods
 
-- `primary` - Primary pane content
-- `secondary` - Secondary pane content
+- `getPrimarySize()` → `number` - Get primary pane percentage
+- `getSecondarySize()` → `number` - Get secondary pane percentage
+- `setPrimarySize(size)` - Set primary pane percentage
+- `reset()` - Reset to 50/50
 
 ## Events
 
 - `pane-resize` → `{ primarySize, secondarySize, splitPane }`
 
-## Methods
+## Slots
 
-- `getPrimarySize()` - Get primary pane percentage
-- `getSecondarySize()` - Get secondary pane percentage
-- `setPrimarySize(size)` - Set primary pane percentage
-- `reset()` - Reset to 50/50
+- `primary` - Primary pane content (left or top)
+- `secondary` - Secondary pane content (right or bottom)
 
 ## CSS Parts
 
-- `primary` - The primary pane container
-- `divider` - The draggable divider bar
-- `handle` - The visual handle inside the divider
-- `secondary` - The secondary pane container
+- `primary` - Primary pane container
+- `divider` - Draggable divider bar
+- `handle` - Visual handle inside divider
+- `secondary` - Secondary pane container
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-split-pane style="height: 400px;">
@@ -54,3 +54,8 @@ disabled: boolean = false;
   <div slot="secondary">70%</div>
 </snice-split-pane>
 ```
+
+## Accessibility
+
+- Divider keyboard-accessible with arrow keys
+- Mouse, touch, and keyboard input supported

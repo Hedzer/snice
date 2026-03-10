@@ -1,142 +1,98 @@
 # snice-select
 
-Customizable dropdown selection with single/multiple selection, search, editable input, and icons.
+Customizable dropdown selection with single/multiple, search, editable input, and icons.
 
 ## Components
 
-### snice-select (Container)
+- `snice-select` - Container with trigger, dropdown, form integration
+- `snice-option` - Declarative option elements
+
+## Properties
+
+### snice-select
 
 ```typescript
-value: string = '';                 // Selected value (comma-separated for multiple)
-disabled: boolean = false;          // Disabled state
-required: boolean = false;          // Required for form validation
-invalid: boolean = false;           // Invalid state styling
-readonly: boolean = false;          // Readonly state
-multiple: boolean = false;          // Allow multiple selection
-searchable: boolean = false;        // Show search input in dropdown
-clearable: boolean = false;         // Show clear button
-editable: boolean = false;          // Editable text input trigger (replaces button)
-allowFreeText: boolean = false;     // attr: allow-free-text — allow values not in options
+value: string = '';                 // Comma-separated for multiple
+disabled: boolean = false;
+required: boolean = false;
+invalid: boolean = false;
+readonly: boolean = false;
+loading: boolean = false;
+multiple: boolean = false;
+searchable: boolean = false;
+clearable: boolean = false;
+editable: boolean = false;          // Text input trigger instead of button
+allowFreeText: boolean = false;     // attr: allow-free-text
 remote: boolean = false;            // Remote search via @request('select/search')
-searchDebounce: number = 300;       // attr: search-debounce — debounce ms for remote search
-open: boolean = false;              // Dropdown open state
-loading: boolean = false;           // Loading state (shows spinner)
+searchDebounce: number = 300;       // attr: search-debounce
+open: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
-name: string = '';                  // Form field name
-label: string = '';                 // Label text
+name: string = '';
+label: string = '';
 placeholder: string = 'Select an option';
-maxHeight: string = '200px';        // Max dropdown height
-options: SelectOption[] = [];       // Programmatic options (works alongside <snice-option> children)
+maxHeight: string = '200px';        // attr: max-height
+options: SelectOption[] = [];       // JS only, works alongside <snice-option> children
 ```
 
-**Methods:**
-```typescript
-selectOption(value: string)  // Select option by value
-clear()                      // Clear selection
-openDropdown()               // Open dropdown
-closeDropdown()              // Close dropdown
-toggleDropdown()             // Toggle dropdown
-focus()                      // Focus trigger (or input in editable mode)
-blur()                       // Blur and close
-```
-
-**Events:**
-```typescript
-'select-change'  // { value, option, select }
-'select-open'    // { select }
-'select-close'   // { select }
-```
-
-### snice-option (Option Item)
+### snice-option
 
 ```typescript
-value: string = '';           // Option value (defaults to label)
-label: string = '';           // Option label (defaults to textContent)
-disabled: boolean = false;    // Disabled state
-selected: boolean = false;    // Initially selected
-icon: string = '';            // Icon URL
+value: string = '';       // Falls back to label
+label: string = '';       // Falls back to textContent
+disabled: boolean = false;
+selected: boolean = false;
+icon: string = '';        // Icon URL
 ```
 
-**Getter:**
-```typescript
-optionData  // { value, label, disabled, selected, icon }
-```
+## Methods
 
-## Usage
+- `focus()` / `blur()` - Focus/blur trigger
+- `clear()` - Clear selection
+- `openDropdown()` / `closeDropdown()` / `toggleDropdown()` - Dropdown control
+- `selectOption(value)` - Select by value
+
+## Events
+
+- `select-change` → `{ value: string | string[], option?, select }`
+- `select-open` → `{ select }`
+- `select-close` → `{ select }`
+
+## CSS Parts
+
+- `label`, `trigger`, `value`, `input`, `arrow`, `spinner`
+- `dropdown`, `search`, `search-input`, `options`, `option`
+
+## Basic Usage
 
 ```html
-<!-- Standard button-trigger select -->
+<!-- Declarative options -->
 <snice-select label="Choose" name="choice">
   <snice-option value="1">Option 1</snice-option>
   <snice-option value="2">Option 2</snice-option>
 </snice-select>
 
-<!-- Editable input-trigger select -->
+<!-- Editable input mode -->
 <snice-select editable label="Fruit" placeholder="Type or select..."></snice-select>
 ```
 
 ```typescript
-// Programmatic options (required for editable mode or in addition to children)
 select.options = [
   { value: 'apple', label: 'Apple' },
-  { value: 'banana', label: 'Banana', icon: '/icons/banana.svg' },
-  { value: 'cherry', label: 'Cherry', disabled: true },
+  { value: 'banana', label: 'Banana', icon: '/icons/banana.svg' }
 ];
-
-select.addEventListener('select-change', (e) => {
-  console.log(e.detail.value);
-});
-
-select.selectOption('1');
+select.addEventListener('select-change', (e) => console.log(e.detail.value));
 ```
 
 ## Editable Mode
 
-When `editable` is set:
-- Renders a text `<input>` instead of a `<button>` trigger
-- Typing filters options in the dropdown
-- Focus opens the dropdown
-- Blur commits the value and closes
-- If no match and `allow-free-text` is set, accepts custom value
-- If no match and no `allow-free-text`, reverts to last valid value
-- Options set via JS `options` property (array), child `<snice-option>` elements, or both (merged)
+- `editable` renders text input instead of button
+- Typing filters options; blur commits value
+- `allow-free-text` accepts values not in options list
+- `remote` + `editable` enables async search via @request/@respond
 
-## Remote Search (@request/@respond)
+## Accessibility
 
-When `remote` is set with `searchable` or `editable`:
-- Typing fires `@request('select/search')` with `{ query, select }` after debounce
-- Controller `@respond('select/search')` returns `SelectOption[]`
-- Dropdown shows spinner while waiting, then refreshes with results
-- Opening dropdown triggers initial search with current query
-- `loading` property no longer closes dropdown when `remote` is true
-
-```typescript
-// Controller
-@respond('select/search')
-async handleSearch(req, respond) {
-  const results = await fetch(`/api/users?q=${req.query}`).then(r => r.json());
-  respond(results.map(u => ({ value: u.id, label: u.name })));
-}
-```
-
-## Features
-
-- Single and multiple selection
-- Search filtering (in-dropdown or editable input)
-- Remote async search via @request/@respond
-- Editable text input mode (replaces combobox)
-- Keyboard navigation
-- Form integration
-- Icons in options
-- Clearable selection
-- Disabled options
-- Programmatic options array (works alongside child elements)
-
-## Notes
-
-- Options can be nested (uses querySelectorAll, not just direct children)
-- Multiple selection values are comma-separated
-- Hidden native select for form submission
+- Hidden native `<select>` for form submission
+- Arrow keys, Enter, Escape for keyboard navigation
 - Dropdown closes on outside click
-- Search shows in dropdown when open (non-editable mode)
-- Child `<snice-option>` elements take precedence when both children and programmatic options are provided
+- Children take precedence over `options` array

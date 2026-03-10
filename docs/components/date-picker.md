@@ -1,22 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/date-picker.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/date-picker.md -->
 
 # Date Picker
 `<snice-date-picker>`
 
-Calendar-based date input with format options and validation.
+Calendar-based date input with format options and validation. Form-associated custom element.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/date-picker/snice-date-picker';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-date-picker.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -36,26 +33,26 @@ import 'snice/components/date-picker/snice-date-picker';
 | `required` | `required` | `boolean` | `false` | Marks as required |
 | `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
 | `clearable` | `clearable` | `boolean` | `false` | Shows clear button |
-| `min` | `min` | `string` | `''` | Minimum selectable date |
-| `max` | `max` | `string` | `''` | Maximum selectable date |
+| `min` | `min` | `string` | `''` | Minimum selectable date (ISO format) |
+| `max` | `max` | `string` | `''` | Maximum selectable date (ISO format) |
 | `name` | `name` | `string` | `''` | Form field name |
 | `showCalendar` | `show-calendar` | `boolean` | `false` | Calendar visibility |
-| `firstDayOfWeek` | `first-day-of-week` | `number` | `0` | First day of week (0=Sun) |
+| `firstDayOfWeek` | `first-day-of-week` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `focus()` | — | Focuses the input |
-| `blur()` | — | Removes focus |
-| `clear()` | — | Clears the selected date |
-| `open()` | — | Opens the calendar popup |
-| `close()` | — | Closes the calendar popup |
+| `focus()` | -- | Focuses the input |
+| `blur()` | -- | Removes focus |
+| `clear()` | -- | Clears the selected date |
+| `open()` | -- | Opens the calendar popup |
+| `close()` | -- | Closes the calendar popup |
 | `selectDate()` | `date: Date` | Programmatically selects a date |
 | `goToMonth()` | `year: number, month: number` | Navigates calendar to a month |
-| `goToToday()` | — | Selects today's date |
-| `checkValidity()` | — | Returns input validity |
-| `reportValidity()` | — | Reports input validity |
+| `goToToday()` | -- | Selects today's date |
+| `checkValidity()` | -- | Returns input validity |
+| `reportValidity()` | -- | Reports input validity |
 | `setCustomValidity()` | `message: string` | Sets custom validation message |
 
 ## Events
@@ -91,6 +88,12 @@ import 'snice/components/date-picker/snice-date-picker';
 
 ```html
 <snice-date-picker label="Select date"></snice-date-picker>
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-date-picker.min.js"></script>
 ```
 
 ## Examples
@@ -204,3 +207,20 @@ dp.addEventListener('datepicker-change', (e) => {
   console.log('ISO:', e.detail.iso);
 });
 ```
+
+## Keyboard Navigation
+
+- **Enter / Space** on input opens the calendar
+- **Escape** closes the calendar and returns focus to input
+- **Tab** navigates between focusable elements in the calendar
+- Calendar days are focusable buttons with aria-labels
+
+## Accessibility
+
+- Form-associated custom element with `ElementInternals`
+- Calendar popup uses `popover="manual"` for proper layering
+- Day buttons include `aria-label` with formatted date
+- Input supports `aria-invalid` when in invalid state
+- Required fields show visual indicator on the label
+- Calendar toggle button has `aria-label="Open calendar"`
+- Clear button has `aria-label="Clear"`

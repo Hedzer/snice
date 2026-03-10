@@ -1,41 +1,26 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/podcast-player.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/podcast-player.md -->
 
-# Podcast Player Component
-
+# Podcast Player
 `<snice-podcast-player>`
 
 A full-featured podcast player with playback controls, playback speed adjustment, episode list, chapter support, RSS feed parsing, sleep timer, and position memory via localStorage.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/podcast-player/snice-podcast-player';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-podcast-player.min.js"></script>
-```
+- [Data Types](#data-types)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `src` | `string` | `''` | Audio source URL for direct playback |
-| `fromRss` (attr: `from-rss`) | `string` | `''` | RSS feed URL. Fetches and displays the episode list automatically |
+| `fromRss` (attr: `from-rss`) | `string` | `''` | RSS feed URL. Fetches and displays episode list automatically |
 | `title` | `string` | `''` | Episode title |
 | `show` | `string` | `''` | Show or podcast name |
 | `artwork` | `string` | `''` | Artwork image URL |
@@ -47,9 +32,9 @@ import 'snice/components/podcast-player/snice-podcast-player';
 | `duration` | `number` | `0` | Episode duration in seconds |
 | `volume` | `number` | `1` | Volume level (range: 0 to 1) |
 | `muted` | `boolean` | `false` | Whether audio is muted |
-| `state` | `PodcastPlayerState` | `'stopped'` | Current playback state (read-only) |
-| `episodes` | `PodcastEpisode[]` | `[]` | Array of episodes (set via JavaScript) |
-| `currentEpisodeIndex` (attr: `current-episode-index`) | `number` | `0` | Index of the currently active episode |
+| `state` | `PodcastPlayerState` | `'stopped'` | Current playback state (not a decorated property) |
+| `episodes` | `PodcastEpisode[]` | `[]` | Array of episodes (set via JS) |
+| `currentEpisodeIndex` (attr: `current-episode-index`) | `number` | `-1` | Index of the currently active episode |
 | `sleepTimer` (attr: `sleep-timer`) | `number` | `0` | Sleep timer duration in minutes (0 = disabled) |
 
 ## Methods
@@ -70,10 +55,10 @@ import 'snice/components/podcast-player/snice-podcast-player';
 | `podcast-play` | `{ player, episode }` | Fired when playback starts |
 | `podcast-pause` | `{ player, episode }` | Fired when playback is paused |
 | `podcast-ended` | `{ player, episode }` | Fired when the current episode ends |
-| `podcast-time-update` | `{ player, currentTime, duration }` | Fired periodically during playback with current time |
+| `podcast-time-update` | `{ player, currentTime, duration }` | Fired periodically during playback |
 | `podcast-rate-change` | `{ player, rate }` | Fired when the playback speed changes |
 | `podcast-episode-change` | `{ player, episode, index }` | Fired when a different episode is selected |
-| `podcast-feed-loaded` | `{ player, feed: RSSFeedData }` | Fired when an RSS feed has been parsed successfully |
+| `podcast-feed-loaded` | `{ player, feed: RSSFeedData }` | Fired when an RSS feed has been parsed |
 
 ## CSS Parts
 
@@ -91,10 +76,6 @@ snice-podcast-player::part(base) {
   background: #1a1a2e;
   color: white;
 }
-
-snice-podcast-player::part(controls) {
-  padding: 1rem;
-}
 ```
 
 ## Basic Usage
@@ -108,33 +89,18 @@ import 'snice/components/podcast-player/snice-podcast-player';
   src="/audio/episode.mp3"
   title="Episode 1"
   show="My Podcast"
+  artwork="/images/cover.jpg"
 ></snice-podcast-player>
 ```
 
 ## Examples
 
-### Single Episode Playback
-
-Play a single episode by setting the source URL directly.
-
-```html
-<snice-podcast-player
-  src="/audio/episode-42.mp3"
-  title="Episode 42: Web Components"
-  show="The Dev Podcast"
-  artwork="/images/dev-podcast-cover.jpg"
-  description="A deep dive into modern web component patterns."
-></snice-podcast-player>
-```
-
 ### RSS Feed Mode
 
-Load an entire podcast from an RSS feed. The player automatically parses the feed to populate the show name, artwork, and episode list.
+Load an entire podcast from an RSS feed.
 
 ```html
-<snice-podcast-player
-  from-rss="https://example.com/podcast/feed.xml"
-></snice-podcast-player>
+<snice-podcast-player from-rss="https://example.com/podcast/feed.xml"></snice-podcast-player>
 ```
 
 ```typescript
@@ -146,55 +112,34 @@ player.addEventListener('podcast-feed-loaded', (e) => {
 
 ### Episode List with Chapters
 
-Provide an array of episodes with chapter markers for enhanced navigation.
-
-```html
-<snice-podcast-player></snice-podcast-player>
-```
+Provide episodes with chapter markers for enhanced navigation.
 
 ```typescript
 player.show = 'Tech Weekly';
-player.artwork = '/images/tech-weekly.jpg';
-
 player.episodes = [
   {
     title: 'Episode 1: Getting Started',
     src: '/audio/ep1.mp3',
     duration: 1800,
-    pubDate: '2025-01-15',
     chapters: [
       { title: 'Intro', startTime: 0 },
       { title: 'Main Topic', startTime: 120 },
-      { title: 'Q&A', startTime: 1200 },
-      { title: 'Outro', startTime: 1700 }
+      { title: 'Q&A', startTime: 1200 }
     ]
   },
-  {
-    title: 'Episode 2: Advanced Patterns',
-    src: '/audio/ep2.mp3',
-    duration: 2400,
-    pubDate: '2025-01-22'
-  },
-  {
-    title: 'Episode 3: Performance Tips',
-    src: '/audio/ep3.mp3',
-    duration: 2100,
-    pubDate: '2025-01-29'
-  }
+  { title: 'Episode 2: Advanced Patterns', src: '/audio/ep2.mp3', duration: 2400 }
 ];
-
 player.loadEpisode(0);
 ```
 
-### Playback Speed and Skip Duration
+### Custom Skip and Speed
 
-Customize skip intervals and playback speed for different listening preferences.
+Customize skip intervals and initial playback speed.
 
 ```html
 <snice-podcast-player
   src="/audio/interview.mp3"
-  title="Interview with the Author"
-  show="Book Club Podcast"
+  title="Interview"
   skip-forward="15"
   skip-back="10"
   playback-rate="1.5"
@@ -206,22 +151,13 @@ Customize skip intervals and playback speed for different listening preferences.
 Listen for playback events to integrate with analytics or custom UI.
 
 ```typescript
-player.addEventListener('podcast-play', () => {
-  console.log('Playing');
-});
-
-player.addEventListener('podcast-pause', () => {
-  console.log('Paused');
-});
+player.addEventListener('podcast-play', () => console.log('Playing'));
+player.addEventListener('podcast-pause', () => console.log('Paused'));
+player.addEventListener('podcast-ended', () => console.log('Finished'));
 
 player.addEventListener('podcast-time-update', (e) => {
-  const { currentTime, duration } = e.detail;
-  const percent = Math.round((currentTime / duration) * 100);
-  console.log(`Playing: ${percent}%`);
-});
-
-player.addEventListener('podcast-ended', () => {
-  console.log('Finished');
+  const percent = Math.round((e.detail.currentTime / e.detail.duration) * 100);
+  console.log(`Progress: ${percent}%`);
 });
 
 player.addEventListener('podcast-episode-change', (e) => {
@@ -229,9 +165,17 @@ player.addEventListener('podcast-episode-change', (e) => {
 });
 ```
 
-## Types
+## Accessibility
 
-### PodcastEpisode
+- Playback controls (play/pause, skip forward/back) are keyboard accessible
+- Progress bar supports seeking via click
+- Playback speed selector cycles through common speeds (0.5x through 2x)
+- Volume control provides mute toggle and level adjustment
+- Episode list items are interactive and indicate the currently playing episode
+- The player remembers playback position via localStorage, restoring it on reload
+- Chapter markers provide named navigation points within an episode
+
+## Data Types
 
 ```typescript
 interface PodcastEpisode {
@@ -243,42 +187,20 @@ interface PodcastEpisode {
   duration?: number;               // Duration in seconds
   chapters?: PodcastChapter[];     // Chapter markers
 }
-```
 
-### PodcastChapter
-
-```typescript
 interface PodcastChapter {
-  title: string;          // Chapter title
-  startTime: number;      // Start time in seconds
-  endTime?: number;       // End time in seconds
-  artwork?: string;       // Chapter-specific artwork URL
+  title: string;                   // Chapter title
+  startTime: number;               // Start time in seconds
+  endTime?: number;                // End time in seconds
+  artwork?: string;                // Chapter-specific artwork URL
 }
-```
 
-### RSSFeedData
-
-```typescript
 interface RSSFeedData {
-  title: string;                   // Podcast title from feed
-  artwork?: string;                // Show artwork URL from feed
-  description?: string;            // Show description from feed
-  episodes: PodcastEpisode[];      // Parsed episode list
+  title: string;
+  artwork?: string;
+  description?: string;
+  episodes: PodcastEpisode[];
 }
-```
 
-### PodcastPlayerState
-
-```typescript
 type PodcastPlayerState = 'playing' | 'paused' | 'stopped' | 'loading' | 'error';
 ```
-
-## Accessibility
-
-- Playback controls (play/pause, skip forward/back) are keyboard accessible
-- The progress bar supports seeking via click or drag
-- Playback speed selector allows choosing from common speed options (0.5x through 2x)
-- Volume control provides mute toggle and level adjustment
-- Episode list items are interactive and indicate the currently playing episode
-- The player remembers playback position via localStorage, restoring it on reload
-- Chapter markers provide named navigation points within an episode

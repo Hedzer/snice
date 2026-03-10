@@ -1,22 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/sparkline.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/sparkline.md -->
 
 # Sparkline
-`<snice-sparkline>`
 
-A lightweight inline chart for visualizing trends in compact spaces.
+A lightweight inline chart for visualizing trends and patterns in compact spaces. Supports line, bar, and area chart types.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/sparkline/snice-sparkline';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-sparkline.min.js"></script>
-```
+- [Properties](#properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -32,19 +26,19 @@ import 'snice/components/sparkline/snice-sparkline';
 | `showDots` (attr: `show-dots`) | `boolean` | `false` | Show dots on data points |
 | `showArea` (attr: `show-area`) | `boolean` | `false` | Show area fill below line |
 | `smooth` | `boolean` | `false` | Use smooth bezier curves |
-| `min` | `number` | `undefined` | Minimum scale value (auto if unset) |
-| `max` | `number` | `undefined` | Maximum scale value (auto if unset) |
+| `min` | `number` | `undefined` | Minimum scale value (auto-calculated if unset) |
+| `max` | `number` | `undefined` | Maximum scale value (auto-calculated if unset) |
 
 ## CSS Parts
 
 | Part | Description |
 |------|-------------|
-| `container` | Outer container |
-| `svg` | SVG element |
-| `line` | Line path |
-| `area` | Area fill path |
-| `dot` | Data point dot |
-| `bar` | Bar rectangle |
+| `container` | Outer container element |
+| `svg` | The SVG element |
+| `line` | Line path element |
+| `area` | Area fill path element |
+| `dot` | Data point dot circle |
+| `bar` | Bar rectangle element |
 
 ## Basic Usage
 
@@ -86,7 +80,7 @@ Use the `color` attribute for semantic color variants.
 
 ### Custom Color
 
-Use the `custom-color` attribute to apply any CSS color.
+Use the `custom-color` attribute to apply any CSS color, overriding the `color` variant.
 
 ```html
 <snice-sparkline custom-color="#9333ea"></snice-sparkline>
@@ -127,7 +121,7 @@ Use the `width` and `height` attributes to set pixel dimensions.
 
 ### Custom Scale
 
-Use `min` and `max` to set fixed data bounds for consistent comparison.
+Use `min` and `max` to set fixed data bounds for consistent comparison across multiple charts.
 
 ```html
 <snice-sparkline min="0" max="100"></snice-sparkline>
@@ -135,13 +129,20 @@ Use `min` and `max` to set fixed data bounds for consistent comparison.
 
 ### Dashboard Trend
 
+Combine options for a compact dashboard widget.
+
 ```html
 <div>
   <label>Daily Visitors</label>
-  <snice-sparkline id="traffic" color="primary" width="150" height="40" show-area></snice-sparkline>
+  <snice-sparkline id="traffic" color="primary" width="150" height="40" show-area smooth></snice-sparkline>
 </div>
 
 <script>
   document.getElementById('traffic').data = [1200, 1350, 1100, 1450, 1600, 1550, 1700];
 </script>
 ```
+
+## Accessibility
+
+- Decorative element; use `aria-busy="true"` on the container while data is loading
+- Set an `aria-label` on the element to describe the trend for screen readers

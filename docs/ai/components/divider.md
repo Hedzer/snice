@@ -1,6 +1,6 @@
 # snice-divider
 
-Separator line with optional text.
+Separator line with optional text label.
 
 ## Properties
 
@@ -15,57 +15,27 @@ color: string = '';
 capped: boolean = false;
 ```
 
-## Usage
+## CSS Custom Properties
 
-```html
-<!-- Basic -->
-<snice-divider></snice-divider>
+- `--divider-color` - Line color (default: `var(--snice-color-border)`)
+- `--divider-thickness` - Line thickness (default: `1px`)
+- `--divider-text-bg` - Text label background
+- `--divider-text-padding` - Text label padding (default: `0 1rem`)
+- `--divider-text-gap` - Gap around text label (default: `1rem`)
 
-<!-- With text -->
-<snice-divider text="OR"></snice-divider>
+## CSS Parts
 
-<!-- Text alignment -->
-<snice-divider text="Start" align="start"></snice-divider>
-<snice-divider text="Center" align="center"></snice-divider>
-<snice-divider text="End" align="end"></snice-divider>
-
-<!-- Variants -->
-<snice-divider variant="solid"></snice-divider>
-<snice-divider variant="dashed"></snice-divider>
-<snice-divider variant="dotted"></snice-divider>
-
-<!-- Spacing -->
-<snice-divider spacing="none"></snice-divider>
-<snice-divider spacing="small"></snice-divider>
-<snice-divider spacing="medium"></snice-divider>
-<snice-divider spacing="large"></snice-divider>
-
-<!-- Vertical -->
-<div style="display: flex; height: 50px;">
-  <span>Left</span>
-  <snice-divider orientation="vertical"></snice-divider>
-  <span>Right</span>
-</div>
-
-<!-- Custom color -->
-<snice-divider color="#3b82f6"></snice-divider>
-
-<!-- Capped (rounded ends) -->
-<snice-divider capped></snice-divider>
-```
-
-**CSS Parts:**
 - `base` - Outer divider container
 - `line` - The divider line(s)
 - `text` - Optional text label
 
-## Features
+## Basic Usage
 
-- Horizontal or vertical
-- 3 line styles (solid/dashed/dotted)
-- Optional text label
-- Text alignment (start/center/end)
-- 4 spacing options
-- Custom color
-- Capped ends
-- Custom text background
+```html
+<snice-divider></snice-divider>
+<snice-divider text="OR"></snice-divider>
+<snice-divider text="Start" align="start"></snice-divider>
+<snice-divider variant="dashed" capped></snice-divider>
+<snice-divider orientation="vertical"></snice-divider>
+<snice-divider color="#3b82f6"></snice-divider>
+```

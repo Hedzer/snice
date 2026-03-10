@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/data-card.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/data-card.md -->
 
 # Data Card
 `<snice-data-card>`
@@ -13,25 +13,13 @@ A key-value detail panel for displaying structured data with grouped sections, m
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/data-card/snice-data-card';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-data-card.min.js"></script>
-```
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `fields` | `DataCardField[]` | `[]` | Array of field objects |
+| `fields` | `DataCardField[]` | `[]` | Array of field objects (JS only, no attribute) |
 | `editable` | `boolean` | `false` | Enable global edit mode |
 | `variant` | `'default' \| 'horizontal' \| 'compact'` | `'default'` | Layout variant |
 
@@ -105,6 +93,12 @@ import 'snice/components/data-card/snice-data-card';
     { label: 'Role', value: 'Administrator' }
   ];
 </script>
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-data-card.min.js"></script>
 ```
 
 ## Examples
@@ -203,3 +197,10 @@ Use `getValues()` and `setValues()` for programmatic data access.
   card.setValues({ Name: 'Jane', Age: 25 });
 </script>
 ```
+
+## Accessibility
+
+- Edit mode inputs support Enter to save and Escape to cancel
+- Edit toggle button is hidden when no fields are editable
+- Links open in new tabs with `rel="noopener"` for security
+- Use `slot="title"` to provide a descriptive heading for the card

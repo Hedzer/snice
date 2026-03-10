@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/cropper.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/cropper.md -->
 
 # Cropper Component
 
-The cropper component provides an image cropping tool with a draggable and resizable crop area, rotation, zoom controls, optional aspect ratio locking, and a rule-of-thirds grid overlay. It outputs cropped images as Blob objects in PNG, JPEG, or WebP format.
+An image cropping tool with a draggable and resizable crop area, rotation, zoom controls, optional aspect ratio locking, and a rule-of-thirds grid overlay. Outputs cropped images as Blob objects in PNG, JPEG, or WebP format.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -31,7 +31,7 @@ The cropper component provides an image cropping tool with a draggable and resiz
 | `crop()` | -- | `Promise<Blob \| null>` | Produce a cropped image Blob from the current crop area |
 | `rotate()` | `degrees: number` | `void` | Rotate the image by the given degrees (cumulative) |
 | `zoom()` | `level: number` | `void` | Set the zoom level (range: 0.1 to 10) |
-| `reset()` | -- | `void` | Reset rotation, zoom, and crop area to their defaults |
+| `reset()` | -- | `void` | Reset rotation, zoom, and crop area to defaults |
 
 ## Events
 
@@ -55,13 +55,11 @@ The cropper component provides an image cropping tool with a draggable and resiz
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer cropper container |
-| `image-container` | `<div>` | Image display area |
-| `crop-area` | `<div>` | Draggable/resizable crop region with handles |
+| Part | Description |
+|------|-------------|
+| `base` | Outer cropper container |
+| `image-container` | Image display area |
+| `crop-area` | Draggable/resizable crop region with handles |
 
 ```css
 snice-cropper::part(base) {
@@ -103,7 +101,7 @@ Load an image and let the user crop it freely.
     const blob = await cropper.crop();
     if (blob) {
       const url = URL.createObjectURL(blob);
-      window.open(url); // Preview the cropped image
+      window.open(url);
     }
   }
   window.handleCrop = handleCrop;
@@ -141,7 +139,7 @@ Lock to a widescreen aspect ratio for video thumbnails or banner images.
 Use the `rotate()` and `zoom()` methods for image adjustment.
 
 ```html
-<snice-cropper id="editor" src="/photos/vacation.jpg" aspect-ratio="0"></snice-cropper>
+<snice-cropper id="editor" src="/photos/vacation.jpg"></snice-cropper>
 
 <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
   <button onclick="document.getElementById('editor').rotate(-90)">Rotate Left</button>
@@ -173,7 +171,7 @@ Track the crop area position and dimensions in real time.
 
 ## Accessibility
 
-- **Drag interaction**: The crop area can be repositioned by dragging, and resized via 8 corner and edge handles
-- **Rule-of-thirds grid**: An overlay grid helps with composition alignment
-- **Visual feedback**: A dark mask outside the crop area clearly indicates the cropped region
-- **Aspect ratio enforcement**: When `aspectRatio` is set, resize handles maintain the locked ratio automatically
+- Drag interaction: The crop area can be repositioned by dragging, and resized via 8 corner and edge handles
+- Rule-of-thirds grid overlay helps with composition alignment
+- Dark mask outside the crop area clearly indicates the cropped region
+- When `aspectRatio` is set, resize handles maintain the locked ratio automatically

@@ -1,22 +1,20 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/login.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/login.md -->
 
 # Login
 `<snice-login>`
 
 A complete authentication form with username/password fields, using Snice's @request/@respond pattern for controller communication.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/login/snice-login';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-login.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Requests](#requests)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -35,11 +33,35 @@ import 'snice/components/login/snice-login';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `login()` | `credentials?: LoginCredentials` | Trigger login (uses form values if no args) |
+| `login()` | `credentials?: LoginCredentials` | Trigger login via @request (uses form values if no args) |
 | `reset()` | -- | Clear form, error, and loading state |
 | `setError()` | `message: string` | Display an error message |
 | `clearError()` | -- | Remove error message |
 | `setCredentials()` | `credentials: Partial<LoginCredentials>` | Set form field values |
+
+## Requests
+
+The login component uses `@request('login-user')` to communicate with an authentication controller.
+
+| Request | Params | Description |
+|---------|--------|-------------|
+| `login-user` | `LoginCredentials` | Sent to controller on login attempt |
+
+### Types
+
+```typescript
+interface LoginCredentials {
+  username: string;
+  password: string;
+  remember?: boolean;
+}
+
+interface LoginResult {
+  success: boolean;
+  error?: string;
+  data?: any;
+}
+```
 
 ## Events
 
@@ -154,8 +176,6 @@ Use `title` and `action-text` to customize the form text.
 
 ### Request/Respond Pattern
 
-The login component uses `@request('login-user')` to communicate with an authentication controller.
-
 ```typescript
 import { controller, respond, IController } from 'snice';
 import type { LoginCredentials, LoginResult } from 'snice/components/login/snice-login.types';
@@ -216,24 +236,10 @@ login.clearError();
 login.reset();
 ```
 
-## Request/Respond Types
+## Accessibility
 
-```typescript
-interface LoginCredentials {
-  username: string;
-  password: string;
-  remember?: boolean;
-}
-
-interface LoginResult {
-  success: boolean;
-  error?: string;
-  data?: any;
-}
-```
-
-## Requests
-
-| Request | Params | Description |
-|---------|--------|-------------|
-| `login-user` | `LoginCredentials` | Sent to controller on login attempt |
+- Form inputs use proper `<label>` elements with `for` attributes
+- Inputs have `autocomplete` attributes (`username`, `current-password`)
+- Enter key on password field triggers form submission
+- Loading and disabled states propagate to all form inputs and the submit button
+- Required fields are marked with the `required` attribute

@@ -1,61 +1,60 @@
 # snice-pdf-viewer
 
-PDF document viewer with toolbar (page navigation, zoom, fit modes, download, print). Uses a vendored PDF.js bundle.
+PDF document viewer with toolbar for page navigation, zoom, fit modes, download, and print. Uses vendored PDF.js.
 
 ## Properties
 
-```ts
-src: string                              // PDF file URL
-page: number                             // Current page (default: 1)
-zoom: number                             // Zoom level (default: 1, range: 0.25-5)
-fit: 'width' | 'height' | 'page'        // Fit mode (default: 'width')
-readonly totalPages: number              // Total pages in document
+```typescript
+src: string = '';                                    // PDF file URL
+page: number = 1;                                    // Current page number
+zoom: number = 1;                                    // Zoom level (0.25-5)
+fit: 'width'|'height'|'page' = 'width';             // Fit mode
+readonly totalPages: number = 0;                     // Total pages in document
 ```
 
 ## Methods
 
-- `goToPage(page: number)` -- Navigate to specific page
-- `nextPage()` -- Go to next page
-- `prevPage()` -- Go to previous page
-- `print()` -- Open PDF in new window for printing
-- `download()` -- Trigger PDF file download
+- `goToPage(page: number)` - Navigate to specific page
+- `nextPage()` - Go to next page
+- `prevPage()` - Go to previous page
+- `print()` - Open PDF in new window for printing
+- `download()` - Trigger PDF file download
 
 ## Events
 
-- `page-change` -> `{ page: number; totalPages: number }` -- Page navigation
-- `pdf-loaded` -> `{ totalPages: number }` -- Document loaded successfully
-- `pdf-error` -> `{ error: string }` -- Loading or rendering error
+- `page-change` → `{ page: number, totalPages: number }` - Page navigation
+- `pdf-loaded` → `{ totalPages: number }` - Document loaded
+- `pdf-error` → `{ error: string }` - Loading or rendering error
 
-**CSS Parts:**
-- `base` - The outer viewer container
-- `toolbar` - The navigation and zoom toolbar
-- `viewport` - The PDF page display area
+## CSS Parts
 
-## Keyboard Shortcuts
+- `base` - Outer viewer container
+- `toolbar` - Navigation and zoom toolbar
+- `viewport` - PDF page display area
 
-- `ArrowRight` / `PageDown` -- Next page
-- `ArrowLeft` / `PageUp` -- Previous page
-- `Ctrl/Cmd +` -- Zoom in
-- `Ctrl/Cmd -` -- Zoom out
-
-## Usage
+## Basic Usage
 
 ```html
-<snice-pdf-viewer
-  src="/documents/report.pdf"
-  fit="width"
-  zoom="1"
-></snice-pdf-viewer>
+<snice-pdf-viewer src="/documents/report.pdf" fit="width"></snice-pdf-viewer>
 ```
 
 ```typescript
-viewer.src = '/documents/report.pdf';
+import 'snice/components/pdf-viewer/snice-pdf-viewer';
 
 viewer.addEventListener('pdf-loaded', (e) => {
   console.log('Pages:', e.detail.totalPages);
 });
-
-viewer.addEventListener('page-change', (e) => {
-  console.log(`Page ${e.detail.page} of ${e.detail.totalPages}`);
-});
 ```
+
+## Keyboard Navigation
+
+- `ArrowRight` / `PageDown` - Next page
+- `ArrowLeft` / `PageUp` - Previous page
+- `Ctrl/Cmd +` - Zoom in
+- `Ctrl/Cmd -` - Zoom out
+
+## Accessibility
+
+- Container is keyboard-focusable with `tabindex="0"`
+- Toolbar buttons have title attributes
+- Page input allows direct page navigation

@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/treemap.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/treemap.md -->
 
 # Treemap
 `<snice-treemap>`
 
-Renders hierarchical data as nested rectangles using a squarified treemap layout. Each rectangle's area is proportional to its value.
+Renders hierarchical data as nested rectangles using a squarified treemap layout. Each rectangle's area is proportional to its value. Supports drill-down navigation.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/treemap/snice-treemap';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-treemap.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -28,6 +23,7 @@ import 'snice/components/treemap/snice-treemap';
 | `colorScheme` (attr: `color-scheme`) | `'default' \| 'blue' \| 'green' \| 'purple' \| 'orange' \| 'warm' \| 'cool' \| 'rainbow'` | `'default'` | Color scheme |
 | `padding` | `number` | `2` | Padding between rectangles (px) |
 | `animation` | `boolean` | `true` | Enable transitions |
+| `drillPath` | `TreemapNode[]` | _(read-only)_ | Current drill-down path |
 
 ### TreemapNode Interface
 
@@ -48,8 +44,6 @@ interface TreemapNode {
 | `drillUp()` | -- | Go back one level |
 | `drillToRoot()` | -- | Reset to root level |
 
-The `drillPath` getter returns the current drill-down path as `TreemapNode[]`.
-
 ## Events
 
 | Event | Detail | Description |
@@ -60,26 +54,12 @@ The `drillPath` getter returns the current drill-down path as `TreemapNode[]`.
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `breadcrumbs` | `<div>` | Breadcrumb navigation for drill-down |
-| `base` | `<div>` | The main treemap container |
-| `chart` | `<div>` | The chart rendering area |
-| `tooltip` | `<div>` | The hover tooltip element |
-
-```css
-snice-treemap::part(base) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-snice-treemap::part(breadcrumbs) {
-  padding: 0.5rem;
-  font-size: 0.875rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `breadcrumbs` | Breadcrumb navigation for drill-down |
+| `base` | The main treemap container |
+| `chart` | The chart rendering area |
+| `tooltip` | The hover tooltip element |
 
 ## Basic Usage
 
@@ -136,10 +116,6 @@ treemap.data = {
 
 Click a rectangle with children to drill into it. A breadcrumb trail appears for navigation.
 
-```html
-<snice-treemap show-labels style="height: 400px;"></snice-treemap>
-```
-
 ```typescript
 treemap.data = {
   label: 'Company',
@@ -170,8 +146,8 @@ treemap.data = {
 ### Programmatic Navigation
 
 ```typescript
-treemap.drillDown(node);   // Drill into a node
-treemap.drillUp();          // Go back one level
-treemap.drillToRoot();      // Reset to root
+treemap.drillDown(node);       // Drill into a node
+treemap.drillUp();              // Go back one level
+treemap.drillToRoot();          // Reset to root
 console.log(treemap.drillPath); // Current path
 ```

@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/link-preview.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/link-preview.md -->
 
 # Link Preview
 `<snice-link-preview>`
 
-Displays a rich preview card for a URL with image, title, description, and site info.
+Displays a rich preview card for a URL with image, title, description, and site info. Clicking the card opens the URL in a new tab.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/link-preview/snice-link-preview';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-link-preview.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -26,8 +21,8 @@ import 'snice/components/link-preview/snice-link-preview';
 | `title` | `string` | `''` | Preview title (clamped to 2 lines) |
 | `description` | `string` | `''` | Preview description (clamped to 3 lines) |
 | `image` | `string` | `''` | Preview image URL |
-| `siteName` (attr: `site-name`) | `string` | `''` | Site name in footer |
-| `favicon` | `string` | `''` | Favicon URL in footer |
+| `siteName` (attr: `site-name`) | `string` | `''` | Site name shown in footer |
+| `favicon` | `string` | `''` | Favicon URL shown in footer |
 | `variant` | `'vertical' \| 'horizontal'` | `'vertical'` | Card layout direction |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Card size |
 
@@ -155,3 +150,12 @@ When no image is provided, a placeholder link icon is shown.
   });
 </script>
 ```
+
+## Accessibility
+
+- The card has `role="article"` and `tabindex="0"` for keyboard focus
+- Keyboard activation via Enter or Space keys
+- Images use `loading="lazy"` and empty `alt` attributes (decorative)
+- Title is clamped to 2 lines, description to 3 lines with CSS overflow
+- Focus ring is visible via `:focus-visible` styling
+- Click opens URL in new tab with `noopener,noreferrer`

@@ -8,96 +8,63 @@ Calendar with date selection and event support.
 value: Date | string = new Date();
 view: 'month'|'week'|'day' = 'month';
 events: CalendarEvent[] = [];
-minDate: Date | string = '';
-maxDate: Date | string = '';
-disabledDates: (Date | string)[] = [];
-highlightToday: boolean = true;
-showWeekNumbers: boolean = false;
-firstDayOfWeek: number = 0; // 0=Sun, 1=Mon
+minDate: Date | string = '';           // attribute: min-date
+maxDate: Date | string = '';           // attribute: max-date
+disabledDates: (Date | string)[] = []; // attribute: disabled-dates
+highlightToday: boolean = true;        // attribute: highlight-today
+showWeekNumbers: boolean = false;      // attribute: show-week-numbers
+firstDayOfWeek: number = 0;            // attribute: first-day-of-week (0=Sun, 1=Mon)
 locale: string = 'en-US';
-```
-
-## CalendarEvent
-
-```typescript
-interface CalendarEvent {
-  id: string | number;
-  title: string;
-  start: Date | string;
-  end?: Date | string;
-  color?: string;
-  data?: any;
-}
 ```
 
 ## Methods
 
-```typescript
-goToToday(): void
-goToDate(date: Date | string): void
-previousMonth(): void
-nextMonth(): void
-previousWeek(): void
-nextWeek(): void
-previousDay(): void
-nextDay(): void
-getDisplayedMonth(): { month: number; year: number }
-getEventsForDate(date: Date | string): CalendarEvent[]
-```
+- `goToToday()` - Navigate to today
+- `goToDate(date: Date | string)` - Navigate to specific date
+- `previousMonth()` / `nextMonth()` - Navigate months
+- `previousWeek()` / `nextWeek()` - Navigate weeks
+- `previousDay()` / `nextDay()` - Navigate days
+- `getDisplayedMonth()` - Returns `{ month: number; year: number }`
+- `getEventsForDate(date: Date | string)` - Returns `CalendarEvent[]`
 
 ## Events
 
-- `calendar-change` - Date selected (detail: { value, calendar })
-- `calendar-event-click` - Event clicked (detail: { event, calendar })
+- `calendar-change` -> `{ value: Date, calendar: SniceCalendarElement }`
+- `calendar-event-click` -> `{ event: CalendarEvent, calendar: SniceCalendarElement }`
 
-## Usage
+## CSS Parts
 
-```html
-<snice-calendar></snice-calendar>
-
-<!-- With events -->
-<snice-calendar></snice-calendar>
-```
-
-```typescript
-calendar.events = [
-  { id: 1, title: 'Meeting', start: new Date(), color: '#2196f3' }
-];
-```
-
-```html
-<!-- With restrictions -->
-<snice-calendar
-  min-date="2024-01-01"
-  max-date="2024-12-31"
-  first-day-of-week="1"
-  locale="fr-FR">
-</snice-calendar>
-```
-
-```typescript
-// Programmatic control
-calendar.goToToday();
-calendar.previousMonth();
-calendar.nextMonth();
-calendar.goToDate(new Date(2024, 5, 15));
-```
-
-**CSS Parts:**
 - `base` - Main calendar container
 - `header` - Header with title and navigation buttons
 - `grid` - Day cells grid
 
-## Features
+## Basic Usage
 
-- Month/week/day views
-- Event display with colors
-- Date restrictions (min/max/disabled)
-- Locale support
-- Week starting day configuration
-- Week numbers (optional)
-- Keyboard navigation
-- Event click handling
-- Programmatic navigation
-- Multi-event days
-- Today highlighting
+```html
+<snice-calendar></snice-calendar>
+```
+
+```typescript
+import 'snice/components/calendar/snice-calendar';
+
+calendar.events = [
+  { id: 1, title: 'Meeting', start: new Date(), color: '#2196f3' }
+];
+
+calendar.addEventListener('calendar-change', (e) => {
+  console.log('Selected:', e.detail.value);
+});
+```
+
+## Keyboard Navigation
+
+- Arrow keys: navigate dates
+- Enter: select date
+- Tab: move between controls
+
+## Accessibility
+
+- Keyboard navigation with arrow keys
+- ARIA labels for dates and events
+- Screen reader friendly
+- Focus management

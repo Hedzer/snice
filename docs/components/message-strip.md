@@ -1,6 +1,6 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/message-strip.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/message-strip.md -->
 
-# Message Strip Component
+# Message Strip
 `<snice-message-strip>`
 
 An inline contextual message bar for displaying status messages within content flow. Unlike alerts (dismissable card), banners (full-width top), and toasts (floating), message strips are designed to sit inline within your content.
@@ -13,19 +13,7 @@ An inline contextual message bar for displaying status messages within content f
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/message-strip/snice-message-strip';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-message-strip.min.js"></script>
-```
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -33,15 +21,14 @@ import 'snice/components/message-strip/snice-message-strip';
 |----------|------|---------|-------------|
 | `variant` | `'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` | Message type / color |
 | `dismissable` | `boolean` | `false` | Show dismiss button |
-| `icon` | `string` | `''` | Custom icon (set "none" to hide) |
+| `icon` | `string` | `''` | Custom icon (set "none" to hide default icon) |
 
 ## Methods
 
-#### `show(): void`
-Show the message strip after it has been hidden.
-
-#### `hide(): void`
-Hide the message strip with a slide-out animation.
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Show the message strip after it has been hidden |
+| `hide()` | -- | Hide the message strip with a slide-out animation |
 
 ## Events
 
@@ -58,11 +45,13 @@ Hide the message strip with a slide-out animation.
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `icon` | The icon container |
-| `content` | The message content area |
-| `dismiss` | The dismiss button |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `icon` | `<div>` | The icon container |
+| `content` | `<div>` | The message content area |
+| `dismiss` | `<button>` | The dismiss button |
 
 ```css
 snice-message-strip::part(content) {
@@ -144,12 +133,6 @@ Use the `icon` slot for custom icon elements.
 
 ### Programmatic Show/Hide
 
-```html
-<snice-message-strip variant="success">
-  Your changes have been saved.
-</snice-message-strip>
-```
-
 ```typescript
 messageStrip.hide();
 messageStrip.show();
@@ -166,16 +149,6 @@ messageStrip.show();
   <input type="text" required>
   <button type="submit">Submit</button>
 </form>
-```
-
-```typescript
-form.addEventListener('submit', (e) => {
-  if (!form.checkValidity()) {
-    e.preventDefault();
-    errorStrip.style.display = '';
-    errorStrip.show();
-  }
-});
 ```
 
 ### Stacked Messages
@@ -200,12 +173,3 @@ form.addEventListener('submit', (e) => {
 - Dismiss button has `aria-label="Dismiss"`
 - Default variant icons provide visual context clues
 - Supports both light and dark color schemes
-
-## When to Use Which
-
-| Component | Use Case |
-|-----------|----------|
-| **Message Strip** | Inline contextual feedback within content |
-| **Alert** | Prominent dismissable card-style notification |
-| **Banner** | Full-width message at the top of the page |
-| **Toast** | Floating temporary notification |

@@ -1,28 +1,22 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/approval-flow.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/approval-flow.md -->
 
 # Approval Flow
 `<snice-approval-flow>`
 
 A visual approval chain showing a sequence of approver nodes with avatar, name, role, and status.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/approval-flow/snice-approval-flow';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-approval-flow.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `steps` | `ApprovalStep[]` | `[]` | Array of approver step objects |
+| `steps` | `ApprovalStep[]` | `[]` | Array of approver step objects (set via JavaScript) |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
 | `currentStep` (attr: `current-step`) | `string` | `''` | ID of the active step |
 

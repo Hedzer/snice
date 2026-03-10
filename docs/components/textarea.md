@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/textarea.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/textarea.md -->
 
 # Textarea
 `<snice-textarea>`
 
-A multi-line text input with validation, character counting, and optional auto-grow.
+A multi-line text input with validation, character counting, and optional auto-grow. Form-associated.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/textarea/snice-textarea';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-textarea.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 

@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/gantt.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/gantt.md -->
 
 # Gantt Component
 
@@ -77,12 +77,12 @@ snice-gantt::part(task-list) {
 
 ## Basic Usage
 
-```html
-<snice-gantt></snice-gantt>
-```
-
 ```typescript
 import 'snice/components/gantt/snice-gantt';
+```
+
+```html
+<snice-gantt></snice-gantt>
 ```
 
 ## Examples

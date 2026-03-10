@@ -1,22 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/avatar-group.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/avatar-group.md -->
 
-# Avatar Group Component
+# Avatar Group
 `<snice-avatar-group>`
 
 Displays a row of overlapping avatars with a "+N" overflow indicator when avatars exceed the maximum visible count.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/avatar-group/snice-avatar-group';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-avatar-group.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -38,12 +35,22 @@ interface AvatarGroupItem {
 }
 ```
 
+## Methods
+
+This component does not expose public methods.
+
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `avatar-click` | `{ avatar: AvatarGroupItem, index: number }` | Fired when an avatar is clicked |
 | `overflow-click` | `{ remaining: number, avatars: AvatarGroupItem[] }` | Fired when "+N" is clicked |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | `<snice-avatar>` elements for declarative mode |
 
 ## CSS Parts
 
@@ -97,6 +104,19 @@ import 'snice/components/avatar-group/snice-avatar-group';
     { name: 'Eve Davis' }
   ];
 </script>
+```
+
+### Declarative Mode
+
+Use `<snice-avatar>` child elements instead of the `avatars` property.
+
+```html
+<snice-avatar-group max="3" size="medium">
+  <snice-avatar name="Alice Johnson"></snice-avatar>
+  <snice-avatar name="Bob Smith" src="/avatars/bob.jpg"></snice-avatar>
+  <snice-avatar name="Carol Williams"></snice-avatar>
+  <snice-avatar name="David Brown"></snice-avatar>
+</snice-avatar-group>
 ```
 
 ### With Overflow

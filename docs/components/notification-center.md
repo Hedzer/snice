@@ -1,43 +1,29 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/notification-center.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/notification-center.md -->
 
-# Notification Center Component
-
+# Notification Center
 `<snice-notification-center>`
 
 A bell icon with a dropdown notification panel. Displays an unread count badge, supports marking notifications as read, and allows dismissing individual items.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [CSS Custom Properties](#css-custom-properties)
+- [Slots](#slots)
 - [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/notification-center/snice-notification-center';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-notification-center.min.js"></script>
-```
+- [Data Types](#data-types)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `notifications` | `NotificationItem[]` | `[]` | Array of notification objects to display |
+| `notifications` | `NotificationItem[]` | `[]` | Array of notification objects to display (set via JS) |
 | `open` | `boolean` | `false` | Whether the dropdown panel is visible |
-| `icon` | `string` | `''` | Custom bell icon (URL, image file, emoji). Use slot for icon fonts. |
+| `icon` | `string` | `''` | Custom bell icon (URL, image file, or emoji). Use slot for icon fonts. |
 
 ## Methods
 
@@ -55,37 +41,11 @@ import 'snice/components/notification-center/snice-notification-center';
 | `notification-dismiss` | `{ id: string }` | Fired when a notification is dismissed |
 | `notification-read-all` | `void` | Fired when all notifications are marked as read |
 
-## CSS Custom Properties
-
-| Property | Description |
-|----------|-------------|
-| `--snice-font-family` | Font family |
-| `--snice-color-text` | Primary text color |
-| `--snice-color-primary` | Mark-all-read link color and unread highlight |
-| `--snice-color-primary-subtle` | Unread item background |
-| `--snice-color-danger` | Badge background and dismiss hover color |
-| `--snice-color-text-inverse` | Badge text color |
-| `--snice-color-text-secondary` | Message text color |
-| `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
-| `--snice-color-border` | Panel and item border color |
-| `--snice-color-background` | Panel background color |
-| `--snice-color-background-element` | Item hover and bell hover background |
-| `--snice-shadow-lg` | Panel drop shadow |
-| `--snice-spacing-*` | Various spacing tokens |
-| `--snice-font-size-sm` | Small text size |
-| `--snice-font-size-md` | Base text size |
-| `--snice-font-weight-medium` | Medium font weight |
-| `--snice-font-weight-semibold` | Semibold font weight |
-| `--snice-font-weight-bold` | Bold font weight |
-| `--snice-border-radius-md` | Item border radius |
-| `--snice-border-radius-lg` | Panel border radius |
-| `--snice-transition-fast` | Hover transition speed |
-
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
-| `icon` | Custom bell icon content. Overrides the `icon` property. Useful for icon fonts (Material Symbols, Font Awesome). |
+| Name | Description |
+|------|-------------|
+| `icon` | Custom bell icon content. Overrides the `icon` property. Useful for icon fonts. |
 
 ## CSS Parts
 
@@ -103,16 +63,26 @@ snice-notification-center::part(trigger) {
   font-size: 1.5rem;
 }
 
-snice-notification-center::part(badge) {
-  background: #ef4444;
-  color: white;
-}
-
 snice-notification-center::part(panel) {
   border-radius: 0.75rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 ```
+
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-color-primary` | Mark-all-read link color and unread highlight |
+| `--snice-color-primary-subtle` | Unread item background |
+| `--snice-color-danger` | Badge background and dismiss hover color |
+| `--snice-color-text-inverse` | Badge text color |
+| `--snice-color-text-secondary` | Message text color |
+| `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
+| `--snice-color-border` | Panel and item border color |
+| `--snice-color-background` | Panel background color |
+| `--snice-color-background-element` | Item hover and bell hover background |
+| `--snice-shadow-lg` | Panel drop shadow |
 
 ## Basic Usage
 
@@ -121,77 +91,18 @@ import 'snice/components/notification-center/snice-notification-center';
 ```
 
 ```html
-<snice-notification-center></snice-notification-center>
+<snice-notification-center id="nc"></snice-notification-center>
+
+<script type="module">
+  const nc = document.getElementById('nc');
+  nc.notifications = [
+    { id: '1', title: 'New message', message: 'You have a new message', timestamp: '2 min ago', type: 'info' },
+    { id: '2', title: 'Build complete', message: 'Deployment succeeded', timestamp: '10 min ago', type: 'success', read: true }
+  ];
+</script>
 ```
 
 ## Examples
-
-### Basic Notifications
-
-Populate the `notifications` property to display items in the dropdown panel.
-
-```html
-<snice-notification-center id="nc"></snice-notification-center>
-
-<script type="module">
-  import 'snice/components/notification-center/snice-notification-center';
-
-  const nc = document.getElementById('nc');
-  nc.notifications = [
-    {
-      id: '1',
-      title: 'New message',
-      message: 'You have a new message from Sarah',
-      timestamp: '2 min ago',
-      type: 'info'
-    },
-    {
-      id: '2',
-      title: 'Build complete',
-      message: 'Production deployment succeeded',
-      timestamp: '10 min ago',
-      type: 'success',
-      read: true
-    },
-    {
-      id: '3',
-      title: 'Disk space low',
-      message: 'Server storage is at 90% capacity',
-      timestamp: '1 hour ago',
-      type: 'warning'
-    }
-  ];
-</script>
-```
-
-### Handling Notification Clicks
-
-Listen for the `notification-click` event to navigate or take action when a notification is clicked.
-
-```html
-<snice-notification-center id="nc"></snice-notification-center>
-
-<script type="module">
-  import 'snice/components/notification-center/snice-notification-center';
-
-  const nc = document.getElementById('nc');
-  nc.notifications = [
-    { id: '1', title: 'New order', message: 'Order #4521 placed', timestamp: 'Just now', type: 'info' },
-    { id: '2', title: 'Payment received', message: '$249.99 from Acme Corp', timestamp: '5 min ago', type: 'success' }
-  ];
-
-  nc.addEventListener('notification-click', (e) => {
-    const notification = e.detail.notification;
-    console.log('Clicked:', notification.title);
-
-    // Mark as read when clicked
-    nc.markAsRead(notification.id);
-
-    // Navigate to relevant page
-    window.location.href = `/notifications/${notification.id}`;
-  });
-</script>
-```
 
 ### Notification Types
 
@@ -201,8 +112,6 @@ Each `type` automatically applies a default icon if no custom `icon` is provided
 <snice-notification-center id="nc"></snice-notification-center>
 
 <script type="module">
-  import 'snice/components/notification-center/snice-notification-center';
-
   const nc = document.getElementById('nc');
   nc.notifications = [
     { id: '1', title: 'Info', message: 'System update available', timestamp: '1 min ago', type: 'info' },
@@ -213,63 +122,59 @@ Each `type` automatically applies a default icon if no custom `icon` is provided
 </script>
 ```
 
+### Handling Notification Clicks
+
+Listen for the `notification-click` event to navigate or take action when a notification is clicked.
+
+```typescript
+nc.addEventListener('notification-click', (e) => {
+  const notification = e.detail.notification;
+  console.log('Clicked:', notification.title);
+  nc.markAsRead(notification.id);
+});
+```
+
 ### Dismiss and Mark All Read
 
 Use methods to manage notification state programmatically.
 
-```html
-<snice-notification-center id="nc"></snice-notification-center>
-<button id="clear-all">Clear All</button>
+```typescript
+// Listen for individual dismissals
+nc.addEventListener('notification-dismiss', (e) => {
+  console.log('Dismissed notification:', e.detail.id);
+});
 
-<script type="module">
-  import 'snice/components/notification-center/snice-notification-center';
+// Listen for mark-all-read
+nc.addEventListener('notification-read-all', () => {
+  console.log('All notifications marked as read');
+});
 
-  const nc = document.getElementById('nc');
-  nc.notifications = [
-    { id: '1', title: 'Alert 1', message: 'First notification', timestamp: '1 min ago', type: 'info' },
-    { id: '2', title: 'Alert 2', message: 'Second notification', timestamp: '2 min ago', type: 'warning' },
-    { id: '3', title: 'Alert 3', message: 'Third notification', timestamp: '3 min ago', type: 'error' }
-  ];
-
-  // Listen for individual dismissals
-  nc.addEventListener('notification-dismiss', (e) => {
-    console.log('Dismissed notification:', e.detail.id);
-  });
-
-  // Listen for mark-all-read
-  nc.addEventListener('notification-read-all', () => {
-    console.log('All notifications marked as read');
-  });
-
-  // Programmatically clear all
-  document.getElementById('clear-all').addEventListener('click', () => {
-    nc.markAllAsRead();
-  });
-</script>
+// Programmatically mark all as read
+nc.markAllAsRead();
 ```
 
 ### Custom Icons
 
-Override the default type-based icon with a custom emoji or text using the `icon` property.
+Override the default type-based icon with a custom emoji or text using the `icon` property on each notification item.
 
-```html
-<snice-notification-center id="nc"></snice-notification-center>
-
-<script type="module">
-  import 'snice/components/notification-center/snice-notification-center';
-
-  const nc = document.getElementById('nc');
-  nc.notifications = [
-    { id: '1', title: 'New follower', message: 'Alex started following you', timestamp: 'Just now', icon: '👤' },
-    { id: '2', title: 'Achievement unlocked', message: 'You completed 100 tasks', timestamp: '5 min ago', icon: '🏆' },
-    { id: '3', title: 'Reminder', message: 'Team standup in 15 minutes', timestamp: '10 min ago', icon: '⏰' }
-  ];
-</script>
+```typescript
+nc.notifications = [
+  { id: '1', title: 'New follower', message: 'Alex started following you', timestamp: 'Just now', icon: '\u{1F464}' },
+  { id: '2', title: 'Achievement unlocked', message: 'You completed 100 tasks', timestamp: '5 min ago', icon: '\u{1F3C6}' },
+  { id: '3', title: 'Reminder', message: 'Team standup in 15 minutes', timestamp: '10 min ago', icon: '\u{23F0}' }
+];
 ```
 
-## Types
+## Accessibility
 
-### NotificationItem
+- The bell icon is keyboard-focusable and opens the dropdown panel on click or Enter/Space
+- The unread count badge is visible for sighted users
+- Notification items in the dropdown are interactive and clickable
+- The dismiss button is accessible for keyboard navigation
+- The "Mark all as read" action is available in the panel header
+- Unread notifications are visually distinguished with a highlighted background
+
+## Data Types
 
 ```typescript
 interface NotificationItem {
@@ -282,12 +187,3 @@ interface NotificationItem {
   type?: 'info' | 'success' | 'warning' | 'error';  // Notification type (determines default icon)
 }
 ```
-
-## Accessibility
-
-- The bell icon is keyboard-focusable and opens the dropdown panel on click or Enter/Space
-- The unread count badge is visible for sighted users; the count is communicated via the badge element
-- Notification items in the dropdown are interactive and clickable
-- The dismiss button is accessible for keyboard navigation
-- The "Mark all as read" action is available as a link at the top of the panel
-- Unread notifications are visually distinguished with a highlighted background

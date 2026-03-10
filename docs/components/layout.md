@@ -1,22 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/layout.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/layout.md -->
 
 # Layout
 `<snice-layout>`
 
 Application layout with header navigation, main content area, and footer.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/layout/snice-layout';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-layout.min.js"></script>
-```
+## Table of Contents
+- [Methods](#methods)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Methods
 

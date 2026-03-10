@@ -1,6 +1,6 @@
 # snice-checkbox
 
-Form checkbox input with indeterminate state.
+Form checkbox with indeterminate and loading states.
 
 ## Properties
 
@@ -8,75 +8,56 @@ Form checkbox input with indeterminate state.
 checked: boolean = false;
 indeterminate: boolean = false;
 disabled: boolean = false;
+loading: boolean = false;
 required: boolean = false;
 invalid: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
 value: string = 'on';
 label: string = '';
-loading: boolean = false;
 ```
 
 ## Methods
 
 - `focus()` - Focus checkbox
-- `blur()` - Blur checkbox
+- `blur()` - Remove focus
 - `click()` - Programmatic click
 - `toggle()` - Toggle checked state
 - `setIndeterminate()` - Set indeterminate state
 
 ## Events
 
-- `checkbox-change` - {checked, indeterminate, checkbox}
+- `checkbox-change` -> `{ checked: boolean, indeterminate: boolean, checkbox: SniceCheckboxElement }`
 
-## Usage
+## CSS Parts
+
+- `input` - Hidden checkbox input
+- `checkbox` - Custom checkbox element
+- `spinner` - Loading spinner
+- `label` - Label text
+
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-checkbox label="Accept terms"></snice-checkbox>
-
-<!-- Checked -->
-<snice-checkbox label="Enabled" checked></snice-checkbox>
-
-<!-- Indeterminate (partial selection) -->
-<snice-checkbox label="Select all" indeterminate></snice-checkbox>
-
-<!-- Disabled -->
-<snice-checkbox label="Disabled" disabled></snice-checkbox>
-
-<!-- Required -->
-<snice-checkbox label="Required" required></snice-checkbox>
-
-<!-- Invalid -->
-<snice-checkbox label="Invalid" invalid></snice-checkbox>
-
-<!-- Sizes -->
-<snice-checkbox label="Small" size="small"></snice-checkbox>
-<snice-checkbox label="Medium" size="medium"></snice-checkbox>
-<snice-checkbox label="Large" size="large"></snice-checkbox>
-
-<!-- Form integration -->
-<snice-checkbox name="newsletter" value="yes" label="Subscribe"></snice-checkbox>
-
-<!-- Event handling -->
-<snice-checkbox></snice-checkbox>
 ```
 
 ```typescript
+import 'snice/components/checkbox/snice-checkbox';
+
 checkbox.addEventListener('checkbox-change', (e) => {
   console.log('Checked:', e.detail.checked);
 });
 ```
 
-## CSS Parts
+## Keyboard Navigation
 
-`input`, `checkbox`, `spinner`, `label`
+- Space: toggle
+- Tab: navigate
 
-## Features
+## Accessibility
 
-- Form-associated custom element
-- Indeterminate state
-- 3 sizes
-- Keyboard accessible
-- Change events
-- Invalid state styling
+- aria-checked (including "mixed" for indeterminate)
+- aria-invalid for validation
+- Screen reader label association
+- Focus indicators

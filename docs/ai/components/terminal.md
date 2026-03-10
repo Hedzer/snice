@@ -12,12 +12,6 @@ maxLines: number = 1000;       // attr: max-lines
 showTimestamps: boolean = false; // attr: show-timestamps
 ```
 
-## Events
-
-- `terminal-command` → `{ command, args }` - Command entered
-- `terminal-clear` → `{}` - Terminal cleared
-- `terminal-ready` → `{}` - Terminal ready
-
 ## Methods
 
 - `write(content, type?)` - Write without newline
@@ -29,9 +23,11 @@ showTimestamps: boolean = false; // attr: show-timestamps
 - `getHistory()` - Get command history
 - `clearHistory()` - Clear command history
 
-## Line Types
+## Events
 
-`input` | `output` | `error` | `info` | `success` | `warning`
+- `terminal-command` -> `{ command, args }` - Command entered
+- `terminal-clear` -> `{}` - Terminal cleared
+- `terminal-ready` -> `{}` - Terminal ready
 
 ## CSS Custom Properties
 
@@ -67,7 +63,11 @@ showTimestamps: boolean = false; // attr: show-timestamps
 - `timestamp` - Line timestamp
 - `line-content` - Line text content
 
-## Usage
+## Line Types
+
+`input` | `output` | `error` | `info` | `success` | `warning`
+
+## Basic Usage
 
 ```html
 <snice-terminal prompt="$ " cwd="~"></snice-terminal>

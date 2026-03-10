@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/candlestick.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/candlestick.md -->
 
 # Candlestick Chart Component
 
-The candlestick chart component renders an SVG-based OHLC (Open-High-Low-Close) financial chart, commonly used for stock market and cryptocurrency price visualization. It supports volume bars, crosshair overlay, zoom/pan, tooltips, and responsive sizing.
+SVG-based OHLC (Open-High-Low-Close) financial chart for stock market and cryptocurrency price visualization. Supports volume bars, crosshair overlay, zoom/pan, tooltips, and responsive sizing.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -13,42 +13,41 @@ The candlestick chart component renders an SVG-based OHLC (Open-High-Low-Close) 
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `data` | `CandleData[]` | `[]` | Array of candlestick data points |
-| `show-volume` | `boolean` | `false` | Show volume bars below the price chart |
-| `show-grid` | `boolean` | `true` | Show horizontal grid lines |
-| `show-crosshair` | `boolean` | `true` | Show crosshair overlay on hover |
-| `bullish-color` | `string` | `''` | Custom color for bullish candles (close >= open) |
-| `bearish-color` | `string` | `''` | Custom color for bearish candles (close < open) |
-| `time-format` | `string` | `'auto'` | Date format: `'auto'`, `'date'`, `'time'`, `'datetime'`, `'month'`, `'year'` |
-| `y-axis-format` | `string` | `'number'` | Y-axis format: `'number'`, `'currency'`, `'percent'` |
-| `zoom-enabled` | `boolean` | `true` | Enable scroll-to-zoom and drag-to-pan |
+| `showVolume` (attr: `show-volume`) | `boolean` | `false` | Show volume bars below the price chart |
+| `showGrid` (attr: `show-grid`) | `boolean` | `true` | Show horizontal grid lines |
+| `showCrosshair` (attr: `show-crosshair`) | `boolean` | `true` | Show crosshair overlay on hover |
+| `bullishColor` (attr: `bullish-color`) | `string` | `''` | Custom color for bullish candles (close >= open) |
+| `bearishColor` (attr: `bearish-color`) | `string` | `''` | Custom color for bearish candles (close < open) |
+| `timeFormat` (attr: `time-format`) | `string` | `'auto'` | Date format: `'auto'`, `'date'`, `'time'`, `'datetime'`, `'month'`, `'year'` |
+| `yAxisFormat` (attr: `y-axis-format`) | `string` | `'number'` | Y-axis format: `'number'`, `'currency'`, `'percent'` |
+| `zoomEnabled` (attr: `zoom-enabled`) | `boolean` | `true` | Enable scroll-to-zoom and drag-to-pan |
 | `animation` | `boolean` | `true` | Animate candle appearance on data change |
 
 ### CandleData Interface
 
 ```typescript
 interface CandleData {
-  date: string | number | Date;   // Timestamp or date string
-  open: number;                     // Opening price
-  high: number;                     // Highest price
-  low: number;                      // Lowest price
-  close: number;                    // Closing price
-  volume?: number;                  // Trading volume (optional)
+  date: string | number | Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume?: number;
 }
 ```
 
 ## Methods
 
-| Method | Signature | Description |
-|--------|-----------|-------------|
-| `resetZoom()` | `() => void` | Reset zoom to show all data points |
-| `zoomTo()` | `(startIndex: number, endIndex: number) => void` | Zoom to a specific index range |
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `resetZoom()` | -- | `void` | Reset zoom to show all data points |
+| `zoomTo()` | `startIndex: number, endIndex: number` | `void` | Zoom to a specific index range |
 
 ## Events
 
@@ -62,86 +61,62 @@ interface CandleData {
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--snice-candlestick-bullish` | `rgb(22 163 74)` (green) | Bullish candle color |
-| `--snice-candlestick-bearish` | `rgb(220 38 38)` (red) | Bearish candle color |
-
-You can also override colors globally using these CSS custom properties:
-
-```css
-snice-candlestick {
-  --snice-candlestick-bullish: #26a69a;
-  --snice-candlestick-bearish: #ef5350;
-}
-```
+| `--snice-candlestick-bullish` | `rgb(22 163 74)` | Bullish candle color |
+| `--snice-candlestick-bearish` | `rgb(220 38 38)` | Bearish candle color |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer chart container with mouse event handlers |
-| `canvas` | `<svg>` | SVG element containing the candlestick chart, grid, and axes |
-| `tooltip` | `<div>` | OHLC data tooltip overlay shown on hover |
-
-```css
-snice-candlestick::part(base) {
-  border-radius: 8px;
-  background: #0f172a;
-}
-
-snice-candlestick::part(tooltip) {
-  background: rgba(15, 23, 42, 0.95);
-  border-radius: 6px;
-  font-size: 0.8rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | Outer chart container with mouse event handlers |
+| `canvas` | SVG element containing the candlestick chart, grid, and axes |
+| `tooltip` | OHLC data tooltip overlay shown on hover |
 
 ## Basic Usage
 
 ```html
 <snice-candlestick id="chart"></snice-candlestick>
+```
 
-<script type="module">
-  import 'snice/components/candlestick/snice-candlestick';
+```typescript
+import 'snice/components/candlestick/snice-candlestick';
 
-  const chart = document.getElementById('chart');
-  chart.data = [
-    { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
-    { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
-    { date: '2024-01-03', open: 98, high: 108, low: 93, close: 107, volume: 450000 },
-  ];
-</script>
+chart.data = [
+  { date: '2024-01-01', open: 100, high: 110, low: 95, close: 105, volume: 500000 },
+  { date: '2024-01-02', open: 105, high: 115, low: 100, close: 98, volume: 600000 },
+  { date: '2024-01-03', open: 98, high: 108, low: 93, close: 107, volume: 450000 },
+];
 ```
 
 ## Examples
 
 ### With Volume Bars
 
+Set `show-volume` to display volume bars below the price chart.
+
 ```html
-<snice-candlestick id="vol-chart" show-volume></snice-candlestick>
+<snice-candlestick show-volume></snice-candlestick>
 ```
 
 ### Custom Colors
+
+Use `bullish-color` and `bearish-color` to customize candle colors.
 
 ```html
 <snice-candlestick bullish-color="#0088ff" bearish-color="#ff6600"></snice-candlestick>
 ```
 
-### Currency Format (Stock Prices)
+### Currency Format
+
+Use `y-axis-format="currency"` for stock price display.
 
 ```html
-<snice-candlestick id="stock-chart" y-axis-format="currency" show-volume></snice-candlestick>
-
-<script>
-  stockChart.data = [
-    { date: '2024-01-02', open: 42500, high: 42850, low: 42200, close: 42700, volume: 15000000 },
-    // ...
-  ];
-</script>
+<snice-candlestick y-axis-format="currency" show-volume></snice-candlestick>
 ```
 
-### Minimal (No Grid, No Crosshair)
+### Minimal Display
+
+Disable grid and crosshair for a minimal chart.
 
 ```html
 <snice-candlestick show-grid="false" show-crosshair="false"></snice-candlestick>
@@ -149,64 +124,52 @@ snice-candlestick::part(tooltip) {
 
 ### Zoom Controls
 
+Use `resetZoom()` and `zoomTo()` for programmatic zoom control.
+
 ```html
 <button onclick="chart.resetZoom()">Reset Zoom</button>
 <button onclick="chart.zoomTo(0, 30)">First 30 Days</button>
 <snice-candlestick id="chart" zoom-enabled></snice-candlestick>
 ```
 
-### Listening to Events
+### Event Handling
 
-```html
-<snice-candlestick id="chart"></snice-candlestick>
+Listen for candle clicks and crosshair movement.
 
-<script>
-  chart.addEventListener('candle-click', (e) => {
-    console.log('Clicked candle:', e.detail.candle);
-    console.log('Index:', e.detail.index);
-  });
+```javascript
+chart.addEventListener('candle-click', (e) => {
+  console.log('Clicked candle:', e.detail.candle);
+});
 
-  chart.addEventListener('crosshair-move', (e) => {
-    console.log('Price at cursor:', e.detail.price);
-    console.log('Date at cursor:', e.detail.date);
-  });
-</script>
+chart.addEventListener('crosshair-move', (e) => {
+  console.log('Price at cursor:', e.detail.price);
+});
 ```
 
 ### Dynamic Data Updates
 
-```html
-<snice-candlestick id="live-chart" show-volume></snice-candlestick>
+Set `data` to a new array to update the chart in real time.
 
-<script>
-  // Add new candle every 5 seconds
-  setInterval(() => {
-    const data = [...liveChart.data];
-    const last = data[data.length - 1];
-    const change = (Math.random() - 0.5) * 10;
-    const open = last.close;
-    const close = open + change;
-    data.push({
-      date: new Date(),
-      open,
-      high: Math.max(open, close) + Math.random() * 3,
-      low: Math.min(open, close) - Math.random() * 3,
-      close,
-      volume: Math.floor(Math.random() * 1000000)
-    });
-    liveChart.data = data;
-  }, 5000);
-</script>
+```javascript
+setInterval(() => {
+  const data = [...chart.data];
+  const last = data[data.length - 1];
+  const open = last.close;
+  const close = open + (Math.random() - 0.5) * 10;
+  data.push({
+    date: new Date(),
+    open,
+    high: Math.max(open, close) + Math.random() * 3,
+    low: Math.min(open, close) - Math.random() * 3,
+    close,
+    volume: Math.floor(Math.random() * 1000000)
+  });
+  chart.data = data;
+}, 5000);
 ```
 
 ## Accessibility
 
-- **ARIA role**: The SVG has `role="img"` for screen reader identification
-- **ARIA label**: Includes data point count in `aria-label`
-- **Keyboard**: Zoom and pan are mouse-driven; use `resetZoom()` and `zoomTo()` methods for programmatic control
-- **Color contrast**: Default bullish (green) and bearish (red) colors meet WCAG AA standards
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+- SVG has `role="img"` with `aria-label` including data point count
+- Default bullish (green) and bearish (red) colors meet WCAG AA contrast standards
+- Zoom and pan are mouse-driven; use `resetZoom()` and `zoomTo()` for programmatic control

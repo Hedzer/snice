@@ -1,10 +1,12 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/leaderboard.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/leaderboard.md -->
 
-# Leaderboard Component
+# Leaderboard
+`<snice-leaderboard>`
 
-The leaderboard component displays a ranked list of entries with optional avatars, change indicators, and podium highlighting. It supports a **dual API**: declarative child elements (`<snice-leaderboard-entry>`) and an imperative `setEntries()` method.
+A ranked list of entries with optional avatars, change indicators, and podium highlighting. Supports a dual API: declarative child elements (`<snice-leaderboard-entry>`) and an imperative `setEntries()` method.
 
 ## Table of Contents
+- [Components](#components)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
@@ -12,10 +14,24 @@ The leaderboard component displays a ranked list of entries with optional avatar
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
-- [Declarative API (Child Elements)](#declarative-api-child-elements)
-- [Imperative API (setEntries)](#imperative-api-setentries)
-- [Variants](#variants)
+- [Examples](#examples)
 - [Accessibility](#accessibility)
+
+## Components
+
+- `<snice-leaderboard>` - The container component
+- `<snice-leaderboard-entry>` - Data container child element (does not render its own shadow DOM)
+
+### Entry Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `rank` | `number` | `0` | Position/rank number |
+| `name` | `string` | `''` | Display name |
+| `score` | `string` | `''` | Score to display |
+| `avatar` | `string` | `''` | URL to avatar image (optional) |
+| `change` | `number` | `0` | Rank change indicator (positive = up, negative = down) |
+| `highlighted` | `boolean` | `false` | Highlight this entry |
 
 ## Properties
 
@@ -27,36 +43,29 @@ The leaderboard component displays a ranked list of entries with optional avatar
 
 ## Methods
 
-### `setEntries(entries: LeaderboardEntry[]): void`
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setEntries()` | `entries: LeaderboardEntry[]` | Set entries imperatively. Slot children take precedence. |
 
-Set leaderboard entries imperatively. Each entry is an object with these fields:
+### LeaderboardEntry Interface
 
 ```typescript
 interface LeaderboardEntry {
-  rank: number;         // Position number
-  name: string;         // Display name
-  score: number | string; // Score value
-  avatar?: string;      // Avatar image URL
-  change?: number;      // Rank change (positive = up, negative = down)
-  highlighted?: boolean; // Highlight this entry
+  rank: number;
+  name: string;
+  score: number | string;
+  avatar?: string;
+  change?: number;
+  highlighted?: boolean;
 }
 ```
 
 ## Events
 
-### `entry-click`
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `entry-click` | `{ entry: LeaderboardEntry, index: number }` | Fired when a leaderboard entry is clicked |
 
-Fired when a leaderboard entry is clicked.
-
-**Event Detail:**
-```typescript
-{
-  entry: LeaderboardEntry; // The clicked entry data
-  index: number;           // Index of the entry
-}
-```
-
-**Example:**
 ```typescript
 leaderboard.addEventListener('entry-click', (e) => {
   console.log('Clicked:', e.detail.entry.name);
@@ -83,7 +92,7 @@ leaderboard.addEventListener('entry-click', (e) => {
 | `--leaderboard-bg-element` | Element background | `var(--snice-color-background-element)` |
 | `--leaderboard-radius` | Border radius | `var(--snice-border-radius-lg)` |
 
-### CSS Parts
+## CSS Parts
 
 | Part | Description |
 |------|-------------|
@@ -94,6 +103,10 @@ leaderboard.addEventListener('entry-click', (e) => {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/leaderboard/snice-leaderboard';
+```
+
 ```html
 <snice-leaderboard title="Top Players">
   <snice-leaderboard-entry rank="1" name="Alice" score="2500"></snice-leaderboard-entry>
@@ -101,53 +114,23 @@ leaderboard.addEventListener('entry-click', (e) => {
 </snice-leaderboard>
 ```
 
-```typescript
-import 'snice/components/leaderboard/snice-leaderboard';
-```
+## Examples
 
-## Declarative API (Child Elements)
+### Declarative API (Child Elements)
 
-Use `<snice-leaderboard-entry>` elements as children of `<snice-leaderboard>`. Each entry is a data container that the parent reads and renders.
+Use `<snice-leaderboard-entry>` elements as children. The parent reads attributes and renders the full UI.
 
 ```html
 <snice-leaderboard variant="podium" title="Season Rankings">
-  <snice-leaderboard-entry
-    rank="1"
-    name="Alice"
-    score="2,500"
-    avatar="alice.jpg"
-    change="3"
-    highlighted>
-  </snice-leaderboard-entry>
-  <snice-leaderboard-entry
-    rank="2"
-    name="Bob"
-    score="2,100"
-    change="-1">
-  </snice-leaderboard-entry>
-  <snice-leaderboard-entry
-    rank="3"
-    name="Charlie"
-    score="1,800"
-    change="2">
-  </snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="1" name="Alice" score="2,500" avatar="alice.jpg" change="3" highlighted></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="2" name="Bob" score="2,100" change="-1"></snice-leaderboard-entry>
+  <snice-leaderboard-entry rank="3" name="Charlie" score="1,800" change="2"></snice-leaderboard-entry>
 </snice-leaderboard>
 ```
 
-### Entry Attributes
+### Imperative API (setEntries)
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `rank` | `number` | `0` | Position/rank number |
-| `name` | `string` | `''` | Display name |
-| `score` | `string` | `''` | Score to display |
-| `avatar` | `string` | `''` | URL to avatar image (optional) |
-| `change` | `number` | `0` | Rank change indicator (positive = up, negative = down) |
-| `highlighted` | `boolean` | `false` | Highlight this entry |
-
-## Imperative API (setEntries)
-
-For dynamic data (e.g., fetched from an API), use the `setEntries()` method.
+For dynamic data, use the `setEntries()` method. Slot children take precedence when both are used.
 
 ```typescript
 leaderboard.setEntries([
@@ -158,30 +141,23 @@ leaderboard.setEntries([
 ]);
 ```
 
-### Dual API Precedence
+### Variants
 
-When **both** child elements and `setEntries()` are used:
-- Child elements (`<snice-leaderboard-entry>`) take precedence
-- `setEntries()` calls are ignored while child elements are present
-- When all children are removed, `setEntries()` becomes active again
-
-## Variants
-
-### Default
+#### Default
 A flat list of ranked entries.
 
 ```html
 <snice-leaderboard>...</snice-leaderboard>
 ```
 
-### Podium
+#### Podium
 The top 3 entries are displayed in a podium layout (2nd, 1st, 3rd). Remaining entries appear as a regular list below.
 
 ```html
 <snice-leaderboard variant="podium">...</snice-leaderboard>
 ```
 
-### Compact
+#### Compact
 Tighter spacing with smaller avatars, suitable for sidebars or smaller containers.
 
 ```html

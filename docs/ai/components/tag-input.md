@@ -4,16 +4,16 @@ Tag/chip input with autocomplete suggestions, keyboard navigation, and comma-sep
 
 ## Properties
 
-```ts
-value: string[] = []
-suggestions: string[] = []
-maxTags: number = 0              // 0 = unlimited (attribute: max-tags)
-allowDuplicates: boolean = false // attribute: allow-duplicates
-placeholder: string = 'Add a tag...'
-disabled: boolean = false
-readonly: boolean = false
-label: string = ''
-name: string = ''
+```typescript
+value: string[] = [];
+suggestions: string[] = [];
+maxTags: number = 0;              // 0 = unlimited (attr: max-tags)
+allowDuplicates: boolean = false; // attr: allow-duplicates
+placeholder: string = 'Add a tag...';
+disabled: boolean = false;
+readonly: boolean = false;
+label: string = '';
+name: string = '';
 ```
 
 ## Methods
@@ -29,15 +29,8 @@ name: string = ''
 - `tag-remove` -> `{ tag: string; index: number; value: string[] }`
 - `tag-change` -> `{ value: string[] }`
 
-## Input Behavior
+## CSS Parts
 
-- Enter: Add current input as tag (or select highlighted suggestion)
-- Comma: Split input and add each part as a tag
-- Backspace on empty input: Remove last tag
-- ArrowUp/ArrowDown: Navigate suggestions
-- Escape: Close suggestions dropdown
-
-**CSS Parts:**
 - `base` - Outer wrapper div
 - `label` - Label element
 - `container` - Tags + input container
@@ -46,19 +39,15 @@ name: string = ''
 - `input` - Text input field
 - `suggestions` - Suggestions dropdown
 
-## CSS Custom Properties
+## Keyboard Navigation
 
-- `--snice-color-border` - Container border (default: `rgb(226 226 226)`)
-- `--snice-color-primary` - Focus ring, tag color (default: `rgb(37 99 235)`)
-- `--snice-color-primary-subtle` - Tag background (default: `rgb(239 246 255)`)
-- `--snice-color-background` - Input background (default: `rgb(255 255 255)`)
-- `--snice-color-text` - Text color (default: `rgb(23 23 23)`)
-- `--snice-color-text-tertiary` - Placeholder color
-- `--snice-focus-ring-width` - Focus ring width (default: `2px`)
-- `--snice-focus-ring-color` - Focus ring color
-- `--snice-shadow-lg` - Suggestions dropdown shadow
+- Enter: Add current input as tag (or select highlighted suggestion)
+- Comma: Split input and add each part as a tag
+- Backspace on empty input: Remove last tag
+- ArrowUp/ArrowDown: Navigate suggestions
+- Escape: Close suggestions dropdown
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-tag-input

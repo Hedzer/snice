@@ -21,19 +21,26 @@ interface TreemapNode {
 }
 ```
 
-## Events
-
-- `treemap-click` → `{ node, depth }`
-- `treemap-hover` → `{ node, depth } | null`
-- `treemap-drill` → `{ node, path }`
-
 ## Methods
 
 - `drillDown(node)` - Drill into node's children
 - `drillUp()` - Go back one level
 - `drillToRoot()` - Reset to root
 
-## Usage
+## Events
+
+- `treemap-click` -> `{ node, depth }`
+- `treemap-hover` -> `{ node, depth } | null`
+- `treemap-drill` -> `{ node, path }`
+
+## CSS Parts
+
+- `breadcrumbs` - Breadcrumb navigation for drill-down
+- `base` - Main treemap container
+- `chart` - Chart rendering area
+- `tooltip` - Hover tooltip element
+
+## Basic Usage
 
 ```html
 <snice-treemap show-labels show-values style="height: 400px;"></snice-treemap>
@@ -55,9 +62,3 @@ treemap.data = {
   ]
 };
 ```
-
-**CSS Parts:**
-- `breadcrumbs` - Breadcrumb navigation for drill-down
-- `base` - Main treemap container
-- `chart` - Chart rendering area
-- `tooltip` - Hover tooltip element

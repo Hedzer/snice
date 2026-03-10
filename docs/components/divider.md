@@ -1,22 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/divider.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/divider.md -->
 
 # Divider
 `<snice-divider>`
 
 Separator line with optional text label.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/divider/snice-divider';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-divider.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -43,13 +37,11 @@ import 'snice/components/divider/snice-divider';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer divider container |
-| `line` | `<div>` | The divider line(s) |
-| `text` | `<span>` | Optional text label |
+| Part | Description |
+|------|-------------|
+| `base` | Outer divider container |
+| `line` | The divider line(s) |
+| `text` | Optional text label |
 
 ```css
 snice-divider::part(line) {
@@ -70,6 +62,12 @@ import 'snice/components/divider/snice-divider';
 
 ```html
 <snice-divider></snice-divider>
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-divider.min.js"></script>
 ```
 
 ## Examples

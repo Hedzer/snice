@@ -1,25 +1,25 @@
 # snice-time-picker
 
-Single time selection with hour/minute/second selectors and AM/PM toggle.
+Single time selection with hour/minute/second selectors and AM/PM toggle. Form-associated.
 
 ## Properties
 
 ```typescript
-value: string = '';                                   // Time string (HH:MM or HH:MM:SS)
+value: string = '';                    // Time string (HH:MM or HH:MM:SS)
 format: '12h'|'24h' = '24h';
 size: 'small'|'medium'|'large' = 'medium';
-step: 1|5|10|15|30 = 15;                             // Minute step
-minTime: string = '';                                 // attribute: min-time
-maxTime: string = '';                                 // attribute: max-time
-showSeconds: boolean = false;                         // attribute: show-seconds
+step: 1|5|10|15|30 = 15;              // Minute step
+minTime: string = '';                  // attr: min-time
+maxTime: string = '';                  // attr: max-time
+showSeconds: boolean = false;          // attr: show-seconds
 disabled: boolean = false;
 readonly: boolean = false;
 loading: boolean = false;
 clearable: boolean = false;
 placeholder: string = '';
 label: string = '';
-helperText: string = '';                              // attribute: helper-text
-errorText: string = '';                               // attribute: error-text
+helperText: string = '';               // attr: helper-text
+errorText: string = '';                // attr: error-text
 required: boolean = false;
 invalid: boolean = false;
 name: string = '';
@@ -33,7 +33,9 @@ variant: 'dropdown'|'inline' = 'dropdown';
 - `clear()` - Clear value
 - `focus()` - Focus input
 - `blur()` - Blur input
-- `checkValidity()` / `reportValidity()` / `setCustomValidity(msg)`
+- `checkValidity()` - Check validation, returns `boolean`
+- `reportValidity()` - Report validation to user, returns `boolean`
+- `setCustomValidity(message)` - Set custom validation message
 
 ## Events
 
@@ -44,33 +46,30 @@ variant: 'dropdown'|'inline' = 'dropdown';
 - `timepicker-close` -> `{ timePicker }`
 - `timepicker-clear` -> `{ timePicker }`
 
-## Usage
+## CSS Parts
+
+- `base` - Wrapper container
+- `label` - Label element
+- `input` - Text input
+- `toggle` - Clock icon button
+- `dropdown` - Dropdown/inline container
+- `hours` - Hours selector column
+- `minutes` - Minutes selector column
+- `seconds` - Seconds selector column
+- `period` - AM/PM selector column
+- `clear` - Clear button
+- `spinner` - Loading spinner
+- `helper-text` - Helper text element
+- `error-text` - Error text element
+
+## Basic Usage
 
 ```html
-<!-- Basic 24h -->
-<snice-time-picker label="Time"></snice-time-picker>
-
-<!-- 12h format -->
+<snice-time-picker label="Select time"></snice-time-picker>
 <snice-time-picker format="12h" value="14:30"></snice-time-picker>
-
-<!-- With seconds -->
 <snice-time-picker show-seconds value="09:15:30"></snice-time-picker>
-
-<!-- 5-minute steps -->
-<snice-time-picker step="5"></snice-time-picker>
-
-<!-- Min/max constraints -->
-<snice-time-picker min-time="09:00" max-time="17:00"></snice-time-picker>
-
-<!-- Inline (always visible) -->
+<snice-time-picker step="5" min-time="09:00" max-time="17:00"></snice-time-picker>
 <snice-time-picker variant="inline" value="10:00"></snice-time-picker>
-
-<!-- Disabled/readonly -->
-<snice-time-picker disabled value="12:00"></snice-time-picker>
-<snice-time-picker readonly value="15:30"></snice-time-picker>
-
-<!-- Event handling -->
-<snice-time-picker></snice-time-picker>
 ```
 
 ```typescript
@@ -78,21 +77,3 @@ picker.addEventListener('time-change', (e) => {
   console.log('Time:', e.detail.value, e.detail.formatted);
 });
 ```
-
-## CSS Parts
-
-`base`, `label`, `input`, `toggle`, `dropdown`, `hours`, `minutes`, `seconds`, `period`, `clear`, `spinner`, `helper-text`, `error-text`
-
-## Features
-
-- Form-associated custom element
-- Hour/minute/second scrollable columns
-- AM/PM toggle for 12h format
-- Dropdown or inline variant
-- 3 sizes (small, medium, large)
-- Loading state with spinner
-- Clearable with clear button
-- Min/max time constraints
-- Configurable minute step (1, 5, 10, 15, 30)
-- Constraint Validation API (checkValidity, reportValidity, setCustomValidity)
-- Keyboard accessible

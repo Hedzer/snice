@@ -1,6 +1,6 @@
 # snice-qr-code
 
-QR code generator with customizable styling and export.
+QR code generator with customizable styling, center overlays, and export.
 
 ## Properties
 
@@ -8,7 +8,7 @@ QR code generator with customizable styling and export.
 value: string = '';
 size: number = 200;
 errorCorrectionLevel: 'L'|'M'|'Q'|'H' = 'M';  // attr: error-correction-level
-renderMode: 'canvas'|'svg' = 'canvas';            // attr: render-mode
+renderMode: 'canvas'|'svg' = 'canvas';           // attr: render-mode
 dotStyle: 'square'|'rounded'|'dots' = 'square';  // attr: dot-style
 margin: number = 4;
 fgColor: string = '#000000';                      // attr: fg-color
@@ -24,50 +24,48 @@ textOutlineColor: string = '#ffffff';             // attr: text-outline-color
 
 ## Methods
 
-- `toSVGString()` - Export as SVG markup string (sync, only when renderMode='svg')
+- `toSVGString()` - SVG markup string (sync, only when renderMode='svg')
 - `toDataURL(type?, quality?)` - Export as data URL (async)
 - `toBlob(type?, quality?)` - Export as Blob (async)
 - `download(filename?)` - Download as image file
 
 ## CSS Custom Properties
 
-- `--qr-bg` - Container background
-- `--qr-border-radius` - Container border radius
-- `--qr-padding` - Container padding
+- `--qr-bg` - Container background (`hsl(0 0% 100%)`)
+- `--qr-border-radius` - Container border radius (`0`)
+- `--qr-padding` - Container padding (`0`)
 
-## Usage
+## CSS Parts
+
+- `base` - QR code container div
+
+## Basic Usage
 
 ```html
-<snice-qr-code value="https://example.com" size="250"></snice-qr-code>
+<snice-qr-code value="https://example.com"></snice-qr-code>
 
-<!-- Custom colors -->
-<snice-qr-code value="https://example.com" fg-color="#2196f3" bg-color="#e3f2fd"></snice-qr-code>
+<!-- Custom colors + dot style -->
+<snice-qr-code value="https://example.com" fg-color="#2196f3" dot-style="rounded"></snice-qr-code>
 
-<!-- With center image -->
+<!-- Center image overlay (use high error correction) -->
 <snice-qr-code value="https://example.com" include-image image-url="/logo.png" error-correction-level="H"></snice-qr-code>
 
-<!-- Dot styles -->
-<snice-qr-code value="https://example.com" dot-style="rounded"></snice-qr-code>
+<!-- Center text overlay -->
+<snice-qr-code value="https://example.com" center-text="SCAN" error-correction-level="H"></snice-qr-code>
+
+<!-- SVG render mode -->
+<snice-qr-code value="https://example.com" render-mode="svg"></snice-qr-code>
 ```
 
 ```typescript
-qr.value = 'https://example.com';
+const qr = document.querySelector('snice-qr-code');
 const url = await qr.toDataURL('image/png');
 const blob = await qr.toBlob('image/png');
 qr.download('qr-code.png');
+const svg = qr.toSVGString(); // only when renderMode='svg'
 ```
 
-**CSS Parts:**
-- `base` - QR code container div
+## Accessibility
 
-## Common Data Formats
-
-```typescript
-// URL:   'https://example.com'
-// Email: 'mailto:name@example.com'
-// Phone: 'tel:+1234567890'
-// SMS:   'sms:+1234567890?body=Hello'
-// WiFi:  'WIFI:T:WPA;S:NetworkName;P:password;;'
-// Geo:   'geo:37.7749,-122.4194'
-// vCard: 'BEGIN:VCARD\nVERSION:3.0\nFN:Name\nEND:VCARD'
-```
+- Purely visual output, no interactive elements
+- Provide adjacent text or wrapper `aria-label` for screen readers

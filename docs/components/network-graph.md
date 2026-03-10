@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/network-graph.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/network-graph.md -->
 
 # Network Graph
 `<snice-network-graph>`
 
 An SVG-based force-directed graph visualization for displaying relationships between nodes.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/network-graph/snice-network-graph';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-network-graph.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -179,6 +174,12 @@ Disable drag and zoom for a non-interactive view.
 ```html
 <snice-network-graph zoom-enabled="false" drag-enabled="false"></snice-network-graph>
 ```
+
+## Accessibility
+
+- The graph container has `role="img"` with `aria-label="Network graph visualization"`
+- Hover tooltips display node label and connection count
+- Responsive via ResizeObserver
 
 ## Data Types
 

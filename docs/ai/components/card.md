@@ -1,6 +1,6 @@
 # snice-card
 
-Container for grouped content.
+Container for grouped content with variants, slots, and interactive states.
 
 ## Properties
 
@@ -12,16 +12,16 @@ selected: boolean = false;
 disabled: boolean = false;
 ```
 
+## Events
+
+- `card-click` -> `{ selected: boolean }`
+
 ## Slots
 
 - `(default)` - Card body content
+- `image` - Image at top of card
 - `header` - Card header
-- `image` - Card image (top of card)
 - `footer` - Card footer
-
-## Events
-
-- `card-click` → `{ selected: boolean }`
 
 ## CSS Parts
 
@@ -30,36 +30,26 @@ disabled: boolean = false;
 - `body` - Card body section
 - `footer` - Card footer section
 
-## Usage
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-card>
-  <p>Card content</p>
-</snice-card>
-
-<!-- With header and footer -->
-<snice-card>
-  <div slot="header">Card Title</div>
+  <div slot="header">Title</div>
   <p>Card body content</p>
-  <div slot="footer">
-    <button>Action</button>
-  </div>
+  <div slot="footer"><button>Action</button></div>
 </snice-card>
-
-<!-- Variants -->
-<snice-card variant="elevated">Elevated (shadow)</snice-card>
-<snice-card variant="bordered">Bordered</snice-card>
-<snice-card variant="flat">Flat</snice-card>
-
-<!-- Sizes -->
-<snice-card size="small">Small padding</snice-card>
-<snice-card size="medium">Medium padding</snice-card>
-<snice-card size="large">Large padding</snice-card>
-
-<!-- Interactive -->
-<snice-card clickable>Click me</snice-card>
-<snice-card clickable selected>Selected</snice-card>
-<snice-card clickable disabled>Disabled</snice-card>
 ```
 
+```typescript
+import 'snice/components/card/snice-card';
+
+card.addEventListener('card-click', (e) => {
+  console.log('Selected:', e.detail.selected);
+});
+```
+
+## Accessibility
+
+- Clickable cards are keyboard accessible
+- ARIA roles and states for interactive cards
+- Clear focus indicators

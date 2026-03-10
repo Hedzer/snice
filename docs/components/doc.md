@@ -1,82 +1,65 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/doc.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/doc.md -->
 
-# snice-doc
+# Doc
+`<snice-doc>`
 
 A simple WYSIWYG document editor component with formatting toolbar and content insertion capabilities.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
+
 ## Properties
 
-| Property          | Attribute          | Type      | Default              | Description                                      |
-| ----------------- | ------------------ | --------- | -------------------- | ------------------------------------------------ |
-| `placeholder`     | `placeholder`      | `string`  | `"Start typing..."`  | Placeholder text when empty                      |
-| `readonly`        | `readonly`         | `boolean` | `false`              | Whether the editor is readonly                   |
-| `icons`           | `icons`            | `string`  | `"default"`          | Icon set: `"default"`, `"material"`, `"fontawesome"` |
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `placeholder` | `placeholder` | `string` | `"Start typing..."` | Placeholder text when empty |
+| `readonly` | `readonly` | `boolean` | `false` | Whether the editor is readonly |
+| `icons` | `icons` | `'default' \| 'material' \| 'fontawesome'` | `'default'` | Toolbar icon set |
 
 ## Methods
 
-### `getHTML(): string`
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getHTML()` | -- | Returns the current HTML content |
+| `setHTML()` | `html: string` | Sets the HTML content |
+| `getText()` | -- | Returns the content as plain text |
+| `getMarkdown()` | -- | Returns the content converted to Markdown |
+| `downloadAs()` | `format: 'html' \| 'markdown' \| 'text', filename?: string` | Downloads the document in the specified format |
+| `clear()` | -- | Clears all content and resets to empty paragraph |
 
-Get the current HTML content of the editor.
+## CSS Custom Properties
 
-```javascript
-const html = editor.getHTML();
-```
-
-### `setHTML(html: string): void`
-
-Set the HTML content of the editor.
-
-```javascript
-editor.setHTML(`
-  <h1>Welcome!</h1>
-  <p>This is a <b>simple</b> document editor.</p>
-`);
-```
-
-### `getText(): string`
-
-Get the document content as plain text.
-
-```javascript
-const text = editor.getText();
-```
-
-### `getMarkdown(): string`
-
-Get the document content converted to Markdown. Supports headings, bold, italic, strikethrough, links, images, lists, tables, horizontal rules, and inline code.
-
-```javascript
-const md = editor.getMarkdown();
-```
-
-### `downloadAs(format: 'html' | 'markdown' | 'text', filename?: string): void`
-
-Download the document in the specified format. If no filename is provided, defaults to `document.html`, `document.md`, or `document.txt`.
-
-```javascript
-editor.downloadAs('markdown', 'my-document.md');
-editor.downloadAs('html');
-editor.downloadAs('text', 'notes.txt');
-```
-
-### `clear(): void`
-
-Clear all content and reset to an empty paragraph.
-
-```javascript
-editor.clear();
-```
+| Property | Description |
+|----------|-------------|
+| `--snice-doc-font-family` | Editor font family |
+| `--snice-doc-font-size` | Editor font size |
+| `--snice-doc-text-color` | Text color |
+| `--snice-doc-background` | Editor background |
+| `--snice-doc-muted-color` | Muted text color |
+| `--snice-doc-placeholder-color` | Placeholder text color |
+| `--snice-doc-primary-color` | Primary accent color |
+| `--snice-doc-link-color` | Link color |
+| `--snice-doc-inline-code-background` | Inline code background |
+| `--snice-doc-toolbar-background` | Toolbar background |
+| `--snice-doc-border` | Border color |
+| `--snice-doc-hover-background` | Hover state background |
+| `--snice-doc-sidebar-background` | Sidebar background |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer document wrapper |
-| `editor` | `<div>` | The editable content area |
-| `toolbar` | `<div>` | The formatting toolbar |
-| `icon` | `<span>` | Toolbar icon element |
+| Part | Description |
+|------|-------------|
+| `base` | The outer document wrapper |
+| `editor` | The editable content area |
+| `toolbar` | The formatting toolbar |
+| `icon` | Toolbar icon element |
 
 ```css
 snice-doc::part(base) {
@@ -97,22 +80,28 @@ snice-doc::part(editor) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/doc/snice-doc';
+```
+
 ```html
 <snice-doc id="editor"></snice-doc>
+
+<script>
+  editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
+  const html = editor.getHTML();
+</script>
 ```
 
-```typescript
-import 'snice';
-
-// Set initial content
-editor.setHTML('<h1>Welcome</h1><p>Start editing...</p>');
-
-// Get content
-const html = editor.getHTML();
-console.log(html);
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-doc.min.js"></script>
 ```
 
-## Toolbar Features
+## Examples
+
+### Toolbar Features
 
 The toolbar includes:
 
@@ -121,16 +110,16 @@ The toolbar includes:
 - **U** - Underline text (Ctrl/Cmd+U)
 - **S** - Strikethrough text
 - **H1, H2, H3, P** - Heading formats and paragraph
-- **• / 1.** - Bulleted and numbered lists
-- **🔗** - Insert link
-- **🖼** - Insert image
-- **📊** - Insert table
-- **―** - Insert divider
-- **⬇** - Download menu (HTML, Markdown, Plain Text)
-
-## Examples
+- **Bullet / Number** - Bulleted and numbered lists
+- **Link** - Insert link
+- **Image** - Insert image
+- **Table** - Insert table
+- **Divider** - Insert horizontal rule
+- **Download** - Download menu (HTML, Markdown, Plain Text)
 
 ### Export and Download
+
+Use `downloadAs()` to save the document in different formats.
 
 ```html
 <snice-doc id="editor"></snice-doc>
@@ -148,13 +137,32 @@ saveHtml.addEventListener('click', () => {
 });
 ```
 
-### Material Icons
+### Icon Sets
 
+Use the `icons` attribute to switch toolbar icon sets.
+
+**Default (text/emoji)**
 ```html
+<snice-doc></snice-doc>
+```
+
+**Material Symbols** - requires loading the font in your document:
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
 <snice-doc icons="material"></snice-doc>
 ```
 
+**Font Awesome** - requires loading the Font Awesome stylesheet:
+```html
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<snice-doc icons="fontawesome"></snice-doc>
+```
+
+Fonts cascade from light DOM into the shadow DOM automatically.
+
 ### Readonly Document Viewer
+
+Set `readonly` to display documents without editing capabilities.
 
 ```html
 <snice-doc readonly></snice-doc>
@@ -169,127 +177,27 @@ viewer.setHTML(`
 
 ### Save and Load Content
 
-```html
-<snice-doc id="editor"></snice-doc>
-<button id="save">Save</button>
-<button id="load">Load</button>
-```
+Use `getHTML()` and `setHTML()` to persist content.
 
 ```typescript
-save.addEventListener('click', () => {
-  localStorage.setItem('document', editor.getHTML());
-});
+// Save
+localStorage.setItem('document', editor.getHTML());
 
-load.addEventListener('click', () => {
-  const html = localStorage.getItem('document');
-  if (html) editor.setHTML(html);
-});
+// Load
+const html = localStorage.getItem('document');
+if (html) editor.setHTML(html);
 ```
 
-## Features
-
-- **WYSIWYG editing** - Direct HTML content editing
-- **Formatting toolbar** - Bold, italic, underline, strikethrough, headings, lists
-- **Content insertion** - Links, images, tables, dividers
-- **Download/Export** - Save as HTML, Markdown, or Plain Text
-- **Icon sets** - Default text labels, Material Icons, or Font Awesome
-- **Paste image support** - Paste images directly from clipboard
-- **Keyboard shortcuts** - Ctrl/Cmd+B for bold, Ctrl/Cmd+I for italic, Ctrl/Cmd+U for underline
-- **Readonly mode** - Display documents without editing capabilities
-- **Dark mode** - Automatic dark mode via prefers-color-scheme
-- **Customizable styling** - CSS custom properties for theming
-
-## Icon Sets
-
-The `icons` property controls which icon set the toolbar uses:
-
-### Default (text/emoji)
-
-```html
-<snice-doc></snice-doc>
-```
-
-Uses text labels (B, I, U, H1, etc.) and emoji for action buttons.
-
-### Material Symbols
-
-```html
-<!-- Load the font in your document -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
-
-<snice-doc icons="material"></snice-doc>
-```
-
-Uses [Material Symbols Outlined](https://fonts.google.com/icons). You must load the font stylesheet in your document — the font cascades from light DOM into the shadow DOM automatically.
-
-### Font Awesome
-
-```html
-<!-- Load the font in your document -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-<snice-doc icons="fontawesome"></snice-doc>
-```
-
-Uses [Font Awesome 6](https://fontawesome.com/icons) solid icons. You must load the Font Awesome stylesheet in your document.
-
-## Keyboard Shortcuts
+## Keyboard Navigation
 
 - **Ctrl/Cmd+B** - Toggle bold
 - **Ctrl/Cmd+I** - Toggle italic
 - **Ctrl/Cmd+U** - Toggle underline
 
-## Styling
-
-The component can be styled using CSS custom properties:
-
-```css
-snice-doc {
-  /* Colors */
-  --snice-doc-text-color: #333;
-  --snice-doc-background: #fff;
-  --snice-doc-muted-color: #999;
-  --snice-doc-placeholder-color: #999;
-  --snice-doc-primary-color: #0969da;
-  --snice-doc-link-color: #0969da;
-
-  /* Code */
-  --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
-
-  /* Toolbar */
-  --snice-doc-toolbar-background: #f6f8fa;
-
-  /* Borders */
-  --snice-doc-border: #e1e4e8;
-  --snice-doc-hover-background: #e8eaed;
-
-  /* Sidebar */
-  --snice-doc-sidebar-background: #f6f8fa;
-}
-```
-
-Dark mode is supported automatically via `prefers-color-scheme: dark`.
-
 ## Accessibility
 
-- Supports keyboard navigation
-- Uses contentEditable for native text editing
+- Uses `contentEditable` for native text editing behavior
 - Semantic HTML output
-
-## Browser Support
-
-Works in all modern browsers that support:
-- Custom Elements v1
-- Shadow DOM
-- contentEditable
-- ES2020+
-
-## TypeScript
-
-Full TypeScript support:
-
-```typescript
-const html = editor.getHTML();
-const markdown = editor.getMarkdown();
-editor.downloadAs('markdown', 'export.md');
-```
+- Keyboard shortcuts for formatting
+- Dark mode support via `prefers-color-scheme: dark`
+- Paste images directly from clipboard

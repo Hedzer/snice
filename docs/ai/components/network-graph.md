@@ -15,33 +15,6 @@ showLabels: boolean = true;       // attr: show-labels
 animation: boolean = true;
 ```
 
-## Types
-
-```typescript
-interface NetworkGraphData {
-  nodes: NetworkNode[];
-  edges: NetworkEdge[];
-}
-
-interface NetworkNode {
-  id: string;
-  label?: string;
-  group?: string;    // Auto color-coded
-  size?: number;     // Custom radius
-  color?: string;    // Custom fill
-  x?: number;        // Fixed position (pins node)
-  y?: number;
-}
-
-interface NetworkEdge {
-  source: string;
-  target: string;
-  label?: string;
-  weight?: number;   // Stroke width
-  color?: string;
-}
-```
-
 ## Events
 
 - `node-click` → `{ node: NetworkNode }`
@@ -49,7 +22,13 @@ interface NetworkEdge {
 - `node-drag` → `{ node: NetworkNode, x: number, y: number }`
 - `graph-zoom` → `{ scale: number, x: number, y: number }`
 
-## Usage
+## CSS Parts
+
+- `base` - The outer graph container
+- `canvas` - The SVG element
+- `tooltip` - The hover tooltip element
+
+## Basic Usage
 
 ```html
 <snice-network-graph id="graph" layout="force" show-labels style="height:400px"></snice-network-graph>
@@ -69,20 +48,26 @@ graph.data = {
 graph.addEventListener('node-click', (e) => console.log(e.detail.node));
 ```
 
-**CSS Parts:**
-- `base` - The outer graph container
-- `canvas` - The SVG element
-- `tooltip` - The hover tooltip element
+## Examples
 
-## Features
+```html
+<!-- Static display -->
+<snice-network-graph zoom-enabled="false" drag-enabled="false"></snice-network-graph>
 
-- Force-directed, circular, and grid layouts
-- Zoom/pan (mouse wheel + drag background)
-- Draggable nodes (pin on drag, double-click to unpin)
-- Node sizing by degree or custom `size`
-- Color coding by `group` (10-color palette)
-- Edge weight as stroke width
-- Hover highlighting (connected subgraph)
-- Tooltips with label and degree
+<!-- Custom force tuning -->
+<snice-network-graph charge-strength="-500" link-distance="120"></snice-network-graph>
+```
+
+## Accessibility
+
+- `role="img"` with `aria-label` on container
+- Hover tooltips with label and degree
 - Responsive via ResizeObserver
-- Accessible: role="img" with aria-label
+
+## Types
+
+```typescript
+interface NetworkGraphData { nodes: NetworkNode[]; edges: NetworkEdge[]; }
+interface NetworkNode { id: string; label?: string; group?: string; size?: number; color?: string; x?: number; y?: number; }
+interface NetworkEdge { source: string; target: string; label?: string; weight?: number; color?: string; }
+```

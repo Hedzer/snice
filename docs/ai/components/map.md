@@ -1,25 +1,22 @@
 # snice-map
 
-Interactive slippy map using OpenStreetMap tiles with markers, popups, drag panning, scroll zoom, and programmatic control.
+Interactive slippy map using OpenStreetMap tiles with markers, popups, drag panning, scroll zoom.
 
 ## Properties
 
 ```ts
-center: MapCenter = { lat: 51.505, lng: -0.09 }  // Map center (set via JS)
-zoom: number = 13                                  // attr: zoom — Zoom level
+center: MapCenter = { lat: 51.505, lng: -0.09 }  // JS only
+zoom: number = 13
 minZoom: number = 1                                // attr: min-zoom
 maxZoom: number = 18                               // attr: max-zoom
-markers: MapMarker[] = []                          // Marker data (set via JS)
-tileUrl: string = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'  // attr: tile-url — Tile server template
+markers: MapMarker[] = []                          // JS only
+tileUrl: string = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'  // attr: tile-url
 ```
 
 ## Types
 
 ```ts
-interface MapCenter {
-  lat: number;
-  lng: number;
-}
+interface MapCenter { lat: number; lng: number; }
 
 interface MapMarker {
   id: string;
@@ -27,40 +24,37 @@ interface MapMarker {
   lng: number;
   label?: string;
   icon?: string;
-  popup?: string;   // Popup text shown on marker click
+  popup?: string;
 }
 ```
 
-## Events
-
-- `map-click` -> `{ lat: number, lng: number }` — Click on map (not a marker)
-- `marker-click` -> `{ marker: MapMarker }` — Marker clicked (also toggles popup)
-- `map-move` -> `{ center: MapCenter, zoom: number }` — After drag pan completes
-- `map-zoom` -> `{ zoom: number }` — Zoom level changed
-
 ## Methods
 
-- `setCenter(lat: number, lng: number): void` — Pan to coordinates
-- `setZoom(zoom: number): void` — Set zoom level (clamped to min/max)
-- `addMarker(marker: MapMarker): void` — Add a marker
-- `removeMarker(id: string): void` — Remove marker by ID
-- `fitBounds(markers?: MapMarker[]): void` — Auto-zoom/center to fit markers (defaults to all)
+- `setCenter(lat, lng)` → Pan to coordinates
+- `setZoom(zoom)` → Set zoom (clamped to min/max)
+- `addMarker(marker)` → Add a marker
+- `removeMarker(id)` → Remove marker by ID
+- `fitBounds(markers?)` → Auto-zoom/center to fit markers (defaults to all)
 
-**CSS Parts:**
-- `base` - The outer map container
-- `tiles` - The tile layer container
-- `markers` - The markers layer container
-- `controls` - The zoom controls container
+## Events
 
-## Behavior
+- `map-click` → `{ lat, lng }` (click on map, not marker)
+- `marker-click` → `{ marker: MapMarker }` (also toggles popup)
+- `map-move` → `{ center: MapCenter, zoom }` (after drag pan)
+- `map-zoom` → `{ zoom }` (zoom level changed)
 
-- Mouse drag to pan, scroll wheel to zoom
-- Zoom +/- buttons in top-right corner
-- Marker click toggles popup display
-- OpenStreetMap attribution included
-- Custom tile servers via `tile-url` with `{x}`, `{y}`, `{z}` placeholders
+## CSS Parts
 
-## Usage
+- `base` - Outer map container
+- `tiles` - Tile layer container
+- `markers` - Markers layer container
+- `controls` - Zoom controls container
+
+## Basic Usage
+
+```typescript
+import 'snice/components/map/snice-map';
+```
 
 ```html
 <snice-map zoom="10" min-zoom="3" max-zoom="16"></snice-map>

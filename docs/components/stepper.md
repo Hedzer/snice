@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/stepper.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/stepper.md -->
 
 # Stepper
-`<snice-stepper>`
 
-A step indicator for visualizing multi-step processes, wizards, and workflows.
+A step indicator for visualizing multi-step processes, wizards, and workflows. Supports horizontal and vertical layouts, clickable navigation, step descriptions, and error states.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/stepper/snice-stepper';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-stepper.min.js"></script>
-```
+- [Properties](#properties)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -27,13 +23,13 @@ import 'snice/components/stepper/snice-stepper';
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
 | `clickable` | `boolean` | `false` | Allow clicking steps for navigation |
 
-### Step Object
+### Step
 
 ```typescript
 interface Step {
   label: string;
   description?: string;
-  status?: 'pending' | 'active' | 'completed' | 'error';
+  status?: 'pending' | 'active' | 'completed' | 'error';  // auto-computed if not set
 }
 ```
 
@@ -41,39 +37,26 @@ interface Step {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `step-change` | `{ previousStep: number, currentStep: number, step: Step }` | A step was clicked (clickable mode only) |
+| `step-change` | `{ previousStep: number, currentStep: number, step: Step }` | A step was clicked (clickable mode only). Cancelable via `preventDefault()`. |
 
 ## Slots
 
 | Name | Description |
 |------|-------------|
-| (default) | `<snice-stepper-panel>` elements for step content |
+| (default) | `<snice-stepper-panel>` elements for step content (auto show/hide based on `currentStep`) |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `container` | `<div>` | Main stepper container |
-| `step` | `<div>` | Individual step wrapper |
-| `step-indicator` | `<div>` | Circular step number/checkmark |
-| `step-content` | `<div>` | Label + description wrapper |
-| `step-label` | `<div>` | Step label text |
-| `step-description` | `<div>` | Step description text |
-| `step-connector` | `<div>` | Line connecting steps |
-| `panels` | `<div>` | Container wrapping slotted panel content |
-
-```css
-snice-stepper::part(step-indicator) {
-  width: 40px;
-  height: 40px;
-}
-
-snice-stepper::part(step-connector) {
-  background: #3b82f6;
-}
-```
+| Part | Description |
+|------|-------------|
+| `container` | Main stepper container |
+| `step` | Individual step wrapper |
+| `step-indicator` | Circular step number/checkmark |
+| `step-content` | Label and description wrapper |
+| `step-label` | Step label text |
+| `step-description` | Step description text |
+| `step-connector` | Line connecting steps |
+| `panels` | Container wrapping slotted panel content |
 
 ## Basic Usage
 
@@ -100,79 +83,55 @@ import 'snice/components/stepper/snice-stepper';
 
 ### Vertical
 
-Use the `orientation` attribute for a vertical layout.
+Use `orientation="vertical"` for a vertical layout.
 
 ```html
-<snice-stepper id="onboarding" orientation="vertical"></snice-stepper>
-
-<script>
-  document.getElementById('onboarding').steps = [
-    { label: 'Create Account' },
-    { label: 'Profile Setup' },
-    { label: 'Preferences' },
-    { label: 'Complete' }
-  ];
-  document.getElementById('onboarding').currentStep = 2;
-</script>
+<snice-stepper orientation="vertical"></snice-stepper>
 ```
 
 ### With Descriptions
 
 Add optional `description` text to each step.
 
-```html
-<snice-stepper id="detailed"></snice-stepper>
-
-<script>
-  document.getElementById('detailed').steps = [
-    { label: 'Order Details', description: 'Review your items' },
-    { label: 'Shipping', description: 'Enter delivery address' },
-    { label: 'Payment', description: 'Secure checkout' }
-  ];
-</script>
+```typescript
+stepper.steps = [
+  { label: 'Order Details', description: 'Review your items' },
+  { label: 'Shipping', description: 'Enter delivery address' },
+  { label: 'Payment', description: 'Secure checkout' }
+];
 ```
 
 ### Interactive Navigation
 
-Set the `clickable` attribute to allow clicking between steps.
+Set `clickable` to allow clicking between steps. Use `preventDefault()` to block navigation.
 
 ```html
-<snice-stepper id="wizard" clickable></snice-stepper>
+<snice-stepper clickable></snice-stepper>
+```
 
-<script>
-  const wizard = document.getElementById('wizard');
-  wizard.steps = [
-    { label: 'Account' },
-    { label: 'Profile' },
-    { label: 'Complete' }
-  ];
-
-  wizard.addEventListener('step-change', (e) => {
-    console.log('Moved to step:', e.detail.currentStep);
-  });
-</script>
+```typescript
+stepper.addEventListener('step-change', (e) => {
+  console.log(`Moving from step ${e.detail.previousStep} to ${e.detail.currentStep}`);
+  // e.preventDefault(); // block navigation if needed
+});
 ```
 
 ### Error State
 
 Set `status: 'error'` on a step to highlight failures.
 
-```html
-<snice-stepper id="validation"></snice-stepper>
-
-<script>
-  document.getElementById('validation').steps = [
-    { label: 'Upload', status: 'completed' },
-    { label: 'Validate', status: 'error' },
-    { label: 'Process', status: 'pending' }
-  ];
-  document.getElementById('validation').currentStep = 1;
-</script>
+```typescript
+stepper.steps = [
+  { label: 'Upload', status: 'completed' },
+  { label: 'Validate', status: 'error' },
+  { label: 'Process', status: 'pending' }
+];
+stepper.currentStep = 1;
 ```
 
 ### With Panels
 
-Use `<snice-stepper-panel>` children for content that auto-shows based on the active step.
+Use `<snice-stepper-panel>` children for content that auto-shows/hides based on the active step.
 
 ```html
 <snice-stepper id="signup" clickable></snice-stepper>
@@ -200,3 +159,10 @@ Use `<snice-stepper-panel>` children for content that auto-shows based on the ac
   ];
 </script>
 ```
+
+## Accessibility
+
+- Steps with `clickable` are keyboard accessible (Enter/Space to activate)
+- Completed steps show a checkmark indicator
+- Error steps use semantic color coding
+- Navigate via `currentStep` property (increment/decrement/set)

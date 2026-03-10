@@ -1,55 +1,40 @@
 # snice-rating
 
-Star rating input with full/half precision, custom icons, and keyboard navigation.
+Interactive star rating input with full/half precision, custom icons, and keyboard navigation.
 
 ## Properties
 
-```ts
-value: number                            // Current rating value (default: 0)
-max: number                              // Maximum stars (default: 5)
-icon: string                             // Star character (default: '\u2605')
-size: 'small' | 'medium' | 'large'      // Display size (default: 'medium')
-readonly: boolean                        // Disable interaction (default: false)
-precision: 'full' | 'half'              // Click precision (default: 'full')
+```typescript
+value: number = 0;
+max: number = 5;
+icon: string = '★';
+size: 'small'|'medium'|'large' = 'medium';
+readonly: boolean = false;
+precision: 'full'|'half' = 'full';
 ```
 
 ## Events
 
-- `rating-change` → `{ value: number }` - Rating value changed
-
-## Keyboard
-
-- `ArrowRight` / `ArrowUp` - Increase value
-- `ArrowLeft` / `ArrowDown` - Decrease value
-- Step size: 1 (full) or 0.5 (half precision)
+- `rating-change` → `{ value: number }`
 
 ## CSS Custom Properties
 
-```css
---rating-color             /* Filled star color (default: --snice-color-warning) */
---rating-color-empty       /* Empty star color (default: --snice-color-border) */
---rating-size              /* Star size: small=1rem, medium=1.5rem, large=2rem */
---snice-font-family
---snice-transition-fast
---snice-focus-ring-width
---snice-focus-ring-color
---snice-focus-ring-offset
-```
+- `--rating-color` - Filled star color (`var(--snice-color-warning)`)
+- `--rating-color-empty` - Empty star color (`var(--snice-color-border)`)
+- `--rating-size` - Star size (auto-set by `size`: small=1rem, medium=1.5rem, large=2rem)
 
-**CSS Parts:**
+## CSS Parts
+
 - `base` - Outer rating container
 - `star` - Individual star/icon element
 
-## Accessibility
-
-Uses `role="radiogroup"` with individual `role="radio"` stars. Keyboard accessible when not readonly.
-
-## Usage
+## Basic Usage
 
 ```html
-<snice-rating value="3.5" max="5" precision="half" size="large"></snice-rating>
+<snice-rating value="3.5" precision="half" max="5"></snice-rating>
 <snice-rating value="4" readonly></snice-rating>
-<snice-rating icon="&#x2764;" max="10"></snice-rating>
+<snice-rating icon="❤" value="3" max="5"></snice-rating>
+<snice-rating value="4" size="large"></snice-rating>
 ```
 
 ```typescript
@@ -57,3 +42,14 @@ rating.addEventListener('rating-change', (e) => {
   console.log('New rating:', e.detail.value);
 });
 ```
+
+## Keyboard Navigation
+
+- ArrowRight/Up: increase by step (1 or 0.5)
+- ArrowLeft/Down: decrease by step
+
+## Accessibility
+
+- `role="radiogroup"` with `role="radio"` per star
+- Not focusable when readonly
+- Focus ring on keyboard navigation

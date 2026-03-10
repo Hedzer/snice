@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/accordion.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/accordion.md -->
 
 # Accordion Components
 
@@ -15,8 +15,6 @@ The accordion components provide collapsible sections of content. An `<snice-acc
 - [Examples](#examples)
 - [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
-- [Common Patterns](#common-patterns)
 
 ## Components
 
@@ -39,7 +37,7 @@ Individual collapsible section within an accordion.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `itemId` | `string` | auto-generated | Unique identifier for the item |
+| `itemId` (attr: `item-id`) | `string` | auto-generated | Unique identifier for the item |
 | `open` | `boolean` | `false` | Whether the item is expanded |
 | `disabled` | `boolean` | `false` | Disable interaction with the item |
 
@@ -155,25 +153,23 @@ Fired when an item is toggled.
 
 ## Slots
 
-### Accordion Item Slots
+### Accordion Container
 
-#### `header` (named slot)
-Content for the clickable header/trigger.
+| Name | Description |
+|------|-------------|
+| (default) | `<snice-accordion-item>` elements |
+
+### Accordion Item
+
+| Name | Description |
+|------|-------------|
+| `header` | Content for the clickable header/trigger |
+| (default) | Content that appears when the item is expanded |
 
 ```html
 <snice-accordion-item>
   <span slot="header">Click to expand</span>
   <div>Panel content</div>
-</snice-accordion-item>
-```
-
-#### Default slot
-Content that appears when the item is expanded.
-
-```html
-<snice-accordion-item>
-  <span slot="header">Header</span>
-  <div>This content is collapsible</div>
 </snice-accordion-item>
 ```
 
@@ -210,6 +206,11 @@ snice-accordion-item::part(icon) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/accordion/snice-accordion';
+import 'snice/components/accordion/snice-accordion-item';
+```
+
 ```html
 <snice-accordion>
   <snice-accordion-item item-id="item-1">
@@ -227,11 +228,6 @@ snice-accordion-item::part(icon) {
     <div>Content for section 3</div>
   </snice-accordion-item>
 </snice-accordion>
-```
-
-```typescript
-import 'snice/components/accordion/snice-accordion';
-import 'snice/components/accordion/snice-accordion-item';
 ```
 
 ## Examples
@@ -282,6 +278,24 @@ import 'snice/components/accordion/snice-accordion-item';
 </snice-accordion>
 ```
 
+### Elevated Variant
+
+Use the `variant` attribute to change the visual style.
+
+```html
+<snice-accordion variant="elevated">
+  <snice-accordion-item item-id="item-1">
+    <span slot="header">Elevated Section 1</span>
+    <p>Content with card-like appearance and shadow.</p>
+  </snice-accordion-item>
+
+  <snice-accordion-item item-id="item-2">
+    <span slot="header">Elevated Section 2</span>
+    <p>Each item appears as a separate card.</p>
+  </snice-accordion-item>
+</snice-accordion>
+```
+
 ### With Disabled Items
 
 ```html
@@ -298,43 +312,10 @@ import 'snice/components/accordion/snice-accordion-item';
 </snice-accordion>
 ```
 
-### FAQ Accordion
-
-```html
-<style>
-  snice-accordion-item::part(header) {
-    font-weight: 600;
-    padding: 1rem;
-  }
-
-  snice-accordion-item::part(content) {
-    padding: 1rem;
-    background: #f9fafb;
-  }
-</style>
-
-<snice-accordion id="faq">
-  <snice-accordion-item item-id="shipping">
-    <span slot="header">What are the shipping options?</span>
-    <p>We offer standard (5-7 days) and express (2-3 days) shipping options.</p>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="returns">
-    <span slot="header">What is your return policy?</span>
-    <p>Items can be returned within 30 days of purchase for a full refund.</p>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="warranty">
-    <span slot="header">Do products come with a warranty?</span>
-    <p>All products include a 1-year manufacturer warranty.</p>
-  </snice-accordion-item>
-</snice-accordion>
-```
-
 ### Programmatic Control
 
 ```html
-<snice-accordion id="controlled">
+<snice-accordion id="controlled" multiple>
   <snice-accordion-item item-id="item-1">
     <span slot="header">Item 1</span>
     <p>Content 1</p>
@@ -382,6 +363,39 @@ accordion.closeItem('item-2');
 accordion.toggleItem('item-3');
 ```
 
+### FAQ Accordion
+
+```html
+<style>
+  snice-accordion-item::part(header) {
+    font-weight: 600;
+    padding: 1rem;
+  }
+
+  snice-accordion-item::part(content) {
+    padding: 1rem;
+    background: #f9fafb;
+  }
+</style>
+
+<snice-accordion id="faq">
+  <snice-accordion-item item-id="shipping">
+    <span slot="header">What are the shipping options?</span>
+    <p>We offer standard (5-7 days) and express (2-3 days) shipping options.</p>
+  </snice-accordion-item>
+
+  <snice-accordion-item item-id="returns">
+    <span slot="header">What is your return policy?</span>
+    <p>Items can be returned within 30 days of purchase for a full refund.</p>
+  </snice-accordion-item>
+
+  <snice-accordion-item item-id="warranty">
+    <span slot="header">Do products come with a warranty?</span>
+    <p>All products include a 1-year manufacturer warranty.</p>
+  </snice-accordion-item>
+</snice-accordion>
+```
+
 ### Dynamic Content Loading
 
 ```html
@@ -396,7 +410,6 @@ accordion.toggleItem('item-3');
     <div id="content-2">Loading...</div>
   </snice-accordion-item>
 </snice-accordion>
-
 ```
 
 ```typescript
@@ -435,7 +448,7 @@ accordion.addEventListener('accordion-open', async (e) => {
 
 <snice-accordion>
   <snice-accordion-item item-id="general-settings">
-    <span slot="header">⚙️ General Settings</span>
+    <span slot="header">General Settings</span>
     <div class="setting-group">
       <div class="setting-item">
         <label>Language</label>
@@ -457,7 +470,7 @@ accordion.addEventListener('accordion-open', async (e) => {
   </snice-accordion-item>
 
   <snice-accordion-item item-id="notification-settings">
-    <span slot="header">🔔 Notifications</span>
+    <span slot="header">Notifications</span>
     <div class="setting-group">
       <div class="setting-item">
         <label>Email notifications</label>
@@ -467,61 +480,6 @@ accordion.addEventListener('accordion-open', async (e) => {
         <label>Push notifications</label>
         <input type="checkbox">
       </div>
-    </div>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="privacy-settings">
-    <span slot="header">🔒 Privacy</span>
-    <div class="setting-group">
-      <div class="setting-item">
-        <label>Profile visibility</label>
-        <select>
-          <option>Public</option>
-          <option>Friends</option>
-          <option>Private</option>
-        </select>
-      </div>
-    </div>
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-### Nested Content
-
-```html
-<snice-accordion>
-  <snice-accordion-item item-id="products">
-    <span slot="header">Products</span>
-    <div style="padding: 1rem;">
-      <ul>
-        <li>Product A - $29.99</li>
-        <li>Product B - $39.99</li>
-        <li>Product C - $49.99</li>
-      </ul>
-    </div>
-  </snice-accordion-item>
-
-  <snice-accordion-item item-id="services">
-    <span slot="header">Services</span>
-    <div style="padding: 1rem;">
-      <table>
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Consultation</td>
-            <td>$99/hr</td>
-          </tr>
-          <tr>
-            <td>Implementation</td>
-            <td>$149/hr</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </snice-accordion-item>
 </snice-accordion>
@@ -544,40 +502,3 @@ The accordion supports comprehensive keyboard navigation:
 - **Screen reader friendly**: Announces state changes
 - **Focus management**: Visible focus indicators
 - **Semantic HTML**: Uses button elements for interactivity
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
-
-## Common Patterns
-
-### FAQ Pattern
-```html
-<snice-accordion>
-  <snice-accordion-item item-id="q1">
-    <span slot="header">Question 1?</span>
-    <p>Answer to question 1.</p>
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-### Settings Pattern
-```html
-<snice-accordion multiple>
-  <snice-accordion-item item-id="general">
-    <span slot="header">General</span>
-    <!-- Settings form -->
-  </snice-accordion-item>
-</snice-accordion>
-```
-
-### Table of Contents Pattern
-```html
-<snice-accordion>
-  <snice-accordion-item item-id="intro" open>
-    <span slot="header">Introduction</span>
-    <p>Content overview...</p>
-  </snice-accordion-item>
-</snice-accordion>
-```

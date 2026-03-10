@@ -8,34 +8,33 @@ Compact inline chart for visualizing trends and patterns.
 data: number[] = [];
 type: 'line'|'bar'|'area' = 'line';
 color: 'primary'|'success'|'warning'|'danger'|'muted' = 'primary';
-customColor: string = '';          // attr: custom-color, overrides color
+customColor?: string;              // attr: custom-color, overrides color
 width: number = 100;
 height: number = 30;
-strokeWidth: number = 2;          // attr: stroke-width
-showDots: boolean = false;        // attr: show-dots
-showArea: boolean = false;        // attr: show-area
+strokeWidth: number = 2;           // attr: stroke-width
+showDots: boolean = false;         // attr: show-dots
+showArea: boolean = false;         // attr: show-area
 smooth: boolean = false;
-min?: number;
-max?: number;
+min?: number;                      // auto-calculated if unset
+max?: number;                      // auto-calculated if unset
 ```
 
 ## CSS Parts
 
-- `container` - Container div
+- `container` - Outer container
 - `svg` - SVG element
-- `line` - Line/path element
-- `area` - Area polygon/path
-- `bar` - Bar rect
-- `dot` - Dot circle
+- `line` - Line path
+- `area` - Area fill path
+- `dot` - Data point circle
+- `bar` - Bar rectangle
 
-## Usage
+## Basic Usage
 
 ```html
-<snice-sparkline></snice-sparkline>
-```
-
-```typescript
-sparkline.data = [10, 20, 15, 25, 30];
+<snice-sparkline id="chart"></snice-sparkline>
+<script>
+  document.getElementById('chart').data = [10, 20, 15, 25, 30];
+</script>
 ```
 
 ```html
@@ -45,3 +44,8 @@ sparkline.data = [10, 20, 15, 25, 30];
 <snice-sparkline custom-color="#9333ea"></snice-sparkline>
 <snice-sparkline min="0" max="100"></snice-sparkline>
 ```
+
+## Accessibility
+
+- Decorative; use `aria-busy="true"` on container while loading
+- Add `aria-label` to describe the trend for screen readers

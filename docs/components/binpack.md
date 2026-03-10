@@ -1,7 +1,75 @@
-# Binpack
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/binpack.md -->
+
+# Binpack Component
 `<snice-binpack>`
 
 A JavaScript-driven bin-packing layout component. Uses the maximal rectangles algorithm to efficiently pack items of varying sizes into a container with absolute positioning and smooth transitions.
+
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `gap` | `gap` | `string` | `'1rem'` | Spacing between items |
+| `columnWidth` | `column-width` | `number` | `0` | Grid snap width (0 = no grid) |
+| `rowHeight` | `row-height` | `number` | `0` | Grid snap height (0 = no grid) |
+| `horizontal` | `horizontal` | `boolean` | `false` | Pack horizontally instead of vertically |
+| `originLeft` | `origin-left` | `boolean` | `true` | `false` = right-to-left |
+| `originTop` | `origin-top` | `boolean` | `true` | `false` = bottom-to-top |
+| `transitionDuration` | `transition-duration` | `string` | `'0.4s'` | CSS transition duration for item movement |
+| `stagger` | `stagger` | `number` | `0` | Delay in ms between each item's transition |
+| `resize` | `resize` | `boolean` | `true` | Auto re-layout on container resize |
+| `draggable` | `draggable` | `boolean` | `false` | Enable drag-to-reorder |
+| `dragThrottle` | `drag-throttle` | `number` | `120` | Throttle interval (ms) for drag layout updates |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `layout()` | -- | Perform a full re-layout |
+| `fit()` | `element: HTMLElement, x?: number, y?: number` | Position specific item at coordinates, reflow others |
+| `reloadItems()` | -- | Re-collect items from DOM |
+| `stamp()` | `elements: HTMLElement \| HTMLElement[]` | Layout around fixed elements |
+| `unstamp()` | `elements: HTMLElement \| HTMLElement[]` | Remove stamp constraint |
+| `getItemElements()` | -- | Returns array of all layout items |
+| `getLayout()` | -- | Returns `BinpackLayout` object with item positions |
+| `setLayout()` | `layout: BinpackLayout` | Apply a saved layout (reorder, hide/show items) |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `binpack-layout-complete` | `{ items: HTMLElement[] }` | Fired after layout completes |
+| `binpack-fit-complete` | `{ item: HTMLElement, x: number, y: number }` | Fired after `fit()` completes |
+| `binpack-drag-item-positioned` | `{ item: HTMLElement, x: number, y: number }` | Fired after a dragged item settles into its new position |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Items to pack. Each item should have explicit width and height. |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--binpack-gap` | Gap between items (set via `gap` property) | `1rem` |
+| `--binpack-transition-duration` | Transition duration for item movement (set via `transition-duration` property) | `0.4s` |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The inner container element |
 
 ## Basic Usage
 
@@ -15,19 +83,6 @@ import 'snice/components/binpack/snice-binpack';
   <div style="width: 150px; height: 80px;">B</div>
   <div style="width: 80px; height: 120px;">C</div>
 </snice-binpack>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/binpack/snice-binpack';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-binpack.min.js"></script>
 ```
 
 ## Examples
@@ -58,7 +113,7 @@ Use `column-width` and `row-height` to snap items to a grid.
 
 ### Staggered Transitions
 
-Use `stagger` to add incremental delay between each item's transition for a cascading effect.
+Use `stagger` to add incremental delay between each item's transition.
 
 ```html
 <snice-binpack transition-duration="0.6s" stagger="40">
@@ -81,7 +136,7 @@ Set `origin-left="false"` to pack items from the right side.
 
 ### Draggable Dashboard
 
-Enable `draggable` to let users drag items to rearrange them. A drop placeholder shows where the item will land, and other items reflow around it in real-time. Combine with `column-width` and `row-height` for grid-snapped drop positions.
+Enable `draggable` to let users drag items to rearrange them.
 
 ```html
 <snice-binpack draggable gap="8px" column-width="80" row-height="80">
@@ -91,28 +146,14 @@ Enable `draggable` to let users drag items to rearrange them. A drop placeholder
 </snice-binpack>
 ```
 
-**CSS for drag states:**
-```css
-/* During drag */
-.binpack-dragging {
-  z-index: 100;
-  opacity: 0.9;
-}
+CSS classes applied during drag:
+- `.binpack-dragging` -- applied during drag (no transition, z-index: 100)
+- `.binpack-positioning` -- applied while animating to final position after drop
 
-/* Animating to final position */
-.binpack-positioning {
-  z-index: 99;
-}
-```
-
-Listen for reorder events:
 ```javascript
-const pack = document.querySelector('snice-binpack');
 pack.addEventListener('binpack-drag-item-positioned', (e) => {
   const { item, x, y } = e.detail;
   console.log('Item dropped at', x, y);
-  // Get items in visual order
-  const ordered = pack.getItemElements();
 });
 ```
 
@@ -120,116 +161,45 @@ pack.addEventListener('binpack-drag-item-positioned', (e) => {
 
 Items can be added or removed dynamically. The layout automatically updates via slot change detection.
 
-```html
-<snice-binpack id="my-pack" gap="0.5rem">
-  <div style="width: 100px; height: 100px;">A</div>
-</snice-binpack>
+```javascript
+const pack = document.querySelector('snice-binpack');
 
-<script>
-  const pack = document.getElementById('my-pack');
+// Add an item
+const item = document.createElement('div');
+item.style.width = '120px';
+item.style.height = '80px';
+pack.appendChild(item);
 
-  // Add an item
-  const item = document.createElement('div');
-  item.style.width = '120px';
-  item.style.height = '80px';
-  pack.appendChild(item);
-
-  // Remove an item
-  pack.lastElementChild.remove();
-</script>
+// Remove an item
+pack.lastElementChild.remove();
 ```
 
 ### Stamp (Fixed Elements)
 
-Use `stamp()` to mark elements as fixed — other items will layout around them.
+Use `stamp()` to mark elements as fixed -- other items layout around them.
 
-```html
-<snice-binpack id="stamp-demo" gap="0.5rem">
-  <div id="fixed" style="width: 200px; height: 200px;">Fixed</div>
-  <div style="width: 80px; height: 80px;">A</div>
-  <div style="width: 100px; height: 60px;">B</div>
-</snice-binpack>
-
-<script>
-  const pack = document.getElementById('stamp-demo');
-  const fixed = document.getElementById('fixed');
-  pack.stamp(fixed);    // Items layout around it
-  pack.unstamp(fixed);  // Resume normal layout
-</script>
+```javascript
+const pack = document.getElementById('stamp-demo');
+const fixed = document.getElementById('fixed');
+pack.stamp(fixed);    // Items layout around it
+pack.unstamp(fixed);  // Resume normal layout
 ```
 
-### fit() Method
+### Save and Restore Layout
 
-Position a specific item at given coordinates, then reflow the remaining items around it.
+Use `getLayout()` and `setLayout()` to persist item arrangement. Items must have a `name` attribute.
 
-```html
-<snice-binpack id="fit-demo" gap="0.5rem">
-  <div id="target" style="width: 100px; height: 100px;">Target</div>
-  <div style="width: 80px; height: 80px;">A</div>
-</snice-binpack>
+```javascript
+// Save
+const layout = pack.getLayout();
+localStorage.setItem('dashboard', JSON.stringify(layout));
 
-<script>
-  const pack = document.getElementById('fit-demo');
-  const target = document.getElementById('target');
-  pack.fit(target, 200, 0);
-</script>
+// Restore
+const saved = JSON.parse(localStorage.getItem('dashboard'));
+pack.setLayout(saved);
 ```
 
-## Slots
-
-| Name | Description |
-|------|-------------|
-| (default) | Items to pack. Each item should have explicit width and height. |
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `gap` | `gap` | `string` | `'1rem'` | Spacing between items |
-| `columnWidth` | `column-width` | `number` | `0` | Grid snap width (0 = no grid) |
-| `rowHeight` | `row-height` | `number` | `0` | Grid snap height (0 = no grid) |
-| `horizontal` | `horizontal` | `boolean` | `false` | Pack horizontally instead of vertically |
-| `originLeft` | `origin-left` | `boolean` | `true` | `false` = right-to-left |
-| `originTop` | `origin-top` | `boolean` | `true` | `false` = bottom-to-top |
-| `transitionDuration` | `transition-duration` | `string` | `'0.4s'` | CSS transition duration for item movement |
-| `stagger` | `stagger` | `number` | `0` | Delay in ms between each item's transition |
-| `resize` | `resize` | `boolean` | `true` | Auto re-layout on container resize |
-| `draggable` | `draggable` | `boolean` | `false` | Enable drag-to-reorder |
-| `dragThrottle` | `drag-throttle` | `number` | `120` | Throttle interval (ms) for drag layout updates |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `binpack-layout-complete` | `{ items: HTMLElement[] }` | Fired after layout completes |
-| `binpack-fit-complete` | `{ item: HTMLElement, x: number, y: number }` | Fired after `fit()` completes |
-| `binpack-drag-item-positioned` | `{ item: HTMLElement, x: number, y: number }` | Fired after a dragged item settles into its new position |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `layout()` | — | Perform a full re-layout |
-| `fit()` | `element: HTMLElement, x?: number, y?: number` | Position specific item at coordinates, reflow others |
-| `reloadItems()` | — | Re-collect items from DOM |
-| `stamp()` | `elements: HTMLElement \| HTMLElement[]` | Layout around fixed elements |
-| `unstamp()` | `elements: HTMLElement \| HTMLElement[]` | Remove stamp constraint |
-| `getItemElements()` | — | Returns array of all layout items |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--binpack-gap` | Gap between items | `1rem` |
-| `--binpack-transition-duration` | Transition duration for item movement | `0.4s` |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The inner container element |
-
-## Notes
+### Notes
 
 - Items must have explicit `width` and `height` (the component does not auto-size items)
 - The container uses `position: relative` and items are absolutely positioned with `transform` for smooth transitions

@@ -5,33 +5,29 @@ Audio recording with visualization and playback.
 ## Properties
 
 ```typescript
-autoStart: boolean = false;
+autoStart: boolean = false;       // attr: auto-start
 format: 'audio/webm'|'audio/ogg'|'audio/mp4'|'audio/wav' = 'audio/webm';
 bitrate: number = 128000;
-showControls: boolean = true;
-showVisualizer: boolean = true;
-maxDuration: number = 0;
-showTimer: boolean = true;
-showPlayback: boolean = true;
-recordedUrl: string = '';          // URL of recorded audio (set after stop)
+showControls: boolean = true;     // attr: show-controls
+showVisualizer: boolean = true;   // attr: show-visualizer
+maxDuration: number = 0;          // attr: max-duration, 0=unlimited
+showTimer: boolean = true;        // attr: show-timer
+showPlayback: boolean = true;     // attr: show-playback
+recordedUrl: string = '';         // URL of recorded audio (set after stop)
 ```
 
 ## Methods
 
-```typescript
-start(): Promise<void>
-stop(): Promise<AudioRecording>
-pause(): void
-resume(): void
-cancel(): void
-getState(): 'inactive'|'recording'|'paused'
-getDuration(): number
-isRecording(): boolean
-download(filename?: string): void
-reset(): void
-```
-
-## AudioRecording
+- `start(): Promise<void>` - Start recording
+- `stop(): Promise<AudioRecording>` - Stop and return recording
+- `pause()` - Pause recording
+- `resume()` - Resume recording
+- `cancel()` - Cancel and discard
+- `getState(): 'inactive'|'recording'|'paused'`
+- `getDuration(): number` - Duration in seconds
+- `isRecording(): boolean`
+- `download(filename?)` - Download recorded audio
+- `reset()` - Reset state and discard playback
 
 ```typescript
 interface AudioRecording {
@@ -46,31 +42,29 @@ interface AudioRecording {
 
 ## Events
 
-- `recorder-start` - Recording started
-- `recorder-stop` - Recording stopped
-- `recorder-pause` - Paused
-- `recorder-resume` - Resumed
-- `recorder-cancel` - Cancelled
-- `recorder-error` - Error
+- `recorder-start` → `{ recorder }` - Recording started
+- `recorder-stop` → `{ recorder }` - Recording stopped
+- `recorder-pause` → `{ recorder }` - Paused
+- `recorder-resume` → `{ recorder }` - Resumed
+- `recorder-cancel` → `{ recorder }` - Cancelled
+- `recorder-error` → `{ recorder, error }` - Error
 
-## Usage
+## CSS Parts
+
+- `base` - Outer recorder container
+- `controls` - Recording and playback control buttons
+- `visualizer` - Audio frequency visualizer bar container
+- `progress` - Playback progress bar
+
+## Basic Usage
+
+```html
+<snice-audio-recorder auto-start format="audio/mp4" bitrate="256000" max-duration="60"></snice-audio-recorder>
+```
 
 ```javascript
-// Start
 await recorder.start();
-
-// Stop and get recording
 const recording = await recorder.stop();
-// { blob, url, duration, size, format, timestamp }
-
-// Pause/resume
-recorder.pause();
-recorder.resume();
-
-// Cancel
-recorder.cancel();
-
-// Download
 recorder.download('recording.webm');
 
 // Upload
@@ -78,29 +72,3 @@ const formData = new FormData();
 formData.append('audio', recording.blob);
 await fetch('/upload', { method: 'POST', body: formData });
 ```
-
-```html
-<snice-audio-recorder
-  auto-start
-  format="audio/mp4"
-  bitrate="256000"
-  max-duration="60">
-</snice-audio-recorder>
-```
-
-**CSS Parts:**
-- `base` - Outer recorder container div
-- `controls` - Recording and playback control buttons
-- `visualizer` - Audio frequency visualizer bar container
-- `progress` - Playback progress bar
-
-## Features
-
-- MediaRecorder API
-- Real-time visualizer
-- Pause/resume
-- Timer
-- Multiple formats
-- Playback
-- Download
-- Requires HTTPS

@@ -14,28 +14,18 @@ isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 
 - `update(placards, appContext?, currentRoute?, routeParams?)` - Update nav with placard data
 
-## Placard Structure
+## Slots
 
-```typescript
-interface Placard {
-  name: string;                      // Route identifier
-  title: string;                     // Display text
-  icon?: string;                     // Icon character
-  order?: number;                    // Sort order
-  parent?: string;                   // Parent name (hierarchical)
-  group?: string;                    // Group name (grouped)
-  show?: boolean;
-  description?: string;              // Accessible label/tooltip
-  tooltip?: string;
-  hotkeys?: string[];
-  helpUrl?: string;
-  searchTerms?: string[];
-  attributes?: Record<string, any>;
-  visibleOn?: Function | Function[];
-}
-```
+- `(default)` - Additional content after navigation
 
-## Usage
+## CSS Parts
+
+- `base` - Outer content wrapper
+- `nav` - Navigation element
+- `link` - Individual nav link
+- `icon` - Nav item icon (img or span)
+
+## Basic Usage
 
 ```html
 <snice-nav id="nav" variant="flat" orientation="horizontal"></snice-nav>
@@ -51,17 +41,30 @@ nav.update([
 ], undefined, 'home');
 ```
 
-**CSS Parts:**
-- `base` - Outer content wrapper
-- `nav` - Navigation element
-- `link` - Individual nav link
-- `icon` - Nav item icon (img or span)
+## Examples
 
-## Features
+```typescript
+// Hierarchical
+nav.update([
+  { name: 'products', title: 'Products', order: 0 },
+  { name: 'electronics', title: 'Electronics', parent: 'products', order: 0 },
+]);
 
-- Flat, hierarchical, and grouped variants
-- Active route tracking (`.nav__link--active`, `aria-current="page"`)
+// Grouped
+nav.update([
+  { name: 'home', title: 'Home', group: 'Main', order: 0 },
+  { name: 'profile', title: 'Profile', group: 'Account', order: 0 },
+]);
+
+// Conditional visibility
+nav.update([
+  { name: 'admin', title: 'Admin', visibleOn: (ctx) => ctx.user?.isAdmin },
+], { user: { isAdmin: true } });
+```
+
+## Accessibility
+
 - `role="navigation"` on container
-- Hotkeys via `data-hotkeys` attribute
-- Conditional visibility via `visibleOn` guards
-- Custom attributes via placard `attributes`
+- `aria-current="page"` on active item
+- `aria-label` from placard `description`
+- Focus-visible styles for keyboard navigation

@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/tree.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/tree.md -->
 
 # Tree
 `<snice-tree>`
@@ -14,29 +14,16 @@ Displays hierarchical data with expandable/collapsible nodes, selection, checkbo
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/tree/snice-tree';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tree.min.js"></script>
-```
-
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `selectable` | `boolean` | `true` | Enable or disable node selection |
-| `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
 | `selectionMode` (attr: `selection-mode`) | `'single' \| 'multiple' \| 'none'` | `'single'` | Selection behavior |
 | `showCheckboxes` (attr: `show-checkboxes`) | `boolean` | `false` | Display checkboxes |
 | `showIcons` (attr: `show-icons`) | `boolean` | `true` | Display node icons |
 | `expandOnClick` (attr: `expand-on-click`) | `boolean` | `false` | Expand/collapse on node click |
+| `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
 | `selectedNodes` (attr: `selected-nodes`) | `string[]` | `[]` | Selected node IDs |
 | `checkedNodes` (attr: `checked-nodes`) | `string[]` | `[]` | Checked node IDs |
 
@@ -181,10 +168,6 @@ tree.nodes = [
 ### Lazy Loading
 
 Set `lazy: true` on nodes to load children on demand.
-
-```html
-<snice-tree></snice-tree>
-```
 
 ```typescript
 tree.nodes = [

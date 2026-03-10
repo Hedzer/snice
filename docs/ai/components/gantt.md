@@ -5,9 +5,9 @@ Interactive Gantt chart with draggable/resizable task bars, zoom levels, task gr
 ## Properties
 
 ```ts
-tasks: GanttTask[] = []              // Task data array (set via JS)
-zoom: GanttZoom = 'week'             // attr: zoom — 'day' | 'week' | 'month'
-showDependencies: boolean = true     // attr: show-dependencies — Render dependency arrows
+tasks: GanttTask[] = []              // Task data array (set via JS, attribute: false)
+zoom: GanttZoom = 'week'             // 'day' | 'week' | 'month'
+showDependencies: boolean = true     // attr: show-dependencies
 ```
 
 ## Types
@@ -18,26 +18,27 @@ interface GanttTask {
   name: string;
   start: string;          // ISO date (YYYY-MM-DD)
   end: string;            // ISO date (YYYY-MM-DD)
-  progress?: number;      // 0-100 completion percentage
-  dependencies?: string[];// IDs of prerequisite tasks
-  color?: string;         // Bar color override
-  group?: string;         // Group name for task grouping
+  progress?: number;      // 0-100
+  dependencies?: string[];// task IDs
+  color?: string;         // bar color override
+  group?: string;         // group name
 }
 ```
-
-## Events
-
-- `task-click` -> `{ task: GanttTask }` — Task bar or name clicked
-- `task-resize` -> `{ task: GanttTask, start: string, end: string }` — Task resized via drag handles
-- `task-move` -> `{ task: GanttTask, start: string, end: string }` — Task moved via drag
-- `task-link` -> `{ source: string, target: string }` — Dependency link created
 
 ## Methods
 
 - `scrollToDate(date: string): void` — Scroll timeline to center on a date
 - `scrollToTask(id: string): void` — Scroll to a task's start date
 
-**CSS Parts:**
+## Events
+
+- `task-click` → `{ task: GanttTask }` — Task bar or name clicked
+- `task-resize` → `{ task: GanttTask, start: string, end: string }` — Task resized via drag handles
+- `task-move` → `{ task: GanttTask, start: string, end: string }` — Task moved via drag
+- `task-link` → `{ source: string, target: string }` — Dependency link created
+
+## CSS Parts
+
 - `base` - Outer Gantt container div
 - `header` - Top header bar with zoom controls
 - `controls` - Zoom toggle button group
@@ -45,15 +46,11 @@ interface GanttTask {
 - `task-list` - Left sidebar with task names
 - `timeline` - Right scrollable timeline area
 
-## Behavior
+## Basic Usage
 
-- Left sidebar shows task names (grouped if `group` set)
-- Timeline auto-calculates range from task dates with padding
-- Bars are draggable (move) and resizable (left/right handles)
-- Today line shown as red vertical indicator
-- Zoom toggle buttons in header (Day/Week/Month)
-
-## Usage
+```typescript
+import 'snice/components/gantt/snice-gantt';
+```
 
 ```html
 <snice-gantt zoom="week" show-dependencies></snice-gantt>
@@ -68,3 +65,10 @@ gantt.tasks = [
 gantt.addEventListener('task-move', e => console.log(e.detail));
 gantt.scrollToDate('2026-03-01');
 ```
+
+## Accessibility
+
+- Bars draggable (move) and resizable (left/right handles)
+- Today line as red vertical indicator
+- Zoom toggle buttons in header (Day/Week/Month)
+- role/aria not explicitly set on task bars

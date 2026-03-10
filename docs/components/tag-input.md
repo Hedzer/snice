@@ -1,18 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/tag-input.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/tag-input.md -->
 
-# Tag Input Component
+# Tag Input
+`<snice-tag-input>`
 
-The tag input component provides a chip/tag-style input field where users can add tags by typing and pressing Enter or comma, remove them with Backspace or the X button, and select from autocomplete suggestions with keyboard navigation.
+A chip/tag-style input field where users can add tags by typing and pressing Enter or comma, remove them with Backspace or the X button, and select from autocomplete suggestions with keyboard navigation.
 
 ## Table of Contents
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Input Behavior](#input-behavior)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -31,131 +31,44 @@ The tag input component provides a chip/tag-style input field where users can ad
 
 ## Methods
 
-#### `addTag(tag: string): void`
-Add a tag programmatically.
-
-```typescript
-tagInput.addTag('JavaScript');
-```
-
-#### `removeTag(index: number): void`
-Remove the tag at the specified index.
-
-```typescript
-tagInput.removeTag(0); // Remove the first tag
-```
-
-#### `clear(): void`
-Remove all tags.
-
-```typescript
-tagInput.clear();
-```
-
-#### `focus(): void`
-Focus the input field.
-
-```typescript
-tagInput.focus();
-```
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `addTag()` | `tag: string` | Add a tag programmatically |
+| `removeTag()` | `index: number` | Remove the tag at the specified index |
+| `clear()` | -- | Remove all tags |
+| `focus()` | -- | Focus the input field |
 
 ## Events
 
-#### `tag-add`
-Fired when a new tag is added.
-
-**Event Detail:**
-```typescript
-{
-  tag: string;       // The added tag
-  value: string[];   // Updated array of all tags
-}
-```
-
-#### `tag-remove`
-Fired when a tag is removed.
-
-**Event Detail:**
-```typescript
-{
-  tag: string;       // The removed tag
-  index: number;     // Index of the removed tag
-  value: string[];   // Updated array of all tags
-}
-```
-
-#### `tag-change`
-Fired whenever the tag list changes (add or remove).
-
-**Event Detail:**
-```typescript
-{
-  value: string[];   // Current array of all tags
-}
-```
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--snice-color-border` | Container border color | `rgb(226 226 226)` |
-| `--snice-color-primary` | Focus ring color and tag accent | `rgb(37 99 235)` |
-| `--snice-color-primary-subtle` | Tag background color | `rgb(239 246 255)` |
-| `--snice-color-background` | Input background color | `rgb(255 255 255)` |
-| `--snice-color-text` | Text color | `rgb(23 23 23)` |
-| `--snice-color-text-tertiary` | Placeholder text color | -- |
-| `--snice-focus-ring-width` | Focus ring width | `2px` |
-| `--snice-focus-ring-color` | Focus ring color | -- |
-| `--snice-shadow-lg` | Suggestions dropdown shadow | -- |
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `tag-add` | `{ tag: string, value: string[] }` | A new tag was added |
+| `tag-remove` | `{ tag: string, index: number, value: string[] }` | A tag was removed |
+| `tag-change` | `{ value: string[] }` | The tag list changed (add or remove) |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer wrapper div |
-| `label` | `<label>` | The label element above the input |
-| `container` | `<div>` | Container holding tags and the input field |
-| `tag` | `<span>` | An individual tag chip |
-| `tag-text` | `<span>` | The text content inside a tag |
-| `input` | `<input>` | The text input field |
-| `suggestions` | `<div>` | The autocomplete suggestions dropdown |
-
-```css
-snice-tag-input::part(container) {
-  border-radius: 8px;
-  padding: 0.5rem;
-}
-
-snice-tag-input::part(tag) {
-  background: #e0f2fe;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-snice-tag-input::part(input) {
-  font-size: 0.875rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer wrapper div |
+| `label` | The label element above the input |
+| `container` | Container holding tags and the input field |
+| `tag` | An individual tag chip |
+| `tag-text` | The text content inside a tag |
+| `input` | The text input field |
+| `suggestions` | The autocomplete suggestions dropdown |
 
 ## Basic Usage
-
-```html
-<snice-tag-input placeholder="Add a tag..."></snice-tag-input>
-```
 
 ```typescript
 import 'snice/components/tag-input/snice-tag-input';
 ```
 
-## Examples
-
-### Basic Tag Input
-
 ```html
 <snice-tag-input placeholder="Add a tag..."></snice-tag-input>
 ```
+
+## Examples
 
 ### With Label and Initial Tags
 
@@ -165,8 +78,6 @@ Use the `label` attribute for a label and set initial tags via JavaScript.
 <snice-tag-input id="skills" label="Skills" placeholder="Add a skill..."></snice-tag-input>
 
 <script type="module">
-  import 'snice/components/tag-input/snice-tag-input';
-
   const tagInput = document.getElementById('skills');
   tagInput.value = ['JavaScript', 'TypeScript', 'CSS'];
 </script>
@@ -181,10 +92,7 @@ Set the `suggestions` property to enable autocomplete.
 
 <script type="module">
   const tagInput = document.getElementById('languages');
-  tagInput.suggestions = [
-    'JavaScript', 'TypeScript', 'Python', 'Rust', 'Go',
-    'Java', 'C++', 'Ruby', 'Swift', 'Kotlin'
-  ];
+  tagInput.suggestions = ['JavaScript', 'TypeScript', 'Python', 'Rust', 'Go'];
 </script>
 ```
 
@@ -193,75 +101,41 @@ Set the `suggestions` property to enable autocomplete.
 Use `max-tags` to restrict the number of tags.
 
 ```html
-<snice-tag-input
-  label="Top 3 Interests"
-  placeholder="Add up to 3..."
-  max-tags="3"
-></snice-tag-input>
+<snice-tag-input label="Top 3 Interests" placeholder="Add up to 3..." max-tags="3"></snice-tag-input>
 ```
 
 ### Handling Tag Changes
 
-```html
-<snice-tag-input id="tags-tracked" label="Tags" placeholder="Add a tag..."></snice-tag-input>
-<p id="tag-count">0 tags</p>
+```javascript
+tagInput.addEventListener('tag-add', (e) => {
+  console.log(`Added: ${e.detail.tag}`);
+});
 
-<script type="module">
-  const tagInput = document.getElementById('tags-tracked');
-  const counter = document.getElementById('tag-count');
+tagInput.addEventListener('tag-remove', (e) => {
+  console.log(`Removed: ${e.detail.tag}`);
+});
 
-  tagInput.addEventListener('tag-add', (e) => {
-    console.log(`Added: ${e.detail.tag}`);
-  });
-
-  tagInput.addEventListener('tag-remove', (e) => {
-    console.log(`Removed: ${e.detail.tag}`);
-  });
-
-  tagInput.addEventListener('tag-change', (e) => {
-    counter.textContent = `${e.detail.value.length} tags`;
-  });
-</script>
+tagInput.addEventListener('tag-change', (e) => {
+  console.log('Tags:', e.detail.value);
+});
 ```
 
 ### Programmatic Tag Management
 
-```html
-<snice-tag-input id="managed-tags" label="Categories"></snice-tag-input>
-<div style="margin-top: 0.5rem;">
-  <button id="add-btn">Add "New"</button>
-  <button id="clear-btn">Clear All</button>
-</div>
-
-<script type="module">
-  const tagInput = document.getElementById('managed-tags');
-  tagInput.value = ['Design', 'Development'];
-
-  document.getElementById('add-btn').addEventListener('click', () => {
-    tagInput.addTag('New');
-  });
-
-  document.getElementById('clear-btn').addEventListener('click', () => {
-    tagInput.clear();
-  });
-</script>
+```javascript
+tagInput.addTag('New');
+tagInput.removeTag(0);
+tagInput.clear();
 ```
 
 ### Disabled and Readonly States
 
 ```html
-<!-- Disabled: no interaction -->
 <snice-tag-input label="Disabled" disabled></snice-tag-input>
-
-<!-- Readonly: shows tags but cannot add or remove -->
-<snice-tag-input id="readonly-tags" label="Readonly" readonly></snice-tag-input>
-
-<script type="module">
-  document.getElementById('readonly-tags').value = ['Fixed', 'Tags'];
-</script>
+<snice-tag-input label="Readonly" readonly></snice-tag-input>
 ```
 
-## Input Behavior
+## Keyboard Navigation
 
 | Key | Action |
 |-----|--------|
@@ -273,8 +147,8 @@ Use `max-tags` to restrict the number of tags.
 
 ## Accessibility
 
-- **Keyboard support**: Full keyboard navigation for adding, removing, and selecting tags
-- **Suggestions navigation**: ArrowUp/ArrowDown navigate through the suggestions dropdown; Enter selects
-- **Backspace removal**: Pressing Backspace on an empty input removes the last tag
-- **Label**: The `label` property provides an accessible label for the input
-- **Focus management**: Focus returns to the input after adding or removing a tag
+- Full keyboard navigation for adding, removing, and selecting tags
+- ArrowUp/ArrowDown navigate through the suggestions dropdown; Enter selects
+- Pressing Backspace on an empty input removes the last tag
+- The `label` property provides an accessible label for the input
+- Focus returns to the input after adding or removing a tag

@@ -1,47 +1,81 @@
 # snice-paint
 
-Self-contained drawing canvas with built-in toolbar.
+Self-contained drawing canvas with built-in toolbar for colors, brush size, eraser, undo/redo, and clear.
 
 ## Properties
 
 ```typescript
-colors: string[] = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#e2e8f0','#1e293b'];
 color: string = '#3b82f6';
-strokeWidth: number = 3;
-minStrokeWidth: number = 1;
-maxStrokeWidth: number = 20;
+strokeWidth: number = 3;                              // attr: stroke-width
+minStrokeWidth: number = 1;                           // attr: min-stroke-width
+maxStrokeWidth: number = 20;                          // attr: max-stroke-width
 controls: string = 'colors,size,eraser,undo,redo,clear';
-backgroundColor: string = '#ffffff';
-colorSelects: number = 0; // extra color-picker dots in palette
+backgroundColor: string = '#ffffff';                  // attr: background-color
+colorSelects: number = 0;                             // attr: color-selects, extra color picker dots
 disabled: boolean = false;
+colors: string[];  // getter/setter, default: ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#e2e8f0','#1e293b']
 ```
-
-## Controls
-
-Comma-separated in `controls` attribute:
-- `colors` — color swatch grid
-- `size` — brush size slider
-- `eraser` — eraser toggle
-- `undo` — undo button
-- `redo` — redo button
-- `clear` — clear button
 
 ## Methods
 
-```typescript
-undo(): void
-redo(): void
-clear(): void
-toDataURL(type?: 'image/png'|'image/jpeg'|'image/webp', quality?: number): string
-toBlob(type?: 'image/png'|'image/jpeg'|'image/webp', quality?: number): Promise<Blob>
-download(filename?: string): void
-getStrokes(): PaintStroke[]
-setStrokes(strokes: PaintStroke[]): void
+- `undo()` - Undo last stroke
+- `redo()` - Redo last undone stroke
+- `clear()` - Clear canvas
+- `toDataURL(type?, quality?)` - Export as data URL
+- `toBlob(type?, quality?)` - Export as Blob (async)
+- `download(filename?)` - Download as image file
+- `getStrokes()` - Get copy of all strokes
+- `setStrokes(strokes)` - Replace all strokes
+
+## Events
+
+- `paint-start` → `{ point: Point }` - Drawing started
+- `paint-end` → `{ stroke: PaintStroke }` - Stroke completed
+- `paint-clear` → `{}` - Canvas cleared
+- `paint-undo` → `{}` - Undo performed
+- `paint-redo` → `{}` - Redo performed
+- `color-select` → `{ color: string, index: number }` - Custom color picked
+
+## Slots
+
+- `toolbar-start` - Content prepended before default controls
+- `colors` - Replaces built-in color swatches
+- `size` - Replaces built-in size slider
+- `tools` - Custom tool buttons (between eraser and undo/redo)
+- `toolbar-end` - Content appended after default controls
+
+## CSS Parts
+
+- `base` - Outer paint container
+- `toolbar` - Toolbar with controls
+- `canvas-wrap` - Canvas wrapper element
+- `canvas` - Drawing canvas element
+
+## Basic Usage
+
+```html
+<snice-paint></snice-paint>
 ```
 
-## PaintStroke
+```typescript
+import 'snice/components/paint/snice-paint';
+
+// Export
+paint.download('artwork.png');
+const strokes = paint.getStrokes();
+paint.setStrokes(strokes);
+```
+
+## Accessibility
+
+- Canvas supports pointer events for drawing
+- Toolbar buttons have title attributes for tooltips
+- Disabled state prevents all drawing interaction
+
+## Types
 
 ```typescript
+interface Point { x: number; y: number; }
 interface PaintStroke {
   id: string;
   tool: 'pen' | 'eraser';
@@ -50,77 +84,5 @@ interface PaintStroke {
   points: Point[];
   timestamp: number;
 }
-```
-
-## Events
-
-- `paint-start` — Drawing started (detail: { point })
-- `paint-end` — Stroke completed (detail: { stroke })
-- `paint-clear` — Canvas cleared
-- `paint-undo` — Undo performed
-- `paint-redo` — Redo performed
-- `color-select` — Custom color picked (detail: { color, index })
-
-## Slots
-
-| Slot | Behavior | Description |
-|------|----------|-------------|
-| `toolbar-start` | Additive | Content prepended above default controls |
-| `colors` | Replaces default | Replaces built-in color swatches |
-| `size` | Replaces default | Replaces built-in size slider |
-| `tools` | Additive | Custom tool buttons (between eraser and undo/redo) |
-| `toolbar-end` | Additive | Content appended below default controls |
-
-Toolbar auto-shows when any slot has content, even if `controls=""`.
-
-**CSS Parts:**
-- `base` - The outer paint container
-- `toolbar` - The toolbar with controls
-- `canvas-wrap` - The canvas wrapper element
-- `canvas` - The drawing canvas element
-
-## Usage
-
-```html
-<snice-paint></snice-paint>
-
-<!-- Custom colors -->
-<snice-paint colors='["#ff0000","#00ff00","#0000ff"]'></snice-paint>
-
-<!-- Minimal controls -->
-<snice-paint controls="colors,undo"></snice-paint>
-
-<!-- Custom size range -->
-<snice-paint min-stroke-width="2" max-stroke-width="50"></snice-paint>
-```
-
-```typescript
-// Export
-paint.download('artwork.png');
-const url = paint.toDataURL();
-
-// Save/load
-const strokes = paint.getStrokes();
-paint.setStrokes(strokes);
-```
-
-```html
-<!-- Custom color pickers in palette -->
-<snice-paint color-selects="2"></snice-paint>
-
-<!-- Custom tools -->
-<snice-paint>
-  <button slot="tools" onclick="...">Rectangle</button>
-  <button slot="tools" onclick="...">Circle</button>
-</snice-paint>
-
-<!-- Replace color picker -->
-<snice-paint>
-  <input slot="colors" type="color" onchange="this.closest('snice-paint').color = this.value">
-</snice-paint>
-
-<!-- Add save button -->
-<snice-paint>
-  <button slot="toolbar-end" onclick="this.closest('snice-paint').download()">Save</button>
-</snice-paint>
+type PaintControl = 'colors' | 'size' | 'eraser' | 'undo' | 'redo' | 'clear';
 ```

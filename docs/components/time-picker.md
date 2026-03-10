@@ -1,46 +1,41 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/time-picker.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/time-picker.md -->
 
 # Time Picker
 `<snice-time-picker>`
 
-Single time selection with hour/minute/second selectors and AM/PM toggle.
+Single time selection with hour/minute/second selectors and AM/PM toggle. Form-associated.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/time-picker/snice-time-picker';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-time-picker.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `value` | `value` | `string` | `''` | Time value (HH:MM or HH:MM:SS) |
-| `format` | `format` | `'12h' \| '24h'` | `'24h'` | Display format |
-| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
-| `step` | `step` | `1 \| 5 \| 10 \| 15 \| 30` | `15` | Minute step interval |
-| `minTime` | `min-time` | `string` | `''` | Minimum selectable time |
-| `maxTime` | `max-time` | `string` | `''` | Maximum selectable time |
-| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
-| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
-| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
-| `clearable` | `clearable` | `boolean` | `false` | Shows clear button when value is set |
-| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `name` | `name` | `string` | `''` | Form field name |
-| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `string` | `''` | Time value (HH:MM or HH:MM:SS) |
+| `format` | `'12h' \| '24h'` | `'24h'` | Display format |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
+| `step` | `1 \| 5 \| 10 \| 15 \| 30` | `15` | Minute step interval |
+| `minTime` (attr: `min-time`) | `string` | `''` | Minimum selectable time |
+| `maxTime` (attr: `max-time`) | `string` | `''` | Maximum selectable time |
+| `showSeconds` (attr: `show-seconds`) | `boolean` | `false` | Show seconds selector |
+| `disabled` | `boolean` | `false` | Disables the picker |
+| `readonly` | `boolean` | `false` | Makes input read-only |
+| `loading` | `boolean` | `false` | Shows loading spinner |
+| `clearable` | `boolean` | `false` | Shows clear button when value is set |
+| `placeholder` | `string` | `''` | Input placeholder text |
+| `label` | `string` | `''` | Label text |
+| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below input |
+| `errorText` (attr: `error-text`) | `string` | `''` | Error text below input |
+| `required` | `boolean` | `false` | Marks as required |
+| `invalid` | `boolean` | `false` | Shows invalid styling |
+| `name` | `string` | `''` | Form field name |
+| `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
 
 ## Methods
 
@@ -51,8 +46,8 @@ import 'snice/components/time-picker/snice-time-picker';
 | `clear()` | -- | Clears the selected time |
 | `focus()` | -- | Focuses the input |
 | `blur()` | -- | Removes focus |
-| `checkValidity()` | -- | Returns input validity |
-| `reportValidity()` | -- | Reports input validity |
+| `checkValidity()` | -- | Returns input validity (`boolean`) |
+| `reportValidity()` | -- | Reports input validity to user (`boolean`) |
 | `setCustomValidity()` | `message: string` | Sets custom validation message |
 
 ## Events
@@ -123,22 +118,6 @@ Use the `size` attribute to change the picker size.
 <snice-time-picker size="large" label="Large"></snice-time-picker>
 ```
 
-### Loading
-
-Set the `loading` attribute to show a spinner and disable interaction.
-
-```html
-<snice-time-picker loading label="Loading"></snice-time-picker>
-```
-
-### Clearable
-
-Set the `clearable` attribute to show a clear button when a value is selected.
-
-```html
-<snice-time-picker value="14:30" clearable label="Clearable"></snice-time-picker>
-```
-
 ### Step Intervals
 
 Use the `step` attribute to control the minute increment in the selector.
@@ -171,6 +150,22 @@ Use `variant="inline"` to always show the time selectors without a dropdown.
 <snice-time-picker variant="inline" value="10:00" label="Inline Picker"></snice-time-picker>
 ```
 
+### Clearable
+
+Set the `clearable` attribute to show a clear button when a value is selected.
+
+```html
+<snice-time-picker value="14:30" clearable label="Clearable"></snice-time-picker>
+```
+
+### Loading
+
+Set the `loading` attribute to show a spinner and disable interaction.
+
+```html
+<snice-time-picker loading label="Loading"></snice-time-picker>
+```
+
 ### Helper and Error Text
 
 Use `helper-text` and `error-text` for guidance or validation messages.
@@ -194,32 +189,13 @@ Use `name` and `required` for native form participation.
 ```html
 <form>
   <snice-time-picker name="startTime" required label="Start Time"></snice-time-picker>
-</form>
-```
-
-### Form Validation
-
-The component supports the Constraint Validation API. Use `checkValidity()`, `reportValidity()`, and `setCustomValidity()` for custom form validation.
-
-```html
-<form>
-  <snice-time-picker name="startTime" required label="Start Time"></snice-time-picker>
   <button type="submit">Submit</button>
 </form>
-```
-
-```typescript
-picker.setCustomValidity('Please select a time during business hours');
-picker.reportValidity();
 ```
 
 ### Event Handling
 
 Listen for time changes using the `time-change` event.
-
-```html
-<snice-time-picker label="Pick a time"></snice-time-picker>
-```
 
 ```typescript
 picker.addEventListener('time-change', (e) => {

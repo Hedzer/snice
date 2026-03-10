@@ -4,7 +4,7 @@ Login form with username/password using @request/@respond pattern.
 
 ## Properties
 
-```typescript
+```ts
 variant: 'default'|'card'|'minimal' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
 title: string = 'Sign In';
@@ -17,11 +17,11 @@ actionText: string = 'Sign In';      // attr: action-text
 
 ## Methods
 
-- `login(credentials?)` - Trigger login via @request (async)
-- `setCredentials({username?, password?, remember?})` - Set form values
-- `reset()` - Clear form, alert, loading
-- `setError(message)` - Show error alert
-- `clearError()` - Clear alert
+- `login(credentials?)` → Trigger login via @request (async)
+- `setCredentials({username?, password?, remember?})` → Set form values
+- `reset()` → Clear form, alert, loading
+- `setError(message)` → Show error alert
+- `clearError()` → Clear alert
 
 ## Requests
 
@@ -29,7 +29,7 @@ actionText: string = 'Sign In';      // attr: action-text
 
 ## Types
 
-```typescript
+```ts
 interface LoginCredentials {
   username: string;
   password: string;
@@ -60,14 +60,19 @@ interface LoginResult {
 - `before-submit`, `after-submit` - Around button
 - `footer` - Footer content
 
-**CSS Parts:**
+## CSS Parts
+
 - `base` - Outer login container
 - `header` - Header section
 - `title` - H1 title element
 - `form` - The login form
 - `footer` - Footer section
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/login/snice-login';
+```
 
 ```html
 <!-- With controller -->

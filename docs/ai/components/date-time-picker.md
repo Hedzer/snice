@@ -1,13 +1,13 @@
 # snice-date-time-picker
 
-Combined date and time picker. Calendar for date, scrollable columns for time.
+Combined date and time picker. Calendar for date, scrollable columns for time. Form-associated.
 
 ## Properties
 
 ```typescript
 value: string = '';                                   // ISO datetime (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS)
-dateFormat: DateTimePickerDateFormat = 'yyyy-mm-dd';   // attribute: date-format — 'yyyy-mm-dd'|'mm/dd/yyyy'|'dd/mm/yyyy'|'yyyy/mm/dd'|'dd-mm-yyyy'|'mm-dd-yyyy'|'mmmm dd, yyyy'
-timeFormat: '12h'|'24h' = '24h';                      // attribute: time-format
+dateFormat: DateTimePickerDateFormat = 'yyyy-mm-dd';  // attribute: date-format
+timeFormat: '12h'|'24h' = '24h';                     // attribute: time-format
 size: 'small'|'medium'|'large' = 'medium';
 min: string = '';                                     // Min date (YYYY-MM-DD)
 max: string = '';                                     // Max date (YYYY-MM-DD)
@@ -26,6 +26,8 @@ name: string = '';
 variant: 'dropdown'|'inline' = 'dropdown';
 ```
 
+Date formats: `'yyyy-mm-dd'`|`'mm/dd/yyyy'`|`'dd/mm/yyyy'`|`'yyyy/mm/dd'`|`'dd-mm-yyyy'`|`'mm-dd-yyyy'`|`'mmmm dd, yyyy'`
+
 ## Methods
 
 - `open()` - Open panel
@@ -37,36 +39,25 @@ variant: 'dropdown'|'inline' = 'dropdown';
 
 ## Events
 
-- `datetime-change` -> `{ value, date, dateString, timeString, iso, dateTimePicker }`
-- `datetimepicker-focus` -> `{ dateTimePicker }`
-- `datetimepicker-blur` -> `{ dateTimePicker }`
-- `datetimepicker-open` -> `{ dateTimePicker }`
-- `datetimepicker-close` -> `{ dateTimePicker }`
-- `datetimepicker-clear` -> `{ dateTimePicker }`
+- `datetime-change` → `{ value, date, dateString, timeString, iso, dateTimePicker }`
+- `datetimepicker-focus` → `{ dateTimePicker }`
+- `datetimepicker-blur` → `{ dateTimePicker }`
+- `datetimepicker-open` → `{ dateTimePicker }`
+- `datetimepicker-close` → `{ dateTimePicker }`
+- `datetimepicker-clear` → `{ dateTimePicker }`
 
-## Usage
+## CSS Parts
+
+`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
+
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-date-time-picker label="Appointment"></snice-date-time-picker>
-
-<!-- With value -->
-<snice-date-time-picker value="2024-12-25T14:30"></snice-date-time-picker>
-
-<!-- 12h format -->
-<snice-date-time-picker time-format="12h" value="2024-12-25T14:30"></snice-date-time-picker>
-
-<!-- With seconds -->
+<snice-date-time-picker value="2024-12-25T14:30" time-format="12h"></snice-date-time-picker>
 <snice-date-time-picker show-seconds value="2024-12-25T14:30:45"></snice-date-time-picker>
-
-<!-- Date constraints -->
-<snice-date-time-picker min="2024-01-01" max="2024-12-31"></snice-date-time-picker>
-
-<!-- Inline (always visible) -->
 <snice-date-time-picker variant="inline" value="2024-06-15T10:00"></snice-date-time-picker>
-
-<!-- Event handling -->
-<snice-date-time-picker id="dtp"></snice-date-time-picker>
+<snice-date-time-picker min="2024-01-01" max="2024-12-31"></snice-date-time-picker>
 ```
 
 ```typescript
@@ -76,24 +67,10 @@ dtp.addEventListener('datetime-change', (e) => {
   console.log('Time:', e.detail.timeString);
 });
 ```
-```
 
-## CSS Parts
+## Accessibility
 
-`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
-
-## Features
-
-- Form-associated custom element
-- Calendar with month navigation + time selector columns side-by-side
-- Year picker (click year in header → 12-year grid, navigate ranges, click to select)
-- Dropdown or inline variant
-- 12h/24h time format with AM/PM toggle
-- Optional seconds selector
-- 3 sizes (small, medium, large)
-- Loading state with spinner
-- Clearable with clear button
-- Min/max date constraints
-- Configurable date display format
-- Constraint Validation API (checkValidity, reportValidity, setCustomValidity)
-- Responsive: stacks vertically on mobile
+- Form-associated with ElementInternals
+- Calendar uses popover="manual"
+- Responsive: stacks vertically on mobile (<480px)
+- Year picker via calendar header year button

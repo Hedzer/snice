@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/menu.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/menu.md -->
 
 # Menu
 `<snice-menu>`
@@ -6,33 +6,25 @@
 A dropdown menu with composable items, dividers, icons, and keyboard shortcut hints.
 
 ## Table of Contents
-- [Menu Properties](#menu-properties)
-- [Menu Item Properties](#menu-item-properties)
+- [Components](#components)
+- [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
-- [Menu Slots](#menu-slots)
-- [Menu Item Slots](#menu-item-slots)
+- [Slots](#slots)
 - [CSS Parts](#css-parts)
 - [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 
-## Importing
+## Components
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/menu/snice-menu';
-import 'snice/components/menu/snice-menu-item';
-import 'snice/components/menu/snice-menu-divider';
-```
+- `<snice-menu>` - The dropdown menu container with trigger and panel
+- `<snice-menu-item>` - Individual selectable menu item with icon and shortcut slots
+- `<snice-menu-divider>` - Visual separator between items
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-menu.min.js"></script>
-```
+## Properties
 
-## Menu Properties
+### snice-menu
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -42,7 +34,7 @@ import 'snice/components/menu/snice-menu-divider';
 | `closeOnSelect` (attr: `close-on-select`) | `boolean` | `true` | Close on item selection |
 | `distance` | `number` | `4` | Distance from trigger to panel (px) |
 
-## Menu Item Properties
+### snice-menu-item
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -64,9 +56,11 @@ import 'snice/components/menu/snice-menu-divider';
 |-------|--------|-------------|
 | `menu-open` | `{ menu: SniceMenuElement }` | Menu opened |
 | `menu-close` | `{ menu: SniceMenuElement }` | Menu closed |
-| `menu-item-select` | `{ item: SniceMenuItemElement, value: string }` | Item selected |
+| `menu-item-select` | `{ item: SniceMenuItemElement, value: string }` | Item selected (bubbles from menu-item) |
 
-## Menu Slots
+## Slots
+
+### snice-menu
 
 | Name | Description |
 |------|-------------|
@@ -75,7 +69,7 @@ import 'snice/components/menu/snice-menu-divider';
 | `image-right` | Image/icon after the trigger |
 | (default) | Menu items and dividers |
 
-## Menu Item Slots
+### snice-menu-item
 
 | Name | Description |
 |------|-------------|
@@ -85,24 +79,30 @@ import 'snice/components/menu/snice-menu-divider';
 
 ## CSS Parts
 
-### Menu Parts
+### snice-menu
 
-| Part | Description |
-|------|-------------|
-| `trigger` | The trigger wrapper element |
-| `image-left` | Left image container |
-| `image-right` | Right image container |
-| `panel` | The dropdown panel |
-| `content` | Panel content wrapper |
+| Part | Element | Description |
+|------|---------|-------------|
+| `trigger` | `<div>` | The trigger wrapper element |
+| `image-left` | `<span>` | Left image container |
+| `image-right` | `<span>` | Right image container |
+| `panel` | `<div>` | The dropdown panel |
+| `content` | `<div>` | Panel content wrapper |
 
-### Menu Item Parts
+### snice-menu-item
 
-| Part | Description |
-|------|-------------|
-| `item` | The menu item container |
-| `icon` | Icon wrapper |
-| `label` | Label wrapper |
-| `shortcut` | Keyboard shortcut wrapper |
+| Part | Element | Description |
+|------|---------|-------------|
+| `item` | `<div>` | The menu item container |
+| `icon` | `<span>` | Icon wrapper |
+| `label` | `<span>` | Label wrapper |
+| `shortcut` | `<span>` | Keyboard shortcut wrapper |
+
+### snice-menu-divider
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `divider` | `<div>` | The separator line |
 
 ## CSS Custom Properties
 
@@ -165,11 +165,6 @@ Use the `icon` and `shortcut` slots on menu items to add visual cues.
 Use the `placement` attribute to position the menu relative to its trigger.
 
 ```html
-<snice-menu placement="bottom-start">
-  <button slot="trigger">Bottom Start</button>
-  <snice-menu-item value="1">Option 1</snice-menu-item>
-</snice-menu>
-
 <snice-menu placement="bottom-end">
   <button slot="trigger">Bottom End</button>
   <snice-menu-item value="1">Option 1</snice-menu-item>
@@ -198,19 +193,17 @@ Set `trigger="hover"` to open the menu on mouse hover.
 Set `trigger="manual"` and use methods to control the menu programmatically.
 
 ```html
-<snice-menu trigger="manual">
+<snice-menu trigger="manual" id="my-menu">
   <button slot="trigger">Manual</button>
   <snice-menu-item value="1">Option 1</snice-menu-item>
 </snice-menu>
 ```
 
 ```typescript
-menu.openMenu();
+document.getElementById('my-menu').openMenu();
 ```
 
 ### Disabled Items
-
-Set the `disabled` attribute on individual menu items.
 
 ```html
 <snice-menu>

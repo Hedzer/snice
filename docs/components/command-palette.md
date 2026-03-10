@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/command-palette.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/command-palette.md -->
 
 # Command Palette Component
 
-A searchable command palette overlay (⌘K) for quick access to application commands and actions.
+A searchable command palette overlay for quick access to application commands and actions. Opens with Cmd+K / Ctrl+K.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -11,8 +11,7 @@ A searchable command palette overlay (⌘K) for quick access to application comm
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [CommandItem Interface](#commanditem-interface)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -20,32 +19,81 @@ A searchable command palette overlay (⌘K) for quick access to application comm
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `open` | `boolean` | `false` | Palette visibility |
-| `commands` | `CommandItem[]` | `[]` | Array of commands |
-| `placeholder` | `string` | `'Type a command or search...'` | Search input placeholder |
-| `noResultsText` | `string` | `'No results found'` | Empty state text |
-| `maxResults` | `number` | `50` | Maximum results to display |
-| `showRecentCommands` | `boolean` | `true` | Show recent commands when search is empty |
-| `recentCommandsLimit` | `number` | `5` | Number of recent commands to track |
-| `caseSensitive` | `boolean` | `false` | Case-sensitive search |
+| `commands` | `CommandItem[]` | `[]` | Array of command objects |
+| `placeholder` | `string` | `'Type a command or search...'` | Search input placeholder text |
+| `noResultsText` (attr: `no-results-text`) | `string` | `'No results found'` | Text shown when search yields no results |
+| `maxResults` (attr: `max-results`) | `number` | `50` | Maximum number of results to display |
+| `showRecentCommands` (attr: `show-recent-commands`) | `boolean` | `true` | Show recently used commands when search is empty |
+| `recentCommandsLimit` (attr: `recent-commands-limit`) | `number` | `5` | Number of recent commands to track |
+| `caseSensitive` (attr: `case-sensitive`) | `boolean` | `false` | Enable case-sensitive search matching |
+
+### CommandItem Interface
+
+```typescript
+interface CommandItem {
+  id: string;              // Unique identifier
+  label: string;           // Command name
+  description?: string;    // Command description
+  icon?: string;           // Text/emoji icon
+  iconImage?: string;      // Icon image URL
+  shortcut?: string;       // Keyboard shortcut display text
+  category?: string;       // Category for grouping
+  disabled?: boolean;      // Disable command
+  action?: () => void | Promise<void>;  // Command action
+  data?: any;              // Custom data
+}
+```
 
 ## Methods
 
-- `show()` - Open the palette
-- `close()` - Close the palette
-- `toggle()` - Toggle palette visibility
-- `addCommand(command: CommandItem)` - Add a command
-- `removeCommand(id: string)` - Remove a command
-- `executeCommand(id: string)` - Execute command by ID
-- `clearSearch()` - Clear search input
-- `focus()` - Focus search input
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Open the palette |
+| `close()` | -- | Close the palette |
+| `toggle()` | -- | Toggle palette visibility |
+| `addCommand()` | `command: CommandItem` | Add a command dynamically |
+| `removeCommand()` | `id: string` | Remove a command by ID |
+| `executeCommand()` | `id: string` | Execute a command by ID |
+| `clearSearch()` | -- | Clear the search input |
+| `focus()` | -- | Focus the search input |
 
 ## Events
 
-- `command-palette-open` - Fired when palette opens
-- `command-palette-close` - Fired when palette closes
-- `command-select` - Fired when command is selected (detail: { command, palette })
-- `command-execute` - Fired when command is executed (detail: { command, palette })
-- `command-search` - Fired when search changes (detail: { query, results, palette })
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `command-palette-open` | `{ palette }` | Fired when the palette opens |
+| `command-palette-close` | `{ palette }` | Fired when the palette closes |
+| `command-select` | `{ command, palette }` | Fired when a command is highlighted/selected |
+| `command-execute` | `{ command, palette }` | Fired when a command is executed |
+| `command-search` | `{ query, results, palette }` | Fired when the search input changes |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Main palette container |
+| `search` | Search area wrapper |
+| `input` | Search input element |
+| `results` | Results list container |
+| `empty` | Empty state message |
+| `category` | Category group header |
+| `item` | Individual command item button |
+| `item-icon` | Item icon wrapper |
+| `item-icon-image` | Item icon image element |
+| `item-content` | Item label and description wrapper |
+| `item-label` | Item label text |
+| `item-description` | Item description text |
+| `item-shortcut` | Keyboard shortcut badge |
+
+```css
+snice-command-palette::part(container) {
+  max-width: 800px;
+}
+
+snice-command-palette::part(item) {
+  border-radius: 0.25rem;
+}
+```
 
 ## Basic Usage
 
@@ -67,21 +115,24 @@ A searchable command palette overlay (⌘K) for quick access to application comm
     {
       id: 'save',
       label: 'Save',
-      description: 'Save the current file',
       icon: '💾',
       shortcut: '⌘S',
       category: 'File',
       action: () => console.log('File saved')
     }
   ];
-
-  // Opens automatically with ⌘K or Ctrl+K
 </script>
+```
+
+```typescript
+import 'snice/components/command-palette/snice-command-palette';
 ```
 
 ## Examples
 
-### Basic Commands
+### Categorized Commands
+
+Group commands by category for organized navigation.
 
 ```html
 <snice-command-palette id="palette"></snice-command-palette>
@@ -96,7 +147,9 @@ A searchable command palette overlay (⌘K) for quick access to application comm
 </script>
 ```
 
-### With Actions
+### Commands with Actions
+
+Attach action functions to commands for immediate execution.
 
 ```javascript
 palette.commands = [
@@ -104,9 +157,7 @@ palette.commands = [
     id: 'theme-toggle',
     label: 'Toggle Theme',
     icon: '🌓',
-    action: () => {
-      document.body.classList.toggle('dark-mode');
-    }
+    action: () => document.body.classList.toggle('dark-mode')
   },
   {
     id: 'logout',
@@ -122,12 +173,16 @@ palette.commands = [
 
 ### Custom Trigger
 
+Use `show()` to open the palette from a custom button instead of the keyboard shortcut.
+
 ```html
 <button onclick="palette.show()">Open Commands</button>
 <snice-command-palette id="palette"></snice-command-palette>
 ```
 
 ### Event Handling
+
+Listen for command execution to log analytics or trigger side effects.
 
 ```javascript
 palette.addEventListener('command-execute', (e) => {
@@ -136,67 +191,18 @@ palette.addEventListener('command-execute', (e) => {
 });
 ```
 
-## CSS Parts
+## Keyboard Navigation
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `container` | `<div>` | Main palette container |
-| `search` | `<div>` | Search area wrapper |
-| `input` | `<input>` | Search input element |
-| `results` | `<div>` | Results list container |
-| `empty` | `<div>` | Empty state message |
-| `category` | `<div>` | Category group header |
-| `item` | `<button>` | Individual command item |
-| `item-icon` | `<div>` | Item icon wrapper |
-| `item-icon-image` | `<img>` | Item icon image |
-| `item-content` | `<div>` | Item label and description wrapper |
-| `item-label` | `<div>` | Item label text |
-| `item-description` | `<div>` | Item description text |
-| `item-shortcut` | `<div>` | Keyboard shortcut badge |
-
-```css
-snice-command-palette::part(container) {
-  max-width: 800px;
-}
-
-snice-command-palette::part(item) {
-  border-radius: 0.25rem;
-}
-```
-
-## CommandItem Interface
-
-```typescript
-interface CommandItem {
-  id: string;              // Unique identifier
-  label: string;           // Command name
-  description?: string;    // Command description
-  icon?: string;           // Text/emoji icon
-  iconImage?: string;      // Icon image URL
-  shortcut?: string;       // Keyboard shortcut display
-  category?: string;       // Command category for grouping
-  disabled?: boolean;      // Disable command
-  action?: () => void | Promise<void>;  // Command action
-  data?: any;             // Custom data
-}
-```
-
-## Keyboard Shortcuts
-
-- `⌘K` or `Ctrl+K` - Toggle palette
-- `Escape` - Close palette
-- `↑` / `↓` - Navigate commands
-- `Enter` - Execute active command
+| Key | Action |
+|-----|--------|
+| `Cmd+K` / `Ctrl+K` | Toggle palette |
+| `Escape` | Close palette |
+| `Arrow Up` / `Arrow Down` | Navigate commands |
+| `Enter` | Execute active command |
 
 ## Accessibility
 
-- Full keyboard navigation
-- ARIA labels and roles
-- Focus trap when open
-- Screen reader announcements
-
-## Browser Support
-
-Modern browsers with Custom Elements v1 support
+- Full keyboard navigation with arrow keys
+- ARIA labels and roles on all interactive elements
+- Focus trap when palette is open
+- Screen reader announcements for search results

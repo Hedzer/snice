@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/diff.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/diff.md -->
 
 # Diff Component
+`<snice-diff>`
 
-The diff component displays a text diff between two strings with unified or side-by-side (split) views, line numbers, word-level highlighting, collapsible unchanged sections, and addition/deletion statistics.
+Text diff viewer with unified and split (side-by-side) modes, line numbers, word-level highlighting, collapsible unchanged sections, and addition/deletion statistics.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -58,13 +59,11 @@ interface DiffHunk {
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer diff container |
-| `header` | `<div>` | Header with addition/deletion stats and mode toggle buttons |
-| `content` | `<div>` | Diff content area containing the diff table(s) |
+| Part | Description |
+|------|-------------|
+| `base` | Outer diff container |
+| `header` | Header with addition/deletion stats and mode toggle buttons |
+| `content` | Diff content area containing the diff table(s) |
 
 ```css
 snice-diff::part(base) {
@@ -81,12 +80,18 @@ snice-diff::part(header) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/diff/snice-diff';
+```
+
 ```html
 <snice-diff old-text="hello world" new-text="hello there"></snice-diff>
 ```
 
-```typescript
-import 'snice/components/diff/snice-diff';
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-diff.min.js"></script>
 ```
 
 ## Examples
@@ -193,9 +198,9 @@ When comparing large files, unchanged sections beyond the `context-lines` thresh
 
 ## Accessibility
 
-- **Dark mode support**: Automatically adapts colors for `[data-theme="dark"]` and `prefers-color-scheme: dark`
-- **Line numbers**: Provide clear reference points for discussing specific changes
-- **Color coding**: Added lines are highlighted with a green background, removed lines with red, providing clear visual distinction
-- **Word-level diffs**: Within changed lines, the specific words that differ are highlighted for precision
-- **Collapsible sections**: Large unchanged regions are collapsed to reduce noise and can be expanded on demand
-- **Stats header**: The +N/-N summary provides an immediate overview of the change scope
+- Dark mode support via `[data-theme="dark"]` and `prefers-color-scheme: dark`
+- Line numbers provide clear reference points for discussing specific changes
+- Color coding: added lines highlighted green, removed lines red
+- Word-level diffs highlight the specific words that differ within changed lines
+- Collapsible sections reduce noise; click to expand
+- Stats header provides an immediate +N/-N overview of change scope

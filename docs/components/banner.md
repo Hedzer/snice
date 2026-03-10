@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/banner.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/banner.md -->
 
 # Banner Component
+`<snice-banner>`
 
-The `<snice-banner>` component displays fixed-position notification banners at the top or bottom of the viewport.
+The banner component displays fixed-position notification banners at the top or bottom of the viewport. Supports multiple variants, dismissible close button, and optional action button.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -12,6 +13,7 @@ The `<snice-banner>` component displays fixed-position notification banners at t
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -21,32 +23,17 @@ The `<snice-banner>` component displays fixed-position notification banners at t
 | `position` | `'top' \| 'bottom'` | `'top'` | Position on screen |
 | `message` | `string` | `''` | Banner message |
 | `dismissible` | `boolean` | `true` | Show close button |
-| `icon` | `string` | `''` | Custom icon (default icons per variant) |
-| `actionText` | `string` | `''` | Action button text |
+| `icon` | `string` | `''` | Custom icon (emoji, URL, image file). Default icons per variant. |
+| `actionText` (attr: `action-text`) | `string` | `''` | Action button text |
 | `open` | `boolean` | `false` | Banner visibility |
 
 ## Methods
 
-#### `show(): void`
-Show the banner.
-
-```typescript
-banner.show();
-```
-
-#### `hide(): void`
-Hide the banner.
-
-```typescript
-banner.hide();
-```
-
-#### `toggle(): void`
-Toggle banner visibility.
-
-```typescript
-banner.toggle();
-```
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Show the banner |
+| `hide()` | -- | Hide the banner |
+| `toggle()` | -- | Toggle banner visibility |
 
 ## Events
 
@@ -58,9 +45,9 @@ banner.toggle();
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
-| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. |
+| Name | Description |
+|------|-------------|
+| `icon` | Custom icon content. Overrides the `icon` property and default variant icons. Use for icon fonts. |
 | (default) | Additional content after the message |
 
 ### Icon Slot Usage
@@ -79,8 +66,6 @@ Use the `icon` slot for external CSS-based icon fonts:
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
 | Part | Element | Description |
 |------|---------|-------------|
 | `banner` | `<div>` | The main banner container |
@@ -89,7 +74,21 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `action` | `<button>` | The action button (when `actionText` is set) |
 | `close` | `<button>` | The close/dismiss button |
 
+```css
+snice-banner::part(banner) {
+  font-size: 1rem;
+}
+
+snice-banner::part(action) {
+  font-weight: 600;
+}
+```
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/banner/snice-banner';
+```
 
 ```html
 <snice-banner
@@ -103,6 +102,8 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 ### Variants
 
+Use the `variant` attribute to set the banner style.
+
 ```html
 <snice-banner variant="info" message="Info message" open></snice-banner>
 <snice-banner variant="success" message="Success!" open></snice-banner>
@@ -112,13 +113,14 @@ Style internal elements from outside the shadow DOM using `::part()`.
 
 ### With Action Button
 
+Use `action-text` to show an action button. Listen for `banner-action` to handle clicks.
+
 ```html
 <snice-banner
   message="A new version is available"
   action-text="Update Now"
   open
 ></snice-banner>
-
 ```
 
 ```typescript
@@ -128,6 +130,8 @@ banner.addEventListener('banner-action', () => {
 ```
 
 ### Bottom Position
+
+Use `position="bottom"` to anchor the banner to the bottom of the viewport.
 
 ```html
 <snice-banner
@@ -140,6 +144,8 @@ banner.addEventListener('banner-action', () => {
 
 ### Not Dismissible
 
+Set `dismissible="false"` to hide the close button.
+
 ```html
 <snice-banner
   message="Maintenance mode active"
@@ -151,6 +157,8 @@ banner.addEventListener('banner-action', () => {
 
 ### Programmatic Control
 
+Use `show()`, `hide()`, and `toggle()` methods.
+
 ```html
 <snice-banner id="myBanner" message="Hello"></snice-banner>
 
@@ -158,3 +166,9 @@ banner.addEventListener('banner-action', () => {
 <button onclick="myBanner.hide()">Hide</button>
 <button onclick="myBanner.toggle()">Toggle</button>
 ```
+
+## Accessibility
+
+- **ARIA role**: Banner has `role="alert"` for screen reader announcements
+- **Close button**: Has `aria-label="Close"` for screen readers
+- **Keyboard accessible**: Close and action buttons are keyboard focusable

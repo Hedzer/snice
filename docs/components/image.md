@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/image.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/image.md -->
 
 # Image Component
 
@@ -6,9 +6,9 @@ The `<snice-image>` component provides a flexible image display with variants, s
 
 ## Table of Contents
 - [Properties](#properties)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [CSS Parts](#css-parts)
 
 ## Properties
 
@@ -27,7 +27,33 @@ The `<snice-image>` component provides a flexible image display with variants, s
 | `width` | `string` | `''` | Custom width (CSS value) |
 | `height` | `string` | `''` | Custom height (CSS value) |
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | Image container div |
+| `image` | The img element |
+| `placeholder` | Placeholder element (shown when loading or no src) |
+
+```css
+snice-image::part(container) {
+  /* Image container */
+}
+
+snice-image::part(image) {
+  /* The img element */
+}
+
+snice-image::part(placeholder) {
+  /* Placeholder element */
+}
+```
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/image/snice-image';
+```
 
 ```html
 <snice-image
@@ -95,33 +121,3 @@ The `<snice-image>` component provides a flexible image display with variants, s
 <!-- Shows placeholder when no src -->
 <snice-image variant="circle" size="medium"></snice-image>
 ```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `container` | Image container div |
-| `image` | The img element |
-| `placeholder` | Placeholder element (shown when loading or no src) |
-
-```css
-snice-image::part(container) {
-  /* Image container */
-}
-
-snice-image::part(image) {
-  /* The img element */
-}
-
-snice-image::part(placeholder) {
-  /* Placeholder element */
-}
-```
-
-## Notes
-
-- Images are lazy-loaded by default for better performance
-- Placeholder is shown when `src` is empty
-- Fallback image is used when main image fails to load
-- Size presets provide consistent image dimensions
-- Custom width/height override size presets

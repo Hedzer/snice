@@ -1,22 +1,25 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/toast.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/toast.md -->
 
 # Toast
 `<snice-toast-container>`
 
 Temporary, non-blocking notification messages. Includes a static `Toast` API for programmatic creation.
 
-## Importing
+## Table of Contents
+- [Components](#components)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
-**ESM (bundler)**
-```typescript
-import Toast from 'snice/components/toast/snice-toast-container';
-```
+## Components
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-toast-container.min.js"></script>
-```
+| Component | Description |
+|-----------|-------------|
+| `<snice-toast-container>` | Container that positions and manages toast notifications |
+| `<snice-toast>` | Individual toast notification element |
 
 ## Properties
 
@@ -80,29 +83,11 @@ interface ToastOptions {
 
 ### snice-toast
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer toast container (includes type modifier class) |
-| `icon` | `<span>` | Wrapper around the type-specific SVG icon |
-| `content` | `<span>` | The message text element |
-
-```css
-snice-toast::part(base) {
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-snice-toast::part(content) {
-  font-weight: 500;
-}
-
-snice-toast::part(icon) {
-  width: 24px;
-  height: 24px;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | Outer toast container (includes type modifier class) |
+| `icon` | Wrapper around the type-specific SVG icon |
+| `content` | The message text element |
 
 ## Basic Usage
 
@@ -180,15 +165,4 @@ Use a container element directly for more control.
 const id = container.show('Hello!', { type: 'success' });
 container.hide(id);
 container.clear();
-```
-
-### Form Validation
-
-```typescript
-try {
-  await submitForm(formData);
-  Toast.success('Form submitted');
-} catch (error) {
-  Toast.error(error.message);
-}
 ```

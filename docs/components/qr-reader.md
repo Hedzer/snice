@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/qr-reader.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/qr-reader.md -->
 
 # QR Reader
-`<snice-qr-reader>`
 
-A QR code scanner using device cameras with WebAssembly-based detection.
+A QR code scanner using device cameras with real-time detection.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/qr-reader/snice-qr-reader';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-qr-reader.min.js"></script>
-```
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -24,28 +20,28 @@ import 'snice/components/qr-reader/snice-qr-reader';
 |----------|------|---------|-------------|
 | `autoStart` (attr: `auto-start`) | `boolean` | `false` | Auto-start scanning on mount |
 | `camera` | `'front' \| 'back'` | `'back'` | Which camera to use |
-| `pickFirst` (attr: `pick-first`) | `boolean` | `false` | Scan until first hit, then stop |
-| `manualSnap` (attr: `manual-snap`) | `boolean` | `false` | Photo snapshot mode |
-| `scanSpeed` (attr: `scan-speed`) | `number` | `3` | Scan speed 1-10 (ignored with pick-first) |
-| `tapStart` (attr: `tap-start`) | `boolean` | `false` | Tap viewport to toggle scanning |
+| `pickFirst` (attr: `pick-first`) | `boolean` | `false` | Scan at max speed until first hit, then auto-stop |
+| `manualSnap` (attr: `manual-snap`) | `boolean` | `false` | Photo snapshot mode instead of continuous scanning |
+| `scanSpeed` (attr: `scan-speed`) | `number` | `3` | Scan speed 1-10 (higher = more CPU, ignored with `pick-first`) |
+| `tapStart` (attr: `tap-start`) | `boolean` | `false` | Tap viewport to toggle scanning on/off |
 
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `start()` | -- | Start camera and scanning |
-| `stop()` | -- | Stop scanning and release camera |
-| `snap()` | -- | Take snapshot (manual-snap mode), returns data or null |
-| `scanImage()` | `file: File` | Scan QR code from an image file |
-| `switchCamera()` | -- | Toggle between front and back camera |
+| `start()` | — | Start camera and begin scanning (async) |
+| `stop()` | — | Stop scanning and release camera |
+| `snap()` | — | Take snapshot and scan for QR code (async, returns data string or `null`) |
+| `scanImage()` | `file: File` | Scan a QR code from an image file (async, returns data string) |
+| `switchCamera()` | — | Toggle between front and back camera |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `qr-scan` | `{ data: string, timestamp: number, reader }` | QR code detected |
+| `qr-scan` | `{ data: string, timestamp: number, reader }` | QR code successfully detected |
 | `qr-error` | `{ error: any, reader }` | Scan error occurred |
-| `camera-ready` | `{ reader }` | Camera initialized |
+| `camera-ready` | `{ reader }` | Camera initialized and ready |
 | `camera-error` | `{ error: any, reader }` | Camera initialization failed |
 
 ## CSS Custom Properties
@@ -86,12 +82,14 @@ Set `auto-start` to begin scanning when the component mounts.
 
 ### Manual Control
 
+Start and stop scanning programmatically.
+
 ```html
 <snice-qr-reader></snice-qr-reader>
 ```
 
 ```typescript
-reader.start();
+await reader.start();
 reader.stop();
 ```
 
@@ -104,29 +102,25 @@ Set `pick-first` to scan at maximum speed until the first QR code is found, then
 ```
 
 ```typescript
-scanner.addEventListener('qr-scan', (e) => {
+reader.addEventListener('qr-scan', (e) => {
   console.log('Found:', e.detail.data);
   // Scanner stops and releases camera automatically
 });
-scanner.start();
+await reader.start();
 ```
 
 ### Manual Snapshot
 
-Set `manual-snap` for a photo-based scanning mode with manual trigger.
+Set `manual-snap` for a photo-based scanning mode with a manual trigger button.
 
 ```html
 <snice-qr-reader manual-snap></snice-qr-reader>
-<button>Take Photo</button>
 ```
 
 ```typescript
-reader.start(); // Opens camera viewfinder
-
-snapBtn.addEventListener('click', async () => {
-  const result = await reader.snap();
-  console.log(result ? `Found: ${result}` : 'No QR code found');
-});
+await reader.start(); // Opens camera viewfinder
+const result = await reader.snap();
+console.log(result ? `Found: ${result}` : 'No QR code found');
 ```
 
 ### Front Camera
@@ -148,24 +142,41 @@ Use `scan-speed` (1-10) to balance detection speed vs CPU usage.
 
 ### Tap to Start
 
-Set `tap-start` to let users click the viewport to toggle scanning.
+Set `tap-start` to let users tap the viewport to toggle scanning.
 
 ```html
 <snice-qr-reader tap-start></snice-qr-reader>
 ```
 
-### Error Handling
+### Scan from Image File
+
+Use `scanImage()` to detect a QR code from an uploaded image.
 
 ```typescript
-reader.addEventListener('qr-error', (e) => {
-  console.error('Scan error:', e.detail.error);
+const fileInput = document.querySelector('input[type="file"]');
+fileInput.addEventListener('change', async (e) => {
+  const result = await reader.scanImage(e.target.files[0]);
+  console.log('Found:', result);
 });
+```
 
+### Error Handling
+
+Listen for error events to handle camera and scan failures.
+
+```typescript
 reader.addEventListener('camera-error', (e) => {
   console.error('Camera error:', e.detail.error);
 });
 
-reader.addEventListener('camera-ready', () => {
-  console.log('Camera initialized');
+reader.addEventListener('qr-error', (e) => {
+  console.error('Scan error:', e.detail.error);
 });
 ```
+
+## Accessibility
+
+- Requires HTTPS for camera access on mobile devices
+- Built-in start/stop/snap buttons with icon labels
+- Camera is released when the component is disconnected or scanning is stopped
+- Visual feedback shown for scan results and errors

@@ -13,20 +13,24 @@ noAnimation: boolean = false;                   // attr: no-animation — always
 noEscapeDismiss: boolean = false;               // attr: no-escape-dismiss
 ```
 
-## Slots
+## Methods
 
-- `(default)` - Action content (buttons, icons, etc.)
+- `show()` - Open
+- `hide()` - Close
+- `toggle()` - Toggle open state
 
 ## Events
 
 - `action-bar-open` → `{ actionBar: SniceActionBarElement }`
 - `action-bar-close` → `{ actionBar: SniceActionBarElement }`
 
-## Methods
+## Slots
 
-- `show()` - Open
-- `hide()` - Close
-- `toggle()` - Toggle open state
+- `(default)` - Action content (buttons, icons, etc.)
+
+## CSS Parts
+
+- `base` - The inner toolbar container
 
 ## CSS Custom Properties
 
@@ -38,21 +42,9 @@ noEscapeDismiss: boolean = false;               // attr: no-escape-dismiss
 - `--action-bar-shadow` - Box shadow
 - `--action-bar-z-index` - Z-index
 
-## CSS Parts
-
-- `base` - The inner toolbar container
-
-## Keyboard
-
-- Arrow keys navigate focusable children (roving tabindex)
-- `Escape` closes unless `no-escape-dismiss`
-- `Home`/`End` jump to first/last
-- `role="toolbar"`
-
-## Usage
+## Basic Usage
 
 ```html
-<!-- Animated on hover -->
 <div style="position:relative"
      onmouseenter="this.querySelector('snice-action-bar').show()"
      onmouseleave="this.querySelector('snice-action-bar').hide()">
@@ -68,3 +60,16 @@ noEscapeDismiss: boolean = false;               // attr: no-escape-dismiss
   <button>Edit</button>
 </snice-action-bar>
 ```
+
+## Keyboard Navigation
+
+- Arrow keys navigate focusable children (roving tabindex)
+- `Escape` closes unless `no-escape-dismiss`
+- `Home`/`End` jump to first/last
+- `role="toolbar"`
+
+## Accessibility
+
+- `role="toolbar"` with `aria-label="Actions"`
+- Roving keyboard navigation
+- Escape dismiss (configurable)

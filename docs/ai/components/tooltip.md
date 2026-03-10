@@ -18,16 +18,6 @@ zIndex: number = 10000;          // attr: z-index
 strictPositioning: boolean = false; // attr: strict-positioning
 ```
 
-## Slots
-
-- `(default)` - Trigger element the tooltip attaches to
-
-**CSS Parts:**
-- `trigger` - Wrapper around the slot/trigger content
-- `tooltip` - The tooltip popup div
-- `content` - Text content inside tooltip
-- `arrow` - Arrow element
-
 ## Methods
 
 - `show()` - Show tooltip
@@ -35,7 +25,18 @@ strictPositioning: boolean = false; // attr: strict-positioning
 - `toggle()` - Toggle visibility
 - `updatePosition()` - Recalculate position
 
-## Usage
+## Slots
+
+- `(default)` - Trigger element the tooltip attaches to
+
+## CSS Parts
+
+- `trigger` - Wrapper around the slot/trigger content
+- `tooltip` - The tooltip popup div
+- `content` - Text content inside tooltip
+- `arrow` - Arrow element
+
+## Basic Usage
 
 ```html
 <snice-tooltip content="Tooltip text">
@@ -63,17 +64,9 @@ strictPositioning: boolean = false; // attr: strict-positioning
 tip.open = true;
 ```
 
-```html
-<snice-tooltip content="Delayed" delay="500" hide-delay="200">
-  <button>Wait</button>
-</snice-tooltip>
-```
-
 ## Attribute-Based Tooltips
 
-Observer for `tooltip` attribute on any element. No wrapper element — safe inside strict-children components (tabs, accordion, etc.). Auto-activates when the tooltip component is loaded.
-
-### Usage
+Observer for `tooltip` attribute on any element. No wrapper element -- safe inside strict-children components (tabs, accordion, etc.). Auto-activates when the tooltip component is loaded.
 
 ```html
 <button tooltip="Save changes">Save</button>
@@ -108,7 +101,3 @@ Observer for `tooltip` attribute on any element. No wrapper element — safe ins
 | `--tooltip-padding` | `8px 12px` | Content padding |
 | `--tooltip-radius` | `6px` | Border radius |
 | `--tooltip-font-size` | `14px` | Font size |
-
-### Cleanup
-
-The tooltip observer is managed automatically by the tooltip component. It activates as a side effect when any `<snice-tooltip>` component is loaded and cleans up when no longer needed.

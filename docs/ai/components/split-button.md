@@ -13,9 +13,14 @@ disabled: boolean = false;
 loading: boolean = false;
 outline: boolean = false;
 pill: boolean = false;
-icon: string = '';                  // Icon (URL, image file, emoji)
-iconPlacement: 'start'|'end' = 'start';
+icon: string = '';                  // URL, image file, or emoji
+iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 ```
+
+## Events
+
+- `primary-click` → `{ button }`
+- `action-click` → `{ value, action, button }`
 
 ## CSS Parts
 
@@ -27,12 +32,7 @@ iconPlacement: 'start'|'end' = 'start';
 - `menu-items` - Menu items wrapper
 - `action` - Individual action button
 
-## Events
-
-- `primary-click` → `{ button }`
-- `action-click` → `{ value, action, button }`
-
-## Usage
+## Basic Usage
 
 ```html
 <snice-split-button label="Save" variant="primary"></snice-split-button>
@@ -49,10 +49,7 @@ btn.addEventListener('primary-click', () => console.log('Save clicked'));
 btn.addEventListener('action-click', (e) => console.log(e.detail.value));
 ```
 
-## Notes
+## Accessibility
 
-- Main button triggers `primary-click`
-- Chevron dropdown triggers menu of alternative actions
-- Menu closes after action click or outside click
-- Escape key closes menu
+- Menu closes on action click, outside click, or Escape key
 - Actions set via JS property (array), not child elements

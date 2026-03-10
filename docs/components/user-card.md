@@ -1,23 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/user-card.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/user-card.md -->
 
-# User Card Component
-
+# User Card
 `<snice-user-card>`
 
-A profile card that displays a user's avatar, name, role, contact information, social links, and online status. Supports three layout variants for different use cases.
+A profile card that displays a user's avatar, name, role, contact information, social links, and online status. Supports three layout variants.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/user-card/snice-user-card';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-user-card.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -30,7 +26,7 @@ import 'snice/components/user-card/snice-user-card';
 | `email` | `string` | `''` | Email address (displayed as mailto link) |
 | `phone` | `string` | `''` | Phone number (displayed as tel link) |
 | `location` | `string` | `''` | Location text |
-| `social` | `SocialLink[]` | `[]` | Array of `{ platform, url }` objects. Set via JS property. |
+| `social` | `SocialLink[]` | `[]` | Array of `{ platform, url }` objects (JS property only) |
 | `status` | `'online' \| 'away' \| 'offline' \| 'busy'` | `'offline'` | Online status indicator |
 | `variant` | `'card' \| 'horizontal' \| 'compact'` | `'card'` | Layout variant |
 
@@ -89,13 +85,8 @@ import 'snice/components/user-card/snice-user-card';
 Use the `variant` attribute to change the layout style.
 
 ```html
-<!-- Default card (centered) -->
 <snice-user-card variant="card" name="Sarah Johnson" role="Engineer"></snice-user-card>
-
-<!-- Horizontal layout -->
 <snice-user-card variant="horizontal" name="Sarah Johnson" role="Engineer"></snice-user-card>
-
-<!-- Compact (for lists) -->
 <snice-user-card variant="compact" name="Sarah Johnson" role="Engineer"></snice-user-card>
 ```
 

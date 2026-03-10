@@ -1,6 +1,6 @@
 # snice-timeline
 
-Displays chronological events with markers.
+Displays chronological events with markers, timestamps, and descriptions.
 
 ## Properties
 
@@ -30,7 +30,7 @@ interface TimelineItem {
 - `title` - Title text
 - `description` - Description text
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-timeline></snice-timeline>
@@ -39,11 +39,12 @@ interface TimelineItem {
 ```typescript
 timeline.items = [
   { timestamp: '2024-01-15', title: 'Created', description: 'Project started', variant: 'success' },
-  { timestamp: '2024-02-01', title: 'Review', description: 'In review', variant: 'warning', icon: '📋' },
-  { timestamp: '2024-03-01', title: 'Launch', description: 'Deployed', variant: 'info', icon: '🚀' }
+  { timestamp: '2024-02-01', title: 'Review', description: 'In review', variant: 'warning', icon: '!' },
+  { timestamp: '2024-03-01', title: 'Launch', description: 'Deployed', variant: 'info' }
 ];
 ```
 
+```html
 <snice-timeline position="alternate"></snice-timeline>
 <snice-timeline position="right"></snice-timeline>
 <snice-timeline orientation="horizontal"></snice-timeline>

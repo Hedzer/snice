@@ -13,11 +13,11 @@ thickness: number = 4;
 
 ## CSS Parts
 
-- `base` - The outer spinner container
-- `circle` - The SVG spinner circle
-- `label` - The label text element
+- `base` - Outer spinner container
+- `circle` - SVG spinner circle
+- `label` - Label text element
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-spinner></snice-spinner>
@@ -25,8 +25,12 @@ thickness: number = 4;
 <snice-spinner size="large"></snice-spinner>
 <snice-spinner size="xl"></snice-spinner>
 <snice-spinner color="success"></snice-spinner>
-<snice-spinner color="warning"></snice-spinner>
 <snice-spinner color="error"></snice-spinner>
 <snice-spinner label="Loading..."></snice-spinner>
 <snice-spinner thickness="6"></snice-spinner>
 ```
+
+## Accessibility
+
+- `role="status"` with `aria-label`
+- `label` property provides visible descriptive text

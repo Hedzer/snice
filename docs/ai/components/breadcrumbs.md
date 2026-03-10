@@ -2,30 +2,47 @@
 
 Navigation breadcrumb trail.
 
+## Components
+
+- `<snice-breadcrumbs>` - Container (imperative `items` array or declarative `<snice-crumb>` children)
+- `<snice-crumb>` - Individual breadcrumb item (data element, no shadow DOM)
+
 ## Properties
 
+### snice-breadcrumbs
+
 ```typescript
-items: BreadcrumbItem[] = [];
-separator: '/'|'>'|'»'|'•'|'|' = '/';
+items: BreadcrumbItem[] = [];                              // JS property only
+separator: '/'|'>'|'>>'|'.'|'|' = '/';
 size: 'small'|'medium'|'large' = 'medium';
-maxItems: number = 0;  // 0 = show all, attr: max-items
+maxItems: number = 0;                                      // 0 = show all, attr: max-items
 ```
 
-## Slots
+### snice-crumb
 
-- `(default)` - `<snice-crumb>` elements (declarative API)
-
-### snice-crumb Slots
-
-- `icon` - Custom icon element (for CSS icon fonts)
-
-## Events
-
-- `breadcrumb-click` → `{ item, index, href, label }`
+```typescript
+label: string = '';
+href: string = '';
+icon: string = '';
+iconImage: string = '';           // attr: icon-image (deprecated)
+active: boolean = false;
+```
 
 ## Methods
 
 - `setItems(items: BreadcrumbItem[])` - Update breadcrumb items
+
+## Events
+
+- `breadcrumb-click` -> `{ item: BreadcrumbItem, index: number, href: string, label: string }`
+
+## Slots
+
+### snice-breadcrumbs
+- `(default)` - `<snice-crumb>` elements (declarative API)
+
+### snice-crumb
+- `icon` - Custom icon element (for CSS icon fonts)
 
 ## CSS Parts
 
@@ -59,7 +76,7 @@ interface BreadcrumbItem {
 }
 ```
 
-## Usage
+## Basic Usage
 
 ```html
 <!-- Imperative -->
@@ -72,7 +89,9 @@ breadcrumbs.items = [
   { label: 'Products', href: '/products' },
   { label: 'Laptop', active: true }
 ];
+```
 
+```html
 <!-- Declarative -->
 <snice-breadcrumbs>
   <snice-crumb href="/" label="Home"></snice-crumb>
@@ -90,3 +109,9 @@ breadcrumbs.items = [
   </snice-crumb>
 </snice-breadcrumbs>
 ```
+
+## Accessibility
+
+- `<nav>` with `aria-label="Breadcrumb"`
+- `aria-current="page"` on active/last item
+- All links and ellipsis button are keyboard accessible

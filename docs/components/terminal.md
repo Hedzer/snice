@@ -1,22 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/terminal.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/terminal.md -->
 
 # Terminal
 `<snice-terminal>`
 
 A shell terminal emulator with command execution, history navigation, and ANSI color support.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/terminal/snice-terminal';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-terminal.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
 
 ## Properties
 
@@ -46,8 +43,8 @@ import 'snice/components/terminal/snice-terminal';
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `terminal-command` | `{ command: string, args: string[] }` | Command entered |
-| `terminal-clear` | -- | Terminal cleared |
-| `terminal-ready` | -- | Terminal initialized |
+| `terminal-clear` | `{}` | Terminal cleared |
+| `terminal-ready` | `{}` | Terminal initialized |
 
 ## CSS Custom Properties
 
@@ -74,28 +71,16 @@ import 'snice/components/terminal/snice-terminal';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `container` | `<div>` | The terminal container |
-| `output` | `<div>` | The scrollable output area |
-| `input-line` | `<div>` | The input line wrapper |
-| `prompt` | `<span>` | The prompt text |
-| `input` | `<input>` | The text input field |
-| `line` | `<div>` | Individual output line |
-| `timestamp` | `<span>` | Line timestamp |
-| `line-content` | `<span>` | Line text content |
-
-```css
-snice-terminal::part(container) {
-  padding: 1rem;
-}
-
-snice-terminal::part(prompt) {
-  color: #89d185;
-}
-```
+| Part | Description |
+|------|-------------|
+| `container` | The terminal container |
+| `output` | The scrollable output area |
+| `input-line` | The input line wrapper |
+| `prompt` | The prompt text |
+| `input` | The text input field |
+| `line` | Individual output line |
+| `timestamp` | Line timestamp |
+| `line-content` | Line text content |
 
 ## Basic Usage
 
@@ -186,3 +171,13 @@ terminal.writeln('Information', 'info');
 terminal.writeln('Success message', 'success');
 terminal.writeln('Warning message', 'warning');
 ```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| Enter | Execute command |
+| ArrowUp / ArrowDown | Navigate command history |
+| Ctrl+C | Cancel current input |
+| Ctrl+L | Clear terminal |
+| Tab | Command completion (placeholder) |

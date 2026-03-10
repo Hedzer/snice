@@ -10,41 +10,35 @@ currentStep: number = 0;          // attr: current-step
 orientation: 'horizontal'|'vertical' = 'horizontal';
 clickable: boolean = false;
 
-// Step object:
 interface Step {
   label: string;
   description?: string;
-  status?: 'pending'|'active'|'completed'|'error'; // auto-computed if not set
+  status?: 'pending'|'active'|'completed'|'error';  // auto-computed if not set
 }
 ```
 
-## Slots
-
-- `(default)` - `<snice-stepper-panel>` elements (auto show/hide based on currentStep)
-
 ## Events
 
-- `step-change` → `{ previousStep, currentStep, step }` - Cancelable via preventDefault()
+- `step-change` → `{ previousStep, currentStep, step }` - Cancelable via `preventDefault()`
 
-## Methods
+## Slots
 
-- Navigate via `currentStep` property (increment/decrement/set)
+- `(default)` - `<snice-stepper-panel>` elements (auto show/hide based on `currentStep`)
 
 ## CSS Parts
 
 - `container` - Main container
-- `step` - Individual step
-- `step-indicator` - Circular indicator
+- `step` - Individual step wrapper
+- `step-indicator` - Circular indicator (number/checkmark)
 - `step-content` - Label + description wrapper
 - `step-label` - Step label text
 - `step-description` - Description text
 - `step-connector` - Line between steps
 - `panels` - Panels container (wraps slotted content)
 
-## Usage
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-stepper></snice-stepper>
 ```
 
@@ -66,14 +60,19 @@ stepper.currentStep = 1;
 
 <!-- Vertical with descriptions -->
 <snice-stepper orientation="vertical"></snice-stepper>
-
-<!-- Error state -->
 ```
 
 ```typescript
+// Error state
 stepper.steps = [
   { label: 'Upload', status: 'completed' },
   { label: 'Validate', status: 'error' },
   { label: 'Process', status: 'pending' }
 ];
 ```
+
+## Accessibility
+
+- Clickable steps are keyboard accessible (Enter/Space)
+- Completed steps show checkmark; error steps use semantic color
+- Navigate via `currentStep` property

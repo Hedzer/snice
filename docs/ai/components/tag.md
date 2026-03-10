@@ -12,44 +12,32 @@ outline: boolean = false;    // Outlined style
 pill: boolean = false;       // Fully rounded corners
 ```
 
+## Events
+
+- `tag-remove` -> `{ tag: SniceTagElement }`
+
 ## Slots
 
 - `(default)` - Tag label content
 - `icon` - Leading icon
 
-## Events
+## CSS Parts
 
-- `tag-remove` → `{ tag: SniceTagElement }`
-
-## Usage
-
-```html
-<!-- Basic -->
-<snice-tag>Label</snice-tag>
-
-<!-- Variants -->
-<snice-tag variant="primary">Primary</snice-tag>
-<snice-tag variant="success">Active</snice-tag>
-<snice-tag variant="danger">Critical</snice-tag>
-
-<!-- Outline -->
-<snice-tag variant="primary" outline>Outlined</snice-tag>
-
-<!-- Pill -->
-<snice-tag pill variant="info">Rounded</snice-tag>
-
-<!-- Removable -->
-<snice-tag removable>Removable</snice-tag>
-
-<!-- With icon -->
-<snice-tag variant="success"><span slot="icon">✓</span>Approved</snice-tag>
-
-<!-- Sizes -->
-<snice-tag size="small">Small</snice-tag>
-<snice-tag size="large">Large</snice-tag>
-```
-
-**CSS Parts:**
 - `base` - The tag container span
 - `icon` - The icon slot wrapper
 - `label` - The label slot wrapper
+
+## Basic Usage
+
+```html
+<snice-tag>Label</snice-tag>
+<snice-tag variant="primary">Primary</snice-tag>
+<snice-tag variant="success">Active</snice-tag>
+<snice-tag variant="danger">Critical</snice-tag>
+<snice-tag variant="primary" outline>Outlined</snice-tag>
+<snice-tag pill variant="info">Rounded</snice-tag>
+<snice-tag removable>Removable</snice-tag>
+<snice-tag variant="success"><span slot="icon">&#10003;</span>Approved</snice-tag>
+<snice-tag size="small">Small</snice-tag>
+<snice-tag size="large">Large</snice-tag>
+```

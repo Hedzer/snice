@@ -18,128 +18,76 @@ autoUpload: boolean = true;    // attribute: auto-upload
 showDropzone: boolean = true;  // attribute: show-dropzone
 showAddButton: boolean = false; // attribute: show-add-button
 showHeader: boolean = true;     // attribute: show-header
-files: GalleryFile[];           // read-only
+files: GalleryFile[];           // read-only getter
 ```
 
-## Getters
+## Methods
 
+Getters:
 - `files: GalleryFile[]` - Get all files
 - `customActions: CustomAction[]` - Get all custom actions
-- `getFile(fileId): GalleryFile | undefined` - Get specific file
-- `getCustomAction(actionId): CustomAction | undefined` - Get specific action
-- `isPending(fileId): boolean` - Check if pending
-- `isUploading(fileId): boolean` - Check if uploading
-- `isPaused(fileId): boolean` - Check if paused
-- `isCompleted(fileId): boolean` - Check if completed
-- `hasError(fileId): boolean` - Check if has error
-- `canAddFiles(): boolean` - Check if can add more files
+- `getFile(fileId): GalleryFile | undefined`
+- `getCustomAction(actionId): CustomAction | undefined`
+- `isPending(fileId): boolean`
+- `isUploading(fileId): boolean`
+- `isPaused(fileId): boolean`
+- `isCompleted(fileId): boolean`
+- `hasError(fileId): boolean`
+- `canAddFiles(): boolean`
 
-## File Management
+File management:
+- `addFiles(files: FileList | File[])`
+- `addFileWithPreview(file: File, previewDataUrl: string)`
+- `removeFile(fileId: string)`
+- `clear()` / `clearCompleted()` / `clearErrors()`
 
-- `addFiles(files: FileList | File[])` - Add files to gallery
-- `addFileWithPreview(file: File, previewDataUrl: string)` - Add file with preview
-- `removeFile(fileId: string)` - Remove file
-- `clear()` - Remove all files
-- `clearCompleted()` - Remove completed files
-- `clearErrors()` - Remove files with errors
+Upload control:
+- `pauseUpload(fileId)` / `resumeUpload(fileId)` / `retryUpload(fileId)` / `cancelUpload(fileId)`
+- `pauseAll()` / `resumeAll()` / `retryAll()` / `cancelAll()`
 
-## Upload Control
+Custom actions:
+- `addCustomAction(icon: string, text: string): string`
+- `removeCustomAction(actionId)` / `clearCustomActions()`
 
-- `pauseUpload(fileId: string)` - Pause upload
-- `resumeUpload(fileId: string)` - Resume upload
-- `retryUpload(fileId: string)` - Retry failed upload
-- `cancelUpload(fileId: string)` - Cancel and remove upload
-- `pauseAll()` - Pause all uploading files
-- `resumeAll()` - Resume all paused files
-- `retryAll()` - Retry all errored files
-- `cancelAll()` - Cancel all active uploads
-
-## Custom Actions
-
-- `addCustomAction(icon: string, text: string): string` - Add custom action, returns actionId
-- `removeCustomAction(actionId: string)` - Remove action
-- `clearCustomActions()` - Remove all actions
-
-## Utility
-
-- `openFilePicker()` - Open file picker dialog
-- `setFileBadge(fileId: string, badge: string, position?: 'top-left'|'top-right'|'bottom-left'|'bottom-right')` - Add badge overlay to file preview (supports HTML)
-- `removeFileBadge(fileId: string)` - Remove badge from file
+Utility:
+- `openFilePicker()`
+- `setFileBadge(fileId, badge, position?)` / `removeFileBadge(fileId)`
 
 ## Events
 
-- `files-change` - {files, component}
-- `upload-progress` - {file, progress, component}
-- `upload-complete` - {file, response: UploadResponse, component}
-- `upload-error` - {file, error, component}
-- `upload-pause` - {file, component}
-- `file-remove` - {file, component}
-- `custom-action-click` - {actionId, component}
-- `gallery-error` - {message, component}
+- `files-change` → `{ files, component }`
+- `upload-progress` → `{ file, progress, component }`
+- `upload-complete` → `{ file, response: UploadResponse, component }`
+- `upload-error` → `{ file, error, component }`
+- `upload-pause` → `{ file, component }`
+- `file-remove` → `{ file, component }`
+- `custom-action-click` → `{ actionId, component }`
+- `gallery-error` → `{ message, component }`
 
-## Types
+## CSS Parts
 
-```typescript
-interface GalleryFile {
-  id: string;
-  file: File;
-  preview?: string;
-  uploadProgress: number;
-  uploadStatus: 'pending'|'uploading'|'paused'|'completed'|'error';
-  error?: string;
-  badge?: string; // HTML content for badge overlay
-  badgePosition?: 'top-left'|'top-right'|'bottom-left'|'bottom-right';
-}
-
-interface UploadRequest {
-  file: File;
-  fileId: string;
-  onProgress?: (progress: number) => void;
-  signal?: AbortSignal;
-}
-
-interface UploadResponse {
-  success: boolean;
-  fileId: string;
-  url?: string;
-  error?: string;
-}
-```
-
-**CSS Parts:**
-- `base` - Outer gallery container div
+- `base` - Outer gallery container
 - `dropzone` - Drag-and-drop upload zone
 - `gallery` - File thumbnails grid/list area
 
-## Upload Handler
+## Basic Usage
 
-Uses `@request/@respond` pattern (`file-gallery-upload`). Handler receives `UploadRequest`, returns `UploadResponse`.
-
-## Usage
+```typescript
+import 'snice/components/file-gallery/snice-file-gallery';
+```
 
 ```html
-<!-- Basic -->
 <snice-file-gallery></snice-file-gallery>
-
-<!-- Images only -->
 <snice-file-gallery accept="image/*"></snice-file-gallery>
-
-<!-- Manual upload -->
 <snice-file-gallery auto-upload="false"></snice-file-gallery>
-
-<!-- Limits -->
 <snice-file-gallery max-files="3" max-size="2097152"></snice-file-gallery>
-
-<!-- List view -->
 <snice-file-gallery view="list"></snice-file-gallery>
-
-<!-- Add button mode -->
-<snice-file-gallery show-dropzone="false" show-add-button="true" max-files="6"></snice-file-gallery>
-
-<!-- Events -->
+<snice-file-gallery show-dropzone="false" show-add-button="true"></snice-file-gallery>
 ```
 
 ```typescript
-gallery.addEventListener('files-change', (e) => console.log(e.detail.files));
-gallery.addEventListener('upload-complete', (e) => console.log(e.detail.response));
+gallery.addEventListener('files-change', e => console.log(e.detail.files));
+gallery.addEventListener('upload-complete', e => console.log(e.detail.response));
 ```
+
+Uses `@request/@respond` pattern (`file-gallery-upload`). Handler receives `UploadRequest { file, fileId, onProgress?, signal? }`, returns `UploadResponse { success, fileId, url?, error? }`.

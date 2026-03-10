@@ -1,32 +1,25 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/music-player.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/music-player.md -->
 
 # Music Player
 `<snice-music-player>`
 
 A full-featured audio player with playlist support, shuffle, repeat modes, and volume control.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/music-player/snice-music-player';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-music-player.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `tracks` | `Track[]` | `[]` | Array of track objects |
-| `currentTrackIndex` | `number` | `0` | Index of the current track |
-| `currentTrack` | `string` | `''` | Current track ID (reflected attribute) |
-| `currentTime` | `number` | `0` | Playback position in seconds (read-only) |
-| `duration` | `number` | `0` | Track duration in seconds |
+| `tracks` | `Track[]` | `[]` | Array of track objects (set via JavaScript) |
+| `currentTrackIndex` (attr: `current-track-index`) | `number` | `0` | Index of the current track |
+| `currentTrack` (attr: `current-track`) | `string` | `''` | Current track ID |
 | `volume` | `number` | `1` | Volume level (0-1) |
 | `muted` | `boolean` | `false` | Whether audio is muted |
 | `shuffle` | `boolean` | `false` | Shuffle mode enabled |
@@ -40,6 +33,22 @@ import 'snice/components/music-player/snice-music-player';
 | `showTrackInfo` (attr: `show-track-info`) | `boolean` | `true` | Show track metadata |
 | `compact` | `boolean` | `false` | Compact layout mode |
 
+> **Note:** `currentTime` and `duration` are plain class fields (not `@property`). They are updated internally during playback. Use `seek()` to set playback position.
+
+### Track Interface
+
+```typescript
+interface Track {
+  id: string;
+  title: string;
+  artist?: string;
+  album?: string;
+  artwork?: string;
+  src: string;
+  duration?: number;
+}
+```
+
 ## Methods
 
 | Method | Arguments | Description |
@@ -48,7 +57,7 @@ import 'snice/components/music-player/snice-music-player';
 | `pause()` | -- | Pause playback |
 | `stop()` | -- | Stop playback and reset position |
 | `next()` | -- | Skip to next track |
-| `previous()` | -- | Skip to previous track |
+| `previous()` | -- | Skip to previous track (restarts if >3s in) |
 | `seek()` | `time: number` | Seek to time in seconds |
 | `setVolume()` | `volume: number` | Set volume (0-1) |
 | `toggleShuffle()` | -- | Toggle shuffle mode |
@@ -60,17 +69,17 @@ import 'snice/components/music-player/snice-music-player';
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `player-play` | `{ track: Track }` | Playback started |
-| `player-pause` | `{ track: Track }` | Playback paused |
-| `player-stop` | `{ player: SniceMusicPlayerElement }` | Playback stopped |
-| `player-track-change` | `{ track: Track }` | Track changed |
-| `player-track-ended` | `{ track: Track }` | Track finished playing |
-| `player-shuffle-change` | `{ shuffle: boolean }` | Shuffle mode toggled |
-| `player-repeat-change` | `{ repeat: string }` | Repeat mode changed |
-| `player-volume-change` | `{ volume: number }` | Volume level changed |
-| `player-seek` | `{ time: number }` | Seeked to a new position |
-| `player-time-update` | `{ currentTime: number, duration: number }` | Playback time updated |
-| `player-error` | `{ error: any }` | An error occurred |
+| `player-play` | `{ player, track: Track }` | Playback started |
+| `player-pause` | `{ player, track: Track }` | Playback paused |
+| `player-stop` | `{ player }` | Playback stopped |
+| `player-track-change` | `{ player, track: Track }` | Track changed |
+| `player-track-ended` | `{ player, track: Track }` | Track finished playing |
+| `player-shuffle-change` | `{ player, shuffle: boolean }` | Shuffle mode toggled |
+| `player-repeat-change` | `{ player, repeat: RepeatMode }` | Repeat mode changed |
+| `player-volume-change` | `{ player, volume: number }` | Volume level changed |
+| `player-seek` | `{ player, time: number }` | Seeked to a new position |
+| `player-time-update` | `{ player, currentTime: number, duration: number }` | Playback time updated |
+| `player-error` | `{ player, error: Error }` | An error occurred |
 
 ## CSS Parts
 
@@ -102,10 +111,11 @@ import 'snice/components/music-player/snice-music-player';
 ```
 
 ```html
-<snice-music-player></snice-music-player>
+<snice-music-player id="player"></snice-music-player>
 ```
 
 ```typescript
+const player = document.getElementById('player');
 player.tracks = [
   { id: '1', title: 'Summer Breeze', artist: 'The Collective', src: '/audio/track1.mp3' }
 ];
@@ -114,10 +124,6 @@ player.tracks = [
 ## Examples
 
 ### Full Player with Playlist
-
-```html
-<snice-music-player></snice-music-player>
-```
 
 ```typescript
 player.tracks = [
@@ -211,18 +217,4 @@ player.addEventListener('player-track-change', (e) => {
 player.addEventListener('player-error', (e) => {
   console.error('Error:', e.detail.error);
 });
-```
-
-## Track Interface
-
-```typescript
-interface Track {
-  id: string;
-  title: string;
-  artist?: string;
-  album?: string;
-  artwork?: string;
-  src: string;
-  duration?: number;
-}
 ```

@@ -30,14 +30,6 @@ interface TreeNode {
 }
 ```
 
-## Events
-
-- `tree-node-expand` → `{ nodeId, node, tree }`
-- `tree-node-collapse` → `{ nodeId, node, tree }`
-- `tree-node-select` → `{ nodeId, node, selectedNodes, tree }`
-- `tree-node-check` → `{ nodeId, node, checked, checkedNodes, tree }`
-- `tree-node-lazy-load` → `{ nodeId, node, tree }`
-
 ## Methods
 
 - `expandNode(id)` / `collapseNode(id)` / `toggleNode(id)`
@@ -49,6 +41,14 @@ interface TreeNode {
 - `getCheckedNodes()` - Get checked nodes
 - `updateNode(id, updates)` - Update node properties
 
+## Events
+
+- `tree-node-expand` -> `{ nodeId, node, tree }`
+- `tree-node-collapse` -> `{ nodeId, node, tree }`
+- `tree-node-select` -> `{ nodeId, node, selectedNodes, tree }`
+- `tree-node-check` -> `{ nodeId, node, checked, checkedNodes, tree }`
+- `tree-node-lazy-load` -> `{ nodeId, node, tree }`
+
 ## CSS Parts
 
 - `container` - Main tree container
@@ -58,7 +58,7 @@ interface TreeNode {
 
 - `--tree-max-height` - Maximum height of tree (default: `100%`)
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-tree selection-mode="single"></snice-tree>

@@ -4,29 +4,29 @@ Compact metrics table with sparklines, color-coded values, and built-in sorting.
 
 ## Properties
 
-```typescript
-columns: MetricColumn[] = [];
-data: Record<string, any>[] = [];
-sortBy: string = '';           // attr: sort-by
-sortDirection: 'asc'|'desc' = 'desc';  // attr: sort-direction
+```ts
+columns: MetricColumn[] = [];                    // JS only
+data: Record<string, any>[] = [];                // JS only
+sortBy: string = '';
+sortDirection: 'asc'|'desc' = 'desc';
 ```
 
 ## Types
 
-```typescript
+```ts
 interface MetricColumn {
   key: string;
   label: string;
   type?: 'text'|'number'|'percent'|'currency';
-  format?: string;       // Currency code for 'currency' type (default: 'USD')
+  format?: string;       // Currency code (default: 'USD')
   sparkline?: boolean;   // Render array values as sparkline
 }
 ```
 
 ## Events
 
-- `sort-change` -> `{ sortBy: string, sortDirection: 'asc'|'desc' }`
-- `row-click` -> `{ row: Record<string, any>, index: number }`
+- `sort-change` → `{ sortBy: string, sortDirection: 'asc'|'desc' }`
+- `row-click` → `{ row: Record<string, any>, index: number }`
 
 ## CSS Parts
 
@@ -34,7 +34,11 @@ interface MetricColumn {
 - `table` - Table element
 - `row` - Table row
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/metric-table/snice-metric-table';
+```
 
 ```html
 <snice-metric-table sort-by="value"></snice-metric-table>
@@ -53,14 +57,3 @@ el.data = [
   { name: 'Bounce Rate', value: 34.2, change: -2.5, revenue: null, trend: [40, 38, 35, 33] }
 ];
 ```
-
-## Features
-
-- Column types: text, number, percent, currency
-- Inline SVG sparklines from array data
-- Positive values green, negative values red
-- Click column headers to sort (toggles asc/desc)
-- Compact row density
-- Currency formatting with locale
-- Null/undefined shown as em-dash
-- Keyboard accessible rows

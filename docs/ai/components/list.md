@@ -2,9 +2,14 @@
 
 List container with search, infinite scroll, and composable list items.
 
+## Components
+
+- `<snice-list>` - Container with search, infinite scroll, loading
+- `<snice-list-item>` - Individual item with heading, description, slots
+
 ## Properties
 
-```typescript
+```ts
 // snice-list
 dividers: boolean = false;
 searchable: boolean = false;
@@ -22,6 +27,11 @@ selected: boolean = false;
 disabled: boolean = false;
 ```
 
+## Requests
+
+- `list/search` → `{ query, list }` - Handle search (debounced 300ms)
+- `list/load-more` → `{ page, list }` - Infinite scroll pagination
+
 ## Slots (snice-list)
 
 - `(default)` - List items
@@ -36,12 +46,18 @@ disabled: boolean = false;
 - `before` - Icon/avatar area
 - `after` - Badge/metadata area
 
-## Requests
+## CSS Parts (snice-list)
 
-- `list/search` → `{ query, list }` - Handle search
-- `list/load-more` → `{ page, list }` - Infinite scroll
+- `container` - Outer list container
+- `search` - Search input wrapper
+- `loading` - Loading skeletons wrapper
+- `sentinel` - Infinite scroll sentinel
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/list/snice-list';
+```
 
 ```html
 <!-- Basic with dividers -->

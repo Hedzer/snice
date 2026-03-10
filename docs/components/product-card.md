@@ -1,150 +1,88 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/product-card.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/product-card.md -->
 
-# Product Card Component
+# Product Card
+`<snice-product-card>`
 
-The product card component displays a product with image gallery, pricing, star ratings, variant selectors, and an add-to-cart button. Supports vertical, horizontal, and compact layouts.
+A product display card with image gallery, pricing, star ratings, variant selectors, and an add-to-cart button. Supports multiple layout variants.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/product-card/snice-product-card';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-product-card.min.js"></script>
-```
+- [Data Types](#data-types)
 
 ## Properties
 
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `name` | `name` | `string` | `''` | Product name |
-| `price` | `price` | `number` | `0` | Regular price |
-| `salePrice` | `sale-price` | `number \| null` | `null` | Sale price (shows strikethrough on original) |
-| `currency` | `currency` | `string` | `'$'` | Currency symbol |
-| `images` | — | `string[]` | `[]` | Image URLs (gallery navigation for multiple) |
-| `rating` | `rating` | `number` | `0` | Star rating (0-5, supports half stars) |
-| `reviewCount` | `review-count` | `number` | `0` | Number of reviews |
-| `variants` | — | `ProductVariant[]` | `[]` | Variant selector groups |
-| `inStock` | `in-stock` | `boolean` | `true` | Whether product is in stock |
-| `variant` | `variant` | `'vertical' \| 'horizontal' \| 'compact' \| 'featured' \| 'minimal' \| 'grid'` | `'vertical'` | Card layout variant |
-| `badge` | `badge` | `string` | `''` | Badge text (e.g. "SALE", "NEW") |
-| `badgeVariant` | `badge-variant` | `'sale' \| 'new' \| 'featured'` | `'sale'` | Badge visual style |
-| `loading` | `loading` | `boolean` | `false` | Shows skeleton loading state |
-| `favorite` | `favorite` | `boolean` | `false` | Favorite/heart toggle state |
-| `stockCount` | `stock-count` | `number` | `-1` | Stock count (-1 hides, <5 shows urgency) |
-
-### ProductVariant Interface
-
-```typescript
-interface ProductVariant {
-  type: string;       // Variant group name, e.g. 'Size', 'Color'
-  options: string[];  // Available options, e.g. ['S', 'M', 'L'] or ['#000', '#fff']
-}
-```
-
-When the `type` is `'Color'` (case-insensitive), options are rendered as color swatches instead of text chips.
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | `string` | `''` | Product name |
+| `price` | `number` | `0` | Regular price |
+| `salePrice` (attr: `sale-price`) | `number \| null` | `null` | Sale price (shows strikethrough on original) |
+| `currency` | `string` | `'$'` | Currency symbol |
+| `images` | `string[]` | `[]` | Image URLs (gallery navigation for multiple). Set via JS. |
+| `rating` | `number` | `0` | Star rating (0-5, supports half stars) |
+| `reviewCount` (attr: `review-count`) | `number` | `0` | Number of reviews |
+| `variants` | `ProductVariant[]` | `[]` | Variant selector groups. Set via JS. |
+| `inStock` (attr: `in-stock`) | `boolean` | `true` | Whether product is in stock |
+| `variant` | `'vertical' \| 'horizontal' \| 'compact' \| 'featured' \| 'minimal' \| 'grid'` | `'vertical'` | Card layout variant |
+| `badge` | `string` | `''` | Badge text (e.g. "SALE", "NEW") |
+| `badgeVariant` (attr: `badge-variant`) | `'sale' \| 'new' \| 'featured'` | `'sale'` | Badge visual style |
+| `loading` | `boolean` | `false` | Shows skeleton loading state |
+| `favorite` | `boolean` | `false` | Favorite/heart toggle state |
+| `stockCount` (attr: `stock-count`) | `number` | `-1` | Stock count (-1 hides, <5 shows urgency) |
 
 ## Events
 
-#### `add-to-cart`
-Fired when the add-to-cart button is clicked.
-
-**Event Detail:**
-```typescript
-{
-  name: string;                           // Product name
-  price: number;                          // Effective price (sale price if available)
-  salePrice: number | null;               // Sale price
-  selectedVariants: Record<string, string>; // e.g. { Size: 'M', Color: '#000' }
-}
-```
-
-#### `variant-select`
-Fired when a variant option is selected.
-
-**Event Detail:**
-```typescript
-{
-  type: string;   // Variant group name
-  value: string;  // Selected option value
-}
-```
-
-#### `image-click`
-Fired when the gallery image is clicked.
-
-**Event Detail:**
-```typescript
-{
-  index: number;  // Current image index
-  src: string;    // Image URL
-}
-```
-
-#### `favorite`
-Fired when the favorite/heart button is toggled.
-
-**Event Detail:**
-```typescript
-{
-  favorited: boolean;  // Whether the product is now favorited
-}
-```
-
-#### `quick-view`
-Fired when the quick view overlay is clicked.
-
-**Event Detail:** `void`
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `add-to-cart` | `{ name, price, salePrice, selectedVariants }` | Fired when the add-to-cart button is clicked |
+| `variant-select` | `{ type: string, value: string }` | Fired when a variant option is selected |
+| `image-click` | `{ index: number, src: string }` | Fired when the gallery image is clicked |
+| `favorite` | `{ favorited: boolean }` | Fired when the favorite button is toggled |
+| `quick-view` | `void` | Fired when the quick view overlay is clicked |
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `base` | The outer card container |
-| `gallery` | Image gallery area |
-| `body` | Card body content |
-| `title` | Product name heading |
-| `rating` | Star rating area |
-| `price` | Price display area |
-| `variants` | Variant selectors area |
-| `cta` | Add-to-cart button |
-| `stock` | Stock status indicator |
-| `badge` | Product badge (SALE, NEW, etc.) |
-| `favorite-btn` | Favorite/heart button |
-| `image` | Gallery image element |
-| `stars` | Star rating container |
-| `price-current` | Current price display |
-| `price-original` | Original price (strikethrough on sale) |
-| `discount` | Discount percentage badge |
-| `variant-group` | Variant selector group |
-| `variant-option` | Individual variant option button |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer card container |
+| `gallery` | `<div>` | Image gallery area |
+| `body` | `<div>` | Card body content |
+| `title` | `<h3>` | Product name heading |
+| `rating` | `<div>` | Star rating area |
+| `stars` | `<div>` | Star rating container |
+| `price` | `<div>` | Price display area |
+| `price-current` | `<span>` | Current price display |
+| `price-original` | `<span>` | Original price (strikethrough on sale) |
+| `discount` | `<span>` | Discount percentage badge |
+| `stock` | `<div>` | Stock status indicator |
+| `variants` | `<div>` | Variant selectors area |
+| `variant-group` | `<div>` | Variant selector group |
+| `variant-option` | `<button>` | Individual variant option button |
+| `cta` | `<button>` | Add-to-cart button |
+| `badge` | `<span>` | Product badge |
+| `favorite-btn` | `<button>` | Favorite/heart button |
+| `image` | `<img>` | Gallery image element |
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/product-card/snice-product-card';
+```
 
 ```html
 <snice-product-card
   name="Running Shoes"
   price="129.99"
   rating="4.5"
-  review-count="342">
+  review-count="342"
+  in-stock>
 </snice-product-card>
-```
-
-```typescript
-import 'snice/components/product-card/snice-product-card';
 ```
 
 ## Examples
@@ -154,77 +92,40 @@ import 'snice/components/product-card/snice-product-card';
 Use the `sale-price` attribute to display a sale with the original price crossed out and a discount badge.
 
 ```html
-<snice-product-card
-  name="Premium Sneakers"
-  price="149.99"
-  sale-price="99.99"
-  rating="4.5"
-  review-count="128">
-</snice-product-card>
+<snice-product-card name="Premium Sneakers" price="149.99" sale-price="99.99" rating="4.5" review-count="128"></snice-product-card>
 ```
 
 ### Multiple Images
 
 Set the `images` property to enable gallery navigation with prev/next buttons and dots.
 
-```html
-<snice-product-card id="shoe" name="Athletic Shoes" price="89.99"></snice-product-card>
-
-<script type="module">
-  const card = document.getElementById('shoe');
-  card.images = ['front.jpg', 'side.jpg', 'back.jpg', 'detail.jpg'];
-</script>
+```typescript
+card.images = ['front.jpg', 'side.jpg', 'back.jpg', 'detail.jpg'];
 ```
 
 ### Variant Selectors
 
-Set the `variants` property to add size chips and color swatches.
+Set the `variants` property to add size chips and color swatches. Color variants (type "Color") render as swatches.
 
-```html
-<snice-product-card id="tshirt" name="Classic T-Shirt" price="29.99"></snice-product-card>
+```typescript
+card.variants = [
+  { type: 'Size', options: ['XS', 'S', 'M', 'L', 'XL'] },
+  { type: 'Color', options: ['#1a1a2e', '#e94560', '#0f3460', '#ffffff'] }
+];
 
-<script type="module">
-  const card = document.getElementById('tshirt');
-  card.images = ['tshirt.jpg'];
-  card.variants = [
-    { type: 'Size', options: ['XS', 'S', 'M', 'L', 'XL'] },
-    { type: 'Color', options: ['#1a1a2e', '#e94560', '#0f3460', '#ffffff'] }
-  ];
-
-  card.addEventListener('variant-select', (e) => {
-    console.log(`Selected ${e.detail.type}: ${e.detail.value}`);
-  });
-</script>
+card.addEventListener('variant-select', (e) => {
+  console.log(`Selected ${e.detail.type}: ${e.detail.value}`);
+});
 ```
 
-### Horizontal Layout
+### Layout Variants
 
-Use `variant="horizontal"` for a side-by-side layout suited to wider containers.
-
-```html
-<snice-product-card
-  variant="horizontal"
-  name="MacBook Pro"
-  price="2499.00"
-  sale-price="2199.00"
-  rating="4.9"
-  review-count="1024">
-</snice-product-card>
-```
-
-### Compact Layout
-
-Use `variant="compact"` for a minimal row layout suited to lists and sidebars.
+Use the `variant` attribute to change the card layout.
 
 ```html
-<snice-product-card
-  variant="compact"
-  name="Wireless Earbuds"
-  price="59.99"
-  sale-price="39.99"
-  rating="4.2"
-  review-count="89">
-</snice-product-card>
+<snice-product-card variant="vertical" name="Product" price="29.99"></snice-product-card>
+<snice-product-card variant="horizontal" name="Product" price="29.99"></snice-product-card>
+<snice-product-card variant="compact" name="Product" price="29.99"></snice-product-card>
 ```
 
 ### Out of Stock
@@ -232,36 +133,32 @@ Use `variant="compact"` for a minimal row layout suited to lists and sidebars.
 Set `in-stock="false"` to disable the add-to-cart button and show an out-of-stock indicator.
 
 ```html
-<snice-product-card
-  name="Limited Edition Watch"
-  price="599.00"
-  in-stock="false"
-  rating="4.8"
-  review-count="56">
-</snice-product-card>
+<snice-product-card name="Limited Edition Watch" price="599.00" in-stock="false"></snice-product-card>
 ```
 
 ### Handling Add to Cart
 
-```html
-<snice-product-card id="product" name="Headphones" price="199.99"></snice-product-card>
-
-<script type="module">
-  const card = document.getElementById('product');
-  card.images = ['headphones.jpg'];
-  card.variants = [{ type: 'Color', options: ['#000000', '#ffffff', '#c0c0c0'] }];
-
-  card.addEventListener('add-to-cart', (e) => {
-    const { name, price, selectedVariants } = e.detail;
-    console.log(`Adding ${name} at $${price}`, selectedVariants);
-  });
-</script>
+```typescript
+card.addEventListener('add-to-cart', (e) => {
+  const { name, price, selectedVariants } = e.detail;
+  console.log(`Adding ${name} at $${price}`, selectedVariants);
+});
 ```
 
 ## Accessibility
 
-- **Star rating**: Includes `aria-label` with numeric rating
-- **Variant selectors**: Use `role="radiogroup"` and `role="radio"` with `aria-checked`
-- **Gallery navigation**: Previous/next buttons have `aria-label` attributes
-- **Out of stock**: CTA button is disabled with appropriate state
-- **Keyboard navigation**: All interactive elements are focusable and keyboard-accessible
+- Star rating includes `aria-label` with numeric rating value
+- Variant selectors use `role="radiogroup"` and `role="radio"` with `aria-checked`
+- Gallery navigation buttons have `aria-label` attributes
+- Favorite button has a descriptive `aria-label`
+- Out-of-stock state disables the CTA button
+- All interactive elements are keyboard-focusable
+
+## Data Types
+
+```typescript
+interface ProductVariant {
+  type: string;                    // Variant group name, e.g. 'Size', 'Color'
+  options: string[];               // Available options, e.g. ['S', 'M', 'L']
+}
+```

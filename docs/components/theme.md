@@ -1,21 +1,14 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/theme.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/theme.md -->
 
 # Theme
 `theme.css`
 
-Provides all design tokens for Snice components via CSS custom properties. Includes light and dark themes with automatic system preference detection.
+Provides all design tokens for Snice components via CSS custom properties. Includes light and dark themes with automatic system preference detection. This is a CSS-only module with no web component.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/theme/theme.css';
-```
-
-**CDN**
-```html
-<link rel="stylesheet" href="theme.min.css">
-```
+## Table of Contents
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## CSS Custom Properties
 
@@ -137,6 +130,10 @@ color: hsl(var(--snice-color-blue-500));
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/theme/theme.css';
+```
+
 ```html
 <link rel="stylesheet" href="snice/components/theme/theme.css">
 ```
@@ -165,16 +162,6 @@ Set `data-theme="dark"` on any element to apply dark theme tokens.
 ```html
 <html data-theme="dark">
   <!-- Dark theme applied -->
-</html>
-```
-
-### Force Light Theme
-
-Set `data-theme="light"` to override system preference and force light theme.
-
-```html
-<html data-theme="light">
-  <!-- Always light, regardless of system preference -->
 </html>
 ```
 

@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/heatmap.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/heatmap.md -->
 
 # Heatmap Component
 
@@ -10,21 +10,18 @@ The heatmap component displays a GitHub-style contribution calendar heatmap. It 
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Intensity Levels](#intensity-levels)
-- [Color Schemes](#color-schemes)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `data` | `HeatmapDataPoint[]` | `[]` | Array of data points with date and value |
-| `color-scheme` | `'green' \| 'blue' \| 'purple' \| 'orange' \| 'red'` | `'green'` | Color scheme for intensity levels |
-| `show-labels` | `boolean` | `true` | Show day and month labels |
-| `cell-size` | `number` | `12` | Cell size in pixels |
-| `cell-gap` | `number` | `3` | Gap between cells in pixels |
-| `show-tooltip` | `boolean` | `true` | Show tooltip on cell hover |
+| `colorScheme` (attr: `color-scheme`) | `'green' \| 'blue' \| 'purple' \| 'orange' \| 'red'` | `'green'` | Color scheme for intensity levels |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Show day and month labels |
+| `cellSize` (attr: `cell-size`) | `number` | `12` | Cell size in pixels |
+| `cellGap` (attr: `cell-gap`) | `number` | `3` | Gap between cells in pixels |
+| `showTooltip` (attr: `show-tooltip`) | `boolean` | `true` | Show tooltip on cell hover |
 | `weeks` | `number` | `52` | Number of weeks to display |
 
 ### HeatmapDataPoint
@@ -38,21 +35,9 @@ interface HeatmapDataPoint {
 
 ## Events
 
-### `cell-click`
-
-Fired when a cell is clicked.
-
-```typescript
-heatmap.addEventListener('cell-click', (e: CustomEvent) => {
-  console.log(e.detail.date);  // '2026-01-15'
-  console.log(e.detail.value); // 5
-});
-```
-
-| Detail Property | Type | Description |
-|-----------------|------|-------------|
-| `date` | `string` | ISO date of the clicked cell |
-| `value` | `number` | Value of the clicked cell |
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `cell-click` | `{ date: string, value: number }` | Fired when a cell is clicked |
 
 ## CSS Parts
 
@@ -77,6 +62,10 @@ snice-heatmap::part(tooltip) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/heatmap/snice-heatmap';
+```
+
 ```html
 <snice-heatmap id="my-heatmap"></snice-heatmap>
 
@@ -88,10 +77,6 @@ snice-heatmap::part(tooltip) {
     { date: '2026-01-17', value: 8 },
   ];
 </script>
-```
-
-```typescript
-import 'snice/components/heatmap/snice-heatmap';
 ```
 
 ## Examples
@@ -167,36 +152,9 @@ import 'snice/components/heatmap/snice-heatmap';
 </script>
 ```
 
-## Intensity Levels
-
-Cell colors are calculated based on quartiles of the maximum value in the dataset:
-
-| Level | Range | Description |
-|-------|-------|-------------|
-| 0 | No data | Empty (gray) |
-| 1 | 1-25% of max | Low activity |
-| 2 | 26-50% of max | Medium activity |
-| 3 | 51-75% of max | High activity |
-| 4 | 76-100% of max | Very high activity |
-
-## Color Schemes
-
-| Scheme | Level 1 | Level 2 | Level 3 | Level 4 |
-|--------|---------|---------|---------|---------|
-| `green` | #9be9a8 | #40c463 | #30a14e | #216e39 |
-| `blue` | #9ecae1 | #4292c6 | #2171b5 | #084594 |
-| `purple` | #c9b1e0 | #9b72cf | #7b4fbf | #5a2d91 |
-| `orange` | #fdcc8a | #fc8d59 | #e34a33 | #b30000 |
-| `red` | #fcae91 | #fb6a4a | #de2d26 | #a50f15 |
-
 ## Accessibility
 
 - **ARIA labels**: Each cell has an `aria-label` describing the date and contribution count
 - **Keyboard navigation**: Cells are focusable buttons
 - **Tooltips**: Visual hover feedback with date and value details
 - **Color contrast**: Intensity levels are distinguishable at all levels
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support

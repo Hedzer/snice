@@ -4,21 +4,15 @@ Testimonial/quote card with author info, avatar, star rating, and variant styles
 
 ## Properties
 
-```ts
-quote: string = ''
-author: string = ''
-avatar: string = ''            // URL for author avatar image
-role: string = ''              // e.g. "CEO"
-company: string = ''           // e.g. "Acme Inc" (renders as "role at company")
-rating: number = 0             // 0-5 star rating (0 = hidden)
-variant: 'card' | 'minimal' | 'featured' = 'card'
+```typescript
+quote: string = '';
+author: string = '';
+avatar: string = '';            // URL for author avatar image
+role: string = '';              // e.g. "CEO"
+company: string = '';           // e.g. "Acme Inc" (renders as "role at company")
+rating: number = 0;             // 0-5 star rating (0 = hidden)
+variant: 'card'|'minimal'|'featured' = 'card';
 ```
-
-## Variants
-
-- `card` - Default. Background, border, and shadow
-- `minimal` - Left border accent, no background
-- `featured` - Primary-colored background with inverse text
 
 ## CSS Custom Properties
 
@@ -29,9 +23,6 @@ variant: 'card' | 'minimal' | 'featured' = 'card'
 - `--snice-color-text-secondary` - Author role color
 - `--snice-color-text-inverse` - Featured variant text (default: `rgb(250 250 250)`)
 - `--snice-color-warning` - Star rating color (default: `rgb(234 179 8)`)
-- `--snice-shadow-sm` - Card shadow
-- `--snice-spacing-lg` - Card padding (default: `1.5rem`)
-- `--snice-border-radius-lg` - Card border radius (default: `0.5rem`)
 
 ## CSS Parts
 
@@ -40,7 +31,7 @@ variant: 'card' | 'minimal' | 'featured' = 'card'
 - `author` - The author info container (avatar, name, role)
 - `stars` - The star rating element
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-testimonial
@@ -53,7 +44,6 @@ variant: 'card' | 'minimal' | 'featured' = 'card'
   variant="card"
 ></snice-testimonial>
 
-<!-- Featured style -->
 <snice-testimonial
   quote="Outstanding experience from start to finish."
   author="John Smith"

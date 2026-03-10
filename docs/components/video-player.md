@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/video-player.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/video-player.md -->
 
-# Video Player Component
+# Video Player
+`<snice-video-player>`
 
-The video player component provides a full-featured video player with custom controls, keyboard shortcuts, picture-in-picture support, fullscreen mode, playback speed selection, and multiple visual variants. It wraps the native HTML video element with a polished, consistent UI.
+A full-featured video player with custom controls, keyboard shortcuts, picture-in-picture support, fullscreen mode, and playback speed selection.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -13,9 +14,8 @@ The video player component provides a full-featured video player with custom con
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -31,145 +31,36 @@ The video player component provides a full-featured video player with custom con
 | `currentTime` (attr: `current-time`) | `number` | `0` | Current playback position in seconds |
 | `volume` | `number` | `1` | Volume level from 0 (silent) to 1 (full) |
 | `variant` | `'default' \| 'minimal' \| 'cinema'` | `'default'` | Visual style variant |
-| `duration` | `number` | _(read-only)_ | Video duration in seconds, set from video metadata |
-
-### Variants
-
-| Variant | Description |
-|---------|-------------|
-| `default` | Full controls with progress bar, playback speed selector, and PiP button |
-| `minimal` | Simplified controls without rate or PiP buttons |
-| `cinema` | Larger controls, no border radius, with box shadow for a theater-like appearance |
+| `duration` | `number` | _(read-only)_ | Video duration in seconds |
 
 ## Methods
 
-#### `play(): Promise<void>`
-Start video playback.
-
-```typescript
-await player.play();
-```
-
-#### `pause(): void`
-Pause video playback.
-
-```typescript
-player.pause();
-```
-
-#### `toggle(): void`
-Toggle between play and pause.
-
-```typescript
-player.toggle();
-```
-
-#### `seekTo(time: number): void`
-Seek to a specific time in seconds.
-
-```typescript
-player.seekTo(30); // Jump to 30 seconds
-```
-
-#### `requestFullscreen(): Promise<void>`
-Enter fullscreen mode.
-
-```typescript
-await player.requestFullscreen();
-```
-
-#### `exitFullscreen(): Promise<void>`
-Exit fullscreen mode.
-
-```typescript
-await player.exitFullscreen();
-```
-
-#### `requestPictureInPicture(): Promise<void>`
-Toggle picture-in-picture mode.
-
-```typescript
-await player.requestPictureInPicture();
-```
-
-#### `setPlaybackRate(rate: number): void`
-Set the playback speed.
-
-```typescript
-player.setPlaybackRate(1.5); // 1.5x speed
-```
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `play()` | -- | Start video playback (async) |
+| `pause()` | -- | Pause video playback |
+| `toggle()` | -- | Toggle between play and pause |
+| `seekTo()` | `time: number` | Seek to a specific time in seconds |
+| `requestFullscreen()` | -- | Enter fullscreen mode (async) |
+| `exitFullscreen()` | -- | Exit fullscreen mode (async) |
+| `requestPictureInPicture()` | -- | Toggle picture-in-picture mode (async) |
+| `setPlaybackRate()` | `rate: number` | Set the playback speed |
 
 ## Events
 
-### `video-play`
-Fired when playback starts.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-}
-```
-
-### `video-pause`
-Fired when playback is paused.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-}
-```
-
-### `video-ended`
-Fired when the video finishes playing.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-}
-```
-
-### `video-time-update`
-Fired periodically during playback with current position.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-  currentTime: number;
-  duration: number;
-}
-```
-
-### `video-fullscreen-change`
-Fired when fullscreen mode is toggled.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-  fullscreen: boolean;
-}
-```
-
-### `video-volume-change`
-Fired when volume or mute state changes.
-
-**Event Detail:**
-```typescript
-{
-  player: SniceVideoPlayerElement;
-  volume: number;
-  muted: boolean;
-}
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `video-play` | `{ player }` | Playback started |
+| `video-pause` | `{ player }` | Playback paused |
+| `video-ended` | `{ player }` | Video finished playing |
+| `video-time-update` | `{ player, currentTime, duration }` | Periodic position update |
+| `video-fullscreen-change` | `{ player, fullscreen }` | Fullscreen mode toggled |
+| `video-volume-change` | `{ player, volume, muted }` | Volume or mute state changed |
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
+| Name | Description |
+|------|-------------|
 | (default) | `<source>` elements for providing multiple video formats |
 
 ## CSS Custom Properties
@@ -197,51 +88,24 @@ Fired when volume or mute state changes.
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer container element |
-| `video` | `<video>` | The native video element |
-| `controls` | `<div>` | Control bar container |
-| `progress` | `<div>` | Progress track element |
-
-```css
-snice-video-player::part(base) {
-  border-radius: 1rem;
-}
-
-snice-video-player::part(controls) {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-snice-video-player::part(progress) {
-  height: 6px;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | Outer container element |
+| `video` | The native video element |
+| `controls` | Control bar container |
+| `progress` | Progress track element |
 
 ## Basic Usage
-
-```html
-<snice-video-player src="video.mp4" poster="poster.jpg"></snice-video-player>
-```
 
 ```typescript
 import 'snice/components/video-player/snice-video-player';
 ```
 
-## Examples
-
-### Basic Video Player
-
-Play a single video file with a poster image.
-
 ```html
-<snice-video-player
-  src="https://example.com/video.mp4"
-  poster="https://example.com/poster.jpg"
-></snice-video-player>
+<snice-video-player src="video.mp4" poster="poster.jpg"></snice-video-player>
 ```
+
+## Examples
 
 ### Multiple Sources
 
@@ -259,11 +123,7 @@ Provide multiple video formats for broader browser compatibility using slotted `
 Use the `cinema` variant for a theater-like presentation with larger controls and box shadow.
 
 ```html
-<snice-video-player
-  src="movie.mp4"
-  poster="movie-poster.jpg"
-  variant="cinema"
-></snice-video-player>
+<snice-video-player src="movie.mp4" poster="movie-poster.jpg" variant="cinema"></snice-video-player>
 ```
 
 ### Minimal Variant
@@ -271,10 +131,7 @@ Use the `cinema` variant for a theater-like presentation with larger controls an
 Use the `minimal` variant for a cleaner player with simplified controls.
 
 ```html
-<snice-video-player
-  src="tutorial.mp4"
-  variant="minimal"
-></snice-video-player>
+<snice-video-player src="tutorial.mp4" variant="minimal"></snice-video-player>
 ```
 
 ### Autoplay Muted
@@ -282,51 +139,26 @@ Use the `minimal` variant for a cleaner player with simplified controls.
 Autoplay requires the video to be muted in most browsers.
 
 ```html
-<snice-video-player
-  src="background-loop.mp4"
-  autoplay
-  muted
-  loop
-></snice-video-player>
+<snice-video-player src="background-loop.mp4" autoplay muted loop></snice-video-player>
 ```
 
 ### Event Handling
 
 Listen for player events to build custom behavior.
 
-```html
-<snice-video-player id="my-player" src="video.mp4"></snice-video-player>
-<p id="status">Ready</p>
+```typescript
+player.addEventListener('video-play', () => {
+  console.log('Playing');
+});
 
-<script type="module">
-  import type { SniceVideoPlayerElement } from 'snice/components/video-player/snice-video-player.types';
-
-  const player = document.getElementById('my-player') as SniceVideoPlayerElement;
-  const status = document.getElementById('status');
-
-  player.addEventListener('video-play', () => {
-    status.textContent = 'Playing';
-  });
-
-  player.addEventListener('video-pause', () => {
-    status.textContent = 'Paused';
-  });
-
-  player.addEventListener('video-ended', () => {
-    status.textContent = 'Finished';
-  });
-
-  player.addEventListener('video-time-update', (e) => {
-    const { currentTime, duration } = e.detail;
-    const percent = Math.round((currentTime / duration) * 100);
-    status.textContent = `Playing: ${percent}%`;
-  });
-</script>
+player.addEventListener('video-time-update', (e) => {
+  const { currentTime, duration } = e.detail;
+  const percent = Math.round((currentTime / duration) * 100);
+  console.log(`Playing: ${percent}%`);
+});
 ```
 
 ### Programmatic Control
-
-Control the player using JavaScript methods.
 
 ```html
 <snice-video-player id="controlled-player" src="video.mp4" controls="false"></snice-video-player>
@@ -337,7 +169,7 @@ Control the player using JavaScript methods.
 <button onclick="document.getElementById('controlled-player').setPlaybackRate(2)">2x Speed</button>
 ```
 
-## Keyboard Shortcuts
+## Keyboard Navigation
 
 | Key | Action |
 |-----|--------|
@@ -351,14 +183,8 @@ Control the player using JavaScript methods.
 
 ## Accessibility
 
-- **Keyboard support**: Full keyboard control with Space/K for play/pause, F for fullscreen, M for mute, and arrow keys for seeking and volume
-- **Focus indicators**: All control buttons have visible focus rings for keyboard navigation
-- **ARIA attributes**: Control buttons have appropriate ARIA labels describing their actions
-- **Screen reader support**: Current time, duration, and playback state are conveyed to assistive technology
-- **Reduced motion**: Transitions respect `prefers-reduced-motion` for users sensitive to animations
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
-- Picture-in-Picture requires browser support (Chrome, Edge, Safari; limited in Firefox)
+- Full keyboard control with Space/K for play/pause, F for fullscreen, M for mute, and arrow keys for seeking and volume
+- All control buttons have visible focus rings for keyboard navigation
+- Control buttons have appropriate ARIA labels describing their actions
+- Current time, duration, and playback state are conveyed to assistive technology
+- Transitions respect `prefers-reduced-motion`

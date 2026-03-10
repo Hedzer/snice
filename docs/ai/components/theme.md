@@ -1,8 +1,8 @@
 # theme.css
 
-CSS-only design token system. No component — just import the stylesheet.
+CSS-only design token system. No component -- just import the stylesheet.
 
-## Usage
+## Basic Usage
 
 ```html
 <link rel="stylesheet" href="snice/components/theme/theme.css">
@@ -19,7 +19,7 @@ CSS-only design token system. No component — just import the stylesheet.
 <html data-theme="dark">...</html>
 ```
 
-## Tokens
+## CSS Custom Properties
 
 ### Colors
 

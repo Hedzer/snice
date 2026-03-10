@@ -6,10 +6,14 @@ Multi-option switcher with sliding indicator. One selected at a time.
 
 ```typescript
 value: string = '';
-options: SegmentedControlOption[] = [];  // { value, label, icon?, disabled? }
+options: SegmentedControlOption[] = [];  // JS only: { value, label, icon?, disabled? }
 size: 'small'|'medium'|'large' = 'medium';
 disabled: boolean = false;
 ```
+
+## Events
+
+- `value-change` → `{ value: string, previousValue: string, option: SegmentedControlOption, control }`
 
 ## CSS Parts
 
@@ -17,31 +21,23 @@ disabled: boolean = false;
 - `indicator` - Sliding selection indicator
 - `segment` - Individual option button
 
-## Events
-
-- `value-change` → `{ value, previousValue, option, control }`
-
-## Usage
+## Basic Usage
 
 ```html
-<snice-segmented-control></snice-segmented-control>
+<snice-segmented-control value="week"></snice-segmented-control>
 ```
 
 ```typescript
 control.options = [
   { value: 'day', label: 'Day' },
   { value: 'week', label: 'Week' },
-  { value: 'month', label: 'Month' },
+  { value: 'month', label: 'Month' }
 ];
-control.value = 'week';
 control.addEventListener('value-change', (e) => console.log(e.detail.value));
 ```
 
-## Notes
+## Accessibility
 
-- Options set via JS property (array), not child elements
+- ARIA radiogroup/radio roles
 - Sliding indicator animates between selections
-- If no value set, first non-disabled option is selected
-- ARIA radiogroup/radio roles for accessibility
-- Diff from tabs: no content panes, just a value selector
-- Diff from switch: more than two options
+- First non-disabled option selected if no value set

@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/timer.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/timer.md -->
 
 # Timer
 `<snice-timer>`
 
-A stopwatch and countdown timer component.
+A stopwatch and countdown timer component with start/stop/reset controls.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/timer/snice-timer';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-timer.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -46,24 +41,11 @@ import 'snice/components/timer/snice-timer';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer timer container |
-| `display` | `<div>` | The time display element |
-| `controls` | `<div>` | The start/stop/reset button container |
-
-```css
-snice-timer::part(display) {
-  font-size: 3rem;
-  font-family: monospace;
-}
-
-snice-timer::part(controls) {
-  gap: 1rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer timer container |
+| `display` | The time display element |
+| `controls` | The start/stop/reset button container |
 
 ## Basic Usage
 
@@ -82,6 +64,8 @@ import 'snice/components/timer/snice-timer';
 ## Examples
 
 ### Stopwatch
+
+Use the default `stopwatch` mode to count up from zero.
 
 ```html
 <snice-timer id="stopwatch" mode="stopwatch"></snice-timer>

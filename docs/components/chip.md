@@ -1,19 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/chip.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/chip.md -->
 
 # Chip Component
 
-The chip component provides compact elements for tags, filters, selections, or categorizations. It supports icons, avatars, removable states, and multiple visual variants.
+Compact elements for tags, filters, selections, or categorizations. Supports icons, avatars, removable states, and multiple visual variants.
 
 ## Table of Contents
 - [Properties](#properties)
 - [Events](#events)
 - [Slots](#slots)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
-- [Common Patterns](#common-patterns)
-- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -30,63 +28,22 @@ The chip component provides compact elements for tags, filters, selections, or c
 
 ## Events
 
-#### `chip-click`
-Fired when the chip is clicked (not the remove button).
-
-**Event Detail:**
-```typescript
-{
-  label: string;
-  selected: boolean;
-}
-```
-
-**Usage:**
-```typescript
-chip.addEventListener('chip-click', (e) => {
-  console.log('Chip clicked:', e.detail.label, 'selected:', e.detail.selected);
-});
-```
-
-#### `chip-remove`
-Fired when the remove button is clicked.
-
-**Event Detail:**
-```typescript
-{
-  label: string;
-}
-```
-
-**Usage:**
-```typescript
-chip.addEventListener('chip-remove', (e) => {
-  console.log('Removed:', e.detail.label);
-  chip.remove(); // Remove from DOM
-});
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `chip-click` | `{ label: string, selected: boolean }` | Fired when the chip is clicked (not the remove button) |
+| `chip-remove` | `{ label: string }` | Fired when the remove button is clicked |
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
+| Name | Description |
+|------|-------------|
 | `icon` | Custom icon content. Overrides the `icon` property. Note: `avatar` property takes precedence over icon slot. |
 
-### Icon Slot Usage
+## CSS Parts
 
-Use the `icon` slot for external CSS-based icon fonts:
-
-```html
-<snice-chip label="Tag">
-  <span slot="icon" class="material-symbols-outlined">label</span>
-</snice-chip>
-
-<snice-chip label="Favorite" variant="warning">
-  <i slot="icon" class="fa-solid fa-star"></i>
-</snice-chip>
-```
-
-> **Note**: If `avatar` property is set, the avatar takes precedence and the icon slot will not be displayed.
+| Part | Description |
+|------|-------------|
+| `icon` | The icon wrapper element |
 
 ## Basic Usage
 
@@ -100,15 +57,9 @@ import 'snice/components/chip/snice-chip';
 
 ## Examples
 
-### Basic Chips
-
-```html
-<snice-chip label="Default"></snice-chip>
-<snice-chip label="Technology"></snice-chip>
-<snice-chip label="Design"></snice-chip>
-```
-
 ### Color Variants
+
+Use the `variant` attribute to set the chip color.
 
 ```html
 <snice-chip label="Default" variant="default"></snice-chip>
@@ -119,7 +70,9 @@ import 'snice/components/chip/snice-chip';
 <snice-chip label="Info" variant="info"></snice-chip>
 ```
 
-### Chip Sizes
+### Sizes
+
+Use the `size` attribute to change the chip size.
 
 ```html
 <snice-chip label="Small" size="small"></snice-chip>
@@ -129,16 +82,10 @@ import 'snice/components/chip/snice-chip';
 
 ### Removable Chips
 
+Set `removable` to show a remove button. Listen for `chip-remove` to handle removal.
+
 ```html
 <snice-chip label="Remove me" removable></snice-chip>
-
-<snice-chip
-  id="removable-chip"
-  label="Click X to remove"
-  removable
-  variant="primary">
-</snice-chip>
-
 ```
 
 ```typescript
@@ -147,20 +94,14 @@ chip.addEventListener('chip-remove', () => {
 });
 ```
 
-### Chips with Icons
+### Icons
 
-The `icon` property supports multiple formats:
-- **URLs**: Image files (`/icons/star.svg`)
-- **Emoji**: `★`, `🏠`, `⚙️`
-- **Scheme overrides**: `img://filename` forces `<img>`, `text://content` forces text
-
-> **⚠️ Common mistake:** `icon="home"` or `icon="settings"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
+Use the `icon` property for emoji or URLs. Use the `icon` slot for CSS-based icon fonts.
 
 ```html
 <!-- Emoji icons -->
 <snice-chip label="Favorite" icon="★" variant="warning"></snice-chip>
 <snice-chip label="Home" icon="🏠" variant="primary"></snice-chip>
-<snice-chip label="Settings" icon="⚙️" variant="default"></snice-chip>
 
 <!-- Image URL -->
 <snice-chip label="Star" icon="/icons/star.svg" variant="warning"></snice-chip>
@@ -171,35 +112,23 @@ The `icon` property supports multiple formats:
 </snice-chip>
 ```
 
-### Chips with Avatars
+> **Note:** `icon="home"` or `icon="settings"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
+
+### Avatars
+
+Use `avatar` for user chips. Avatar takes precedence over the icon slot.
 
 ```html
-<snice-chip
-  label="John Doe"
-  avatar="https://via.placeholder.com/32"
-  removable>
-</snice-chip>
-
-<snice-chip
-  label="Jane Smith"
-  avatar="https://via.placeholder.com/32/FF6B6B"
-  removable>
-</snice-chip>
-
-<snice-chip
-  label="Alice Brown"
-  avatar="https://via.placeholder.com/32/4ECDC4"
-  removable>
-</snice-chip>
+<snice-chip label="John Doe" avatar="https://via.placeholder.com/32" removable></snice-chip>
 ```
 
 ### Selected State
 
+Set `selected` for toggleable chips.
+
 ```html
 <snice-chip label="Option 1" selected></snice-chip>
 <snice-chip label="Option 2"></snice-chip>
-<snice-chip label="Option 3"></snice-chip>
-
 ```
 
 ```typescript
@@ -211,496 +140,38 @@ chips.forEach(chip => {
 });
 ```
 
-### Disabled Chips
+### Filter Chips
 
-```html
-<snice-chip label="Disabled" disabled></snice-chip>
-<snice-chip label="Disabled Removable" removable disabled></snice-chip>
-<snice-chip label="Disabled Selected" selected disabled></snice-chip>
+Use selected state for multi-select filter behavior.
+
+```typescript
+chip.addEventListener('click', () => {
+  chip.selected = !chip.selected;
+  console.log('Active filters:', Array.from(chips).filter(c => c.selected).map(c => c.label));
+});
 ```
 
 ### Tag List
 
-```html
-<style>
-  .tag-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-</style>
+Combine `removable` and `chip-remove` events for dynamic tag management.
 
-<div class="tag-container">
+```html
+<div class="tag-container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
   <snice-chip label="JavaScript" variant="warning" removable></snice-chip>
   <snice-chip label="TypeScript" variant="primary" removable></snice-chip>
   <snice-chip label="React" variant="info" removable></snice-chip>
-  <snice-chip label="Vue" variant="success" removable></snice-chip>
-  <snice-chip label="Angular" variant="error" removable></snice-chip>
 </div>
-
 ```
 
 ```typescript
 chips.forEach(chip => {
-  chip.addEventListener('chip-remove', () => {
-    chip.remove();
-  });
+  chip.addEventListener('chip-remove', () => chip.remove());
 });
-```
-
-### Filter Chips
-
-```html
-<style>
-  .filter-section {
-    margin-bottom: 1.5rem;
-  }
-
-  .filter-title {
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-  }
-
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-</style>
-
-<div class="filter-section">
-  <div class="filter-title">Category</div>
-  <div class="filter-chips">
-    <snice-chip id="cat-electronics" label="Electronics"></snice-chip>
-    <snice-chip id="cat-clothing" label="Clothing"></snice-chip>
-    <snice-chip id="cat-books" label="Books"></snice-chip>
-    <snice-chip id="cat-home" label="Home & Garden"></snice-chip>
-  </div>
-</div>
-
-<div class="filter-section">
-  <div class="filter-title">Price</div>
-  <div class="filter-chips">
-    <snice-chip id="price-1" label="Under $25"></snice-chip>
-    <snice-chip id="price-2" label="$25-$50"></snice-chip>
-    <snice-chip id="price-3" label="$50-$100"></snice-chip>
-    <snice-chip id="price-4" label="Over $100"></snice-chip>
-  </div>
-</div>
-
-```
-
-```typescript
-filterChips.forEach(chip => {
-  chip.addEventListener('click', () => {
-    chip.selected = !chip.selected;
-    console.log('Filters:', Array.from(filterChips)
-      .filter(c => c.selected)
-      .map(c => c.label));
-  });
-});
-```
-
-### Contact Chips
-
-```html
-<style>
-  .contacts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    max-width: 600px;
-  }
-</style>
-
-<div>
-  <h4>To:</h4>
-  <div class="contacts" id="recipients"></div>
-</div>
-
-```
-
-```typescript
-import 'snice/components/chip/snice-chip';
-
-const contacts = [
-  { name: 'John Doe', email: 'john@example.com', avatar: 'https://via.placeholder.com/32' },
-  { name: 'Jane Smith', email: 'jane@example.com', avatar: 'https://via.placeholder.com/32/FF6B6B' },
-  { name: 'Bob Johnson', email: 'bob@example.com', avatar: 'https://via.placeholder.com/32/4ECDC4' }
-];
-
-contacts.forEach(contact => {
-  const chip = document.createElement('snice-chip');
-  chip.label = contact.name;
-  chip.avatar = contact.avatar;
-  chip.removable = true;
-
-  chip.addEventListener('chip-remove', () => {
-    chip.remove();
-    console.log('Removed:', contact.name);
-  });
-
-  container.appendChild(chip);
-});
-```
-
-### Status Chips
-
-```html
-<style>
-  .status-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 400px;
-  }
-
-  .status-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-  }
-
-  .status-info h4 {
-    margin: 0 0 0.25rem;
-  }
-
-  .status-info p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 0.875rem;
-  }
-</style>
-
-<div class="status-list">
-  <div class="status-item">
-    <div class="status-info">
-      <h4>Order #1234</h4>
-      <p>Placed 2 hours ago</p>
-    </div>
-    <snice-chip label="Processing" variant="warning" size="small"></snice-chip>
-  </div>
-
-  <div class="status-item">
-    <div class="status-info">
-      <h4>Order #1235</h4>
-      <p>Placed yesterday</p>
-    </div>
-    <snice-chip label="Shipped" variant="info" size="small"></snice-chip>
-  </div>
-
-  <div class="status-item">
-    <div class="status-info">
-      <h4>Order #1236</h4>
-      <p>Placed 3 days ago</p>
-    </div>
-    <snice-chip label="Delivered" variant="success" size="small"></snice-chip>
-  </div>
-
-  <div class="status-item">
-    <div class="status-info">
-      <h4>Order #1237</h4>
-      <p>Placed last week</p>
-    </div>
-    <snice-chip label="Cancelled" variant="error" size="small"></snice-chip>
-  </div>
-</div>
-```
-
-### Skill Tags
-
-```html
-<style>
-  .profile-section {
-    max-width: 600px;
-  }
-
-  .skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-</style>
-
-<div class="profile-section">
-  <h3>Skills</h3>
-  <div class="skills" id="skill-list"></div>
-  <button id="add-skill" style="margin-top: 1rem;">Add Skill</button>
-</div>
-
-```
-
-```typescript
-import 'snice/components/chip/snice-chip';
-
-const availableSkills = ['JavaScript', 'Python', 'Java', 'C++', 'React', 'Vue', 'Node.js', 'Docker'];
-let currentSkills = ['JavaScript', 'React', 'Node.js'];
-
-function renderSkills() {
-  skillsList.innerHTML = '';
-  currentSkills.forEach(skill => {
-    const chip = document.createElement('snice-chip');
-    chip.label = skill;
-    chip.variant = 'primary';
-    chip.removable = true;
-
-    chip.addEventListener('chip-remove', () => {
-      currentSkills = currentSkills.filter(s => s !== skill);
-      renderSkills();
-    });
-
-    skillsList.appendChild(chip);
-  });
-}
-
-addButton.addEventListener('click', () => {
-  const skill = prompt('Enter skill name:');
-  if (skill && !currentSkills.includes(skill)) {
-    currentSkills.push(skill);
-    renderSkills();
-  }
-});
-
-renderSkills();
-```
-
-### Interactive Selection
-
-```html
-<style>
-  .selection-group {
-    margin-bottom: 2rem;
-  }
-
-  .selection-group h4 {
-    margin-bottom: 0.75rem;
-  }
-
-  .chip-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-</style>
-
-<div class="selection-group">
-  <h4>Select your preferred language:</h4>
-  <div class="chip-group" id="language-group">
-    <snice-chip label="English"></snice-chip>
-    <snice-chip label="Spanish"></snice-chip>
-    <snice-chip label="French"></snice-chip>
-    <snice-chip label="German"></snice-chip>
-    <snice-chip label="Chinese"></snice-chip>
-  </div>
-</div>
-
-<div class="selection-group">
-  <h4>Select topics of interest (multiple):</h4>
-  <div class="chip-group" id="topics-group">
-    <snice-chip label="Technology"></snice-chip>
-    <snice-chip label="Science"></snice-chip>
-    <snice-chip label="Arts"></snice-chip>
-    <snice-chip label="Sports"></snice-chip>
-    <snice-chip label="Music"></snice-chip>
-    <snice-chip label="Travel"></snice-chip>
-  </div>
-</div>
-
-```
-
-```typescript
-// Single selection for language
-languageChips.forEach(chip => {
-  chip.addEventListener('click', () => {
-    languageChips.forEach(c => c.selected = false);
-    chip.selected = true;
-  });
-});
-
-// Multiple selection for topics
-topicChips.forEach(chip => {
-  chip.addEventListener('click', () => {
-    chip.selected = !chip.selected;
-  });
-});
-```
-
-### Search Result Tags
-
-```html
-<style>
-  .search-results {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .result-item {
-    padding: 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-  }
-
-  .result-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  .result-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-top: 0.5rem;
-  }
-</style>
-
-<div class="search-results">
-  <div class="result-item">
-    <h3 class="result-title">Getting Started with Web Components</h3>
-    <p>Learn how to build reusable components...</p>
-    <div class="result-tags">
-      <snice-chip label="Tutorial" variant="primary" size="small"></snice-chip>
-      <snice-chip label="JavaScript" variant="info" size="small"></snice-chip>
-      <snice-chip label="Web Components" variant="success" size="small"></snice-chip>
-    </div>
-  </div>
-
-  <div class="result-item">
-    <h3 class="result-title">Advanced TypeScript Patterns</h3>
-    <p>Explore advanced type system features...</p>
-    <div class="result-tags">
-      <snice-chip label="Advanced" variant="warning" size="small"></snice-chip>
-      <snice-chip label="TypeScript" variant="primary" size="small"></snice-chip>
-      <snice-chip label="Patterns" variant="default" size="small"></snice-chip>
-    </div>
-  </div>
-</div>
-```
-
-### Active Filters Display
-
-```html
-<style>
-  .active-filters {
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .filters-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .filters-header h4 {
-    margin: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-
-  .clear-all {
-    font-size: 0.875rem;
-    color: #3b82f6;
-    text-decoration: underline;
-    cursor: pointer;
-    border: none;
-    background: none;
-  }
-
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-</style>
-
-<div class="active-filters">
-  <div class="filters-header">
-    <h4>Active Filters (3)</h4>
-    <button class="clear-all" id="clear-filters">Clear all</button>
-  </div>
-  <div class="filter-chips" id="active-filters">
-    <snice-chip label="Category: Electronics" variant="primary" removable size="small"></snice-chip>
-    <snice-chip label="Price: $25-$50" variant="info" removable size="small"></snice-chip>
-    <snice-chip label="Brand: Sony" variant="success" removable size="small"></snice-chip>
-  </div>
-</div>
-
-```
-
-```typescript
-// Handle remove events
-container.addEventListener('chip-remove', (e) => {
-  e.target.remove();
-  updateFilterCount();
-});
-
-// Clear all filters
-clearButton.addEventListener('click', () => {
-  container.innerHTML = '';
-  updateFilterCount();
-});
-
-function updateFilterCount() {
-  const count = container.querySelectorAll('snice-chip').length;
-  header.textContent = `Active Filters (${count})`;
-}
 ```
 
 ## Accessibility
 
-- **Keyboard support**: Focusable and activatable with Enter/Space
-- **ARIA attributes**: `role`, `aria-selected`, `aria-disabled`
-- **Screen reader friendly**: Remove button has `aria-label`
-- **Focus indicators**: Clear focus states for keyboard navigation
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
-
-## Common Patterns
-
-### Tag/Label
-```html
-<snice-chip label="JavaScript" variant="primary"></snice-chip>
-```
-
-### Removable Tag
-```html
-<snice-chip label="Remove me" removable></snice-chip>
-```
-
-### Filter Selection
-```html
-<snice-chip label="Filter" selected></snice-chip>
-```
-
-### User/Contact
-```html
-<snice-chip label="John Doe" avatar="/avatar.jpg" removable></snice-chip>
-```
-
-### Status Indicator
-```html
-<snice-chip label="Active" variant="success" size="small"></snice-chip>
-```
-
-## Variant Colors
-
-| Variant | Color Scheme | Use Case |
-|---------|-------------|----------|
-| `default` | Gray | Neutral tags, labels |
-| `primary` | Blue | Primary categories, selections |
-| `success` | Green | Positive status, confirmed items |
-| `warning` | Orange | Important tags, warnings |
-| `error` | Red | Error states, critical items |
-| `info` | Light blue | Informational tags |
+- Focusable and activatable with Enter/Space
+- ARIA attributes: `role`, `aria-selected`, `aria-disabled`
+- Remove button has `aria-label` for screen readers
+- Clear focus indicators for keyboard navigation

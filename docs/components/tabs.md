@@ -1,24 +1,25 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/tabs.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/tabs.md -->
 
 # Tabs
 `<snice-tabs>`
 
 A tabbed interface for organizing content into separate panels, using `<snice-tab>` for navigation and `<snice-tab-panel>` for content.
 
-## Importing
+## Table of Contents
+- [Components](#components)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/tabs/snice-tabs';
-import 'snice/components/tabs/snice-tab';
-import 'snice/components/tabs/snice-tab-panel';
-```
+## Components
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tabs.min.js"></script>
-```
+- `<snice-tabs>` - Container that manages tab selection and panels
+- `<snice-tab>` - Individual tab button (placed in `nav` slot)
+- `<snice-tab-panel>` - Content panel associated with a tab
 
 ## Properties
 
@@ -38,6 +39,15 @@ import 'snice/components/tabs/snice-tab-panel';
 | `disabled` | `boolean` | `false` | Prevents tab selection |
 | `closable` | `boolean` | `false` | Shows close button |
 
+### snice-tab-panel
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | `string` | `''` | Panel identifier |
+| `transitionIn` (attr: `transition-in`) | `string` | `''` | Incoming transition |
+| `transitionOut` (attr: `transition-out`) | `string` | `''` | Outgoing transition |
+| `transitionDuration` (attr: `transition-duration`) | `number` | `300` | Transition duration in ms |
+
 ## Methods
 
 | Method | Arguments | Description |
@@ -51,8 +61,9 @@ import 'snice/components/tabs/snice-tab-panel';
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `tab-change` | `{ index: number, oldIndex: number, tab: SniceTabElement, panel: SniceTabPanelElement }` | Active tab changed |
-| `tab-close` | `{ tab: SniceTabElement }` | Close button clicked on a closable tab |
+| `tab-change` | `{ index, oldIndex, tab, panel }` | Active tab changed |
+| `tab-select` | `{ tab }` | Tab clicked |
+| `tab-close` | `{ tab }` | Close button clicked on a closable tab |
 
 ## Slots
 
@@ -63,18 +74,16 @@ import 'snice/components/tabs/snice-tab-panel';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outermost tabs container |
-| `nav-container` | `<div>` | Nav bar wrapper (includes scroll buttons) |
-| `nav` | `<div>` | Tab navigation scroll area |
-| `indicator` | `<div>` | Active tab indicator bar |
-| `scroll-button` | `<button>` | Scroll arrow button (both) |
-| `scroll-button-start` | `<button>` | Start scroll button |
-| `scroll-button-end` | `<button>` | End scroll button |
-| `panels` | `<div>` | Panel content wrapper |
+| Part | Description |
+|------|-------------|
+| `base` | Outermost tabs container |
+| `nav-container` | Nav bar wrapper (includes scroll buttons) |
+| `nav` | Tab navigation scroll area |
+| `indicator` | Active tab indicator bar |
+| `scroll-button` | Scroll arrow button (both) |
+| `scroll-button-start` | Start scroll button |
+| `scroll-button-end` | End scroll button |
+| `panels` | Panel content wrapper |
 
 ## Basic Usage
 

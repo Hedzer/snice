@@ -1,33 +1,39 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/availability.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/availability.md -->
 
-# Availability Component
+# Availability
 `<snice-availability>`
 
 A weekly availability grid for setting recurring time ranges. Users can click or drag to toggle time slots on and off.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/availability/snice-availability';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-availability.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Attribute | Type | Default | Description |
 |----------|-----------|------|---------|-------------|
-| `value` | — | `AvailabilityRange[]` | `[]` | Current availability ranges |
+| `value` | -- | `AvailabilityRange[]` | `[]` | Current availability ranges (set via JavaScript) |
 | `granularity` | `granularity` | `number` | `60` | Slot size in minutes (15, 30, 60) |
 | `startHour` | `start-hour` | `number` | `0` | First hour displayed |
 | `endHour` | `end-hour` | `number` | `24` | Last hour displayed |
 | `format` | `format` | `'12h' \| '24h'` | `'12h'` | Time format for labels |
 | `readonly` | `readonly` | `boolean` | `false` | Prevents editing |
+
+### AvailabilityRange Interface
+
+```typescript
+interface AvailabilityRange {
+  day: number;    // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+  start: string;  // "HH:MM" (24h format)
+  end: string;    // "HH:MM" (24h format)
+}
+```
 
 ## Methods
 
@@ -66,13 +72,13 @@ availability.clear();
 ### `availability-change`
 Dispatched when availability changes (after mouse up from drag, or preset/clear action).
 
+**Detail:** `{ value: AvailabilityRange[] }`
+
 ```javascript
 availability.addEventListener('availability-change', (e) => {
   saveToServer(e.detail.value);
 });
 ```
-
-**Detail:** `{ value: AvailabilityRange[] }`
 
 ## CSS Parts
 
@@ -93,6 +99,10 @@ snice-availability::part(header) {
 ```
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/availability/snice-availability';
+```
 
 ```html
 <snice-availability start-hour="8" end-hour="18"></snice-availability>
@@ -197,33 +207,8 @@ availability.setAvailability(ranges);
 availability.readonly = true; // Display only
 ```
 
-## Interfaces
-
-### AvailabilityRange
-
-```typescript
-interface AvailabilityRange {
-  day: number;    // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
-  start: string;  // "HH:MM" (24h format)
-  end: string;    // "HH:MM" (24h format)
-}
-```
-
-## Interaction
-
-- **Click** a cell to toggle it on or off
-- **Click and drag** to paint multiple cells (adds or removes based on first cell's state)
-- **Presets** for quick selection of common patterns
-- Changes emit `availability-change` after mouse release
-
 ## Accessibility
 
-- Keyboard navigation with arrow keys
-- ARIA labels for days and time slots
-- Visual legend for available/unavailable
-- Hours counter in footer
-
-## Browser Support
-
-- Modern browsers with Custom Elements v1 support
-- Mouse interaction for click and drag
+- **Interaction**: Click a cell to toggle, click and drag to paint multiple cells
+- **Visual legend**: Available/unavailable indicator in footer
+- **Hours counter**: Total selected hours displayed in footer

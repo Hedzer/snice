@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/tag.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/tag.md -->
 
-# Tag Component
+# Tag
 `<snice-tag>`
 
 A display-only tag/token for labeling and categorization. Unlike the chip component, tags are simpler with no selection state and are primarily used for status labels, categories, and metadata.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/tag/snice-tag';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tag.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -48,13 +44,6 @@ import 'snice/components/tag/snice-tag';
 | `base` | The tag container span |
 | `icon` | The icon slot wrapper |
 | `label` | The label slot wrapper |
-
-```css
-snice-tag::part(base) {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-```
 
 ## Basic Usage
 
@@ -131,35 +120,8 @@ tag.addEventListener('tag-remove', (e) => {
 Use the `icon` slot to add a leading icon.
 
 ```html
-<snice-tag variant="success"><span slot="icon">✓</span>Approved</snice-tag>
-<snice-tag variant="danger"><span slot="icon">✕</span>Rejected</snice-tag>
-<snice-tag variant="warning"><span slot="icon">⚠</span>Pending</snice-tag>
-```
-
-### Status Labels
-
-```html
-<snice-tag variant="success">Active</snice-tag>
-<snice-tag variant="warning">Draft</snice-tag>
-<snice-tag variant="danger">Archived</snice-tag>
-<snice-tag outline>Inactive</snice-tag>
-```
-
-### Priority Levels
-
-```html
-<snice-tag variant="danger" size="small">Critical</snice-tag>
-<snice-tag variant="warning" size="small">High</snice-tag>
-<snice-tag variant="primary" size="small">Medium</snice-tag>
-<snice-tag size="small">Low</snice-tag>
-```
-
-### Article Categories
-
-```html
-<snice-tag pill variant="primary" size="small">Technology</snice-tag>
-<snice-tag pill variant="success" size="small">Science</snice-tag>
-<snice-tag pill variant="info" size="small">Design</snice-tag>
+<snice-tag variant="success"><span slot="icon">&#10003;</span>Approved</snice-tag>
+<snice-tag variant="danger"><span slot="icon">&#10005;</span>Rejected</snice-tag>
 ```
 
 ## Accessibility

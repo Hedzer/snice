@@ -25,7 +25,11 @@ height: string = '';
 - `image` - The img element
 - `placeholder` - Placeholder element (shown when loading or no src)
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/image/snice-image';
+```
 
 ```html
 <!-- Basic -->
@@ -51,19 +55,9 @@ height: string = '';
 <!-- Custom dimensions -->
 <snice-image src="image.jpg" width="300px" height="200px"></snice-image>
 
-<!-- Lazy loading -->
+<!-- Eager loading -->
 <snice-image src="image.jpg" lazy="false"></snice-image>
 
-<!-- Placeholder -->
+<!-- Placeholder (no src) -->
 <snice-image size="medium" variant="circle"></snice-image>
 ```
-
-## Features
-
-- 3 size presets (small: 48px, medium: 96px, large: 192px)
-- 3 shape variants (rounded, square, circle)
-- 5 object-fit options
-- Lazy loading (default on)
-- Fallback image support
-- Placeholder for missing images
-- Custom width/height

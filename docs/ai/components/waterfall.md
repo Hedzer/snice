@@ -4,24 +4,24 @@ Waterfall chart (bridge chart) showing cumulative effect of sequential positive/
 
 ## Properties
 
-```ts
-data: WaterfallDataPoint[] = []
-orientation: 'vertical' | 'horizontal' = 'vertical'
-showValues: boolean = true     // attribute: show-values
-showConnectors: boolean = true // attribute: show-connectors
-animated: boolean = false
+```typescript
+data: WaterfallDataPoint[] = [];
+orientation: 'vertical'|'horizontal' = 'vertical';
+showValues: boolean = true;     // attr: show-values
+showConnectors: boolean = true; // attr: show-connectors
+animated: boolean = false;
 
 interface WaterfallDataPoint {
-  label: string
-  value: number
-  type?: 'increase' | 'decrease' | 'total'  // auto-detected from value sign if omitted
+  label: string;
+  value: number;
+  type?: 'increase'|'decrease'|'total';  // auto-detected from value sign if omitted
 }
 ```
 
 ## Events
 
-- `bar-click` → `{ item: WaterfallDataPoint; index: number }` — bar clicked
-- `bar-hover` → `{ item: WaterfallDataPoint; index: number }` — bar hovered
+- `bar-click` -> `{ item: WaterfallDataPoint, index: number }`
+- `bar-hover` -> `{ item: WaterfallDataPoint, index: number }`
 
 ## CSS Custom Properties
 
@@ -34,7 +34,12 @@ interface WaterfallDataPoint {
 - `--snice-transition-fast` - Bar hover transition (default: `150ms`)
 - `--snice-font-weight-medium` - Value text weight
 
-## Usage
+## CSS Parts
+
+- `base` - Main waterfall container
+- `chart` - Chart rendering area
+
+## Basic Usage
 
 ```html
 <snice-waterfall show-values show-connectors></snice-waterfall>
@@ -53,7 +58,3 @@ chart.addEventListener('bar-click', (e) => {
   console.log(`Clicked: ${e.detail.item.label} (${e.detail.item.value})`);
 });
 ```
-
-**CSS Parts:**
-- `base` - Main waterfall container
-- `chart` - Chart rendering area

@@ -1,10 +1,12 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/book.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/book.md -->
 
 # Book Component
+`<snice-book>`
 
-The book component displays content as a page-flipping book with realistic 3D page-turn animations. It supports a customizable cover page, keyboard and touch navigation, and programmatic page control.
+The book component displays content as a page-flipping book with realistic 3D page-turn animations. It supports a customizable cover page, keyboard navigation, and programmatic page control.
 
 ## Table of Contents
+- [Components](#components)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
@@ -13,17 +15,26 @@ The book component displays content as a page-flipping book with realistic 3D pa
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
+
+## Components
+
+### `<snice-book>`
+Main book container with page-flip animation.
+
+### `<snice-book-page>`
+Individual page element. Each child becomes one page in the book. Supports `front` and `back` named slots for double-sided pages.
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `currentPage` (attr: `current-page`) | `number` | `0` | Current page number (0-indexed) |
+| `currentPage` (attr: `current-page`) | `number` | `0` | Current page number (0 = cover closed) |
 | `coverImage` (attr: `cover-image`) | `string` | `''` | URL for the cover page image |
 | `title` | `string` | `''` | Book title displayed on the cover |
 | `author` | `string` | `''` | Author name displayed on the cover |
-| `totalPages` | `number` | _(read-only)_ | Total number of pages (count of slotted child elements) |
+| `totalPages` | `number` | _(read-only)_ | Total number of pages (count of slotted `<snice-book-page>` elements) |
 
 ## Methods
 
@@ -47,23 +58,21 @@ The book component displays content as a page-flipping book with realistic 3D pa
 
 | Name | Description |
 |------|-------------|
-| (default) | Page elements. Each child element becomes one page in the book. |
+| (default) | `<snice-book-page>` elements. Each child element becomes one page in the book. |
 
 ## CSS Custom Properties
 
-| Property | Description |
-|----------|-------------|
-| `--page-bg` | Page background color (default: `#F5F5F5`) |
-| `--dark-text` | Primary text color (default: `#2A2935`) |
-| `--baseline` | Base spacing unit (default: `12px`) |
-| `--book-title` | Book title font family (default: `'Tulpen One', sans-serif`) |
-| `--title` | Section title / body heading font (default: `'Cormorant Garamond', serif`) |
-| `--body` | Body text font (default: `'Cormorant Garamond', serif`) |
-| `--base-size` | Base font size, derived from baseline (default: `calc(var(--baseline) * 1.2)`) |
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--page-bg` | Page background color | `#F5F5F5` |
+| `--dark-text` | Primary text color | `#2A2935` |
+| `--baseline` | Base spacing unit | `12px` |
+| `--book-title` | Book title font family | `'Tulpen One', sans-serif` |
+| `--title` | Section title / body heading font | `'Cormorant Garamond', serif` |
+| `--body` | Body text font | `'Cormorant Garamond', serif` |
+| `--base-size` | Base font size, derived from baseline | `calc(var(--baseline) * 1.2)` |
 
 ## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
@@ -83,16 +92,22 @@ snice-book::part(book) {
 
 ## Basic Usage
 
-```html
-<snice-book>
-  <div>Page 1 content</div>
-  <div>Page 2 content</div>
-  <div>Page 3 content</div>
-</snice-book>
-```
-
 ```typescript
 import 'snice/components/book/snice-book';
+```
+
+```html
+<snice-book>
+  <snice-book-page>
+    <div>Page 1 content</div>
+  </snice-book-page>
+  <snice-book-page>
+    <div>Page 2 content</div>
+  </snice-book-page>
+  <snice-book-page>
+    <div>Page 3 content</div>
+  </snice-book-page>
+</snice-book>
 ```
 
 ## Examples
@@ -103,10 +118,12 @@ Use the `title`, `author`, and `cover-image` attributes to create a book with a 
 
 ```html
 <snice-book title="The Great Gatsby" author="F. Scott Fitzgerald" cover-image="/covers/gatsby.jpg">
-  <div>In my younger and more vulnerable years my father gave me some advice...</div>
-  <div>Chapter 2 content here...</div>
-  <div>Chapter 3 content here...</div>
-  <div>Chapter 4 content here...</div>
+  <snice-book-page>
+    <div>In my younger and more vulnerable years...</div>
+  </snice-book-page>
+  <snice-book-page>
+    <div>Chapter 2 content here...</div>
+  </snice-book-page>
 </snice-book>
 ```
 
@@ -116,23 +133,20 @@ Use methods to control the book from JavaScript.
 
 ```html
 <snice-book id="tutorial-book" title="Tutorial">
-  <div>Step 1: Install the package</div>
-  <div>Step 2: Import the component</div>
-  <div>Step 3: Add it to your HTML</div>
-  <div>Step 4: Customize with properties</div>
+  <snice-book-page><div>Step 1: Install</div></snice-book-page>
+  <snice-book-page><div>Step 2: Import</div></snice-book-page>
+  <snice-book-page><div>Step 3: Use</div></snice-book-page>
 </snice-book>
 
 <button onclick="document.getElementById('tutorial-book').prevPage()">Previous</button>
 <button onclick="document.getElementById('tutorial-book').nextPage()">Next</button>
+```
 
-<script type="module">
-  import 'snice/components/book/snice-book';
-
-  const book = document.getElementById('tutorial-book');
-  book.addEventListener('page-turn', (e) => {
-    console.log(`Turned to page ${e.detail.page} (${e.detail.direction})`);
-  });
-</script>
+```typescript
+const book = document.getElementById('tutorial-book');
+book.addEventListener('page-turn', (e) => {
+  console.log(`Turned to page ${e.detail.page} (${e.detail.direction})`);
+});
 ```
 
 ### Rich HTML Content Pages
@@ -141,26 +155,33 @@ Each page can contain arbitrary HTML including text, images, and interactive ele
 
 ```html
 <snice-book title="Product Catalog">
-  <div style="padding: 2rem;">
-    <h2>Introduction</h2>
-    <p>Browse our latest collection of premium products.</p>
-  </div>
-  <div style="padding: 2rem;">
-    <h3>Widget Pro</h3>
-    <img src="/products/widget-pro.jpg" alt="Widget Pro" style="width: 100%;">
-    <p>Our most popular product. Starting at $29.99.</p>
-  </div>
-  <div style="padding: 2rem;">
-    <h3>Gadget X</h3>
-    <img src="/products/gadget-x.jpg" alt="Gadget X" style="width: 100%;">
-    <p>Next-generation performance. Starting at $49.99.</p>
-  </div>
+  <snice-book-page>
+    <div style="padding: 2rem;">
+      <h2>Introduction</h2>
+      <p>Browse our latest collection.</p>
+    </div>
+  </snice-book-page>
+  <snice-book-page>
+    <div style="padding: 2rem;">
+      <h3>Widget Pro</h3>
+      <img src="/products/widget-pro.jpg" alt="Widget Pro" style="width: 100%;">
+      <p>Starting at $29.99.</p>
+    </div>
+  </snice-book-page>
 </snice-book>
 ```
 
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| Arrow Right | Next page |
+| Arrow Left | Previous page |
+
+The book must be focused (it sets `tabindex="0"` on ready).
+
 ## Accessibility
 
-- **Keyboard support**: Arrow Right/Down to go to the next page, Arrow Left/Up for the previous page, Home for the first page, End for the last page
-- **Focus management**: The book is focusable and responds to keyboard input when focused
-- **Screen readers**: Page turn events and navigation controls provide feedback on the current position
-- **Touch support**: Swipe gestures on touch devices for natural page turning
+- **Keyboard support**: Arrow keys for page navigation when focused
+- **Focus management**: The book is focusable and responds to keyboard input
+- **Screen readers**: Page turn events provide feedback on current position

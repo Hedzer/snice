@@ -1,101 +1,47 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/booking.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/booking.md -->
 
 # Booking Component
 `<snice-booking>`
 
 A multi-step appointment booking widget with date selection, time slot picking, and confirmation form.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/booking/snice-booking';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-booking.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Interfaces](#interfaces)
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Attribute | Type | Default | Description |
 |----------|-----------|------|---------|-------------|
-| `availableDates` | `available-dates` | `(Date \| string)[]` | `[]` | Dates that can be selected |
-| `availableSlots` | `available-slots` | `BookingSlot[]` | `[]` | Available time slots |
+| `availableDates` | -- | `(Date \| string)[]` | `[]` | Dates that can be selected (JS property only) |
+| `availableSlots` | -- | `BookingSlot[]` | `[]` | Available time slots (JS property only) |
 | `duration` | `duration` | `number` | `30` | Default duration in minutes |
 | `minDate` | `min-date` | `Date \| string` | `''` | Earliest selectable date |
 | `maxDate` | `max-date` | `Date \| string` | `''` | Latest selectable date |
-| `fields` | — | `BookingField[]` | `[]` | Form fields for step 3 |
+| `fields` | -- | `BookingField[]` | `[]` | Form fields for step 3 (JS property only) |
 | `variant` | `variant` | `'stepper' \| 'inline'` | `'stepper'` | Layout mode |
 
 ## Methods
 
-### `reset(): void`
-Reset the booking widget to step 1 and clear all selections.
-
-```javascript
-booking.reset();
-```
-
-### `getBooking(): BookingData | null`
-Get the current booking data. Returns `null` if date or slot not selected.
-
-```javascript
-const data = booking.getBooking();
-if (data) {
-  console.log('Date:', data.date);
-  console.log('Time:', data.slot.time);
-  console.log('Name:', data.fields.name);
-}
-```
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `reset()` | -- | `void` | Reset to step 1 and clear all selections |
+| `getBooking()` | -- | `BookingData \| null` | Get current booking data, or `null` if incomplete |
 
 ## Events
 
-### `date-select`
-Dispatched when a date is selected in step 1.
-
-```javascript
-booking.addEventListener('date-select', (e) => {
-  console.log('Selected date:', e.detail.date);
-  // Load available slots for this date from your API
-});
-```
-
-**Detail:** `{ date: string }`
-
-### `slot-select`
-Dispatched when a time slot is selected in step 2.
-
-```javascript
-booking.addEventListener('slot-select', (e) => {
-  console.log('Selected slot:', e.detail.slot);
-});
-```
-
-**Detail:** `{ slot: BookingSlot }`
-
-### `booking-confirm`
-Dispatched when the booking is confirmed in step 3.
-
-```javascript
-booking.addEventListener('booking-confirm', (e) => {
-  const { booking } = e.detail;
-  submitBooking(booking);
-});
-```
-
-**Detail:** `{ booking: BookingData }`
-
-### `booking-cancel`
-Dispatched when the cancel button is clicked.
-
-```javascript
-booking.addEventListener('booking-cancel', () => {
-  closeBookingModal();
-});
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `date-select` | `{ date: string }` | Fired when a date is selected |
+| `slot-select` | `{ slot: BookingSlot }` | Fired when a time slot is selected |
+| `booking-confirm` | `{ booking: BookingData }` | Fired when the booking is confirmed |
+| `booking-cancel` | `void` | Fired when the cancel button is clicked |
 
 ## CSS Parts
 
@@ -117,11 +63,17 @@ snice-booking::part(base) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/booking/snice-booking';
+```
+
 ```html
 <snice-booking></snice-booking>
 ```
 
 ```typescript
+const booking = document.querySelector('snice-booking');
+
 booking.availableDates = ['2025-06-15', '2025-06-16', '2025-06-17'];
 booking.availableSlots = [
   { date: '2025-06-15', time: '09:00', duration: 30 },
@@ -150,7 +102,7 @@ The stepper variant guides users through three steps: date selection, time slot,
 
 ### Inline Variant
 
-The inline variant shows all three steps side by side.
+The inline variant shows all three sections side by side.
 
 ```html
 <snice-booking variant="inline"></snice-booking>
@@ -158,11 +110,15 @@ The inline variant shows all three steps side by side.
 
 ### With Date Restrictions
 
+Use `min-date` and `max-date` to constrain selectable dates.
+
 ```html
 <snice-booking min-date="2025-06-01" max-date="2025-08-31"></snice-booking>
 ```
 
 ### Dynamic Slot Loading
+
+Load time slots from an API when a date is selected.
 
 ```javascript
 booking.addEventListener('date-select', async (e) => {
@@ -185,7 +141,6 @@ booking.fields = [
 ### Complete Booking Flow
 
 ```typescript
-// Set up available dates and slots
 booking.availableDates = getAvailableDates();
 booking.availableSlots = getAvailableSlots();
 booking.fields = [
@@ -193,7 +148,6 @@ booking.fields = [
   { name: 'email', label: 'Email', type: 'email', required: true },
 ];
 
-// Handle confirmation
 booking.addEventListener('booking-confirm', async (e) => {
   const result = await createAppointment(e.detail.booking);
   if (result.success) {
@@ -201,7 +155,6 @@ booking.addEventListener('booking-confirm', async (e) => {
   }
 });
 
-// Handle cancellation
 booking.addEventListener('booking-cancel', () => {
   booking.reset();
 });
@@ -243,12 +196,7 @@ interface BookingData {
 
 ## Accessibility
 
-- Keyboard navigation for date picker and slots
+- Keyboard navigation for date picker and time slots
 - ARIA labels for steps and form fields
 - Focus management between steps
 - Screen reader friendly step indicators
-
-## Browser Support
-
-- Modern browsers with Custom Elements v1 support
-- Date formatting via Intl API

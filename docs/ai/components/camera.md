@@ -5,150 +5,68 @@ Live camera feed with built-in mobile-style controls.
 ## Properties
 
 ```typescript
-autoStart: boolean = true;
-facingMode: 'user'|'environment' = 'user';
+autoStart: boolean = true;                    // attribute: auto-start
+facingMode: 'user'|'environment' = 'user';    // attribute: facing-mode
 mirror: boolean = true;
-controlsPosition: ControlsPosition = 'auto';
-showControls: boolean = true;
+controlsPosition: ControlsPosition = 'auto';  // attribute: controls-position
+showControls: boolean = true;                  // attribute: show-controls
 width: number = 1280;
 height: number = 720;
-aspectRatio: string = 'auto';  // 'auto' (fills space), '16:9', '9:16', '4:3', '1:1', '21:9'
-objectFit: 'contain'|'cover' = 'cover';  // cover: fills frame (may crop), contain: full video (may letterbox)
-```
-
-## ControlsPosition
-
-```typescript
-type ControlsPosition =
-  | 'auto'                    // Auto-detect (bottom-right portrait, right landscape)
-  | 'bottom' | 'right' | 'left' | 'top'     // Edge positions
-  | 'bottom-left' | 'bottom-right'          // Corner positions
-  | 'top-left' | 'top-right';
+aspectRatio: string = 'auto';                  // attribute: aspect-ratio — 'auto','16:9','9:16','4:3','1:1','21:9'
+objectFit: 'contain'|'cover' = 'cover';        // attribute: object-fit
 ```
 
 ## Methods
 
-```typescript
-start(): Promise<void>
-stop(): void
-capture(): Promise<CapturedImage>
-switchCamera(): Promise<void>
-isActive(): boolean
-getStream(): MediaStream | null
-enterFullscreen(): void
-exitFullscreen(): void
-toggleFullscreen(): void
-```
-
-## CapturedImage
-
-```typescript
-interface CapturedImage {
-  dataURL: string;
-  blob: Blob;
-  width: number;
-  height: number;
-  timestamp: number;
-}
-```
+- `start(): Promise<void>` - Start camera feed
+- `stop(): void` - Stop camera
+- `capture(): Promise<CapturedImage>` - Capture frame (`{ dataURL, blob, width, height, timestamp }`)
+- `switchCamera(): Promise<void>` - Toggle front/back
+- `isActive(): boolean` - Check if running
+- `getStream(): MediaStream | null` - Get stream
+- `enterFullscreen()` / `exitFullscreen()` / `toggleFullscreen()` - Fullscreen control
 
 ## Events
 
-- `camera-start` - Camera started (detail: { stream })
-- `camera-stop` - Camera stopped
-- `camera-capture` - Photo captured (detail: { image })
-- `camera-error` - Error occurred (detail: { error })
+- `camera-start` -> `{ stream: MediaStream }`
+- `camera-stop` -> (no detail)
+- `camera-capture` -> `{ image: CapturedImage }`
+- `camera-error` -> `{ error: Error }`
 
 ## Slots
 
 - `controls` - Custom controls overlay (full viewport, positioned absolutely)
 
-## Usage
-
-```html
-<!-- Zero config -->
-<snice-camera></snice-camera>
-
-<!-- Custom position -->
-<snice-camera controls-position="bottom-left"></snice-camera>
-
-<!-- Back camera -->
-<snice-camera facing-mode="environment"></snice-camera>
-
-<!-- Custom controls overlay -->
-<snice-camera>
-  <div slot="controls" style="position: absolute; top: 10px; left: 10px;">
-    LIVE
-  </div>
-</snice-camera>
-
-<!-- Hide built-in controls, use only custom -->
-<snice-camera show-controls="false">
-  <div slot="controls" style="position: absolute; bottom: 20px; right: 20px;">
-    <button onclick="this.closest('snice-camera').capture()">📷</button>
-  </div>
-</snice-camera>
-
-<!-- 4K resolution -->
-<snice-camera width="3840" height="2160"></snice-camera>
-
-<!-- 16:9 aspect ratio -->
-<snice-camera aspect-ratio="16:9"></snice-camera>
-
-<!-- Square -->
-<snice-camera aspect-ratio="1:1" width="1080" height="1080"></snice-camera>
-
-<!-- Portrait mode with cover -->
-<snice-camera aspect-ratio="9:16" object-fit="cover" width="720" height="1280"></snice-camera>
-
-<!-- Cover mode (fills container, may crop) -->
-<snice-camera object-fit="cover"></snice-camera>
-```
-
-```javascript
-// Capture photo
-const image = await camera.capture();
-// { dataURL, blob, width, height, timestamp }
-
-// Switch camera
-await camera.switchCamera();
-
-// Events
-camera.addEventListener('camera-capture', (e) => {
-  const img = e.detail.image;
-  console.log(img.dataURL);
-});
-
-// Fullscreen
-camera.toggleFullscreen();
-```
-
-**CSS Parts:**
-- `base` - Outer camera container div
-- `controls` - Built-in control buttons area (capture, switch camera)
-
 ## CSS Custom Properties
 
-- `--snice-camera-bg` - Camera background (default: `rgb(0 0 0)`)
-- `--snice-camera-overlay` - Controls gradient overlay (default: `rgb(0 0 0 / 0.5)`)
-- `--snice-camera-controls-color` - Controls icon/text color (default: `rgb(255 255 255)`)
-- `--snice-camera-btn-bg` - Button background (default: `rgb(0 0 0 / 0.4)`)
-- `--snice-camera-btn-hover-bg` - Button hover background (default: `rgb(0 0 0 / 0.6)`)
-- `--snice-camera-capture-bg` - Capture button background (default: `rgb(255 255 255 / 0.95)`)
-- `--snice-camera-capture-color` - Capture button icon color (default: `rgb(51 51 51)`)
-- `--snice-camera-capture-hover-bg` - Capture button hover (default: `rgb(255 255 255)`)
-- `--snice-camera-flash-color` - Flash overlay color (default: `rgb(255 255 255)`)
-- `--snice-camera-status-bg` - Status badge background (default: `rgb(0 0 0 / 0.7)`)
+- `--snice-camera-bg` - Background (default: `rgb(0 0 0)`)
+- `--snice-camera-overlay` - Controls gradient overlay
+- `--snice-camera-controls-color` - Controls icon/text color
+- `--snice-camera-btn-bg` / `--snice-camera-btn-hover-bg` - Button backgrounds
+- `--snice-camera-capture-bg` / `--snice-camera-capture-color` / `--snice-camera-capture-hover-bg` - Capture button
+- `--snice-camera-flash-color` - Flash overlay
+- `--snice-camera-status-bg` - Status badge
 
-## Features
+## CSS Parts
 
-- Auto-starts on load (default)
-- Built-in mobile-style controls (Material Design icons)
-- 720p HD quality (1280x720 hardcoded)
-- Switch camera button (auto-hides if only one camera)
-- Capture button with camera icon
-- Auto-detect orientation for control positioning
-- Corner and edge control positioning
-- Mirror mode for front camera
-- Slotted custom controls overlay
-- Requires HTTPS
+- `base` - Outer camera container
+- `controls` - Built-in control buttons area
+
+## Basic Usage
+
+```html
+<snice-camera></snice-camera>
+```
+
+```typescript
+import 'snice/components/camera/snice-camera';
+
+const image = await camera.capture();
+// { dataURL, blob, width, height, timestamp }
+```
+
+## Accessibility
+
+- Keyboard navigation for controls
+- Visual feedback for capture
+- Error messaging

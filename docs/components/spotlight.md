@@ -1,10 +1,11 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/spotlight.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/spotlight.md -->
 
-# Spotlight Component
+# Spotlight
 
-The spotlight component provides a guided tour and onboarding experience by highlighting elements on the page with a cutout overlay and step-by-step popover instructions. It supports step navigation, customizable positioning, and smooth transitions between steps.
+A guided tour and onboarding component that highlights elements on the page with a cutout overlay and step-by-step popover instructions. Supports customizable positioning and smooth transitions between steps.
 
 ## Table of Contents
+
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
@@ -12,7 +13,6 @@ The spotlight component provides a guided tour and onboarding experience by high
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -27,79 +27,28 @@ interface SpotlightStep {
   target: string;              // CSS selector for the element to highlight
   title: string;               // Step title displayed in the popover
   description: string;         // Step description text
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';  // Popover position relative to target
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';  // Popover position
 }
 ```
 
 ## Methods
 
-#### `start(): void`
-Begin the spotlight tour from step 0.
-
-```typescript
-spotlight.start();
-```
-
-#### `next(): void`
-Advance to the next step. Ends the tour if on the last step.
-
-```typescript
-spotlight.next();
-```
-
-#### `prev(): void`
-Go back to the previous step.
-
-```typescript
-spotlight.prev();
-```
-
-#### `goToStep(index: number): void`
-Jump to a specific step by index.
-
-```typescript
-spotlight.goToStep(2);
-```
-
-#### `end(): void`
-End the tour immediately.
-
-```typescript
-spotlight.end();
-```
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `start()` | -- | `void` | Begin the tour from step 0 |
+| `next()` | -- | `void` | Advance to the next step (ends tour if on last step) |
+| `prev()` | -- | `void` | Go back to the previous step |
+| `goToStep()` | `index: number` | `void` | Jump to a specific step by index |
+| `end()` | -- | `void` | End the tour immediately |
 
 ## Events
 
-### `spotlight-start`
-Fired when the tour begins.
-
-**Event Detail:** `void`
-
-### `spotlight-step`
-Fired when navigating to a new step.
-
-**Event Detail:**
-```typescript
-{
-  index: number;
-  step: SpotlightStep;
-}
-```
-
-### `spotlight-end`
-Fired when the tour ends (either completed or ended programmatically).
-
-**Event Detail:** `void`
-
-### `spotlight-skip`
-Fired when the user skips the tour.
-
-**Event Detail:**
-```typescript
-{
-  index: number;  // The step index where the tour was skipped
-}
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `spotlight-start` | `void` | Tour has begun |
+| `spotlight-step` | `{ index: number, step: SpotlightStep }` | Navigated to a new step |
+| `spotlight-end` | `void` | Tour ended (completed or ended programmatically) |
+| `spotlight-skip` | `{ index: number }` | User skipped the tour at the given step |
 
 ## CSS Custom Properties
 
@@ -115,99 +64,63 @@ Fired when the user skips the tour.
 
 ## Basic Usage
 
-```html
-<snice-spotlight></snice-spotlight>
-```
-
 ```typescript
 import 'snice/components/spotlight/snice-spotlight';
 ```
 
-## Examples
-
-### Basic Tour
-
-Set up a simple guided tour with three steps targeting elements on the page.
-
 ```html
-<div id="search-bar">Search...</div>
-<div id="nav-menu">Navigation</div>
-<div id="profile-icon">Profile</div>
-
 <snice-spotlight id="tour"></snice-spotlight>
 
-<script type="module">
-  import 'snice/components/spotlight/snice-spotlight';
-
+<script>
   const spotlight = document.getElementById('tour');
   spotlight.steps = [
-    { target: '#search-bar', title: 'Search', description: 'Use the search bar to find content.', position: 'bottom' },
-    { target: '#nav-menu', title: 'Navigation', description: 'Browse sections from the navigation menu.', position: 'right' },
-    { target: '#profile-icon', title: 'Profile', description: 'View and edit your profile settings here.', position: 'left' }
+    { target: '#search-bar', title: 'Search', description: 'Find content here.', position: 'bottom' },
+    { target: '#nav-menu', title: 'Navigation', description: 'Browse sections.', position: 'right' },
+    { target: '#profile', title: 'Profile', description: 'Your settings.', position: 'left' }
   ];
   spotlight.start();
 </script>
 ```
 
-### Listening for Tour Events
-
-React to tour lifecycle events to track progress or trigger side effects.
-
-```html
-<snice-spotlight id="onboarding"></snice-spotlight>
-
-<script type="module">
-  import type { SniceSpotlightElement } from 'snice/components/spotlight/snice-spotlight.types';
-
-  const spotlight = document.getElementById('onboarding') as SniceSpotlightElement;
-
-  spotlight.steps = [
-    { target: '#feature-a', title: 'Feature A', description: 'This is feature A.' },
-    { target: '#feature-b', title: 'Feature B', description: 'This is feature B.' },
-    { target: '#feature-c', title: 'Feature C', description: 'This is feature C.' }
-  ];
-
-  spotlight.addEventListener('spotlight-step', (e) => {
-    console.log(`Now on step ${e.detail.index}: ${e.detail.step.title}`);
-  });
-
-  spotlight.addEventListener('spotlight-end', () => {
-    console.log('Tour completed');
-    localStorage.setItem('onboarding-done', 'true');
-  });
-
-  spotlight.addEventListener('spotlight-skip', (e) => {
-    console.log(`Tour skipped at step ${e.detail.index}`);
-  });
-
-  // Only show tour for new users
-  if (!localStorage.getItem('onboarding-done')) {
-    spotlight.start();
-  }
-</script>
-```
+## Examples
 
 ### Auto-Positioned Steps
 
-Use `position: 'auto'` or omit the position to let the component automatically determine the best popover placement.
+Omit `position` or set it to `'auto'` for automatic popover placement.
 
-```html
-<snice-spotlight id="auto-tour"></snice-spotlight>
-
-<script type="module">
-  const spotlight = document.getElementById('auto-tour');
-  spotlight.steps = [
-    { target: '.sidebar', title: 'Sidebar', description: 'Access tools and settings here.' },
-    { target: '.main-content', title: 'Content Area', description: 'Your main workspace.', position: 'auto' },
-    { target: '.footer-help', title: 'Help', description: 'Need assistance? Click here.', position: 'top' }
-  ];
-  spotlight.start();
-</script>
+```typescript
+spotlight.steps = [
+  { target: '.sidebar', title: 'Sidebar', description: 'Access tools here.' },
+  { target: '.main', title: 'Content', description: 'Your workspace.', position: 'auto' },
+];
+spotlight.start();
 ```
 
-### Programmatic Step Navigation
+### Event Handling
 
-Control the tour programmatically using methods, useful for custom navigation UI.
+Track tour lifecycle events for analytics or conditional behavior.
+
+```typescript
+spotlight.addEventListener('spotlight-step', (e) => {
+  console.log(`Step ${e.detail.index}: ${e.detail.step.title}`);
+});
+
+spotlight.addEventListener('spotlight-end', () => {
+  localStorage.setItem('onboarding-done', 'true');
+});
+
+spotlight.addEventListener('spotlight-skip', (e) => {
+  console.log(`Skipped at step ${e.detail.index}`);
+});
+
+if (!localStorage.getItem('onboarding-done')) {
+  spotlight.start();
+}
+```
+
+### Programmatic Navigation
+
+Control the tour with methods for custom navigation UI.
 
 ```html
 <snice-spotlight id="controlled-tour"></snice-spotlight>
@@ -220,13 +133,8 @@ Control the tour programmatically using methods, useful for custom navigation UI
 
 ## Accessibility
 
-- **Keyboard support**: The popover navigation buttons (Next, Previous, Skip) are fully keyboard accessible
-- **Focus management**: Focus is moved to the popover when each step is shown
-- **ARIA attributes**: The overlay and popover use appropriate ARIA roles for screen reader support
-- **Escape key**: Pressing Escape ends the tour
-- **Reduced motion**: Transitions respect `prefers-reduced-motion` for users sensitive to animations
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+- Navigation buttons (Next, Previous, Skip) are keyboard accessible
+- Focus moves to the popover when each step is shown
+- Overlay and popover use appropriate ARIA roles
+- Escape key ends the tour
+- Transitions respect `prefers-reduced-motion`

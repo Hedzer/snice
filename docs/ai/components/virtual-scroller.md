@@ -29,7 +29,7 @@ interface VirtualScrollerItem {
 
 - `base` - The outer scroller container
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-virtual-scroller style="height: 400px;" item-height="60"></snice-virtual-scroller>

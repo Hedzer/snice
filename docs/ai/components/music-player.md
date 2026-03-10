@@ -4,29 +4,29 @@ Full-featured audio player with playlist, shuffle, repeat, and volume control.
 
 ## Properties
 
-```typescript
-tracks: Track[] = [];
-currentTrackIndex: number = 0;
-currentTrack: string = '';            // reflected attribute, track ID
-currentTime: number = 0;             // read-only, use seek()
-duration: number = 0;
+```ts
+tracks: Track[] = [];                              // JS only
+currentTrackIndex: number = 0;                     // attr: current-track-index
+currentTrack: string = '';                         // attr: current-track, track ID
 volume: number = 1;
 muted: boolean = false;
 shuffle: boolean = false;
 repeat: 'off'|'all'|'one' = 'off';
 state: 'playing'|'paused'|'stopped'|'loading'|'error' = 'stopped';
 autoplay: boolean = false;
-showPlaylist: boolean = true;         // attr: show-playlist
-showControls: boolean = true;         // attr: show-controls
-showVolume: boolean = true;           // attr: show-volume
-showArtwork: boolean = true;          // attr: show-artwork
-showTrackInfo: boolean = true;        // attr: show-track-info
+showPlaylist: boolean = true;                      // attr: show-playlist
+showControls: boolean = true;                      // attr: show-controls
+showVolume: boolean = true;                        // attr: show-volume
+showArtwork: boolean = true;                       // attr: show-artwork
+showTrackInfo: boolean = true;                     // attr: show-track-info
 compact: boolean = false;
 ```
 
-## Track Interface
+> `currentTime` and `duration` are plain class fields, not `@property`. Use `seek()` to set position.
 
-```typescript
+## Types
+
+```ts
 interface Track {
   id: string;
   title: string;
@@ -36,42 +36,50 @@ interface Track {
   src: string;
   duration?: number;
 }
+
+type RepeatMode = 'off' | 'all' | 'one';
+type PlayerState = 'playing' | 'paused' | 'stopped' | 'loading' | 'error';
 ```
 
 ## Methods
 
-- `play()` - Start/resume playback (async)
-- `pause()` - Pause playback
-- `stop()` - Stop and reset position
-- `next()` - Skip to next track
-- `previous()` - Skip to previous track
-- `seek(time: number)` - Seek to time in seconds
-- `setVolume(volume: number)` - Set volume (0-1)
-- `toggleShuffle()` - Toggle shuffle mode
-- `setRepeat(mode: 'off'|'all'|'one')` - Set repeat mode
-- `loadTrack(index: number)` - Load track by index (async)
-- `getCurrentTrack()` - Returns current Track or null
+- `play()` → Start/resume (async)
+- `pause()` → Pause
+- `stop()` → Stop and reset position
+- `next()` → Next track
+- `previous()` → Previous track (restarts if >3s in)
+- `seek(time)` → Seek to seconds
+- `setVolume(volume)` → Set volume (0-1)
+- `toggleShuffle()` → Toggle shuffle
+- `setRepeat(mode)` → Set repeat mode
+- `loadTrack(index)` → Load track by index (async)
+- `getCurrentTrack()` → Current Track or null
 
 ## Events
 
-- `player-play` → `{ track }`
-- `player-pause` → `{ track }`
+- `player-play` → `{ player, track }`
+- `player-pause` → `{ player, track }`
 - `player-stop` → `{ player }`
-- `player-track-change` → `{ track }`
-- `player-track-ended` → `{ track }`
-- `player-shuffle-change` → `{ shuffle }`
-- `player-repeat-change` → `{ repeat }`
-- `player-volume-change` → `{ volume }`
-- `player-seek` → `{ time }`
-- `player-time-update` → `{ currentTime, duration }`
-- `player-error` → `{ error }`
+- `player-track-change` → `{ player, track }`
+- `player-track-ended` → `{ player, track }`
+- `player-shuffle-change` → `{ player, shuffle }`
+- `player-repeat-change` → `{ player, repeat }`
+- `player-volume-change` → `{ player, volume }`
+- `player-seek` → `{ player, time }`
+- `player-time-update` → `{ player, currentTime, duration }`
+- `player-error` → `{ player, error }`
 
-**CSS Parts:**
-- `base` - Outer player container div
-- `controls` - Playback controls and progress bar section
-- `playlist` - Playlist section with track list
+## CSS Parts
 
-## Usage
+- `base` - Outer player container
+- `controls` - Playback controls and progress bar
+- `playlist` - Playlist section
+
+## Basic Usage
+
+```typescript
+import 'snice/components/music-player/snice-music-player';
+```
 
 ```html
 <snice-music-player id="player" autoplay shuffle compact show-playlist="false"></snice-music-player>

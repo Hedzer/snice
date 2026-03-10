@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/progress-ring.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/progress-ring.md -->
 
 # Progress Ring
 `<snice-progress-ring>`
 
 A determinate circular progress indicator that displays progress as an animated SVG ring fill with optional center text.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/progress-ring/snice-progress-ring';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-progress-ring.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -34,18 +29,20 @@ import 'snice/components/progress-ring/snice-progress-ring';
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `progress-complete` | `{ value: number, max: number, component: SniceProgressRingElement }` | Fired when value reaches max |
+| `progress-complete` | `{ value: number, max: number, component }` | Fired when value reaches max |
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `base` | Outer container with `role="progressbar"` |
-| `track` | Background circle |
-| `fill` | Progress circle |
-| `center` | Center text container |
-| `value` | Percentage text |
-| `label` | Label text |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Outer container with `role="progressbar"` |
+| `track` | `<circle>` | Background circle |
+| `fill` | `<circle>` | Progress circle |
+| `center` | `<div>` | Center text container |
+| `value` | `<span>` | Percentage text |
+| `label` | `<span>` | Label text |
 
 ## Basic Usage
 
@@ -69,7 +66,7 @@ Set the `show-value` attribute to display the percentage in the center of the ri
 
 ### Custom Label
 
-Use the `label` attribute to display custom text in the center instead of (or alongside) the percentage.
+Use the `label` attribute to display custom text in the center.
 
 ```html
 <snice-progress-ring value="60" label="CPU" show-value></snice-progress-ring>
@@ -115,13 +112,13 @@ Use the `max` attribute to set a maximum value other than 100.
 
 Listen to the `progress-complete` event to react when progress reaches the maximum.
 
-```html
-<snice-progress-ring id="upload" value="0" max="100" show-value></snice-progress-ring>
-
-<script>
-  const ring = document.getElementById('upload');
-  ring.addEventListener('progress-complete', () => {
-    console.log('Upload complete!');
-  });
-</script>
+```typescript
+ring.addEventListener('progress-complete', () => {
+  console.log('Upload complete!');
+});
 ```
+
+## Accessibility
+
+- Uses `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, and `aria-valuemax`
+- Label or percentage text is used as `aria-label` for screen readers

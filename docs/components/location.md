@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/location.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/location.md -->
 
 # Location
 `<snice-location>`
 
 Displays location information with addresses, coordinates, maps, and custom icons.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/location/snice-location';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-location.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 

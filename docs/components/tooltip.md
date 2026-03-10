@@ -1,9 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/tooltip.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/tooltip.md -->
 
 # Tooltip
 `<snice-tooltip>`
 
-Provides contextual information when users hover, click, or focus an element.
+Provides contextual information when users hover, click, or focus an element. Supports smart repositioning near viewport edges.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -13,19 +13,6 @@ Provides contextual information when users hover, click, or focus an element.
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Attribute-Based Tooltips](#attribute-based-tooltips)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/tooltip/snice-tooltip';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-tooltip.min.js"></script>
-```
 
 ## Properties
 
@@ -60,30 +47,12 @@ import 'snice/components/tooltip/snice-tooltip';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `trigger` | `<div>` | Wrapper around the slot/trigger content |
-| `tooltip` | `<div>` | The tooltip popup element |
-| `content` | `<span>` | The text content inside the tooltip |
-| `arrow` | `<div>` | The arrow/caret element pointing to the trigger |
-
-```css
-snice-tooltip::part(tooltip) {
-  background: #1e293b;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
-snice-tooltip::part(arrow) {
-  color: #1e293b;
-}
-
-snice-tooltip::part(content) {
-  padding: 8px 14px;
-}
-```
+| Part | Description |
+|------|-------------|
+| `trigger` | Wrapper around the slot/trigger content |
+| `tooltip` | The tooltip popup element |
+| `content` | The text content inside the tooltip |
+| `arrow` | The arrow/caret element pointing to the trigger |
 
 ## Basic Usage
 
@@ -218,7 +187,7 @@ Set the `strict-positioning` attribute to disable automatic repositioning when n
 
 Wrapping elements in `<snice-tooltip>` can break parent-child relationships in components that require direct children (accordion, tabs, stepper, breadcrumbs, table, etc.). The attribute-based approach uses a plain `tooltip` attribute on any element, avoiding DOM disruption entirely.
 
-The tooltip observer activates automatically when any tooltip component is loaded — no setup needed.
+The tooltip observer activates automatically when any tooltip component is loaded -- no setup needed.
 
 ### Basic Usage
 
@@ -236,101 +205,30 @@ The tooltip observer activates automatically when any tooltip component is loade
 
 ### Inside Strict-Children Components
 
-This is the primary use case — adding tooltips without disrupting component structure:
+This is the primary use case -- adding tooltips without disrupting component structure:
 
 ```html
 <snice-tabs>
   <snice-tab slot="nav" tooltip="User settings">Settings</snice-tab>
   <snice-tab slot="nav" tooltip="Account info">Profile</snice-tab>
 </snice-tabs>
-
-<snice-accordion>
-  <snice-accordion-item tooltip="Click to expand">
-    <span slot="header">Section 1</span>
-    <p>Content here</p>
-  </snice-accordion-item>
-</snice-accordion>
-
-<snice-breadcrumbs>
-  <a href="/" tooltip="Go to homepage">Home</a>
-  <a href="/docs" tooltip="Documentation">Docs</a>
-</snice-breadcrumbs>
-```
-
-### Scoped Configuration via CSS
-
-Use CSS custom properties to configure tooltips. Properties cascade, so you can scope config with CSS selectors:
-
-```html
-<style>
-  /* All toolbar tooltips appear below with a delay */
-  .toolbar [tooltip] {
-    --tooltip-position: bottom;
-    --tooltip-delay: 200;
-  }
-
-  /* Sidebar tooltips appear to the right */
-  .sidebar [tooltip] {
-    --tooltip-position: right;
-    --tooltip-offset: 16;
-  }
-
-  /* Custom themed tooltips */
-  .dark-section [tooltip] {
-    --tooltip-bg: hsl(220 20% 15%);
-    --tooltip-color: hsl(220 20% 90%);
-    --tooltip-radius: 8px;
-    --tooltip-font-size: 13px;
-  }
-</style>
-
-<div class="toolbar">
-  <button tooltip="Bold (Ctrl+B)"><b>B</b></button>
-  <button tooltip="Italic (Ctrl+I)"><i>I</i></button>
-</div>
-```
-
-### Click Trigger
-
-```html
-<button tooltip="Click to toggle" style="--tooltip-trigger: click">
-  Click me
-</button>
-```
-
-### Focus Trigger
-
-```html
-<input tooltip="Enter your email" style="--tooltip-trigger: focus" type="email">
-```
-
-### Without Arrow
-
-```html
-<button tooltip="No arrow" style="--tooltip-arrow: none">
-  Hover me
-</button>
 ```
 
 ### CSS Variable Reference
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `--tooltip-position` | `top` | Position: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end` |
-| `--tooltip-trigger` | `hover` | Trigger: `hover`, `click`, `focus` |
+| `--tooltip-position` | `top` | Position: top/bottom/left/right + -start/-end |
+| `--tooltip-trigger` | `hover` | Trigger: hover, click, focus |
 | `--tooltip-delay` | `0` | Show delay in milliseconds |
 | `--tooltip-hide-delay` | `0` | Hide delay in milliseconds |
 | `--tooltip-offset` | `12` | Distance from trigger element in pixels |
 | `--tooltip-arrow` | *(shown)* | Set to `none` to hide the arrow |
 | `--tooltip-max-width` | `250` | Maximum tooltip width in pixels |
 | `--tooltip-z-index` | `10000` | Z-index stacking order |
-| `--tooltip-strict-positioning` | *(false)* | Set to `true` to disable automatic repositioning when near viewport edges |
+| `--tooltip-strict-positioning` | *(false)* | Set to `true` to disable auto-flip |
 | `--tooltip-bg` | `hsl(0 0% 20%)` | Background color |
 | `--tooltip-color` | `white` | Text color |
 | `--tooltip-padding` | `8px 12px` | Content padding |
 | `--tooltip-radius` | `6px` | Border radius |
 | `--tooltip-font-size` | `14px` | Font size |
-
-### Cleanup
-
-The tooltip observer is managed automatically by the tooltip component. It activates as a side effect when any `<snice-tooltip>` component is loaded and cleans up when no longer needed.

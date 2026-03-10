@@ -5,31 +5,36 @@ Role/permission grid with checkbox toggles for managing access control.
 ## Properties
 
 ```typescript
-roles: PermissionRole[] = [];        // { id, name, description? }
-permissions: Permission[] = [];      // { id, name, group?, description? }
-matrix: PermissionMatrix = {};       // { [roleId]: string[] } (permission IDs)
+roles: PermissionRole[] = [];        // attr: none (JS only)
+permissions: Permission[] = [];      // attr: none (JS only)
+matrix: PermissionMatrix = {};       // attr: none (JS only), { [roleId]: string[] }
 readonly: boolean = false;
 ```
-
-## Events
-
-- `permission-toggle` -> `{ roleId: string, permissionId: string, granted: boolean }`
-- `matrix-change` -> `{ matrix: PermissionMatrix }`
 
 ## Methods
 
 - `getMatrix()` - Returns deep copy of current matrix
-- `setMatrix(matrix)` - Replace entire matrix
-- `hasPermission(roleId, permId)` - Check if role has permission
+- `setMatrix(matrix: PermissionMatrix)` - Replace entire matrix
+- `hasPermission(roleId: string, permId: string)` - Check if role has permission
 
-## Usage
+## Events
+
+- `permission-toggle` → `{ roleId: string, permissionId: string, granted: boolean }` - Checkbox toggled
+- `matrix-change` → `{ matrix: PermissionMatrix }` - Matrix updated
+
+## CSS Parts
+
+- `base` - Outer container
+
+## Basic Usage
 
 ```html
 <snice-permission-matrix id="pm"></snice-permission-matrix>
-<snice-permission-matrix id="pm-ro" readonly></snice-permission-matrix>
 ```
 
 ```typescript
+import 'snice/components/permission-matrix/snice-permission-matrix';
+
 pm.roles = [
   { id: 'admin', name: 'Admin', description: 'Full access' },
   { id: 'editor', name: 'Editor' },
@@ -46,28 +51,18 @@ pm.matrix = {
   editor: ['create', 'read', 'update'],
   viewer: ['read']
 };
-
-// Listen for changes
-pm.addEventListener('permission-toggle', (e) => {
-  console.log(e.detail.roleId, e.detail.permissionId, e.detail.granted);
-});
-
-// Query
-pm.hasPermission('admin', 'delete'); // true
-pm.getMatrix(); // returns deep copy
 ```
 
-## CSS Parts
+## Accessibility
 
-- `base` - Outer container
+- Table uses `role="grid"` with `aria-label`
+- Checkboxes have accessible labels (e.g., "Grant Create for Admin")
+- Readonly mode shows check/dash indicators instead of checkboxes
 
-## Features
+## Types
 
-- Rows = roles, columns = permissions
-- Checkbox toggles for editable mode
-- Check/dash indicators for readonly mode
-- Role descriptions shown inline
-- Permission descriptions in headers
-- Sticky first column and header row
-- Accessible ARIA labels on checkboxes
-- Deep-copy getMatrix() for safe reads
+```typescript
+interface PermissionRole { id: string; name: string; description?: string; }
+interface Permission { id: string; name: string; group?: string; description?: string; }
+type PermissionMatrix = { [roleId: string]: string[] };
+```

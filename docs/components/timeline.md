@@ -1,22 +1,15 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/timeline.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/timeline.md -->
 
 # Timeline
 `<snice-timeline>`
 
-Displays events in chronological order with markers, timestamps, and descriptions.
+Displays events in chronological order with markers, timestamps, and descriptions. Supports vertical and horizontal orientations with configurable item positioning.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/timeline/snice-timeline';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-timeline.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 

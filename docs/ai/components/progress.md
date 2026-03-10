@@ -1,6 +1,6 @@
 # snice-progress
 
-Progress indicator with linear or circular display.
+Progress indicator with linear or circular display, indeterminate mode, striped/animated styles, and labels.
 
 ## Properties
 
@@ -8,75 +8,58 @@ Progress indicator with linear or circular display.
 value: number = 0;
 max: number = 100;
 variant: 'linear'|'circular' = 'linear';
-indeterminate: boolean = false;
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl' = 'medium';
 color: 'primary'|'success'|'warning'|'error'|'info'|string = 'primary';
-showLabel: boolean = false;       // attr: show-label
-label: string = '';
+indeterminate: boolean = false;
+showLabel: boolean = false;                          // attr: show-label
+label: string = '';                                  // Custom label text
 striped: boolean = false;
 animated: boolean = false;
-thickness: number = 4;            // Stroke width for circular variant
+thickness: number = 4;                               // Circular stroke width
 ```
 
 ## Methods
 
-- `setProgress(value, max?)` - Set progress value
+- `setProgress(value: number, max?: number)` - Set progress value
 - `getPercentage()` - Get calculated percentage (0-100)
 
 ## Events
 
-- `progress-change` → `{ value, max, percentage, indeterminate }`
+- `progress-change` → `{ value, max, percentage, indeterminate }` - Value changed
 
-## Usage
+## CSS Parts
+
+Linear: `base`, `bar`, `label`
+Circular: `base`, `circle`, `circle-bg`, `circle-bar`, `label`
+
+## CSS Custom Properties
+
+```css
+--progress-height: 0.5rem;
+--progress-radius: 4px;
+--progress-bg: var(--snice-color-border, rgb(226 226 226));
+--progress-color: var(--snice-color-primary, rgb(37 99 235));
+--progress-animation-duration: 1.5s;
+```
+
+## Basic Usage
 
 ```html
-<!-- Linear -->
 <snice-progress value="50"></snice-progress>
-
-<!-- Circular -->
 <snice-progress variant="circular" value="75" size="xl"></snice-progress>
-
-<!-- Indeterminate -->
 <snice-progress indeterminate></snice-progress>
-
-<!-- With label -->
 <snice-progress value="60" show-label></snice-progress>
-<snice-progress value="60" label="Uploading..."></snice-progress>
-
-<!-- Striped and animated -->
 <snice-progress value="70" striped animated></snice-progress>
-
-<!-- Colors -->
 <snice-progress value="80" color="success"></snice-progress>
-<snice-progress value="80" color="#3b82f6"></snice-progress>
-
-<!-- Custom max -->
-<snice-progress value="3" max="10"></snice-progress>
 ```
 
 ```typescript
+import 'snice/components/progress/snice-progress';
 progress.setProgress(75);
-progress.setProgress(3, 10);
 console.log(progress.getPercentage());
 ```
 
-**CSS Parts (linear):**
-- `base` - Outer progress container
-- `bar` - The progress bar fill
-- `label` - Percentage or custom label text
+## Accessibility
 
-**CSS Parts (circular):**
-- `base` - Outer progress container
-- `circle` - The SVG element
-- `circle-bg` - Background circle stroke
-- `circle-bar` - Foreground progress arc
-- `label` - Percentage or custom label text
-
-## Features
-
-- Linear and circular variants
-- Indeterminate mode for unknown progress
-- Optional percentage or custom label
-- Striped and animated styles
-- 5 semantic + custom CSS colors
-- 6 sizes (small through xxxl)
+- Uses `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`
+- Label text used as `aria-label`

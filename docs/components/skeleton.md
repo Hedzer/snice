@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/skeleton.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/skeleton.md -->
 
 # Skeleton
-`<snice-skeleton>`
 
 Displays placeholder loading animations to indicate content is being loaded.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/skeleton/snice-skeleton';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-skeleton.min.js"></script>
-```
+- [Properties](#properties)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -27,7 +22,7 @@ import 'snice/components/skeleton/snice-skeleton';
 | `height` | `string` | `''` | Custom height (CSS value) |
 | `animation` | `'pulse' \| 'wave' \| 'none'` | `'wave'` | Animation style |
 | `count` | `number` | `1` | Number of skeleton lines to render |
-| `spacing` | `string` | `'8px'` | Gap between multiple skeleton lines |
+| `spacing` | `string` | `'8px'` | Gap between multiple lines |
 
 ## CSS Custom Properties
 
@@ -39,22 +34,10 @@ import 'snice/components/skeleton/snice-skeleton';
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer skeleton container |
-| `bone` | `<div>` | Individual skeleton placeholder element |
-
-```css
-snice-skeleton::part(bone) {
-  border-radius: 0.5rem;
-}
-
-snice-skeleton::part(base) {
-  padding: 0.5rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | Outer skeleton container |
+| `bone` | Individual skeleton placeholder element |
 
 ## Basic Usage
 
@@ -74,31 +57,22 @@ Use the `variant` attribute to change the skeleton shape.
 
 ```html
 <snice-skeleton variant="text"></snice-skeleton>
-<snice-skeleton variant="circular"></snice-skeleton>
-<snice-skeleton variant="rectangular"></snice-skeleton>
-<snice-skeleton variant="rounded"></snice-skeleton>
+<snice-skeleton variant="circular" width="64px" height="64px"></snice-skeleton>
+<snice-skeleton variant="rectangular" width="200px" height="150px"></snice-skeleton>
+<snice-skeleton variant="rounded" width="300px" height="150px"></snice-skeleton>
 ```
 
 ### Paragraph
 
-Set the `count` attribute to render multiple skeleton lines, simulating a paragraph.
+Set `count` to render multiple skeleton lines simulating a paragraph.
 
 ```html
 <snice-skeleton variant="text" count="4"></snice-skeleton>
 ```
 
-### Custom Dimensions
-
-Use the `width` and `height` attributes to set custom sizes.
-
-```html
-<snice-skeleton variant="rectangular" width="200px" height="150px"></snice-skeleton>
-<snice-skeleton variant="circular" width="64px" height="64px"></snice-skeleton>
-```
-
 ### Animation Styles
 
-Use the `animation` attribute to change the loading animation.
+Use `animation` to change the loading animation.
 
 ```html
 <snice-skeleton animation="wave"></snice-skeleton>
@@ -106,10 +80,22 @@ Use the `animation` attribute to change the loading animation.
 <snice-skeleton animation="none"></snice-skeleton>
 ```
 
-### Spacing
+### Complex Layout
 
-Use the `spacing` attribute to control the gap between multiple skeleton lines.
+Combine variants to create loading placeholders for cards or profiles.
 
 ```html
-<snice-skeleton variant="text" count="3" spacing="12px"></snice-skeleton>
+<div style="display: flex; gap: 16px;">
+  <snice-skeleton variant="circular" width="48px" height="48px"></snice-skeleton>
+  <div style="flex: 1;">
+    <snice-skeleton variant="text" width="40%"></snice-skeleton>
+    <snice-skeleton variant="text" width="60%"></snice-skeleton>
+  </div>
+</div>
 ```
+
+## Accessibility
+
+- Purely decorative placeholder; does not convey content to screen readers
+- Use `aria-busy="true"` on the container element while loading
+- Replace with actual content once loaded

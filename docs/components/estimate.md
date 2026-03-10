@@ -1,21 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/estimate.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/estimate.md -->
 
-# Estimate Component
+# Estimate
 
 A professional estimate/quote component with optional line items, accept/decline actions, expiry dates, and automatic calculations. Supports comparison mode for presenting multiple options.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/estimate/snice-estimate';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-estimate.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -25,9 +22,9 @@ import 'snice/components/estimate/snice-estimate';
 | `date` | `string` | `''` | Estimate date |
 | `expiryDate` | `string` | `''` | Expiration/valid until date |
 | `status` | `'draft' \| 'sent' \| 'accepted' \| 'declined' \| 'expired'` | `'draft'` | Estimate status |
-| `from` | `EstimateParty \| null` | `null` | Sender/business info |
-| `to` | `EstimateParty \| null` | `null` | Recipient/client info |
-| `items` | `EstimateItem[]` | `[]` | Line items |
+| `from` | `EstimateParty \| null` | `null` | Sender/business info (JS only) |
+| `to` | `EstimateParty \| null` | `null` | Recipient/client info (JS only) |
+| `items` | `EstimateItem[]` | `[]` | Line items (JS only) |
 | `currency` | `string` | `'$'` | Currency symbol |
 | `taxRate` | `number` | `0` | Tax rate percentage |
 | `discount` | `number` | `0` | Discount percentage |
@@ -84,32 +81,6 @@ interface EstimateItem {
 | `qr` | QR code content |
 | `footer` | Additional footer content |
 
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--estimate-max-width` | `50rem` | Maximum width |
-| `--estimate-bg` | `white` | Background color |
-| `--estimate-bg-element` | `rgb(252 251 249)` | Element background |
-| `--estimate-border` | `rgb(226 226 226)` | Border color |
-| `--estimate-text` | `rgb(23 23 23)` | Text color |
-| `--estimate-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--estimate-accent` | `rgb(37 99 235)` | Accent color |
-| `--estimate-header-padding` | `1.5rem` | Header padding |
-| `--estimate-section-padding` | `1rem 1.5rem` | Section padding |
-| `--estimate-radius` | `0.5rem` | Border radius |
-| `--estimate-title-size` | `1.5rem` | Title font size |
-| `--estimate-title-weight` | `700` | Title font weight |
-| `--estimate-accept-bg` | `rgb(22 163 74)` | Accept button background |
-| `--estimate-accept-text` | `white` | Accept button text |
-| `--estimate-decline-bg` | `transparent` | Decline button background |
-| `--estimate-decline-text` | `rgb(220 38 38)` | Decline button text |
-| `--estimate-decline-border` | `rgb(220 38 38)` | Decline button border |
-| `--estimate-total-bg` | `rgb(252 251 249)` | Total row background |
-| `--estimate-total-border` | `rgb(226 226 226)` | Total row border |
-| `--estimate-total-weight` | `700` | Total font weight |
-| `--estimate-qr-size` | `5rem` | QR code size |
-
 ## CSS Parts
 
 | Part | Description |
@@ -151,7 +122,37 @@ interface EstimateItem {
 | `option-button` | Select option button |
 | `footer` | Footer area |
 
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--estimate-max-width` | `50rem` | Maximum width |
+| `--estimate-bg` | `white` | Background color |
+| `--estimate-bg-element` | `rgb(252 251 249)` | Element background |
+| `--estimate-border` | `rgb(226 226 226)` | Border color |
+| `--estimate-text` | `rgb(23 23 23)` | Text color |
+| `--estimate-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--estimate-accent` | `rgb(37 99 235)` | Accent color |
+| `--estimate-header-padding` | `1.5rem` | Header padding |
+| `--estimate-section-padding` | `1rem 1.5rem` | Section padding |
+| `--estimate-radius` | `0.5rem` | Border radius |
+| `--estimate-title-size` | `1.5rem` | Title font size |
+| `--estimate-title-weight` | `700` | Title font weight |
+| `--estimate-accept-bg` | `rgb(22 163 74)` | Accept button background |
+| `--estimate-accept-text` | `white` | Accept button text |
+| `--estimate-decline-bg` | `transparent` | Decline button background |
+| `--estimate-decline-text` | `rgb(220 38 38)` | Decline button text |
+| `--estimate-decline-border` | `rgb(220 38 38)` | Decline button border |
+| `--estimate-total-bg` | `rgb(252 251 249)` | Total row background |
+| `--estimate-total-border` | `rgb(226 226 226)` | Total row border |
+| `--estimate-total-weight` | `700` | Total font weight |
+| `--estimate-qr-size` | `5rem` | QR code size |
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/estimate/snice-estimate';
+```
 
 ```html
 <snice-estimate
@@ -221,19 +222,10 @@ est.items = [
 ### Different Statuses
 
 ```html
-<!-- Draft estimate (no action buttons) -->
 <snice-estimate estimate-number="EST-D1" status="draft"></snice-estimate>
-
-<!-- Sent estimate (shows accept/decline buttons) -->
 <snice-estimate estimate-number="EST-S1" status="sent"></snice-estimate>
-
-<!-- Accepted estimate -->
 <snice-estimate estimate-number="EST-A1" status="accepted"></snice-estimate>
-
-<!-- Declined estimate -->
 <snice-estimate estimate-number="EST-X1" status="declined"></snice-estimate>
-
-<!-- Expired estimate -->
 <snice-estimate estimate-number="EST-E1" status="expired"></snice-estimate>
 ```
 
@@ -277,57 +269,6 @@ est.items = [
 ];
 ```
 
-### With Terms and Conditions
-
-```html
-<snice-estimate
-  id="terms-est"
-  estimate-number="EST-TERMS"
-  status="sent"
-  notes="Payment terms: Net 30 days upon acceptance."
-  terms="Cancellation policy: 50% refund if cancelled within 5 business days. No refunds after work has commenced.">
-</snice-estimate>
-```
-
-```typescript
-est.from = { name: 'Professional Services' };
-est.to = { name: 'Corporate Client' };
-est.items = [{ description: 'Project Work', quantity: 1, unitPrice: 25000 }];
-```
-
-### Listening for Events
-
-```html
-<snice-estimate
-  id="event-est"
-  estimate-number="EST-EVT"
-  status="sent">
-</snice-estimate>
-```
-
-```typescript
-est.from = { name: 'Vendor' };
-est.to = { name: 'Customer' };
-est.items = [
-  { description: 'Item 1', quantity: 1, unitPrice: 500, optional: true },
-  { description: 'Item 2', quantity: 1, unitPrice: 300 }
-];
-
-est.addEventListener('item-toggle', (e) => {
-  console.log('Item', e.detail.index, 'included:', e.detail.included);
-});
-
-est.addEventListener('estimate-accept', (e) => {
-  console.log('Estimate accepted!', e.detail.estimateNumber);
-  console.log('Total:', e.detail.total);
-  console.log('Items:', e.detail.items);
-});
-
-est.addEventListener('estimate-decline', (e) => {
-  console.log('Estimate declined:', e.detail.estimateNumber);
-});
-```
-
 ### With QR Code
 
 ```html
@@ -342,35 +283,34 @@ est.addEventListener('estimate-decline', (e) => {
 ### Different Variants
 
 ```html
-<!-- Professional variant -->
 <snice-estimate variant="professional" estimate-number="EST-P1"></snice-estimate>
-
-<!-- Creative variant -->
 <snice-estimate variant="creative" estimate-number="EST-C1"></snice-estimate>
-
-<!-- Minimal variant -->
 <snice-estimate variant="minimal" estimate-number="EST-M1"></snice-estimate>
 ```
 
-### Print Estimate
-
-```html
-<snice-estimate id="print-est" estimate-number="EST-PRINT"></snice-estimate>
-<button onclick="document.getElementById('print-est').print()">
-  Print Estimate
-</button>
-```
-
-### Export to JSON
-
-```html
-<snice-estimate id="json-est" estimate-number="EST-JSON"></snice-estimate>
-<button onclick="exportEstimate()">Export JSON</button>
-```
+### Listening for Events
 
 ```typescript
+est.addEventListener('item-toggle', (e) => {
+  console.log('Item', e.detail.index, 'included:', e.detail.included);
+});
+
+est.addEventListener('estimate-accept', (e) => {
+  console.log('Estimate accepted!', e.detail.estimateNumber);
+  console.log('Total:', e.detail.total);
+});
+
+est.addEventListener('estimate-decline', (e) => {
+  console.log('Estimate declined:', e.detail.estimateNumber);
+});
+```
+
+### Print and Export
+
+```typescript
+est.print();
+
 const data = est.toJSON();
-console.log(data);
 // Contains: estimateNumber, date, expiryDate, status, items,
 // subtotal, discountAmount, taxAmount, total, etc.
 ```

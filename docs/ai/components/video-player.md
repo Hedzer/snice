@@ -4,18 +4,18 @@ Full-featured video player with custom controls, keyboard shortcuts, PiP, and fu
 
 ## Properties
 
-```ts
-src: string = ''
-poster: string = ''
-autoplay: boolean = false
-muted: boolean = false
-loop: boolean = false
-controls: boolean = true
-playbackRate: number = 1       // attribute: playback-rate
-currentTime: number = 0        // attribute: current-time
-volume: number = 1             // 0-1
-variant: 'default' | 'minimal' | 'cinema' = 'default'
-readonly duration: number      // read-only, set from video metadata
+```typescript
+src: string = '';
+poster: string = '';
+autoplay: boolean = false;
+muted: boolean = false;
+loop: boolean = false;
+controls: boolean = true;
+playbackRate: number = 1;       // attr: playback-rate
+currentTime: number = 0;        // attr: current-time
+volume: number = 1;             // 0-1
+variant: 'default'|'minimal'|'cinema' = 'default';
+duration: number;               // read-only
 ```
 
 ## Methods
@@ -23,42 +23,28 @@ readonly duration: number      // read-only, set from video metadata
 - `play()` - Start playback (async)
 - `pause()` - Pause playback
 - `toggle()` - Toggle play/pause
-- `seekTo(time: number)` - Seek to time in seconds
+- `seekTo(time)` - Seek to time in seconds
 - `requestFullscreen()` - Enter fullscreen (async)
 - `exitFullscreen()` - Exit fullscreen (async)
 - `requestPictureInPicture()` - Toggle picture-in-picture (async)
-- `setPlaybackRate(rate: number)` - Set playback speed
-
-## Slots
-
-- `default` - `<source>` elements for multiple formats
+- `setPlaybackRate(rate)` - Set playback speed
 
 ## Events
 
-- `video-play` -> `{ player: SniceVideoPlayerElement }`
-- `video-pause` -> `{ player: SniceVideoPlayerElement }`
-- `video-ended` -> `{ player: SniceVideoPlayerElement }`
-- `video-time-update` -> `{ player: SniceVideoPlayerElement; currentTime: number; duration: number }`
-- `video-fullscreen-change` -> `{ player: SniceVideoPlayerElement; fullscreen: boolean }`
-- `video-volume-change` -> `{ player: SniceVideoPlayerElement; volume: number; muted: boolean }`
+- `video-play` -> `{ player }`
+- `video-pause` -> `{ player }`
+- `video-ended` -> `{ player }`
+- `video-time-update` -> `{ player, currentTime, duration }`
+- `video-fullscreen-change` -> `{ player, fullscreen }`
+- `video-volume-change` -> `{ player, volume, muted }`
 
-## Keyboard Shortcuts
+## Slots
 
-- Space/K: Toggle play/pause
-- F: Toggle fullscreen
-- M: Toggle mute
-- ArrowRight/ArrowLeft: Seek forward/backward 5s
-- ArrowUp/ArrowDown: Volume up/down 10%
-
-## Variants
-
-- `default` - Full controls, progress bar, PiP, rate selector
-- `minimal` - Simplified controls, no rate/PiP buttons
-- `cinema` - Larger controls, no border radius, box shadow
+- `(default)` - `<source>` elements for multiple formats
 
 ## CSS Custom Properties
 
-- `--snice-video-overlay-bg` - Video background color (default: `rgb(0 0 0)`)
+- `--snice-video-overlay-bg` - Video background (default: `rgb(0 0 0)`)
 - `--snice-video-overlay-alpha` - Overlay with alpha (default: `rgb(0 0 0 / 0.5)`)
 - `--snice-video-controls-color` - Controls text/icon color (default: `rgb(255 255 255)`)
 - `--snice-video-controls-hover-bg` - Button hover background (default: `rgb(255 255 255 / 0.15)`)
@@ -77,31 +63,28 @@ readonly duration: number      // read-only, set from video metadata
 - `--snice-focus-ring-width` - Button focus ring width
 - `--snice-focus-ring-color` - Button focus ring color
 
-**CSS Parts:**
+## CSS Parts
+
 - `base` - Outer container element
 - `video` - The `<video>` element
 - `controls` - Control bar container
 - `progress` - Progress track element
 
-## Usage
+## Keyboard Navigation
+
+- Space/K: Toggle play/pause
+- F: Toggle fullscreen
+- M: Toggle mute
+- ArrowRight/ArrowLeft: Seek forward/backward 5s
+- ArrowUp/ArrowDown: Volume up/down 10%
+
+## Basic Usage
 
 ```html
-<snice-video-player
-  src="video.mp4"
-  poster="poster.jpg"
-  controls
-></snice-video-player>
+<snice-video-player src="video.mp4" poster="poster.jpg"></snice-video-player>
 
-<!-- Multiple sources -->
 <snice-video-player poster="poster.jpg">
   <source src="video.webm" type="video/webm">
   <source src="video.mp4" type="video/mp4">
 </snice-video-player>
-```
-
-```typescript
-player.addEventListener('video-ended', () => {
-  console.log('Video finished');
-});
-player.play();
 ```

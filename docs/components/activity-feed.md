@@ -1,28 +1,23 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/activity-feed.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/activity-feed.md -->
 
 # Activity Feed
 `<snice-activity-feed>`
 
 A vertical timeline of activity entries for displaying audit logs, user activity streams, and event histories.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/activity-feed/snice-activity-feed';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-activity-feed.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `activities` | `Activity[]` | `[]` | Array of activity objects |
+| `activities` | `Activity[]` | `[]` | Array of activity objects (set via JavaScript) |
 | `filter` | `string` | `''` | Active filter by activity type |
 | `groupBy` (attr: `group-by`) | `'none' \| 'date'` | `'none'` | Grouping mode |
 

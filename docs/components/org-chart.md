@@ -1,57 +1,42 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/org-chart.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/org-chart.md -->
 
-# Org Chart Component
-
+# Org Chart
 `<snice-org-chart>`
 
-A hierarchical organizational chart that renders tree-structured data with node cards, connecting lines, avatars, and expand/collapse functionality. Supports both top-down and left-right layout directions.
+A hierarchical organizational chart with expand/collapse functionality, avatars, and two layout directions.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/org-chart/snice-org-chart';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-org-chart.min.js"></script>
-```
+- [Data Types](#data-types)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `data` | `OrgChartNode \| null` | `null` | Root node of the organizational tree (set via JavaScript) |
-| `direction` | `'top-down' \| 'left-right'` | `'top-down'` | Layout direction for the chart |
-| `compact` | `boolean` | `false` | Use compact node display with smaller cards |
+| `data` | `OrgChartNode \| null` | `null` | Root node of the tree (set via JS) |
+| `direction` | `'top-down' \| 'left-right'` | `'top-down'` | Layout direction |
+| `compact` | `boolean` | `false` | Compact node display |
 
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `collapseNode()` | `id: string` | Collapse a specific node, hiding its children |
-| `expandNode()` | `id: string` | Expand a specific node, showing its children |
-| `expandAll()` | -- | Expand all nodes in the chart |
-| `collapseAll()` | -- | Collapse all nodes in the chart |
+| `collapseNode()` | `id: string` | Collapse a specific node by ID |
+| `expandNode()` | `id: string` | Expand a specific node by ID |
+| `expandAll()` | -- | Expand all nodes in the tree |
+| `collapseAll()` | -- | Collapse all nodes in the tree |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `node-click` | `{ node: OrgChartNode }` | Fired when a node card is clicked |
+| `node-click` | `{ node: OrgChartNode }` | Fired when a node is clicked |
 | `node-expand` | `{ node: OrgChartNode }` | Fired when a node is expanded |
 | `node-collapse` | `{ node: OrgChartNode }` | Fired when a node is collapsed |
 
@@ -62,15 +47,10 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | The outer chart container |
-| `tree` | `<div>` | The tree layout wrapper with connecting lines |
-| `node` | `<div>` | Individual node cards (repeated for each node) |
+| `tree` | `<div>` | The tree layout wrapper |
+| `node` | `<div>` | Individual node cards |
 
 ```css
-snice-org-chart::part(base) {
-  padding: 2rem;
-  overflow: auto;
-}
-
 snice-org-chart::part(node) {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -84,216 +64,87 @@ import 'snice/components/org-chart/snice-org-chart';
 ```
 
 ```html
-<snice-org-chart direction="top-down"></snice-org-chart>
+<snice-org-chart id="chart" direction="top-down"></snice-org-chart>
+
+<script type="module">
+  const chart = document.getElementById('chart');
+  chart.data = {
+    id: 'ceo',
+    name: 'Jane Smith',
+    title: 'CEO',
+    avatar: '/avatars/jane.jpg',
+    children: [
+      { id: 'cto', name: 'Bob Jones', title: 'CTO', children: [
+        { id: 'dev1', name: 'Alice Chen', title: 'Senior Engineer' },
+        { id: 'dev2', name: 'David Park', title: 'Engineer' }
+      ]},
+      { id: 'cfo', name: 'Carol White', title: 'CFO' }
+    ]
+  };
+</script>
 ```
 
 ## Examples
 
-### Basic Org Chart
+### Left-Right Layout
 
-Provide a tree data structure to render a top-down organizational chart.
-
-```html
-<snice-org-chart id="org" direction="top-down"></snice-org-chart>
-
-<script type="module">
-  import 'snice/components/org-chart/snice-org-chart';
-
-  const chart = document.getElementById('org');
-  chart.data = {
-    id: 'ceo',
-    name: 'Jane Smith',
-    title: 'CEO',
-    avatar: '/avatars/jane.jpg',
-    children: [
-      {
-        id: 'cto',
-        name: 'Bob Jones',
-        title: 'CTO',
-        children: [
-          { id: 'dev1', name: 'Alice Chen', title: 'Senior Engineer' },
-          { id: 'dev2', name: 'David Park', title: 'Engineer' }
-        ]
-      },
-      {
-        id: 'cfo',
-        name: 'Carol White',
-        title: 'CFO',
-        children: [
-          { id: 'acc1', name: 'Eve Brown', title: 'Accountant' }
-        ]
-      }
-    ]
-  };
-</script>
-```
-
-### Left-to-Right Layout
-
-Use `direction="left-right"` for a horizontal chart layout.
+Use `direction="left-right"` for a horizontal tree layout.
 
 ```html
-<snice-org-chart id="horizontal-org" direction="left-right"></snice-org-chart>
-
-<script type="module">
-  import 'snice/components/org-chart/snice-org-chart';
-
-  const chart = document.getElementById('horizontal-org');
-  chart.data = {
-    id: 'root',
-    name: 'Engineering',
-    title: 'Department',
-    children: [
-      {
-        id: 'frontend',
-        name: 'Frontend Team',
-        title: 'Team Lead: Maria',
-        children: [
-          { id: 'fe1', name: 'Tom', title: 'React Developer' },
-          { id: 'fe2', name: 'Lisa', title: 'UI Engineer' }
-        ]
-      },
-      {
-        id: 'backend',
-        name: 'Backend Team',
-        title: 'Team Lead: James',
-        children: [
-          { id: 'be1', name: 'Sam', title: 'API Engineer' },
-          { id: 'be2', name: 'Nina', title: 'Database Admin' }
-        ]
-      }
-    ]
-  };
-</script>
+<snice-org-chart direction="left-right"></snice-org-chart>
 ```
 
 ### Compact Mode
 
-Set the `compact` attribute for smaller node cards, useful for large organizations.
+Use the `compact` attribute for smaller node cards.
 
 ```html
-<snice-org-chart id="compact-org" compact></snice-org-chart>
-
-<script type="module">
-  import 'snice/components/org-chart/snice-org-chart';
-
-  const chart = document.getElementById('compact-org');
-  chart.data = {
-    id: 'ceo',
-    name: 'Jane Smith',
-    title: 'CEO',
-    children: [
-      { id: 'vp1', name: 'VP Engineering', title: 'VP' },
-      { id: 'vp2', name: 'VP Sales', title: 'VP' },
-      { id: 'vp3', name: 'VP Marketing', title: 'VP' },
-      { id: 'vp4', name: 'VP Operations', title: 'VP' }
-    ]
-  };
-</script>
-```
-
-### Interactive Node Selection
-
-Listen for `node-click` events to display details or navigate when a node is selected.
-
-```html
-<snice-org-chart id="interactive-org"></snice-org-chart>
-<div id="selected-info" style="margin-top: 1rem;"></div>
-
-<script type="module">
-  import 'snice/components/org-chart/snice-org-chart';
-
-  const chart = document.getElementById('interactive-org');
-  const info = document.getElementById('selected-info');
-
-  chart.data = {
-    id: 'ceo',
-    name: 'Jane Smith',
-    title: 'CEO',
-    avatar: '/avatars/jane.jpg',
-    children: [
-      { id: 'cto', name: 'Bob Jones', title: 'CTO', avatar: '/avatars/bob.jpg' },
-      { id: 'cfo', name: 'Carol White', title: 'CFO', avatar: '/avatars/carol.jpg' }
-    ]
-  };
-
-  chart.addEventListener('node-click', (e) => {
-    const node = e.detail.node;
-    info.textContent = `Selected: ${node.name} (${node.title || 'No title'})`;
-  });
-</script>
+<snice-org-chart compact></snice-org-chart>
 ```
 
 ### Programmatic Expand/Collapse
 
-Use methods to control which branches of the tree are visible.
-
-```html
-<snice-org-chart id="controlled-org"></snice-org-chart>
-<button id="expand-all">Expand All</button>
-<button id="collapse-all">Collapse All</button>
-
-<script type="module">
-  import 'snice/components/org-chart/snice-org-chart';
-
-  const chart = document.getElementById('controlled-org');
-  chart.data = {
-    id: 'root',
-    name: 'Company',
-    title: 'Organization',
-    children: [
-      {
-        id: 'dept1',
-        name: 'Engineering',
-        title: 'Department',
-        children: [
-          { id: 'team1', name: 'Frontend', title: 'Team' },
-          { id: 'team2', name: 'Backend', title: 'Team' }
-        ]
-      },
-      {
-        id: 'dept2',
-        name: 'Marketing',
-        title: 'Department',
-        children: [
-          { id: 'team3', name: 'Content', title: 'Team' },
-          { id: 'team4', name: 'Growth', title: 'Team' }
-        ]
-      }
-    ]
-  };
-
-  document.getElementById('expand-all').addEventListener('click', () => chart.expandAll());
-  document.getElementById('collapse-all').addEventListener('click', () => chart.collapseAll());
-
-  chart.addEventListener('node-expand', (e) => {
-    console.log('Expanded:', e.detail.node.name);
-  });
-
-  chart.addEventListener('node-collapse', (e) => {
-    console.log('Collapsed:', e.detail.node.name);
-  });
-</script>
-```
-
-## Types
-
-### OrgChartNode
+Use methods to control the tree programmatically.
 
 ```typescript
-interface OrgChartNode {
-  id: string;                    // Unique identifier for the node
-  name: string;                  // Person's name displayed on the card
-  title?: string;                // Job title or role
-  avatar?: string;               // Avatar image URL
-  children?: OrgChartNode[];     // Child nodes in the hierarchy
-}
+chart.collapseAll();
+chart.expandNode('cto');
+
+chart.addEventListener('node-expand', (e) => {
+  console.log('Expanded:', e.detail.node.name);
+});
+
+chart.addEventListener('node-collapse', (e) => {
+  console.log('Collapsed:', e.detail.node.name);
+});
+```
+
+### Interactive Node Selection
+
+Listen for `node-click` events to display details or navigate.
+
+```typescript
+chart.addEventListener('node-click', (e) => {
+  const node = e.detail.node;
+  console.log(`Selected: ${node.name} (${node.title || 'No title'})`);
+});
 ```
 
 ## Accessibility
 
 - Node cards are interactive and clickable
-- Expand/collapse controls are accessible for toggling subtree visibility
-- The chart uses connecting lines to visually represent the hierarchy
+- Expand/collapse toggle buttons are accessible
+- Avatar placeholders display name initials when no image is provided
 - Nodes display name, title, and optional avatar for clear identification
-- Keyboard users can interact with node cards to trigger click events
+
+## Data Types
+
+```typescript
+interface OrgChartNode {
+  id: string;                      // Unique identifier
+  name: string;                    // Person's name
+  title?: string;                  // Job title or role
+  avatar?: string;                 // Avatar image URL
+  children?: OrgChartNode[];       // Child nodes
+}
+```

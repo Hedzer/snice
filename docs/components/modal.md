@@ -1,22 +1,20 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/modal.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/modal.md -->
 
 # Modal
 `<snice-modal>`
 
 A dialog overlay with focus trapping, backdrop dismiss, and keyboard navigation.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/modal/snice-modal';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-modal.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -136,38 +134,23 @@ Set `no-backdrop-dismiss` to prevent closing when clicking outside.
 </snice-modal>
 ```
 
-### Prevent Escape Dismiss
-
-Set `no-escape-dismiss` to prevent closing with the Escape key.
-
-```html
-<snice-modal no-escape-dismiss label="Confirmation Required">
-  <div slot="header"><h2>Confirm Action</h2></div>
-  <p>Pressing Escape won't close this modal.</p>
-  <div slot="footer">
-    <button onclick="this.closest('snice-modal').close()">Confirm</button>
-  </div>
-</snice-modal>
-```
-
 ### Confirmation Dialog
 
 ```html
-<button>Delete Item</button>
+<button id="deleteBtn">Delete Item</button>
 
-<snice-modal size="small" label="Confirm Delete">
+<snice-modal id="confirmModal" size="small" label="Confirm Delete">
   <div slot="header"><h2>Confirm Delete</h2></div>
   <p>Are you sure? This action cannot be undone.</p>
   <div slot="footer">
-    <button>Cancel</button>
-    <button>Delete</button>
+    <button onclick="this.closest('snice-modal').close()">Cancel</button>
+    <button id="confirmBtn">Delete</button>
   </div>
 </snice-modal>
 ```
 
 ```typescript
 deleteBtn.addEventListener('click', () => modal.show());
-cancelBtn.addEventListener('click', () => modal.close());
 confirmBtn.addEventListener('click', () => {
   console.log('Item deleted');
   modal.close();
@@ -177,8 +160,6 @@ confirmBtn.addEventListener('click', () => {
 ### Form in Modal
 
 ```html
-<button>Edit Profile</button>
-
 <snice-modal label="Edit Profile">
   <div slot="header"><h2>Edit Profile</h2></div>
   <form style="display:flex;flex-direction:column;gap:1rem;">
@@ -192,15 +173,6 @@ confirmBtn.addEventListener('click', () => {
 </snice-modal>
 ```
 
-```typescript
-editBtn.addEventListener('click', () => modal.show());
-profileForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  console.log('Saved:', Object.fromEntries(new FormData(e.target)));
-  modal.close();
-});
-```
-
 ### Programmatic Control
 
 ```typescript
@@ -210,3 +182,20 @@ modal.close(); // Close
 modal.addEventListener('modal-open', () => console.log('Opened'));
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| Escape | Close the modal (unless `no-escape-dismiss` is set) |
+| Tab | Cycle through focusable elements within the modal |
+| Shift+Tab | Cycle backwards through focusable elements |
+
+## Accessibility
+
+- Uses `role="dialog"` with `aria-modal="true"` and `aria-label`
+- Focus is trapped within the modal by default (disable with `no-focus-trap`)
+- First focusable element receives focus on open
+- Previous focus is restored on close
+- Body scroll is locked while modal is open
+- Close button has `aria-label="Close modal"`

@@ -1,25 +1,29 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/select.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/select.md -->
 
 # Select
-`<snice-select>`
 
-A customizable dropdown selection with single/multiple selection, search filtering, and composable options.
+A customizable dropdown selection with single/multiple selection, search filtering, editable input mode, and composable options.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/select/snice-select';
-import 'snice/components/select/snice-option';
-```
+- [Components](#components)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-select.min.js"></script>
-```
+## Components
 
-## Select Properties
+- `<snice-select>` - The select container with trigger, dropdown, and form integration
+- `<snice-option>` - Individual option elements (declarative API)
+
+## Properties
+
+### Select Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -30,7 +34,7 @@ import 'snice/components/select/snice-option';
 | `readonly` | `boolean` | `false` | Readonly state |
 | `loading` | `boolean` | `false` | Shows loading spinner |
 | `multiple` | `boolean` | `false` | Allow multiple selection |
-| `searchable` | `boolean` | `false` | Show search input |
+| `searchable` | `boolean` | `false` | Show search input in dropdown |
 | `clearable` | `boolean` | `false` | Show clear button |
 | `editable` | `boolean` | `false` | Render editable text input instead of button trigger |
 | `allowFreeText` (attr: `allow-free-text`) | `boolean` | `false` | Allow values not in the options list |
@@ -42,9 +46,9 @@ import 'snice/components/select/snice-option';
 | `label` | `string` | `''` | Label text |
 | `placeholder` | `string` | `'Select an option'` | Placeholder text |
 | `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
-| `options` | `SelectOption[]` | `[]` | Programmatic options array |
+| `options` | `SelectOption[]` | `[]` | Programmatic options array (JS only) |
 
-## Option Properties
+### Option Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -58,21 +62,37 @@ import 'snice/components/select/snice-option';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
+| `focus()` | — | Focus the select trigger |
+| `blur()` | — | Remove focus and close dropdown |
+| `clear()` | — | Clear the selection |
+| `openDropdown()` | — | Open the dropdown |
+| `closeDropdown()` | — | Close the dropdown |
+| `toggleDropdown()` | — | Toggle the dropdown |
 | `selectOption()` | `value: string` | Select an option by value |
-| `clear()` | -- | Clear the selection |
-| `openDropdown()` | -- | Open the dropdown |
-| `closeDropdown()` | -- | Close the dropdown |
-| `toggleDropdown()` | -- | Toggle the dropdown |
-| `focus()` | -- | Focus the select trigger |
-| `blur()` | -- | Remove focus and close dropdown |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `select-change` | `{ value, option, select }` | Selection changed |
+| `select-change` | `{ value: string \| string[], option?: SelectOption, select }` | Selection changed |
 | `select-open` | `{ select }` | Dropdown opened |
 | `select-close` | `{ select }` | Dropdown closed |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `label` | The label text |
+| `trigger` | The trigger button or input container |
+| `value` | The displayed value text |
+| `input` | The hidden native select for form submission |
+| `arrow` | The dropdown arrow icon |
+| `spinner` | The loading spinner |
+| `dropdown` | The dropdown container |
+| `search` | The search wrapper |
+| `search-input` | The search text input |
+| `options` | The options list container |
+| `option` | Individual option items |
 
 ## Basic Usage
 
@@ -91,76 +111,84 @@ import 'snice/components/select/snice-option';
 
 ## Examples
 
-### Sizes
-
-Use the `size` attribute to change the select size.
-
-```html
-<snice-select size="small" label="Small">
-  <snice-option value="a">Option A</snice-option>
-  <snice-option value="b">Option B</snice-option>
-</snice-select>
-
-<snice-select size="large" label="Large">
-  <snice-option value="a">Option A</snice-option>
-  <snice-option value="b">Option B</snice-option>
-</snice-select>
-```
-
 ### Multiple Selection
 
-Set the `multiple` attribute to allow selecting more than one option.
+Set `multiple` to allow selecting more than one option.
 
 ```html
-<snice-select label="Select languages" multiple>
+<snice-select label="Languages" multiple>
   <snice-option value="js">JavaScript</snice-option>
   <snice-option value="ts">TypeScript</snice-option>
   <snice-option value="py">Python</snice-option>
-  <snice-option value="rs">Rust</snice-option>
 </snice-select>
 ```
 
 ### Searchable
 
-Set the `searchable` attribute to show a search input for filtering options.
+Set `searchable` to show a search input for filtering options.
 
 ```html
-<snice-select label="Choose a country" searchable>
+<snice-select label="Country" searchable>
   <snice-option value="us">United States</snice-option>
   <snice-option value="uk">United Kingdom</snice-option>
   <snice-option value="ca">Canada</snice-option>
-  <snice-option value="au">Australia</snice-option>
-  <snice-option value="de">Germany</snice-option>
 </snice-select>
+```
+
+### Editable Mode
+
+Set `editable` to render a text input instead of a button. Typing filters options.
+
+```html
+<snice-select editable label="Fruit" placeholder="Type or select..."></snice-select>
+```
+
+```typescript
+select.options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' }
+];
+```
+
+### Allow Free Text
+
+Set `allow-free-text` with `editable` to accept values not in the options list.
+
+```html
+<snice-select editable allow-free-text label="Tag" placeholder="Type a tag..."></snice-select>
+```
+
+### Remote Search
+
+Set `remote` with `searchable` or `editable` for async search via `@request/@respond`.
+
+```typescript
+// Controller
+@respond('select/search')
+async handleSearch(req, respond) {
+  const results = await fetch(`/api/users?q=${req.query}`).then(r => r.json());
+  respond(results.map(u => ({ value: u.id, label: u.name })));
+}
 ```
 
 ### Clearable
 
-Set the `clearable` attribute to show a clear button.
+Set `clearable` to show a clear button.
 
 ```html
-<snice-select label="Clearable select" clearable>
+<snice-select label="Clearable" clearable>
   <snice-option value="1">Option 1</snice-option>
   <snice-option value="2">Option 2</snice-option>
 </snice-select>
 ```
 
-### Disabled Options
-
-```html
-<snice-select label="With disabled option">
-  <snice-option value="active">Active</snice-option>
-  <snice-option value="unavailable" disabled>Unavailable</snice-option>
-  <snice-option value="other">Other</snice-option>
-</snice-select>
-```
-
 ### With Icons
 
-Use the `icon` attribute on options to display an image.
+Use the `icon` attribute on options to display images.
 
 ```html
-<snice-select label="Select role">
+<snice-select label="Role">
   <snice-option value="user" icon="/icons/user.svg">User</snice-option>
   <snice-option value="admin" icon="/icons/admin.svg">Admin</snice-option>
 </snice-select>
@@ -168,92 +196,42 @@ Use the `icon` attribute on options to display an image.
 
 ### Form Integration
 
+The select participates in forms via a hidden native select element.
+
 ```html
 <form>
   <snice-select name="role" label="User role" required>
     <snice-option value="user">User</snice-option>
     <snice-option value="admin">Admin</snice-option>
-    <snice-option value="moderator">Moderator</snice-option>
   </snice-select>
   <button type="submit">Submit</button>
 </form>
 ```
 
-```typescript
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  console.log(Object.fromEntries(new FormData(e.target)));
-});
-```
-
-### Programmatic Control
-
-```typescript
-select.selectOption('apple');
-select.clear();
-select.openDropdown();
-select.closeDropdown();
-select.toggleDropdown();
-```
-
 ### Event Handling
+
+Listen to `select-change` for selection changes.
 
 ```typescript
 select.addEventListener('select-change', (e) => {
   console.log('Selected:', e.detail.value);
 });
-
-select.addEventListener('select-open', () => console.log('Opened'));
-select.addEventListener('select-close', () => console.log('Closed'));
 ```
 
-### Validation
+## Keyboard Navigation
 
-```html
-<snice-select name="category" label="Category" required>
-  <snice-option value="tech">Technology</snice-option>
-  <snice-option value="health">Health</snice-option>
-</snice-select>
-```
+| Key | Action |
+|-----|--------|
+| `ArrowDown` | Move to next option / open dropdown |
+| `ArrowUp` | Move to previous option |
+| `Enter` | Select focused option / open dropdown |
+| `Escape` | Close dropdown |
+| `Tab` | Close dropdown and move focus |
 
-```typescript
-function validate() {
-  select.invalid = !select.value;
-  return !!select.value;
-}
-```
+## Accessibility
 
-### Editable Mode
-
-Set the `editable` attribute to render a text input instead of a button. Users can type to filter or enter custom values (with `allow-free-text`). This replaces the need for a separate combobox component.
-
-```html
-<snice-select editable label="Choose a fruit" placeholder="Type or select..."></snice-select>
-```
-
-```typescript
-select.options = [
-  { value: 'apple', label: 'Apple' },
-  { value: 'banana', label: 'Banana' },
-  { value: 'cherry', label: 'Cherry' },
-];
-```
-
-#### Allow Custom Values
-
-Set `allow-free-text` alongside `editable` to let users enter values not in the options list.
-
-```html
-<snice-select editable allow-free-text label="Tag" placeholder="Type a tag..."></snice-select>
-```
-
-#### Programmatic Options
-
-Use the `options` property to set options via JavaScript. Works alongside child `<snice-option>` elements (merged at render time, children take precedence).
-
-```typescript
-select.options = [
-  { value: 'us', label: 'United States', icon: '/flags/us.png' },
-  { value: 'uk', label: 'United Kingdom', icon: '/flags/uk.png' },
-];
-```
+- Hidden native `<select>` for form submission
+- Keyboard navigable with arrow keys, Enter, and Escape
+- Dropdown closes on outside click
+- Multiple selection values are comma-separated
+- Child `<snice-option>` elements take precedence over `options` array when both provided

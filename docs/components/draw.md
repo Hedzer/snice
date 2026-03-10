@@ -1,72 +1,84 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/draw.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/draw.md -->
 
 # Draw Component
+`<snice-draw>`
 
-Canvas drawing with smooth lazy-brush technology.
+Canvas drawing with smooth lazy-brush technology, auto-polygon, and auto-circle detection.
+
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `width` | `number` | `800` | Canvas width |
-| `height` | `number` | `600` | Canvas height |
-| `tool` | `DrawTool` | `'pen'` | Drawing tool |
-| `color` | `string` | `'#000000'` | Brush color |
-| `strokeWidth` | `number` | `2` | Brush width |
-| `backgroundColor` | `string` | `'#ffffff'` | Canvas background |
-| `lazy` | `boolean` | `false` | Enable lazy brush |
-| `lazyRadius` | `number` | `60` | Lazy brush radius |
-| `friction` | `number` | `0.1` | Lazy brush friction |
-| `smoothing` | `number` | `0.5` | Line smoothing (0-1) |
-| `autoPolygon` | `boolean` | `false` | Enable auto-polygon |
-| `polygonCurvePoints` | `number` | `10` | Polygon curve smoothness (2-30) |
-| `disabled` | `boolean` | `false` | Disable drawing |
+| Property | Attribute | Type | Default | Description |
+|----------|-----------|------|---------|-------------|
+| `width` | `width` | `number` | `800` | Canvas width |
+| `height` | `height` | `number` | `600` | Canvas height |
+| `tool` | `tool` | `DrawTool` | `'pen'` | Drawing tool (`'pen'` \| `'eraser'` \| `'line'` \| `'rectangle'` \| `'circle'` \| `'text'`) |
+| `color` | `color` | `string` | `'#000000'` | Brush color |
+| `strokeWidth` | `stroke-width` | `number` | `2` | Brush width |
+| `backgroundColor` | `background-color` | `string` | `'#ffffff'` | Canvas background |
+| `lazy` | `lazy` | `boolean` | `false` | Enable lazy brush |
+| `lazyRadius` | `lazy-radius` | `number` | `60` | Lazy brush radius |
+| `friction` | `friction` | `number` | `0.1` | Lazy brush friction |
+| `smoothing` | `smoothing` | `number` | `0.5` | Line smoothing (0-1) |
+| `autoPolygon` | `auto-polygon` | `boolean` | `false` | Enable auto-polygon shape completion |
+| `polygonCurvePoints` | `polygon-curve-points` | `number` | `10` | Polygon curve smoothness (2-30) |
+| `autoCircle` | `auto-circle` | `boolean` | `false` | Enable auto-circle detection |
+| `circlePoints` | `circle-points` | `number` | `50` | Circle closing curve smoothness |
+| `disabled` | `disabled` | `boolean` | `false` | Disable drawing |
+
+### Types
+
+```typescript
+type DrawTool = 'pen' | 'eraser' | 'line' | 'rectangle' | 'circle' | 'text';
+
+interface DrawStroke {
+  id: string;          // Unique identifier
+  tool: DrawTool;      // Tool used
+  color: string;       // Hex color
+  width: number;       // Stroke width
+  points: Point[];     // Array of {x, y, pressure?}
+  timestamp: number;   // Creation time (ms)
+}
+```
 
 ## Methods
 
-### `clear(): void`
-Clear the entire canvas.
-
-### `undo(): void`
-Undo last stroke.
-
-### `redo(): void`
-Redo previously undone stroke.
-
-### `toDataURL(type?, quality?): string`
-Export as data URL.
-
-### `toBlob(type?, quality?): Promise<Blob>`
-Export as Blob.
-
-### `download(filename?): void`
-Download drawing.
-
-### `loadImage(url): Promise<void>`
-Load image onto canvas.
-
-### `getStrokes(): DrawStroke[]`
-Get all strokes.
-
-### `setStrokes(strokes): void`
-Set strokes (for loading saved drawings).
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `clear()` | -- | Clear the entire canvas |
+| `undo()` | -- | Undo last stroke |
+| `redo()` | -- | Redo previously undone stroke |
+| `toDataURL()` | `type?: string, quality?: number` | Export as data URL |
+| `toBlob()` | `type?: string, quality?: number` | Export as Blob |
+| `download()` | `filename?: string` | Download drawing |
+| `loadImage()` | `url: string` | Load image onto canvas |
+| `getStrokes()` | -- | Get all strokes |
+| `setStrokes()` | `strokes: DrawStroke[]` | Set strokes (for loading saved drawings) |
 
 ## Events
 
-- `draw-start` - Drawing started
-- `draw-end` - Drawing ended (stroke complete)
-- `draw-clear` - Canvas cleared
-- `draw-undo` - Undo performed
-- `draw-redo` - Redo performed
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `draw-start` | -- | Drawing started |
+| `draw-end` | `{ stroke }` | Drawing ended (stroke complete) |
+| `draw-clear` | -- | Canvas cleared |
+| `draw-undo` | -- | Undo performed |
+| `draw-redo` | -- | Redo performed |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer draw container |
-| `canvas` | `<canvas>` | Drawing canvas element |
+| Part | Description |
+|------|-------------|
+| `base` | Outer draw container |
+| `canvas` | Drawing canvas element |
 
 ```css
 snice-draw::part(base) {
@@ -81,31 +93,25 @@ snice-draw::part(canvas) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/draw/snice-draw';
+```
+
 ```html
 <snice-draw id="draw" width="800" height="600"></snice-draw>
 ```
 
-```typescript
-// Clear canvas
-draw.clear();
-
-// Undo/redo
-draw.undo();
-draw.redo();
-
-// Download
-draw.download('my-drawing.png');
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-draw.min.js"></script>
 ```
 
 ## Examples
 
-### Basic Drawing
+### Custom Colors and Stroke Width
 
-```html
-<snice-draw width="800" height="600"></snice-draw>
-```
-
-### Custom Colors
+Use the `color` and `stroke-width` properties to customize the brush.
 
 ```typescript
 draw.color = '#ff0000';
@@ -113,6 +119,8 @@ draw.strokeWidth = 5;
 ```
 
 ### Toolbar Integration
+
+Build a custom toolbar with tool and color controls.
 
 ```html
 <div>
@@ -127,71 +135,65 @@ draw.strokeWidth = 5;
 <snice-draw id="draw"></snice-draw>
 ```
 
-### Lazy Brush Settings
+### Lazy Brush
 
-```javascript
-// More responsive (smaller radius)
-draw.lazyRadius = 10;
+Enable lazy brush for smooth, organic lines by making the brush lag behind the cursor.
 
-// Very smooth (larger radius)
-draw.lazyRadius = 60;
-
-// Disable lazy brush
-draw.lazy = false;
+```html
+<snice-draw lazy lazy-radius="60" friction="0.1" smoothing="0.5"></snice-draw>
 ```
+
+- Larger radius = smoother, slower response
+- Smaller radius = more control, less smoothing
+- Disable for pixel-perfect control
+
+### Auto-Polygon
+
+Enable auto-polygon to automatically close drawn shapes.
+
+```html
+<snice-draw auto-polygon polygon-curve-points="15"></snice-draw>
+```
+
+When you finish drawing, it detects self-intersections and trims at the first crossing point. If start and end points are far apart (>20px), it connects them with a smooth curve. The `polygon-curve-points` value (2-30) controls curve smoothness.
+
+### Auto-Circle
+
+Enable auto-circle to detect and smooth circular strokes.
+
+```html
+<snice-draw auto-circle circle-points="50"></snice-draw>
+```
+
+When enabled, strokes are analyzed and converted into smooth circles. The `circle-points` value controls the smoothness of the closing curve.
 
 ### Export Drawing
 
+Use `toDataURL()`, `toBlob()`, or `download()` to export the canvas.
+
 ```javascript
-// As data URL
 const dataURL = draw.toDataURL('image/png');
-
-// As blob
 const blob = await draw.toBlob('image/png', 0.9);
-
-// Download
 draw.download('my-artwork.png');
 ```
 
 ### Save and Load
 
-Each stroke has a unique ID for tracking and manipulation:
+Use `getStrokes()` and `setStrokes()` to persist drawings.
 
 ```javascript
-// Save drawing
+// Save
 const strokes = draw.getStrokes();
 localStorage.setItem('drawing', JSON.stringify(strokes));
 
-// Load drawing
+// Load
 const saved = JSON.parse(localStorage.getItem('drawing'));
 draw.setStrokes(saved);
-
-// Access individual strokes by ID
-const strokes = draw.getStrokes();
-console.log(strokes[0].id); // e.g., "stroke-1735216842123-x7k9m2p"
-
-// Filter strokes
-const penStrokes = strokes.filter(s => s.tool === 'pen');
-
-// Remove specific stroke
-const filtered = strokes.filter(s => s.id !== 'stroke-id-to-remove');
-draw.setStrokes(filtered);
-```
-
-**Stroke Structure:**
-
-```typescript
-interface DrawStroke {
-  id: string;          // Unique identifier
-  tool: DrawTool;      // 'pen' | 'eraser' | etc
-  color: string;       // Hex color
-  width: number;       // Stroke width
-  points: Point[];     // Array of {x, y, pressure?}
-  timestamp: number;   // Creation time (ms)
-}
 ```
 
 ### Load Background Image
+
+Use `loadImage()` to load a background image onto the canvas.
 
 ```javascript
 await draw.loadImage('background.jpg');
@@ -199,126 +201,18 @@ await draw.loadImage('background.jpg');
 
 ### Event Handling
 
+Listen for drawing events to build auto-save or analytics.
+
 ```javascript
 draw.addEventListener('draw-end', (e) => {
   const stroke = e.detail.stroke;
   console.log(`Drew ${stroke.points.length} points`);
-
-  // Auto-save
-  saveDrawing();
 });
 ```
 
-### Keyboard Shortcuts
+## Accessibility
 
-```javascript
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey || e.metaKey) {
-    if (e.key === 'z') {
-      e.preventDefault();
-      if (e.shiftKey) {
-        draw.redo();
-      } else {
-        draw.undo();
-      }
-    }
-  }
-});
-```
-
-## Tools
-
-- `'pen'` - Draw with brush
-- `'eraser'` - Erase strokes
-- `'line'` - Draw straight lines
-- `'rectangle'` - Draw rectangles
-- `'circle'` - Draw circles
-- `'text'` - Add text
-
-## Lazy Brush
-
-The lazy brush creates smooth, organic lines by making the brush lag behind your cursor within a configurable radius. This eliminates jitter and produces professional-looking strokes.
-
-**How it works:**
-1. Cursor moves freely
-2. Brush follows within `lazyRadius`
-3. Creates smooth curves
-4. Reduces hand tremor effects
-
-**Tips:**
-- Larger radius = smoother, slower response
-- Smaller radius = more control, less smoothing
-- Disable for pixel-perfect control
-
-## Auto-Polygon
-
-Auto-polygon automatically processes completed strokes into closed shapes. When you finish drawing (release the mouse/pointer), it analyzes the stroke and applies smart shape completion.
-
-**Features:**
-
-1. **Self-Intersection Detection**
-   - Detects when your stroke crosses itself
-   - Automatically trims at the first intersection point
-   - Creates a clean closed shape without excess
-
-2. **Auto-Close Open Shapes**
-   - If start and end points are far apart (>20px)
-   - Connects them with a smooth quadratic curve
-   - Curve adapts to the gap distance
-
-**Properties:**
-
-- `autoPolygon` - Enable/disable the feature (default: `false`)
-- `polygonCurvePoints` - Curve smoothness, 2-30 (default: `10`)
-  - Lower values (2-5): Sharp, direct connection
-  - Medium values (10-15): Balanced smooth curve
-  - Higher values (20-30): Very smooth, organic curve
-
-**Example:**
-
-```typescript
-// Enable auto-polygon
-draw.autoPolygon = true;
-
-// Adjust curve smoothness
-draw.polygonCurvePoints = 15; // Smoother curves
-```
-
-```html
-<snice-draw
-  auto-polygon
-  polygon-curve-points="15">
-</snice-draw>
-```
-
-**Use Cases:**
-
-- Sketching closed shapes quickly
-- Drawing polygons without precision
-- Creating organic forms that auto-complete
-- UI wireframing and mockups
-- Diagram creation
-
-**How It Works:**
-
-The algorithm processes strokes on `pointerup`:
-
-1. Simplify points (sample every 5th point for performance)
-2. Check for self-intersections using line-line intersection
-3. If intersection found: trim and close at that point
-4. If no intersection and gap >20px: generate curve points
-5. Use quadratic Bezier with perpendicular control point
-6. Insert interpolated points for smooth rendering
-
-## Browser Support
-
-- Modern browsers with Canvas API
-- Pointer Events API for touch support
+- Pointer Events API for touch and stylus support
 - Works on desktop and mobile
-
-## Performance
-
-- Optimized canvas rendering
-- Efficient stroke storage
-- Smooth 60fps drawing
-- Touch and stylus pressure support
+- Pressure-sensitive stylus support
+- `disabled` property prevents all drawing interaction

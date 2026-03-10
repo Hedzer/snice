@@ -1,34 +1,31 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/mentions.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/mentions.md -->
 
 # Mentions
 `<snice-mentions>`
 
 A text input with inline @mention autocomplete. Typing the trigger character shows a filtered user list dropdown, and selected mentions are stored as structured markers in the value.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/mentions/snice-mentions';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-mentions.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `value` | `string` | `''` | Raw text with `@[Name](id)` mention markers |
-| `users` | `MentionUser[]` | `[]` | Users available for autocomplete |
+| `users` | `MentionUser[]` | `[]` | Users available for autocomplete (set via JavaScript) |
 | `placeholder` | `string` | `'Type @ to mention someone...'` | Input placeholder text |
 | `readonly` | `boolean` | `false` | Prevents editing |
 | `trigger` | `string` | `'@'` | Character that triggers the autocomplete dropdown |
 
-### MentionUser Interface
+### Types
 
 ```typescript
 interface MentionUser {
@@ -36,11 +33,7 @@ interface MentionUser {
   name: string;
   avatar?: string;
 }
-```
 
-### Mention Interface
-
-```typescript
 interface Mention {
   id: string;
   name: string;
@@ -67,12 +60,14 @@ interface Mention {
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `base` | Wrapper container |
-| `editor` | Editor container with border |
-| `textarea` | The textarea element |
-| `dropdown` | Autocomplete dropdown |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | Wrapper container |
+| `editor` | `<div>` | Editor container with border |
+| `textarea` | `<textarea>` | The textarea element |
+| `dropdown` | `<div>` | Autocomplete dropdown |
 
 ## Basic Usage
 
@@ -171,3 +166,19 @@ editor.addEventListener('value-change', e => {
   console.log('Mentions:', e.detail.mentions);
 });
 ```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| Arrow Down | Move to next item in dropdown |
+| Arrow Up | Move to previous item in dropdown |
+| Enter / Tab | Select highlighted item |
+| Escape | Close dropdown |
+
+## Accessibility
+
+- The textarea has `aria-autocomplete="list"` and `aria-haspopup="listbox"`
+- Dropdown items have `role="option"` with `aria-selected` for the highlighted item
+- The dropdown has `role="listbox"`
+- Avatar placeholders show user initials when no image is provided

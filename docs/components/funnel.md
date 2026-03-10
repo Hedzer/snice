@@ -1,6 +1,6 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/funnel.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/funnel.md -->
 
-# Funnel Component
+# Funnel
 
 The funnel component renders an SVG-based funnel/conversion chart, ideal for visualizing pipeline stages, conversion funnels, and drop-off analysis. Each stage is rendered as a trapezoid shape that narrows proportionally to its value.
 
@@ -11,19 +11,19 @@ The funnel component renders an SVG-based funnel/conversion chart, ideal for vis
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `data` | `FunnelStage[]` | `[]` | Array of stage objects with label, value, and optional color |
+| `data` | `FunnelStage[]` | `[]` | Array of stage objects with label, value, and optional color (set via JS) |
 | `variant` | `'default' \| 'gradient'` | `'default'` | Color variant - default uses distinct colors, gradient uses opacity fade |
 | `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Funnel layout direction |
-| `show-labels` | `boolean` | `true` | Whether to display stage labels |
-| `show-values` | `boolean` | `true` | Whether to display stage values |
-| `show-percentages` | `boolean` | `true` | Whether to display conversion percentages |
+| `showLabels` (attr: `show-labels`) | `boolean` | `true` | Whether to display stage labels |
+| `showValues` (attr: `show-values`) | `boolean` | `true` | Whether to display stage values |
+| `showPercentages` (attr: `show-percentages`) | `boolean` | `true` | Whether to display conversion percentages |
 | `animation` | `boolean` | `false` | Whether to animate stages on initial render |
 
 ### FunnelStage Interface
@@ -71,13 +71,11 @@ funnel.addEventListener('funnel-click', (e) => {
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer funnel container |
-| `chart` | `<div>` | SVG chart rendering area |
-| `tooltip` | `<div>` | Hover tooltip element |
+| Part | Description |
+|------|-------------|
+| `base` | Outer funnel container |
+| `chart` | SVG chart rendering area |
+| `tooltip` | Hover tooltip element |
 
 ```css
 snice-funnel::part(base) {
@@ -91,12 +89,14 @@ snice-funnel::part(tooltip) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/funnel/snice-funnel';
+```
+
 ```html
 <snice-funnel id="my-funnel"></snice-funnel>
 
 <script type="module">
-  import 'snice/components/funnel/snice-funnel';
-
   const funnel = document.getElementById('my-funnel');
   funnel.data = [
     { label: 'Visitors', value: 10000 },
@@ -186,6 +186,11 @@ The gradient variant uses decreasing opacity of the primary color for a smoother
 </script>
 ```
 
+## Keyboard Navigation
+
+- **Enter** / **Space** -- Activate a focused stage (fires `funnel-click`)
+- **Tab** -- Navigate between stages
+
 ## Accessibility
 
 - **ARIA role**: The SVG has `role="img"` with `aria-label="Funnel chart"`
@@ -193,9 +198,3 @@ The gradient variant uses decreasing opacity of the primary color for a smoother
 - **ARIA labels**: Each stage has a descriptive `aria-label` including the label, value, and percentage
 - **Keyboard support**: Stages can be activated with Enter or Space keys
 - **Focus styles**: Visible focus ring on keyboard navigation
-- **Color contrast**: Default colors meet WCAG AA standards
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support

@@ -4,7 +4,7 @@ Rich URL preview card with image, title, description, and site info.
 
 ## Properties
 
-```typescript
+```ts
 url: string = '';
 title: string = '';
 description: string = '';
@@ -19,7 +19,17 @@ size: 'small'|'medium'|'large' = 'medium';
 
 - `link-click` → `{ url: string }`
 
-## Usage
+## CSS Parts
+
+- `base` - Outer preview card container
+- `content` - Text content area (title, description, footer)
+- `title` - Title text element
+
+## Basic Usage
+
+```typescript
+import 'snice/components/link-preview/snice-link-preview';
+```
 
 ```html
 <!-- Vertical (default) -->
@@ -37,19 +47,3 @@ size: 'small'|'medium'|'large' = 'medium';
   url="https://example.com" title="Quick Link" description="Short.">
 </snice-link-preview>
 ```
-
-## CSS Parts
-
-- `base` - The outer preview card container
-- `content` - The text content area (title, description, footer)
-- `title` - The title text element
-
-## Features
-
-- Vertical (image top) and horizontal (image left) layouts
-- 3 sizes: small, medium, large
-- Placeholder icon when no image
-- Title clamped to 2 lines, description to 3
-- Domain extracted from URL
-- Click opens URL in new tab (noopener, noreferrer)
-- Keyboard accessible (Enter/Space)

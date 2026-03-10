@@ -4,17 +4,27 @@ Dialog overlay with focus trap, backdrop dismiss, and accessibility.
 
 ## Properties
 
-```typescript
+```ts
 open: boolean = false;
 size: 'small'|'medium'|'large'|'fullscreen' = 'medium';
 noBackdropDismiss: boolean = false;  // attr: no-backdrop-dismiss
 noEscapeDismiss: boolean = false;    // attr: no-escape-dismiss
 noFocusTrap: boolean = false;        // attr: no-focus-trap
 noCloseButton: boolean = false;      // attr: no-close-button
-noHeader: boolean = false;           // attr: no-header — hides header entirely
-noFooter: boolean = false;           // attr: no-footer — hides footer entirely
+noHeader: boolean = false;           // attr: no-header
+noFooter: boolean = false;           // attr: no-footer
 label: string = '';                  // Accessible label
 ```
+
+## Methods
+
+- `show()` → Open modal
+- `close()` → Close modal
+
+## Events
+
+- `modal-open` → `{ modal: SniceModalElement }`
+- `modal-close` → `{ modal: SniceModalElement }`
 
 ## Slots
 
@@ -22,17 +32,24 @@ label: string = '';                  // Accessible label
 - `header` - Header content (title)
 - `footer` - Footer content (action buttons)
 
-## Events
+## CSS Parts
 
-- `modal-open` → `{ modal: SniceModalElement }`
-- `modal-close` → `{ modal: SniceModalElement }`
+- `backdrop` - Backdrop overlay
+- `panel` - Modal panel container
+- `header` - Header section
+- `close` - Close button
+- `body` - Body content section
+- `footer` - Footer section
 
-## Methods
+## Keyboard
 
-- `show()` - Open modal
-- `close()` - Close modal
+Escape closes (unless no-escape-dismiss). Tab/Shift+Tab cycle focus within modal.
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/modal/snice-modal';
+```
 
 ```html
 <snice-modal label="Confirm Action">
@@ -50,12 +67,3 @@ modal.show();
 modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
-
-## CSS Parts
-
-- `backdrop` - The backdrop overlay
-- `panel` - The modal panel container
-- `header` - Header section
-- `close` - Close button
-- `body` - Body content section
-- `footer` - Footer section

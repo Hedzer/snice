@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/switch.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/switch.md -->
 
 # Switch
-`<snice-switch>`
 
-A toggle switch input for boolean selections.
+A toggle switch input for boolean selections. Supports on/off labels, form integration, and loading state.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/switch/snice-switch';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-switch.min.js"></script>
-```
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -24,7 +20,7 @@ import 'snice/components/switch/snice-switch';
 |----------|------|---------|-------------|
 | `checked` | `boolean` | `false` | Whether the switch is on |
 | `disabled` | `boolean` | `false` | Disables the switch |
-| `loading` | `boolean` | `false` | Shows loading spinner |
+| `loading` | `boolean` | `false` | Shows loading spinner and disables the switch |
 | `required` | `boolean` | `false` | Makes the switch required |
 | `invalid` | `boolean` | `false` | Shows invalid state |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
@@ -36,12 +32,12 @@ import 'snice/components/switch/snice-switch';
 
 ## Methods
 
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `toggle()` | -- | Toggle the switch state |
-| `focus()` | `options?: FocusOptions` | Focus the switch |
-| `blur()` | -- | Remove focus |
-| `click()` | -- | Programmatically click the switch |
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `toggle()` | -- | `void` | Toggle the switch state |
+| `focus()` | `options?: FocusOptions` | `void` | Focus the switch |
+| `blur()` | -- | `void` | Remove focus |
+| `click()` | -- | `void` | Programmatically click the switch |
 
 ## Events
 
@@ -73,12 +69,12 @@ import 'snice/components/switch/snice-switch';
 
 ### Sizes
 
-Use the `size` attribute to change the switch size.
+Use `size` to change the switch dimensions.
 
 ```html
-<snice-switch size="small" label="Small switch"></snice-switch>
-<snice-switch size="medium" label="Medium switch"></snice-switch>
-<snice-switch size="large" label="Large switch"></snice-switch>
+<snice-switch size="small" label="Small"></snice-switch>
+<snice-switch size="medium" label="Medium"></snice-switch>
+<snice-switch size="large" label="Large"></snice-switch>
 ```
 
 ### States
@@ -86,26 +82,27 @@ Use the `size` attribute to change the switch size.
 ```html
 <snice-switch checked label="Enabled"></snice-switch>
 <snice-switch disabled label="Disabled"></snice-switch>
-<snice-switch invalid label="Invalid input"></snice-switch>
+<snice-switch invalid label="Invalid"></snice-switch>
+<snice-switch loading label="Saving..."></snice-switch>
 ```
 
 ### With On/Off Labels
 
-Use the `label-on` and `label-off` attributes for text inside the switch track.
+Use `label-on` and `label-off` for text inside the switch track.
 
 ```html
 <snice-switch label="Dark mode" label-on="ON" label-off="OFF"></snice-switch>
 ```
 
-### In a Form
+### Form Integration
 
-The switch contains a native `<input type="checkbox">` internally, which participates in form submission when `name` is set.
+The switch contains an internal `<input type="checkbox">` that participates in form submission when `name` is set.
 
 ```html
 <form id="settings-form">
   <snice-switch name="notifications" value="enabled" label="Email notifications" required></snice-switch>
-  <snice-switch name="newsletter" value="subscribed" label="Subscribe to newsletter"></snice-switch>
-  <button type="submit">Save Settings</button>
+  <snice-switch name="newsletter" value="subscribed" label="Newsletter"></snice-switch>
+  <button type="submit">Save</button>
 </form>
 
 <script>
@@ -119,12 +116,15 @@ The switch contains a native `<input type="checkbox">` internally, which partici
 
 ### Event Handling
 
-```html
-<snice-switch id="feature-switch" label="Enable feature"></snice-switch>
-
-<script>
-  document.getElementById('feature-switch').addEventListener('switch-change', (e) => {
-    console.log('Switch is', e.detail.checked ? 'on' : 'off');
-  });
-</script>
+```typescript
+el.addEventListener('switch-change', (e) => {
+  console.log('Switch is', e.detail.checked ? 'on' : 'off');
+});
 ```
+
+## Accessibility
+
+- Keyboard toggle with Space key
+- Visible focus ring on keyboard navigation
+- `role="switch"` with `aria-checked` state
+- Loading state disables interaction and shows a spinner
