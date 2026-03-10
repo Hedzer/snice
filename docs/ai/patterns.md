@@ -467,3 +467,27 @@ class SearchBox extends HTMLElement {
   }
 }
 ```
+
+## React Router
+
+```tsx
+import { SniceRouter, Route, useSniceContext } from 'snice/react';
+
+function App() {
+  return (
+    <SniceRouter mode="hash" context={{ user, theme: 'dark' }} layout={AppShell}>
+      <Route path="/" page={HomePage} />
+      <Route path="/settings" page={SettingsPage} guard={authGuard} guardRedirect="/login" />
+      <Route path="/legacy" page="legacy-dashboard" />
+      <Route path="/login" page={LoginPage} layout={false} />
+    </SniceRouter>
+  );
+}
+
+function AppShell({ children }) {
+  const ctx = useSniceContext();
+  return <div className="shell"><nav>...</nav><main>{children}</main></div>;
+}
+
+const authGuard = (ctx, params) => !!ctx.principal;
+```

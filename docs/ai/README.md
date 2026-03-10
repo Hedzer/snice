@@ -12,6 +12,7 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 - `api.md` - Complete API reference
 - `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
+- `react-integration.md` - React router, hooks, guards, context
 - `architecture.md` - System design
 - `components/*.md` - Component reference (DO NOT read all upfront - read only as needed)
 
