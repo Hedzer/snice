@@ -43,101 +43,36 @@
   --tag-gap: 0.375rem; /* 6px */
 }
 
-/* Filled variants */
+/* Filled variants — use semantic theme tokens that auto-switch light/dark */
 :host([variant="default"]) .tag,
 :host(:not([variant])) .tag {
-  background: hsl(var(--snice-color-gray-100));
-  color: hsl(var(--snice-color-gray-700));
+  background: var(--snice-color-background-tertiary, rgb(242 242 242));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([variant="primary"]) .tag {
-  background: hsl(var(--snice-color-blue-100));
-  color: hsl(var(--snice-color-blue-800));
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 :host([variant="success"]) .tag {
-  background: hsl(var(--snice-color-green-100));
-  color: hsl(var(--snice-color-green-800));
+  background: var(--snice-color-success-subtle, hsl(138 76% 97%));
+  color: var(--snice-color-success-hover, hsl(142 72% 29%));
 }
 
 :host([variant="warning"]) .tag {
-  background: hsl(var(--snice-color-yellow-200));
-  color: hsl(var(--snice-color-yellow-800));
+  background: var(--snice-color-warning-subtle, hsl(55 92% 95%));
+  color: var(--snice-color-warning-hover, hsl(36 88% 33%));
 }
 
 :host([variant="danger"]) .tag {
-  background: hsl(var(--snice-color-red-100));
-  color: hsl(var(--snice-color-red-800));
+  background: var(--snice-color-danger-subtle, hsl(0 86% 97%));
+  color: var(--snice-color-danger-hover, hsl(0 74% 42%));
 }
 
 :host([variant="info"]) .tag {
-  background: hsl(var(--snice-color-blue-100));
-  color: hsl(var(--snice-color-blue-900));
-}
-
-/* Dark mode filled variants */
-@media (prefers-color-scheme: dark) {
-  :host([variant="default"]) .tag,
-  :host(:not([variant])) .tag {
-    background: hsl(var(--snice-color-gray-700));
-    color: hsl(var(--snice-color-gray-200));
-  }
-
-  :host([variant="primary"]) .tag {
-    background: hsl(var(--snice-color-blue-900));
-    color: hsl(var(--snice-color-blue-200));
-  }
-
-  :host([variant="success"]) .tag {
-    background: hsl(var(--snice-color-green-900));
-    color: hsl(var(--snice-color-green-200));
-  }
-
-  :host([variant="warning"]) .tag {
-    background: hsl(var(--snice-color-yellow-900));
-    color: hsl(var(--snice-color-yellow-200));
-  }
-
-  :host([variant="danger"]) .tag {
-    background: hsl(var(--snice-color-red-900));
-    color: hsl(var(--snice-color-red-200));
-  }
-
-  :host([variant="info"]) .tag {
-    background: hsl(var(--snice-color-blue-900));
-    color: hsl(var(--snice-color-blue-200));
-  }
-
-  :host([outline][variant="default"]) .tag,
-  :host([outline]:not([variant])) .tag {
-    border-color: hsl(var(--snice-color-gray-500));
-    color: hsl(var(--snice-color-gray-300));
-  }
-
-  :host([outline][variant="primary"]) .tag {
-    border-color: hsl(var(--snice-color-blue-500));
-    color: hsl(var(--snice-color-blue-300));
-  }
-
-  :host([outline][variant="success"]) .tag {
-    border-color: hsl(var(--snice-color-green-500));
-    color: hsl(var(--snice-color-green-300));
-  }
-
-  :host([outline][variant="warning"]) .tag {
-    border-color: hsl(var(--snice-color-yellow-500));
-    color: hsl(var(--snice-color-yellow-300));
-  }
-
-  :host([outline][variant="danger"]) .tag {
-    border-color: hsl(var(--snice-color-red-500));
-    color: hsl(var(--snice-color-red-300));
-  }
-
-  :host([outline][variant="info"]) .tag {
-    border-color: hsl(var(--snice-color-blue-500));
-    color: hsl(var(--snice-color-blue-300));
-  }
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 /* Outline variants */
@@ -148,33 +83,33 @@
 
 :host([outline][variant="default"]) .tag,
 :host([outline]:not([variant])) .tag {
-  border-color: hsl(var(--snice-color-gray-300));
-  color: hsl(var(--snice-color-gray-700));
+  border-color: var(--snice-color-border, rgb(226 226 226));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([outline][variant="primary"]) .tag {
-  border-color: hsl(var(--snice-color-blue-400));
-  color: hsl(var(--snice-color-blue-700));
+  border-color: var(--snice-color-primary, hsl(217 83% 53%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 :host([outline][variant="success"]) .tag {
-  border-color: hsl(var(--snice-color-green-400));
-  color: hsl(var(--snice-color-green-700));
+  border-color: var(--snice-color-success, hsl(142 76% 36%));
+  color: var(--snice-color-success-hover, hsl(142 72% 29%));
 }
 
 :host([outline][variant="warning"]) .tag {
-  border-color: hsl(var(--snice-color-yellow-400));
-  color: hsl(var(--snice-color-yellow-700));
+  border-color: var(--snice-color-warning, hsl(41 96% 40%));
+  color: var(--snice-color-warning-hover, hsl(36 88% 33%));
 }
 
 :host([outline][variant="danger"]) .tag {
-  border-color: hsl(var(--snice-color-red-400));
-  color: hsl(var(--snice-color-red-700));
+  border-color: var(--snice-color-danger, hsl(0 72% 51%));
+  color: var(--snice-color-danger-hover, hsl(0 74% 42%));
 }
 
 :host([outline][variant="info"]) .tag {
-  border-color: hsl(var(--snice-color-blue-400));
-  color: hsl(var(--snice-color-blue-700));
+  border-color: var(--snice-color-primary, hsl(217 83% 53%));
+  color: var(--snice-color-primary-hover, hsl(217 77% 48%));
 }
 
 /* Icon slot */
