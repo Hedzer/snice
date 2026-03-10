@@ -152,6 +152,49 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .c6 { background: linear-gradient(135deg, #431407, #ea580c); }
     .c7 { background: linear-gradient(135deg, #1e293b, #334155); }
     .c8 { background: linear-gradient(135deg, #1a2e05, #65a30d); }
+    .c9 { background: linear-gradient(135deg, #1e1b4b, #4f46e5); }
+    .c10 { background: linear-gradient(135deg, #0c4a6e, #0284c7); }
+    /* User card */
+    .widget-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .widget-user-name { font-weight: 700; font-size: 0.7rem; color: #fff; }
+    .widget-user-role { font-size: 0.55rem; opacity: 0.5; }
+    .widget-user-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.5rem;
+      margin-top: 2px;
+    }
+    .widget-user-status::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+    /* Weather */
+    .weather-icon { font-size: 1.6rem; line-height: 1; }
+    .weather-temp { font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .weather-desc { font-size: 0.55rem; opacity: 0.5; }
+    .weather-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.5rem;
+      opacity: 0.5;
+      margin-top: 4px;
+    }
     .flat1 { background: var(--snice-color-primary, rgb(37 99 235)); }
     .flat2 { background: var(--snice-color-success, rgb(22 163 74)); }
     .flat3 { background: var(--snice-color-danger, rgb(220 38 38)); }
@@ -229,6 +272,34 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       <div class="widget c8" name="uptime" style="width:80px;height:80px">
         <div class="widget-hdr">Uptime</div>
         <div class="widget-body" style="align-items:center"><div class="big" style="font-size:1rem">99.9%</div><div class="sub">30d</div></div>
+      </div>
+      <div class="widget c9" name="user" style="width:168px;height:80px">
+        <div class="widget-body" style="flex-direction:row;align-items:center;gap:0.6rem;padding:0.5rem 0.6rem">
+          <div class="widget-avatar">JD</div>
+          <div>
+            <div class="widget-user-name">Jane Doe</div>
+            <div class="widget-user-role">Admin</div>
+            <div class="widget-user-status" style="color:#4ade80">Online</div>
+          </div>
+        </div>
+      </div>
+      <div class="widget c10" name="weather" style="width:80px;height:168px">
+        <div class="widget-hdr" style="font-size:0.55rem">Weather</div>
+        <div class="widget-body" style="align-items:center;gap:0.15rem">
+          <div class="weather-icon">&#9925;</div>
+          <div class="weather-temp">72&#176;</div>
+          <div class="weather-desc">Partly cloudy</div>
+          <div class="weather-row" style="width:100%;margin-top:6px">
+            <span>H: 78&#176;</span>
+            <span>L: 64&#176;</span>
+          </div>
+          <div style="display:flex;gap:2px;margin-top:4px">
+            <div style="text-align:center;font-size:0.45rem;opacity:0.4;line-height:1.4"><div>&#9728;</div>Tu</div>
+            <div style="text-align:center;font-size:0.45rem;opacity:0.4;line-height:1.4"><div>&#9729;</div>We</div>
+            <div style="text-align:center;font-size:0.45rem;opacity:0.4;line-height:1.4"><div>&#9748;</div>Th</div>
+            <div style="text-align:center;font-size:0.45rem;opacity:0.4;line-height:1.4"><div>&#9728;</div>Fr</div>
+          </div>
+        </div>
       </div>
     </snice-binpack>
     <div class="layout-output" id="dash-output">// Drag a widget or click "Save layout" to see output</div>
