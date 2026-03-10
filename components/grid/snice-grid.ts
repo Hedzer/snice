@@ -307,7 +307,7 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 
   // -- Private helpers ------------------------------------------------------
