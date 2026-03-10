@@ -505,12 +505,4 @@ Guards, context shape, and page contracts are identical across both systems. A g
 
 **Route matching uses [pica-route](https://www.npmjs.com/package/pica-route)** — the same library as vanilla Snice's router. Routes are sorted by specificity (longest path first), so `/users/:id` takes priority over `/users`.
 
-**Default loading.** If no `loading` prop is provided, async guards show a simple centered CSS spinner. The spinner uses the animation name `snice-spin` — add this keyframe to your CSS if you want it to animate:
-
-```css
-@keyframes snice-spin {
-  to { transform: rotate(360deg); }
-}
-```
-
-Or pass your own `loading` component/JSX.
+**Default loading.** If no `loading` prop is provided, async guards show a simple centered CSS spinner. Pass your own `loading` component/JSX to customize it.

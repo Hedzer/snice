@@ -23,16 +23,13 @@ Read these instead of `/docs/*.md` for faster context loading.
 ## CLI
 
 ```bash
-# Create project from template
-npx snice create-app my-app --template=base
-npx snice create-app my-app --template=pwa
-npx snice create-app my-app --template=react  # or: npx snice create-react-app my-app
+# Create project
+npx snice create-app my-app
+npx snice create-app my-app --template=react
 
 # Run MCP server
 npx snice mcp
 ```
-
-**Note:** Use `--template=base` (equals), not `--template base` (space).
 
 ## MCP Server
 

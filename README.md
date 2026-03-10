@@ -14,20 +14,13 @@ npm run dev
 
 ### Templates
 
-Choose a template that fits your project:
-
 ```bash
-# Base template (default) - minimal setup with routing
+# Default - routing, auth, guards, middleware, services
 npx snice create-app my-app
 
-# PWA template - auth, guards, middleware, services
-npx snice create-app my-app --template=pwa
+# React + Snice - React router, hooks, guards, layouts
+npx snice create-app my-app --template=react
 ```
-
-| Template | Includes |
-|----------|----------|
-| `base` | Routing, pages, components, controllers |
-| `pwa` | Everything in base + auth flow, guards, middleware, services, JWT handling |
 
 ## What's in the Box
 
