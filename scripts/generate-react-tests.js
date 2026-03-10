@@ -177,6 +177,10 @@ const componentTestConfig = {
     events: ['onActionBarOpen', 'onActionBarClose'],
     variants: ['default', 'pill'],
     sizes: ['small', 'medium']
+  },
+  'binpack': {
+    properties: ['gap', 'columnWidth', 'rowHeight', 'horizontal', 'originLeft', 'originTop', 'transitionDuration', 'stagger', 'resize'],
+    events: ['onBinpackLayoutComplete', 'onBinpackFitComplete']
   }
 };
 
