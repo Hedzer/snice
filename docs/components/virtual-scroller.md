@@ -1,22 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/virtual-scroller.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/virtual-scroller.md -->
 
 # Virtual Scroller
 `<snice-virtual-scroller>`
 
-Efficiently renders large lists by only displaying visible items.
+Efficiently renders large lists by only displaying visible items. Supports fixed and variable row heights with a configurable buffer.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/virtual-scroller/snice-virtual-scroller';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-virtual-scroller.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -49,18 +43,9 @@ interface VirtualScrollerItem {
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer scroller container |
-
-```css
-snice-virtual-scroller::part(base) {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 transparent;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer scroller container |
 
 ## Basic Usage
 
@@ -140,24 +125,6 @@ scroller.renderItem = (item) => {
     <div style="color: #666;">${item.data.email}</div>
   </div>`;
 };
-```
-
-### Filtering
-
-```javascript
-const allItems = Array.from({ length: 10000 }, (_, i) => ({
-  id: i,
-  data: { name: `Item ${i + 1}` }
-}));
-
-scroller.items = allItems;
-
-function filterItems(query) {
-  scroller.items = query
-    ? allItems.filter(item => item.data.name.toLowerCase().includes(query.toLowerCase()))
-    : allItems;
-  scroller.refresh();
-}
 ```
 
 ### Dynamic Updates

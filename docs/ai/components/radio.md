@@ -1,6 +1,6 @@
 # snice-radio
 
-Form radio button input with automatic group management.
+Form radio button input with automatic group management by name.
 
 ## Properties
 
@@ -15,19 +15,19 @@ size: 'small'|'medium'|'large' = 'medium';
 name: string = '';           // Group name for mutual exclusion
 value: string = '';
 label: string = '';
-description: string = '';    // Subtitle text (block variant)
+description: string = '';    // Subtitle text (block variant only)
 ```
 
 ## Methods
 
-- `focus()` - Focus radio
+- `focus()` - Focus radio input
 - `blur()` - Remove focus
 - `click()` - Programmatic click
 - `select()` - Select and fire change event
 
 ## Events
 
-- `radio-change` → `{ checked, value, radio }`
+- `radio-change` → `{ checked: boolean, value: string, radio: SniceRadioElement }`
 
 ## Slots
 
@@ -35,15 +35,15 @@ description: string = '';    // Subtitle text (block variant)
 
 ## CSS Parts
 
-- `input` - Hidden radio input
+- `input` - Hidden native radio input
 - `radio` - Radio circle container
 - `dot` - Inner dot indicator
 - `spinner` - Loading spinner
-- `label` - Label text
 - `content` - Content wrapper (block variant)
+- `label` - Label text
 - `description` - Description text (block variant)
 
-## Usage
+## Basic Usage
 
 ```html
 <!-- Radio group -->
@@ -59,7 +59,6 @@ description: string = '';    // Subtitle text (block variant)
 <snice-radio label="Disabled" disabled></snice-radio>
 <snice-radio label="Loading" loading></snice-radio>
 <snice-radio label="Invalid" invalid></snice-radio>
-<snice-radio label="Required" required></snice-radio>
 
 <!-- Block variant (card-style) -->
 <snice-radio variant="block" name="plan" value="free" label="Free" description="For individuals" checked>
@@ -76,11 +75,14 @@ radio.addEventListener('radio-change', (e) => {
 });
 ```
 
-## Features
+## Keyboard Navigation
 
-- Automatic radio group management by name
-- 3 sizes
-- Block variant: card-style layout with description + suffix slot
-- Loading state with spinner
-- Keyboard accessible (arrow keys navigate group, wraps around)
-- Contains native `<input type="radio">` for form participation
+- Arrow keys navigate within group (wraps around)
+- Focused radio is auto-selected
+
+## Accessibility
+
+- Native `<input type="radio">` for form participation
+- `aria-invalid` when invalid
+- Focus ring on keyboard navigation
+- Required indicator on label

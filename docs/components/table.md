@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/table.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/table.md -->
 
 # Table
 `<snice-table>`
 
 Displays tabular data with sorting, filtering, search, selection, pagination, column resize, column menu, tree data, master-detail, toolbar, and 20+ specialized column types.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/table/snice-table';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-table.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Column Definition](#column-definition)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -45,6 +41,8 @@ import 'snice/components/table/snice-table';
 | `currentPage` (attr: `current-page`) | `number` | `1` | Current page number |
 | `totalItems` (attr: `total-items`) | `number` | `0` | Total item count (server mode) |
 | `pageSizes` | `number[]` | `[10, 25, 50, 100]` | Available page size options (JS only) |
+| `columns` | `any[]` | `[]` | Column definitions (JS only) |
+| `data` | `any[]` | `[]` | Row data (JS only) |
 
 ## Column Definition
 
@@ -59,10 +57,13 @@ interface ColumnDefinition {
   align?: 'left' | 'center' | 'right';
   width?: string;
   sortable?: boolean;
-  resizable?: boolean;       // default: true (when column-resize enabled)
-  reorderable?: boolean;     // default: true
-  hideable?: boolean;        // default: true
-  pinnable?: boolean;        // default: true
+  resizable?: boolean;
+  reorderable?: boolean;
+  hideable?: boolean;
+  pinnable?: boolean;
+  pinned?: 'left' | 'right' | false;
+  editable?: boolean;
+  exportable?: boolean;
   formatter?: (value: any, row?: any) => string;
   numberFormat?: { decimals?, thousandsSeparator?, prefix?, suffix?, negativeStyle? };
   ratingFormat?: { max?, color? };
@@ -133,6 +134,10 @@ interface ColumnDefinition {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/table/snice-table';
+```
+
 ```javascript
 table.setColumns([
   { key: 'name', label: 'Name', sortable: true },
@@ -184,7 +189,7 @@ Sparklines and progress bars support per-row color via object values:
 ```
 
 Set `colorize: true` on `progressFormat` to auto-color based on value:
-- Green (≥70%), Yellow (≥40%), Red (<40%)
+- Green (>=70%), Yellow (>=40%), Red (<40%)
 
 ### Toolbar
 
@@ -197,8 +202,6 @@ table.setToolbar({
 });
 ```
 
-The sort and filter buttons open modal dialogs using `snice-modal` with `snice-select` and `snice-input` components.
-
 ### Column Menu (Right-Click)
 
 Enable with `column-menu` attribute. Right-click any column header for:
@@ -210,12 +213,11 @@ Enable with `column-menu` attribute. Right-click any column header for:
 
 ### Column Resize
 
-Enable with `column-resize` attribute. Drag the right edge of any column header to resize. Double-click the resize handle to auto-size to content. Uses `table-layout: fixed` for precise width control.
+Enable with `column-resize` attribute. Drag the right edge of any column header to resize. Double-click the resize handle to auto-size to content.
 
 ### Filter Model (MUI X Pro Compatible)
 
 ```javascript
-// Set filters programmatically
 table.setFilterModel({
   filters: [
     { column: 'name', operator: 'contains', value: 'john' },
@@ -234,9 +236,9 @@ table.setFilterModel({
 
 ```javascript
 table.setTreeData({
-  getPath: (row) => row.path,      // Returns path array e.g. ['US', 'CA']
-  groupColumn: 'name',             // Column with expand/collapse toggle
-  defaultExpansionDepth: 1          // Auto-expand to depth 1
+  getPath: (row) => row.path,
+  groupColumn: 'name',
+  defaultExpansionDepth: 1
 });
 
 table.setData([
@@ -245,12 +247,6 @@ table.setData([
   { id: 3, name: 'New York', path: ['USA', 'NY'] }
 ]);
 ```
-
-Clicking either the caret icon or the parent node text will expand/collapse.
-
-### Select-All with Filters
-
-When filters are active, the select-all checkbox only selects the visible/filtered rows — not all data. This matches MUI X Pro behavior.
 
 ### Declarative Columns and Rows
 
@@ -296,7 +292,6 @@ class UserTableController implements IController {
 
   @respond('table/data')
   async getTableData(params) {
-    // params includes: search, sort, filter, selector, page, pageSize
     const response = await fetch(`/api/users?search=${params.search}`);
     const json = await response.json();
     return { data: json.users, total: json.total };

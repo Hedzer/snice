@@ -1,35 +1,21 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/markdown.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/markdown.md -->
 
-# Markdown Component
-
+# Markdown
 `<snice-markdown>`
 
 A lightweight GFM-compatible markdown renderer that converts markdown text to styled HTML inside shadow DOM. Includes built-in sanitization to prevent XSS attacks.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Slots](#slots)
 - [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Supported Syntax](#supported-syntax)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/markdown/snice-markdown';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-markdown.min.js"></script>
-```
 
 ## Properties
 
@@ -38,18 +24,26 @@ import 'snice/components/markdown/snice-markdown';
 | `sanitize` | `boolean` | `true` | Whether to sanitize the HTML output to prevent XSS |
 | `theme` | `'default' \| 'github'` | `'default'` | Visual theme for the rendered output |
 
+> **Note:** The `content` field is a plain class property, not a reactive `@property`. Use `setContent()` to update content programmatically, or provide text as slotted content.
+
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `setContent()` | `markdown: string` | Set the markdown source programmatically |
+| `setContent()` | `markdown: string` | Set the markdown source programmatically and re-render |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `markdown-render` | `{ html: string }` | Fired after the markdown has been rendered to HTML |
-| `link-click` | `{ href: string; text: string }` | Fired when a link in the rendered content is clicked. Default navigation is prevented |
+| `link-click` | `{ href: string, text: string }` | Fired when a link in the rendered content is clicked. Default navigation is prevented |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Markdown source text (read on connect and slotchange) |
 
 ## CSS Custom Properties
 
@@ -155,7 +149,7 @@ Use the `theme="github"` attribute for GitHub-style markdown rendering.
 
 ### Intercepting Link Clicks
 
-Listen for the `link-click` event to handle navigation within your application instead of following the default link behavior.
+Listen for the `link-click` event to handle navigation within your application.
 
 ```html
 <snice-markdown id="docs">Check out [the documentation](/docs) or visit [our website](https://example.com).</snice-markdown>
@@ -169,7 +163,6 @@ Listen for the `link-click` event to handle navigation within your application i
     const { href, text } = e.detail;
     console.log(`Link clicked: "${text}" -> ${href}`);
 
-    // Handle internal navigation
     if (href.startsWith('/')) {
       window.history.pushState({}, '', href);
     } else {
@@ -181,12 +174,8 @@ Listen for the `link-click` event to handle navigation within your application i
 
 ### Code Blocks and Tables
 
-Render markdown that includes fenced code blocks and GFM tables.
-
 ```html
 <snice-markdown>## API Response
-
-The endpoint returns the following JSON:
 
 | Code | Meaning |
 |------|---------|

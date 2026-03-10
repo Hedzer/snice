@@ -1,6 +1,6 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/flip-card.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/flip-card.md -->
 
-# Flip Card Component
+# Flip Card
 
 The flip card component creates a two-sided card with a CSS 3D flip animation. Content is placed in front and back slots, and the card can be flipped by clicking, keyboard interaction, or programmatically.
 
@@ -9,10 +9,11 @@ The flip card component creates a two-sided card with a CSS 3D flip animation. C
 - [Methods](#methods)
 - [Events](#events)
 - [Slots](#slots)
-- [CSS Custom Properties](#css-custom-properties)
 - [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -29,7 +30,7 @@ The flip card component creates a two-sided card with a CSS 3D flip animation. C
 | Method | Arguments | Description |
 |--------|-----------|-------------|
 | `flip()` | -- | Toggle between front and back faces |
-| `flipTo()` | `side: 'front' \| 'back'` | Flip to a specific side |
+| `flipTo(side)` | `side: 'front' \| 'back'` | Flip to a specific side |
 
 ## Events
 
@@ -44,21 +45,13 @@ The flip card component creates a two-sided card with a CSS 3D flip animation. C
 | `front` | Content displayed on the front face of the card |
 | `back` | Content displayed on the back face of the card |
 
-## CSS Custom Properties
-
-| Property | Description |
-|----------|-------------|
-| `--flip-duration` | Animation duration (automatically set from the `duration` property) |
-
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer flip card container |
-| `front` | `<div>` | The front face container |
-| `back` | `<div>` | The back face container |
+| Part | Description |
+|------|-------------|
+| `base` | The outer flip card container |
+| `front` | The front face container |
+| `back` | The back face container |
 
 ```css
 snice-flip-card::part(base) {
@@ -74,17 +67,23 @@ snice-flip-card::part(back) {
 }
 ```
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--flip-duration` | Animation duration (automatically set from the `duration` property) |
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/flip-card/snice-flip-card';
+```
 
 ```html
 <snice-flip-card style="width: 300px; height: 200px;">
   <div slot="front">Front side</div>
   <div slot="back">Back side</div>
 </snice-flip-card>
-```
-
-```typescript
-import 'snice/components/flip-card/snice-flip-card';
 ```
 
 ## Examples
@@ -126,13 +125,11 @@ Use `direction="vertical"` to flip the card around the X axis.
 Set `duration` to control the speed of the flip animation.
 
 ```html
-<!-- Slow flip -->
 <snice-flip-card duration="1200" style="width: 250px; height: 180px;">
   <div slot="front">Slow flip (1.2s)</div>
   <div slot="back">Back side</div>
 </snice-flip-card>
 
-<!-- Fast flip -->
 <snice-flip-card duration="200" style="width: 250px; height: 180px;">
   <div slot="front">Fast flip (0.2s)</div>
   <div slot="back">Back side</div>
@@ -155,16 +152,12 @@ Disable click-to-flip and control the card from JavaScript.
   </div>
 </snice-flip-card>
 
-<div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-  <button onclick="document.getElementById('controlled-card').flipTo('front')">Show Front</button>
-  <button onclick="document.getElementById('controlled-card').flipTo('back')">Show Back</button>
-  <button onclick="document.getElementById('controlled-card').flip()">Toggle</button>
-</div>
+<button onclick="document.getElementById('controlled-card').flipTo('front')">Show Front</button>
+<button onclick="document.getElementById('controlled-card').flipTo('back')">Show Back</button>
+<button onclick="document.getElementById('controlled-card').flip()">Toggle</button>
 ```
 
 ### Flashcard Study Deck
-
-Build a flashcard-style study app by listening to flip events.
 
 ```html
 <snice-flip-card id="flashcard" direction="vertical" style="width: 350px; height: 250px;">
@@ -177,8 +170,6 @@ Build a flashcard-style study app by listening to flip events.
 </snice-flip-card>
 
 <script type="module">
-  import 'snice/components/flip-card/snice-flip-card';
-
   const card = document.getElementById('flashcard');
   card.addEventListener('flip-change', (e) => {
     console.log(`Now showing: ${e.detail.side}`);
@@ -186,9 +177,14 @@ Build a flashcard-style study app by listening to flip events.
 </script>
 ```
 
+## Keyboard Navigation
+
+When `click-to-flip` is enabled:
+- **Enter** / **Space** -- Toggle the card flip
+
 ## Accessibility
 
 - **Keyboard support**: When `click-to-flip` is enabled, pressing Enter or Space toggles the card
-- **Focus management**: The card is focusable and has `tabindex="0"` when click-to-flip is enabled
-- **ARIA attributes**: The component conveys state for assistive technologies
+- **Focus management**: The card is focusable with `tabindex="0"` when click-to-flip is enabled
+- **ARIA attributes**: The component uses `role="button"` and `aria-label` to convey state for assistive technologies
 - **Visible content**: Both sides of the card accept arbitrary slotted content, allowing for accessible markup on each face

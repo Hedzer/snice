@@ -1,22 +1,26 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/key-value.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/key-value.md -->
 
 # Key Value
 `<snice-key-value>`
 
 A key-value pair editor for building UIs like HTTP header editors, environment variable configurators, and settings panels. Supports both declarative child elements and imperative JavaScript APIs.
 
-## Importing
+## Table of Contents
+- [Components](#components)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/key-value/snice-key-value';
-```
+## Components
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-key-value.min.js"></script>
-```
+| Element | Description |
+|---------|-------------|
+| `<snice-key-value>` | Container/editor component |
+| `<snice-kv-pair>` | Data container child element (no shadow DOM) |
 
 ## Properties
 
@@ -67,6 +71,12 @@ import 'snice/components/key-value/snice-key-value';
 | `kv-change` | `{ items: KeyValueItem[] }` | Fired on any change (add, remove, edit) |
 | `kv-copy` | `{ items: KeyValueItem[] }` | Fired when copy button is clicked |
 
+## Slots
+
+| Slot Name | Description |
+|-----------|-------------|
+| (default) | `<snice-kv-pair>` child elements for declarative data |
+
 ## CSS Parts
 
 | Part | Description |
@@ -75,7 +85,7 @@ import 'snice/components/key-value/snice-key-value';
 | `title` | The title element |
 | `copy-button` | The copy button |
 | `rows` | The rows container |
-| `row` | An individual row |
+| `row` | An individual row (edit mode) |
 | `key-input` | The key input field |
 | `value-input` | The value input field |
 | `description-input` | The description input field |

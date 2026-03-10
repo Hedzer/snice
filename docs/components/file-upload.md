@@ -1,16 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/file-upload.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/file-upload.md -->
 
-# File Upload Component
+# File Upload
 
-The `<snice-file-upload>` component provides a file upload interface with drag-and-drop support, file previews, and validation.
+The `<snice-file-upload>` component provides a file upload interface with drag-and-drop support, file previews, and validation. It is a form-associated custom element.
 
 ## Table of Contents
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Features](#features)
 
 ## Properties
 
@@ -20,63 +20,48 @@ The `<snice-file-upload>` component provides a file upload interface with drag-a
 | `variant` | `'outlined' \| 'filled'` | `'outlined'` | Visual style variant |
 | `accept` | `string` | `''` | Allowed file types (same as input accept) |
 | `multiple` | `boolean` | `false` | Allow multiple file selection |
-| `label` | `string` | `''` | Label text |
-| `helperText` | `string` | `''` | Helper text below upload area |
-| `errorText` | `string` | `''` | Error message (shown when invalid) |
 | `disabled` | `boolean` | `false` | Whether upload is disabled |
 | `required` | `boolean` | `false` | Whether upload is required |
 | `invalid` | `boolean` | `false` | Whether to show invalid state |
-| `maxSize` | `number` | `-1` | Maximum file size in bytes (-1 = no limit) |
-| `maxFiles` | `number` | `-1` | Maximum number of files (-1 = no limit) |
+| `label` | `string` | `''` | Label text |
+| `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below upload area |
+| `errorText` (attr: `error-text`) | `string` | `''` | Error message (shown when invalid) |
+| `maxSize` (attr: `max-size`) | `number` | `-1` | Maximum file size in bytes (-1 = no limit) |
+| `maxFiles` (attr: `max-files`) | `number` | `-1` | Maximum number of files (-1 = no limit) |
 | `name` | `string` | `''` | Form field name |
-| `dragDrop` | `boolean` | `true` | Enable drag-and-drop |
-| `showPreview` | `boolean` | `true` | Show image previews |
+| `dragDrop` (attr: `drag-drop`) | `boolean` | `true` | Enable drag-and-drop |
+| `showPreview` (attr: `show-preview`) | `boolean` | `true` | Show image previews |
 | `files` | `FileList \| null` | `null` | Selected files (read-only) |
 
 ## Methods
 
-### `clear(): void`
-Remove all selected files.
-
-```typescript
-upload.clear();
-```
-
-### `removeFile(index: number): void`
-Remove a specific file by index.
-
-```typescript
-upload.removeFile(0); // Remove first file
-```
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `clear()` | -- | Remove all selected files |
+| `removeFile(index)` | `index: number` | Remove a specific file by index |
 
 ## Events
 
-### `file-upload-change`
-Fired when files are added or removed.
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `file-upload-change` | `{ files: File[], fileUpload: SniceFileUploadElement }` | Fired when files are added or removed |
+| `file-upload-error` | `{ message: string, fileUpload: SniceFileUploadElement }` | Fired when file validation fails |
 
-**Detail**: `{ files: File[], fileUpload: SniceFileUploadElement }`
+## CSS Parts
 
-```typescript
-upload.addEventListener('file-upload-change', (e) => {
-  console.log('Selected files:', e.detail.files);
-  e.detail.files.forEach(file => {
-    console.log(`- ${file.name} (${file.size} bytes)`);
-  });
-});
-```
-
-### `file-upload-error`
-Fired when file validation fails.
-
-**Detail**: `{ message: string, fileUpload: SniceFileUploadElement }`
-
-```typescript
-upload.addEventListener('file-upload-error', (e) => {
-  console.error('Upload error:', e.detail.message);
-});
-```
+| Part | Description |
+|------|-------------|
+| `upload-area` | Drop zone container |
+| `input` | Hidden file input |
+| `file-item` | Individual file entry |
+| `error-text` | Error text element |
+| `helper-text` | Helper text element |
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/file-upload/snice-file-upload';
+```
 
 ```html
 <snice-file-upload
@@ -87,8 +72,6 @@ upload.addEventListener('file-upload-error', (e) => {
 ```
 
 ```typescript
-import 'snice/components/file-upload/snice-file-upload';
-
 const upload = document.querySelector('snice-file-upload');
 upload.addEventListener('file-upload-change', (e) => {
   console.log('Files:', e.detail.files);
@@ -164,37 +147,6 @@ upload.addEventListener('file-upload-change', (e) => {
 ></snice-file-upload>
 ```
 
-### File Type Restrictions
-
-```html
-<!-- Images only -->
-<snice-file-upload accept="image/*" label="Images"></snice-file-upload>
-
-<!-- Specific formats -->
-<snice-file-upload accept=".pdf,.doc,.docx" label="Documents"></snice-file-upload>
-
-<!-- Multiple types -->
-<snice-file-upload accept="image/*,.pdf" label="Images and PDFs"></snice-file-upload>
-```
-
-### With Size Validation
-
-```html
-<snice-file-upload
-  label="Upload Photo"
-  accept="image/*"
-  max-size="5242880"
-  helper-text="Maximum 5MB"
-></snice-file-upload>
-
-<script>
-const upload = document.querySelector('snice-file-upload');
-upload.addEventListener('file-upload-error', (e) => {
-  alert(e.detail.message);
-});
-</script>
-```
-
 ### Form Integration
 
 ```html
@@ -213,63 +165,24 @@ upload.addEventListener('file-upload-error', (e) => {
 <script>
 document.getElementById('upload-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-
   const formData = new FormData(e.target);
   const files = formData.getAll('documents');
-
   console.log(`Uploading ${files.length} file(s)...`);
-
-  // Upload to server
-  const response = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData
-  });
-
-  console.log('Upload complete!');
 });
 </script>
 ```
 
 ### Managing Files Programmatically
 
-```html
-<snice-file-upload id="file-upload" multiple></snice-file-upload>
-<button onclick="clearFiles()">Clear All</button>
-<button onclick="removeFirst()">Remove First</button>
-
-<script>
-const upload = document.getElementById('file-upload');
-
-function clearFiles() {
-  upload.clear();
-}
-
-function removeFirst() {
-  upload.removeFile(0);
-}
+```typescript
+upload.clear();
+upload.removeFile(0);
 
 upload.addEventListener('file-upload-change', (e) => {
   console.log(`${e.detail.files.length} file(s) selected`);
 });
-</script>
+
+upload.addEventListener('file-upload-error', (e) => {
+  console.error('Upload error:', e.detail.message);
+});
 ```
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `upload-area` | Drop zone container |
-| `input` | Hidden file input |
-| `file-item` | Individual file entry |
-| `error-text` | Error text element |
-| `helper-text` | Helper text element |
-
-## Features
-
-- **Drag and Drop**: Native drag-and-drop support with visual feedback
-- **Image Preview**: Automatic thumbnail generation for image files
-- **File Validation**: Size and type validation with error messaging
-- **Multiple Files**: Support for single or multiple file selection
-- **File Management**: Add and remove files before upload
-- **Form Integration**: Form-associated custom element
-- **Accessibility**: Full keyboard support and ARIA attributes

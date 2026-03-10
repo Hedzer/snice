@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/masonry.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/masonry.md -->
 
 # Masonry
 `<snice-masonry>`
 
 A Pinterest-style layout that arranges items in columns with variable heights using CSS columns.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/masonry/snice-masonry';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-masonry.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -135,3 +130,10 @@ Use the `gap` attribute with any CSS length value.
   });
 </script>
 ```
+
+## Accessibility
+
+- The masonry container has `role="list"` for screen readers
+- Items flow top-to-bottom, left-to-right within CSS columns
+- `break-inside: avoid` prevents items from splitting across columns
+- CSS columns-based layout requires no JavaScript measurement

@@ -29,17 +29,7 @@ presets: DateRangePreset[] = [];   // attribute: false (JS only)
 showCalendar: boolean = false;     // attr: show-calendar
 ```
 
-## Formats
-
-`'mm/dd/yyyy'` | `'dd/mm/yyyy'` | `'yyyy-mm-dd'` | `'yyyy/mm/dd'` | `'dd-mm-yyyy'` | `'mm-dd-yyyy'` | `'mmmm dd, yyyy'`
-
-## Events
-
-- `daterange-change` → `{ start, end, startDate, endDate, startIso, endIso }`
-- `daterange-open` → `{ dateRangePicker }`
-- `daterange-close` → `{ dateRangePicker }`
-- `daterange-clear` → `{ dateRangePicker }`
-- `daterange-preset` → `{ label, start, end }`
+Formats: `'mm/dd/yyyy'`|`'dd/mm/yyyy'`|`'yyyy-mm-dd'`|`'yyyy/mm/dd'`|`'dd-mm-yyyy'`|`'mm-dd-yyyy'`|`'mmmm dd, yyyy'`
 
 ## Methods
 
@@ -51,19 +41,45 @@ showCalendar: boolean = false;     // attr: show-calendar
 - `reportValidity()` - Report validation to user, returns `boolean`
 - `setCustomValidity(message)` - Set custom validation message
 
-## Presets
+## Events
 
-```js
+- `daterange-change` → `{ start, end, startDate, endDate, startIso, endIso }`
+- `daterange-open` → `{ dateRangePicker }`
+- `daterange-close` → `{ dateRangePicker }`
+- `daterange-clear` → `{ dateRangePicker }`
+- `daterange-preset` → `{ label, start, end, dateRangePicker }`
+- `daterange-focus` → `{ dateRangePicker }`
+- `daterange-blur` → `{ dateRangePicker }`
+
+## CSS Parts
+
+`input`, `calendar-toggle`, `clear`, `spinner`, `calendar`, `helper-text`, `error-text`
+
+## Basic Usage
+
+```html
+<snice-date-range-picker label="Select Range" clearable columns="2"></snice-date-range-picker>
+```
+
+```typescript
+// Presets (JS only)
 picker.presets = [
   { label: 'Last 7 days', start: new Date(Date.now() - 7*86400000), end: new Date() },
   { label: 'This month', start: new Date(2026, 2, 1), end: new Date(2026, 2, 31) },
 ];
+
+// Events
+picker.addEventListener('daterange-change', (e) => {
+  console.log(e.detail.startIso, e.detail.endIso);
+});
 ```
 
 ## Form Integration
 
 `formAssociated: true`. Submits `{name}-start` and `{name}-end` via FormData.
 
-## CSS Parts
+## Accessibility
 
-`input`, `calendar-toggle`, `clear`, `spinner`, `calendar`, `error-text`, `helper-text`
+- Form-associated with ElementInternals
+- Calendar uses popover="manual"
+- Navigation buttons have aria-labels

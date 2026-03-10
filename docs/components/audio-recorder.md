@@ -1,21 +1,30 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/audio-recorder.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/audio-recorder.md -->
 
-# Audio Recorder Component
+# Audio Recorder
+`<snice-audio-recorder>`
 
 Record audio with visualization, pause/resume, and playback.
+
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `autoStart` | `boolean` | `false` | Auto-start recording |
-| `format` | `AudioFormat` | `'audio/webm'` | Output format |
+| `autoStart` (attr: `auto-start`) | `boolean` | `false` | Auto-start recording |
+| `format` | `AudioFormat` | `'audio/webm'` | Output format (`'audio/webm'`, `'audio/ogg'`, `'audio/mp4'`, `'audio/wav'`) |
 | `bitrate` | `number` | `128000` | Audio bitrate (bps) |
-| `showControls` | `boolean` | `true` | Show control buttons |
-| `showVisualizer` | `boolean` | `true` | Show frequency visualizer |
-| `maxDuration` | `number` | `0` | Max duration (seconds, 0=unlimited) |
-| `showTimer` | `boolean` | `true` | Show recording timer |
-| `showPlayback` | `boolean` | `true` | Show playback controls after recording |
+| `showControls` (attr: `show-controls`) | `boolean` | `true` | Show control buttons |
+| `showVisualizer` (attr: `show-visualizer`) | `boolean` | `true` | Show frequency visualizer |
+| `maxDuration` (attr: `max-duration`) | `number` | `0` | Max duration (seconds, 0=unlimited) |
+| `showTimer` (attr: `show-timer`) | `boolean` | `true` | Show recording timer |
+| `showPlayback` (attr: `show-playback`) | `boolean` | `true` | Show playback controls after recording |
 | `recordedUrl` | `string` | `''` | URL of recorded audio (set automatically after stop) |
 
 ## Methods
@@ -36,7 +45,7 @@ Resume paused recording.
 Cancel and discard recording.
 
 ### `getState(): RecorderState`
-Get current state ('inactive', 'recording', 'paused').
+Get current state (`'inactive'`, `'recording'`, `'paused'`).
 
 ### `getDuration(): number`
 Get recording duration in seconds.
@@ -44,24 +53,37 @@ Get recording duration in seconds.
 ### `isRecording(): boolean`
 Check if currently recording.
 
-### `download(filename?): void`
+### `download(filename?: string): void`
 Download recorded audio.
 
 ### `reset(): void`
 Reset recorder state and discard playback.
 
+### AudioRecording Interface
+
+```typescript
+interface AudioRecording {
+  blob: Blob;
+  url: string;
+  duration: number;
+  size: number;
+  format: string;
+  timestamp: number;
+}
+```
+
 ## Events
 
-- `recorder-start` - Recording started
-- `recorder-stop` - Recording stopped
-- `recorder-pause` - Recording paused
-- `recorder-resume` - Recording resumed
-- `recorder-cancel` - Recording cancelled
-- `recorder-error` - Error occurred
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `recorder-start` | `{ recorder }` | Recording started |
+| `recorder-stop` | `{ recorder }` | Recording stopped |
+| `recorder-pause` | `{ recorder }` | Recording paused |
+| `recorder-resume` | `{ recorder }` | Recording resumed |
+| `recorder-cancel` | `{ recorder }` | Recording cancelled |
+| `recorder-error` | `{ recorder, error }` | Error occurred |
 
 ## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
@@ -84,25 +106,21 @@ snice-audio-recorder::part(visualizer) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/audio-recorder/snice-audio-recorder';
+```
+
 ```html
 <snice-audio-recorder id="recorder"></snice-audio-recorder>
 
 <script>
   const recorder = document.getElementById('recorder');
 
-  // Listen for stop event
   recorder.addEventListener('recorder-stop', async () => {
     // Recording complete
   });
 </script>
 ```
-
-## Audio Formats
-
-- `'audio/webm'` - WebM (default)
-- `'audio/ogg'` - Ogg Vorbis
-- `'audio/mp4'` - MP4/AAC
-- `'audio/wav'` - WAV (uncompressed)
 
 ## Examples
 
@@ -156,27 +174,3 @@ const formData = new FormData();
 formData.append('audio', recording.blob, 'recording.webm');
 await fetch('/upload', { method: 'POST', body: formData });
 ```
-
-## AudioRecording Interface
-
-```typescript
-interface AudioRecording {
-  blob: Blob;
-  url: string;
-  duration: number;
-  size: number;
-  format: string;
-  timestamp: number;
-}
-```
-
-## Security
-
-- Requires HTTPS (or localhost)
-- Requires user permission
-- Permission prompts are browser-controlled
-
-## Browser Support
-
-- Modern browsers with MediaRecorder API
-- Requires microphone hardware

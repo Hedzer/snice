@@ -1,24 +1,27 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/list.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/list.md -->
 
 # List
 `<snice-list>`
 
 A list container with search, infinite scroll, loading states, and composable list items.
 
-## Importing
+## Table of Contents
+- [Components](#components)
+- [Properties](#properties)
+- [Requests](#requests)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/list/snice-list';
-```
+## Components
 
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-list.min.js"></script>
-```
+- `<snice-list>` - The list container with search, infinite scroll, and loading support
+- `<snice-list-item>` - Individual list item with heading, description, and slot areas
 
-## List Properties
+## Properties
+
+### snice-list
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -31,7 +34,7 @@ import 'snice/components/list/snice-list';
 | `threshold` | `number` | `0.5` | Intersection threshold for infinite scroll |
 | `skeletonCount` (attr: `skeleton-count`) | `number` | `5` | Number of skeleton placeholders |
 
-## List Item Properties
+### snice-list-item
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -40,7 +43,18 @@ import 'snice/components/list/snice-list';
 | `selected` | `boolean` | `false` | Highlights the item |
 | `disabled` | `boolean` | `false` | Disables interaction |
 
-## List Slots
+## Requests
+
+The list uses `@request`/`@respond` for controller-driven data flow.
+
+| Request | Params | Description |
+|---------|--------|-------------|
+| `list/search` | `{ query: string, list }` | Handle search queries (debounced 300ms) |
+| `list/load-more` | `{ page: number, list }` | Load next page for infinite scroll |
+
+## Slots
+
+### snice-list
 
 | Name | Description |
 |------|-------------|
@@ -48,15 +62,26 @@ import 'snice/components/list/snice-list';
 | `before` | Content before the list items |
 | `after` | Content after the list items |
 | `no-results` | Custom empty state (overrides default) |
-| `loading` | Custom loading content (overrides skeleton) |
+| `loading` | Custom loading content (overrides skeletons) |
 
-## List Item Slots
+### snice-list-item
 
 | Name | Description |
 |------|-------------|
 | (default) | Custom item content |
-| `before` | Content before the item (e.g., icon) |
-| `after` | Content after the item (e.g., badge) |
+| `before` | Content before the item (e.g., icon, avatar) |
+| `after` | Content after the item (e.g., badge, metadata) |
+
+## CSS Parts
+
+### snice-list
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `container` | `<div>` | The outer list container |
+| `search` | `<div>` | The search input wrapper |
+| `loading` | `<div>` | The loading skeletons wrapper |
+| `sentinel` | `<div>` | The infinite scroll sentinel element |
 
 ## Basic Usage
 
@@ -105,7 +130,7 @@ Use the `before` and `after` slots on list items for icons and metadata.
 
 ### Searchable List
 
-Set the `searchable` attribute to show a search input. Handle queries with the `list/search` request.
+Set the `searchable` attribute to show a search input. Handle queries with a `list/search` responder.
 
 ```html
 <snice-list searchable dividers>
@@ -152,10 +177,3 @@ Set the `no-results` attribute to show an empty state message.
   <snice-list-item heading="Enterprise" disabled></snice-list-item>
 </snice-list>
 ```
-
-## Requests
-
-| Request | Params | Description |
-|---------|--------|-------------|
-| `list/search` | `{ query: string, list }` | Handle search queries |
-| `list/load-more` | `{ page: number, list }` | Load next page for infinite scroll |

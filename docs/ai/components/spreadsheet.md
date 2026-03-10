@@ -4,122 +4,57 @@ Excel-like spreadsheet with formulas, multi-cell selection, undo/redo, column re
 
 ## Properties
 
-```ts
-data: any[][] = []
-columns: SpreadsheetColumn[] = []
-readonly: boolean = false
+```typescript
+data: any[][] = [];
+columns: SpreadsheetColumn[] = [];
+readonly: boolean = false;
 
 interface SpreadsheetColumn {
-  header: string
-  type?: 'text' | 'number' | 'date' | 'boolean' | 'select'
-  width?: number
-  options?: string[]           // for 'select' type
-}
-
-interface CellPosition {
-  row: number
-  col: number
-}
-
-interface CellRange {
-  start: CellPosition
-  end: CellPosition
-}
-
-interface UndoEntry {
-  row: number
-  col: number
-  oldValue: any
-  newValue: any
+  header: string;
+  type?: 'text'|'number'|'date'|'boolean'|'select';
+  width?: number;
+  options?: string[];           // for 'select' type
 }
 ```
 
 ## Methods
 
-- `getCell(row: number, col: number)` - Get resolved cell value
-- `setCell(row: number, col: number, value: any)` - Set cell value (auto-expands data, adds to undo stack)
-- `getData()` - Get copy of all data
-- `setData(data: any[][])` - Replace all data
+- `getCell(row, col)` → `any` - Get resolved cell value (formulas return computed result)
+- `setCell(row, col, value)` - Set cell value (auto-expands, adds to undo stack)
+- `getData()` → `any[][]` - Get copy of all data
+- `setData(data)` - Replace all data
 
 ## Events
 
-- `cell-change` -> `{ row: number; col: number; value: any; oldValue: any }`
-- `cell-select` -> `{ row: number; col: number }`
-- `row-select` -> `{ row: number }`
-- `column-sort` -> `{ col: number; direction: 'asc' | 'desc' }`
+- `cell-change` → `{ row, col, value, oldValue }`
+- `cell-select` → `{ row, col }`
+- `row-select` → `{ row }`
+- `column-sort` → `{ col, direction: 'asc'|'desc' }`
 
-## Formula Support
+## CSS Parts
 
-Cells starting with `=` are evaluated. Supported functions:
-- `=SUM(A1:B3)`, `=AVG(A1:A5)`, `=AVERAGE(A1:A5)`
-- `=COUNT(A1:A10)`, `=MIN(A1:A5)`, `=MAX(A1:A5)`
-
-## Keyboard Shortcuts
-
-- Arrow keys: Navigate cells
-- Shift+Arrow: Extend selection range
-- Shift+Click: Extend selection to clicked cell
-- Enter/F2: Edit selected cell
-- Tab/Shift+Tab: Move to next/previous cell (commits edit, auto-expands grid)
-- Escape: Cancel edit
-- Delete/Backspace: Clear selected cell(s)
-- Ctrl+C/Ctrl+V: Copy/paste (supports tab-separated multi-cell)
-- Ctrl+Z: Undo (up to 100 entries)
-- Ctrl+Y / Ctrl+Shift+Z: Redo
-- Any printable key: Start editing with that character (type-to-edit)
-
-## Multi-Cell Selection
-
-- Click+drag to select range
-- Shift+click extends from anchor
-- Shift+arrow keys grow selection
-- Selected range: light blue fill; anchor cell: 2px blue border
-- Status bar shows COUNT, SUM, AVG of numeric cells in selection
-
-## Column Resizing
-
-- Drag right edge of column header to resize
-- Min width: 40px
-- Widths stored in internal map
-
-## Context Menu (Right-Click)
-
-Items: Cut, Copy, Paste, Insert Row Above/Below, Delete Row, Insert Column Left/Right, Delete Column, Clear Cell(s)
-
-## Row/Column Add Buttons
-
-- "+" row at bottom: appends empty row
-- "+" column at right: appends empty column
-- Auto-expand on Tab (last col) or Enter (last row)
-
-## Empty State
-
-When data is empty, shows "Double-click or start typing to add data"
-
-## Frozen Headers
-
-- Row numbers: sticky left (visible during horizontal scroll)
-- Column headers: sticky top
-- Corner cell (top-left): sticky both directions
-
-**CSS Parts:**
-- `formula-bar` - The formula bar with cell reference and input
-- `base` - The main spreadsheet grid area
-- `status-bar` - The bottom status bar showing selection stats
-- `context-menu` - The right-click context menu
+- `formula-bar` - Formula bar with cell reference and input
+- `base` - Main spreadsheet grid area
+- `status-bar` - Bottom status bar (selection stats)
+- `context-menu` - Right-click context menu
 
 ## CSS Custom Properties
 
-- `--snice-color-border` - Grid lines (default: `rgb(226 226 226)`)
-- `--snice-color-background` - Cell background (default: `rgb(255 255 255)`)
+- `--snice-color-border` - Grid lines (`rgb(226 226 226)`)
+- `--snice-color-background` - Cell background (`rgb(255 255 255)`)
 - `--snice-color-background-element` - Header/row-number background
-- `--snice-color-primary` - Selected cell border (default: `rgb(37 99 235)`)
-- `--snice-color-primary-subtle` - Range selection fill / header highlight
-- `--snice-color-text` - Cell text color
+- `--snice-color-background-hover` - Row/header hover
+- `--snice-color-primary` - Selected cell border (`rgb(37 99 235)`)
+- `--snice-color-primary-subtle` - Range selection fill
+- `--snice-color-text` - Cell text
 - `--snice-color-text-secondary` - Formula bar cell ref
 - `--snice-color-text-tertiary` - Row numbers, status bar labels
 
-## Usage
+## Formula Support
+
+Cells starting with `=` are evaluated: `SUM`, `AVG`/`AVERAGE`, `COUNT`, `MIN`, `MAX`. Cell refs use A1 notation.
+
+## Basic Usage
 
 ```html
 <snice-spreadsheet></snice-spreadsheet>
@@ -141,3 +76,22 @@ sheet.addEventListener('cell-change', (e) => {
   console.log(`Cell [${e.detail.row},${e.detail.col}] changed to ${e.detail.value}`);
 });
 ```
+
+## Keyboard Navigation
+
+- Arrow keys: navigate cells
+- Shift+Arrow: extend selection range
+- Enter/F2: edit cell; Escape: cancel
+- Tab/Shift+Tab: next/prev cell (commits edit, auto-expands)
+- Delete/Backspace: clear cell(s)
+- Ctrl+C/V: copy/paste (tab-separated multi-cell)
+- Ctrl+Z: undo; Ctrl+Y: redo (up to 100 entries)
+- Any printable key: type-to-edit
+
+## Accessibility
+
+- Full keyboard navigation and editing
+- Visible focus indicator on selected cell
+- Frozen row numbers (sticky left) and column headers (sticky top)
+- Context menu: Cut, Copy, Paste, Insert/Delete Row/Column, Clear
+- Auto-expanding grid via "+" buttons and Tab/Enter at edges

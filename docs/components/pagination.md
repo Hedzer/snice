@@ -1,35 +1,32 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/pagination.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/pagination.md -->
 
 # Pagination
 `<snice-pagination>`
 
-A pagination navigation component for navigating through multi-page content.
+A pagination navigation component with page numbers, ellipsis, and first/previous/next/last navigation buttons.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/pagination/snice-pagination';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-pagination.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `current` | `number` | `1` | Active page number |
+| `current` | `number` | `1` | Current active page |
 | `total` | `number` | `1` | Total number of pages |
-| `siblings` | `number` | `1` | Page buttons on each side of current |
-| `showFirst` (attr: `show-first`) | `boolean` | `true` | Show "First" button |
-| `showLast` (attr: `show-last`) | `boolean` | `true` | Show "Last" button |
-| `showPrev` (attr: `show-prev`) | `boolean` | `true` | Show "Previous" button |
-| `showNext` (attr: `show-next`) | `boolean` | `true` | Show "Next" button |
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Pagination size |
+| `siblings` | `number` | `1` | Number of pages shown on each side of the current page |
+| `showFirst` (attr: `show-first`) | `boolean` | `true` | Show first page button |
+| `showLast` (attr: `show-last`) | `boolean` | `true` | Show last page button |
+| `showPrev` (attr: `show-prev`) | `boolean` | `true` | Show previous page button |
+| `showNext` (attr: `show-next`) | `boolean` | `true` | Show next page button |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
 | `variant` | `'default' \| 'rounded' \| 'text'` | `'default'` | Visual style |
 
 ## Methods
@@ -48,45 +45,37 @@ import 'snice/components/pagination/snice-pagination';
 |-------|--------|-------------|
 | `pagination-change` | `{ page: number, previousPage: number }` | Fired when the page changes |
 
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--pagination-gap` | Gap between buttons | `4px` |
-| `--pagination-button-size` | Button dimensions | `32px` |
-| `--pagination-button-padding` | Button padding | `8px` |
-| `--pagination-font-size` | Font size | `14px` |
-| `--pagination-border-radius` | Button border radius | `4px` |
-
 ## CSS Parts
 
 Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
-| `base` | `<nav>` | The outer navigation container |
-| `button` | `<button>` | All navigation buttons (shared) |
-| `first-button` | `<button>` | The "First page" button |
-| `prev-button` | `<button>` | The "Previous page" button |
-| `pages` | `<div>` | Container holding page number buttons |
-| `ellipsis` | `<span>` | The ellipsis indicator between page ranges |
-| `next-button` | `<button>` | The "Next page" button |
-| `last-button` | `<button>` | The "Last page" button |
+| `base` | `<nav>` | The pagination nav container |
+| `button` | `<button>` | All navigation buttons (shared part) |
+| `first-button` | `<button>` | The first page button |
+| `prev-button` | `<button>` | The previous page button |
+| `pages` | `<div>` | The page numbers container |
+| `ellipsis` | `<span>` | The ellipsis indicators |
+| `next-button` | `<button>` | The next page button |
+| `last-button` | `<button>` | The last page button |
 
 ```css
-snice-pagination::part(base) {
-  gap: 8px;
-}
-
 snice-pagination::part(button) {
   border-radius: 50%;
   font-weight: 600;
 }
-
-snice-pagination::part(ellipsis) {
-  color: #9ca3af;
-}
 ```
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--pagination-gap` | Gap between buttons | `4px` |
+| `--pagination-button-size` | Button width and height | `32px` |
+| `--pagination-button-padding` | Button horizontal padding | `8px` |
+| `--pagination-font-size` | Button font size | `14px` |
+| `--pagination-border-radius` | Button border radius | `4px` |
 
 ## Basic Usage
 
@@ -96,13 +85,29 @@ import 'snice/components/pagination/snice-pagination';
 
 ```html
 <snice-pagination current="1" total="10"></snice-pagination>
+
+<script type="module">
+  document.querySelector('snice-pagination').addEventListener('pagination-change', (e) => {
+    console.log('Page:', e.detail.page, 'Previous:', e.detail.previousPage);
+  });
+</script>
 ```
 
 ## Examples
 
+### Variants
+
+Use the `variant` attribute to change the button style.
+
+```html
+<snice-pagination total="20" variant="default"></snice-pagination>
+<snice-pagination total="20" variant="rounded"></snice-pagination>
+<snice-pagination total="20" variant="text"></snice-pagination>
+```
+
 ### Sizes
 
-Use the `size` attribute to change the pagination size.
+Use the `size` attribute to adjust button dimensions.
 
 ```html
 <snice-pagination total="10" size="small"></snice-pagination>
@@ -110,63 +115,36 @@ Use the `size` attribute to change the pagination size.
 <snice-pagination total="10" size="large"></snice-pagination>
 ```
 
-### Variants
+### Extended Siblings
 
-Use the `variant` attribute to change the visual style.
-
-```html
-<snice-pagination total="10" variant="default"></snice-pagination>
-<snice-pagination total="10" variant="rounded"></snice-pagination>
-<snice-pagination total="10" variant="text"></snice-pagination>
-```
-
-### Controlling Siblings
-
-Use the `siblings` attribute to set how many page buttons appear on each side of the current page.
+Use `siblings` to show more page numbers around the current page.
 
 ```html
-<!-- 1 page each side (default): [1] ... [4] [5] [6] ... [20] -->
-<snice-pagination current="5" total="20" siblings="1"></snice-pagination>
-
-<!-- 3 pages each side: [1] ... [7] [8] [9] [10] [11] [12] [13] ... [20] -->
-<snice-pagination current="10" total="20" siblings="3"></snice-pagination>
+<snice-pagination total="50" siblings="3"></snice-pagination>
 ```
 
-### Without Navigation Buttons
+### Minimal Navigation
 
-Hide the first, last, previous, or next buttons as needed.
+Hide specific navigation buttons for a simpler layout.
 
 ```html
 <snice-pagination total="10" show-first="false" show-last="false"></snice-pagination>
-
-<!-- Page numbers only -->
-<snice-pagination
-  total="10"
-  show-first="false"
-  show-last="false"
-  show-prev="false"
-  show-next="false">
-</snice-pagination>
 ```
 
-### Event Handling
+### Programmatic Navigation
 
-```html
-<snice-pagination total="20"></snice-pagination>
-```
+Use methods to control pagination from JavaScript.
 
 ```typescript
-pagination.addEventListener('pagination-change', (e) => {
-  console.log(`Page ${e.detail.previousPage} → ${e.detail.page}`);
-});
-```
-
-### Programmatic Control
-
-```typescript
+const pagination = document.querySelector('snice-pagination');
 pagination.goToPage(5);
 pagination.nextPage();
 pagination.previousPage();
-pagination.firstPage();
-pagination.lastPage();
 ```
+
+## Accessibility
+
+- The component uses a `<nav>` element with `aria-label="Pagination"`
+- The active page has `aria-current="page"`
+- Each button has an `aria-label` describing its action
+- Boundary buttons are automatically disabled when at the first or last page

@@ -1,21 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/invoice.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/invoice.md -->
 
 # Invoice Component
 
 A professional invoice component with line items, automatic tax and discount calculations, status tracking, and QR code support. Supports multiple visual variants and customizable layouts.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/invoice/snice-invoice';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-invoice.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -82,23 +79,6 @@ interface InvoiceItem {
 | `qr` | QR code content. Use for payment QR codes or links. |
 | (default) | Additional content rendered in the footer area |
 
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--invoice-max-width` | `50rem` | Maximum width of invoice |
-| `--invoice-padding` | `2rem` | Internal padding |
-| `--invoice-bg` | `white` | Background color |
-| `--invoice-text` | `rgb(23 23 23)` | Text color |
-| `--invoice-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--invoice-accent` | `rgb(37 99 235)` | Accent color |
-| `--invoice-border` | `rgb(226 226 226)` | Border color |
-| `--invoice-border-radius` | `0.5rem` | Border radius |
-| `--invoice-shadow` | `none` | Box shadow |
-| `--invoice-table-header-bg` | `transparent` | Table header background |
-| `--invoice-summary-width` | `16rem` | Summary column width |
-| `--invoice-qr-size` | `6rem` | QR code size |
-
 ## CSS Parts
 
 | Part | Description |
@@ -132,7 +112,28 @@ interface InvoiceItem {
 | `qr` | QR code element |
 | `footer` | Footer area |
 
+## CSS Custom Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `--invoice-max-width` | `50rem` | Maximum width of invoice |
+| `--invoice-padding` | `2rem` | Internal padding |
+| `--invoice-bg` | `white` | Background color |
+| `--invoice-text` | `rgb(23 23 23)` | Text color |
+| `--invoice-text-secondary` | `rgb(82 82 82)` | Secondary text |
+| `--invoice-accent` | `rgb(37 99 235)` | Accent color |
+| `--invoice-border` | `rgb(226 226 226)` | Border color |
+| `--invoice-border-radius` | `0.5rem` | Border radius |
+| `--invoice-shadow` | `none` | Box shadow |
+| `--invoice-table-header-bg` | `transparent` | Table header background |
+| `--invoice-summary-width` | `16rem` | Summary column width |
+| `--invoice-qr-size` | `6rem` | QR code size |
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/invoice/snice-invoice';
+```
 
 ```html
 <snice-invoice
@@ -249,18 +250,18 @@ interface InvoiceItem {
   invoice.from = { name: 'My Company' };
   invoice.to = { name: 'Customer' };
   invoice.items = [];
-  
+
   function addItem() {
     invoice.items = [
       ...invoice.items,
       { description: 'New Service', quantity: 1, unitPrice: 99 }
     ];
   }
-  
+
   function markPaid() {
     invoice.status = 'paid';
   }
-  
+
   invoice.addEventListener('invoice-status-change', (e) => {
     console.log('Status changed:', e.detail.oldStatus, '→', e.detail.newStatus);
   });

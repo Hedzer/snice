@@ -2,7 +2,15 @@
 
 Tabbed interface with tab buttons and content panels.
 
-## snice-tabs (Container)
+## Components
+
+- `snice-tabs` - Container
+- `snice-tab` - Tab button
+- `snice-tab-panel` - Content panel
+
+## Properties
+
+### snice-tabs
 
 ```typescript
 selected: number = 0;
@@ -11,14 +19,14 @@ noScrollControls: boolean = false;  // attr: no-scroll-controls
 transition: string = 'none';
 ```
 
-## snice-tab (Tab Button)
+### snice-tab
 
 ```typescript
 disabled: boolean = false;
 closable: boolean = false;
 ```
 
-## snice-tab-panel (Content Panel)
+### snice-tab-panel
 
 ```typescript
 name: string = '';
@@ -27,18 +35,18 @@ transitionOut: string = '';       // attr: transition-out
 transitionDuration: number = 300; // attr: transition-duration
 ```
 
-## Events
-
-- `tab-change` → `{ index, oldIndex, tab, panel }` - Tab switched
-- `tab-select` → `{ tab }` - Tab clicked
-- `tab-close` → `{ tab }` - Close button clicked
-
 ## Methods
 
 - `selectTab(index)` - Select tab by index
 - `show(index)` - Alias for selectTab
 - `getTab(index)` - Get tab element
 - `getPanel(index)` - Get panel element
+
+## Events
+
+- `tab-change` -> `{ index, oldIndex, tab, panel }` - Tab switched
+- `tab-select` -> `{ tab }` - Tab clicked
+- `tab-close` -> `{ tab }` - Close button clicked
 
 ## Slots
 
@@ -56,7 +64,7 @@ transitionDuration: number = 300; // attr: transition-duration
 - `scroll-button-end` - End scroll button
 - `panels` - Panel content wrapper
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-tabs>

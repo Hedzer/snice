@@ -1,22 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/spinner.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/spinner.md -->
 
 # Spinner
-`<snice-spinner>`
 
-An animated loading indicator.
+An animated loading indicator with configurable size, color, and optional label.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/spinner/snice-spinner';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-spinner.min.js"></script>
-```
+- [Properties](#properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -24,29 +18,16 @@ import 'snice/components/spinner/snice-spinner';
 |----------|------|---------|-------------|
 | `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
 | `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
-| `label` | `string` | `''` | Accessible label |
-| `thickness` | `number` | `4` | Stroke thickness |
+| `label` | `string` | `''` | Accessible label text displayed below the spinner |
+| `thickness` | `number` | `4` | Stroke thickness in pixels |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer spinner container |
-| `circle` | `<svg>` | The SVG spinner circle |
-| `label` | `<span>` | The label text element |
-
-```css
-snice-spinner::part(base) {
-  gap: 0.75rem;
-}
-
-snice-spinner::part(label) {
-  font-size: 0.875rem;
-  color: #64748b;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer spinner container |
+| `circle` | The SVG spinner circle |
+| `label` | The label text element |
 
 ## Basic Usage
 
@@ -62,7 +43,7 @@ import 'snice/components/spinner/snice-spinner';
 
 ### Sizes
 
-Use the `size` attribute to change the spinner's size.
+Use the `size` attribute to change the spinner's dimensions.
 
 ```html
 <snice-spinner size="small"></snice-spinner>
@@ -85,15 +66,24 @@ Use the `color` attribute to change the spinner's color.
 
 ### With Label
 
-Set the `label` attribute for an accessible description.
+Set the `label` attribute to display descriptive text below the spinner.
 
 ```html
 <snice-spinner label="Loading data..."></snice-spinner>
 ```
 
+### Custom Thickness
+
+Use the `thickness` attribute to adjust the stroke width.
+
+```html
+<snice-spinner thickness="2"></snice-spinner>
+<snice-spinner thickness="6"></snice-spinner>
+```
+
 ### Inline
 
-Use a small spinner inline with text.
+Use a small spinner inline with text for button loading states.
 
 ```html
 <button disabled>
@@ -101,3 +91,8 @@ Use a small spinner inline with text.
   Processing...
 </button>
 ```
+
+## Accessibility
+
+- Uses `role="status"` with `aria-label` for screen readers
+- The `label` property provides visible and accessible descriptive text

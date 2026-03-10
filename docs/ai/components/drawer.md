@@ -5,13 +5,13 @@ Slide-out panel from any viewport side with focus trap and dismissal options. Su
 ## Properties
 
 ```typescript
-open: boolean = false;                         // Visibility state
+open: boolean = false;
 position: 'left'|'right'|'top'|'bottom' = 'left';
 size: 'small'|'medium'|'large'|'xl'|'xxl'|'xxxl'|'full' = 'medium';
 inline: boolean = false;                       // Sit in document flow (no overlay/backdrop/focus-trap)
 breakpoint: number = 0;                        // Viewport px width: above → inline, below → overlay
-noHeader: boolean = false;                      // attribute: no-header — hide header entirely
-noFooter: boolean = false;                      // attribute: no-footer — hide footer entirely
+noHeader: boolean = false;                     // attribute: no-header
+noFooter: boolean = false;                     // attribute: no-footer
 noBackdrop: boolean = false;                   // attribute: no-backdrop
 noBackdropDismiss: boolean = false;            // attribute: no-backdrop-dismiss
 noEscapeDismiss: boolean = false;              // attribute: no-escape-dismiss
@@ -23,30 +23,42 @@ contained: boolean = false;                    // Position relative to parent
 
 ## Methods
 
-```typescript
-show()    // Open drawer
-hide()    // Close drawer
-toggle()  // Toggle drawer
-```
+- `show()` - Open drawer
+- `hide()` - Close drawer
+- `toggle()` - Toggle drawer
 
 ## Events
 
-```typescript
-'drawer-open'   // { drawer }
-'drawer-close'  // { drawer }
-```
+- `drawer-open` → `{ drawer }` - Drawer opened
+- `drawer-close` → `{ drawer }` - Drawer closed
 
 ## Slots
 
-```html
-<snice-drawer>
-  <h2 slot="title">Title</h2>
-  <div>Body content</div>
-  <div slot="footer">Actions</div>
-</snice-drawer>
-```
+- `(default)` - Body content
+- `title` - Header title text
+- `footer` - Footer actions
 
-## Usage
+## CSS Custom Properties
+
+- `--drawer-width-small` through `--drawer-width-xxxl` - Width per size
+- `--drawer-height-small` through `--drawer-height-xxxl` - Height per size (top/bottom)
+- `--drawer-bg` - Background (default: `var(--snice-color-background, white)`)
+- `--drawer-shadow` - Shadow (default: `var(--snice-shadow-lg)`)
+- `--drawer-backdrop` - Backdrop color (default: `rgba(0, 0, 0, 0.5)`)
+- `--drawer-transition` - Transition timing
+- `--drawer-z-index` - Z-index (default: `1050`)
+
+## CSS Parts
+
+- `backdrop` - Backdrop overlay
+- `base` - Drawer panel container
+- `header` - Header section
+- `title` - Title wrapper (h2)
+- `close` - Close button
+- `body` - Body content section
+- `footer` - Footer section
+
+## Basic Usage
 
 ```html
 <snice-drawer id="menu" position="left">
@@ -66,10 +78,9 @@ drawer.toggle();
 
 ## Inline Mode
 
-Renders in document flow — no overlay, backdrop, focus trap, or escape handler. Drawer panel is always visible.
+Renders in document flow — no overlay, backdrop, focus trap, or escape handler.
 
 ```html
-<!-- Always-visible sidebar -->
 <div style="display:flex; height:100vh">
   <snice-drawer inline position="left" size="small">
     <span slot="title">Sidebar</span>
@@ -79,73 +90,33 @@ Renders in document flow — no overlay, backdrop, focus trap, or escape handler
 </div>
 ```
 
-- CSS uses border separator instead of box-shadow
-- `open` property is ignored (always visible)
-- Border direction matches `position` (left→border-right, right→border-left, etc.)
-
 ## Breakpoint Mode
 
-Responsive switching: inline above the breakpoint, overlay below. Uses `window.matchMedia`.
+Responsive: inline above breakpoint, overlay below. Uses `window.matchMedia`.
 
 ```html
-<!-- Inline on desktop (≥768px), overlay on mobile (<768px) -->
-<snice-drawer breakpoint="768" position="left" size="small">
-  <span slot="title">Navigation</span>
-  ...
-</snice-drawer>
+<snice-drawer breakpoint="768" position="left" size="small">...</snice-drawer>
 ```
-
-- Sets/removes the `inline` attribute dynamically via matchMedia listener
-- Crossing the breakpoint while open: overlay behaviors torn down/set up automatically
-- Listener cleaned up on `@dispose()`
-- `@watch('breakpoint')` tears down old listener and sets up new one when value changes
 
 ## Push Content with `<snice-drawer-target>`
 
-Use `<snice-drawer-target>` to wrap content that should be pushed when a drawer opens. The target watches the drawer's `[open]` attribute via MutationObserver and applies a `translateX()` or `translateY()` transform.
-
-```typescript
-// snice-drawer-target properties
-for: string = '';   // ID of the linked drawer
-push: string = '';  // Current push amount (e.g. '240px'), set automatically
-```
-
 ```html
-<snice-drawer id="nav" position="left" size="small" contained push-content>
-  <span slot="title">Nav</span>
-</snice-drawer>
+<snice-drawer id="nav" position="left" size="small" contained push-content>...</snice-drawer>
 <snice-drawer-target for="nav">
-  <main>This content slides when drawer opens</main>
+  <main>Content slides when drawer opens</main>
 </snice-drawer-target>
 ```
 
-- Target measures drawer panel width/height directly via `shadowRoot.querySelector('.drawer').offsetWidth`
-- Left/right drawers → `translateX`, top/bottom → `translateY`
-- Transition: `transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)`
-- Resets parent `scrollLeft`/`scrollTop` after transform change (prevents `overflow:hidden` scroll bug)
-- Cleanup on disconnect via `@dispose()`
+Target properties: `for: string` (drawer ID), `push: string` (auto-set amount).
 
-## Features
+## Keyboard Navigation
 
-- Slides from any edge (left, right, top, bottom)
-- Multiple size options
-- Focus trap with Tab navigation
-- Focus restoration on close
-- Backdrop click to close
-- Escape key to close
-- Push content mode via `<snice-drawer-target>`
-- Persistent mode (no close button)
-- Inline mode (persistent sidebar in document flow)
-- Breakpoint mode (responsive inline ↔ overlay switching)
-- Contained mode uses `overflow: clip` to prevent scroll bugs during transform animations
-- ARIA attributes (role, aria-modal, aria-hidden)
+- Escape closes drawer (unless no-escape-dismiss/persistent)
+- Tab/Shift+Tab cycles focusable elements (focus trapped)
 
-## CSS Parts
+## Accessibility
 
-- `backdrop` - Backdrop overlay
-- `base` - The drawer panel container
-- `header` - Header section
-- `title` - Title wrapper (h2)
-- `close` - Close button
-- `body` - Body content section
-- `footer` - Footer section
+- role=dialog, aria-modal=true on drawer
+- aria-hidden reflects visibility
+- Focus trap + focus restoration
+- Contained mode skips focus trap and body scroll lock

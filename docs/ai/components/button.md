@@ -1,6 +1,6 @@
 # snice-button
 
-Interactive button with variants and states.
+Interactive button with variants, states, and form association.
 
 ## Properties
 
@@ -16,18 +16,9 @@ circle: boolean = false;
 href: string = '';
 target: string = '';
 download: string = '';
-icon: string = '';
-iconPlacement: 'start'|'end' = 'start';
+icon: string = '';                        // emoji, URL, image file
+iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 ```
-
-## Slots
-
-- `(default)` - Button label content
-- `icon` - Custom icon content (overrides `icon` property)
-
-## Events
-
-- `button-click` → `{ originalEvent: MouseEvent }`
 
 ## Methods
 
@@ -38,10 +29,25 @@ iconPlacement: 'start'|'end' = 'start';
 - `setDisabled(disabled)` - Set disabled state
 - `setVariant(variant)` - Set variant
 
-## Usage
+## Events
+
+- `button-click` -> `{ originalEvent: MouseEvent }`
+
+## Slots
+
+- `(default)` - Button label content
+- `icon` - Custom icon content (overrides `icon` property)
+
+## CSS Parts
+
+- `base` - The button element
+- `spinner` - Loading spinner
+- `label` - Button label text
+- `icon` - Icon container
+
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-button>Click me</snice-button>
 
 <!-- Variants -->
@@ -53,7 +59,6 @@ iconPlacement: 'start'|'end' = 'start';
 
 <!-- Sizes -->
 <snice-button size="small">Small</snice-button>
-<snice-button size="medium">Medium</snice-button>
 <snice-button size="large">Large</snice-button>
 
 <!-- States -->
@@ -63,11 +68,9 @@ iconPlacement: 'start'|'end' = 'start';
 <!-- Styles -->
 <snice-button outline>Outline</snice-button>
 <snice-button pill>Pill</snice-button>
-<snice-button circle icon="×"></snice-button>
+<snice-button circle icon="x"></snice-button>
 
-<!-- ⚠️ icon="home" renders as PLAIN TEXT. Use the icon slot for icon fonts. -->
-
-<!-- Icon SLOT — for Material Symbols, Font Awesome, SVGs -->
+<!-- Icon SLOT -- for Material Symbols, Font Awesome, SVGs -->
 <snice-button>
   <span slot="icon" class="material-symbols-outlined">save</span>
   Save
@@ -76,38 +79,24 @@ iconPlacement: 'start'|'end' = 'start';
   <i slot="icon" class="fa-solid fa-trash"></i>
   Delete
 </snice-button>
-<snice-button>
-  <svg slot="icon" viewBox="0 0 24 24"><path d="..."/></svg>
-  Action
-</snice-button>
 
-<!-- Icon PROPERTY — for emoji, URLs, image files only -->
-<snice-button icon="→">Next</snice-button>
-<snice-button icon="🏠">Home</snice-button>
+<!-- Icon PROPERTY -- for emoji, URLs, image files only -->
+<!-- icon="home" renders as PLAIN TEXT, NOT a Material icon -->
+<snice-button icon="->">Next</snice-button>
 <snice-button icon="/icons/save.svg">Save</snice-button>
-<snice-button icon="icon.png">Image file</snice-button>
-<!-- Scheme overrides: img://, text:// -->
 <snice-button icon="img://filename">Force img</snice-button>
-<snice-button icon="text://content">Force text</snice-button>
 
 <!-- As link -->
 <snice-button href="/page">Link</snice-button>
 <snice-button href="/file.pdf" download>Download</snice-button>
+
+<!-- Form -->
+<snice-button type="submit" variant="primary">Submit</snice-button>
+<snice-button type="reset">Reset</snice-button>
 ```
 
-## CSS Parts
+## Accessibility
 
-`base`, `spinner`, `label`, `icon`
-
-## Features
-
-- 6 color variants
-- 3 sizes
-- Outline style
-- Pill (rounded) shape
-- Circle (icon only) shape
-- Loading state with spinner
-- Disabled state
-- Link mode (href)
-- Icon support with placement (URL, image files, emoji). Use slot for icon fonts.
-- Download attribute support
+- Keyboard accessible (Enter, Space)
+- Focus ring on `:focus-visible`
+- Form-associated (`formAssociated: true`)

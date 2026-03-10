@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/avatar.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/avatar.md -->
 
 # Avatar
 `<snice-avatar>`
 
 Displays a user profile image with automatic fallback to name-based initials or a default person icon.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/avatar/snice-avatar';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-avatar.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -42,11 +37,9 @@ import 'snice/components/avatar/snice-avatar';
 |----------|-------------|---------|
 | `--avatar-size` | Avatar dimensions | Varies by `size` attribute |
 | `--avatar-bg` | Background color | Auto-generated from name |
-| `--avatar-color` | Text/icon color | `hsl(0 0% 100%)` |
+| `--avatar-color` | Text/icon color | `rgb(255 255 255)` |
 
 ## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
 
 | Part | Element | Description |
 |------|---------|-------------|
@@ -121,6 +114,17 @@ Use the `size` attribute to change the avatar dimensions.
 <snice-avatar name="XX" size="xxl"></snice-avatar>
 ```
 
+### Size Reference
+
+| Size | Dimensions | Font Size |
+|------|-----------|-----------|
+| `xs` | 1.5rem (24px) | 0.625rem (10px) |
+| `small` | 2rem (32px) | 0.75rem (12px) |
+| `medium` | 2.5rem (40px) | 0.875rem (14px) |
+| `large` | 3rem (48px) | 1rem (16px) |
+| `xl` | 4rem (64px) | 1.25rem (20px) |
+| `xxl` | 6rem (96px) | 2rem (32px) |
+
 ### Shapes
 
 Use the `shape` attribute to change the avatar shape.
@@ -170,34 +174,6 @@ When an image fails to load, the component automatically shows initials instead.
 </snice-avatar>
 ```
 
-### Avatar Group
-
-Stack avatars with negative margins to create an overlapping group.
-
-```html
-<style>
-  .avatar-group {
-    display: flex;
-    align-items: center;
-  }
-  .avatar-group snice-avatar {
-    margin-left: -12px;
-    border: 3px solid white;
-    border-radius: 50%;
-  }
-  .avatar-group snice-avatar:first-child {
-    margin-left: 0;
-  }
-</style>
-
-<div class="avatar-group">
-  <snice-avatar src="/photos/user1.jpg" name="User 1"></snice-avatar>
-  <snice-avatar src="/photos/user2.jpg" name="User 2"></snice-avatar>
-  <snice-avatar src="/photos/user3.jpg" name="User 3"></snice-avatar>
-  <snice-avatar name="+5" fallback-background="#e5e7eb"></snice-avatar>
-</div>
-```
-
 ### Profile Card
 
 Combine with other elements for a profile card layout.
@@ -230,14 +206,3 @@ Use small avatars alongside user-generated content.
   </div>
 </div>
 ```
-
-## Size Reference
-
-| Size | Dimensions | Font Size |
-|------|-----------|-----------|
-| `xs` | 1.5rem (24px) | 0.625rem (10px) |
-| `small` | 2rem (32px) | 0.75rem (12px) |
-| `medium` | 2.5rem (40px) | 0.875rem (14px) |
-| `large` | 3rem (48px) | 1rem (16px) |
-| `xl` | 4rem (64px) | 1.25rem (20px) |
-| `xxl` | 6rem (96px) | 2rem (32px) |

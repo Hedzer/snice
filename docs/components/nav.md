@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/nav.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/nav.md -->
 
 # Nav
 `<snice-nav>`
 
 A navigation menu that renders from placard configurations and integrates with Snice's routing system.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/nav/snice-nav';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-nav.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -31,6 +27,12 @@ import 'snice/components/nav/snice-nav';
 | Method | Arguments | Description |
 |--------|-----------|-------------|
 | `update()` | `placards, appContext?, currentRoute?, routeParams?` | Update navigation with placard data |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Additional content rendered after the navigation |
 
 ## CSS Parts
 
@@ -175,6 +177,14 @@ Set `is-top-level` to automatically receive placards and routes from the Snice c
 ```html
 <snice-nav is-top-level></snice-nav>
 ```
+
+## Accessibility
+
+- The `<nav>` element has `role="navigation"` for screen readers
+- Active items receive `aria-current="page"`
+- Items with `description` get `aria-label` for accessible names
+- Focus-visible styles are provided for keyboard navigation
+- All navigation links are keyboard-focusable
 
 ## Placard Structure
 

@@ -1,35 +1,29 @@
 # snice-flip-card
 
-3D card flip component with front/back faces, horizontal/vertical flip direction, and click or programmatic control.
+3D card flip component with front/back faces, horizontal/vertical direction, click or programmatic control.
 
 ## Properties
 
-```ts
-flipped: boolean = false                 // attr: flipped — Whether back face is showing
-clickToFlip: boolean = true              // attr: click-to-flip — Enable click/keyboard to toggle
-direction: FlipDirection = 'horizontal'  // attr: direction — 'horizontal' | 'vertical'
-duration: number = 600                   // attr: duration — Flip animation duration in ms
+```typescript
+flipped: boolean = false;                 // Whether back face is showing
+clickToFlip: boolean = true;              // attribute: click-to-flip
+direction: 'horizontal'|'vertical' = 'horizontal';
+duration: number = 600;                   // Flip animation duration in ms
 ```
-
-## Slots
-
-- `front` — Content for the front face
-- `back` — Content for the back face
-
-## Events
-
-- `flip-change` -> `{ flipped: boolean, side: 'front' | 'back' }` — Fires on flip state change
 
 ## Methods
 
-- `flip(): void` — Toggle between front and back
-- `flipTo(side: 'front' | 'back'): void` — Flip to a specific side
+- `flip()` - Toggle between front and back
+- `flipTo(side: 'front'|'back')` - Flip to a specific side
 
-## CSS Custom Properties
+## Events
 
-```css
---flip-duration   /* Animation duration, set automatically from duration property */
-```
+- `flip-change` → `{ flipped: boolean, side: 'front'|'back' }`
+
+## Slots
+
+- `front` - Content for the front face
+- `back` - Content for the back face
 
 ## CSS Parts
 
@@ -37,12 +31,15 @@ duration: number = 600                   // attr: duration — Flip animation du
 - `front` - The front face container
 - `back` - The back face container
 
-## Keyboard
+## CSS Custom Properties
 
-When `click-to-flip` is enabled:
-- Enter / Space — Toggle flip
+- `--flip-duration` - Animation duration (set automatically from `duration` property)
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/flip-card/snice-flip-card';
+```
 
 ```html
 <snice-flip-card direction="horizontal" style="width: 300px; height: 200px;">
@@ -55,3 +52,14 @@ When `click-to-flip` is enabled:
 card.flipTo('back');
 card.addEventListener('flip-change', e => console.log(e.detail.side));
 ```
+
+## Keyboard Navigation
+
+When `click-to-flip` is enabled:
+- Enter / Space - Toggle flip
+
+## Accessibility
+
+- `role="button"` with `aria-label` on the card
+- `tabindex="0"` when click-to-flip is enabled
+- Enter/Space keyboard activation

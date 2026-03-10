@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/carousel.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/carousel.md -->
 
-# Carousel
-`<snice-carousel>`
+# Carousel Component
 
-Content carousel with autoplay, looping, navigation controls, and multi-slide views.
+Content carousel with autoplay, looping, navigation controls, slide indicators, and multi-slide views.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/carousel/snice-carousel';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-carousel.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -36,11 +32,11 @@ import 'snice/components/carousel/snice-carousel';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `next()` | — | Advance to the next slide |
-| `prev()` | — | Go to the previous slide |
+| `next()` | -- | Advance to the next slide |
+| `prev()` | -- | Go to the previous slide |
 | `goToSlide()` | `index: number` | Navigate to a specific slide by index |
-| `play()` | — | Start autoplay |
-| `pause()` | — | Pause autoplay |
+| `play()` | -- | Start autoplay |
+| `pause()` | -- | Pause autoplay |
 
 ## Events
 
@@ -69,10 +65,6 @@ import 'snice/components/carousel/snice-carousel';
 
 ## Basic Usage
 
-```typescript
-import 'snice/components/carousel/snice-carousel';
-```
-
 ```html
 <snice-carousel>
   <div>Slide 1</div>
@@ -81,29 +73,21 @@ import 'snice/components/carousel/snice-carousel';
 </snice-carousel>
 ```
 
+```typescript
+import 'snice/components/carousel/snice-carousel';
+```
+
 ## Examples
 
 ### Autoplay
 
-Set the `autoplay` attribute to automatically advance slides. Use `autoplay-interval` to control the timing in milliseconds.
+Set the `autoplay` attribute to automatically advance slides.
 
 ```html
 <snice-carousel autoplay autoplay-interval="2000">
   <img src="/photos/hero-1.jpg" alt="Product showcase">
   <img src="/photos/hero-2.jpg" alt="Feature highlight">
   <img src="/photos/hero-3.jpg" alt="Customer testimonial">
-</snice-carousel>
-```
-
-### Autoplay Direction
-
-Use `autoplay-direction` to reverse the autoplay direction.
-
-```html
-<snice-carousel autoplay autoplay-direction="backward">
-  <div>First</div>
-  <div>Second</div>
-  <div>Third</div>
 </snice-carousel>
 ```
 
@@ -123,7 +107,7 @@ Use `slides-per-view` to show multiple slides at once, and `space-between` for s
 
 ### Without Loop
 
-Set `loop` to `false` to disable infinite scrolling. Navigation buttons will be disabled at the start and end.
+Set `loop` to `false` to disable infinite scrolling.
 
 ```html
 <snice-carousel loop="false">
@@ -138,14 +122,7 @@ Set `loop` to `false` to disable infinite scrolling. Navigation buttons will be 
 Use `show-controls` and `show-indicators` to toggle navigation elements.
 
 ```html
-<!-- No arrow buttons -->
 <snice-carousel show-controls="false">
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-</snice-carousel>
-
-<!-- No indicator dots -->
-<snice-carousel show-indicators="false">
   <div>Slide 1</div>
   <div>Slide 2</div>
 </snice-carousel>
@@ -172,7 +149,7 @@ Use methods to control the carousel from JavaScript.
 Listen for slide changes to synchronize other UI elements.
 
 ```typescript
-carousel.addEventListener('carousel-slide-change', (e: CustomEvent) => {
+carousel.addEventListener('carousel-slide-change', (e) => {
   console.log('Active slide:', e.detail.activeIndex);
   console.log('Previous slide:', e.detail.previousIndex);
 });
@@ -180,14 +157,13 @@ carousel.addEventListener('carousel-slide-change', (e: CustomEvent) => {
 
 ### Image Gallery
 
-A common pattern using the carousel for an image gallery.
+Use the carousel for an image gallery with styled slides.
 
 ```html
-<snice-carousel id="gallery" loop>
+<snice-carousel loop>
   <img src="/gallery/sunset.jpg" alt="Sunset over mountains">
   <img src="/gallery/ocean.jpg" alt="Ocean waves">
   <img src="/gallery/forest.jpg" alt="Forest trail">
-  <img src="/gallery/city.jpg" alt="City skyline">
 </snice-carousel>
 
 <style>
@@ -200,31 +176,8 @@ A common pattern using the carousel for an image gallery.
 </style>
 ```
 
-### Product Card Carousel
+## Accessibility
 
-Display product cards in a scrollable carousel.
-
-```html
-<snice-carousel slides-per-view="3" space-between="16" loop>
-  <div class="product-card">
-    <img src="/products/headphones.jpg" alt="Headphones">
-    <h3>Wireless Headphones</h3>
-    <p>$79.99</p>
-  </div>
-  <div class="product-card">
-    <img src="/products/keyboard.jpg" alt="Keyboard">
-    <h3>Mechanical Keyboard</h3>
-    <p>$129.99</p>
-  </div>
-  <div class="product-card">
-    <img src="/products/mouse.jpg" alt="Mouse">
-    <h3>Ergonomic Mouse</h3>
-    <p>$49.99</p>
-  </div>
-  <div class="product-card">
-    <img src="/products/monitor.jpg" alt="Monitor">
-    <h3>4K Monitor</h3>
-    <p>$399.99</p>
-  </div>
-</snice-carousel>
-```
+- Keyboard navigation with arrow keys
+- ARIA roles and labels for controls and indicators
+- Focus management between slides

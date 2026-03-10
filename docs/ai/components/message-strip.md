@@ -1,36 +1,44 @@
 # snice-message-strip
 
-Inline contextual message bar within content flow. Differs from alert (dismissable card), banner (full-width top), toast (floating).
+Inline contextual message bar within content flow. Differs from alert (card), banner (full-width), toast (floating).
 
 ## Properties
 
-```typescript
+```ts
 variant: 'info'|'success'|'warning'|'danger' = 'info';
 dismissable: boolean = false;
 icon: string = '';  // Custom icon (set "none" to hide)
 ```
+
+## Methods
+
+- `show()` → Show the message strip
+- `hide()` → Hide with slide-out animation
+
+## Events
+
+- `dismiss` → `{ variant: string }`
 
 ## Slots
 
 - `(default)` - Message content
 - `icon` - Custom icon element
 
-## Events
+## CSS Parts
 
-- `dismiss` → `{ variant: string }`
+- `icon` - Icon container
+- `content` - Message content area
+- `dismiss` - Dismiss button
 
-## Methods
+## Basic Usage
 
-- `show()` - Show the message strip
-- `hide()` - Hide with animation
-
-## Usage
+```typescript
+import 'snice/components/message-strip/snice-message-strip';
+```
 
 ```html
-<!-- Basic -->
-<snice-message-strip variant="info">Informational message.</snice-message-strip>
-
 <!-- Variants -->
+<snice-message-strip variant="info">Informational message.</snice-message-strip>
 <snice-message-strip variant="success">Operation completed.</snice-message-strip>
 <snice-message-strip variant="warning">Review your changes.</snice-message-strip>
 <snice-message-strip variant="danger">An error occurred.</snice-message-strip>
@@ -43,17 +51,9 @@ icon: string = '';  // Custom icon (set "none" to hide)
 
 <!-- No icon -->
 <snice-message-strip variant="info" icon="none">No icon shown.</snice-message-strip>
-
-<!-- Programmatic -->
-<snice-message-strip>Message</snice-message-strip>
 ```
 
 ```typescript
 messageStrip.hide();
 messageStrip.show();
 ```
-
-**CSS Parts:**
-- `icon` - The icon container
-- `content` - The message content area
-- `dismiss` - The dismiss button

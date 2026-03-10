@@ -2,6 +2,17 @@
 
 Temporary notification system with static API.
 
+## Components
+
+- `<snice-toast-container>` - Positions and manages toasts
+- `<snice-toast>` - Individual toast notification
+
+## snice-toast-container
+
+```typescript
+position: 'top-left'|'top-center'|'top-right'|'bottom-left'|'bottom-center'|'bottom-right' = 'bottom-center';
+```
+
 ## snice-toast
 
 ```typescript
@@ -9,17 +20,6 @@ type: 'success'|'error'|'warning'|'info' = 'info';
 message: string = '';
 closable: boolean = true;
 icon: boolean = true;
-```
-
-**CSS Parts (snice-toast):**
-- `base` - Outer toast div (has type modifier class)
-- `icon` - Icon span wrapper
-- `content` - Message text span
-
-## snice-toast-container
-
-```typescript
-position: 'top-left'|'top-center'|'top-right'|'bottom-left'|'bottom-center'|'bottom-right' = 'bottom-center';
 ```
 
 ## Static API
@@ -49,17 +49,23 @@ interface ToastOptions {
 }
 ```
 
-## Events (snice-toast)
-
-- `close-toast` → `{ id: string }` - Close button clicked
-
-## Container Methods
+## Methods (container instance)
 
 - `show(message, options?)` - Show toast, returns ID
 - `hide(id)` - Hide specific toast
 - `clear()` - Remove all toasts
 
-## Usage
+## Events (snice-toast)
+
+- `close-toast` -> `{ id: string }` - Close button clicked
+
+## CSS Parts (snice-toast)
+
+- `base` - Outer toast div (has type modifier class)
+- `icon` - Icon span wrapper
+- `content` - Message text span
+
+## Basic Usage
 
 ```typescript
 Toast.success('Saved successfully');
@@ -68,7 +74,7 @@ Toast.warning('Low disk space');
 
 Toast.show('Custom', { type: 'success', duration: 5000, position: 'top-right' });
 
-const id = Toast.info('Loading...', { duration: 0 });
+const id = await Toast.info('Loading...', { duration: 0 });
 await operation();
 Toast.hide(id);
 ```

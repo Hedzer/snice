@@ -1,28 +1,28 @@
 # snice-cropper
 
-Image cropping component with draggable/resizable crop area, rotation, zoom, aspect ratio lock, and rule-of-thirds grid.
+Image cropping with draggable/resizable crop area, rotation, zoom, aspect ratio lock, and rule-of-thirds grid.
 
 ## Properties
 
-```ts
-src: string = ''                              // attr: src — Image URL to crop
-aspectRatio: number = 0                       // attr: aspect-ratio — Lock ratio (0 = free, e.g. 1.777 for 16:9)
-minWidth: number = 20                         // attr: min-width — Min crop width in px
-minHeight: number = 20                        // attr: min-height — Min crop height in px
-outputType: CropperOutputType = 'png'         // attr: output-type — 'png' | 'jpeg' | 'webp'
+```typescript
+src: string = '';                                    // Image URL
+aspectRatio: number = 0;                             // attribute: aspect-ratio (0 = free, 1 = square, 1.777 = 16:9)
+minWidth: number = 20;                               // attribute: min-width
+minHeight: number = 20;                              // attribute: min-height
+outputType: 'png'|'jpeg'|'webp' = 'png';           // attribute: output-type
 ```
-
-## Events
-
-- `crop-change` -> `{ rect: { x: number, y: number, width: number, height: number } }` — Fires on crop area move/resize
-- `crop-complete` -> `{ blob: Blob | null }` — Fires after `crop()` produces output
 
 ## Methods
 
-- `crop(): Promise<Blob | null>` — Produce cropped image blob
-- `rotate(degrees: number): void` — Rotate image by degrees (cumulative)
-- `zoom(level: number): void` — Set zoom level (0.1 to 10)
-- `reset(): void` — Reset rotation, zoom, and crop area to defaults
+- `crop(): Promise<Blob | null>` - Produce cropped image blob
+- `rotate(degrees: number)` - Rotate image (cumulative)
+- `zoom(level: number)` - Set zoom level (0.1 to 10)
+- `reset()` - Reset rotation, zoom, and crop area
+
+## Events
+
+- `crop-change` -> `{ rect: { x, y, width, height } }` - Crop area moved/resized
+- `crop-complete` -> `{ blob: Blob | null }` - After crop() produces output
 
 ## CSS Custom Properties
 
@@ -31,36 +31,36 @@ outputType: CropperOutputType = 'png'         // attr: output-type — 'png' | '
 --snice-color-border              /* Container border */
 --snice-border-radius-lg          /* Container radius */
 --cropper-overlay                 /* Overlay mask color (default: rgb(0 0 0 / 0.5)) */
---cropper-border-color            /* Crop area border color (default: rgb(255 255 255)) */
---cropper-guide-color             /* Rule-of-thirds guide color (default: rgb(255 255 255 / 0.4)) */
---cropper-handle-color            /* Resize handle fill (default: rgb(255 255 255)) */
---cropper-handle-border           /* Resize handle border (default: rgb(0 0 0 / 0.3)) */
+--cropper-border-color            /* Crop area border (default: rgb(255 255 255)) */
+--cropper-guide-color             /* Guide lines (default: rgb(255 255 255 / 0.4)) */
+--cropper-handle-color            /* Handle fill (default: rgb(255 255 255)) */
+--cropper-handle-border           /* Handle border (default: rgb(0 0 0 / 0.3)) */
 ```
 
-**CSS Parts:**
-- `base` - Outer cropper container div
+## CSS Parts
+
+- `base` - Outer cropper container
 - `image-container` - Image display area
 - `crop-area` - Draggable/resizable crop region
 
-## Behavior
-
-- Crop area is draggable (move) and resizable via 8 corner/edge handles
-- Rule-of-thirds grid overlay on crop area
-- Dark mask outside crop area
-- Aspect ratio enforced on resize when `aspectRatio > 0`
-
-## Usage
+## Basic Usage
 
 ```html
 <snice-cropper src="/photo.jpg" aspect-ratio="1" output-type="jpeg"></snice-cropper>
 ```
 
 ```typescript
+import 'snice/components/cropper/snice-cropper';
+
 const blob = await cropper.crop();
-
-// Rotate 90 degrees clockwise
 cropper.rotate(90);
-
-// Zoom in
 cropper.zoom(1.5);
+cropper.reset();
 ```
+
+## Accessibility
+
+- Drag to reposition, 8 handles to resize
+- Rule-of-thirds grid overlay
+- Dark mask indicates crop region
+- Aspect ratio enforced on resize when set

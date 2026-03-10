@@ -1,50 +1,48 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/receipt.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/receipt.md -->
 
-# Receipt Component
+# Receipt
 
 A transaction receipt component for displaying purchase details with merchant info, line items, totals, and payment method. Supports multiple visual variants including thermal printer style.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/receipt/snice-receipt';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-receipt.min.js"></script>
-```
+- [Properties](#properties)
+- [Methods](#methods)
+- [Slots](#slots)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `receiptNumber` | `string` | `''` | Receipt identifier |
+| `receiptNumber` (attr: `receipt-number`) | `string` | `''` | Receipt identifier |
 | `date` | `string` | `''` | Receipt date/time (displayed as-is) |
-| `currency` | `string` | `'USD'` | Currency code for formatting |
-| `locale` | `string` | `''` | Locale for currency formatting |
-| `merchant` | `ReceiptMerchant` | `{ name: '' }` | Merchant/store information |
-| `items` | `ReceiptItem[]` | `[]` | Line items |
-| `tax` | `number` | `0` | Tax amount (single tax) |
-| `taxes` | `ReceiptTaxLine[]` | `[]` | Multiple tax lines |
-| `subtotal` | `number` | `0` | Pre-tax subtotal (auto-calculated if 0) |
+| `currency` | `string` | `'USD'` | ISO 4217 currency code for formatting |
+| `locale` | `string` | `''` | Locale for `Intl.NumberFormat` currency formatting |
+| `merchant` | `ReceiptMerchant` | `{ name: '' }` | Merchant/store information (JS only) |
+| `items` | `ReceiptItem[]` | `[]` | Line items (JS only) |
+| `tax` | `number` | `0` | Single tax amount |
+| `taxes` | `ReceiptTaxLine[]` | `[]` | Multiple tax lines (overrides `tax`, JS only) |
+| `subtotal` | `number` | `0` | Pre-tax subtotal (auto-calculated from items if 0) |
 | `total` | `number` | `0` | Grand total (auto-calculated if 0) |
 | `tip` | `number` | `0` | Tip/gratuity amount |
 | `discount` | `number` | `0` | Discount amount |
-| `discountLabel` | `string` | `'Discount'` | Label for discount line |
-| `paymentMethod` | `string` | `''` | Payment method displayed |
-| `paymentDetails` | `string` | `''` | Additional payment info |
+| `discountLabel` (attr: `discount-label`) | `string` | `'Discount'` | Label for discount line |
+| `paymentMethod` (attr: `payment-method`) | `string` | `''` | Payment method text |
+| `paymentDetails` (attr: `payment-details`) | `string` | `''` | Additional payment info |
 | `variant` | `'standard' \| 'thermal' \| 'modern' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
-| `showQr` | `boolean` | `false` | Show QR code placeholder |
-| `qrData` | `string` | `''` | QR code data |
-| `qrPosition` | `'top' \| 'bottom' \| 'footer'` | `'bottom'` | QR code placement |
-| `thankYou` | `string` | `'Thank you for your purchase!'` | Footer message |
+| `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code slot |
+| `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
+| `qrPosition` (attr: `qr-position`) | `'top' \| 'bottom' \| 'footer'` | `'bottom'` | QR code placement |
+| `thankYou` (attr: `thank-you`) | `string` | `'Thank you for your purchase!'` | Footer message |
 | `cashier` | `string` | `''` | Cashier name |
-| `terminalId` | `string` | `''` | Terminal/register identifier |
+| `terminalId` (attr: `terminal-id`) | `string` | `''` | Terminal/register identifier |
 
-### ReceiptMerchant Interface
+### Type Interfaces
 
 ```typescript
 interface ReceiptMerchant {
@@ -56,11 +54,7 @@ interface ReceiptMerchant {
   website?: string;
   taxId?: string;
 }
-```
 
-### ReceiptItem Interface
-
-```typescript
 interface ReceiptItem {
   name: string;
   quantity: number;
@@ -69,11 +63,7 @@ interface ReceiptItem {
   discount?: number;
   note?: string;
 }
-```
 
-### ReceiptTaxLine Interface
-
-```typescript
 interface ReceiptTaxLine {
   label: string;
   rate?: number;
@@ -83,59 +73,59 @@ interface ReceiptTaxLine {
 
 ## Methods
 
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `print()` | `void` | Open print dialog with receipt styles |
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `print()` | — | Open print dialog with receipt styles |
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
-| `qr` | QR code content |
-| `barcode` | Barcode content (displayed near footer) |
-| (default) | Additional content in footer |
+| Name | Description |
+|------|-------------|
+| (default) | Additional footer content below thank-you message |
+| `qr` | QR code content (shown when `show-qr` is set) |
+| `barcode` | Barcode content displayed near the footer |
 
 ## CSS Custom Properties
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--receipt-max-width` | `22rem` | Maximum width |
-| `--receipt-padding` | `1.5rem` | Internal padding |
-| `--receipt-bg` | `white` | Background color |
-| `--receipt-text` | `rgb(23 23 23)` | Text color |
-| `--receipt-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--receipt-border` | `rgb(226 226 226)` | Border color |
-| `--receipt-border-radius` | `8px` | Border radius |
-| `--receipt-divider-style` | `dashed` | Divider line style |
-| `--receipt-merchant-font-size` | `1.25rem` | Merchant name size |
-| `--receipt-total-font-size` | `1.125rem` | Total amount size |
-| `--receipt-total-font-weight` | `700` | Total weight |
-| `--receipt-thermal-font` | `'Courier New', monospace` | Thermal variant font |
-| `--receipt-thermal-width` | `18rem` | Thermal variant width |
-| `--receipt-thermal-bg` | `rgb(255 255 248)` | Thermal variant background |
-| `--receipt-modern-radius` | `12px` | Modern variant radius |
-| `--receipt-modern-shadow` | `0 4px 24px rgb(0 0 0 / 0.08)` | Modern variant shadow |
-| `--receipt-qr-size` | `6rem` | QR code size |
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--receipt-max-width` | Maximum width | `22rem` |
+| `--receipt-padding` | Internal padding | `1.5rem` |
+| `--receipt-bg` | Background color | `white` |
+| `--receipt-text` | Text color | `rgb(23 23 23)` |
+| `--receipt-text-secondary` | Secondary text | `rgb(82 82 82)` |
+| `--receipt-border` | Border color | `rgb(226 226 226)` |
+| `--receipt-border-radius` | Border radius | `8px` |
+| `--receipt-divider-style` | Divider line style | `dashed` |
+| `--receipt-merchant-font-size` | Merchant name size | `1.25rem` |
+| `--receipt-total-font-size` | Total amount size | `1.125rem` |
+| `--receipt-total-font-weight` | Total weight | `700` |
+| `--receipt-thermal-font` | Thermal variant font | `'Courier New', monospace` |
+| `--receipt-thermal-width` | Thermal variant width | `18rem` |
+| `--receipt-thermal-bg` | Thermal variant background | `rgb(255 255 248)` |
+| `--receipt-modern-radius` | Modern variant radius | `12px` |
+| `--receipt-modern-shadow` | Modern variant shadow | `0 4px 24px rgb(0 0 0 / 0.08)` |
+| `--receipt-qr-size` | QR code size | `6rem` |
 
 ## CSS Parts
 
 | Part | Description |
 |------|-------------|
 | `base` | Root container |
+| `divider` | Section dividers |
 | `header` | Merchant header section |
 | `logo` | Merchant logo image |
 | `merchant-name` | Merchant name |
 | `merchant-address` | Merchant address |
 | `merchant-contact` | Contact info line |
-| `divider` | Horizontal dividers |
-| `meta` | Receipt metadata (number, date, etc.) |
-| `receipt-number` | Receipt number |
-| `date` | Receipt date |
-| `items-header` | Items section header |
+| `meta` | Receipt metadata section |
+| `receipt-number` | Receipt number value |
+| `date` | Date value |
+| `items-header` | Items column header row |
 | `items` | Items container |
 | `item` | Individual item row |
 | `item-name` | Item name |
-| `item-sku` | Item SKU |
+| `item-sku` | Item SKU (detailed variant) |
 | `item-qty` | Item quantity |
 | `item-price` | Item price |
 | `totals` | Totals section |
@@ -154,6 +144,10 @@ interface ReceiptTaxLine {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/receipt/snice-receipt';
+```
+
 ```html
 <snice-receipt
   receipt-number="RCT-48291"
@@ -165,8 +159,9 @@ interface ReceiptTaxLine {
 ```
 
 ```typescript
-rcpt.merchant = { name: 'Coffee Shop', address: '789 Main St' };
-rcpt.items = [
+const receipt = document.querySelector('snice-receipt');
+receipt.merchant = { name: 'Coffee Shop', address: '789 Main St' };
+receipt.items = [
   { name: 'Latte', quantity: 2, price: 5.50 },
   { name: 'Muffin', quantity: 1, price: 3.95 }
 ];
@@ -174,42 +169,22 @@ rcpt.items = [
 
 ## Examples
 
-### Standard Receipt
-
-```html
-<snice-receipt
-  receipt-number="RCT-001"
-  date="2026-03-01 2:30 PM"
-  payment-method="Credit Card">
-</snice-receipt>
-```
-
-```typescript
-receipt.merchant = {
-  name: 'My Store',
-  address: '123 Main St',
-  phone: '(555) 123-4567'
-};
-receipt.items = [
-  { name: 'Item 1', quantity: 1, price: 19.99 },
-  { name: 'Item 2', quantity: 2, price: 9.99 }
-];
-```
-
 ### Thermal Printer Style
+
+Use `variant="thermal"` for a monospace, narrow-width thermal printer aesthetic.
 
 ```html
 <snice-receipt
   variant="thermal"
   receipt-number="00847"
   date="03/01/2026 14:30"
-  currency="USD"
-  tax="2.10"
   payment-method="Cash">
 </snice-receipt>
 ```
 
 ### Modern Variant
+
+Use `variant="modern"` for a card-based style with rounded sections and shadows.
 
 ```html
 <snice-receipt
@@ -220,18 +195,11 @@ receipt.items = [
 </snice-receipt>
 ```
 
-### With Multiple Taxes
+### Multiple Tax Lines
 
-```html
-<snice-receipt
-  receipt-number="RCT-003"
-  currency="CAD">
-</snice-receipt>
-```
+Set `taxes` for multi-line tax breakdowns (overrides single `tax` property).
 
 ```typescript
-receipt.merchant = { name: 'Canadian Store' };
-receipt.items = [{ name: 'Product', quantity: 1, price: 100 }];
 receipt.taxes = [
   { label: 'GST', rate: 5, amount: 5.00 },
   { label: 'PST', rate: 7, amount: 7.00 }
@@ -240,54 +208,48 @@ receipt.taxes = [
 
 ### With Tip
 
-```html
-<snice-receipt
-  receipt-number="T-128"
-  date="2026-03-01"
-  payment-method="Visa •••• 4242">
-</snice-receipt>
-```
+Set `tip` for restaurant-style receipts with gratuity.
 
 ```typescript
-receipt.merchant = { name: 'Bistro Restaurant' };
 receipt.items = [
   { name: 'Steak Dinner', quantity: 2, price: 32.00 },
   { name: 'Wine', quantity: 1, price: 45.00 }
 ];
-receipt.subtotal = 109.00;
 receipt.tax = 10.90;
-receipt.tip = 22.00;  // 20% tip
-receipt.total = 141.90;
+receipt.tip = 22.00;
 ```
 
 ### With QR Code
 
+Set `show-qr` and use the `qr` slot for QR code content.
+
 ```html
-<snice-receipt
-  receipt-number="RCT-004"
-  show-qr
-  qr-position="top">
+<snice-receipt show-qr qr-position="bottom">
   <img slot="qr" src="/loyalty-qr.svg" alt="Loyalty QR" />
 </snice-receipt>
 ```
 
 ### With Barcode
 
+Use the `barcode` slot for barcode content.
+
 ```html
 <snice-receipt receipt-number="RCT-005">
-  <svg slot="barcode" viewBox="0 0 100 30">
-    <!-- Barcode SVG -->
-  </svg>
+  <svg slot="barcode" viewBox="0 0 100 30"><!-- barcode SVG --></svg>
 </snice-receipt>
 ```
 
-### Print Receipt
+### Print
 
-```html
-<snice-receipt></snice-receipt>
-<button>Print Receipt</button>
-```
+Use `print()` to open a print dialog with receipt styles.
 
 ```typescript
 receipt.print();
 ```
+
+## Accessibility
+
+- Semantic HTML structure with logical content order
+- Print styles included for all variants
+- Currency formatted using `Intl.NumberFormat` for locale-appropriate display
+- Subtotal auto-calculated from items if not set; total auto-calculated as subtotal + tax - discount + tip

@@ -2,7 +2,7 @@
 
 Key-value pair editor for HTTP headers, env vars, config entries. Dual API: declarative `<snice-kv-pair>` children or imperative `setItems()`.
 
-## Elements
+## Components
 
 - `snice-key-value` — Container/editor
 - `snice-kv-pair` — Data container child (no shadow DOM)
@@ -22,7 +22,7 @@ readonly: boolean = false;
 name: string = '';
 variant: 'default'|'compact' = 'default';
 mode: 'edit'|'view' = 'edit';              // view = read-only display
-showCopy: boolean = false;                  // attr: show-copy — copy button in header
+showCopy: boolean = false;                  // attr: show-copy
 value: string;                              // readonly getter — JSON string of items
 ```
 
@@ -34,13 +34,6 @@ value: string = '';
 description: string = '';
 ```
 
-## Events
-
-- `kv-add` → `{ item: KeyValueItem, index: number }`
-- `kv-remove` → `{ item: KeyValueItem, index: number }`
-- `kv-change` → `{ items: KeyValueItem[] }`
-- `kv-copy` → `{ items: KeyValueItem[] }`
-
 ## Methods
 
 - `setItems(items)` - Set items imperatively (ignored in slot mode)
@@ -50,7 +43,26 @@ description: string = '';
 - `getItems()` - Returns non-empty items
 - `focus()` - Focus first key input
 
-## Usage
+## Events
+
+- `kv-add` → `{ item: KeyValueItem, index: number }`
+- `kv-remove` → `{ item: KeyValueItem, index: number }`
+- `kv-change` → `{ items: KeyValueItem[] }`
+- `kv-copy` → `{ items: KeyValueItem[] }`
+
+## Slots
+
+- `(default)` - `<snice-kv-pair>` child elements
+
+## CSS Parts
+
+`base`, `title`, `copy-button`, `rows`, `row`, `key-input`, `value-input`, `description-input`, `delete-button`, `view-row`, `view-key`, `view-value`, `view-desc`, `empty`
+
+## Basic Usage
+
+```typescript
+import 'snice/components/key-value/snice-key-value';
+```
 
 ```html
 <!-- Declarative -->
@@ -77,14 +89,18 @@ kv.addEventListener('kv-change', e => console.log(e.detail.items));
 
 <!-- Compact with descriptions -->
 <snice-key-value variant="compact" show-description></snice-key-value>
+
+<!-- View mode -->
+<snice-key-value mode="view" label="Response Headers">
+  <snice-kv-pair key="Content-Type" value="application/json"></snice-kv-pair>
+</snice-key-value>
 ```
 
 ## Behavior
 
-- **Auto-expand** (default): last row non-empty → new empty row appended
-- **Fixed rows**: `rows="5"` → exactly 5, no delete buttons, no auto-expand
+- **Auto-expand** (default): last row non-empty -> new empty row appended
+- **Fixed rows**: `rows="5"` -> exactly 5, no delete buttons, no auto-expand
 - **Slot precedence**: `<snice-kv-pair>` children override `setItems()`
-- **View mode**: `mode="view"` renders as read-only text (no inputs), empty items hidden
-- **Copy button**: `show-copy` adds clipboard button in header, copies JSON
-- **Form associated**: `value` getter returns `JSON.stringify({key:value,...})`, `setFormValue()` called on every change
-- Delete all rows → one empty row remains
+- **View mode**: `mode="view"` renders as read-only text, empty items hidden
+- **Copy button**: `show-copy` adds clipboard button, copies JSON
+- **Form associated**: `value` getter returns JSON string, `setFormValue()` on every change

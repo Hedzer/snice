@@ -4,67 +4,63 @@ Interactive recipe card with ingredient scaling, step-by-step mode, per-step tim
 
 ## Properties
 
-```ts
-title: string                            // Recipe title
-description: string                      // Short description
-image: string                            // Hero image URL
-author: string                           // Author name
-prepTime: number                         // Prep time in minutes (attr: prep-time)
-cookTime: number                         // Cook time in minutes (attr: cook-time)
-servings: number                         // Base serving count (default: 4)
-difficulty: 'easy' | 'medium' | 'hard'  // Difficulty level (default: 'medium')
-cuisine: string                          // Cuisine type (shown as tag)
-variant: 'card' | 'full'                // Display variant (default: 'full')
-ingredients: RecipeIngredient[]          // Ingredient list
-steps: RecipeStep[]                      // Instruction steps
-nutrition: RecipeNutrition | null        // Nutrition facts per serving
-tags: string[]                           // Recipe tags
+```typescript
+title: string = '';
+description: string = '';
+image: string = '';                          // Hero image URL
+author: string = '';
+prepTime: number = 0;                       // attr: prep-time, minutes
+cookTime: number = 0;                       // attr: cook-time, minutes
+servings: number = 4;
+difficulty: 'easy'|'medium'|'hard' = 'medium';
+cuisine: string = '';                        // Shown as tag
+variant: 'card'|'full' = 'full';
+ingredients: RecipeIngredient[] = [];        // JS only
+steps: RecipeStep[] = [];                    // JS only
+nutrition: RecipeNutrition | null = null;    // JS only
+tags: string[] = [];                         // JS only
 ```
 
-### Types
+## Types
 
-```ts
+```typescript
 interface RecipeIngredient {
-  name: string;
-  amount: number;
-  unit: string;
-  group?: string;                        // Group header for ingredient sections
+  name: string; amount: number; unit: string; group?: string;
 }
-
 interface RecipeStep {
-  text: string;
-  image?: string;                        // Step photo URL
-  tip?: string;                          // Pro tip text
-  time?: number;                         // Timer duration in minutes
+  text: string; image?: string; tip?: string; time?: number; // minutes
 }
-
 interface RecipeNutrition {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber?: number;
-  sodium?: number;                       // in mg
+  calories: number; protein: number; carbs: number; fat: number;
+  fiber?: number; sodium?: number;
 }
 ```
 
 ## Methods
 
-- `setServings(count: number)` -- Adjust serving count (scales ingredients)
-- `print()` -- Print the recipe
-- `reset()` -- Reset checked ingredients, completed steps, timers, and servings
+- `setServings(count)` - Adjust serving count (scales ingredients)
+- `print()` - Print the recipe
+- `reset()` - Reset checked ingredients, completed steps, timers, servings
 
 ## Events
 
-- `recipe-serving-change` -> `{ servings: number; previousServings: number }` -- Serving count changed
-- `recipe-step-complete` -> `{ stepIndex: number; completed: boolean }` -- Step toggled
-- `recipe-ingredient-check` -> `{ ingredientIndex: number; checked: boolean; ingredient: RecipeIngredient }` -- Ingredient checked/unchecked
+- `recipe-serving-change` → `{ servings: number, previousServings: number }`
+- `recipe-step-complete` → `{ stepIndex: number, completed: boolean }`
+- `recipe-ingredient-check` → `{ ingredientIndex: number, checked: boolean, ingredient: RecipeIngredient }`
 
 ## CSS Parts
 
-`container`, `hero`, `header`, `meta`, `content`, `ingredients`, `steps`, `nutrition`, `controls`
+- `container` - Outer recipe container
+- `hero` - Hero image area
+- `header` - Title/description/author
+- `meta` - Metadata bar (times, servings, difficulty)
+- `content` - Main content (ingredients + steps)
+- `ingredients` - Ingredients section
+- `steps` - Instructions section
+- `nutrition` - Nutrition facts panel
+- `controls` - Bottom control buttons
 
-## Usage
+## Basic Usage
 
 ```typescript
 recipe.title = 'Pasta Carbonara';
@@ -81,9 +77,15 @@ recipe.ingredients = [
 ];
 recipe.steps = [
   { text: 'Boil pasta in salted water.', time: 10 },
-  { text: 'Fry pancetta until crispy.', tip: 'Use medium heat to render fat slowly.' },
+  { text: 'Fry pancetta until crispy.', tip: 'Use medium heat.' },
   { text: 'Mix eggs and parmesan.' },
   { text: 'Combine all ingredients off heat.' }
 ];
 recipe.nutrition = { calories: 650, protein: 28, carbs: 72, fat: 24 };
 ```
+
+## Accessibility
+
+- Keyboard accessible checkboxes, step toggles, and timer buttons
+- Serving adjuster buttons have aria-labels
+- Print-friendly layout via `print()`

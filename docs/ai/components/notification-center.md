@@ -4,24 +4,10 @@ Bell icon with dropdown notification panel. Shows unread badge, supports dismiss
 
 ## Properties
 
-```ts
-notifications: NotificationItem[]       // Array of notification objects
-open: boolean                           // Whether the dropdown panel is visible (default: false)
-icon: string                            // Custom bell icon (URL, image file, emoji) (default: '')
-```
-
-### NotificationItem
-
-```ts
-interface NotificationItem {
-  id: string;
-  title: string;
-  message: string;
-  timestamp: string;
-  read?: boolean;
-  icon?: string;                         // Emoji/text icon (auto-set by type if omitted)
-  type?: 'info' | 'success' | 'warning' | 'error';
-}
+```typescript
+notifications: NotificationItem[] = [];  // attr: none (JS only)
+open: boolean = false;                   // Panel visibility
+icon: string = '';                       // Custom bell icon (URL, image, emoji)
 ```
 
 ## Methods
@@ -32,8 +18,8 @@ interface NotificationItem {
 
 ## Events
 
-- `notification-click` → `{ notification: NotificationItem }` - Notification item clicked
-- `notification-dismiss` → `{ id: string }` - Notification dismissed
+- `notification-click` → `{ notification: NotificationItem }` - Item clicked
+- `notification-dismiss` → `{ id: string }` - Item dismissed
 - `notification-read-all` → `void` - All marked as read
 
 ## Slots
@@ -45,13 +31,11 @@ interface NotificationItem {
 - `trigger` - The bell icon button
 - `icon` - The bell icon span
 - `panel` - The dropdown notification panel
-- `panel-header` - The panel header with title and mark-all-read action
+- `panel-header` - Panel header with title and mark-all-read action
 
 ## CSS Custom Properties
 
 ```css
---snice-font-family
---snice-color-text
 --snice-color-primary              /* Mark all read link, unread highlight */
 --snice-color-primary-subtle       /* Unread item background */
 --snice-color-danger               /* Badge background, dismiss hover */
@@ -62,24 +46,17 @@ interface NotificationItem {
 --snice-color-background           /* Panel background */
 --snice-color-background-element   /* Item hover, bell hover */
 --snice-shadow-lg                  /* Panel shadow */
---snice-spacing-*
---snice-font-size-sm
---snice-font-size-md
---snice-font-weight-medium
---snice-font-weight-semibold
---snice-font-weight-bold
---snice-border-radius-md
---snice-border-radius-lg
---snice-transition-fast
 ```
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-notification-center></snice-notification-center>
 ```
 
 ```typescript
+import 'snice/components/notification-center/snice-notification-center';
+
 nc.notifications = [
   { id: '1', title: 'New message', message: 'You have a new message', timestamp: '2 min ago', type: 'info' },
   { id: '2', title: 'Deployed', message: 'Build succeeded', timestamp: '5 min ago', type: 'success', read: true }
@@ -88,4 +65,25 @@ nc.notifications = [
 nc.addEventListener('notification-click', (e) => {
   console.log('Clicked:', e.detail.notification);
 });
+```
+
+## Accessibility
+
+- Bell icon is keyboard-focusable
+- Unread count via badge element
+- Notification items are clickable with dismiss buttons
+- "Mark all as read" action in panel header
+
+## Types
+
+```typescript
+interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  read?: boolean;
+  icon?: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+}
 ```

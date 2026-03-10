@@ -1,22 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/input.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/input.md -->
 
 # Input
 `<snice-input>`
 
 Text input field with validation, icons, and form association.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/input/snice-input';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-input.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
 
 ## Properties
 
@@ -153,7 +150,7 @@ Set the `password` attribute along with `type="password"` to show a visibility t
 
 For icon fonts (Material Symbols, Font Awesome, etc.), use the `prefix-icon` and `suffix-icon` **slots**. The `prefix-icon` and `suffix-icon` **attributes** are for emoji, URLs, and image files only.
 
-> **⚠️ `prefix-icon="search"` renders as plain text, not a Material icon.** Use the slot for icon fonts.
+> **`prefix-icon="search"` renders as plain text, not a Material icon.** Use the slot for icon fonts.
 
 #### Icon Slots (for icon fonts and SVGs)
 
@@ -278,3 +275,17 @@ Listen for input events using `input-input` and `input-change`.
 inp.addEventListener('input-input', (e) => console.log('Input:', e.detail.value));
 inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.value));
 ```
+
+## Keyboard Navigation
+
+- **Tab**: Focus/unfocus the input
+- **Escape**: Clear input when `clearable` is set (via clear button)
+- Standard native input keyboard behavior applies
+
+## Accessibility
+
+- Form-associated custom element with `ElementInternals`
+- Label element linked to input
+- `aria-invalid` set when `invalid` is true
+- Required indicator (`*`) shown when `required` is set
+- Clear button and password toggle have `aria-label`

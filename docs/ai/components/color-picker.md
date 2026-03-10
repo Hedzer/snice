@@ -1,13 +1,13 @@
 # snice-color-picker
 
-Color picker with format conversion and presets.
+Color picker with format conversion, presets, and form integration.
 
 ## Properties
 
 ```typescript
+size: 'small'|'medium'|'large' = 'medium';
 value: string = '#000000';
 format: 'hex'|'rgb'|'hsl' = 'hex';
-size: 'small'|'medium'|'large' = 'medium';
 label: string = '';
 helperText: string = '';       // attribute: helper-text
 errorText: string = '';        // attribute: error-text
@@ -23,8 +23,15 @@ loading: boolean = false;
 
 ## Methods
 
-- `focus()` - Focus picker
-- `blur()` - Blur picker
+- `focus()` - Focus picker input
+- `blur()` - Remove focus
+
+## Events
+
+- `color-picker-input` -> `{ value, colorPicker }` - During color adjustment
+- `color-picker-change` -> `{ value, colorPicker }` - Color committed
+- `color-picker-focus` -> `{ colorPicker }` - Input focused
+- `color-picker-blur` -> `{ colorPicker }` - Input blurred
 
 ## CSS Parts
 
@@ -32,51 +39,22 @@ loading: boolean = false;
 - `error-text` - Error text element
 - `helper-text` - Helper text element
 
-## Events
-
-- `color-picker-input` → `{ value, colorPicker }`
-- `color-picker-change` → `{ value, colorPicker }`
-- `color-picker-focus` → `{ colorPicker }`
-- `color-picker-blur` → `{ colorPicker }`
-
-## Usage
+## Basic Usage
 
 ```html
-<!-- Basic -->
 <snice-color-picker label="Color" value="#ff0000"></snice-color-picker>
-
-<!-- Formats -->
-<snice-color-picker format="hex"></snice-color-picker>
-<snice-color-picker format="rgb"></snice-color-picker>
-<snice-color-picker format="hsl"></snice-color-picker>
-
-<!-- With presets -->
-<snice-color-picker show-presets></snice-color-picker>
-
-<!-- No input -->
-<snice-color-picker show-input="false"></snice-color-picker>
-
-<!-- Sizes -->
-<snice-color-picker size="small"></snice-color-picker>
-<snice-color-picker size="medium"></snice-color-picker>
-<snice-color-picker size="large"></snice-color-picker>
-
-<!-- Events -->
-<snice-color-picker></snice-color-picker>
 ```
 
 ```typescript
+import 'snice/components/color-picker/snice-color-picker';
+
 picker.addEventListener('color-picker-change', (e) => {
   console.log('Color:', e.detail.value);
 });
 ```
 
-## Features
+## Accessibility
 
 - Form-associated custom element
-- Native color picker integration
-- 3 color formats (hex, rgb, hsl)
-- Format conversion
-- Color presets
-- 3 sizes
-- Accessible
+- Label association, error/helper text announced
+- Keyboard accessible

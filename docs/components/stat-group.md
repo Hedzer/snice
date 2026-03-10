@@ -1,47 +1,34 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/stat-group.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/stat-group.md -->
 
 # Stat Group
-
-`<snice-stat-group>`
 
 A coordinated row of KPI cards with consistent sizing, trend indicators, and responsive grid layout.
 
 ## Table of Contents
+
 - [Properties](#properties)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/stat-group/snice-stat-group';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-stat-group.min.js"></script>
-```
+- [Accessibility](#accessibility)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `stats` | `StatItem[]` | `[]` | Array of stat objects to display |
-| `columns` | `number` | `0` | Number of columns (0 = auto-fit) |
+| `columns` | `number` | `0` | Number of columns (0 = auto-fit based on width) |
 | `variant` | `'card' \| 'minimal' \| 'bordered'` | `'card'` | Visual style variant |
 
-### StatItem Interface
+### StatItem
 
 ```typescript
 interface StatItem {
   label: string;              // Stat label text
   value: string | number;     // Display value
   trend?: 'up' | 'down' | 'neutral';  // Trend direction
-  trendValue?: string;        // Trend comparison text
+  trendValue?: string;        // Trend comparison text (e.g. "+12.5%")
   icon?: string;              // Icon text or emoji
   color?: string;             // Accent color for icon and value
 }
@@ -51,7 +38,7 @@ interface StatItem {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `stat-click` | `{ stat: StatItem, index: number }` | Fired when a stat card is clicked |
+| `stat-click` | `{ stat: StatItem, index: number }` | A stat card was clicked |
 
 ## CSS Parts
 
@@ -59,16 +46,6 @@ interface StatItem {
 |------|-------------|
 | `base` | The grid container element |
 | `stat` | Individual stat card element |
-
-```css
-snice-stat-group::part(stat) {
-  border-radius: 1rem;
-}
-
-snice-stat-group::part(base) {
-  gap: 2rem;
-}
-```
 
 ## Basic Usage
 
@@ -82,7 +59,7 @@ import 'snice/components/stat-group/snice-stat-group';
 <script>
   document.getElementById('stats').stats = [
     { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%' },
-    { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%' }
+    { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%' },
   ];
 </script>
 ```
@@ -91,7 +68,7 @@ import 'snice/components/stat-group/snice-stat-group';
 
 ### Variants
 
-Use the `variant` attribute to change the visual style of the stat cards.
+Use `variant` to change the visual style of the stat cards.
 
 ```html
 <!-- Card (default) - bordered cards with hover effects -->
@@ -106,7 +83,7 @@ Use the `variant` attribute to change the visual style of the stat cards.
 
 ### Fixed Column Count
 
-Use the `columns` attribute to set a specific number of columns. When set to `0` (default), columns auto-fit based on available width.
+Use `columns` to set a specific number of columns. Default `0` auto-fits based on width.
 
 ```html
 <snice-stat-group columns="2"></snice-stat-group>
@@ -115,44 +92,33 @@ Use the `columns` attribute to set a specific number of columns. When set to `0`
 
 ### Trend Indicators
 
-Each stat can display a trend direction and value showing comparison data.
+Each stat can display a trend direction with comparison text.
 
-```html
-<script>
-  el.stats = [
-    { label: 'Revenue', value: '$45K', trend: 'up', trendValue: '+12.5% vs last month' },
-    { label: 'Churn', value: '2.3%', trend: 'down', trendValue: '-0.5%' },
-    { label: 'Conversion', value: '3.2%', trend: 'neutral', trendValue: '0.0%' }
-  ];
-</script>
+```typescript
+el.stats = [
+  { label: 'Revenue', value: '$45K', trend: 'up', trendValue: '+12.5% vs last month' },
+  { label: 'Churn', value: '2.3%', trend: 'down', trendValue: '-0.5%' },
+  { label: 'Conversion', value: '3.2%', trend: 'neutral', trendValue: '0.0%' }
+];
 ```
 
 ### With Icons and Colors
 
 Customize each stat with an icon and accent color.
 
-```html
-<script>
-  el.stats = [
-    { label: 'Revenue', value: '$45,231', icon: '$', color: 'rgb(22 163 74)', trend: 'up', trendValue: '+12.5%' },
-    { label: 'Orders', value: '1,245', icon: '\u{1F4E6}', trend: 'down', trendValue: '-3.1%' }
-  ];
-</script>
+```typescript
+el.stats = [
+  { label: 'Revenue', value: '$45,231', icon: '$', color: 'rgb(22 163 74)', trend: 'up', trendValue: '+12.5%' },
+  { label: 'Orders', value: '1,245', icon: '\u{1F4E6}', trend: 'down', trendValue: '-3.1%' }
+];
 ```
 
-### Handling Clicks
+### Event Handling
 
-Listen for the `stat-click` event to respond when a user clicks a stat card.
-
-```html
-<snice-stat-group id="clickable-stats"></snice-stat-group>
-
-<script>
-  document.getElementById('clickable-stats').addEventListener('stat-click', e => {
-    console.log('Clicked stat:', e.detail.stat.label);
-    console.log('Index:', e.detail.index);
-  });
-</script>
+```typescript
+el.addEventListener('stat-click', (e) => {
+  console.log('Clicked:', e.detail.stat.label, 'at index', e.detail.index);
+});
 ```
 
 ## Accessibility

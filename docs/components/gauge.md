@@ -1,4 +1,4 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/gauge.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/gauge.md -->
 
 # Gauge Component
 
@@ -10,8 +10,6 @@ The gauge component renders an SVG-based semicircle gauge/meter chart, ideal for
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
-- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -50,16 +48,16 @@ snice-gauge::part(label) {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/gauge/snice-gauge';
+```
+
 ```html
 <!-- Simple gauge -->
 <snice-gauge value="75"></snice-gauge>
 
 <!-- With label -->
 <snice-gauge value="42" label="CPU Usage"></snice-gauge>
-```
-
-```typescript
-import 'snice/components/gauge/snice-gauge';
 ```
 
 ## Examples
@@ -172,19 +170,3 @@ import 'snice/components/gauge/snice-gauge';
 - **ARIA label**: Uses the `label` property for `aria-label`, falls back to "Gauge: {value}"
 - **Color contrast**: All variant colors meet WCAG AA standards against their backgrounds
 - **No motion sensitivity**: Arc animation uses CSS transitions which respect `prefers-reduced-motion`
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
-
-## Variant Colors
-
-| Variant | Color Scheme | Use Case |
-|---------|-------------|----------|
-| `default` | Gray | Neutral metrics |
-| `primary` | Blue | Primary metrics, general data |
-| `success` | Green | Positive values, health checks |
-| `warning` | Orange | Attention needed, thresholds |
-| `error` | Red | Critical values, alerts |
-| `info` | Light blue | Informational data |

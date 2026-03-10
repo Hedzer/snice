@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/link.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/link.md -->
 
 # Link
 `<snice-link>`
 
 A customizable hyperlink component with variants, external link handling, and hash routing support.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/link/snice-link';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-link.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -26,9 +22,9 @@ import 'snice/components/link/snice-link';
 | `target` | `'_self' \| '_blank' \| '_parent' \| '_top'` | `'_self'` | Link target |
 | `variant` | `'default' \| 'primary' \| 'secondary' \| 'muted'` | `'default'` | Visual style |
 | `disabled` | `boolean` | `false` | Disables the link |
-| `external` | `boolean` | `false` | Opens in new tab with `noopener noreferrer` |
+| `external` | `boolean` | `false` | Opens in new tab with `noopener noreferrer` and shows arrow icon |
 | `underline` | `boolean` | `false` | Shows text underline |
-| `hash` | `boolean` | `false` | Auto-prepends `#` to href |
+| `hash` | `boolean` | `false` | Auto-prepends `#` to href for SPA routing |
 
 ## Events
 
@@ -45,10 +41,10 @@ import 'snice/components/link/snice-link';
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `link` | The anchor element |
-| `external-icon` | The external link arrow icon |
+| Part | Element | Description |
+|------|---------|-------------|
+| `link` | `<a>` | The anchor element |
+| `external-icon` | `<span>` | The external link arrow icon (visible when `external` is set) |
 
 ## Basic Usage
 
@@ -143,3 +139,10 @@ Links display inline and work naturally within text.
   <snice-link href="https://github.com" external variant="muted">GitHub</snice-link>
 </footer>
 ```
+
+## Accessibility
+
+- Renders a standard `<a>` element inside shadow DOM
+- External links automatically get `rel="noopener noreferrer"` and `target="_blank"`
+- Disabled links prevent click events and use `pointer-events: none` with a `not-allowed` cursor
+- The `navigate` event is cancelable, allowing routers to prevent default browser navigation

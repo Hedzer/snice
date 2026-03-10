@@ -1,53 +1,51 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/permission-matrix.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/permission-matrix.md -->
 
-# Permission Matrix Component
-
+# Permission Matrix
 `<snice-permission-matrix>`
 
-A grid that maps roles to permissions using checkbox toggles. Useful for managing access control, displaying role-based permissions, and configuring authorization settings.
+A role/permission grid with checkbox toggles for managing access control. Rows represent roles, columns represent permissions.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/permission-matrix/snice-permission-matrix';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-permission-matrix.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
+- [Data Types](#data-types)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `roles` | `PermissionRole[]` | `[]` | Array of role objects: `{ id, name, description? }`. Set via JS. |
-| `permissions` | `Permission[]` | `[]` | Array of permission objects: `{ id, name, group?, description? }`. Set via JS. |
-| `matrix` | `PermissionMatrix` | `{}` | Object mapping role IDs to arrays of permission IDs: `{ [roleId]: string[] }`. Set via JS. |
-| `readonly` | `boolean` | `false` | When true, shows check/dash indicators instead of checkboxes |
+| `roles` | `PermissionRole[]` | `[]` | Array of roles to display as rows (set via JS) |
+| `permissions` | `Permission[]` | `[]` | Array of permissions to display as columns (set via JS) |
+| `matrix` | `PermissionMatrix` | `{}` | Permission assignments: `{ [roleId]: string[] }` (set via JS) |
+| `readonly` | `boolean` | `false` | Display check/dash indicators instead of checkboxes |
 
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `getMatrix()` | -- | Returns a deep copy of the current permission matrix |
-| `setMatrix()` | `matrix: PermissionMatrix` | Replaces the entire permission matrix |
-| `hasPermission()` | `roleId: string, permId: string` | Returns `true` if the role has the specified permission |
+| `getMatrix()` | -- | Returns a deep copy of the current matrix |
+| `setMatrix()` | `matrix: PermissionMatrix` | Replace the entire matrix |
+| `hasPermission()` | `roleId: string, permId: string` | Check if a role has a specific permission |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `permission-toggle` | `{ roleId: string, permissionId: string, granted: boolean }` | Fired when a single permission is toggled |
-| `matrix-change` | `{ matrix: PermissionMatrix }` | Fired after any permission change, with the full updated matrix |
+| `permission-toggle` | `{ roleId: string, permissionId: string, granted: boolean }` | Fired when a checkbox is toggled |
+| `matrix-change` | `{ matrix: PermissionMatrix }` | Fired when the matrix is updated |
 
 ## CSS Parts
 
-| Part | Description |
-|------|-------------|
-| `base` | Outer container element |
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `base` | `<div>` | The outer container |
 
 ## Basic Usage
 
@@ -58,10 +56,10 @@ import 'snice/components/permission-matrix/snice-permission-matrix';
 ```html
 <snice-permission-matrix id="pm"></snice-permission-matrix>
 
-<script>
+<script type="module">
   const pm = document.getElementById('pm');
   pm.roles = [
-    { id: 'admin', name: 'Admin' },
+    { id: 'admin', name: 'Admin', description: 'Full access' },
     { id: 'editor', name: 'Editor' },
     { id: 'viewer', name: 'Viewer' }
   ];
@@ -81,102 +79,61 @@ import 'snice/components/permission-matrix/snice-permission-matrix';
 
 ## Examples
 
-### Editable Matrix
+### Readonly Mode
 
-By default, the matrix is editable. Users can toggle checkboxes to grant or revoke permissions.
-
-```html
-<snice-permission-matrix id="pm"></snice-permission-matrix>
-
-<script>
-  const pm = document.getElementById('pm');
-  pm.roles = [
-    { id: 'admin', name: 'Administrator', description: 'Full system access' },
-    { id: 'editor', name: 'Editor', description: 'Content management' },
-    { id: 'viewer', name: 'Viewer', description: 'Read-only access' }
-  ];
-  pm.permissions = [
-    { id: 'create', name: 'Create' },
-    { id: 'read', name: 'Read' },
-    { id: 'update', name: 'Update' },
-    { id: 'delete', name: 'Delete' }
-  ];
-  pm.matrix = {
-    admin: ['create', 'read', 'update', 'delete'],
-    editor: ['create', 'read', 'update'],
-    viewer: ['read']
-  };
-</script>
-```
-
-### Read-Only Mode
-
-Use the `readonly` attribute to display the matrix without editable checkboxes. Granted permissions show a checkmark, denied permissions show a dash.
+Use the `readonly` attribute to display a non-editable view with check and dash indicators.
 
 ```html
-<snice-permission-matrix id="pm-readonly" readonly></snice-permission-matrix>
+<snice-permission-matrix readonly></snice-permission-matrix>
 ```
 
-### With Permission Descriptions
+### Event Handling
 
-Add `description` to permission objects to show additional context in the column headers.
+Listen for permission changes.
 
-```javascript
-pm.permissions = [
-  { id: 'create', name: 'Create', description: 'Add new items' },
-  { id: 'read', name: 'Read', description: 'View existing items' },
-  { id: 'update', name: 'Update', description: 'Modify existing items' },
-  { id: 'delete', name: 'Delete', description: 'Remove items permanently' }
-];
+```typescript
+pm.addEventListener('permission-toggle', (e) => {
+  console.log(e.detail.roleId, e.detail.permissionId, e.detail.granted);
+});
+
+pm.addEventListener('matrix-change', (e) => {
+  console.log('Updated matrix:', e.detail.matrix);
+});
+```
+
+### Querying Permissions
+
+Use methods to inspect the matrix programmatically.
+
+```typescript
+pm.hasPermission('admin', 'delete'); // true
+pm.hasPermission('viewer', 'delete'); // false
+
+const matrixCopy = pm.getMatrix(); // deep copy
 ```
 
 ### Grouped Permissions
 
-Set the `group` property on permissions to organize them by category. Group names appear as headers.
+Use the `group` property on permissions to organize columns.
 
-```javascript
+```typescript
 pm.permissions = [
-  { id: 'view-docs', name: 'View', group: 'Documents' },
-  { id: 'edit-docs', name: 'Edit', group: 'Documents' },
-  { id: 'delete-docs', name: 'Delete', group: 'Documents' },
-  { id: 'view-reports', name: 'View', group: 'Reports' },
-  { id: 'export-reports', name: 'Export', group: 'Reports' },
-  { id: 'manage-team', name: 'Manage', group: 'Team' },
-  { id: 'view-team', name: 'View', group: 'Team' }
+  { id: 'create', name: 'Create', group: 'Content' },
+  { id: 'read', name: 'Read', group: 'Content' },
+  { id: 'manage-users', name: 'Manage Users', group: 'Admin' },
+  { id: 'billing', name: 'Billing', group: 'Admin' }
 ];
 ```
 
-### Listening for Changes
+## Accessibility
 
-```javascript
-pm.addEventListener('permission-toggle', (e) => {
-  console.log(`${e.detail.roleId}: ${e.detail.permissionId} = ${e.detail.granted}`);
-});
+- The table uses `role="grid"` with `aria-label="Permission matrix"`
+- Each checkbox has an accessible label (e.g., "Grant Create for Admin")
+- Readonly mode displays check/dash SVG indicators instead of interactive checkboxes
+- Role descriptions and permission descriptions are displayed when provided
+- Column headers use `scope="col"` for screen readers
 
-pm.addEventListener('matrix-change', (e) => {
-  console.log('Full matrix:', e.detail.matrix);
-  // Save to backend, etc.
-});
-```
-
-### Programmatic Access
-
-```javascript
-// Check if a role has a specific permission
-pm.hasPermission('admin', 'delete'); // true
-
-// Get a deep copy of the matrix
-const currentMatrix = pm.getMatrix();
-
-// Replace the entire matrix
-pm.setMatrix({
-  admin: ['create', 'read', 'update', 'delete'],
-  editor: ['read'],
-  viewer: []
-});
-```
-
-## Type Definitions
+## Data Types
 
 ```typescript
 interface PermissionRole {
@@ -194,11 +151,3 @@ interface Permission {
 
 type PermissionMatrix = { [roleId: string]: string[] };
 ```
-
-## Accessibility
-
-- Table uses `role="grid"` with `aria-label`
-- Each checkbox has a descriptive `aria-label` (e.g., "Grant Delete for Admin")
-- Keyboard navigation works with standard tab/enter/space
-- Focus indicators are visible on checkboxes
-- Column headers use `scope="col"` for screen readers

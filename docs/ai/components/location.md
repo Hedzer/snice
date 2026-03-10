@@ -4,7 +4,7 @@ Display location information with addresses, coordinates, and maps.
 
 ## Properties
 
-```typescript
+```ts
 mode: 'full'|'compact'|'coordinates'|'address' = 'full';
 name: string = '';
 address: string = '';
@@ -22,22 +22,33 @@ mapUrl: string = '';             // attr: map-url
 clickable: boolean = false;
 ```
 
+## Methods
+
+- `getData()` → `LocationData`
+- `getCoordinates()` → `{ latitude, longitude } | null`
+- `getFullAddress()` → `string`
+- `openMap()` → Opens location in maps (new tab)
+
+## Events
+
+- `location-click` → `LocationData` (when clickable)
+
 ## Slots
 
 - `icon` - Custom icon content (overrides `icon`/`iconImage` properties)
 
-## Methods
+## CSS Parts
 
-- `getData()` - Returns LocationData object
-- `getCoordinates()` - Returns `{ latitude, longitude }` or null
-- `getFullAddress()` - Returns formatted address string
-- `openMap()` - Opens location in maps app (new tab)
+- `base` - Outer location container
+- `icon` - Icon container
+- `content` - Content area (name, address, coordinates)
+- `map` - Embedded map container
 
-## Events
+## Basic Usage
 
-- `location-click` → `LocationData` - Clicked (when clickable)
-
-## Usage
+```typescript
+import 'snice/components/location/snice-location';
+```
 
 ```html
 <snice-location
@@ -61,18 +72,3 @@ clickable: boolean = false;
   <span slot="icon" class="material-symbols-outlined">business</span>
 </snice-location>
 ```
-
-**CSS Parts:**
-- `base` - The outer location container
-- `icon` - The icon container
-- `content` - The content area with name, address, coordinates
-- `map` - The embedded map container
-
-## Features
-
-- 4 display modes (full/compact/coordinates/address)
-- Embedded Google Maps support
-- Custom icons (emoji, URL, image). Use slot for icon fonts.
-- Clickable to open in maps app
-- Custom map URL support
-- Complete address formatting

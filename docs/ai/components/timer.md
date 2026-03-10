@@ -10,13 +10,6 @@ initialTime: number = 0;   // attr: initial-time, seconds (for timer mode)
 running: boolean;           // read-only
 ```
 
-## Events
-
-- `timer-start` → `{ timer, time }`
-- `timer-stop` → `{ timer, time }`
-- `timer-reset` → `{ timer, time }`
-- `timer-complete` → `{ timer }` - Countdown reached 0
-
 ## Methods
 
 - `start()` - Start timer
@@ -24,13 +17,20 @@ running: boolean;           // read-only
 - `reset()` - Reset to initial state
 - `getTime()` - Get current time in seconds
 
+## Events
+
+- `timer-start` -> `{ timer, time }`
+- `timer-stop` -> `{ timer, time }`
+- `timer-reset` -> `{ timer, time }`
+- `timer-complete` -> `{ timer }` - Countdown reached 0
+
 ## CSS Parts
 
 - `base` - The outer timer container
 - `display` - The time display element
 - `controls` - The start/stop/reset button container
 
-## Usage
+## Basic Usage
 
 ```html
 <!-- Stopwatch (counts up) -->

@@ -4,13 +4,17 @@ Text input with inline @mention autocomplete. Mentions stored as `@[Name](id)` m
 
 ## Properties
 
-```typescript
+```ts
 value: string = '';              // Raw text with @[Name](id) markers
-users: MentionUser[] = [];       // Autocomplete candidates
+users: MentionUser[] = [];       // JS only — autocomplete candidates
 placeholder: string = 'Type @ to mention someone...';
 readonly: boolean = false;
 trigger: string = '@';           // Trigger character
+```
 
+## Types
+
+```ts
 interface MentionUser {
   id: string;
   name: string;
@@ -25,26 +29,34 @@ interface Mention {
 }
 ```
 
-## Events
-
-- `mention-add` -> `{ user: MentionUser, value: string }`
-- `mention-remove` -> `{ user: MentionUser, value: string }`
-- `value-change` -> `{ value: string, plainText: string, mentions: Mention[] }`
-
 ## Methods
 
-- `getValue()` - Raw value with mention markers
-- `getPlainText()` - Text with mentions replaced by names only
-- `getMentions()` - Array of Mention objects with id, name, indices
+- `getValue()` → `string` (raw value with markers)
+- `getPlainText()` → `string` (mentions replaced by names)
+- `getMentions()` → `Mention[]` (structured mention data)
+
+## Events
+
+- `mention-add` → `{ user: MentionUser, value: string }`
+- `mention-remove` → `{ user: MentionUser, value: string }`
+- `value-change` → `{ value: string, plainText: string, mentions: Mention[] }`
 
 ## CSS Parts
 
-- `base` - Wrapper
+- `base` - Wrapper container
 - `editor` - Editor container
 - `textarea` - Text input
 - `dropdown` - Autocomplete dropdown
 
-## Usage
+## Keyboard
+
+Arrow Down/Up navigate dropdown, Enter/Tab select, Escape closes.
+
+## Basic Usage
+
+```typescript
+import 'snice/components/mentions/snice-mentions';
+```
 
 ```html
 <snice-mentions placeholder="Write something..."></snice-mentions>

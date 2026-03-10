@@ -4,7 +4,7 @@ Hyperlink component with variants, external link handling, and hash routing.
 
 ## Properties
 
-```typescript
+```ts
 href: string = '';
 target: '_self'|'_blank'|'_parent'|'_top' = '_self';
 variant: 'default'|'primary'|'secondary'|'muted' = 'default';
@@ -14,24 +14,27 @@ underline: boolean = false;
 hash: boolean = false;        // auto-prepend # to href
 ```
 
-## Slots
-
-- `(default)` - Link text content
-
 ## Events
 
 - `click` → `MouseEvent` (prevented when disabled)
 - `navigate` → `{ href: string }` (hash links only, cancelable)
+
+## Slots
+
+- `(default)` - Link text content
 
 ## CSS Parts
 
 - `link` - Anchor element
 - `external-icon` - External arrow icon
 
-## Usage
+## Basic Usage
+
+```typescript
+import 'snice/components/link/snice-link';
+```
 
 ```html
-<!-- Basic -->
 <snice-link href="/about">About</snice-link>
 
 <!-- Variants -->

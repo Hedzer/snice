@@ -1,36 +1,34 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/paint.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/paint.md -->
 
 # Paint
 `<snice-paint>`
 
-A self-contained drawing canvas with a built-in toolbar for color selection, brush sizing, eraser, undo/redo, and export.
+A self-contained drawing canvas with a built-in toolbar for colors, brush size, eraser, undo/redo, and clear.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/paint/snice-paint';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-paint.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
+- [Data Types](#data-types)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `colors` | `string[]` | 8 default colors | Color palette (set via JSON attribute) |
 | `color` | `string` | `'#3b82f6'` | Current brush color |
-| `strokeWidth` (attr: `stroke-width`) | `number` | `3` | Brush stroke width |
-| `minStrokeWidth` (attr: `min-stroke-width`) | `number` | `1` | Minimum slider value |
-| `maxStrokeWidth` (attr: `max-stroke-width`) | `number` | `20` | Maximum slider value |
-| `controls` | `string` | `'colors,size,eraser,undo,redo,clear'` | Visible toolbar sections |
+| `strokeWidth` (attr: `stroke-width`) | `number` | `3` | Current brush stroke width |
+| `minStrokeWidth` (attr: `min-stroke-width`) | `number` | `1` | Minimum brush size |
+| `maxStrokeWidth` (attr: `max-stroke-width`) | `number` | `20` | Maximum brush size |
+| `controls` | `string` | `'colors,size,eraser,undo,redo,clear'` | Comma-separated list of toolbar controls |
 | `backgroundColor` (attr: `background-color`) | `string` | `'#ffffff'` | Canvas background color |
-| `colorSelects` (attr: `color-selects`) | `number` | `0` | Number of custom color-picker dots in palette |
-| `disabled` | `boolean` | `false` | Disable all interaction |
+| `colorSelects` (attr: `color-selects`) | `number` | `0` | Number of extra color picker dots in palette |
+| `disabled` | `boolean` | `false` | Disable drawing interaction |
+| `colors` | `string[]` | `['#3b82f6',...]` | Color palette (getter/setter, set via JS or JSON attribute) |
 
 ## Methods
 
@@ -38,82 +36,35 @@ import 'snice/components/paint/snice-paint';
 |--------|-----------|-------------|
 | `undo()` | -- | Undo the last stroke |
 | `redo()` | -- | Redo the last undone stroke |
-| `clear()` | -- | Clear the entire canvas |
-| `toDataURL()` | `type?: string, quality?: number` | Export as data URL |
-| `toBlob()` | `type?: string, quality?: number` | Export as Blob (async) |
-| `download()` | `filename?: string` | Download as PNG file |
-| `getStrokes()` | -- | Get all strokes for serialization |
-| `setStrokes()` | `strokes: PaintStroke[]` | Restore strokes from saved data |
+| `clear()` | -- | Clear the canvas |
+| `toDataURL()` | `type?: string, quality?: number` | Export canvas as a data URL |
+| `toBlob()` | `type?: string, quality?: number` | Export canvas as a Blob (async) |
+| `download()` | `filename?: string` | Download canvas as an image file |
+| `getStrokes()` | -- | Get a copy of all strokes |
+| `setStrokes()` | `strokes: PaintStroke[]` | Replace all strokes and redraw |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `paint-start` | `{ point: Point }` | Drawing started |
-| `paint-end` | `{ stroke: PaintStroke }` | Stroke completed |
-| `paint-clear` | -- | Canvas cleared |
-| `paint-undo` | -- | Undo performed |
-| `paint-redo` | -- | Redo performed |
-| `color-select` | `{ color: string, index: number }` | Custom color picked from color-select dot |
+| `paint-start` | `{ point: Point }` | Fired when drawing starts |
+| `paint-end` | `{ stroke: PaintStroke }` | Fired when a stroke is completed |
+| `paint-clear` | `{}` | Fired when the canvas is cleared |
+| `paint-undo` | `{}` | Fired when an undo is performed |
+| `paint-redo` | `{}` | Fired when a redo is performed |
+| `color-select` | `{ color: string, index: number }` | Fired when a custom color picker is used |
 
 ## Slots
 
-The toolbar supports named slots for customizing or extending its controls. Additive slots inject content alongside defaults; replacement slots override the default section entirely.
-
-| Slot | Behavior | Description |
+| Name | Behavior | Description |
 |------|----------|-------------|
-| `toolbar-start` | Additive | Prepended above all default controls |
+| `toolbar-start` | Additive | Content prepended before default controls |
 | `colors` | Replaces default | Replaces the built-in color swatches |
-| `size` | Replaces default | Replaces the built-in brush size slider |
-| `tools` | Additive | Custom tool buttons, placed between eraser and undo/redo |
-| `toolbar-end` | Additive | Appended below all default controls |
+| `size` | Replaces default | Replaces the built-in size slider |
+| `tools` | Additive | Custom tool buttons (between eraser and undo/redo) |
+| `toolbar-end` | Additive | Content appended after default controls |
 
-The toolbar will automatically appear if any slot has content, even when `controls=""`.
-
-### Adding Custom Tools
-
-Add extra tool buttons alongside the built-in eraser.
-
-```html
-<snice-paint>
-  <button slot="tools" onclick="...">🔲 Rectangle</button>
-  <button slot="tools" onclick="...">⭕ Circle</button>
-  <button slot="tools" onclick="...">📝 Text</button>
-</snice-paint>
-```
-
-### Replacing the Color Picker
-
-Swap the default swatch grid for a native color input or your own palette component.
-
-```html
-<snice-paint>
-  <input slot="colors" type="color" onchange="this.closest('snice-paint').color = this.value">
-</snice-paint>
-```
-
-### Adding a Save Button
-
-Append controls after the built-in buttons.
-
-```html
-<snice-paint>
-  <button slot="toolbar-end" onclick="this.closest('snice-paint').download()">💾 Save</button>
-</snice-paint>
-```
-
-### Combining Slots
-
-All slots can be used together.
-
-```html
-<snice-paint>
-  <span slot="toolbar-start" style="font-size:0.5rem;text-align:center">My App</span>
-  <input slot="colors" type="color" onchange="this.closest('snice-paint').color = this.value">
-  <button slot="tools" onclick="...">🔲 Rect</button>
-  <button slot="toolbar-end" onclick="this.closest('snice-paint').download()">💾 Save</button>
-</snice-paint>
-```
+The toolbar auto-shows when any slot has content, even if `controls=""`.
 
 ## CSS Parts
 
@@ -122,20 +73,9 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | Part | Element | Description |
 |------|---------|-------------|
 | `base` | `<div>` | The outer paint container |
-| `toolbar` | `<div>` | The toolbar with color swatches, size slider, and action buttons |
-| `canvas-wrap` | `<div>` | The wrapper around the drawing canvas |
+| `toolbar` | `<div>` | The toolbar with controls |
+| `canvas-wrap` | `<div>` | The canvas wrapper element |
 | `canvas` | `<canvas>` | The drawing canvas element |
-
-```css
-snice-paint::part(toolbar) {
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-snice-paint::part(canvas) {
-  border-radius: 0 0 8px 8px;
-}
-```
 
 ## Basic Usage
 
@@ -151,119 +91,93 @@ import 'snice/components/paint/snice-paint';
 
 ### Custom Colors
 
-Use the `colors` attribute with a JSON array to set the palette.
+Set the color palette via a JSON attribute or JavaScript.
 
 ```html
-<snice-paint colors='["#ff0000","#00ff00","#0000ff","#ffff00"]'></snice-paint>
+<snice-paint colors='["#ff0000","#00ff00","#0000ff"]'></snice-paint>
 ```
 
-### Custom Size Range
+### Minimal Controls
 
-Use `min-stroke-width` and `max-stroke-width` to control the brush slider range.
-
-```html
-<snice-paint min-stroke-width="2" max-stroke-width="50" stroke-width="10"></snice-paint>
-```
-
-### Minimal Toolbar
-
-Use the `controls` attribute with a comma-separated list to show only specific controls.
+Show only specific toolbar controls.
 
 ```html
 <snice-paint controls="colors,undo"></snice-paint>
 ```
 
-### No Toolbar
+### Custom Size Range
 
-Pass an empty string to hide the toolbar entirely.
-
-```html
-<snice-paint controls=""></snice-paint>
-```
-
-### Disabled
-
-Set the `disabled` attribute to prevent all interaction.
+Adjust the minimum and maximum brush sizes.
 
 ```html
-<snice-paint disabled></snice-paint>
+<snice-paint min-stroke-width="2" max-stroke-width="50"></snice-paint>
 ```
 
-### Custom Background
+### Color Pickers
 
-Use the `background-color` attribute to change the canvas background.
+Add extra color picker inputs to the palette.
 
 ```html
-<snice-paint background-color="#f0f0f0"></snice-paint>
+<snice-paint color-selects="2"></snice-paint>
 ```
 
-### Custom Color Pickers
+### Custom Toolbar Content
 
-Add extra color-picker dots to the palette. Click a dot to open the native color picker; once selected, the dot fills with that color and it becomes the active brush color.
+Use slots to extend the toolbar with custom controls.
 
 ```html
-<snice-paint color-selects="3"></snice-paint>
+<snice-paint>
+  <button slot="tools" onclick="...">Rectangle</button>
+  <button slot="toolbar-end" onclick="this.closest('snice-paint').download()">Save</button>
+</snice-paint>
 ```
 
-Listen for custom color selections:
+### Replace Color Picker
+
+Swap the default swatches for a native color input.
+
+```html
+<snice-paint>
+  <input slot="colors" type="color" onchange="this.closest('snice-paint').color = this.value">
+</snice-paint>
+```
+
+### Export and Save/Load
 
 ```typescript
-paint.addEventListener('color-select', (e) => {
-  console.log(`Custom color ${e.detail.index}: ${e.detail.color}`);
-});
-```
+// Export as image
+paint.download('artwork.png');
+const dataUrl = paint.toDataURL();
+const blob = await paint.toBlob();
 
-### Programmatic Control
-
-```typescript
-// Change settings
-paint.color = '#ff6600';
-paint.strokeWidth = 8;
-
-// Undo / redo / clear
-paint.undo();
-paint.redo();
-paint.clear();
-
-// Export
-paint.download('my-painting.png');
-const dataURL = paint.toDataURL('image/png');
-const blob = await paint.toBlob('image/jpeg', 0.9);
-```
-
-### Save and Restore Strokes
-
-```typescript
-// Save strokes
+// Save and restore strokes
 const strokes = paint.getStrokes();
-localStorage.setItem('painting', JSON.stringify(strokes));
-
-// Restore strokes
-const saved = JSON.parse(localStorage.getItem('painting'));
-paint.setStrokes(saved);
+localStorage.setItem('drawing', JSON.stringify(strokes));
+paint.setStrokes(JSON.parse(localStorage.getItem('drawing')));
 ```
 
-### Event Handling
+## Accessibility
+
+- Canvas supports pointer events for drawing on touch and mouse devices
+- All toolbar buttons have `title` attributes for tooltips
+- The `disabled` property prevents all drawing interaction
+
+## Data Types
 
 ```typescript
-paint.addEventListener('paint-end', (e) => {
-  console.log(`Stroke with ${e.detail.stroke.points.length} points`);
-});
-
-paint.addEventListener('paint-clear', () => {
-  console.log('Canvas cleared');
-});
-```
-
-## Stroke Structure
-
-```typescript
-interface PaintStroke {
-  id: string;
-  tool: 'pen' | 'eraser';
-  color: string;
-  width: number;
-  points: Point[];     // Array of { x, y }
-  timestamp: number;
+interface Point {
+  x: number;
+  y: number;
 }
+
+interface PaintStroke {
+  id: string;                      // Unique stroke identifier
+  tool: 'pen' | 'eraser';         // Drawing tool used
+  color: string;                   // Stroke color
+  width: number;                   // Stroke width
+  points: Point[];                 // Array of points in the stroke
+  timestamp: number;               // When the stroke was created
+}
+
+type PaintControl = 'colors' | 'size' | 'eraser' | 'undo' | 'redo' | 'clear';
 ```

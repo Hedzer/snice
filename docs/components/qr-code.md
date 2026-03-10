@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/qr-code.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/qr-code.md -->
 
 # QR Code
-`<snice-qr-code>`
 
-A QR code generator with customizable styling, dot patterns, and image export.
+A QR code generator with customizable styling, dot patterns, center overlays, and image export.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/qr-code/snice-qr-code';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-qr-code.min.js"></script>
-```
+- [Properties](#properties)
+- [Methods](#methods)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -27,14 +23,14 @@ import 'snice/components/qr-code/snice-qr-code';
 | `errorCorrectionLevel` (attr: `error-correction-level`) | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | Error correction level |
 | `renderMode` (attr: `render-mode`) | `'canvas' \| 'svg'` | `'canvas'` | Rendering mode |
 | `dotStyle` (attr: `dot-style`) | `'square' \| 'rounded' \| 'dots'` | `'square'` | Module shape style |
-| `margin` | `number` | `4` | Quiet zone size |
+| `margin` | `number` | `4` | Quiet zone size in modules |
 | `fgColor` (attr: `fg-color`) | `string` | `'#000000'` | Foreground color |
 | `bgColor` (attr: `bg-color`) | `string` | `'#ffffff'` | Background color |
-| `includeImage` (attr: `include-image`) | `boolean` | `false` | Show center image |
+| `includeImage` (attr: `include-image`) | `boolean` | `false` | Show center image overlay |
 | `imageUrl` (attr: `image-url`) | `string` | `''` | Center image URL |
-| `imageSize` (attr: `image-size`) | `number` | `40` | Center image size |
+| `imageSize` (attr: `image-size`) | `number` | `40` | Center image size in pixels |
 | `centerText` (attr: `center-text`) | `string` | `''` | Center overlay text |
-| `centerTextSize` (attr: `center-text-size`) | `number` | `16` | Center text font size |
+| `centerTextSize` (attr: `center-text-size`) | `number` | `16` | Center text font size in pixels |
 | `textFillColor` (attr: `text-fill-color`) | `string` | `'#000000'` | Center text fill color |
 | `textOutlineColor` (attr: `text-outline-color`) | `string` | `'#ffffff'` | Center text outline color |
 
@@ -42,26 +38,24 @@ import 'snice/components/qr-code/snice-qr-code';
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `toSVGString()` | -- | Export as SVG markup string (sync, only when renderMode is `'svg'`) |
-| `toDataURL()` | `type?: string, quality?: number` | Export as data URL (async) |
-| `toBlob()` | `type?: string, quality?: number` | Export as Blob (async) |
-| `download()` | `filename?: string` | Download as image file |
+| `toSVGString()` | — | Returns SVG markup string (sync, only works when `renderMode` is `'svg'`) |
+| `toDataURL()` | `type?: 'image/png' \| 'image/jpeg' \| 'image/webp' \| 'image/svg+xml', quality?: number` | Export as data URL (async) |
+| `toBlob()` | `type?: 'image/png' \| 'image/jpeg' \| 'image/webp' \| 'image/svg+xml', quality?: number` | Export as Blob (async) |
+| `download()` | `filename?: string` | Download as image file (defaults to `'qr-code.png'`) |
 
 ## CSS Custom Properties
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--qr-bg` | Container background color | _(theme default)_ |
-| `--qr-border-radius` | Container border radius | _(theme default)_ |
-| `--qr-padding` | Container padding | _(theme default)_ |
+| `--qr-bg` | Container background color | `hsl(0 0% 100%)` |
+| `--qr-border-radius` | Container border radius | `0` |
+| `--qr-padding` | Container padding | `0` |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | QR code container holding the generated canvas or SVG |
+| Part | Description |
+|------|-------------|
+| `base` | The container div holding the generated canvas or SVG |
 
 ```css
 snice-qr-code::part(base) {
@@ -112,7 +106,7 @@ Use the `dot-style` attribute to change the module shape.
 
 ### Error Correction
 
-Use `error-correction-level` for higher resilience to damage.
+Use `error-correction-level` for higher resilience to damage. Use `'H'` when adding center overlays.
 
 ```html
 <snice-qr-code value="Important Data" error-correction-level="H"></snice-qr-code>
@@ -120,16 +114,15 @@ Use `error-correction-level` for higher resilience to damage.
 
 ### Render Mode
 
-Use `render-mode` to switch between SVG and canvas rendering.
+Use `render-mode` to switch between canvas and SVG rendering.
 
 ```html
-<snice-qr-code value="https://example.com" render-mode="canvas"></snice-qr-code>
 <snice-qr-code value="https://example.com" render-mode="svg"></snice-qr-code>
 ```
 
 ### Center Image
 
-Use `include-image` with `image-url` to overlay a logo in the center.
+Use `include-image` with `image-url` to overlay a logo in the center. Pair with high error correction.
 
 ```html
 <snice-qr-code
@@ -154,7 +147,29 @@ Use `center-text` to overlay text in the center of the QR code.
 </snice-qr-code>
 ```
 
+### Export
+
+Use the export methods to save or share the QR code programmatically.
+
+```typescript
+const qr = document.querySelector('snice-qr-code');
+
+// Data URL
+const dataURL = await qr.toDataURL('image/png');
+
+// Blob
+const blob = await qr.toBlob('image/png');
+
+// Download
+qr.download('my-qr-code.png');
+
+// SVG string (only when render-mode="svg")
+const svgMarkup = qr.toSVGString();
+```
+
 ### Common Data Formats
+
+Set `value` to standard URI schemes for common QR code use cases.
 
 ```html
 <!-- URL -->
@@ -166,9 +181,6 @@ Use `center-text` to overlay text in the center of the QR code.
 <!-- Phone -->
 <snice-qr-code value="tel:+1234567890"></snice-qr-code>
 
-<!-- SMS -->
-<snice-qr-code value="sms:+1234567890?body=Hello"></snice-qr-code>
-
 <!-- WiFi -->
 <snice-qr-code value="WIFI:T:WPA;S:MyNetwork;P:password123;;"></snice-qr-code>
 
@@ -176,28 +188,8 @@ Use `center-text` to overlay text in the center of the QR code.
 <snice-qr-code value="geo:37.7749,-122.4194"></snice-qr-code>
 ```
 
-### Export
+## Accessibility
 
-```typescript
-// Data URL
-const dataURL = await qr.toDataURL('image/png');
-
-// Blob
-const blob = await qr.toBlob('image/png');
-
-// Download
-qr.download('my-qr-code.png');
-```
-
-### Dynamic Updates
-
-```html
-<input type="text" id="qrInput" placeholder="Enter text">
-<snice-qr-code></snice-qr-code>
-```
-
-```typescript
-qrInput.addEventListener('input', (e) => {
-  qr.value = e.target.value;
-});
-```
+- The QR code renders as a `<canvas>` or `<svg>` element inside a container div
+- No interactive elements; the component is purely visual output
+- Provide adjacent text or an `aria-label` on a wrapper for screen reader users to understand the encoded content

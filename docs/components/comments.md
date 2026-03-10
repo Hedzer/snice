@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/comments.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/comments.md -->
 
 # Comments Component
 
-The comments component provides a threaded comment system with nested replies, like/unlike functionality, user avatars, relative timestamps, and current-user awareness for delete permissions.
+A threaded comment system with nested replies, like/unlike functionality, user avatars, relative timestamps, and current-user awareness for delete permissions. Supports both programmatic and declarative usage.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -77,6 +77,13 @@ interface Comment {
 | `input-area` | The new comment input area |
 | `list` | The comments list container |
 
+```css
+snice-comments::part(base) {
+  max-width: 600px;
+  margin: 0 auto;
+}
+```
+
 ## Basic Usage
 
 ```html
@@ -91,7 +98,7 @@ import 'snice/components/comments/snice-comments';
 
 ### Basic Comment Thread
 
-Set comments via JavaScript to display a comment thread with the current user set.
+Set comments via JavaScript to display a threaded conversation.
 
 ```html
 <snice-comments id="my-comments" current-user="Alice" allow-replies allow-likes></snice-comments>
@@ -158,7 +165,7 @@ Use the `replies` array within a comment to create threaded conversations. Contr
 </script>
 ```
 
-### Read-Only Comments (No Replies or Likes)
+### Read-Only Comments
 
 Disable replies and likes for a read-only display of past comments.
 
@@ -179,7 +186,7 @@ Disable replies and likes for a read-only display of past comments.
 </script>
 ```
 
-### Listening to Events
+### Event Handling
 
 Listen for comment actions to sync with a backend.
 
@@ -192,7 +199,6 @@ Listen for comment actions to sync with a backend.
 
   el.addEventListener('comment-add', (e) => {
     console.log('New comment:', e.detail.text, 'by', e.detail.author);
-    // POST to your API
   });
 
   el.addEventListener('comment-reply', (e) => {
@@ -229,7 +235,7 @@ Comments can also be defined declaratively using `<snice-comment>` child element
 
 ## Accessibility
 
-- **Keyboard support**: Tab through comments, reply buttons, and like buttons. Enter or Space to activate controls.
-- **Timestamps**: Displayed as relative times (e.g., "2 hours ago") for quick scanning
-- **Current user**: Delete controls only appear on the current user's own comments to prevent confusion
-- **Screen readers**: Comment structure and author information are conveyed through semantic markup
+- Keyboard support: Tab through comments, reply buttons, and like buttons. Enter or Space to activate controls.
+- Timestamps displayed as relative times (e.g., "2 hours ago") for quick scanning
+- Delete controls only appear on the current user's own comments
+- Semantic markup conveys comment structure and author information to screen readers

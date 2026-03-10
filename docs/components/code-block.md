@@ -1,53 +1,127 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/code-block.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/code-block.md -->
 
 # Code Block Component
 
 Display code with syntax highlighting, line numbers, and copy functionality. Uses a JSON-driven tokenizer engine with Monarch-inspired state machine for syntax highlighting.
 
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
+
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `code` | `string` | `''` | Code content |
+| `code` | `string` | `''` | Code content (set via slot or property) |
 | `language` | `CodeLanguage` | `'plaintext'` | Programming language |
 | `grammar` | `Grammar \| string \| null` | `null` | Grammar object or URL to grammar JSON |
-| `showLineNumbers` | `boolean` | `false` | Show line numbers |
-| `startLine` | `number` | `1` | Starting line number |
-| `highlightLines` | `number[]` | `[]` | Lines to highlight |
+| `showLineNumbers` (attr: `show-line-numbers`) | `boolean` | `false` | Show line numbers |
+| `startLine` (attr: `start-line`) | `number` | `1` | Starting line number |
+| `highlightLines` (attr: `highlight-lines`) | `number[]` | `[]` | Lines to highlight |
 | `copyable` | `boolean` | `true` | Show copy button |
-| `filename` | `string` | `''` | File name to display |
+| `filename` | `string` | `''` | File name to display in header |
 | `format` | `string` | `''` | Formatter name from grammar (e.g. `"pretty"`), or any truthy string with `setFormatter()` |
-| `theme` | `'' \| 'dark' \| 'light'` | `''` | Force a specific color theme; empty string auto-detects from page or OS |
-| `fetchMode` | `'native' \| 'virtual' \| 'event'` | `'native'` | How grammar URLs are fetched: `native` uses fetch(), `virtual` uses import(), `event` dispatches `grammar-request` |
+| `theme` | `'' \| 'dark' \| 'light'` | `''` | Force a specific color theme; empty = auto-detect from page/OS |
+| `fetchMode` (attr: `fetch-mode`) | `'native' \| 'virtual' \| 'event'` | `'native'` | How grammar URLs are fetched |
 
-## Slots
+### Fetch Mode
 
-| Slot | Description |
-|------|-------------|
-| (default) | Code content as slotted text (auto-dedented) |
+- **`native`** (default) -- `fetch(url).then(r => r.json())`. No external wiring needed.
+- **`virtual`** -- Uses `@request/@respond` pattern (`snice/code-block/load-grammar`). Requires a `@respond` handler.
+- **`event`** -- Dispatches `grammar-request` CustomEvent. Listener calls `codeBlock.setGrammar()` to provide grammar.
 
 ## Methods
 
-- `copy()` - Copy code to clipboard
-- `highlight()` - Manually trigger syntax highlighting
-- `setHighlighter(fn)` - Set an external highlighter function for this instance
-- `setFormatter(fn)` - Set a code formatter function for this instance
-- `setGrammar(grammar)` - Set a grammar object programmatically
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `copy()` | -- | Copy code to clipboard |
+| `highlight()` | -- | Manually trigger syntax highlighting |
+| `setHighlighter()` | `fn: HighlighterFunction` | Set an external highlighter function |
+| `setFormatter()` | `fn: FormatterFunction` | Set a code formatter function |
+| `setGrammar()` | `grammar: Grammar` | Set a grammar object programmatically |
 
 ## Events
 
-- `code-copy` - Code copied (detail: `{ code, codeBlock }`)
-- `code-before-format` - Before formatting (detail: `{ code, language, codeBlock }`)
-- `code-after-format` - After formatting (detail: `{ code, language, codeBlock }`)
-- `code-before-highlight` - Before highlighting (detail: `{ code, language, codeBlock }`)
-- `code-after-highlight` - After highlighting (detail: `{ code, language, codeBlock }`)
-- `grammar-request` - Grammar fetch requested (detail: `{ url, language, codeBlock }`). Only dispatched when `fetch-mode="event"`.
-- `grammar-loaded` - Grammar successfully loaded (detail: `{ grammar, url, language, codeBlock }`). Fired after grammar is fetched (native/virtual), received via event mode, or set programmatically with `setGrammar()`.
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `code-copy` | `{ code, codeBlock }` | Code copied to clipboard |
+| `code-before-format` | `{ code, language, codeBlock }` | Before formatting |
+| `code-after-format` | `{ code, language, codeBlock }` | After formatting |
+| `code-before-highlight` | `{ code, language, codeBlock }` | Before highlighting |
+| `code-after-highlight` | `{ code, language, codeBlock }` | After highlighting |
+| `grammar-request` | `{ url, language, codeBlock }` | Grammar fetch requested (only when `fetch-mode="event"`) |
+| `grammar-loaded` | `{ grammar, url, language, codeBlock }` | Grammar loaded (any mode) or set via `setGrammar()` |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Code content as slotted text (auto-dedented) |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `container` | The outer code block wrapper |
+| `header` | The header bar with filename and copy button |
+| `filename` | The filename display |
+| `copy-button` | The copy-to-clipboard button |
+| `content` | The scrollable code content area |
+| `pre` | The pre-formatted code container |
+| `code` | The code element containing highlighted tokens |
 
 ## Basic Usage
 
 ```html
+<snice-code-block language="javascript" grammar="grammars/typescript.json">
+const x = 1;
+console.log(x);
+</snice-code-block>
+```
+
+```typescript
+import 'snice/components/code-block/snice-code-block';
+```
+
+## Examples
+
+### With Line Numbers and Filename
+
+Set `show-line-numbers` and `filename` for a file-like display.
+
+```html
+<snice-code-block grammar="grammars/typescript.json" language="typescript" show-line-numbers filename="index.ts">
+const greeting = 'Hello World';
+console.log(greeting);
+</snice-code-block>
+```
+
+### Highlight Specific Lines
+
+Use `highlight-lines` to draw attention to specific lines.
+
+```html
+<snice-code-block grammar="grammars/python.json" language="python" highlight-lines="[2,3,4]">
+def hello():
+    name = "World"
+    greeting = f"Hello {name}"
+    print(greeting)
+</snice-code-block>
+```
+
+### Programmatic Code
+
+Set code via the `code` property for dynamic content.
+
+```html
 <snice-code-block id="code" language="javascript" grammar="grammars/typescript.json"></snice-code-block>
+
 <script>
   document.getElementById('code').code = `
 function hello() {
@@ -57,406 +131,75 @@ function hello() {
 </script>
 ```
 
-## Code Formatters
+### Force Theme
 
-Formatters transform code before syntax highlighting — useful for pretty-printing minified or poorly-indented code.
+Use `theme` to override auto-detection.
 
-### Grammar-Based Formatters (Declarative)
+```html
+<snice-code-block theme="dark" language="javascript">const x = 1;</snice-code-block>
+<snice-code-block theme="light" language="javascript">const x = 1;</snice-code-block>
+```
 
-Grammars can include a `formatters` section with named declarative rule sets. Set `format` to the formatter name to use it:
+### Grammar-Based Formatter
+
+Use `format="pretty"` with a grammar that includes formatters.
 
 ```html
 <snice-code-block grammar="grammars/json.json" format="pretty" code='{"a":1,"b":[2,3]}'></snice-code-block>
 ```
 
-The grammar's `"pretty"` formatter will automatically format the code before highlighting. No JavaScript needed.
+Grammars with built-in `"pretty"` formatters: `json.json`, `typescript.json`, `css.json`, `snice.json`.
 
-**Grammars with built-in `"pretty"` formatters:** `json.json`, `typescript.json`, `css.json`, `snice.json`.
+### Imperative Formatter
 
-#### Grammar Formatter Rules
-
-Each named formatter is a set of declarative rules defined in the grammar JSON:
-
-```json
-{
-  "formatters": {
-    "pretty": {
-      "tabSize": 2,
-      "useTabs": false,
-      "newlineAfter": "[{\\[,]",
-      "newlineBefore": "[}\\]]",
-      "spaceAfter": "[:]",
-      "indent": "[{\\[]",
-      "dedent": "[}\\]]",
-      "skipStrings": true,
-      "skipComments": true
-    }
-  }
-}
-```
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `tabSize` | `number` | `2` | Indent width |
-| `useTabs` | `boolean` | `false` | Use tabs instead of spaces |
-| `newlineAfter` | `string` (regex) | — | Insert newline after these chars |
-| `newlineBefore` | `string` (regex) | — | Insert newline before these chars |
-| `spaceAfter` | `string` (regex) | — | Insert space after these chars |
-| `spaceBefore` | `string` (regex) | — | Insert space before these chars |
-| `spaceAround` | `string` (regex) | — | Insert space on both sides |
-| `indent` | `string` (regex) | — | Chars that increase indent level |
-| `dedent` | `string` (regex) | — | Chars that decrease indent level |
-| `trimTrailing` | `boolean` | `true` | Remove trailing whitespace per line |
-| `collapseBlankLines` | `number` | — | Max consecutive blank lines |
-| `skipStrings` | `boolean` | `true` | Don't apply rules inside string literals |
-| `skipComments` | `boolean` | `true` | Don't apply rules inside comments |
-
-### Imperative Formatters
-
-For cases requiring JavaScript logic, `setFormatter(fn)` still works. When both are present, `setFormatter()` takes priority over grammar-based formatters.
-
-```typescript
-type FormatterFunction = (code: string, language: string) => string | Promise<string>;
-```
-
-### JSON Formatter
-
-Zero-dependency formatter that pretty-prints JSON using `JSON.parse()` + `JSON.stringify()`:
+Use `setFormatter()` for custom formatting logic.
 
 ```typescript
 import { createJsonFormatter } from 'snice/components/code-block/formatters/json';
 
-const formatter = createJsonFormatter({ indent: 2 });
-codeBlock.setFormatter(formatter);
+codeBlock.setFormatter(createJsonFormatter({ indent: 2 }));
 codeBlock.format = 'pretty';
 codeBlock.code = '{"name":"snice","version":"4.0.0"}';
 ```
 
-### Indent Formatter
+### Event-Based Grammar Loading
 
-Zero-dependency indent normalizer that re-indents code by tracking brace/bracket/paren nesting depth:
-
-```typescript
-import { createIndentFormatter } from 'snice/components/code-block/formatters/indent';
-
-const formatter = createIndentFormatter({ tabSize: 2, useTabs: false });
-codeBlock.setFormatter(formatter);
-codeBlock.format = 'pretty';
-```
-
-### Prettier Formatter
-
-Adapter for Prettier (requires `prettier` as a dependency):
-
-```typescript
-import * as prettier from 'prettier/standalone';
-import parserBabel from 'prettier/plugins/babel';
-import parserEstree from 'prettier/plugins/estree';
-import { setupPrettierFormatter } from 'snice/components/code-block/formatters/prettier';
-
-const formatter = setupPrettierFormatter(prettier, [parserBabel, parserEstree], {
-  tabWidth: 2,
-  singleQuote: true,
-});
-codeBlock.setFormatter(formatter);
-codeBlock.format = 'pretty';
-```
-
-### Whitespace Handling
-
-Slotted content is automatically **dedented** — common leading indentation from HTML nesting is stripped while preserving relative indentation. This means code inside deeply nested HTML stays clean:
+Use `fetch-mode="event"` to control grammar loading externally.
 
 ```html
-<div class="container">
-  <snice-code-block language="javascript">
-    function hello() {
-      console.log("world");
-    }
-  </snice-code-block>
-</div>
-```
+<snice-code-block grammar="grammars/typescript.json" fetch-mode="event" id="cb"></snice-code-block>
 
-The 4-space indent from HTML nesting is stripped, but the 2-space relative indent inside the function is preserved.
-
-## Grammar Format
-
-Grammars are JSON-serializable objects with states, transitions, and lookup tables:
-
-```typescript
-interface Grammar {
-  name: string;               // Language name
-  fileTypes?: string[];        // File extensions
-  defaultToken?: string;       // Token type for unmatched text
-  ignoreCase?: boolean;        // Case-insensitive regex matching
-  tokenizer: Record<string, GrammarEntry[]>;  // Named states
-  formatters?: Record<string, FormatRules>;    // Named declarative formatters
-  [key: string]: any;          // Lookup tables (keywords, builtins, etc.)
-}
-```
-
-### Rules
-
-Each state contains an array of rules. Rules can be:
-
-- **Simple**: `[regex, token]` — Match regex, assign token type
-- **With transition**: `[regex, token, nextState]` — Match and change state
-- **Conditional**: `[regex, { cases: { '@table': 'token', '@default': 'fallback' } }]` — Lookup matched text in tables
-- **Include**: `{ include: '@stateName' }` — Include rules from another state
-
-### State Transitions
-
-- `@stateName` — Push state onto stack (enter nested context)
-- `@pop` — Pop state from stack (return to previous context)
-
-### Example: Handling Multi-line Comments
-
-```json
-{
-  "tokenizer": {
-    "root": [
-      ["/\\*", "comment", "@comment"],
-      ["//.*$", "comment"]
-    ],
-    "comment": [
-      ["[^*]+", "comment"],
-      ["\\*/", "comment", "@pop"],
-      ["[*]", "comment"]
-    ]
-  }
-}
-```
-
-### Example: Template Literals with Interpolation
-
-```json
-{
-  "tokenizer": {
-    "root": [
-      ["`", "string", "@template"]
-    ],
-    "template": [
-      ["\\$\\{", "punctuation", "@interpolation"],
-      ["[^`$\\\\]+", "string"],
-      ["\\\\.", "string"],
-      ["`", "string", "@pop"]
-    ],
-    "interpolation": [
-      ["\\}", "punctuation", "@pop"],
-      { "include": "@root" }
-    ]
-  }
-}
-```
-
-## Programmatic API
-
-The highlighter engine can be used directly:
-
-```typescript
-import {
-  highlightCode,
-  tokenize,
-  registerGrammar,
-  unregisterGrammar,
-  getGrammar
-} from 'snice/components/code-block/highlighter';
-
-// Highlight with a grammar object → HTML string
-const html = highlightCode('const x = 1;', grammarObject);
-
-// Highlight with a registered grammar name (plaintext fallback if not found)
-registerGrammar('typescript', tsGrammar);
-const html2 = highlightCode('const x = 1;', 'typescript');
-
-// Get raw tokens
-const tokens = tokenize('const x = 1;', grammarObject);
-// [{ text: 'const', type: 'keyword' }, { text: ' ', type: null }, ...]
-
-// Register a grammar globally
-registerGrammar('myLang', myGrammar);
-
-// Remove a registered grammar
-unregisterGrammar('myLang');
-
-// Look up a registered grammar (returns undefined if not found)
-const grammar = getGrammar('typescript');
-```
-
-## Examples
-
-```html
-<!-- With grammar and line numbers -->
-<snice-code-block grammar="grammars/typescript.json" language="typescript" show-line-numbers></snice-code-block>
-
-<!-- With filename -->
-<snice-code-block grammar="grammars/typescript.json" filename="index.js"></snice-code-block>
-
-<!-- Highlight specific lines -->
-<snice-code-block grammar="grammars/python.json" language="python" highlight-lines="[2,3,4]"></snice-code-block>
-
-<!-- Plaintext (no grammar needed) -->
-<snice-code-block language="plaintext"></snice-code-block>
-```
-
-## Grammar Files
-
-Grammars are **external JSON files** loaded on demand — the component ships with no built-in grammars to keep the bundle small.
-
-### Available Grammars
-
-| File | Languages | Aliases |
-|------|-----------|---------|
-| `typescript.json` | TypeScript, JavaScript | ts, tsx, js, jsx |
-| `html.json` | HTML, XML | htm, svg |
-| `css.json` | CSS, SCSS, Less | |
-| `json.json` | JSON | jsonc |
-| `python.json` | Python | py, pyw |
-| `bash.json` | Bash, Shell | sh, zsh |
-| `snice.json` | Snice (TS + templates) | |
-
-Grammar files are located at:
-- **Source:** `components/code-block/grammars/`
-- **Built:** `dist/components/code-block/grammars/`
-- **Standalone:** serve alongside the component JS file
-
-### Snice Grammar
-
-The `snice.json` grammar extends TypeScript with full awareness of snice's template DSL. Use it to highlight snice component source code.
-
-**What it highlights:**
-
-| Syntax | Token Type | Description |
-|--------|-----------|-------------|
-| `html\`` / `css\`` | `tag` | Tagged template entry (enters HTML/CSS mode) |
-| `<if>`, `<case>`, `<when>`, `<default>` | `keyword` | Snice conditional rendering elements |
-| `.prop=${val}` | `property` | Property bindings |
-| `?attr=${bool}` | `attr-name` | Boolean attribute bindings |
-| `@event=${fn}` | `function` | Event bindings (includes `@event:modifier`, `@event.modifier`) |
-| `${...}` | (TypeScript) | Interpolations return to TS mode |
-| `html/*html*/\`` | `tag` | Editor hint pattern supported |
-
-**Example:**
-
-```html
-<snice-code-block grammar="grammars/snice.json" language="snice" id="code"></snice-code-block>
 <script>
-  document.getElementById('code').code = `
-@element('my-counter')
-class MyCounter extends HTMLElement {
-  @property({ type: Number }) count = 0;
-
-  @render()
-  template() {
-    return html\\\`
-      <if \\\${this.count > 0}>
-        <span>\\\${this.count}</span>
-      </if>
-      <button @click=\\\${() => this.count++}>+</button>
-    \\\`;
-  }
-
-  @styles()
-  componentStyles() {
-    return css\\\`:host { display: block; padding: 1rem; }\\\`;
-  }
-}`;
+  cb.addEventListener('grammar-request', async (e) => {
+    const grammar = await fetch(e.detail.url).then(r => r.json());
+    e.detail.codeBlock.setGrammar(grammar);
+  });
 </script>
 ```
-
-### Loading a Grammar via URL
-
-The simplest way — set the `grammar` property to a URL string:
-
-```html
-<snice-code-block
-  grammar="grammars/typescript.json"
-  language="typescript"
-  id="code">
-</snice-code-block>
-<script>
-  document.getElementById('code').code = 'const x: number = 42;';
-</script>
-```
-
-The grammar JSON file will be fetched and cached automatically.
 
 ### Inline Grammar Object
 
-You can also pass a grammar object directly via JavaScript:
+Pass a grammar object directly via JavaScript.
 
-```html
-<snice-code-block id="cb" language="custom"></snice-code-block>
-<script>
-  const codeBlock = document.getElementById('cb');
-  codeBlock.grammar = {
-    name: 'my-language',
-    keywords: ['func', 'var', 'return'],
-    tokenizer: {
-      root: [
-        ['//.*$', 'comment'],
-        ['"[^"]*"', 'string'],
-        ['\\b\\d+\\b', 'number'],
-        ['[a-zA-Z_]\\w*', { cases: { '@keywords': 'keyword', '@default': '' } }]
-      ]
-    }
-  };
-  codeBlock.code = 'func main() { return 42; }';
-</script>
+```javascript
+codeBlock.grammar = {
+  name: 'my-language',
+  keywords: ['func', 'var', 'return'],
+  tokenizer: {
+    root: [
+      ['//.*$', 'comment'],
+      ['"[^"]*"', 'string'],
+      ['\\b\\d+\\b', 'number'],
+      ['[a-zA-Z_]\\w*', { cases: { '@keywords': 'keyword', '@default': '' } }]
+    ]
+  }
+};
+codeBlock.code = 'func main() { return 42; }';
 ```
 
-### Registering Grammars Globally
+### Customize Token Colors
 
-For programmatic use, you can register grammars so they're available by language name:
-
-```typescript
-import { registerGrammar } from 'snice/components/code-block/highlighter';
-
-// Fetch and register
-const tsGrammar = await fetch('grammars/typescript.json').then(r => r.json());
-registerGrammar('typescript', tsGrammar);
-registerGrammar('ts', tsGrammar);       // register aliases too
-registerGrammar('javascript', tsGrammar);
-registerGrammar('js', tsGrammar);
-```
-
-Without a registered grammar or explicit `grammar` property, code is displayed as escaped plaintext.
-
-## Theming (Light / Dark Mode)
-
-The code block automatically follows the page's theme. It detects:
-
-1. **`data-theme` attribute** on the page (snice theme system): `[data-theme="dark"]` or `[data-theme="light"]`
-2. **OS preference** via `prefers-color-scheme` media query (fallback when no `data-theme` is set)
-
-### Forcing a Theme
-
-Use the `theme` attribute to override auto-detection:
-
-```html
-<!-- Always dark, even on a light-themed page -->
-<snice-code-block theme="dark" language="javascript">
-const x = 1;
-</snice-code-block>
-
-<!-- Always light, even on a dark-themed page -->
-<snice-code-block theme="light" language="javascript">
-const x = 1;
-</snice-code-block>
-```
-
-### Customizing Colors
-
-Override structural colors with CSS custom properties:
-
-```css
-snice-code-block {
-  --code-block-bg: #1e1e2e;
-  --code-block-text: #cdd6f4;
-  --code-block-header-bg: #181825;
-}
-```
-
-Override individual token colors:
+Override individual token colors with CSS custom properties.
 
 ```css
 snice-code-block {
@@ -468,51 +211,44 @@ snice-code-block {
 }
 ```
 
-All available token color variables: `--code-keyword-color`, `--code-function-color`, `--code-string-color`, `--code-number-color`, `--code-comment-color`, `--code-operator-color`, `--code-punctuation-color`, `--code-tag-color`, `--code-attr-name-color`, `--code-attr-value-color`, `--code-constant-color`, `--code-class-color`, `--code-builtin-color`, `--code-regex-color`.
+### Customize Structural Colors
 
-## Token CSS Classes
-
-The following token types are styled by default:
-
-| Token | Color (default) | Description |
-|-------|----------------|-------------|
-| `keyword` | Purple (#c678dd) | Language keywords |
-| `string` | Green (#98c379) | String literals |
-| `comment` | Gray (#5c6370) | Comments (italic) |
-| `number` | Orange (#d19a66) | Numeric literals |
-| `function` | Blue (#61afef) | Function names |
-| `class-name` | Yellow (#e5c07b) | Class/type names |
-| `tag` | Red (#e06c75) | HTML tags, decorators |
-| `attr-name` | Orange (#d19a66) | Attribute names |
-| `attr-value` | Green (#98c379) | Attribute values |
-| `property` | Orange (#d19a66) | Object properties |
-| `operator` | Cyan (#56b6c2) | Operators |
-| `punctuation` | Gray (#abb2bf) | Brackets, semicolons |
-| `constant` | Orange (#d19a66) | true/false/null |
-| `builtin` | Red (#e06c75) | Built-in functions |
-
-Colors are customizable via CSS variables (e.g., `--code-keyword-color`).
-
-## CSS Parts
-
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `container` | `<div>` | The outer code block wrapper |
-| `header` | `<div>` | The header bar with filename and copy button |
-| `filename` | `<span>` | The filename display |
-| `copy-button` | `<button>` | The copy-to-clipboard button |
-| `content` | `<div>` | The scrollable code content area |
-| `pre` | `<pre>` | The pre-formatted code container |
-| `code` | `<code>` | The code element containing highlighted tokens |
+Override the block background, text, and header colors.
 
 ```css
-snice-code-block::part(container) {
-  border-radius: 8px;
-}
-
-snice-code-block::part(header) {
-  padding: 0.5rem 1rem;
+snice-code-block {
+  --code-block-bg: #1e1e2e;
+  --code-block-text: #cdd6f4;
+  --code-block-header-bg: #181825;
 }
 ```
+
+### Programmatic Highlighter API
+
+Use the highlighter engine directly for custom rendering.
+
+```typescript
+import { highlightCode, tokenize, registerGrammar } from 'snice/components/code-block/highlighter';
+
+const html = highlightCode('const x = 1;', grammarObject);
+registerGrammar('typescript', tsGrammar);
+const html2 = highlightCode('const x = 1;', 'typescript');
+```
+
+### Available Grammar Files
+
+| File | Languages |
+|------|-----------|
+| `typescript.json` | TypeScript, JavaScript |
+| `html.json` | HTML, XML |
+| `css.json` | CSS, SCSS, Less |
+| `json.json` | JSON |
+| `python.json` | Python |
+| `bash.json` | Bash, Shell |
+| `snice.json` | Snice (TypeScript + html/css template highlighting) |
+
+## Accessibility
+
+- Auto-follows `data-theme` attribute or OS `prefers-color-scheme`
+- Copy button for easy code copying
+- Semantic `<pre>` and `<code>` elements

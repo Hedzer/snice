@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/camera-annotate.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/camera-annotate.md -->
 
 # Camera Annotate Component
 
-The camera annotate component combines camera capture with freehand drawing and labeled annotations. It provides a workflow for taking pictures, drawing shapes on them, and adding descriptive labels to each annotation.
+Combines camera capture with freehand drawing and labeled annotations. Provides a workflow for taking pictures, drawing shapes on them, and adding descriptive labels to each annotation.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -11,46 +11,42 @@ The camera annotate component combines camera capture with freehand drawing and 
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Annotation Workflow](#annotation-workflow)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `mode` | `'camera' \| 'annotate'` | `'camera'` | Current mode of the component |
-| `auto-rotate-colors` | `boolean` | `true` | Automatically cycle through preset colors for each new annotation |
-| `show-labels-panel` | `boolean` | `true` | Show the sidebar panel with annotation labels |
+| `autoRotateColors` (attr: `auto-rotate-colors`) | `boolean` | `true` | Automatically cycle through preset colors for each new annotation |
+| `showLabelsPanel` (attr: `show-labels-panel`) | `boolean` | `true` | Show the sidebar panel with annotation labels |
 
 ## Methods
 
-| Method | Return Type | Description |
-|--------|-------------|-------------|
-| `capture()` | `Promise<void>` | Capture current camera frame and switch to annotate mode |
-| `exportImage(options?)` | `string` | Export annotated image as data URL. Options: `{ includeLabels?: boolean }` |
-| `exportAnnotations()` | `AnnotationData` | Export all annotation data as a serializable object |
-| `importAnnotations(data)` | `void` | Load annotation data from a previously exported object |
-| `clearAnnotations()` | `void` | Remove all annotations and strokes |
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `capture()` | -- | `Promise<void>` | Capture current camera frame and switch to annotate mode |
+| `exportImage()` | `options?: { includeLabels?: boolean }` | `string` | Export annotated image as data URL |
+| `exportAnnotations()` | -- | `AnnotationData` | Export all annotation data as a serializable object |
+| `importAnnotations()` | `data: AnnotationData` | `void` | Load annotation data from a previously exported object |
+| `clearAnnotations()` | -- | `void` | Remove all annotations and strokes |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `capture` | `{ dataURL, width, height }` | Fired when an image is captured from the camera |
-| `annotate` | `{ annotation }` | Fired when a new annotation (shape) is drawn |
-| `annotation-change` | `{ annotations }` | Fired when annotations are modified (add, remove, visibility, label) |
+| `capture` | `{ dataURL: string, width: number, height: number }` | Fired when an image is captured from the camera |
+| `annotate` | `{ annotation: Annotation }` | Fired when a new annotation (shape) is drawn |
+| `annotation-change` | `{ annotations: Annotation[] }` | Fired when annotations are modified (add, remove, visibility, label) |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer layout container |
-| `canvas` | `<div>` | Canvas area containing the video feed and drawing surface |
-| `toolbar` | `<div>` | Toolbar with capture/retake, undo, clear, and export buttons |
-| `sidebar` | `<div>` | Sidebar panel with color palette and annotation labels |
+| Part | Description |
+|------|-------------|
+| `base` | Outer layout container |
+| `canvas` | Canvas area containing the video feed and drawing surface |
+| `toolbar` | Toolbar with capture/retake, undo, clear, and export buttons |
+| `sidebar` | Sidebar panel with color palette and annotation labels |
 
 ```css
 snice-camera-annotate::part(base) {
@@ -76,13 +72,9 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 
 ## Examples
 
-### Default Camera Annotator
-
-```html
-<snice-camera-annotate></snice-camera-annotate>
-```
-
 ### Without Labels Panel
+
+Hide the sidebar by setting `show-labels-panel` to false.
 
 ```html
 <snice-camera-annotate show-labels-panel="false"></snice-camera-annotate>
@@ -90,11 +82,15 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 
 ### Manual Color Selection
 
+Disable auto-rotation to choose colors manually from the palette.
+
 ```html
 <snice-camera-annotate auto-rotate-colors="false"></snice-camera-annotate>
 ```
 
 ### Listening to Events
+
+Use events to track capture and annotation changes.
 
 ```html
 <snice-camera-annotate id="annotator"></snice-camera-annotate>
@@ -118,75 +114,33 @@ import 'snice/components/camera-annotate/snice-camera-annotate';
 
 ### Save and Load Annotations
 
-```html
-<snice-camera-annotate id="annotator"></snice-camera-annotate>
+Use `exportAnnotations()` and `importAnnotations()` to persist annotation data.
 
-<script type="module">
-  const annotator = document.getElementById('annotator');
+```javascript
+// Save
+const data = annotator.exportAnnotations();
+localStorage.setItem('annotations', JSON.stringify(data));
 
-  // Save
-  function saveAnnotations() {
-    const data = annotator.exportAnnotations();
-    localStorage.setItem('annotations', JSON.stringify(data));
-  }
-
-  // Load
-  function loadAnnotations() {
-    const json = localStorage.getItem('annotations');
-    if (json) {
-      annotator.importAnnotations(JSON.parse(json));
-    }
-  }
-</script>
+// Load
+const json = localStorage.getItem('annotations');
+if (json) {
+  annotator.importAnnotations(JSON.parse(json));
+}
 ```
 
 ### Export Image
 
-```html
-<snice-camera-annotate id="annotator"></snice-camera-annotate>
-<button onclick="downloadImage()">Download</button>
+Use `exportImage()` to download the annotated image with or without labels.
 
-<script type="module">
-  function downloadImage() {
-    const annotator = document.getElementById('annotator');
+```javascript
+const imageOnly = annotator.exportImage();
+const withLabels = annotator.exportImage({ includeLabels: true });
 
-    // Without labels on the image
-    const imageOnly = annotator.exportImage();
-
-    // With labels rendered on the image
-    const withLabels = annotator.exportImage({ includeLabels: true });
-
-    // Download
-    const a = document.createElement('a');
-    a.href = withLabels;
-    a.download = 'annotated.png';
-    a.click();
-  }
-</script>
+const a = document.createElement('a');
+a.href = withLabels;
+a.download = 'annotated.png';
+a.click();
 ```
-
-## Annotation Workflow
-
-1. **Camera Mode**: The component starts showing a live camera feed
-2. **Capture**: Click the "Capture" button to take a photo
-3. **Annotate Mode**: Draw shapes on the captured image using freehand strokes
-4. **Label**: Type labels for each annotation in the sidebar
-5. **Manage**: Show/hide individual annotations, toggle all, or delete specific ones
-6. **Export**: Save annotation data as JSON or export the annotated image
-7. **Retake**: Click "Retake" to return to camera mode and start fresh
-
-### Color System
-
-- **Preset Palette**: 12 preset colors displayed as swatches in the sidebar
-- **Auto Rotate**: When enabled (default), each new annotation automatically gets the next color from the palette
-- **Manual Selection**: Click any color swatch to set the active drawing color
-
-### Visual Highlighting
-
-When you hover over an annotation label in the sidebar:
-- The corresponding shape is highlighted at full opacity
-- All other shapes dim to 20% opacity with a grayscale filter
-- This makes it easy to identify which shape belongs to which label
 
 ## Accessibility
 
@@ -194,9 +148,3 @@ When you hover over an annotation label in the sidebar:
 - Annotation visibility toggles have descriptive title text
 - Delete buttons have clear title labels
 - The sidebar scrolls independently when annotations exceed available space
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires camera access via `getUserMedia`
-- Requires Custom Elements v1 and Shadow DOM support

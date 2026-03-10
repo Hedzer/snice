@@ -17,50 +17,18 @@ status: 'online'|'away'|'offline'|'busy' = 'offline';
 variant: 'card'|'horizontal'|'compact' = 'card';
 ```
 
-## Slots
+## Methods
 
-- `(default)` - Action buttons (e.g. Follow, Message)
+- `emitActionClick(action: string)` - Dispatch action-click event programmatically
 
 ## Events
 
 - `social-click` -> `{ platform: string, url: string }`
 - `action-click` -> `{ action: string }`
 
-## Methods
+## Slots
 
-- `emitActionClick(action: string)` - Dispatch action-click event programmatically
-
-## Usage
-
-```html
-<!-- Basic card -->
-<snice-user-card
-  name="Sarah Johnson"
-  role="Engineer"
-  company="Acme Corp"
-  email="sarah@acme.com"
-  phone="+1 555-0123"
-  location="San Francisco, CA"
-  status="online"
-></snice-user-card>
-
-<!-- Horizontal layout -->
-<snice-user-card variant="horizontal" name="Alex" role="CTO" status="online">
-  <button>Message</button>
-</snice-user-card>
-
-<!-- Compact (list item) -->
-<snice-user-card variant="compact" name="Lisa" role="Dev" status="away"></snice-user-card>
-```
-
-```javascript
-// Set social links (array property)
-card.social = [
-  { platform: 'github', url: 'https://github.com/user' },
-  { platform: 'twitter', url: 'https://twitter.com/user' },
-  { platform: 'linkedin', url: 'https://linkedin.com/in/user' }
-];
-```
+- `(default)` - Action buttons (e.g. Follow, Message)
 
 ## CSS Parts
 
@@ -73,11 +41,37 @@ card.social = [
 - `social` - Social links row
 - `actions` - Actions slot wrapper
 
-## Features
+## Basic Usage
 
-- 3 layout variants (card/horizontal/compact)
-- Avatar with initials fallback
-- Status indicator (online/away/offline/busy)
-- Contact info with icons (email, phone, location)
-- Social link icons (github, twitter, linkedin, facebook, instagram, youtube, website)
-- Slotted action buttons
+```html
+<snice-user-card
+  name="Sarah Johnson"
+  role="Engineer"
+  company="Acme Corp"
+  email="sarah@acme.com"
+  phone="+1 555-0123"
+  location="San Francisco, CA"
+  status="online"
+></snice-user-card>
+
+<snice-user-card variant="horizontal" name="Alex" role="CTO" status="online">
+  <button>Message</button>
+</snice-user-card>
+
+<snice-user-card variant="compact" name="Lisa" role="Dev" status="away"></snice-user-card>
+```
+
+```javascript
+card.social = [
+  { platform: 'github', url: 'https://github.com/user' },
+  { platform: 'twitter', url: 'https://twitter.com/user' },
+  { platform: 'linkedin', url: 'https://linkedin.com/in/user' }
+];
+```
+
+## Accessibility
+
+- Avatar fallback uses initials from name
+- Status indicator has `role="img"` and `aria-label`
+- Social links have `aria-label` and `title`
+- Email/phone rendered as accessible links

@@ -40,7 +40,7 @@ interface ApprovalStep {
 - `actions` - Approve/reject button row
 - `connector` - Line between steps
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-approval-flow current-step="2" orientation="vertical"></snice-approval-flow>

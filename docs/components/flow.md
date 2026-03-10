@@ -1,70 +1,98 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/flow.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/flow.md -->
 
 # Flow
-`<snice-flow>`
 
 A node-based flow/diagram editor component for building visual workflows, data pipelines, and node graphs. Features draggable nodes with input/output ports, bezier curve edges, zoom/pan canvas, snap-to-grid, and a minimap overview.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/flow/snice-flow';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-flow.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
-| Property | Type | Default | Attribute | Description |
-|----------|------|---------|-----------|-------------|
-| `nodes` | `FlowNode[]` | `[]` | - | Array of node definitions (set via JS) |
-| `edges` | `FlowEdge[]` | `[]` | - | Array of edge definitions (set via JS) |
-| `snapToGrid` | `boolean` | `true` | `snap-to-grid` | Snap node positions to grid |
-| `gridSize` | `number` | `20` | `grid-size` | Grid spacing in pixels |
-| `zoomEnabled` | `boolean` | `true` | `zoom-enabled` | Enable mouse wheel zoom |
-| `panEnabled` | `boolean` | `true` | `pan-enabled` | Enable background pan |
-| `minimap` | `boolean` | `true` | `minimap` | Show minimap overview |
-| `editable` | `boolean` | `true` | `editable` | Allow drawing new edges |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `nodes` | `FlowNode[]` | `[]` | Array of node definitions (set via JS) |
+| `edges` | `FlowEdge[]` | `[]` | Array of edge definitions (set via JS) |
+| `snapToGrid` (attr: `snap-to-grid`) | `boolean` | `true` | Snap node positions to grid |
+| `gridSize` (attr: `grid-size`) | `number` | `20` | Grid spacing in pixels |
+| `zoomEnabled` (attr: `zoom-enabled`) | `boolean` | `true` | Enable mouse wheel zoom |
+| `panEnabled` (attr: `pan-enabled`) | `boolean` | `true` | Enable background pan |
+| `minimap` | `boolean` | `true` | Show minimap overview |
+| `editable` | `boolean` | `true` | Allow drawing new edges |
+
+### FlowNode Interface
+
+```typescript
+interface FlowNode {
+  id: string;
+  x: number;
+  y: number;
+  type?: string;                    // Shown as small label above title
+  data?: Record<string, unknown>;   // Custom data payload
+  label?: string;                   // Node title
+  width?: number;                   // Default: 160
+  height?: number;                  // Default: 80
+  inputs?: FlowPort[];              // Input ports (left side)
+  outputs?: FlowPort[];             // Output ports (right side)
+  color?: string;                   // Header background color
+  selected?: boolean;
+}
+
+interface FlowPort {
+  id: string;
+  label?: string;
+  type?: string;
+}
+```
+
+### FlowEdge Interface
+
+```typescript
+interface FlowEdge {
+  id: string;
+  source: string;          // Source node id
+  target: string;          // Target node id
+  sourcePort?: string;     // Source port id
+  targetPort?: string;     // Target port id
+  label?: string;          // Edge label (shown at midpoint)
+  color?: string;          // Custom stroke color
+  animated?: boolean;      // Dashed animated stroke
+}
+```
 
 ## Methods
 
-| Method | Description |
-|--------|-------------|
-| `addNode(node)` | Add a node to the canvas |
-| `removeNode(id)` | Remove a node and its connected edges |
-| `addEdge(edge)` | Add an edge between two ports |
-| `removeEdge(id)` | Remove an edge |
-| `fitView()` | Auto-zoom to fit all nodes in view |
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `addNode(node)` | `node: FlowNode` | Add a node to the canvas |
+| `removeNode(id)` | `id: string` | Remove a node and its connected edges |
+| `addEdge(edge)` | `edge: FlowEdge` | Add an edge between two ports |
+| `removeEdge(id)` | `id: string` | Remove an edge |
+| `fitView()` | -- | Auto-zoom to fit all nodes in view |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `node-drag` | `{ node, x, y }` | Node was dragged to new position |
-| `node-select` | `{ node }` | Node selected (null when deselected) |
-| `edge-connect` | `{ edge }` | New edge created by dragging between ports |
-| `edge-disconnect` | `{ edge }` | Edge removed |
-| `canvas-click` | `{ x, y }` | Background canvas clicked |
-
-## CSS Custom Properties
-
-The component uses standard snice theme tokens with fallbacks. Override with custom properties on the host element.
+| `node-drag` | `{ node: FlowNode, x: number, y: number }` | Node was dragged to new position |
+| `node-select` | `{ node: FlowNode \| null }` | Node selected (null when deselected) |
+| `edge-connect` | `{ edge: FlowEdge }` | New edge created by dragging between ports |
+| `edge-disconnect` | `{ edge: FlowEdge }` | Edge removed |
+| `canvas-click` | `{ x: number, y: number }` | Background canvas clicked |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer flow container |
-| `canvas` | `<svg>` | SVG layer for edges and connections |
-| `nodes` | `<div>` | Container for all node elements |
-| `minimap` | `<div>` | Minimap overview panel |
+| Part | Description |
+|------|-------------|
+| `base` | Outer flow container |
+| `canvas` | SVG layer for edges and connections |
+| `nodes` | Container for all node elements |
+| `minimap` | Minimap overview panel |
 
 ```css
 snice-flow::part(base) {
@@ -159,7 +187,6 @@ flow.edges = [
 ### Programmatic API
 
 ```javascript
-// Add nodes and edges dynamically
 flow.addNode({
   id: 'new-node', x: 200, y: 200, label: 'New Node',
   inputs: [{ id: 'in', label: 'In' }],
@@ -171,55 +198,13 @@ flow.addEdge({
   sourcePort: 'out', targetPort: 'in',
 });
 
-// Remove
 flow.removeNode('new-node'); // also removes connected edges
 flow.removeEdge('new-edge');
 
-// Fit all nodes into view
 flow.fitView();
 ```
 
-### Drawing Edges
-
-Users can create connections by clicking and dragging from a port dot on one node to a port dot on another node. A preview bezier curve shows while dragging.
-
-## Types
-
-```typescript
-interface FlowNode {
-  id: string;
-  x: number;
-  y: number;
-  type?: string;                    // Shown as small label above title
-  data?: Record<string, unknown>;   // Custom data payload
-  label?: string;                   // Node title
-  width?: number;                   // Default: 160
-  height?: number;                  // Default: 80
-  inputs?: FlowPort[];              // Input ports (left side)
-  outputs?: FlowPort[];             // Output ports (right side)
-  color?: string;                   // Header background color
-  selected?: boolean;
-}
-
-interface FlowPort {
-  id: string;
-  label?: string;
-  type?: string;
-}
-
-interface FlowEdge {
-  id: string;
-  source: string;          // Source node id
-  target: string;          // Target node id
-  sourcePort?: string;     // Source port id
-  targetPort?: string;     // Target port id
-  label?: string;          // Edge label (shown at midpoint)
-  color?: string;          // Custom stroke color
-  animated?: boolean;      // Dashed animated stroke
-}
-```
-
-## Interaction
+### Interaction
 
 - **Drag nodes**: Click and drag a node to move it. Snaps to grid if enabled.
 - **Draw edges**: Click and drag from a port dot to another port dot.

@@ -4,45 +4,28 @@ Weather display card with current conditions, humidity, wind, and multi-day fore
 
 ## Properties
 
-```ts
-data: WeatherData | null = null
-unit: 'celsius' | 'fahrenheit' = 'celsius'
-variant: 'compact' | 'full' = 'full'
+```typescript
+data: WeatherData | null = null;
+unit: 'celsius'|'fahrenheit' = 'celsius';
+variant: 'compact'|'full' = 'full';
 
 interface WeatherData {
-  temp: number
-  condition: string           // e.g. "Sunny", "Partly Cloudy", "Rain"
-  icon?: string               // emoji or custom icon (auto-detected from condition if omitted)
-  humidity?: number            // percentage
-  wind?: number               // km/h
-  forecast?: WeatherForecastDay[]
+  temp: number;
+  condition: string;           // e.g. "Sunny", "Partly Cloudy", "Rain"
+  icon?: string;               // emoji or custom icon (auto-detected from condition if omitted)
+  humidity?: number;           // percentage
+  wind?: number;               // km/h
+  forecast?: WeatherForecastDay[];
 }
 
 interface WeatherForecastDay {
-  day: string                 // e.g. "Mon", "Tue"
-  high: number
-  low: number
-  condition: string
-  icon?: string
+  day: string;                 // e.g. "Mon", "Tue"
+  high: number;
+  low: number;
+  condition: string;
+  icon?: string;
 }
 ```
-
-## Variants
-
-- `full` - Shows current weather, details (humidity/wind), and forecast
-- `compact` - Current temp and icon only; hides details and forecast
-
-## Auto-detected Icons
-
-When `icon` is omitted, mapped from `condition` string:
-- sun/clear -> sun emoji
-- partly cloud -> partly cloudy emoji
-- cloud -> cloud emoji
-- rain -> rain emoji
-- snow -> snow emoji
-- thunder/storm -> thunderstorm emoji
-- fog/mist -> fog emoji
-- wind -> wind emoji
 
 ## CSS Custom Properties
 
@@ -56,16 +39,18 @@ When `icon` is omitted, mapped from `condition` string:
 - `--snice-border-radius-lg` - Card border radius (default: `0.5rem`)
 - `--snice-spacing-lg` - Card padding (default: `1.5rem`)
 
-**CSS Parts:**
+## CSS Parts
+
 - `base` - Outer weather card div
 - `current` - Current conditions section (icon + temp + condition)
 - `details` - Details row (humidity and wind)
 - `forecast` - Multi-day forecast section
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-weather unit="celsius" variant="full"></snice-weather>
+<snice-weather unit="fahrenheit" variant="compact"></snice-weather>
 ```
 
 ```typescript

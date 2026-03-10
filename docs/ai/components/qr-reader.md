@@ -1,6 +1,6 @@
 # snice-qr-reader
 
-QR code scanner using device camera and ZXing WASM decoder.
+QR code scanner using device camera with real-time detection.
 
 ## Properties
 
@@ -15,10 +15,10 @@ tapStart: boolean = false;          // attr: tap-start, tap viewport to start/st
 
 ## Methods
 
-- `start()` - Start camera and scanning
+- `start()` - Start camera and scanning (async)
 - `stop()` - Stop scanning and release camera
-- `snap()` - Take snapshot (manual-snap mode), returns QR data or null
-- `scanImage(file: File)` - Scan QR code from image file
+- `snap()` - Take snapshot, returns QR data string or null (async)
+- `scanImage(file: File)` - Scan QR code from image file (async)
 - `switchCamera()` - Toggle front/back camera
 
 ## Events
@@ -28,7 +28,15 @@ tapStart: boolean = false;          // attr: tap-start, tap viewport to start/st
 - `camera-ready` → `{ reader }`
 - `camera-error` → `{ error: any, reader }`
 
-## Usage
+## CSS Custom Properties
+
+- `--qr-reader-bg` - Container background (`rgb(0 0 0)`)
+- `--qr-reader-overlay` - Overlay/gradient color (`rgb(0 0 0 / 0.7)`)
+- `--qr-reader-controls-color` - Button icon/text color (`rgb(255 255 255)`)
+- `--qr-reader-btn-bg` - Button background (`rgb(0 0 0 / 0.4)`)
+- `--qr-reader-btn-hover-bg` - Button hover background (`rgb(0 0 0 / 0.6)`)
+
+## Basic Usage
 
 ```html
 <!-- Auto-start continuous scanning -->
@@ -46,28 +54,17 @@ tapStart: boolean = false;          // attr: tap-start, tap viewport to start/st
 
 ```typescript
 reader.addEventListener('qr-scan', (e) => console.log(e.detail.data));
-reader.start();
+await reader.start();
 
 // Manual snap
 const result = await reader.snap();
+
+// Scan from file
+const data = await reader.scanImage(file);
 ```
 
-## CSS Custom Properties
+## Accessibility
 
-- `--qr-reader-bg` - Container background (default: `rgb(0 0 0)`)
-- `--qr-reader-overlay` - Overlay/gradient color (default: `rgb(0 0 0 / 0.7)`)
-- `--qr-reader-controls-color` - Button icon/text color (default: `rgb(255 255 255)`)
-- `--qr-reader-btn-bg` - Button background (default: `rgb(0 0 0 / 0.4)`)
-- `--qr-reader-btn-hover-bg` - Button hover background (default: `rgb(0 0 0 / 0.6)`)
-
-## Features
-
-- ZXing WASM decoder (Apache 2.0 + MIT)
-- Web Worker for non-blocking detection
-- Front/back camera switching
-- Configurable scan speed (1-10)
-- Pick-first mode (max speed, auto-stop)
-- Manual snapshot mode
-- Tap-to-start interaction
+- Requires HTTPS for mobile camera access
+- Built-in control buttons with icon labels
 - Camera released on stop/dispose
-- HTTPS required for mobile

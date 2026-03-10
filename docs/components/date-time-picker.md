@@ -1,22 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/date-time-picker.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/date-time-picker.md -->
 
 # Date Time Picker
 `<snice-date-time-picker>`
 
-Combined date and time picker with calendar and scrollable time selectors.
+Combined date and time picker with calendar and scrollable time selectors. Form-associated custom element.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/date-time-picker/snice-date-time-picker';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-date-time-picker.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -90,6 +86,12 @@ import 'snice/components/date-time-picker/snice-date-time-picker';
 
 ```html
 <snice-date-time-picker label="Appointment"></snice-date-time-picker>
+```
+
+**CDN**
+```html
+<script src="snice-runtime.min.js"></script>
+<script src="snice-date-time-picker.min.js"></script>
 ```
 
 ## Examples
@@ -192,6 +194,8 @@ Use `helper-text` and `error-text` for guidance or validation.
 
 ### Disabled and Readonly
 
+Use `disabled` or `readonly` to prevent user interaction.
+
 ```html
 <snice-date-time-picker disabled value="2024-12-25T14:30" label="Disabled"></snice-date-time-picker>
 <snice-date-time-picker readonly value="2024-12-25T14:30" label="Readonly"></snice-date-time-picker>
@@ -211,10 +215,6 @@ Use `name` and `required` for native form participation.
 
 Listen for changes using the `datetime-change` event.
 
-```html
-<snice-date-time-picker id="dtp" label="Pick date & time"></snice-date-time-picker>
-```
-
 ```typescript
 dtp.addEventListener('datetime-change', (e) => {
   console.log('ISO:', e.detail.iso);
@@ -225,20 +225,17 @@ dtp.addEventListener('datetime-change', (e) => {
 
 ### Form Validation
 
-The component supports the Constraint Validation API. Use `checkValidity()`, `reportValidity()`, and `setCustomValidity()` for custom form validation.
-
-```html
-<form>
-  <snice-date-time-picker name="appointment" required label="Appointment"></snice-date-time-picker>
-  <button type="submit">Submit</button>
-</form>
-```
+The component supports the Constraint Validation API.
 
 ```typescript
 picker.setCustomValidity('Please select a future date and time');
 picker.reportValidity();
 ```
 
-## Responsive Behavior
+## Accessibility
 
-On screens smaller than 480px, the panel stacks the calendar and time selectors vertically instead of side-by-side.
+- Form-associated custom element with `ElementInternals`
+- Calendar popup uses `popover="manual"` for proper layering
+- Supports `aria-invalid` when in invalid state
+- Required fields show visual indicator on the label
+- On screens smaller than 480px, the panel stacks vertically

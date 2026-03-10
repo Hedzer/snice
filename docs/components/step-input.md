@@ -1,22 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/step-input.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/step-input.md -->
 
 # Step Input
-`<snice-step-input>`
 
-A numeric stepper control with visible increment and decrement buttons flanking an input field.
+A numeric stepper control with visible increment and decrement buttons flanking an input field. Supports value constraints, wrapping, and keyboard input.
 
-## Importing
+## Table of Contents
 
-**ESM (bundler)**
-```typescript
-import 'snice/components/step-input/snice-step-input';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-step-input.min.js"></script>
-```
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -27,18 +24,18 @@ import 'snice/components/step-input/snice-step-input';
 | `max` | `number` | `Infinity` | Maximum allowed value |
 | `step` | `number` | `1` | Increment/decrement amount |
 | `disabled` | `boolean` | `false` | Disables all interaction |
-| `readonly` | `boolean` | `false` | Prevents value changes |
+| `readonly` | `boolean` | `false` | Prevents value changes (input remains focusable) |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
 | `wrap` | `boolean` | `false` | Wrap around at min/max boundaries |
 
 ## Methods
 
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `increment()` | -- | Increase value by step |
-| `decrement()` | -- | Decrease value by step |
-| `focus()` | `options?: FocusOptions` | Focus the input field |
-| `blur()` | -- | Remove focus |
+| Method | Arguments | Returns | Description |
+|--------|-----------|---------|-------------|
+| `increment()` | -- | `void` | Increase value by step |
+| `decrement()` | -- | `void` | Decrease value by step |
+| `focus()` | `options?: FocusOptions` | `void` | Focus the input field |
+| `blur()` | -- | `void` | Remove focus |
 
 ## Events
 
@@ -69,7 +66,7 @@ import 'snice/components/step-input/snice-step-input';
 
 ### Sizes
 
-Use the `size` attribute to change the stepper's size.
+Use `size` to change the stepper's dimensions.
 
 ```html
 <snice-step-input size="small" value="3"></snice-step-input>
@@ -79,7 +76,7 @@ Use the `size` attribute to change the stepper's size.
 
 ### Min, Max, and Step
 
-Use the `min`, `max`, and `step` attributes to constrain and control the value range.
+Use `min`, `max`, and `step` to constrain and control the value range.
 
 ```html
 <snice-step-input min="0" max="10" step="1" value="5"></snice-step-input>
@@ -88,38 +85,44 @@ Use the `min`, `max`, and `step` attributes to constrain and control the value r
 
 ### Wrap Around
 
-Set the `wrap` attribute to cycle through values when reaching the min or max boundary.
+Set `wrap` to cycle through values when reaching the min or max boundary.
 
 ```html
 <snice-step-input min="1" max="12" value="12" wrap></snice-step-input>
 ```
 
-### Disabled
-
-Set the `disabled` attribute to prevent user interaction.
+### Disabled and Read Only
 
 ```html
 <snice-step-input value="3" disabled></snice-step-input>
-```
-
-### Read Only
-
-Set the `readonly` attribute to prevent value changes while keeping the input focusable.
-
-```html
 <snice-step-input value="42" readonly></snice-step-input>
 ```
 
 ### Programmatic Control
 
-Use the `increment()` and `decrement()` methods for programmatic control.
-
-```html
-<snice-step-input id="qty" min="1" max="99" value="1"></snice-step-input>
-
-<script>
-  const stepper = document.getElementById('qty');
-  stepper.increment(); // value becomes 2
-  stepper.decrement(); // value becomes 1
-</script>
+```typescript
+const stepper = document.querySelector('snice-step-input');
+stepper.increment(); // value becomes 6
+stepper.decrement(); // value becomes 5
 ```
+
+### Event Handling
+
+```typescript
+stepper.addEventListener('value-change', (e) => {
+  console.log(`Changed from ${e.detail.oldValue} to ${e.detail.value}`);
+});
+```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `ArrowUp` | Increment by step |
+| `ArrowDown` | Decrement by step |
+
+## Accessibility
+
+- Buttons are keyboard accessible with visible focus indicators
+- Input field accepts direct keyboard entry
+- Disabled buttons at min/max boundaries (unless `wrap` is set)

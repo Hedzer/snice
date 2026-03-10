@@ -1,34 +1,18 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/map.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/map.md -->
 
-# Map Component
-
+# Map
 `<snice-map>`
 
 An interactive slippy map component using OpenStreetMap tiles. Supports markers with popups, drag panning, scroll zoom, and programmatic control over the viewport.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-- [Types](#types)
 - [Accessibility](#accessibility)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/map/snice-map';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-map.min.js"></script>
-```
 
 ## Properties
 
@@ -40,6 +24,24 @@ import 'snice/components/map/snice-map';
 | `maxZoom` (attr: `max-zoom`) | `number` | `18` | Maximum allowed zoom level |
 | `markers` | `MapMarker[]` | `[]` | Array of marker data (set via JavaScript) |
 | `tileUrl` (attr: `tile-url`) | `string` | `'https://tile.openstreetmap.org/{z}/{x}/{y}.png'` | Tile server URL template with `{x}`, `{y}`, `{z}` placeholders |
+
+### Types
+
+```typescript
+interface MapCenter {
+  lat: number;
+  lng: number;
+}
+
+interface MapMarker {
+  id: string;       // Unique identifier
+  lat: number;      // Latitude
+  lng: number;      // Longitude
+  label?: string;   // Marker label text
+  icon?: string;    // Custom icon URL
+  popup?: string;   // Popup text shown on marker click
+}
+```
 
 ## Methods
 
@@ -55,9 +57,9 @@ import 'snice/components/map/snice-map';
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `map-click` | `{ lat: number; lng: number }` | Fired when the map is clicked (not on a marker) |
+| `map-click` | `{ lat: number, lng: number }` | Fired when the map is clicked (not on a marker) |
 | `marker-click` | `{ marker: MapMarker }` | Fired when a marker is clicked. Also toggles the marker's popup |
-| `map-move` | `{ center: MapCenter; zoom: number }` | Fired after a drag pan operation completes |
+| `map-move` | `{ center: MapCenter, zoom: number }` | Fired after a drag pan operation completes |
 | `map-zoom` | `{ zoom: number }` | Fired when the zoom level changes |
 
 ## CSS Parts
@@ -194,34 +196,10 @@ Use the `tile-url` attribute to load tiles from a different provider.
 ></snice-map>
 ```
 
-## Types
-
-### MapCenter
-
-```typescript
-interface MapCenter {
-  lat: number;
-  lng: number;
-}
-```
-
-### MapMarker
-
-```typescript
-interface MapMarker {
-  id: string;       // Unique identifier
-  lat: number;      // Latitude
-  lng: number;      // Longitude
-  label?: string;   // Marker label text
-  icon?: string;    // Custom icon URL
-  popup?: string;   // Popup text shown on marker click
-}
-```
-
 ## Accessibility
 
-- The map supports mouse drag to pan and scroll wheel to zoom
-- Zoom in/out buttons are provided in the top-right corner for keyboard and pointer access
+- Mouse drag to pan, scroll wheel to zoom
+- Zoom in/out buttons in the top-right corner for keyboard and pointer access
 - Markers are interactive and toggle popup display on click
 - OpenStreetMap attribution is included automatically
 - For keyboard-only users, the zoom buttons provide an accessible alternative to scroll-wheel zoom

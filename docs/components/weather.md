@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/weather.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/weather.md -->
 
-# Weather Component
+# Weather
+`<snice-weather>`
 
-The weather component displays current weather conditions with temperature, condition description, humidity, wind speed, and an optional multi-day forecast. It supports Celsius and Fahrenheit units, auto-detected weather icons, and compact or full display variants. The component does not make API calls; it receives all data via properties.
+Displays current weather conditions with temperature, condition description, humidity, wind speed, and an optional multi-day forecast. The component does not make API calls; it receives all data via properties.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -11,7 +12,6 @@ The weather component displays current weather conditions with temperature, cond
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -21,52 +21,41 @@ The weather component displays current weather conditions with temperature, cond
 | `unit` | `'celsius' \| 'fahrenheit'` | `'celsius'` | Temperature unit |
 | `variant` | `'compact' \| 'full'` | `'full'` | Display variant |
 
-### WeatherData
+### WeatherData Interface
 
 ```typescript
 interface WeatherData {
-  temp: number;                     // Current temperature
-  condition: string;                // Condition description (e.g., "Sunny", "Partly Cloudy", "Rain")
+  temp: number;
+  condition: string;                // e.g., "Sunny", "Partly Cloudy", "Rain"
   icon?: string;                    // Emoji or custom icon (auto-detected from condition if omitted)
   humidity?: number;                // Humidity percentage
   wind?: number;                    // Wind speed in km/h
-  forecast?: WeatherForecastDay[];  // Multi-day forecast array
+  forecast?: WeatherForecastDay[];
 }
-```
 
-### WeatherForecastDay
-
-```typescript
 interface WeatherForecastDay {
-  day: string;        // Day label (e.g., "Mon", "Tue")
-  high: number;       // High temperature
-  low: number;        // Low temperature
-  condition: string;  // Condition description
-  icon?: string;      // Emoji or custom icon (auto-detected if omitted)
+  day: string;        // e.g., "Mon", "Tue"
+  high: number;
+  low: number;
+  condition: string;
+  icon?: string;      // Auto-detected if omitted
 }
 ```
-
-### Variants
-
-| Variant | Description |
-|---------|-------------|
-| `full` | Shows current weather, detail row (humidity and wind), and multi-day forecast |
-| `compact` | Shows only the current temperature and weather icon; hides details and forecast |
 
 ### Auto-Detected Icons
 
-When the `icon` property is omitted on either the main data or forecast days, the component maps the `condition` string to an appropriate emoji:
+When the `icon` property is omitted, the component maps the `condition` string to an appropriate emoji:
 
 | Condition (contains) | Icon |
 |----------------------|------|
-| sun / clear | Sun emoji |
-| partly cloud | Partly cloudy emoji |
-| cloud | Cloud emoji |
-| rain | Rain emoji |
-| snow | Snow emoji |
-| thunder / storm | Thunderstorm emoji |
-| fog / mist | Fog emoji |
-| wind | Wind emoji |
+| sun / clear | Sun |
+| partly cloud | Partly cloudy |
+| cloud | Cloud |
+| rain | Rain |
+| snow | Snow |
+| thunder / storm | Thunderstorm |
+| fog / mist | Fog |
+| wind | Wind |
 
 ## CSS Custom Properties
 
@@ -84,35 +73,30 @@ When the `icon` property is omitted on either the main data or forecast days, th
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer weather card container |
-| `current` | `<div>` | Current conditions section with icon, temperature, and condition text |
-| `details` | `<div>` | Details row showing humidity and wind speed |
-| `forecast` | `<div>` | Multi-day forecast section with day columns |
-
-```css
-snice-weather::part(base) {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-snice-weather::part(forecast) {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | Outer weather card container |
+| `current` | Current conditions section with icon, temperature, and condition text |
+| `details` | Details row showing humidity and wind speed |
+| `forecast` | Multi-day forecast section with day columns |
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/weather/snice-weather';
+```
 
 ```html
 <snice-weather></snice-weather>
 ```
 
 ```typescript
-import 'snice/components/weather/snice-weather';
+weather.data = {
+  temp: 22,
+  condition: 'Partly Cloudy',
+  humidity: 65,
+  wind: 12
+};
 ```
 
 ## Examples
@@ -121,27 +105,20 @@ import 'snice/components/weather/snice-weather';
 
 Show current conditions with humidity, wind, and a multi-day forecast.
 
-```html
-<snice-weather id="weather-full" unit="celsius" variant="full"></snice-weather>
-
-<script type="module">
-  import 'snice/components/weather/snice-weather';
-
-  const weather = document.getElementById('weather-full');
-  weather.data = {
-    temp: 22,
-    condition: 'Partly Cloudy',
-    humidity: 65,
-    wind: 12,
-    forecast: [
-      { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
-      { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
-      { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
-      { day: 'Thu', high: 25, low: 19, condition: 'Sunny' },
-      { day: 'Fri', high: 21, low: 14, condition: 'Thunderstorm' }
-    ]
-  };
-</script>
+```typescript
+weather.data = {
+  temp: 22,
+  condition: 'Partly Cloudy',
+  humidity: 65,
+  wind: 12,
+  forecast: [
+    { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
+    { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
+    { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
+    { day: 'Thu', high: 25, low: 19, condition: 'Sunny' },
+    { day: 'Fri', high: 21, low: 14, condition: 'Thunderstorm' }
+  ]
+};
 ```
 
 ### Compact Variant
@@ -149,15 +126,14 @@ Show current conditions with humidity, wind, and a multi-day forecast.
 Use the `compact` variant for a small weather badge showing just the temperature and icon.
 
 ```html
-<snice-weather id="weather-compact" unit="fahrenheit" variant="compact"></snice-weather>
+<snice-weather unit="fahrenheit" variant="compact"></snice-weather>
+```
 
-<script type="module">
-  const weather = document.getElementById('weather-compact');
-  weather.data = {
-    temp: 72,
-    condition: 'Sunny'
-  };
-</script>
+```typescript
+weather.data = {
+  temp: 72,
+  condition: 'Sunny'
+};
 ```
 
 ### Fahrenheit Units
@@ -165,90 +141,55 @@ Use the `compact` variant for a small weather badge showing just the temperature
 Set `unit="fahrenheit"` for Fahrenheit temperature display.
 
 ```html
-<snice-weather id="weather-f" unit="fahrenheit"></snice-weather>
-
-<script type="module">
-  const weather = document.getElementById('weather-f');
-  weather.data = {
-    temp: 85,
-    condition: 'Clear',
-    humidity: 45,
-    wind: 8,
-    forecast: [
-      { day: 'Sat', high: 87, low: 72, condition: 'Sunny' },
-      { day: 'Sun', high: 82, low: 68, condition: 'Partly Cloudy' },
-      { day: 'Mon', high: 79, low: 65, condition: 'Rain' }
-    ]
-  };
-</script>
+<snice-weather unit="fahrenheit"></snice-weather>
 ```
 
 ### Custom Icons
 
 Override the auto-detected icons by providing explicit `icon` values.
 
-```html
-<snice-weather id="weather-custom"></snice-weather>
-
-<script type="module">
-  const weather = document.getElementById('weather-custom');
-  weather.data = {
-    temp: 18,
-    condition: 'Overcast',
-    icon: '/icons/weather/overcast.svg',
-    humidity: 80,
-    wind: 20,
-    forecast: [
-      { day: 'Mon', high: 20, low: 14, condition: 'Rain', icon: '/icons/weather/rain.svg' },
-      { day: 'Tue', high: 22, low: 15, condition: 'Snow', icon: '/icons/weather/snow.svg' }
-    ]
-  };
-</script>
+```typescript
+weather.data = {
+  temp: 18,
+  condition: 'Overcast',
+  icon: '/icons/weather/overcast.svg',
+  humidity: 80,
+  wind: 20,
+  forecast: [
+    { day: 'Mon', high: 20, low: 14, condition: 'Rain', icon: '/icons/weather/rain.svg' }
+  ]
+};
 ```
 
 ### Fetching Data from an API
 
 The weather component does not call any APIs itself. Fetch data externally and pass it in.
 
-```html
-<snice-weather id="live-weather" variant="full"></snice-weather>
+```typescript
+async function loadWeather() {
+  const response = await fetch('/api/weather?city=london');
+  const apiData = await response.json();
 
-<script type="module">
-  import type { SniceWeatherElement } from 'snice/components/weather/snice-weather.types';
+  weather.data = {
+    temp: apiData.current.temp,
+    condition: apiData.current.condition,
+    humidity: apiData.current.humidity,
+    wind: apiData.current.wind_speed,
+    forecast: apiData.daily.map(day => ({
+      day: day.day_name.slice(0, 3),
+      high: day.high,
+      low: day.low,
+      condition: day.condition
+    }))
+  };
+}
 
-  const weather = document.getElementById('live-weather') as SniceWeatherElement;
-
-  async function loadWeather() {
-    const response = await fetch('/api/weather?city=london');
-    const apiData = await response.json();
-
-    weather.data = {
-      temp: apiData.current.temp,
-      condition: apiData.current.condition,
-      humidity: apiData.current.humidity,
-      wind: apiData.current.wind_speed,
-      forecast: apiData.daily.map(day => ({
-        day: day.day_name.slice(0, 3),
-        high: day.high,
-        low: day.low,
-        condition: day.condition
-      }))
-    };
-  }
-
-  loadWeather();
-</script>
+loadWeather();
 ```
 
 ## Accessibility
 
-- **ARIA attributes**: The component uses appropriate ARIA roles and labels for the weather display
-- **Temperature units**: The unit (C or F) is included in screen reader text alongside the temperature value
-- **Weather icons**: Icons have alt text derived from the condition string for screen readers
-- **Forecast readability**: Each forecast day includes high and low temperatures with labels
-- **Color contrast**: All text meets WCAG AA contrast standards
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+- The unit (C or F) is included in screen reader text alongside the temperature value
+- Weather icons have alt text derived from the condition string
+- Each forecast day includes high and low temperatures with labels
+- All text meets WCAG AA contrast standards

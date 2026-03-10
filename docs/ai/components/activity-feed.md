@@ -26,15 +26,15 @@ interface Activity {
 }
 ```
 
-## Events
-
-- `activity-click` -> `{ activity: Activity }`
-- `load-more` -> `{ count: number }`
-
 ## Methods
 
 - `addActivity(activity)` - Prepend activity to feed
 - `clearFilter()` - Reset filter to show all
+
+## Events
+
+- `activity-click` → `{ activity: Activity }`
+- `load-more` → `{ count: number }`
 
 ## CSS Parts
 
@@ -47,7 +47,7 @@ interface Activity {
 - `timestamp` - Timestamp text
 - `group-header` - Date group header
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-activity-feed group-by="date"></snice-activity-feed>
@@ -57,8 +57,8 @@ interface Activity {
 feed.activities = [
   { id: '1', actor: { name: 'Alice', avatar: 'alice.jpg' }, action: 'created', target: 'Project Alpha', timestamp: '2024-01-15T10:30:00Z', type: 'create', icon: '+' },
   { id: '2', actor: { name: 'Bob' }, action: 'commented on', target: 'Issue #42', timestamp: '2024-01-15T11:00:00Z', type: 'comment' },
-  { id: '3', actor: { name: 'Charlie' }, action: 'deployed', target: 'v2.0.0', timestamp: '2024-01-14T09:00:00Z', type: 'deploy' }
 ];
 feed.addEventListener('activity-click', e => console.log(e.detail.activity));
 feed.addEventListener('load-more', e => console.log('Load more, current:', e.detail.count));
+feed.addActivity({ id: '3', actor: { name: 'System' }, action: 'deployed', target: 'v3.0', timestamp: new Date().toISOString(), type: 'deploy' });
 ```

@@ -1,30 +1,16 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/empty-state.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/empty-state.md -->
 
-# Empty State Component
+# Empty State
 
-The `<snice-empty-state>` component provides a consistent way to display empty or no-data states.
+The `<snice-empty-state>` component provides a consistent way to display empty or no-data states with an icon, title, description, and optional action button.
 
 ## Table of Contents
-- [Importing](#importing)
 - [Properties](#properties)
 - [Events](#events)
 - [Slots](#slots)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/empty-state/snice-empty-state';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-empty-state.min.js"></script>
-```
 
 ## Properties
 
@@ -35,24 +21,18 @@ import 'snice/components/empty-state/snice-empty-state';
 | `title` | `string` | `'No data'` | Title text |
 | `description` | `string` | `''` | Description text |
 | `actionText` (attr: `action-text`) | `string` | `''` | Action button text |
-| `actionHref` (attr: `action-href`) | `string` | `''` | Action link URL |
+| `actionHref` (attr: `action-href`) | `string` | `''` | Action link URL (renders as `<a>` instead of `<button>`) |
 
 ## Events
 
-#### `empty-state-action`
-Fired when action button/link is clicked.
-
-**Event Detail:**
-```typescript
-{
-  emptyState: SniceEmptyStateElement;
-}
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `empty-state-action` | `{ emptyState: SniceEmptyStateElement }` | Fired when action button/link is clicked |
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
+| Name | Description |
+|------|-------------|
 | `icon` | Custom icon content. Overrides the `icon` property. |
 | (default) | Custom content below the action button |
 
@@ -82,6 +62,10 @@ Use the `icon` slot for external CSS-based icon fonts:
 | `action` | Action button or link |
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/empty-state/snice-empty-state';
+```
 
 ```html
 <snice-empty-state

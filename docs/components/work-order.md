@@ -1,29 +1,27 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/work-order.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/work-order.md -->
 
-# Work Order Component
+# Work Order
+`<snice-work-order>`
 
-A service work order component with task checklists, parts/materials tracking, time/labor calculations, and customer sign-off. Perfect for field service, maintenance, and repair workflows.
+A service work order component with task checklists, parts/materials tracking, time/labor calculations, customer sign-off, and QR code support. Designed for field service, maintenance, and repair workflows.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/work-order/snice-work-order';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-work-order.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `woNumber` | `string` | `''` | Work order identifier |
+| `woNumber` (attr: `wo-number`) | `string` | `''` | Work order identifier |
 | `date` | `string` | `''` | Work order date |
-| `dueDate` | `string` | `''` | Due/completion date |
+| `dueDate` (attr: `due-date`) | `string` | `''` | Due/completion date |
 | `priority` | `'low' \| 'medium' \| 'high' \| 'urgent'` | `'medium'` | Priority level with visual badge |
 | `status` | `'open' \| 'in-progress' \| 'completed' \| 'cancelled'` | `'open'` | Status with visual badge |
 | `customer` | `WorkOrderCustomer \| null` | `null` | Customer information |
@@ -31,14 +29,14 @@ import 'snice/components/work-order/snice-work-order';
 | `tasks` | `WorkOrderTask[]` | `[]` | Task checklist |
 | `parts` | `WorkOrderPart[]` | `[]` | Parts/materials list |
 | `asset` | `WorkOrderAsset \| null` | `null` | Equipment/asset information |
-| `laborRate` | `number` | `0` | Hourly labor rate for calculations |
+| `laborRate` (attr: `labor-rate`) | `number` | `0` | Hourly labor rate for calculations |
 | `notes` | `string` | `''` | Additional notes |
 | `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed'` | `'standard'` | Visual style variant |
-| `showQr` | `boolean` | `false` | Show QR code placeholder |
-| `qrData` | `string` | `''` | QR code data |
-| `qrPosition` | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |
+| `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code placeholder |
+| `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
+| `qrPosition` (attr: `qr-position`) | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |
 
-### WorkOrderCustomer Interface
+### Data Interfaces
 
 ```typescript
 interface WorkOrderCustomer {
@@ -47,33 +45,21 @@ interface WorkOrderCustomer {
   phone?: string;
   email?: string;
 }
-```
 
-### WorkOrderTask Interface
-
-```typescript
 interface WorkOrderTask {
   description: string;
   assignee?: string;
   completed?: boolean;
   hours?: number;
 }
-```
 
-### WorkOrderPart Interface
-
-```typescript
 interface WorkOrderPart {
   name: string;
   partNumber?: string;
   quantity: number;
   unitCost: number;
 }
-```
 
-### WorkOrderAsset Interface
-
-```typescript
 interface WorkOrderAsset {
   id: string;
   name: string;
@@ -89,7 +75,7 @@ interface WorkOrderAsset {
 |--------|---------|-------------|
 | `getTotalPartsCost()` | `number` | Calculate total cost of all parts |
 | `getTotalLaborHours()` | `number` | Sum of all task hours |
-| `getTotalLaborCost()` | `number` | Labor hours × labor rate |
+| `getTotalLaborCost()` | `number` | Labor hours x labor rate |
 | `getTotalCost()` | `number` | Parts cost + labor cost |
 | `print()` | `void` | Print the work order |
 | `toJSON()` | `WorkOrderJSON` | Export all data including calculated totals |
@@ -104,31 +90,31 @@ interface WorkOrderAsset {
 
 ## Slots
 
-| Slot Name | Description |
-|-----------|-------------|
+| Name | Description |
+|------|-------------|
+| (default) | Additional content after main sections |
 | `qr` | QR code content |
 | `signature` | Signature capture area |
 | `footer` | Additional footer content |
-| (default) | Default slot for extra content |
 
 ## CSS Custom Properties
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--wo-max-width` | `50rem` | Maximum width |
-| `--wo-bg` | `white` | Background color |
-| `--wo-bg-element` | `rgb(252 251 249)` | Element background |
-| `--wo-text` | `rgb(23 23 23)` | Text color |
-| `--wo-text-secondary` | `rgb(82 82 82)` | Secondary text |
-| `--wo-border` | `rgb(226 226 226)` | Border color |
-| `--wo-accent` | `rgb(37 99 235)` | Accent color |
-| `--wo-priority-low-bg/text` | various | Low priority badge colors |
-| `--wo-priority-medium-bg/text` | various | Medium priority badge colors |
-| `--wo-priority-high-bg/text` | various | High priority badge colors |
-| `--wo-priority-urgent-bg/text` | various | Urgent priority badge colors |
-| `--wo-task-checkbox-size` | `1.25rem` | Checkbox size |
-| `--wo-signature-line-color` | border color | Signature line color |
-| `--wo-qr-size` | `5rem` | QR code size |
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--wo-max-width` | Maximum width | `50rem` |
+| `--wo-bg` | Background color | `white` |
+| `--wo-bg-element` | Element background | `rgb(252 251 249)` |
+| `--wo-text` | Text color | `rgb(23 23 23)` |
+| `--wo-text-secondary` | Secondary text | `rgb(82 82 82)` |
+| `--wo-border` | Border color | `rgb(226 226 226)` |
+| `--wo-accent` | Accent color | `rgb(37 99 235)` |
+| `--wo-priority-low-bg` / `--wo-priority-low-text` | Low priority badge colors | various |
+| `--wo-priority-medium-bg` / `--wo-priority-medium-text` | Medium priority badge colors | various |
+| `--wo-priority-high-bg` / `--wo-priority-high-text` | High priority badge colors | various |
+| `--wo-priority-urgent-bg` / `--wo-priority-urgent-text` | Urgent priority badge colors | various |
+| `--wo-task-checkbox-size` | Checkbox size | `1.25rem` |
+| `--wo-signature-line-color` | Signature line color | border color |
+| `--wo-qr-size` | QR code size | `5rem` |
 
 ## CSS Parts
 
@@ -183,6 +169,10 @@ interface WorkOrderAsset {
 
 ## Basic Usage
 
+```typescript
+import 'snice/components/work-order/snice-work-order';
+```
+
 ```html
 <snice-work-order
   wo-number="WO-2026-0184"
@@ -207,37 +197,11 @@ wo.parts = [
 
 ## Examples
 
-### Basic Work Order
-
-```html
-<snice-work-order
-  wo-number="WO-001"
-  date="2026-03-01"
-  priority="medium"
-  status="open"
-  description="Routine maintenance check.">
-</snice-work-order>
-```
-
-```typescript
-wo.customer = { name: 'ABC Company' };
-wo.tasks = [
-  { description: 'Check system status', completed: false }
-];
-```
-
 ### With Asset Information
 
-```html
-<snice-work-order
-  wo-number="WO-002"
-  date="2026-03-01"
-  description="Repair malfunctioning equipment.">
-</snice-work-order>
-```
+Use the `asset` property to display equipment details. The `maintenance` variant highlights the asset section.
 
 ```typescript
-wo.customer = { name: 'Manufacturing Plant' };
 wo.asset = {
   id: 'EQ-12345',
   name: 'CNC Machine Alpha',
@@ -245,43 +209,27 @@ wo.asset = {
   serial: 'SN789456123',
   lastService: '2025-12-15'
 };
-wo.tasks = [
-  { description: 'Diagnose issue', completed: true },
-  { description: 'Replace worn parts', completed: false }
-];
 ```
 
 ### Task Checklist with Hours
 
+Set `labor-rate` and provide tasks with hours for automatic labor cost calculation.
+
 ```html
-<snice-work-order
-  wo-number="WO-003"
-  labor-rate="75"
-  description="Server room maintenance.">
-</snice-work-order>
+<snice-work-order wo-number="WO-003" labor-rate="75"></snice-work-order>
 ```
 
 ```typescript
-wo.customer = { name: 'Tech Corp' };
 wo.tasks = [
   { description: 'Clean server racks', assignee: 'John D.', hours: 2, completed: true },
   { description: 'Replace failed drives', assignee: 'John D.', hours: 1.5, completed: true },
-  { description: 'Update firmware', assignee: 'Sarah M.', hours: 1, completed: false },
-  { description: 'Run diagnostics', assignee: 'Sarah M.', hours: 0.5, completed: false }
+  { description: 'Update firmware', assignee: 'Sarah M.', hours: 1, completed: false }
 ];
 ```
 
 ### Parts and Materials
 
-```html
-<snice-work-order
-  wo-number="WO-004"
-  labor-rate="90">
-</snice-work-order>
-```
-
 ```typescript
-wo.customer = { name: 'Property Management' };
 wo.parts = [
   { name: 'Air Filter 16x25x1', partNumber: 'AF-1625', quantity: 12, unitCost: 8.99 },
   { name: 'Thermostat', partNumber: 'TH-WIFI', quantity: 3, unitCost: 149.99 },
@@ -289,29 +237,19 @@ wo.parts = [
 ];
 ```
 
-### Different Priorities and Statuses
+### Priorities and Statuses
 
 ```html
-<!-- Low priority, open -->
 <snice-work-order wo-number="WO-L1" priority="low" status="open"></snice-work-order>
-
-<!-- Medium priority, in-progress -->
 <snice-work-order wo-number="WO-M1" priority="medium" status="in-progress"></snice-work-order>
-
-<!-- High priority -->
 <snice-work-order wo-number="WO-H1" priority="high" status="open"></snice-work-order>
-
-<!-- Urgent priority -->
 <snice-work-order wo-number="WO-U1" priority="urgent" status="in-progress"></snice-work-order>
-
-<!-- Completed status -->
 <snice-work-order wo-number="WO-C1" priority="medium" status="completed"></snice-work-order>
-
-<!-- Cancelled -->
-<snice-work-order wo-number="WO-X1" priority="low" status="cancelled"></snice-work-order>
 ```
 
 ### Field Service Variant
+
+Use the `field-service` variant for larger checkboxes, bordered tasks, and a prominent signature area.
 
 ```html
 <snice-work-order
@@ -323,11 +261,7 @@ wo.parts = [
 </snice-work-order>
 ```
 
-### Listening for Events
-
-```html
-<snice-work-order wo-number="WO-EVT-001"></snice-work-order>
-```
+### Event Handling
 
 ```typescript
 wo.addEventListener('task-toggle', (e) => {
@@ -345,37 +279,16 @@ wo.addEventListener('wo-sign', (e) => {
 
 ### Cost Calculation
 
-```html
-<snice-work-order
-  wo-number="WO-COST-001"
-  labor-rate="100">
-</snice-work-order>
-```
-
 ```typescript
-wo.tasks = [
-  { description: 'Labor 1', hours: 2, completed: true },
-  { description: 'Labor 2', hours: 3, completed: false }
-];
-wo.parts = [
-  { name: 'Part A', quantity: 2, unitCost: 50 },
-  { name: 'Part B', quantity: 1, unitCost: 150 }
-];
-
-// Access calculated totals
 console.log('Parts cost:', wo.getTotalPartsCost());
 console.log('Labor hours:', wo.getTotalLaborHours());
 console.log('Labor cost:', wo.getTotalLaborCost());
 console.log('Total cost:', wo.getTotalCost());
 ```
 
-### Print Work Order
-
-```html
-<snice-work-order wo-number="WO-PRINT-001"></snice-work-order>
-<button>Print Work Order</button>
-```
+### Print and Export
 
 ```typescript
-wo.print();
+wo.print();                    // Opens browser print dialog
+const data = wo.toJSON();      // Export all data with computed totals
 ```

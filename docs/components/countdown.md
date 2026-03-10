@@ -1,8 +1,8 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/countdown.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/countdown.md -->
 
 # Countdown Component
 
-The countdown component displays a countdown timer to a target date with live-updating segments for days, hours, minutes, and seconds. It supports three visual variants (simple, flip, circular) and configurable display formats.
+A countdown timer to a target date with live-updating segments for days, hours, minutes, and seconds. Supports three visual variants (simple, flip, circular) and configurable display formats.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -30,8 +30,6 @@ The countdown component displays a countdown timer to a target date with live-up
 
 ## CSS Custom Properties
 
-The countdown component uses standard Snice design tokens:
-
 | Property | Description |
 |----------|-------------|
 | `--snice-font-family` | Font family |
@@ -47,15 +45,13 @@ The countdown component uses standard Snice design tokens:
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | Outer countdown container |
-| `segment` | `<div>` | Individual time segment (days, hours, etc.) |
-| `value` | `<span>` | Digit value within a segment |
-| `label` | `<span>` | Text label within a segment (e.g. "Days") |
-| `separator` | `<span>` | Colon separator between segments |
+| Part | Description |
+|------|-------------|
+| `base` | Outer countdown container |
+| `segment` | Individual time segment (days, hours, etc.) |
+| `value` | Digit value within a segment |
+| `label` | Text label within a segment (e.g. "Days") |
+| `separator` | Colon separator between segments |
 
 ```css
 snice-countdown::part(value) {
@@ -109,9 +105,9 @@ Use `variant="circular"` to display each segment inside a circular progress ring
 <snice-countdown target="2026-06-15T18:00:00Z" variant="circular" format="hms"></snice-countdown>
 ```
 
-### Short Format (Minutes and Seconds)
+### Short Format
 
-Use `format="ms"` for a short countdown that only shows minutes and seconds.
+Use `format="ms"` for a countdown that only shows minutes and seconds.
 
 ```html
 <snice-countdown target="2026-02-22T12:30:00Z" format="ms" variant="simple"></snice-countdown>
@@ -135,7 +131,6 @@ Listen for completion and tick events to trigger actions.
 
   countdown.addEventListener('countdown-tick', (e) => {
     if (e.detail.total <= 60) {
-      // Last minute — add urgency styling
       countdown.style.color = 'red';
     }
   });
@@ -144,7 +139,7 @@ Listen for completion and tick events to trigger actions.
 
 ## Accessibility
 
-- **Live updates**: The countdown updates every second with current values
-- **Completion state**: A `.complete` CSS class is added to the host element when the countdown finishes, allowing for visual feedback
-- **Labels**: Each time segment (days, hours, minutes, seconds) has a descriptive label below the digits
-- **Screen readers**: Segment labels provide context for the displayed numbers
+- Live updates every second with current values
+- A `.complete` CSS class is added to the host element when the countdown finishes
+- Each time segment has a descriptive label below the digits
+- Segment labels provide context for screen readers

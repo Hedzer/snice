@@ -5,12 +5,12 @@ GitHub-style calendar heatmap visualization.
 ## Properties
 
 ```typescript
-data: HeatmapDataPoint[] = [];           // Array of { date: string, value: number }
-colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green'; // attribute: color-scheme
-showLabels: boolean = true;              // attribute: show-labels
-cellSize: number = 12;                   // attribute: cell-size, px
-cellGap: number = 3;                     // attribute: cell-gap, px
-showTooltip: boolean = true;             // attribute: show-tooltip
+data: HeatmapDataPoint[] = [];           // Array of { date: string, value: number } (attribute: false)
+colorScheme: 'green'|'blue'|'purple'|'orange'|'red' = 'green'; // attr: color-scheme
+showLabels: boolean = true;              // attr: show-labels
+cellSize: number = 12;                   // attr: cell-size, px
+cellGap: number = 3;                     // attr: cell-gap, px
+showTooltip: boolean = true;             // attr: show-tooltip
 weeks: number = 52;                      // Number of weeks to display
 ```
 
@@ -18,7 +18,18 @@ weeks: number = 52;                      // Number of weeks to display
 
 - `cell-click` → `{ date: string; value: number }` — fired when a cell is clicked
 
-## Usage
+## CSS Parts
+
+- `base` - Outer heatmap container div
+- `grid-area` - Grid area with labels and cells
+- `grid` - Cell grid container
+- `tooltip` - Hover tooltip element
+
+## Basic Usage
+
+```typescript
+import 'snice/components/heatmap/snice-heatmap';
+```
 
 ```html
 <snice-heatmap color-scheme="green"></snice-heatmap>
@@ -35,19 +46,8 @@ heatmap.addEventListener('cell-click', (e) => {
 });
 ```
 
-**CSS Parts:**
-- `base` - Outer heatmap container div
-- `grid-area` - Grid area with labels and cells
-- `grid` - Cell grid container
-- `tooltip` - Hover tooltip element
+## Accessibility
 
-## Features
-
-- 5 color schemes (green, blue, purple, orange, red)
-- 5 intensity levels (empty, low, medium, high, very-high)
-- Day labels (Mon, Wed, Fri) on left
-- Month labels on top
+- aria-labels on all cells with date and value
+- Cells are focusable buttons
 - Tooltip on hover with date and value
-- Cell click events
-- Configurable cell size, gap, and week count
-- Accessible: aria-labels on all cells

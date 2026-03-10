@@ -1,7 +1,71 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/action-bar.md -->
+
 # Action Bar
 `<snice-action-bar>`
 
 A positioned, animated container for contextual actions that appears on hover, focus, or programmatic trigger.
+
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
+
+## Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `open` | `boolean` | `false` | Whether the action bar is visible |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'bottom'` | Position relative to parent |
+| `size` | `'small' \| 'medium'` | `'medium'` | Bar size |
+| `variant` | `'default' \| 'pill'` | `'default'` | Visual style |
+| `noAnimation` (attr: `no-animation`) | `boolean` | `false` | Always visible, no transitions |
+| `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent Escape key from closing |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `show()` | -- | Opens the action bar |
+| `hide()` | -- | Closes the action bar |
+| `toggle()` | -- | Toggles the open state |
+
+## Events
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `action-bar-open` | `{ actionBar: SniceActionBarElement }` | Fired when the bar opens |
+| `action-bar-close` | `{ actionBar: SniceActionBarElement }` | Fired when the bar closes |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| (default) | Action content (buttons, icons, etc.) |
+
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `base` | The inner toolbar container |
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--action-bar-background` | Background color | `var(--snice-color-background-element)` |
+| `--action-bar-border` | Border style | `1px solid var(--snice-color-border)` |
+| `--action-bar-border-radius` | Border radius | `var(--snice-border-radius-lg)` |
+| `--action-bar-padding` | Inner padding | `var(--snice-spacing-xs)` |
+| `--action-bar-gap` | Gap between items | `var(--snice-spacing-2xs)` |
+| `--action-bar-shadow` | Box shadow | `var(--snice-shadow-md)` |
+| `--action-bar-z-index` | Z-index | `10` |
 
 ## Basic Usage
 
@@ -17,19 +81,6 @@ import 'snice/components/action-bar/snice-action-bar';
     <button>Delete</button>
   </snice-action-bar>
 </div>
-```
-
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/action-bar/snice-action-bar';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-action-bar.min.js"></script>
 ```
 
 ## Examples
@@ -108,9 +159,15 @@ Set `no-animation` to make the bar always visible with no transitions.
 </snice-action-bar>
 ```
 
-### Keyboard Navigation
+## Keyboard Navigation
 
-The action bar uses `role="toolbar"` and supports roving keyboard navigation. Arrow keys move focus between slotted children. `Escape` closes the bar (unless `no-escape-dismiss` is set).
+The action bar uses `role="toolbar"` and supports roving keyboard navigation:
+
+- **Arrow Right / Arrow Down**: Move focus to the next item
+- **Arrow Left / Arrow Up**: Move focus to the previous item
+- **Home**: Move focus to the first item
+- **End**: Move focus to the last item
+- **Escape**: Close the bar (unless `no-escape-dismiss` is set)
 
 ```html
 <snice-action-bar open no-escape-dismiss>
@@ -120,52 +177,9 @@ The action bar uses `role="toolbar"` and supports roving keyboard navigation. Ar
 </snice-action-bar>
 ```
 
-## Slots
+## Accessibility
 
-| Name | Description |
-|------|-------------|
-| (default) | Action content (buttons, icons, etc.) |
-
-## Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `open` | `boolean` | `false` | Whether the action bar is visible |
-| `position` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'bottom'` | Position relative to parent |
-| `size` | `'small' \| 'medium'` | `'medium'` | Bar size |
-| `variant` | `'default' \| 'pill'` | `'default'` | Visual style |
-| `noAnimation` (attr: `no-animation`) | `boolean` | `false` | Always visible, no transitions |
-| `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent Escape key from closing |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `action-bar-open` | `{ actionBar: SniceActionBarElement }` | Fired when the bar opens |
-| `action-bar-close` | `{ actionBar: SniceActionBarElement }` | Fired when the bar closes |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `show()` | -- | Opens the action bar |
-| `hide()` | -- | Closes the action bar |
-| `toggle()` | -- | Toggles the open state |
-
-## CSS Custom Properties
-
-| Property | Description | Default |
-|----------|-------------|---------|
-| `--action-bar-background` | Background color | `var(--snice-color-background-element)` |
-| `--action-bar-border` | Border style | `1px solid var(--snice-color-border)` |
-| `--action-bar-border-radius` | Border radius | `var(--snice-border-radius-lg)` |
-| `--action-bar-padding` | Inner padding | `var(--snice-spacing-xs)` |
-| `--action-bar-gap` | Gap between items | `var(--snice-spacing-2xs)` |
-| `--action-bar-shadow` | Box shadow | `var(--snice-shadow-md)` |
-| `--action-bar-z-index` | Z-index | `10` |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The inner toolbar container |
+- **ARIA role**: `role="toolbar"` with `aria-label="Actions"`
+- **Keyboard support**: Full roving keyboard navigation
+- **Focus management**: Arrow keys move focus between slotted children
+- **Escape dismiss**: Configurable via `no-escape-dismiss`

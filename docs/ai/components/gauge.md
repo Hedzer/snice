@@ -11,11 +11,21 @@ max: number = 100;
 label: string = '';
 variant: 'default'|'primary'|'success'|'warning'|'error'|'info' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
-showValue: boolean = true;     // attribute: show-value
+showValue: boolean = true;
 thickness: number = 8;
 ```
 
-## Usage
+## CSS Parts
+
+- `base` - Outer gauge container div with role="meter"
+- `value` - Numeric value text span
+- `label` - Label text span below the gauge
+
+## Basic Usage
+
+```typescript
+import 'snice/components/gauge/snice-gauge';
+```
 
 ```html
 <!-- Basic -->
@@ -44,19 +54,8 @@ thickness: number = 8;
 <snice-gauge value="50" showValue="false"></snice-gauge>
 ```
 
-**CSS Parts:**
-- `base` - Outer gauge container div with role="meter"
-- `value` - Numeric value text span
-- `label` - Label text span below the gauge
+## Accessibility
 
-## Features
-
-- SVG semicircle arc with animated fill
-- 6 color variants
-- 3 sizes (small 80px, medium 120px, large 160px)
-- Custom min/max range
-- Configurable stroke thickness
-- Optional value display and label
-- Accessible: role="meter" with aria-valuenow/min/max
-- Smooth CSS transitions
-- Works without theme (CSS fallbacks)
+- role="meter" with aria-valuenow/min/max
+- aria-label from `label` prop or fallback "Gauge: {value}"
+- Smooth CSS transitions respect prefers-reduced-motion

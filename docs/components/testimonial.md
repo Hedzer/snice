@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/testimonial.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/testimonial.md -->
 
-# Testimonial Component
+# Testimonial
+`<snice-testimonial>`
 
-The testimonial component displays a quote or review card with author information, avatar, role/company attribution, optional star rating, and multiple visual variants. It is ideal for customer testimonials, reviews, and social proof sections.
+Displays a quote or review card with author information, avatar, role/company attribution, optional star rating, and multiple visual variants.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -11,7 +12,6 @@ The testimonial component displays a quote or review card with author informatio
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -20,18 +20,10 @@ The testimonial component displays a quote or review card with author informatio
 | `quote` | `string` | `''` | The testimonial quote text |
 | `author` | `string` | `''` | Author name |
 | `avatar` | `string` | `''` | URL for the author's avatar image |
-| `role` | `string` | `''` | Author's role or job title (e.g., "CEO") |
+| `role` | `string` | `''` | Author's role or job title |
 | `company` | `string` | `''` | Author's company name (renders as "role at company") |
 | `rating` | `number` | `0` | Star rating from 0-5 (0 hides the rating display) |
 | `variant` | `'card' \| 'minimal' \| 'featured'` | `'card'` | Visual style variant |
-
-### Variants
-
-| Variant | Description |
-|---------|-------------|
-| `card` | Default style with background, border, and shadow |
-| `minimal` | Left border accent, no background fill |
-| `featured` | Primary-colored background with inverse (light) text |
 
 ## CSS Custom Properties
 
@@ -41,50 +33,33 @@ The testimonial component displays a quote or review card with author informatio
 | `--snice-color-border` | Card border color | `rgb(226 226 226)` |
 | `--snice-color-primary` | Quote icon color, minimal border accent, featured background | `rgb(37 99 235)` |
 | `--snice-color-text` | Primary text color | `rgb(23 23 23)` |
-| `--snice-color-text-secondary` | Author role/company text color | _(theme default)_ |
+| `--snice-color-text-secondary` | Author role/company text color | -- |
 | `--snice-color-text-inverse` | Text color for the featured variant | `rgb(250 250 250)` |
 | `--snice-color-warning` | Star rating color | `rgb(234 179 8)` |
-| `--snice-shadow-sm` | Card shadow | _(theme default)_ |
+| `--snice-shadow-sm` | Card shadow | -- |
 | `--snice-spacing-lg` | Card padding | `1.5rem` |
 | `--snice-border-radius-lg` | Card border radius | `0.5rem` |
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer testimonial container |
-| `quote` | `<div>` | The quote text element |
-| `author` | `<div>` | The author info container (avatar, name, role) |
-| `stars` | `<div>` | The star rating element |
-
-```css
-snice-testimonial::part(base) {
-  border: 2px solid #e2e8f0;
-}
-
-snice-testimonial::part(quote) {
-  font-style: italic;
-  font-size: 1.125rem;
-}
-
-snice-testimonial::part(stars) {
-  color: #f59e0b;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer testimonial container |
+| `quote` | The quote text element |
+| `author` | The author info container (avatar, name, role) |
+| `stars` | The star rating element |
 
 ## Basic Usage
+
+```typescript
+import 'snice/components/testimonial/snice-testimonial';
+```
 
 ```html
 <snice-testimonial
   quote="This product changed my workflow completely."
   author="Jane Doe"
 ></snice-testimonial>
-```
-
-```typescript
-import 'snice/components/testimonial/snice-testimonial';
 ```
 
 ## Examples
@@ -121,83 +96,51 @@ Use the `minimal` variant for a subtle left-border accent style without a backgr
 
 ### Featured Variant
 
-Use the `featured` variant for a bold, primary-colored background with inverse text, suitable for hero sections.
+Use the `featured` variant for a bold, primary-colored background with inverse text.
 
 ```html
 <snice-testimonial
   variant="featured"
-  quote="Outstanding experience from start to finish. The team was incredibly responsive."
+  quote="Outstanding experience from start to finish."
   author="John Smith"
   role="VP of Engineering"
   company="TechCorp"
-  avatar="https://example.com/avatars/john.jpg"
   rating="5"
 ></snice-testimonial>
 ```
 
 ### Without Rating
 
-Set `rating` to `0` (or omit it) to hide the star rating display entirely.
+Set `rating` to `0` (or omit it) to hide the star rating display.
 
 ```html
 <snice-testimonial
   quote="A game-changer for our team's productivity."
   author="Sarah Kim"
   role="Product Manager"
-  company="StartupXYZ"
 ></snice-testimonial>
 ```
 
 ### Testimonial Grid
 
-Arrange multiple testimonials in a responsive grid layout.
-
 ```html
-<style>
-  .testimonial-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-</style>
-
-<div class="testimonial-grid">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
   <snice-testimonial
     quote="Incredible tool. Saved us hours every week."
     author="Maria Lopez"
-    role="Engineering Manager"
-    company="DataFlow"
     rating="5"
   ></snice-testimonial>
-
   <snice-testimonial
     quote="The best UI components library I've used."
     author="Chris Park"
-    role="Frontend Developer"
-    company="WebScale"
-    avatar="https://example.com/avatars/chris.jpg"
     rating="4"
-  ></snice-testimonial>
-
-  <snice-testimonial
-    quote="Clean design, great documentation, easy integration."
-    author="Emma Wilson"
-    role="Tech Lead"
-    company="BuildRight"
-    rating="5"
   ></snice-testimonial>
 </div>
 ```
 
 ## Accessibility
 
-- **Semantic markup**: The quote is rendered with appropriate quotation semantics
-- **Image alt text**: Avatar images use the author name as alt text for screen readers
-- **Star rating**: The star rating is conveyed with an ARIA label (e.g., "4 out of 5 stars")
-- **Color contrast**: All text meets WCAG AA contrast requirements across all variants, including the featured variant with inverse text
-- **No interactive elements**: Testimonials are display-only, so no keyboard interaction is needed
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+- Avatar images use the author name as alt text for screen readers
+- Star rating is conveyed with visible star characters
+- Color contrast meets WCAG AA across all variants
+- No interactive elements; testimonials are display-only

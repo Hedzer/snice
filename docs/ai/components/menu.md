@@ -2,50 +2,88 @@
 
 Dropdown menu with items, dividers, and configurable trigger behavior.
 
+## Components
+
+- `<snice-menu>` - Container with trigger and panel
+- `<snice-menu-item>` - Selectable item with icon/shortcut slots
+- `<snice-menu-divider>` - Visual separator
+
 ## Properties
 
-```typescript
+```ts
+// snice-menu
 open: boolean = false;
 placement: 'bottom-start'|'bottom-end'|'top-start'|'top-end'|'right-start'|'right-end'|'left-start'|'left-end' = 'bottom-start';
 trigger: 'click'|'hover'|'manual' = 'click';
 closeOnSelect: boolean = true;       // attr: close-on-select
 distance: number = 4;
+
+// snice-menu-item
+value: string = '';
+disabled: boolean = false;
+selected: boolean = false;
 ```
 
 ## Methods
 
-- `openMenu()` - Open the menu
-- `closeMenu()` - Close the menu
-- `toggleMenu()` - Toggle open/closed
+- `openMenu()` → Open the menu
+- `closeMenu()` → Close the menu
+- `toggleMenu()` → Toggle open/closed
 
-## Slots (menu)
+## Events
+
+- `menu-open` → `{ menu }`
+- `menu-close` → `{ menu }`
+- `menu-item-select` → `{ item, value }` (bubbles from menu-item)
+
+## Slots (snice-menu)
 
 - `trigger` - Trigger element (required)
 - `image-left` - Image before trigger
 - `image-right` - Image after trigger
 - `(default)` - Menu items and dividers
 
-## Events
+## Slots (snice-menu-item)
 
-- `menu-open` → `{ menu }`
-- `menu-close` → `{ menu }`
-- `menu-item-select` → `{ item, value }`
+- `icon` - Icon before label
+- `(default)` - Label content
+- `shortcut` - Keyboard shortcut hint
 
-## snice-menu-item
+## CSS Parts (snice-menu)
 
-```typescript
-value: string = '';
-disabled: boolean = false;
-selected: boolean = false;
+- `trigger` - Trigger wrapper
+- `image-left` - Left image container
+- `image-right` - Right image container
+- `panel` - Dropdown panel
+- `content` - Panel content wrapper
+
+## CSS Parts (snice-menu-item)
+
+- `item` - Item container
+- `icon` - Icon wrapper
+- `label` - Label wrapper
+- `shortcut` - Shortcut wrapper
+
+## CSS Parts (snice-menu-divider)
+
+- `divider` - Separator line
+
+## CSS Custom Properties
+
+```css
+--menu-bg: var(--snice-color-background, white);
+--menu-border: var(--snice-color-border, #e5e7eb);
+--menu-shadow: var(--snice-shadow-lg);
+--menu-z-index: var(--snice-z-index-dropdown, 1000);
+--menu-border-radius: var(--snice-radius-md, 0.375rem);
+--menu-min-width: 10rem;
 ```
 
-Slots: `icon`, `(default)`, `shortcut`
+## Basic Usage
 
-## snice-menu-divider
-
-Visual separator between items.
-
-## Usage
+```typescript
+import 'snice/components/menu/snice-menu';
+```
 
 ```html
 <snice-menu>
@@ -59,40 +97,4 @@ Visual separator between items.
   <snice-menu-divider></snice-menu-divider>
   <snice-menu-item value="exit">Exit</snice-menu-item>
 </snice-menu>
-
-<!-- Hover trigger -->
-<snice-menu trigger="hover">...</snice-menu>
-
-<!-- Manual control -->
-<snice-menu trigger="manual">...</snice-menu>
-
-<!-- Keep open -->
-<snice-menu close-on-select="false">...</snice-menu>
-```
-
-## CSS Parts
-
-### snice-menu
-- `trigger` - Trigger wrapper
-- `image-left` - Left image container
-- `image-right` - Right image container
-- `panel` - Dropdown panel
-- `content` - Panel content wrapper
-
-### snice-menu-item
-- `item` - Item container
-- `icon` - Icon wrapper
-- `label` - Label wrapper
-- `shortcut` - Shortcut wrapper
-
-## CSS Custom Properties
-
-```css
---menu-bg: var(--snice-color-background, white);
---menu-border: var(--snice-color-border, #e5e7eb);
---menu-shadow: var(--snice-shadow-lg, ...);
---menu-z-index: var(--snice-z-index-dropdown, 1000);
---menu-border-radius: var(--snice-radius-md, 0.375rem);
---menu-min-width: 10rem;
---menu-distance: 4px;  /* set via distance property */
 ```

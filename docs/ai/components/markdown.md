@@ -5,26 +5,24 @@ Lightweight GFM-compatible markdown renderer with built-in sanitization.
 ## Properties
 
 ```ts
-sanitize: boolean                        // Sanitize HTML output (default: true)
-theme: 'default' | 'github'             // Visual theme
+sanitize: boolean = true;          // Sanitize HTML output
+theme: 'default'|'github' = 'default';
 ```
+
+> `content` is a plain class field, not `@property`. Use `setContent()` or slotted text.
 
 ## Methods
 
-- `setContent(markdown: string)` — Set markdown source programmatically
-
-## Slots
-
-- (default) - Markdown source text
-
-## Input
-
-Content via slotted text or `setContent()`. No `content` attribute/property.
+- `setContent(markdown: string)` → Set markdown source and re-render
 
 ## Events
 
-- `markdown-render` → `{ html: string }` - Fired after markdown is rendered
-- `link-click` → `{ href: string; text: string }` - Fired when a link is clicked (default prevented)
+- `markdown-render` → `{ html: string }` (after render)
+- `link-click` → `{ href: string, text: string }` (default prevented)
+
+## Slots
+
+- `(default)` - Markdown source text
 
 ## CSS Custom Properties
 
@@ -44,21 +42,19 @@ Content via slotted text or `setContent()`. No `content` attribute/property.
 --snice-font-weight-semibold
 ```
 
-**CSS Parts:**
-- `base` - The rendered markdown body container
+## CSS Parts
 
-## Supported Markdown
+- `base` - Rendered markdown body container
 
-- Headings (h1-h6)
-- Bold, italic, strikethrough
-- Ordered/unordered lists, task lists
-- Code blocks with language class, inline code
-- Blockquotes
-- Tables (GFM)
-- Images, links, autolinks
-- Horizontal rules
+## Supported Syntax
 
-## Usage
+Headings (h1-h6), bold, italic, strikethrough, ordered/unordered/task lists, code blocks with language class, inline code, blockquotes, tables (GFM), images, links, autolinks, horizontal rules.
+
+## Basic Usage
+
+```typescript
+import 'snice/components/markdown/snice-markdown';
+```
 
 ```html
 <snice-markdown># Hello

@@ -1,35 +1,22 @@
 # snice-cart
 
-Shopping cart summary with line items, quantity controls, coupon field, tax, discount, and checkout CTA.
+Shopping cart with line items, quantity controls, coupon, tax, discount, and checkout.
 
 ## Properties
 
-```ts
-items: CartItem[] = [];                    // Cart items
-currency: string = '$';                    // Currency symbol
-taxRate: number = 0;                       // Tax percentage (attr: tax-rate)
-discount: number = 0;                      // Discount amount
-couponCode: string = '';                   // Applied coupon code (attr: coupon-code)
-```
-
-### Types
-
-```ts
-interface CartItem {
-  id: string;
-  name: string;
-  image?: string;
-  price: number;
-  quantity: number;
-  variant?: string;        // e.g. 'Size: M, Color: Black'
-}
+```typescript
+items: CartItem[] = [];            // Cart items (property only)
+currency: string = '$';
+taxRate: number = 0;               // attribute: tax-rate
+discount: number = 0;
+couponCode: string = '';           // attribute: coupon-code
 ```
 
 ## Methods
 
-- `addItem(item: CartItem)` - Add item (increments quantity if exists)
-- `removeItem(id: string)` - Remove item by ID
-- `updateQuantity(id: string, qty: number)` - Set quantity (removes if 0)
+- `addItem(item: CartItem)` - Add item (increments qty if exists)
+- `removeItem(id: string)` - Remove by ID
+- `updateQuantity(id: string, qty: number)` - Set qty (removes if 0)
 - `applyCoupon(code: string)` - Apply coupon code
 - `clear()` - Remove all items
 
@@ -37,23 +24,25 @@ interface CartItem {
 
 - `item-add` -> `{ item: CartItem }`
 - `item-remove` -> `{ item: CartItem }`
-- `quantity-change` -> `{ item: CartItem; previousQuantity: number; newQuantity: number }`
+- `quantity-change` -> `{ item, previousQuantity, newQuantity }`
 - `coupon-apply` -> `{ code: string }`
-- `checkout` -> `{ items: CartItem[]; subtotal: number; discount: number; tax: number; total: number }`
+- `checkout` -> `{ items, subtotal, discount, tax, total }`
 
 ## CSS Parts
 
-`base`, `header`, `items`, `item`, `coupon`, `summary`, `checkout`, `empty`
+- `base`, `header`, `items`, `item`, `coupon`, `summary`, `checkout`, `empty`
 
-## Usage
+## Basic Usage
 
 ```html
-<snice-cart tax-rate="8.5" currency="$"></snice-cart>
+<snice-cart tax-rate="8.5"></snice-cart>
 ```
 
 ```typescript
+import 'snice/components/cart/snice-cart';
+
 cart.items = [
-  { id: '1', name: 'Running Shoes', image: 'shoe.jpg', price: 89.99, quantity: 1, variant: 'Size: M' },
+  { id: '1', name: 'Shoes', price: 89.99, quantity: 1, variant: 'Size: M' },
   { id: '2', name: 'Watch', price: 249.00, quantity: 1 }
 ];
 
@@ -64,3 +53,9 @@ cart.addEventListener('checkout', (e) => {
   console.log(`Total: ${e.detail.total}`);
 });
 ```
+
+## Accessibility
+
+- Quantity controls have descriptive aria-labels
+- Remove buttons include item name
+- Keyboard operable

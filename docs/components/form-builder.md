@@ -1,30 +1,73 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/form-builder.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/form-builder.md -->
 
 # Form Builder
-`<snice-form-builder>`
 
 Drag-and-drop form designer that outputs a JSON schema describing the form structure.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/form-builder/snice-form-builder';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-form-builder.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `schema` | `schema` | `FormSchema` | `{ fields: [] }` | JSON schema (input/output) |
-| `mode` | `mode` | `'edit' \| 'preview'` | `'edit'` | Current mode |
-| `fieldTypes` | `field-types` | `FormFieldType[]` | all types | Available field types in the palette |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `schema` | `FormSchema` | `{ fields: [] }` | JSON schema (input/output, set via JS) |
+| `mode` | `'edit' \| 'preview'` | `'edit'` | Current mode |
+| `fieldTypes` | `FormFieldType[]` | all types | Available field types in the palette (set via JS) |
+
+### FormSchema Interface
+
+```typescript
+interface FormSchema {
+  title?: string;
+  description?: string;
+  fields: FormField[];
+}
+```
+
+### FormField Interface
+
+```typescript
+interface FormField {
+  id: string;
+  type: FormFieldType;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: FormFieldOption[];
+  defaultValue?: string;
+  helpText?: string;
+  min?: number;
+  max?: number;
+  pattern?: string;
+  accept?: string;
+  content?: string;       // For paragraph fields
+  width?: 'full' | 'half';
+}
+```
+
+### FormFieldType
+
+```typescript
+type FormFieldType =
+  | 'text' | 'number' | 'email' | 'phone'
+  | 'select' | 'date' | 'checkbox' | 'radio'
+  | 'file' | 'signature' | 'section' | 'paragraph';
+```
+
+### FormFieldOption Interface
+
+```typescript
+interface FormFieldOption {
+  label: string;
+  value: string;
+}
+```
 
 ## Methods
 
@@ -91,8 +134,6 @@ fb.setSchema({
 
 ### Adding Fields Programmatically
 
-Use `addField()` to append a new field to the form.
-
 ```javascript
 fb.addField('text');
 fb.addField('email');
@@ -100,8 +141,6 @@ fb.addField('select');
 ```
 
 ### Preview Mode
-
-Set the `mode` attribute to `"preview"` or call `preview()` to test the form.
 
 ```html
 <snice-form-builder mode="preview"></snice-form-builder>
@@ -114,7 +153,7 @@ fb.mode = 'edit'; // Switch back to edit mode
 
 ### Custom Field Types
 
-Use the `field-types` property to limit available field types.
+Use the `fieldTypes` property to limit available field types.
 
 ```javascript
 fb.fieldTypes = ['text', 'email', 'select', 'checkbox'];
@@ -122,12 +161,9 @@ fb.fieldTypes = ['text', 'email', 'select', 'checkbox'];
 
 ### Listening to Changes
 
-React to schema changes as the user designs the form.
-
 ```javascript
 fb.addEventListener('schema-change', (e) => {
   const schema = e.detail.schema;
-  // Save to backend or localStorage
   localStorage.setItem('form-draft', JSON.stringify(schema));
 });
 
@@ -167,76 +203,13 @@ fb.setSchema({
 
 ### Getting the Schema
 
-Retrieve the current schema as a plain object.
-
 ```javascript
 const schema = fb.getSchema();
 console.log(JSON.stringify(schema, null, 2));
 
-// Send to backend
 fetch('/api/forms', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(schema)
 });
 ```
-
-## FormSchema Interface
-
-```typescript
-interface FormSchema {
-  title?: string;
-  description?: string;
-  fields: FormField[];
-}
-```
-
-## FormField Interface
-
-```typescript
-interface FormField {
-  id: string;
-  type: FormFieldType;
-  label: string;
-  placeholder?: string;
-  required?: boolean;
-  options?: FormFieldOption[];
-  defaultValue?: string;
-  helpText?: string;
-  min?: number;
-  max?: number;
-  pattern?: string;
-  accept?: string;
-  content?: string;       // For paragraph fields
-  width?: 'full' | 'half';
-}
-```
-
-## FormFieldType
-
-```typescript
-type FormFieldType =
-  | 'text' | 'number' | 'email' | 'phone'
-  | 'select' | 'date' | 'checkbox' | 'radio'
-  | 'file' | 'signature' | 'section' | 'paragraph';
-```
-
-## FormFieldOption Interface
-
-```typescript
-interface FormFieldOption {
-  label: string;
-  value: string;
-}
-```
-
-## Features
-
-- Drag fields from the palette into the canvas to add them
-- Click fields to select and edit properties in the side panel
-- Drag to reorder fields within the canvas
-- Duplicate or delete fields with action buttons
-- Toggle between edit and preview modes
-- Section headers and paragraphs for form organization
-- Customizable available field types
-- JSON schema output for form persistence and rendering

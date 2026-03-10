@@ -5,36 +5,39 @@ SVG-based Sankey diagram for flow visualization between categories.
 ## Properties
 
 ```typescript
-data: SankeyData = { nodes: [], links: [] };
-nodeWidth: number = 20;
-nodePadding: number = 10;
+data: SankeyData = { nodes: [], links: [] }; // JS only
+nodeWidth: number = 20;              // attr: node-width
+nodePadding: number = 10;            // attr: node-padding
 alignment: 'left'|'right'|'center'|'justify' = 'justify';
-showLabels: boolean = true;
-showValues: boolean = true;
+showLabels: boolean = true;          // attr: show-labels
+showValues: boolean = true;          // attr: show-values
 animation: boolean = false;
 ```
 
 ## Types
 
 ```typescript
-interface SankeyData {
-  nodes: SankeyNode[];
-  links: SankeyLink[];
-}
+interface SankeyData { nodes: SankeyNode[]; links: SankeyLink[]; }
 interface SankeyNode { id: string; label?: string; color?: string; }
 interface SankeyLink { source: string; target: string; value: number; color?: string; }
 ```
 
 ## Events
 
-- `sankey-node-click` → `{ node: SankeyNode }` — node clicked
-- `sankey-link-click` → `{ link: SankeyLink }` — link clicked
-- `sankey-hover` → `{ type: 'node'|'link', item: SankeyNode|SankeyLink } | null` — hover change
+- `sankey-node-click` → `{ node: SankeyNode }`
+- `sankey-link-click` → `{ link: SankeyLink }`
+- `sankey-hover` → `{ type: 'node'|'link', item } | null`
 
-## Usage
+## CSS Parts
+
+- `base` - Outer container
+- `chart` - SVG chart area
+- `tooltip` - Hover tooltip
+
+## Basic Usage
 
 ```html
-<snice-sankey show-labels show-values animation></snice-sankey>
+<snice-sankey show-labels show-values animation style="height: 300px;"></snice-sankey>
 ```
 
 ```typescript
@@ -49,20 +52,8 @@ sankey.data = {
 };
 ```
 
-**CSS Parts:**
-- `base` - The outer Sankey container
-- `chart` - The SVG chart area
-- `tooltip` - The hover tooltip element
+## Accessibility
 
-## Features
-
-- SVG rendering with curved bezier link paths
-- Sankey layout algorithm with iterative node relaxation
-- Link width proportional to flow value
-- Hover highlighting (dims non-connected nodes/links)
-- Tooltips on hover for nodes and links
-- Responsive sizing via ResizeObserver
-- Animation on initial render
-- 4 alignment modes
-- Custom node/link colors
-- Accessible: role="img" with aria-label
+- SVG `role="img"` with `aria-label`
+- Hover highlighting dims non-connected elements
+- Responsive via ResizeObserver

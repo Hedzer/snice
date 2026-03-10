@@ -27,13 +27,6 @@ autoGrow: boolean = false;    // attr: auto-grow
 loading: boolean = false;
 ```
 
-## Events
-
-- `textarea-input` → `{ value, textarea }` - On input
-- `textarea-change` → `{ value, textarea }` - On change
-- `textarea-focus` → `{ textarea }` - On focus
-- `textarea-blur` → `{ textarea }` - On blur
-
 ## Methods
 
 - `focus()` - Focus textarea
@@ -43,21 +36,27 @@ loading: boolean = false;
 - `reportValidity()` - Report validation to user, returns `boolean`
 - `setCustomValidity(message)` - Set custom validation message
 
-## Usage
+## Events
+
+- `textarea-input` -> `{ value, textarea }` - On input
+- `textarea-change` -> `{ value, textarea }` - On change
+- `textarea-focus` -> `{ textarea }` - On focus
+- `textarea-blur` -> `{ textarea }` - On blur
+
+## CSS Parts
+
+- `textarea` - The native textarea element
+- `spinner` - Loading spinner
+- `error-text` - Error message container
+- `helper-text` - Helper text container
+
+## Basic Usage
 
 ```html
 <snice-textarea label="Comments" placeholder="Enter comments"></snice-textarea>
 <snice-textarea variant="filled"></snice-textarea>
-<snice-textarea variant="underlined"></snice-textarea>
-<snice-textarea rows="5"></snice-textarea>
 <snice-textarea auto-grow></snice-textarea>
 <snice-textarea maxlength="500"></snice-textarea>
 <snice-textarea resize="both"></snice-textarea>
-<snice-textarea size="small"></snice-textarea>
-<snice-textarea helper-text="Max 500 characters"></snice-textarea>
 <snice-textarea invalid error-text="Required field"></snice-textarea>
 ```
-
-## CSS Parts
-
-`textarea`, `spinner`, `error-text`, `helper-text`

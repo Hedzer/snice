@@ -1,8 +1,9 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/waterfall.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/waterfall.md -->
 
-# Waterfall Component
+# Waterfall
+`<snice-waterfall>`
 
-The waterfall component renders a waterfall chart (also known as a bridge chart) that visualizes the cumulative effect of sequential positive and negative values. Bars are color-coded by type: green for increases, red for decreases, and blue for totals, with optional connector lines and value labels.
+Renders a waterfall chart (bridge chart) that visualizes the cumulative effect of sequential positive and negative values. Bars are color-coded by type: green for increases, red for decreases, and blue for totals.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -12,7 +13,6 @@ The waterfall component renders a waterfall chart (also known as a bridge chart)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
 
 ## Properties
 
@@ -24,13 +24,13 @@ The waterfall component renders a waterfall chart (also known as a bridge chart)
 | `showConnectors` (attr: `show-connectors`) | `boolean` | `true` | Show connector lines between bars |
 | `animated` | `boolean` | `false` | Animate bars on render |
 
-### WaterfallDataPoint
+### WaterfallDataPoint Interface
 
 ```typescript
 interface WaterfallDataPoint {
-  label: string;                                      // Bar label text
-  value: number;                                      // Numeric value
-  type?: 'increase' | 'decrease' | 'total';           // Bar type (auto-detected from value sign if omitted)
+  label: string;
+  value: number;
+  type?: 'increase' | 'decrease' | 'total';  // auto-detected from value sign if omitted
 }
 ```
 
@@ -38,27 +38,10 @@ When `type` is omitted, it is automatically determined: positive values render a
 
 ## Events
 
-### `bar-click`
-Fired when a bar is clicked.
-
-**Event Detail:**
-```typescript
-{
-  item: WaterfallDataPoint;
-  index: number;
-}
-```
-
-### `bar-hover`
-Fired when the mouse enters a bar.
-
-**Event Detail:**
-```typescript
-{
-  item: WaterfallDataPoint;
-  index: number;
-}
-```
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `bar-click` | `{ item: WaterfallDataPoint, index: number }` | Bar clicked |
+| `bar-hover` | `{ item: WaterfallDataPoint, index: number }` | Mouse entered a bar |
 
 ## CSS Custom Properties
 
@@ -75,123 +58,74 @@ Fired when the mouse enters a bar.
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The main waterfall container |
-| `chart` | `<div>` | The chart rendering area |
-
-```css
-snice-waterfall::part(base) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-snice-waterfall::part(chart) {
-  padding: 1rem;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The main waterfall container |
+| `chart` | The chart rendering area |
 
 ## Basic Usage
-
-```html
-<snice-waterfall></snice-waterfall>
-```
 
 ```typescript
 import 'snice/components/waterfall/snice-waterfall';
 ```
 
+```html
+<snice-waterfall show-values show-connectors></snice-waterfall>
+```
+
+```typescript
+chart.data = [
+  { label: 'Starting Balance', value: 1000, type: 'total' },
+  { label: 'Revenue', value: 500 },
+  { label: 'Costs', value: -200 },
+  { label: 'Tax', value: -100 },
+  { label: 'Net Income', value: 1200, type: 'total' }
+];
+```
+
 ## Examples
 
-### Profit & Loss Waterfall
+### Profit and Loss
 
 Show how revenue, costs, and taxes contribute to a final balance.
 
-```html
-<snice-waterfall id="pnl-chart" show-values show-connectors></snice-waterfall>
-
-<script type="module">
-  import 'snice/components/waterfall/snice-waterfall';
-
-  const chart = document.getElementById('pnl-chart');
-  chart.data = [
-    { label: 'Starting Balance', value: 1000, type: 'total' },
-    { label: 'Revenue', value: 500 },
-    { label: 'Services', value: 300 },
-    { label: 'Costs', value: -200 },
-    { label: 'Wages', value: -350 },
-    { label: 'Tax', value: -100 },
-    { label: 'Net Income', value: 1150, type: 'total' }
-  ];
-</script>
+```typescript
+chart.data = [
+  { label: 'Starting Balance', value: 1000, type: 'total' },
+  { label: 'Revenue', value: 500 },
+  { label: 'Services', value: 300 },
+  { label: 'Costs', value: -200 },
+  { label: 'Wages', value: -350 },
+  { label: 'Tax', value: -100 },
+  { label: 'Net Income', value: 1150, type: 'total' }
+];
 ```
 
 ### Horizontal Orientation
 
-Render the waterfall chart horizontally instead of vertically.
+Use the `orientation` attribute to render the chart horizontally.
 
 ```html
-<snice-waterfall id="horizontal-chart" orientation="horizontal" show-values></snice-waterfall>
-
-<script type="module">
-  const chart = document.getElementById('horizontal-chart');
-  chart.data = [
-    { label: 'Q1 Start', value: 5000, type: 'total' },
-    { label: 'Sales', value: 2000 },
-    { label: 'Returns', value: -300 },
-    { label: 'Marketing', value: -800 },
-    { label: 'Q1 End', value: 5900, type: 'total' }
-  ];
-</script>
+<snice-waterfall orientation="horizontal" show-values></snice-waterfall>
 ```
 
 ### Animated Chart
 
-Use the `animated` property to animate bars when the chart renders.
+Use the `animated` attribute to animate bars when the chart renders.
 
 ```html
-<snice-waterfall id="animated-chart" animated show-values show-connectors></snice-waterfall>
-
-<script type="module">
-  const chart = document.getElementById('animated-chart');
-  chart.data = [
-    { label: 'January', value: 10000, type: 'total' },
-    { label: 'New Subscriptions', value: 3500 },
-    { label: 'Upgrades', value: 1200 },
-    { label: 'Churn', value: -2100 },
-    { label: 'Refunds', value: -400 },
-    { label: 'February', value: 12200, type: 'total' }
-  ];
-</script>
+<snice-waterfall animated show-values show-connectors></snice-waterfall>
 ```
 
 ### Bar Click Handling
 
 Listen for bar clicks to display details or navigate to related views.
 
-```html
-<snice-waterfall id="clickable-chart" show-values></snice-waterfall>
-<p id="click-info">Click a bar to see details.</p>
-
-<script type="module">
-  const chart = document.getElementById('clickable-chart');
-  const info = document.getElementById('click-info');
-
-  chart.data = [
-    { label: 'Budget', value: 50000, type: 'total' },
-    { label: 'Hiring', value: -15000 },
-    { label: 'Equipment', value: -8000 },
-    { label: 'Revenue', value: 20000 },
-    { label: 'Remaining', value: 47000, type: 'total' }
-  ];
-
-  chart.addEventListener('bar-click', (e) => {
-    const { item, index } = e.detail;
-    info.textContent = `Clicked: ${item.label} = ${item.value > 0 ? '+' : ''}${item.value}`;
-  });
-</script>
+```typescript
+chart.addEventListener('bar-click', (e) => {
+  const { item, index } = e.detail;
+  console.log(`Clicked: ${item.label} = ${item.value}`);
+});
 ```
 
 ### Without Connectors or Values
@@ -199,31 +133,18 @@ Listen for bar clicks to display details or navigate to related views.
 Hide connector lines and value labels for a cleaner visual.
 
 ```html
-<snice-waterfall id="clean-chart"></snice-waterfall>
+<snice-waterfall></snice-waterfall>
+```
 
-<script type="module">
-  const chart = document.getElementById('clean-chart');
-  chart.showValues = false;
-  chart.showConnectors = false;
-  chart.data = [
-    { label: 'Start', value: 100, type: 'total' },
-    { label: 'Add', value: 40 },
-    { label: 'Remove', value: -25 },
-    { label: 'Add', value: 15 },
-    { label: 'End', value: 130, type: 'total' }
-  ];
-</script>
+```typescript
+chart.showValues = false;
+chart.showConnectors = false;
 ```
 
 ## Accessibility
 
-- **ARIA roles**: Bars use appropriate roles for data visualization
-- **Value labels**: When `showValues` is enabled, values are displayed as text for screen readers
-- **Color and text**: Bar types are distinguishable not only by color but also by their value labels (positive/negative numbers)
-- **Keyboard support**: Bars are focusable and clickable via keyboard
-- **Reduced motion**: When `animated` is set, animations respect `prefers-reduced-motion`
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
+- Bars use appropriate roles for data visualization
+- Value labels provide screen reader text when `showValues` is enabled
+- Bar types are distinguishable by color and value labels
+- Bars are focusable and clickable via keyboard
+- Animations respect `prefers-reduced-motion`

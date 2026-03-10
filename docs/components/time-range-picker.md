@@ -1,22 +1,17 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/time-range-picker.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/time-range-picker.md -->
 
 # Time Range Picker
 `<snice-time-range-picker>`
 
 A vertically stacked time slot picker for selecting time ranges within a single day via click and drag.
 
-## Importing
-
-**ESM (bundler)**
-```typescript
-import 'snice/components/time-range-picker/snice-time-range-picker';
-```
-
-**CDN**
-```html
-<script src="snice-runtime.min.js"></script>
-<script src="snice-time-range-picker.min.js"></script>
-```
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
@@ -32,15 +27,6 @@ import 'snice/components/time-range-picker/snice-time-range-picker';
 | `readonly` | `boolean` | `false` | Show selections but prevent interaction |
 | `disabled` | `boolean` | `false` | Disable all interaction |
 
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `getSelectedRanges()` | -- | Returns `TimeRange[]` |
-| `setSelectedRanges()` | `ranges: TimeRange[]` | Set selected ranges |
-| `clearSelection()` | -- | Clear all selections |
-| `isSlotDisabled()` | `time: string` | Check if slot is disabled, returns `boolean` |
-
 ### TimeRange Interface
 
 ```typescript
@@ -49,6 +35,15 @@ interface TimeRange {
   end: string;    // "HH:MM"
 }
 ```
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getSelectedRanges()` | -- | Returns `TimeRange[]` |
+| `setSelectedRanges()` | `ranges: TimeRange[]` | Set selected ranges |
+| `clearSelection()` | -- | Clear all selections |
+| `isSlotDisabled()` | `time: string` | Check if slot is disabled, returns `boolean` |
 
 ## Events
 
@@ -60,25 +55,11 @@ interface TimeRange {
 
 ## CSS Parts
 
-Style internal elements from outside the shadow DOM using `::part()`.
-
-| Part | Element | Description |
-|------|---------|-------------|
-| `base` | `<div>` | The outer wrapper container |
-| `header` | `<div>` | The header with label and selected value display |
-| `slots` | `<div>` | The time slots container |
-
-```css
-snice-time-range-picker::part(header) {
-  font-weight: 600;
-  padding: 0.75rem;
-}
-
-snice-time-range-picker::part(slots) {
-  max-height: 400px;
-  overflow-y: auto;
-}
-```
+| Part | Description |
+|------|-------------|
+| `base` | The outer wrapper container |
+| `header` | The header with label and selected value display |
+| `slots` | The time slots container |
 
 ## Basic Usage
 

@@ -1,6 +1,6 @@
 # snice-draw
 
-Canvas drawing with lazy-brush smoothing.
+Canvas drawing with lazy-brush smoothing, auto-polygon, and auto-circle.
 
 ## Properties
 
@@ -9,30 +9,29 @@ width: number = 800;
 height: number = 600;
 tool: 'pen'|'eraser'|'line'|'rectangle'|'circle'|'text' = 'pen';
 color: string = '#000000';
-strokeWidth: number = 2;           // attribute: stroke-width
+strokeWidth: number = 2;            // attribute: stroke-width
 backgroundColor: string = '#ffffff'; // attribute: background-color
 lazy: boolean = false;
-lazyRadius: number = 60;           // attribute: lazy-radius
+lazyRadius: number = 60;            // attribute: lazy-radius
 friction: number = 0.1;
 smoothing: number = 0.5;
-autoPolygon: boolean = false;      // attribute: auto-polygon
-polygonCurvePoints: number = 10;   // attribute: polygon-curve-points
+autoPolygon: boolean = false;       // attribute: auto-polygon
+polygonCurvePoints: number = 10;    // attribute: polygon-curve-points (2-30)
+autoCircle: boolean = false;        // attribute: auto-circle
+circlePoints: number = 50;          // attribute: circle-points
 disabled: boolean = false;
 ```
 
 ## Methods
 
-```typescript
-clear(): void
-undo(): void
-redo(): void
-toDataURL(type?: 'image/png'|'image/jpeg'|'image/webp', quality?: number): string
-toBlob(type?: 'image/png'|'image/jpeg'|'image/webp', quality?: number): Promise<Blob>
-download(filename?: string): void
-loadImage(url: string): Promise<void>
-getStrokes(): DrawStroke[]
-setStrokes(strokes: DrawStroke[]): void
-```
+- `clear()` - Clear canvas
+- `undo()` / `redo()` - Undo/redo strokes
+- `toDataURL(type?, quality?)` → `string` - Export as data URL
+- `toBlob(type?, quality?)` → `Promise<Blob>` - Export as Blob
+- `download(filename?)` - Download drawing
+- `loadImage(url)` → `Promise<void>` - Load background image
+- `getStrokes()` → `DrawStroke[]` - Get all strokes
+- `setStrokes(strokes)` - Set strokes (load saved drawings)
 
 ## DrawStroke
 
@@ -42,7 +41,7 @@ interface DrawStroke {
   tool: DrawTool;
   color: string;
   width: number;
-  points: Point[];
+  points: Point[];      // {x, y, pressure?}
   timestamp: number;
 }
 ```
@@ -50,95 +49,44 @@ interface DrawStroke {
 ## Events
 
 - `draw-start` - Drawing started
-- `draw-end` - Stroke completed (detail: { stroke })
+- `draw-end` → `{ stroke }` - Stroke completed
 - `draw-clear` - Canvas cleared
 - `draw-undo` - Undo performed
 - `draw-redo` - Redo performed
 
-## Usage
+## CSS Parts
 
-```javascript
-// Change tool
+- `base` - Outer draw container
+- `canvas` - Drawing canvas element
+
+## Basic Usage
+
+```html
+<snice-draw width="800" height="600" tool="pen" color="#000000" stroke-width="2"></snice-draw>
+<snice-draw lazy lazy-radius="60" auto-polygon polygon-curve-points="15"></snice-draw>
+<snice-draw auto-circle circle-points="50"></snice-draw>
+```
+
+```typescript
 draw.tool = 'pen';
 draw.color = '#ff0000';
-draw.strokeWidth = 5;
-
-// Lazy brush
-draw.lazy = true;
-draw.lazyRadius = 60;
-draw.friction = 0.1;
-draw.smoothing = 0.5;
-
-// Auto-polygon
-draw.autoPolygon = true;
-draw.polygonCurvePoints = 15; // Smoother curves
-
-// Actions
 draw.clear();
 draw.undo();
-draw.redo();
-
-// Export
-const dataURL = draw.toDataURL('image/png');
-const blob = await draw.toBlob('image/png');
 draw.download('drawing.png');
 
-// Save/load
 const strokes = draw.getStrokes();
 draw.setStrokes(strokes);
-
-// Load image
 await draw.loadImage('bg.jpg');
 ```
 
-```html
-<snice-draw
-  width="800"
-  height="600"
-  tool="pen"
-  color="#000000"
-  stroke-width="2"
-  lazy
-  lazy-radius="60"
-  friction="0.1"
-  auto-polygon
-  polygon-curve-points="10">
-</snice-draw>
-```
-
-**CSS Parts:**
-- `base` - Outer draw container div
-- `canvas` - Drawing canvas element
-
 ## Lazy Brush
 
-Smooth drawing with cursor lag-following:
-- Brush follows cursor within radius
-- Creates organic, smooth lines
-- Reduces jitter and tremor
-- Configurable radius and smoothing
+Brush follows cursor within radius for smooth lines. Larger radius = smoother. Reduces jitter/tremor.
 
 ## Auto-Polygon
 
-Automatically processes completed strokes into closed shapes:
-- Detects self-intersections and trims excess
-- Auto-closes open shapes with smooth curves
-- `autoPolygon: boolean` - Enable feature (default: false)
-- `polygonCurvePoints: number` - Curve smoothness 2-30 (default: 10)
+Processes completed strokes into closed shapes. Detects self-intersections and trims. Auto-closes open shapes with smooth curves. `polygonCurvePoints` 2-30 controls curve smoothness.
 
-Processing happens on stroke completion (pointerup):
-1. If stroke crosses itself, trim at first intersection
-2. If start/end points >20px apart, connect with quadratic curve
-3. Higher curve points = smoother closing arc
+## Auto-Circle
 
-## Features
-
-- Canvas drawing
-- Lazy brush smoothing
-- Auto-polygon processing
-- Pen/eraser tools
-- Undo/redo
-- Export (PNG/JPEG/WebP)
-- Save/load strokes
-- Touch/stylus support
-- Keyboard shortcuts
+Detects circular strokes and smooths them. `circlePoints` controls closing curve smoothness.

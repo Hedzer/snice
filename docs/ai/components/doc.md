@@ -1,53 +1,23 @@
 # snice-doc
 
-Simple WYSIWYG document editor with toolbar and sidebar.
-
-## Usage
-
-```html
-<snice-doc></snice-doc>
-<snice-doc icons="material"></snice-doc>
-<snice-doc icons="fontawesome"></snice-doc>
-```
+Simple WYSIWYG document editor with formatting toolbar and content insertion.
 
 ## Properties
 
-- `placeholder: string` - Placeholder text (default: `"Start typing..."`)
-- `readonly: boolean` - Readonly mode (default: `false`)
-- `icons: 'default' | 'material' | 'fontawesome'` - Toolbar icon set (default: `"default"`)
+```typescript
+placeholder: string = 'Start typing...';
+readonly: boolean = false;
+icons: 'default'|'material'|'fontawesome' = 'default';
+```
 
 ## Methods
 
-- `getHTML(): string` - Get HTML content
-- `setHTML(html: string): void` - Set HTML content
-- `getText(): string` - Get plain text content
-- `getMarkdown(): string` - Get content as markdown
-- `downloadAs(format: 'html' | 'markdown' | 'text', filename?: string): void` - Download document
-- `clear(): void` - Clear all content
-
-## Toolbar
-
-- **B, I, U, S** - Bold, italic, underline, strikethrough
-- **H1, H2, H3, P** - Heading formats and paragraph
-- **•, 1.** - Bulleted and numbered lists
-- **🔗** - Insert link
-- **🖼** - Insert image
-- **📊** - Insert table
-- **―** - Insert divider
-- **⬇** - Download (HTML, Markdown, or Plain Text)
-
-## Icon Sets
-
-- `default` - Text labels and emoji icons
-- `material` - Material Symbols Outlined (user must load the font in the document)
-- `fontawesome` - Font Awesome 6 solid icons (user must load the font in the document)
-- Fonts cascade from light DOM into shadow DOM — no auto-loading
-
-## Keyboard Shortcuts
-
-- **Ctrl/Cmd+B** - Bold
-- **Ctrl/Cmd+I** - Italic
-- **Ctrl/Cmd+U** - Underline
+- `getHTML()` → `string` - Get HTML content
+- `setHTML(html)` - Set HTML content
+- `getText()` → `string` - Get plain text content
+- `getMarkdown()` → `string` - Get content as Markdown
+- `downloadAs(format, filename?)` - Download as `'html'`|`'markdown'`|`'text'`
+- `clear()` - Clear all content
 
 ## CSS Custom Properties
 
@@ -67,25 +37,6 @@ Simple WYSIWYG document editor with toolbar and sidebar.
 --snice-doc-sidebar-background
 ```
 
-## Example
-
-```typescript
-doc.setHTML(`
-  <h1>Title</h1>
-  <p>Content with <b>bold</b> and <i>italic</i>.</p>
-`);
-
-// Export formats
-const html = doc.getHTML();
-const markdown = doc.getMarkdown();
-const text = doc.getText();
-
-// Download
-doc.downloadAs('markdown', 'my-doc.md');
-doc.downloadAs('html');
-doc.downloadAs('text');
-```
-
 ## CSS Parts
 
 - `base` - Outer document wrapper
@@ -93,14 +44,38 @@ doc.downloadAs('text');
 - `toolbar` - Formatting toolbar
 - `icon` - Toolbar icon element
 
-## Features
+## Basic Usage
 
-- WYSIWYG contentEditable editing
-- Formatting toolbar with configurable icon sets
-- Insert images, tables, dividers, links
-- Download as HTML, Markdown, or Plain Text
+```html
+<snice-doc></snice-doc>
+<snice-doc icons="material"></snice-doc>
+<snice-doc icons="fontawesome"></snice-doc>
+<snice-doc readonly></snice-doc>
+```
+
+```typescript
+doc.setHTML('<h1>Title</h1><p>Content with <b>bold</b>.</p>');
+const html = doc.getHTML();
+const markdown = doc.getMarkdown();
+doc.downloadAs('markdown', 'my-doc.md');
+```
+
+## Icon Sets
+
+- `default` - Text labels and emoji
+- `material` - Material Symbols Outlined (load font in document)
+- `fontawesome` - Font Awesome 6 solid (load font in document)
+- Fonts cascade from light DOM into shadow DOM
+
+## Keyboard Navigation
+
+- Ctrl/Cmd+B - Bold
+- Ctrl/Cmd+I - Italic
+- Ctrl/Cmd+U - Underline
+
+## Accessibility
+
+- contentEditable for native text editing
+- Semantic HTML output
+- Dark mode via prefers-color-scheme
 - Paste images from clipboard
-- Keyboard shortcuts
-- Readonly mode
-- Dark mode (prefers-color-scheme)
-- Material Icons and Font Awesome support

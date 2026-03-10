@@ -1,42 +1,61 @@
 # snice-avatar
 
-User profile images with fallback initials.
+User profile image with automatic fallback to name-based initials or default person icon.
+
+## Table of Contents
+- [Properties](#properties)
+- [Methods](#methods)
+- [CSS Custom Properties](#css-custom-properties)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
 
 ## Properties
 
 ```typescript
-src: string = '';
-alt: string = '';
-name: string = '';
+src: string = '';                    // Image URL
+alt: string = '';                    // Alt text (falls back to `name`)
+name: string = '';                   // User's name (initials + color generation)
 size: 'xs'|'small'|'medium'|'large'|'xl'|'xxl' = 'medium';
 shape: 'circle'|'square'|'rounded' = 'circle';
-fallbackColor: string = '#ffffff';
-fallbackBackground: string = '';
+fallbackColor: string = '#ffffff';   // attr: fallback-color — text color for initials
+fallbackBackground: string = '';     // attr: fallback-background — overrides auto-color
 ```
 
 ## Methods
 
-- `getInitials(name)` - Extract initials from name
+- `getInitials(name: string): string` - Extract initials from a name string
 
-## Usage
+## CSS Custom Properties
+
+- `--avatar-size` - Avatar dimensions (varies by `size`)
+- `--avatar-bg` - Background color (auto-generated from name)
+- `--avatar-color` - Text/icon color (default: `rgb(255 255 255)`)
+
+## CSS Parts
+
+- `base` - Outer avatar container
+- `image` - The `<img>` element (when loaded)
+- `fallback` - Initials or default icon container
+
+## Basic Usage
 
 ```html
-<!-- With image -->
-<snice-avatar
-  src="/user.jpg"
-  alt="John Doe"
-  name="John Doe">
-</snice-avatar>
+<snice-avatar src="/user.jpg" name="John Doe"></snice-avatar>
+```
 
-<!-- Fallback to initials -->
+## Examples
+
+```html
+<!-- Initials fallback (no image) -->
 <snice-avatar name="John Doe"></snice-avatar>
+
+<!-- Default icon (no name or image) -->
+<snice-avatar></snice-avatar>
 
 <!-- Sizes -->
 <snice-avatar name="JD" size="xs"></snice-avatar>
-<snice-avatar name="JD" size="small"></snice-avatar>
-<snice-avatar name="JD" size="medium"></snice-avatar>
 <snice-avatar name="JD" size="large"></snice-avatar>
-<snice-avatar name="JD" size="xl"></snice-avatar>
 <snice-avatar name="JD" size="xxl"></snice-avatar>
 
 <!-- Shapes -->
@@ -44,23 +63,20 @@ fallbackBackground: string = '';
 <snice-avatar name="JD" shape="square"></snice-avatar>
 <snice-avatar name="JD" shape="rounded"></snice-avatar>
 
-<!-- Custom colors -->
-<snice-avatar
-  name="JD"
-  fallback-color="#fff"
-  fallback-background="#3b82f6">
-</snice-avatar>
+<!-- Custom fallback colors -->
+<snice-avatar name="Custom" fallback-color="#fff" fallback-background="#3b82f6"></snice-avatar>
+
+<!-- Broken image falls back to initials -->
+<snice-avatar src="https://broken-url.com/404.jpg" name="Fallback User"></snice-avatar>
 ```
 
-**CSS Parts:**
-- `base` - Outer avatar container
-- `image` - The `<img>` element (when image is loaded)
-- `fallback` - Initials or default icon container
+### Size Reference
 
-## Features
-
-- 6 size options (xs to xxl)
-- 3 shape options
-- Image with fallback to initials
-- Custom fallback colors
-- Auto-extracts initials from name
+| Size | Dimensions | Font Size |
+|------|-----------|-----------|
+| `xs` | 1.5rem (24px) | 0.625rem |
+| `small` | 2rem (32px) | 0.75rem |
+| `medium` | 2.5rem (40px) | 0.875rem |
+| `large` | 3rem (48px) | 1rem |
+| `xl` | 4rem (64px) | 1.25rem |
+| `xxl` | 6rem (96px) | 2rem |

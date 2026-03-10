@@ -1,20 +1,19 @@
-<!-- AI: For a low-token version of this doc, use docs/ai/components/alert.md instead -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/alert.md -->
 
-# Alert Component
+# Alert
+`<snice-alert>`
 
-The alert component displays notification messages to provide user feedback for informational, success, warning, or error states. It supports customizable variants, sizes, titles, icons, and optional dismissal.
+Displays notification messages to provide user feedback for informational, success, warning, or error states. Supports customizable variants, sizes, titles, icons, and optional dismissal.
 
 ## Table of Contents
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
 - [Slots](#slots)
+- [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
-- [Browser Support](#browser-support)
-- [Common Patterns](#common-patterns)
-- [Variant Colors](#variant-colors)
 
 ## Properties
 
@@ -107,16 +106,22 @@ Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Aw
 </snice-alert>
 ```
 
+## CSS Parts
+
+| Part | Description |
+|------|-------------|
+| `icon` | The icon container |
+
 ## Basic Usage
+
+```typescript
+import 'snice/components/alert/snice-alert';
+```
 
 ```html
 <snice-alert>
   This is a basic alert message.
 </snice-alert>
-```
-
-```typescript
-import 'snice/components/alert/snice-alert';
 ```
 
 ## Examples
@@ -197,18 +202,15 @@ import 'snice/components/alert/snice-alert';
 
 The `icon` property supports multiple formats:
 - **URLs**: Image files (`/icons/info.svg`)
-- **Emoji**: `🎉`, `💡`
+- **Emoji**: icons like a lightbulb or star
 - **Scheme overrides**: `img://filename` forces `<img>`, `text://content` forces text
 
-> **⚠️ Common mistake:** `icon="lightbulb"` or `icon="info"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
+> **Common mistake:** `icon="lightbulb"` or `icon="info"` renders as **plain text**, not a Material icon. Snice does not bundle Material Symbols. Use the `icon` slot instead.
 
 ```html
 <!-- Emoji icons -->
 <snice-alert variant="success" icon="🎉">
   Congratulations! You've unlocked a new achievement!
-</snice-alert>
-
-<snice-alert variant="info" icon="💡">
 </snice-alert>
 
 <!-- Image URL -->
@@ -248,7 +250,6 @@ The `icon` property supports multiple formats:
 
   <button type="submit">Sign Up</button>
 </form>
-
 ```
 
 ```typescript
@@ -275,7 +276,6 @@ form.addEventListener('submit', (e) => {
     errorAlert.show();
   } else {
     errorAlert.style.display = 'none';
-    // Submit form
   }
 });
 ```
@@ -287,7 +287,6 @@ form.addEventListener('submit', (e) => {
 
 <button onclick="showSuccessAlert()">Show Success</button>
 <button onclick="showErrorAlert()">Show Error</button>
-
 ```
 
 ```typescript
@@ -385,7 +384,6 @@ alert.addEventListener('alert-hidden', () => {
 <button onclick="notify('success', 'File uploaded successfully')">Success</button>
 <button onclick="notify('warning', 'Low disk space')">Warning</button>
 <button onclick="notify('error', 'Connection lost')">Error</button>
-
 ```
 
 ```typescript
@@ -444,7 +442,6 @@ window.notify = (variant, message) => {
 ```typescript
 alert.addEventListener('alert-dismiss', (e) => {
   console.log('User dismissed alert:', e.detail);
-  // Track analytics
   analytics.track('alert_dismissed', {
     variant: e.detail.variant,
     title: e.detail.title
@@ -457,46 +454,8 @@ alert.addEventListener('alert-shown', () => {
 
 alert.addEventListener('alert-hidden', () => {
   console.log('Alert is now hidden');
-  // Clean up or remove from DOM
   alert.remove();
 });
-```
-
-### API Response Alerts
-
-```html
-<snice-alert style="display: none;"></snice-alert>
-
-<button onclick="makeApiCall()">Make API Call</button>
-```
-
-```typescript
-window.makeApiCall = async () => {
-  try {
-    const response = await fetch('/api/data');
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    alert.variant = 'success';
-    alert.title = 'Success!';
-    alert.textContent = 'Data loaded successfully.';
-    alert.dismissible = true;
-    alert.style.display = 'block';
-    alert.show();
-
-  } catch (error) {
-    alert.variant = 'error';
-    alert.title = 'Error';
-    alert.textContent = `Failed to load data: ${error.message}`;
-    alert.dismissible = true;
-    alert.style.display = 'block';
-    alert.show();
-  }
-};
 ```
 
 ## Accessibility
@@ -506,54 +465,3 @@ window.makeApiCall = async () => {
 - **Color contrast**: All variants meet WCAG AA standards
 - **Screen reader friendly**: Content is properly announced
 - **Focus management**: Dismiss button receives proper focus
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires Custom Elements v1 and Shadow DOM support
-
-## Common Patterns
-
-### Success Pattern
-```html
-<snice-alert variant="success" title="Success!" dismissible>
-  Your changes have been saved.
-</snice-alert>
-```
-
-### Error Pattern
-```html
-<snice-alert variant="error" title="Error" dismissible>
-  Unable to save changes. Please try again.
-</snice-alert>
-```
-
-### Warning Pattern
-```html
-<snice-alert variant="warning" title="Warning">
-  This action cannot be undone.
-</snice-alert>
-```
-
-### Info Pattern
-```html
-<snice-alert variant="info" title="Information">
-  New features are available in this update.
-</snice-alert>
-```
-
-### Inline Form Validation
-```html
-<snice-alert variant="error" size="small">
-  Please enter a valid email address.
-</snice-alert>
-```
-
-## Variant Colors
-
-| Variant | Color Scheme | Use Case |
-|---------|-------------|----------|
-| `info` | Blue | General information, tips, updates |
-| `success` | Green | Successful operations, confirmations |
-| `warning` | Orange | Cautions, important notices |
-| `error` | Red | Errors, failed operations, critical issues |

@@ -6,17 +6,13 @@ Coordinated row of KPI cards with trend indicators and responsive grid layout.
 
 ```typescript
 stats: StatItem[] = [];
-columns: number = 0;  // 0 = auto-fit
+columns: number = 0;             // 0 = auto-fit
 variant: 'card'|'minimal'|'bordered' = 'card';
-```
 
-## Types
-
-```typescript
 interface StatItem {
   label: string;
   value: string | number;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: 'up'|'down'|'neutral';
   trendValue?: string;
   icon?: string;
   color?: string;
@@ -25,14 +21,14 @@ interface StatItem {
 
 ## Events
 
-- `stat-click` -> `{ stat: StatItem, index: number }`
+- `stat-click` → `{ stat, index }`
 
 ## CSS Parts
 
 - `base` - Grid container
 - `stat` - Individual stat card
 
-## Usage
+## Basic Usage
 
 ```html
 <snice-stat-group></snice-stat-group>
@@ -43,16 +39,12 @@ el.stats = [
   { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%' },
   { label: 'Users', value: '2,338', trend: 'up', trendValue: '+8.2%' },
   { label: 'Orders', value: '1,245', trend: 'down', trendValue: '-3.1%' },
-  { label: 'Bounce', value: '3.24%', trend: 'neutral', trendValue: '0.0%' }
 ];
 ```
 
 ```html
-<!-- Variants -->
 <snice-stat-group variant="minimal"></snice-stat-group>
 <snice-stat-group variant="bordered"></snice-stat-group>
-
-<!-- Fixed columns -->
 <snice-stat-group columns="2"></snice-stat-group>
 ```
 
@@ -61,13 +53,11 @@ el.stats = [
 el.stats = [
   { label: 'Revenue', value: '$45K', icon: '$', color: 'rgb(22 163 74)', trend: 'up', trendValue: '+12%' }
 ];
+
+el.addEventListener('stat-click', (e) => console.log(e.detail.stat.label));
 ```
 
-## Features
+## Accessibility
 
-- 3 visual variants: card, minimal, bordered
-- Auto-fit responsive grid (wraps on narrow viewports)
-- Fixed column count option
-- Trend indicators (up/down/neutral) with color coding
-- Icon and color customization per stat
-- Keyboard accessible (Enter/Space to click)
+- Stat cards have `role="button"`, keyboard accessible (Enter/Space)
+- Trend indicators use semantic color coding
