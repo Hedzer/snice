@@ -268,6 +268,40 @@ describe('snice-grid', () => {
       expect(items[2].style.transform).toBe('translate(0px, 80px)');
     });
 
+    it('should swap items when one is placed on another with different origin', async () => {
+      el = await createComponent<SniceGridElement>('snice-grid', {
+        'column-width': 80, 'row-height': 80, gap: '0px'
+      });
+      // item1 at (0,0), item2 at (2,0)
+      const item1 = document.createElement('div');
+      item1.setAttribute('name', 'a');
+      item1.setAttribute('grid-col', '0');
+      item1.setAttribute('grid-row', '0');
+      const item2 = document.createElement('div');
+      item2.setAttribute('name', 'b');
+      item2.setAttribute('grid-col', '2');
+      item2.setAttribute('grid-row', '0');
+      el.appendChild(item1);
+      el.appendChild(item2);
+      await wait(50);
+      el.reloadItems();
+      el.layout();
+
+      // Verify initial positions
+      expect(item1.style.transform).toBe('translate(0px, 0px)');
+      expect(item2.style.transform).toBe('translate(160px, 0px)');
+
+      // Now move item2 to (0,0) — should swap with item1
+      item2.setAttribute('grid-col', '0');
+      item2.setAttribute('grid-row', '0');
+      el.layout();
+
+      // item1 should swap to (2,0) where item2 came from
+      // item2 should be at (0,0)
+      expect(item1.style.transform).toBe('translate(160px, 0px)');
+      expect(item2.style.transform).toBe('translate(0px, 0px)');
+    });
+
     it('should handle colspan collision', async () => {
       el = await createComponent<SniceGridElement>('snice-grid', {
         'column-width': 80, 'row-height': 80, gap: '0px', columns: 4
