@@ -2,15 +2,9 @@ import React from 'react';
 /**
  * Base props that all Snice React components extend
  */
-export interface SniceBaseProps {
+export interface SniceBaseProps extends React.HTMLAttributes<HTMLElement> {
     /** Ref to the underlying web component element */
     ref?: React.Ref<any>;
-    /** Children to render inside the component */
-    children?: React.ReactNode;
-    /** Class name for styling */
-    className?: string;
-    /** Inline styles */
-    style?: React.CSSProperties;
 }
 /**
  * Props for form-associated Snice components
@@ -26,14 +20,6 @@ export interface SniceFormProps extends SniceBaseProps {
     required?: boolean;
     /** Whether the control is readonly */
     readonly?: boolean;
-    /** Callback when value changes */
-    onChange?: (event: Event) => void;
-    /** Callback on input */
-    onInput?: (event: Event) => void;
-    /** Callback on blur */
-    onBlur?: (event: FocusEvent) => void;
-    /** Callback on focus */
-    onFocus?: (event: FocusEvent) => void;
 }
 /**
  * Ref type for components with methods
