@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Router, render, html, css, styles } from './test-imports';
 
+let uniqueCounter = 0;
+function uniqueName(prefix: string): string {
+  return `${prefix}-${++uniqueCounter}`;
+}
+
 describe('Router', () => {
   let router: ReturnType<typeof Router>;
   let targetEl: HTMLElement;
@@ -254,6 +259,131 @@ describe('Router', () => {
       
       navigate('/route3');
       expect(targetEl.querySelector('multi-route')).toBeDefined();
+    });
+  });
+
+  describe('guards', () => {
+    it('should allow navigation when async guard resolves to true', async () => {
+      const tagName = uniqueName('async-allow-page');
+      const router = Router({
+        target: '#app',
+        type: 'hash',
+        context: { user: { name: 'Alice' } }
+      });
+      const { page, initialize, navigate } = router;
+
+      const asyncGuard = async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return true;
+      };
+
+      @page({ tag: tagName, routes: ['/async-allow'], guards: asyncGuard })
+      class AsyncAllowPage extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Async Allowed</div>`;
+        }
+      }
+
+      initialize();
+      await navigate('/async-allow');
+
+      const el = targetEl.querySelector(tagName);
+      expect(el).toBeDefined();
+      expect(el).not.toBeNull();
+    });
+
+    it('should block navigation when async guard resolves to false', async () => {
+      const tagName = uniqueName('async-deny-page');
+      const router = Router({
+        target: '#app',
+        type: 'hash',
+        context: { user: null }
+      });
+      const { page, initialize, navigate } = router;
+
+      const asyncGuard = async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return false;
+      };
+
+      @page({ tag: tagName, routes: ['/async-deny'], guards: asyncGuard })
+      class AsyncDenyPage extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Should Not See This</div>`;
+        }
+      }
+
+      initialize();
+      await navigate('/async-deny');
+
+      const el = targetEl.querySelector(tagName);
+      expect(el).toBeNull();
+      // Should render 403
+      expect(targetEl.innerHTML).toContain('403');
+    });
+
+    it('should require all guards to pass with mixed sync and async guards', async () => {
+      const tagName = uniqueName('mixed-guard-page');
+      const router = Router({
+        target: '#app',
+        type: 'hash',
+        context: { user: { role: 'admin' } }
+      });
+      const { page, initialize, navigate } = router;
+
+      const syncGuard = () => true;
+      const asyncGuard = async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return true;
+      };
+
+      @page({ tag: tagName, routes: ['/mixed-guards'], guards: [syncGuard, asyncGuard] })
+      class MixedGuardPage extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Mixed Guards Passed</div>`;
+        }
+      }
+
+      initialize();
+      await navigate('/mixed-guards');
+
+      const el = targetEl.querySelector(tagName);
+      expect(el).toBeDefined();
+      expect(el).not.toBeNull();
+    });
+
+    it('should block when any guard in mixed array fails', async () => {
+      const tagName = uniqueName('mixed-fail-page');
+      const router = Router({
+        target: '#app',
+        type: 'hash',
+        context: {}
+      });
+      const { page, initialize, navigate } = router;
+
+      const syncGuard = () => true;
+      const asyncGuardFail = async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return false;
+      };
+
+      @page({ tag: tagName, routes: ['/mixed-fail'], guards: [syncGuard, asyncGuardFail] })
+      class MixedFailPage extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Should Not See This</div>`;
+        }
+      }
+
+      initialize();
+      await navigate('/mixed-fail');
+
+      const el = targetEl.querySelector(tagName);
+      expect(el).toBeNull();
+      expect(targetEl.innerHTML).toContain('403');
     });
   });
 });
