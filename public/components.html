@@ -1017,41 +1017,253 @@ tiles.addEventListener('tile-click',
     <!-- ── Binpack ── -->
     <div class="comp-section" data-category="Layout" data-cat-index="1" data-cat-order="10">
       <h3>Binpack</h3>
-      <p class="comp-desc">JS-driven bin-packing layout — items fill gaps like Tetris</p>
+      <p class="comp-desc">Draggable bin-packing layout — items fill gaps like Tetris. Drag widgets to rearrange.</p>
       <style>
-        .bp-item { display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white; opacity: 0.92; }
+        .bp-widget {
+          border-radius: 10px;
+          font-size: 0.75rem;
+          color: #e0e0e0;
+          overflow: hidden;
+          user-select: none;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          display: flex;
+          flex-direction: column;
+        }
+        .bp-widget-header {
+          padding: 0.5rem 0.75rem;
+          font-weight: 600;
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          opacity: 0.7;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+        .bp-widget-body {
+          flex: 1;
+          padding: 0.25rem 0.75rem 0.6rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .bp-big-num {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #fff;
+          line-height: 1.1;
+        }
+        .bp-sub {
+          font-size: 0.6rem;
+          opacity: 0.6;
+          margin-top: 0.15rem;
+        }
+        .bp-bar-row {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          margin-top: 0.25rem;
+        }
+        .bp-bar {
+          flex: 1;
+          height: 4px;
+          border-radius: 2px;
+          background: rgba(255,255,255,0.15);
+          overflow: hidden;
+        }
+        .bp-bar-fill {
+          height: 100%;
+          border-radius: 2px;
+        }
+        .bp-bar-label {
+          font-size: 0.55rem;
+          opacity: 0.5;
+          min-width: 2rem;
+          text-align: right;
+        }
+        .bp-sparkline {
+          display: flex;
+          align-items: flex-end;
+          gap: 2px;
+          height: 32px;
+          margin-top: 0.3rem;
+        }
+        .bp-sparkline span {
+          flex: 1;
+          border-radius: 1.5px;
+          min-width: 3px;
+        }
+        .bp-gauge {
+          width: 56px;
+          height: 56px;
+          margin: 0 auto 0.15rem;
+        }
+        .bp-list-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.2rem 0;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          font-size: 0.6rem;
+        }
+        .bp-list-item:last-child { border: none; }
+        .bp-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 0.3rem; }
+        .bp-up { color: #4ade80; }
+        .bp-down { color: #f87171; }
       </style>
       <div class="comp-split">
         <div class="comp-split-demo" style="width:100%">
-          <snice-binpack gap="6px">
-            <div class="bp-item" style="width:180px;height:120px;background:var(--snice-color-primary,rgb(37 99 235))">1</div>
-            <div class="bp-item" style="width:120px;height:180px;background:rgb(22 163 74)">2</div>
-            <div class="bp-item" style="width:240px;height:60px;background:rgb(220 38 38)">3</div>
-            <div class="bp-item" style="width:60px;height:120px;background:rgb(139 92 246)">4</div>
-            <div class="bp-item" style="width:120px;height:120px;background:rgb(234 179 8)">5</div>
-            <div class="bp-item" style="width:180px;height:60px;background:rgb(236 72 153)">6</div>
-            <div class="bp-item" style="width:60px;height:60px;background:rgb(249 115 22)">7</div>
-            <div class="bp-item" style="width:120px;height:60px;background:rgb(168 85 247)">8</div>
-            <div class="bp-item" style="width:180px;height:120px;background:rgb(20 184 166)">9</div>
-            <div class="bp-item" style="width:60px;height:180px;background:rgb(14 165 233)">10</div>
-            <div class="bp-item" style="width:120px;height:60px;background:rgb(244 63 94)">11</div>
-            <div class="bp-item" style="width:240px;height:120px;background:rgb(34 197 94)">12</div>
+          <snice-binpack draggable gap="8px" column-width="80" row-height="80" style="max-width:520px">
+
+            <!-- Revenue: 2x2 -->
+            <div class="bp-widget" name="revenue" style="width:168px;height:168px;background:linear-gradient(135deg,#1e3a5f,#2563eb)">
+              <div class="bp-widget-header">&#x1f4b0; Revenue</div>
+              <div class="bp-widget-body">
+                <div class="bp-big-num">$48.2k</div>
+                <div class="bp-sub"><span class="bp-up">&#9650; 12.5%</span> vs last month</div>
+                <div class="bp-sparkline">
+                  <span style="height:40%;background:#3b82f6"></span>
+                  <span style="height:55%;background:#3b82f6"></span>
+                  <span style="height:45%;background:#3b82f6"></span>
+                  <span style="height:70%;background:#3b82f6"></span>
+                  <span style="height:60%;background:#3b82f6"></span>
+                  <span style="height:85%;background:#3b82f6"></span>
+                  <span style="height:75%;background:#60a5fa"></span>
+                  <span style="height:95%;background:#60a5fa"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Users: 1x1 -->
+            <div class="bp-widget" name="users" style="width:80px;height:80px;background:linear-gradient(135deg,#134e4a,#14b8a6)">
+              <div class="bp-widget-header">Users</div>
+              <div class="bp-widget-body">
+                <div class="bp-big-num" style="font-size:1.2rem">3,842</div>
+                <div class="bp-sub"><span class="bp-up">&#9650; 8%</span></div>
+              </div>
+            </div>
+
+            <!-- CPU: 1x1 gauge -->
+            <div class="bp-widget" name="cpu" style="width:80px;height:80px;background:linear-gradient(135deg,#3b1764,#8b5cf6)">
+              <div class="bp-widget-header">CPU</div>
+              <div class="bp-widget-body" style="align-items:center;padding-top:0">
+                <svg class="bp-gauge" viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="#a78bfa" stroke-width="5" stroke-dasharray="103 138" stroke-dashoffset="-69" stroke-linecap="round"/>
+                  <text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">74%</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Orders: 2x1 -->
+            <div class="bp-widget" name="orders" style="width:168px;height:80px;background:linear-gradient(135deg,#4a1d2e,#e11d48)">
+              <div class="bp-widget-header">&#x1f4e6; Today's Orders</div>
+              <div class="bp-widget-body" style="flex-direction:row;align-items:center;gap:1rem">
+                <div>
+                  <div class="bp-big-num" style="font-size:1.3rem">284</div>
+                  <div class="bp-sub">processed</div>
+                </div>
+                <div style="flex:1">
+                  <div class="bp-bar-row"><div class="bp-bar"><div class="bp-bar-fill" style="width:82%;background:#fb7185"></div></div><div class="bp-bar-label">82%</div></div>
+                  <div class="bp-bar-row"><div class="bp-bar"><div class="bp-bar-fill" style="width:12%;background:#fbbf24"></div></div><div class="bp-bar-label">12%</div></div>
+                  <div class="bp-bar-row"><div class="bp-bar"><div class="bp-bar-fill" style="width:6%;background:#94a3b8"></div></div><div class="bp-bar-label">6%</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Memory: 1x1 gauge -->
+            <div class="bp-widget" name="memory" style="width:80px;height:80px;background:linear-gradient(135deg,#1a3320,#16a34a)">
+              <div class="bp-widget-header">Mem</div>
+              <div class="bp-widget-body" style="align-items:center;padding-top:0">
+                <svg class="bp-gauge" viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="#4ade80" stroke-width="5" stroke-dasharray="83 138" stroke-dashoffset="-69" stroke-linecap="round"/>
+                  <text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">61%</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Traffic: 3x1 -->
+            <div class="bp-widget" name="traffic" style="width:256px;height:80px;background:linear-gradient(135deg,#1e293b,#334155)">
+              <div class="bp-widget-header">&#x1f310; Traffic Sources</div>
+              <div class="bp-widget-body" style="padding-top:0">
+                <div class="bp-list-item"><span><span class="bp-dot" style="background:#3b82f6"></span>Organic</span><span style="color:#fff">45%</span></div>
+                <div class="bp-list-item"><span><span class="bp-dot" style="background:#8b5cf6"></span>Social</span><span style="color:#fff">28%</span></div>
+                <div class="bp-list-item"><span><span class="bp-dot" style="background:#f97316"></span>Direct</span><span style="color:#fff">18%</span></div>
+                <div class="bp-list-item"><span><span class="bp-dot" style="background:#94a3b8"></span>Other</span><span style="color:#fff">9%</span></div>
+              </div>
+            </div>
+
+            <!-- Conversion: 1x2 -->
+            <div class="bp-widget" name="conversion" style="width:80px;height:168px;background:linear-gradient(180deg,#1e3a5f,#0f172a)">
+              <div class="bp-widget-header" style="font-size:0.55rem">Conv.</div>
+              <div class="bp-widget-body" style="align-items:center;gap:0.5rem">
+                <svg class="bp-gauge" viewBox="0 0 56 56" style="width:48px;height:48px">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="#60a5fa" stroke-width="5" stroke-dasharray="42 138" stroke-dashoffset="-69" stroke-linecap="round"/>
+                  <text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">3.2%</text>
+                </svg>
+                <div style="text-align:center">
+                  <div style="font-size:0.55rem;opacity:0.5">Goal: 4%</div>
+                  <div class="bp-bar" style="width:40px;margin-top:0.2rem"><div class="bp-bar-fill" style="width:80%;background:#60a5fa"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Uptime: 1x1 -->
+            <div class="bp-widget" name="uptime" style="width:80px;height:80px;background:linear-gradient(135deg,#1a2e05,#65a30d)">
+              <div class="bp-widget-header" style="font-size:0.55rem">Uptime</div>
+              <div class="bp-widget-body" style="align-items:center">
+                <div class="bp-big-num" style="font-size:1.1rem">99.9%</div>
+                <div class="bp-sub">30d avg</div>
+              </div>
+            </div>
+
+            <!-- Alerts: 2x1 -->
+            <div class="bp-widget" name="alerts" style="width:168px;height:80px;background:linear-gradient(135deg,#431407,#ea580c)">
+              <div class="bp-widget-header">&#x1f514; Alerts</div>
+              <div class="bp-widget-body" style="padding-top:0">
+                <div class="bp-list-item"><span style="color:#fbbf24">&#x26a0;</span><span style="color:#fff">DB latency spike</span><span style="opacity:0.5">2m ago</span></div>
+                <div class="bp-list-item"><span style="color:#4ade80">&#x2713;</span><span style="color:#fff">Deploy complete</span><span style="opacity:0.5">14m ago</span></div>
+                <div class="bp-list-item"><span style="color:#94a3b8">&#x2139;</span><span style="color:#fff">Scaling up +2</span><span style="opacity:0.5">31m ago</span></div>
+              </div>
+            </div>
+
+            <!-- Disk: 1x1 -->
+            <div class="bp-widget" name="disk" style="width:80px;height:80px;background:linear-gradient(135deg,#1c1917,#78716c)">
+              <div class="bp-widget-header" style="font-size:0.55rem">Disk</div>
+              <div class="bp-widget-body" style="align-items:center;padding-top:0">
+                <svg class="bp-gauge" viewBox="0 0 56 56">
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+                  <circle cx="28" cy="28" r="22" fill="none" stroke="#fbbf24" stroke-width="5" stroke-dasharray="97 138" stroke-dashoffset="-69" stroke-linecap="round"/>
+                  <text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">71%</text>
+                </svg>
+              </div>
+            </div>
+
           </snice-binpack>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-binpack gap="6px"&gt;
-  &lt;div style="width:180px;height:120px"&gt;1&lt;/div&gt;
-  &lt;div style="width:120px;height:180px"&gt;2&lt;/div&gt;
-  &lt;div style="width:240px;height:60px"&gt;3&lt;/div&gt;
-  &lt;div style="width:60px;height:120px"&gt;4&lt;/div&gt;
-  &lt;!-- Items are 60px multiples — gaps fill perfectly --&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-binpack draggable gap="8px"
+  column-width="80" row-height="80"&gt;
+  &lt;div style="width:168px;height:168px"&gt;
+    Revenue widget...
+  &lt;/div&gt;
+  &lt;div style="width:80px;height:80px"&gt;
+    Users widget...
+  &lt;/div&gt;
+  &lt;!-- Items pack tightly, drag to rearrange --&gt;
 &lt;/snice-binpack&gt;
 
-&lt;!-- Grid-snapped --&gt;
-&lt;snice-binpack column-width="100" row-height="100"&gt;
-  ...
-&lt;/snice-binpack&gt;</snice-code-block>
+&lt;!-- Attributes --&gt;
+&lt;snice-binpack
+  draggable          &lt;!-- enable drag-to-reorder --&gt;
+  gap="8px"          &lt;!-- spacing between items --&gt;
+  column-width="80"  &lt;!-- grid snap width --&gt;
+  row-height="80"    &lt;!-- grid snap height --&gt;
+  horizontal         &lt;!-- pack left-to-right --&gt;
+  stagger="40"       &lt;!-- cascade transition delay --&gt;
+&gt;&lt;/snice-binpack&gt;</snice-code-block>
         </div>
       </div>
     </div>
@@ -8323,9 +8535,11 @@ weather.data = {
       'data': ['table', 'spreadsheet', 'chart', 'kpi', 'heatmap', 'virtual scroller', 'data card', 'metric table', 'stat group', 'leaderboard'],
       'layout': ['split pane', 'masonry', 'binpack', 'accordion', 'tabs', 'carousel', 'divider'],
       'binpack': ['binpack'],
-      'packery': ['binpack'],
       'tetris': ['binpack'],
       'bin packing': ['binpack'],
+      'draggable grid': ['binpack'],
+      'draggable dashboard': ['binpack'],
+      'drag reorder': ['binpack', 'sortable'],
       'feedback': ['alert', 'toast', 'banner', 'spinner', 'progress', 'skeleton', 'empty state', 'message strip', 'activity feed'],
       'loading': ['spinner', 'progress', 'skeleton', 'progress ring'],
       'scan': ['qr code', 'qr reader', 'camera'],
