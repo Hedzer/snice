@@ -6,7 +6,7 @@ import * as storage from '../../src/services/storage';
 describe('Auth Middleware', () => {
   let mockContext: Context;
   let mockRequest: Request;
-  let mockNext: ReturnType<typeof vi.fn>;
+  let mockNext: any;
 
   beforeEach(() => {
     localStorage.clear();

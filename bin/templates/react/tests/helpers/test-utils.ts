@@ -42,12 +42,7 @@ export function cleanup(): void {
 /**
  * Mock localStorage for tests
  */
-export function mockLocalStorage(): {
-  getItem: ReturnType<typeof vi.fn>;
-  setItem: ReturnType<typeof vi.fn>;
-  removeItem: ReturnType<typeof vi.fn>;
-  clear: ReturnType<typeof vi.fn>;
-} {
+export function mockLocalStorage() {
   const store: Record<string, string> = {};
 
   return {
@@ -71,7 +66,7 @@ export function mockFetch(
   response: unknown = {},
   status = 200,
   ok = true
-): ReturnType<typeof vi.fn> {
+) {
   return vi.fn(() =>
     Promise.resolve({
       ok,
