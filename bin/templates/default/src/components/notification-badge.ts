@@ -37,7 +37,7 @@ export class NotificationBadge extends HTMLElement {
         min-width: 18px;
         height: 18px;
         padding: 0 4px;
-        background: var(--danger-color);
+        background: var(--snice-color-danger);
         color: white;
         font-size: 0.6875rem;
         font-weight: 600;
