@@ -112,5 +112,3 @@ export function useRoute(): string {
   return useSniceContext().navigation.route;
 }
 
-// Export the raw context for SniceRouter to use as its provider
-export { SniceCtx as SniceContextInternal };
