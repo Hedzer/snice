@@ -267,8 +267,8 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       // Apply grid attributes from layout
       item.setAttribute('grid-col', String(entry.col));
       item.setAttribute('grid-row', String(entry.row));
-      if (entry.colspan) item.setAttribute('grid-colspan', String(entry.colspan));
-      if (entry.rowspan) item.setAttribute('grid-rowspan', String(entry.rowspan));
+      if (entry.colspan != null) item.setAttribute('grid-colspan', String(entry.colspan));
+      if (entry.rowspan != null) item.setAttribute('grid-rowspan', String(entry.rowspan));
 
       if (entry.hidden) {
         item.setAttribute('hidden', '');
@@ -387,16 +387,16 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       const colspan = parseInt(item.getAttribute('grid-colspan') || '1', 10);
       const rowspan = parseInt(item.getAttribute('grid-rowspan') || '1', 10);
 
-      // Check collision and find free spot
+      // Check collision and find free spot (push right-then-down from requested position)
       if (occupancy.isOccupied(col, row, colspan, rowspan)) {
-        const free = occupancy.findNextFree(0, 0, colspan, rowspan, maxCols);
+        const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
         col = free.col;
         row = free.row;
       }
 
       // Also check that item fits within column constraint
       if (maxCols > 0 && col + colspan > maxCols) {
-        const free = occupancy.findNextFree(0, 0, colspan, rowspan, maxCols);
+        const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
         col = free.col;
         row = free.row;
       }
