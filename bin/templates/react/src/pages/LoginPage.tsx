@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState } from 'react';
 import { useSniceContext, useNavigate, Login, useRequestHandler } from 'snice/react';
 import 'snice/components/login/snice-login';
 

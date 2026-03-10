@@ -6,7 +6,7 @@ import type { Principal } from '../../src/types/auth';
 
 describe('Error Middleware', () => {
   let mockContext: Context;
-  let mockNext: ReturnType<typeof vi.fn>;
+  let mockNext: any;
   let originalLocation: Location;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('Error Middleware', () => {
 
     // Mock window.location
     delete (window as any).location;
-    window.location = { href: '' } as Location;
+    (window as any).location = { href: '' };
 
     // Create mock context
     mockContext = {
@@ -41,7 +41,7 @@ describe('Error Middleware', () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
+    (window as any).location = originalLocation;
   });
 
   it('should pass through successful responses', async () => {
