@@ -239,6 +239,17 @@ export function Router(options: RouterOptions): RouterInstance {
     currentLayoutTimestamp = null;
   }
 
+  function createLoadingSpinner(): HTMLElement {
+    const container = doc.createElement('div');
+    container.setAttribute('data-snice-loading', '');
+    container.innerHTML = /*html*/`
+      <style>@keyframes snice-spin{to{transform:rotate(360deg)}}</style>
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px">
+        <div style="width:32px;height:32px;border:3px solid rgba(128,128,128,0.3);border-top-color:rgba(128,128,128,0.8);border-radius:50%;animation:snice-spin 0.6s linear infinite"></div>
+      </div>`;
+    return container;
+  }
+
   async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element): Promise<boolean> {
     const hasGuards = !!guards;
     if (!hasGuards) {
@@ -246,14 +257,28 @@ export function Router(options: RouterOptions): RouterInstance {
     }
 
     const guardsArray = Array.isArray(guards) ? guards : [guards];
-    for (const guard of guardsArray) {
-      const allowed = await guard(context, params);
-      if (!allowed) {
-        renderForbiddenPage(target);
-        return false;
+    let spinner: HTMLElement | null = null;
+    let spinnerTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Show spinner after a short delay (avoids flash for fast sync guards)
+    spinnerTimer = setTimeout(() => {
+      spinner = createLoadingSpinner();
+      target.appendChild(spinner);
+    }, 50);
+
+    try {
+      for (const guard of guardsArray) {
+        const allowed = await guard(context, params);
+        if (!allowed) {
+          renderForbiddenPage(target);
+          return false;
+        }
       }
+      return true;
+    } finally {
+      if (spinnerTimer) clearTimeout(spinnerTimer);
+      if (spinner) spinner.remove();
     }
-    return true;
   }
 
   function createHomeElement(): { element: HTMLElement; transition?: Transition; layout?: string | false } {
