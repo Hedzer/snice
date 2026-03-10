@@ -171,11 +171,11 @@ export class AppHeader extends HTMLElement {
         cursor: pointer;
         padding: 0.375rem 0.5rem;
         border-radius: var(--snice-border-radius-lg);
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       .user-btn:hover {
-        background: var(--bg-secondary);
+        background: var(--snice-color-background-secondary);
       }
 
       .user-name {
@@ -192,7 +192,7 @@ export class AppHeader extends HTMLElement {
         background: var(--snice-color-background);
         border: 1px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-lg);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--snice-shadow-lg);
         padding: 0.5rem 0;
         z-index: 100;
       }
@@ -202,7 +202,7 @@ export class AppHeader extends HTMLElement {
         display: block;
         width: 100%;
         padding: 0.5rem 1rem;
-        color: var(--text-color);
+        color: var(--snice-color-text);
         text-decoration: none;
         background: none;
         border: none;
@@ -213,7 +213,7 @@ export class AppHeader extends HTMLElement {
 
       .user-menu a:hover,
       .user-menu button:hover {
-        background: var(--bg-secondary);
+        background: var(--snice-color-background-secondary);
         color: var(--snice-color-primary);
       }
 
