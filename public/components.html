@@ -8403,7 +8403,12 @@ weather.data = {
           .replace(/`([^`]+)`/g, (_, code) => '<code>' + code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code>')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, href) => {
+            if (href.startsWith('#')) {
+              return '<a href="#doc-' + href.slice(1) + '" data-doc-anchor>' + text + '</a>';
+            }
+            return '<a href="' + href + '">' + text + '</a>';
+          });
       }
 
       for (const line of lines) {
@@ -8443,7 +8448,9 @@ weather.data = {
           flushList();
           const lvl = line.match(/^(#+)/)[1].length;
           const tag = 'h' + Math.min(lvl + 1, 5);
-          html += '<' + tag + '>' + inline(line.replace(/^#+\s*/, '')) + '</' + tag + '>';
+          const text = line.replace(/^#+\s*/, '');
+          const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+          html += '<' + tag + ' id="doc-' + id + '">' + inline(text) + '</' + tag + '>';
           continue;
         }
 
@@ -8947,6 +8954,15 @@ weather.data = {
           iframe.src = src;
         }
       }
+
+      body.addEventListener('click', e => {
+        const anchor = e.target.closest('a[data-doc-anchor]');
+        if (!anchor) return;
+        e.preventDefault();
+        const id = anchor.getAttribute('href').slice(1);
+        const target = body.querySelector('#' + CSS.escape(id));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
 
       document.addEventListener('click', async e => {
         const btn = e.target.closest('.more-link');
