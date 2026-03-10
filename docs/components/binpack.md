@@ -1,7 +1,7 @@
 # Binpack
 `<snice-binpack>`
 
-A JavaScript-driven bin-packing layout component inspired by Packery. Uses the maximal rectangles algorithm to efficiently pack items of varying sizes into a container with absolute positioning and smooth transitions.
+A JavaScript-driven bin-packing layout component. Uses the maximal rectangles algorithm to efficiently pack items of varying sizes into a container with absolute positioning and smooth transitions.
 
 ## Basic Usage
 

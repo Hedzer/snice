@@ -26,7 +26,8 @@ function rectOverlaps(a: Rect, b: Rect): boolean {
 }
 
 function canFit(space: Rect, item: Rect): boolean {
-  return item.width <= space.width && item.height <= space.height;
+  // 1px tolerance for sub-pixel rounding errors
+  return space.width >= item.width - 1 && space.height >= item.height - 1;
 }
 
 /**
@@ -66,37 +67,51 @@ function getMaximalFreeRects(space: Rect, placed: Rect): Rect[] {
 
 class Packer {
   spaces: Rect[];
+  width: number;
+  height: number;
   private horizontal: boolean;
 
   constructor(width: number, height: number, horizontal: boolean) {
+    this.width = width;
+    this.height = height;
     this.horizontal = horizontal;
     this.spaces = [{ x: 0, y: 0, width, height }];
   }
 
   /**
-   * Find first fitting space and return the placement position.
-   * If columnWidth/rowHeight are provided, snap to grid.
+   * Snap item dimensions to the nearest grid multiple.
+   * If gridSize is set, round UP to the next (gridSize + gutter) multiple.
    */
-  pack(itemWidth: number, itemHeight: number, columnWidth: number, rowHeight: number): { x: number; y: number } | null {
-    const item: Rect = { x: 0, y: 0, width: itemWidth, height: itemHeight };
+  private applyGrid(measurement: number, gridSize: number, gutter: number): number {
+    if (!gridSize) return measurement;
+    const gridWithGutter = gridSize + gutter;
+    const remainder = measurement % gridWithGutter;
+    const method = remainder && remainder < 1 ? 'round' : 'ceil';
+    return Math[method](measurement / gridWithGutter) * gridWithGutter;
+  }
+
+  /**
+   * Find first fitting space and return the placement position.
+   * If columnWidth/rowHeight are provided, snap item SIZE to grid.
+   */
+  pack(itemWidth: number, itemHeight: number, columnWidth: number, rowHeight: number, gutter: number): { x: number; y: number } | null {
+    // Snap item size to grid multiples
+    const w = this.applyGrid(itemWidth, columnWidth, gutter);
+    const h = this.applyGrid(itemHeight, rowHeight, gutter);
+
+    // Clamp to packer bounds
+    const item: Rect = {
+      x: 0, y: 0,
+      width: Math.min(w, this.width),
+      height: Math.min(h, this.height),
+    };
 
     for (const space of this.spaces) {
       if (canFit(space, item)) {
-        let x = space.x;
-        let y = space.y;
-
-        // Grid snapping
-        if (columnWidth > 0) {
-          x = Math.round(x / columnWidth) * columnWidth;
-        }
-        if (rowHeight > 0) {
-          y = Math.round(y / rowHeight) * rowHeight;
-        }
-
-        item.x = x;
-        item.y = y;
+        item.x = space.x;
+        item.y = space.y;
         this.placed(item);
-        return { x, y };
+        return { x: space.x, y: space.y };
       }
     }
 
@@ -383,10 +398,11 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     const containerHeight = this.clientHeight;
     const gapPx = this.getGapPixels();
 
-    // Vertical: constrained by container width, infinite height
-    // Horizontal: constrained by container height, infinite width
-    const packWidth = this.horizontal ? 100000 : containerWidth;
-    const packHeight = this.horizontal ? containerHeight : 100000;
+    // Packer dimensions include one extra gutter so edge items fit.
+    // Vertical: constrained by container width, infinite height.
+    // Horizontal: constrained by container height, infinite width.
+    const packWidth = this.horizontal ? 100000 : containerWidth + gapPx;
+    const packHeight = this.horizontal ? containerHeight + gapPx : 100000;
 
     const packer = new Packer(packWidth, packHeight, this.horizontal);
 
@@ -426,7 +442,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
       const itemWidth = item.offsetWidth + gapPx;
       const itemHeight = item.offsetHeight + gapPx;
 
-      const position = packer.pack(itemWidth, itemHeight, this.columnWidth, this.rowHeight);
+      const position = packer.pack(itemWidth, itemHeight, this.columnWidth, this.rowHeight, gapPx);
 
       if (position) {
         let x = position.x;
@@ -451,13 +467,14 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
       }
     }
 
-    // Set container height (or width for horizontal)
+    // Set container size, subtracting trailing gutter
+    const containerSize = Math.max(0, maxExtent - gapPx);
     if (this.container) {
       if (this.horizontal) {
-        this.container.style.width = `${maxExtent}px`;
+        this.container.style.width = `${containerSize}px`;
         this.container.style.height = '';
       } else {
-        this.container.style.height = `${maxExtent}px`;
+        this.container.style.height = `${containerSize}px`;
         this.container.style.width = '';
       }
     }
