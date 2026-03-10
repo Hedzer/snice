@@ -14,10 +14,9 @@ For per-component docs, use the MCP server: `claude mcp add snice -- npx snice m
 ## Installation
 
 ```bash
-npx snice create-app my-app --template=base   # or --template=pwa
+npx snice create-app my-app
+npx snice create-app my-app --template=react
 ```
-
-Note: Use `--template=base` (equals sign), not `--template base` (space).
 
 ### Manual Setup
 

@@ -37,7 +37,7 @@ Four building blocks:
 ## Quick Start
 
 ```bash
-npx snice create-app my-app --template=base
+npx snice create-app my-app
 ```
 
 ```typescript
