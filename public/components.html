@@ -5213,6 +5213,51 @@ nav.update([
           <div style="height:400px">
             <snice-paint id="demo-paint" color-selects="2" style="display:block;width:100%;height:100%"></snice-paint>
           </div>
+          <script>
+            (function() {
+              function wave(cx, cy, amp, freq, len, steps) {
+                const pts = [];
+                for (let i = 0; i <= steps; i++) {
+                  const t = i / steps;
+                  pts.push({ x: cx + t * len, y: cy + Math.sin(t * freq * Math.PI) * amp, pressure: 0.5 });
+                }
+                return pts;
+              }
+              function spiral(cx, cy, r, turns, steps) {
+                const pts = [];
+                for (let i = 0; i <= steps; i++) {
+                  const t = i / steps;
+                  const angle = t * turns * Math.PI * 2;
+                  const radius = r * t;
+                  pts.push({ x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius, pressure: 0.5 });
+                }
+                return pts;
+              }
+              function curve(points, steps) {
+                const pts = [];
+                for (let i = 0; i <= steps; i++) {
+                  const t = i / steps;
+                  const idx = Math.min(Math.floor(t * (points.length - 1)), points.length - 2);
+                  const lt = t * (points.length - 1) - idx;
+                  pts.push({
+                    x: points[idx][0] + (points[idx + 1][0] - points[idx][0]) * lt,
+                    y: points[idx][1] + (points[idx + 1][1] - points[idx][1]) * lt,
+                    pressure: 0.5
+                  });
+                }
+                return pts;
+              }
+              const strokes = [
+                { id: 's1', tool: 'pen', color: '#3b82f6', width: 4, points: wave(40, 120, 40, 3, 300, 60), timestamp: 1 },
+                { id: 's2', tool: 'pen', color: '#ef4444', width: 3, points: spiral(200, 250, 60, 3, 80), timestamp: 2 },
+                { id: 's3', tool: 'pen', color: '#10b981', width: 5, points: curve([[30,200],[80,80],[180,300],[280,180],[350,220]], 50), timestamp: 3 },
+                { id: 's4', tool: 'pen', color: '#f59e0b', width: 3, points: wave(60, 300, 30, 4, 280, 50), timestamp: 4 },
+                { id: 's5', tool: 'pen', color: '#8b5cf6', width: 4, points: curve([[300,60],[340,160],[280,260],[350,340]], 40), timestamp: 5 },
+              ];
+              const el = document.getElementById('demo-paint');
+              if (el) el.addEventListener('ready', function() { el.setStrokes(strokes); }, { once: true });
+            })();
+          </script>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -7507,7 +7552,7 @@ stepper.currentStep = 1;</snice-code-block>
         } else if (command === 'status') {
           terminal.writeln('All systems operational ✓', 'success');
         } else if (command === 'version') {
-          terminal.writeln('Snice v4.29.0 (build ea70767)', 'info');
+          terminal.writeln('Snice v4.8.0 (build ea70767)', 'info');
         } else if (command.startsWith('echo ')) {
           terminal.writeln(command.slice(5));
         } else {
