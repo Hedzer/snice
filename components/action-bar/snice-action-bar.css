@@ -7,6 +7,10 @@
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
+}
+
+/* Transitions only after ready — prevents animate-out on initial style application */
+:host([ready]) {
   transition: opacity var(--snice-transition-medium, 250ms) ease, transform var(--snice-transition-medium, 250ms) ease, visibility 0s linear var(--snice-transition-medium, 250ms);
 }
 
@@ -132,8 +136,12 @@
   transform: translate(0, 0);
 }
 
-/* Inner container */
+/* Inner container — hidden until @ready to prevent FOUC */
 .action-bar {
+  display: none;
+}
+
+:host([ready]) .action-bar {
   display: inline-flex;
   align-items: center;
   gap: var(--action-bar-gap, var(--snice-spacing-2xs, 0.25rem));

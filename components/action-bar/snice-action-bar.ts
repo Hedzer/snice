@@ -16,7 +16,9 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
 
   @ready()
   onReady() {
-    this.setAttribute('data-ready', '');
+    // Delay enabling transitions so the browser paints the hidden state first.
+    // Without this, the element visibly animates to hidden on upgrade.
+    setTimeout(() => this.setAttribute('ready', ''), 10);
   }
 
   @watch('open')
