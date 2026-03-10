@@ -1,3 +1,41 @@
+# [4.29.0](https://github.com/Hedzer/snice/compare/v4.28.0...v4.29.0) (2026-03-10)
+
+
+### Bug Fixes
+
+* **action-bar:** address code review — decorators, a11y, CSS, tests ([f44f2ca](https://github.com/Hedzer/snice/commit/f44f2ca74091449f60bbd3b571e999ddff67647a))
+* **action-bar:** use snice-button circle text in showcase and full-showcase ([ceea751](https://github.com/Hedzer/snice/commit/ceea7517f6da16257efb22dd9e72f5dca9c1d164))
+* **action-bar:** use snice-button circle text variant, fix fade-on-load ([d4bc8c4](https://github.com/Hedzer/snice/commit/d4bc8c4c7f6d37a3775e84b0ae06edd9c7bfa0d5))
+* align binpack algorithm with maximal rectangles reference ([3c8d04e](https://github.com/Hedzer/snice/commit/3c8d04edf55c4c72e481abfb25994d6295c69df7))
+* binpack zero-width in flex containers and improve showcase ([9497d8d](https://github.com/Hedzer/snice/commit/9497d8d28d65b68906aa3639dfd018ec9259265e))
+* **binpack:** support pending layout for late-arriving items ([cff3598](https://github.com/Hedzer/snice/commit/cff3598f9aff4a10c525f01a98aafaaa9424f710))
+* **button:** center icons in circle buttons, remove translateY hack for circle mode ([ce15817](https://github.com/Hedzer/snice/commit/ce15817dc0734d124665f635204a9480a6c8dff8))
+* circle button icon sizing and alignment ([3c59f63](https://github.com/Hedzer/snice/commit/3c59f6378cb682a1512215812c55a77b445ff757))
+* prevent action-bar FOUC and animate-out on initial render ([c9da203](https://github.com/Hedzer/snice/commit/c9da203741f55e7bdfae7e25b02af787a045f0c0))
+* remove data-ready transition gate from action-bar ([04639bb](https://github.com/Hedzer/snice/commit/04639bb654fce8f9e0530051374f94f303679889))
+* use 60px-multiple item sizes in binpack showcase for tight packing ([52c0ac1](https://github.com/Hedzer/snice/commit/52c0ac100de2b58a560f403969689793232b4480))
+* use pixel sizes in binpack horizontal and grid-snapped demos ([42db6bc](https://github.com/Hedzer/snice/commit/42db6bcdadc1a047e8964a4430448c50a4f1c64f))
+
+
+### Features
+
+* **action-bar:** add component implementation ([17fd187](https://github.com/Hedzer/snice/commit/17fd187cdaab5aff975fbb52381d80e1008f3954))
+* **action-bar:** add component styles ([2cf77b3](https://github.com/Hedzer/snice/commit/2cf77b3b6774cadd18376176aafc77d8a6a8388e))
+* **action-bar:** add demo page ([fc172a9](https://github.com/Hedzer/snice/commit/fc172a95a146eacf4cdb56ccf33c6270c2c39e23))
+* **action-bar:** add full showcase ([4ce2ded](https://github.com/Hedzer/snice/commit/4ce2dedda8553f024aebd860b4509d0bab19f56e))
+* **action-bar:** add React adapter and tests ([cf83649](https://github.com/Hedzer/snice/commit/cf83649e75d75a5be4d4ba9d4cb639c9564ccaae))
+* **action-bar:** add type definitions ([1105729](https://github.com/Hedzer/snice/commit/11057298d635698a999fab096a238455781c66e8))
+* **action-bar:** add website showcase ([8061c6b](https://github.com/Hedzer/snice/commit/8061c6bed5d346c9f1042c61d8b17c93351bf95a))
+* **action-bar:** complete component, remove from WIP ([8cd42d9](https://github.com/Hedzer/snice/commit/8cd42d91cbf7f8bcef697cdc24bb1f47e8ed0cf6))
+* add action-bar showcase to components page ([88f4e5c](https://github.com/Hedzer/snice/commit/88f4e5cadc9657e089297ace56cafceb0f6c20b4))
+* add anchor link navigation to inline doc viewer ([8629d11](https://github.com/Hedzer/snice/commit/8629d11ca65af1cedade8170bfb7f1e7d029e003))
+* add createRequestHandler for vanilla JS request/response handling ([e325a34](https://github.com/Hedzer/snice/commit/e325a34456c7b96a3be8e336f0a38455237bdef2))
+* add snice-action-bar component ([f3d5abe](https://github.com/Hedzer/snice/commit/f3d5abe17263d810ba829f905997cd33fe213202))
+* add snice-binpack component ([7a6c36d](https://github.com/Hedzer/snice/commit/7a6c36d5745ad3db28bdb49513c63bb5c3b06571))
+* add useRequestHandler React hook with rollup build ([ee6a3ae](https://github.com/Hedzer/snice/commit/ee6a3aeeba239b53ca86c6a176464cf65f21dd93))
+* **binpack:** add drag-to-reorder and layout serialization API ([6f47088](https://github.com/Hedzer/snice/commit/6f47088d49150c9e2507ad0e4d5f4e26d65a71e9))
+* sync binpack React adapter with drag properties and events ([330a338](https://github.com/Hedzer/snice/commit/330a3380c3665a0389a89370e59b6c1e1ea3569f))
+
 # [4.28.0](https://github.com/Hedzer/snice/compare/v4.27.0...v4.28.0) (2026-03-09)
 
 

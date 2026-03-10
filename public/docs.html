@@ -100,6 +100,7 @@
 <a href="#request-response-request-response-options" class="sub">Request/Response Options</a>
 <a href="#request-response-error-handling" class="sub">Error Handling</a>
 <a href="#request-response-advanced-patterns" class="sub">Advanced Patterns</a>
+<a href="#request-response-using-without-decorators" class="sub">Using Without Decorators</a>
 <a href="#fetcher">Fetcher</a>
 <a href="#fetcher-overview" class="sub">Overview</a>
 <a href="#fetcher-basic-usage" class="sub">Basic Usage</a>
@@ -3585,6 +3586,68 @@ class TickerController implements IController {
     return { subscribed: true };
   }
 }</snice-code-block>
+<h2 id="request-response-using-without-decorators">Using Without Decorators</h2>
+<p>For vanilla JS or React code that needs to respond to <code>@request</code> channels without using the decorator system.</p>
+<h3 id="request-response-vanilla-js-createrequesthandler">Vanilla JS: createRequestHandler</h3>
+<snice-code-block language="javascript" grammar="grammars/typescript.json">import { createRequestHandler } from 'snice';
+
+// Attach handlers to any DOM target (events bubble, so ancestors work)
+const cleanup = createRequestHandler(document.getElementById('app'), {
+  'fetch-user': async (payload) =&gt; {
+    const res = await fetch(`/api/users/${payload.id}`);
+    return res.json();
+  },
+  'save-settings': async (payload) =&gt; {
+    await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
+    return { ok: true };
+  }
+});
+
+// Global handler (catches all bubbling requests)
+const globalCleanup = createRequestHandler(document, {
+  'fetch-user': async (payload) =&gt; ({ name: 'Jane', id: payload.id }),
+});
+
+// Remove all listeners when done
+cleanup();</snice-code-block>
+<p><strong>Options:</strong></p>
+<div class="doc-table-wrap"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td><code>passive</code></td><td><code>boolean</code></td><td><code>false</code></td><td>When true, doesn't stop event propagation (allows multiple handlers)</td></tr></tbody></table></div>
+<h3 id="request-response-react-userequesthandler">React: useRequestHandler</h3>
+<snice-code-block language="tsx" grammar="grammars/typescript.json">import { useRef } from 'react';
+import { useRequestHandler } from 'snice/react/useRequestHandler';
+
+function Dashboard() {
+  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+  // Routes are ref-stable — no useCallback needed
+  useRequestHandler(containerRef, {
+    'fetch-user': async (payload) =&gt; {
+      const res = await fetch(`/api/users/${payload.id}`);
+      return res.json();
+    },
+    'save-settings': async (payload) =&gt; {
+      await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
+      return { ok: true };
+    },
+  });
+
+  return (
+    &lt;div ref={containerRef}&gt;
+      &lt;snice-user-card /&gt;
+      &lt;snice-settings-panel /&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Global handler (null ref = document)
+function GlobalProvider({ children }) {
+  useRequestHandler(null, {
+    'fetch-config': async () =&gt; ({ theme: 'dark', locale: 'en' }),
+  });
+
+  return &lt;&gt;{children}&lt;/&gt;;
+}</snice-code-block>
+<p>The hook automatically cleans up listeners on unmount and re-subscribes only when the set of channel names changes. Route callbacks always use the latest version without re-attaching listeners.</p>
 </section>
 <section class="doc-file" id="fetcher">
 <h1 id="fetcher-fetch-middleware">Fetch Middleware</h1>
@@ -4520,7 +4583,7 @@ getGrammar('myLang');</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.28.0 · MIT</span>
+      <span>Snice v4.29.0 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
