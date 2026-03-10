@@ -373,6 +373,8 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     this.layoutScheduled = true;
     requestAnimationFrame(() => {
       this.layoutScheduled = false;
+      // Don't run scheduled layouts during active drag — it would fight with free drag positioning
+      if (this.dragItem) return;
       this.performLayout();
     });
   }
@@ -425,13 +427,22 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       });
     }
 
+    // Phase 1b: Sort placements — unmoved items first, moved items last.
+    // This ensures static items are in the occupancy grid before moved items
+    // are processed, so the moved item triggers proper swap logic.
+    const sorted = [...placements].sort((a, b) => {
+      const aPrev = this.resolvedPositions.get(a.item);
+      const bPrev = this.resolvedPositions.get(b.item);
+      const aMoved = aPrev ? (aPrev.col !== a.col || aPrev.row !== a.row ? 1 : 0) : 0;
+      const bMoved = bPrev ? (bPrev.col !== b.col || bPrev.row !== b.row ? 1 : 0) : 0;
+      return aMoved - bMoved;
+    });
+
     // Phase 2: Place items with swap-first collision resolution
-    // Process in DOM order. When collision detected:
-    // 1. Try swap — give the occupant this item's requested position
-    // 2. Fall back to push-right-then-down if swap fails (e.g. multiple occupants, or occupant doesn't fit)
+    // Unmoved items placed first, moved items last (so they collide with and swap static items).
     const resolvedMap = new Map<HTMLElement, { col: number; row: number; colspan: number; rowspan: number }>();
 
-    for (const p of placements) {
+    for (const p of sorted) {
       let { col, row } = p;
       const { colspan, rowspan, item } = p;
 
@@ -502,6 +513,16 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
 
       occupancy.occupy(col, row, colspan, rowspan, item);
       resolvedMap.set(item, { col, row, colspan, rowspan });
+    }
+
+    // Phase 2b: Sync grid attributes so displaced items don't snap back on next layout
+    for (const p of placements) {
+      const resolved = resolvedMap.get(p.item);
+      if (!resolved) continue;
+      if (resolved.col !== p.col || resolved.row !== p.row) {
+        p.item.setAttribute('grid-col', String(resolved.col));
+        p.item.setAttribute('grid-row', String(resolved.row));
+      }
     }
 
     // Phase 3: Apply positions to DOM
