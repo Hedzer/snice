@@ -347,12 +347,23 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       .filter(el => el instanceof HTMLElement);
   }
 
+  private lastObservedWidth = 0;
+  private lastObservedHeight = 0;
+
   private setupResizeObserver(): void {
     if (!this.resize) return;
     if (this.resizeObserver) return;
 
-    this.resizeObserver = new ResizeObserver(() => {
-      this.scheduleLayout();
+    this.resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      // Only relayout if the host element size actually changed (not from our own container sizing)
+      if (Math.abs(width - this.lastObservedWidth) > 0.5 || Math.abs(height - this.lastObservedHeight) > 0.5) {
+        this.lastObservedWidth = width;
+        this.lastObservedHeight = height;
+        this.scheduleLayout();
+      }
     });
     this.resizeObserver.observe(this);
   }
@@ -430,47 +441,58 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       }
 
       if (occupancy.isOccupied(col, row, colspan, rowspan)) {
-        // Try swap: find the single occupant in the target area
+        // Try swap: displace all occupants in target area, place incoming item,
+        // then re-place displaced items at incoming item's previous position (best effort)
         const occupants = occupancy.getOccupants(col, row, colspan, rowspan);
+        const prevPos = this.resolvedPositions.get(item);
+        const swapCol = prevPos ? prevPos.col : p.col;
+        const swapRow = prevPos ? prevPos.row : p.row;
+        const samePosition = swapCol === col && swapRow === row;
 
-        if (occupants.size === 1) {
-          const [occupant] = occupants;
-          const occupantPos = resolvedMap.get(occupant);
-          if (occupantPos) {
-            // Check if the current item fits at the occupant's resolved position
-            const occCol = occupantPos.col;
-            const occRow = occupantPos.row;
-            const occColspan = occupantPos.colspan;
-            const occRowspan = occupantPos.rowspan;
+        let swapped = false;
 
-            // Vacate occupant's cells, check if we fit at its old spot
-            occupancy.vacate(occCol, occRow, occColspan, occRowspan);
+        if (occupants.size > 0 && !samePosition) {
+          // Collect occupant info and vacate all their cells
+          const displaced: Array<{ el: HTMLElement; pos: { col: number; row: number; colspan: number; rowspan: number } }> = [];
+          for (const occ of occupants) {
+            const occPos = resolvedMap.get(occ);
+            if (occPos) {
+              displaced.push({ el: occ, pos: { ...occPos } });
+              occupancy.vacate(occPos.col, occPos.row, occPos.colspan, occPos.rowspan);
+            }
+          }
 
-            // Can we place at the target? (occupant cells are now vacated)
-            if (!occupancy.isOccupied(col, row, colspan, rowspan)) {
-              // Swap: move occupant to the incoming item's previous resolved position
-              // Use previous layout position if available, otherwise the requested attribute position
-              const prevPos = this.resolvedPositions.get(item);
-              const swapCol = prevPos ? prevPos.col : p.col;
-              const swapRow = prevPos ? prevPos.row : p.row;
-              // Skip swap if target is the same position (both items at same cell, e.g. initial layout)
-              const samePosition = swapCol === col && swapRow === row;
-              if (!samePosition && !occupancy.isOccupied(swapCol, swapRow, occColspan, occRowspan)) {
-                // Successful swap
-                occupancy.occupy(col, row, colspan, rowspan, item);
-                resolvedMap.set(item, { col, row, colspan, rowspan });
+          // Can we place the incoming item at the target now?
+          if (!occupancy.isOccupied(col, row, colspan, rowspan)) {
+            // Place incoming item
+            occupancy.occupy(col, row, colspan, rowspan, item);
+            resolvedMap.set(item, { col, row, colspan, rowspan });
 
-                // Re-place occupant at the swap position
-                occupancy.occupy(swapCol, swapRow, occColspan, occRowspan, occupant);
-                resolvedMap.set(occupant, { ...occupantPos, col: swapCol, row: swapRow });
-                continue;
+            // Re-place displaced items: best effort at swap position, fallback push-right-then-down
+            for (const d of displaced) {
+              const { colspan: dc, rowspan: dr } = d.pos;
+              // Try the swap position (incoming item's previous location)
+              if (!occupancy.isOccupied(swapCol, swapRow, dc, dr)) {
+                occupancy.occupy(swapCol, swapRow, dc, dr, d.el);
+                resolvedMap.set(d.el, { ...d.pos, col: swapCol, row: swapRow });
+              } else {
+                // Push-right-then-down from swap position
+                const free = occupancy.findNextFree(swapCol, swapRow, dc, dr, maxCols);
+                occupancy.occupy(free.col, free.row, dc, dr, d.el);
+                resolvedMap.set(d.el, { ...d.pos, col: free.col, row: free.row });
               }
             }
 
-            // Swap failed — restore occupant and fall through to push-right-then-down
-            occupancy.occupy(occCol, occRow, occColspan, occRowspan, occupant);
+            swapped = true;
+          } else {
+            // Can't place — restore all occupants
+            for (const d of displaced) {
+              occupancy.occupy(d.pos.col, d.pos.row, d.pos.colspan, d.pos.rowspan, d.el);
+            }
           }
         }
+
+        if (swapped) continue;
 
         // Fall back: push-right-then-down
         const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
