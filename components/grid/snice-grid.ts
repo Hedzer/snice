@@ -8,36 +8,57 @@ import type { SniceGridElement, GridLayout, GridLayoutEntry, GridLayoutCompleteD
 // ---------------------------------------------------------------------------
 
 class OccupancyGrid {
-  private cells = new Map<string, boolean>();
+  private cells = new Map<string, HTMLElement>();
 
   private key(col: number, row: number): string {
     return `${col},${row}`;
   }
 
-  occupy(col: number, row: number, colspan: number, rowspan: number): void {
+  occupy(col: number, row: number, colspan: number, rowspan: number, item: HTMLElement): void {
     for (let r = row; r < row + rowspan; r++) {
       for (let c = col; c < col + colspan; c++) {
-        this.cells.set(this.key(c, r), true);
+        this.cells.set(this.key(c, r), item);
       }
     }
+  }
+
+  vacate(col: number, row: number, colspan: number, rowspan: number): void {
+    for (let r = row; r < row + rowspan; r++) {
+      for (let c = col; c < col + colspan; c++) {
+        this.cells.delete(this.key(c, r));
+      }
+    }
+  }
+
+  getOccupant(col: number, row: number): HTMLElement | undefined {
+    return this.cells.get(this.key(col, row));
   }
 
   isOccupied(col: number, row: number, colspan: number, rowspan: number): boolean {
     for (let r = row; r < row + rowspan; r++) {
       for (let c = col; c < col + colspan; c++) {
-        if (this.cells.get(this.key(c, r))) return true;
+        if (this.cells.has(this.key(c, r))) return true;
       }
     }
     return false;
   }
 
-  findNextFree(startCol: number, startRow: number, colspan: number, rowspan: number, maxCols: number): { col: number; row: number } {
-    let col = startCol;
-    let row = startRow;
+  /** Find all unique items occupying cells in the given range */
+  getOccupants(col: number, row: number, colspan: number, rowspan: number): Set<HTMLElement> {
+    const occupants = new Set<HTMLElement>();
+    for (let r = row; r < row + rowspan; r++) {
+      for (let c = col; c < col + colspan; c++) {
+        const occupant = this.cells.get(this.key(c, r));
+        if (occupant) occupants.add(occupant);
+      }
+    }
+    return occupants;
+  }
 
+  findNextFree(startCol: number, startRow: number, colspan: number, rowspan: number, maxCols: number): { col: number; row: number } {
     // Scan right-then-down
-    for (let r = row; r < 10000; r++) {
-      const startC = r === row ? col : 0;
+    for (let r = startRow; r < 10000; r++) {
+      const startC = r === startRow ? startCol : 0;
       const endC = maxCols > 0 ? maxCols - colspan + 1 : 10000;
       for (let c = startC; c < endC; c++) {
         if (!this.isOccupied(c, r, colspan, rowspan)) {
@@ -373,65 +394,126 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     const maxCols = this.columns;
     const occupancy = new OccupancyGrid();
 
+    // Phase 1: Collect requested positions for all visible items
+    interface ItemPlacement {
+      item: HTMLElement;
+      col: number;
+      row: number;
+      colspan: number;
+      rowspan: number;
+    }
+    const placements: ItemPlacement[] = [];
+    for (const item of this.items) {
+      if (item.hasAttribute('hidden')) continue;
+      placements.push({
+        item,
+        col: parseInt(item.getAttribute('grid-col') || '0', 10),
+        row: parseInt(item.getAttribute('grid-row') || '0', 10),
+        colspan: parseInt(item.getAttribute('grid-colspan') || '1', 10),
+        rowspan: parseInt(item.getAttribute('grid-rowspan') || '1', 10),
+      });
+    }
+
+    // Phase 2: Place items with swap-first collision resolution
+    // Process in DOM order. When collision detected:
+    // 1. Try swap — give the occupant this item's requested position
+    // 2. Fall back to push-right-then-down if swap fails (e.g. multiple occupants, or occupant doesn't fit)
+    const resolvedMap = new Map<HTMLElement, { col: number; row: number; colspan: number; rowspan: number }>();
+
+    for (const p of placements) {
+      let { col, row } = p;
+      const { colspan, rowspan, item } = p;
+
+      // Clamp to column constraint
+      if (maxCols > 0 && col + colspan > maxCols) {
+        col = Math.max(0, maxCols - colspan);
+      }
+
+      if (occupancy.isOccupied(col, row, colspan, rowspan)) {
+        // Try swap: find the single occupant in the target area
+        const occupants = occupancy.getOccupants(col, row, colspan, rowspan);
+
+        if (occupants.size === 1) {
+          const [occupant] = occupants;
+          const occupantPos = resolvedMap.get(occupant);
+          if (occupantPos) {
+            // Check if the current item fits at the occupant's resolved position
+            const occCol = occupantPos.col;
+            const occRow = occupantPos.row;
+            const occColspan = occupantPos.colspan;
+            const occRowspan = occupantPos.rowspan;
+
+            // Vacate occupant's cells, check if we fit at its old spot
+            occupancy.vacate(occCol, occRow, occColspan, occRowspan);
+
+            // Can we place at the target? (occupant cells are now vacated)
+            if (!occupancy.isOccupied(col, row, colspan, rowspan)) {
+              // Swap: move occupant to the incoming item's previous resolved position
+              // Use previous layout position if available, otherwise the requested attribute position
+              const prevPos = this.resolvedPositions.get(item);
+              const swapCol = prevPos ? prevPos.col : p.col;
+              const swapRow = prevPos ? prevPos.row : p.row;
+              // Skip swap if target is the same position (both items at same cell, e.g. initial layout)
+              const samePosition = swapCol === col && swapRow === row;
+              if (!samePosition && !occupancy.isOccupied(swapCol, swapRow, occColspan, occRowspan)) {
+                // Successful swap
+                occupancy.occupy(col, row, colspan, rowspan, item);
+                resolvedMap.set(item, { col, row, colspan, rowspan });
+
+                // Re-place occupant at the swap position
+                occupancy.occupy(swapCol, swapRow, occColspan, occRowspan, occupant);
+                resolvedMap.set(occupant, { ...occupantPos, col: swapCol, row: swapRow });
+                continue;
+              }
+            }
+
+            // Swap failed — restore occupant and fall through to push-right-then-down
+            occupancy.occupy(occCol, occRow, occColspan, occRowspan, occupant);
+          }
+        }
+
+        // Fall back: push-right-then-down
+        const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
+        col = free.col;
+        row = free.row;
+      }
+
+      occupancy.occupy(col, row, colspan, rowspan, item);
+      resolvedMap.set(item, { col, row, colspan, rowspan });
+    }
+
+    // Phase 3: Apply positions to DOM
     let maxCol = 0;
     let maxRow = 0;
     let staggerIndex = 0;
-
     this.resolvedPositions.clear();
 
-    for (const item of this.items) {
-      if (item.hasAttribute('hidden')) continue;
+    for (const p of placements) {
+      const resolved = resolvedMap.get(p.item);
+      if (!resolved) continue;
 
-      let col = parseInt(item.getAttribute('grid-col') || '0', 10);
-      let row = parseInt(item.getAttribute('grid-row') || '0', 10);
-      const colspan = parseInt(item.getAttribute('grid-colspan') || '1', 10);
-      const rowspan = parseInt(item.getAttribute('grid-rowspan') || '1', 10);
+      const { col, row, colspan, rowspan } = resolved;
 
-      // Check collision and find free spot (push right-then-down from requested position)
-      if (occupancy.isOccupied(col, row, colspan, rowspan)) {
-        const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
-        col = free.col;
-        row = free.row;
-      }
-
-      // Also check that item fits within column constraint
-      if (maxCols > 0 && col + colspan > maxCols) {
-        const free = occupancy.findNextFree(col, row, colspan, rowspan, maxCols);
-        col = free.col;
-        row = free.row;
-      }
-
-      occupancy.occupy(col, row, colspan, rowspan);
-
-      // Calculate pixel position
       let x = col * (this.columnWidth + gapPx);
       let y = row * (this.rowHeight + gapPx);
 
-      // Set item dimensions
       const itemWidth = colspan * this.columnWidth + (colspan - 1) * gapPx;
       const itemHeight = rowspan * this.rowHeight + (rowspan - 1) * gapPx;
-      item.style.width = `${itemWidth}px`;
-      item.style.height = `${itemHeight}px`;
+      p.item.style.width = `${itemWidth}px`;
+      p.item.style.height = `${itemHeight}px`;
 
-      // Handle origin direction
       if (!this.originLeft) {
-        const containerWidth = this.clientWidth;
-        x = containerWidth - x - itemWidth;
+        x = this.clientWidth - x - itemWidth;
       }
       if (!this.originTop) {
-        const containerHeight = this.clientHeight;
-        y = containerHeight - y - itemHeight;
+        y = this.clientHeight - y - itemHeight;
       }
 
-      this.positionItem(item, x, y, this.stagger > 0 ? staggerIndex * this.stagger : 0);
+      this.positionItem(p.item, x, y, this.stagger > 0 ? staggerIndex * this.stagger : 0);
+      this.resolvedPositions.set(p.item, { col, row, colspan, rowspan });
 
-      // Track resolved position
-      this.resolvedPositions.set(item, { col, row, colspan, rowspan });
-
-      // Track extents
       if (col + colspan > maxCol) maxCol = col + colspan;
       if (row + rowspan > maxRow) maxRow = row + rowspan;
-
       staggerIndex++;
     }
 
