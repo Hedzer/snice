@@ -21,6 +21,10 @@
   box-sizing: border-box;
 }
 
+::slotted([hidden]) {
+  display: none !important;
+}
+
 /* Gate transitions behind [ready] to prevent FOUC */
 :host([ready]) ::slotted(*) {
   transition: transform var(--binpack-transition-duration) ease;
