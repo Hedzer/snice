@@ -15,6 +15,8 @@ export { observe } from './observe';
 export { on } from './on';
 export type { OnOptions } from './on';
 export { request, respond } from './request-response';
+export { createRequestHandler } from './create-request-handler';
+export type { RequestRoute, RequestRouteMap, CreateRequestHandlerOptions } from './create-request-handler';
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 
 // v3.0.0 new template system
