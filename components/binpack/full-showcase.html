@@ -253,28 +253,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <!-- 3. Horizontal packing -->
   <section>
     <h2>Horizontal packing</h2>
-    <snice-binpack gap="0.5rem" horizontal style="height:16rem;overflow-x:auto">
-      <div class="item flat1" style="width:6rem;height:6rem">1</div>
-      <div class="item flat2" style="width:4rem;height:8rem">2</div>
-      <div class="item flat3" style="width:8rem;height:5rem">3</div>
-      <div class="item flat4" style="width:5rem;height:10rem">4</div>
-      <div class="item flat5" style="width:7rem;height:4rem">5</div>
-      <div class="item flat6" style="width:4rem;height:4rem">6</div>
+    <snice-binpack gap="8px" horizontal style="height:220px;overflow-x:auto">
+      <div class="item flat1" style="width:80px;height:100px">1</div>
+      <div class="item flat2" style="width:80px;height:60px">2</div>
+      <div class="item flat3" style="width:80px;height:80px">3</div>
+      <div class="item flat4" style="width:80px;height:120px">4</div>
+      <div class="item flat5" style="width:80px;height:70px">5</div>
+      <div class="item flat6" style="width:80px;height:90px">6</div>
+      <div class="item flat7" style="width:80px;height:60px">7</div>
+      <div class="item flat8" style="width:80px;height:100px">8</div>
+      <div class="item c1" style="width:80px;height:80px">9</div>
+      <div class="item c2" style="width:80px;height:50px">10</div>
     </snice-binpack>
-    <div class="label">horizontal</div>
+    <div class="label">horizontal — items fill columns top-to-bottom, then flow right</div>
   </section>
 
   <!-- 4. Grid-snapped -->
   <section>
     <h2>Grid-snapped layout</h2>
-    <snice-binpack gap="0.5rem" column-width="100" row-height="100">
-      <div class="item flat1" style="width:6rem;height:6rem">1</div>
-      <div class="item flat2" style="width:8rem;height:4rem">2</div>
-      <div class="item flat3" style="width:5rem;height:8rem">3</div>
-      <div class="item flat4" style="width:10rem;height:5rem">4</div>
-      <div class="item flat5" style="width:4rem;height:4rem">5</div>
+    <snice-binpack gap="8px" column-width="100" row-height="100" style="max-width:440px">
+      <div class="item flat1" style="width:100px;height:100px">1</div>
+      <div class="item flat2" style="width:208px;height:100px">2</div>
+      <div class="item flat3" style="width:100px;height:208px">3</div>
+      <div class="item flat4" style="width:100px;height:100px">4</div>
+      <div class="item flat5" style="width:100px;height:100px">5</div>
+      <div class="item flat6" style="width:208px;height:100px">6</div>
+      <div class="item flat7" style="width:100px;height:100px">7</div>
+      <div class="item flat8" style="width:100px;height:100px">8</div>
     </snice-binpack>
-    <div class="label">column-width="100" row-height="100"</div>
+    <div class="label">column-width="100" row-height="100" — items snap to 100px grid</div>
   </section>
 
   <!-- 5. Right-to-left vs left-to-right -->
