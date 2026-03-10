@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin: 0 0 0.75rem;
+    }
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .controls button {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: 4px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      color: var(--snice-color-text, rgb(23 23 23));
+      cursor: pointer;
+      font-size: 0.8125rem;
+    }
+    .controls button:hover {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+    }
+    snice-grid {
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: 4px;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Explicit grid placement with spanning</h2>
+    <snice-grid columns="4" rows="4" column-width="100" row-height="100" gap="8px" style="max-width: 30rem;">
+      <div class="item" grid-col="0" grid-row="0" grid-colspan="2" grid-rowspan="1" style="background:var(--snice-color-primary, rgb(37 99 235))">Header</div>
+      <div class="item" grid-col="2" grid-row="0" grid-colspan="1" grid-rowspan="2" style="background:rgb(22 163 74)">Sidebar</div>
+      <div class="item" grid-col="3" grid-row="0" grid-colspan="1" grid-rowspan="1" style="background:rgb(139 92 246)">Nav</div>
+      <div class="item" grid-col="0" grid-row="1" grid-colspan="2" grid-rowspan="2" style="background:rgb(220 38 38)">Main</div>
+      <div class="item" grid-col="3" grid-row="1" grid-colspan="1" grid-rowspan="1" style="background:rgb(234 179 8)">Widget</div>
+      <div class="item" grid-col="2" grid-row="2" grid-colspan="2" grid-rowspan="1" style="background:rgb(236 72 153)">Footer-R</div>
+      <div class="item" grid-col="0" grid-row="3" grid-colspan="4" grid-rowspan="1" style="background:rgb(20 184 166)">Footer</div>
+    </snice-grid>
+  </section>
+
+  <section>
+    <h2>Draggable grid (drag items to reposition)</h2>
+    <snice-grid id="draggable" columns="5" rows="3" column-width="80" row-height="80" gap="8px" draggable style="max-width: 30rem;">
+      <div class="item" grid-col="0" grid-row="0" style="background:var(--snice-color-primary, rgb(37 99 235))">A</div>
+      <div class="item" grid-col="1" grid-row="0" grid-colspan="2" style="background:rgb(22 163 74)">B</div>
+      <div class="item" grid-col="3" grid-row="0" style="background:rgb(220 38 38)">C</div>
+      <div class="item" grid-col="4" grid-row="0" style="background:rgb(139 92 246)">D</div>
+      <div class="item" grid-col="0" grid-row="1" grid-colspan="2" grid-rowspan="2" style="background:rgb(234 179 8)">E</div>
+      <div class="item" grid-col="2" grid-row="1" style="background:rgb(236 72 153)">F</div>
+      <div class="item" grid-col="3" grid-row="1" grid-colspan="2" style="background:rgb(20 184 166)">G</div>
+      <div class="item" grid-col="2" grid-row="2" grid-colspan="3" style="background:rgb(249 115 22)">H</div>
+    </snice-grid>
+  </section>
+
+  <section>
+    <h2>Dynamic add / remove</h2>
+    <div class="controls">
+      <button onclick="addItem()">Add item</button>
+      <button onclick="removeItem()">Remove last</button>
+      <button onclick="document.getElementById('dynamic').layout()">Re-layout</button>
+    </div>
+    <snice-grid id="dynamic" columns="4" rows="4" column-width="80" row-height="80" gap="8px" draggable style="max-width: 30rem;">
+      <div class="item" grid-col="0" grid-row="0" style="background:var(--snice-color-primary, rgb(37 99 235))">1</div>
+      <div class="item" grid-col="1" grid-row="0" style="background:rgb(22 163 74)">2</div>
+      <div class="item" grid-col="2" grid-row="0" grid-colspan="2" style="background:rgb(220 38 38)">3</div>
+    </snice-grid>
+  </section>
+
+  <script type="module">
+    import './snice-grid.ts';
+
+    let counter = 3;
+    const colors = [
+      'rgb(37 99 235)', 'rgb(22 163 74)', 'rgb(220 38 38)',
+      'rgb(139 92 246)', 'rgb(234 179 8)', 'rgb(236 72 153)',
+      'rgb(20 184 166)', 'rgb(249 115 22)'
+    ];
+
+    window.addItem = function() {
+      counter++;
+      const grid = document.getElementById('dynamic');
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.style.background = colors[Math.floor(Math.random() * colors.length)];
+      div.textContent = counter;
+      grid.appendChild(div);
+    };
+
+    window.removeItem = function() {
+      const grid = document.getElementById('dynamic');
+      const last = grid.lastElementChild;
+      if (last) last.remove();
+    };
+  </script>
+</body>
+</html>
