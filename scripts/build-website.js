@@ -355,8 +355,8 @@ ${header('home')}
       <h3>Quick Start</h3>
       <div class="templates-grid">
         <div class="template-card">
-          <h4>Base Template</h4>
-          <p>Minimal starter with counter example</p>
+          <h4>Snice App</h4>
+          <p>Routing, auth, guards, middleware, services</p>
           <div class="install">
             <code>npx snice create-app my-app</code>
             <button onclick="navigator.clipboard.writeText('npx snice create-app my-app')">
@@ -365,11 +365,11 @@ ${header('home')}
           </div>
         </div>
         <div class="template-card">
-          <h4>PWA Template</h4>
-          <p>Auth, middleware, live notifications</p>
+          <h4>React + Snice</h4>
+          <p>React router, hooks, guards, layouts</p>
           <div class="install">
-            <code>npx snice create-app my-app --template=pwa</code>
-            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app --template=pwa')">
+            <code>npx snice create-app my-app --template=react</code>
+            <button onclick="navigator.clipboard.writeText('npx snice create-app my-app --template=react')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             </button>
           </div>

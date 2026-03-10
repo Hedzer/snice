@@ -3613,41 +3613,26 @@ cleanup();</snice-code-block>
 <p><strong>Options:</strong></p>
 <div class="doc-table-wrap"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td><code>passive</code></td><td><code>boolean</code></td><td><code>false</code></td><td>When true, doesn't stop event propagation (allows multiple handlers)</td></tr></tbody></table></div>
 <h3 id="request-response-react-userequesthandler">React: useRequestHandler</h3>
-<snice-code-block language="tsx" grammar="grammars/typescript.json">import { useRef } from 'react';
-import { useRequestHandler } from 'snice/react/useRequestHandler';
+<p>For full documentation, examples, options, and global handler patterns, see the <strong><a href="./react-integration.md#userequesthandler">React Integration guide</a></strong>.</p>
+<snice-code-block language="tsx" grammar="grammars/typescript.json">import { useRequestHandler } from 'snice/react';
 
 function Dashboard() {
-  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+  const ref = useRef&lt;HTMLDivElement&gt;(null);
 
-  // Routes are ref-stable — no useCallback needed
-  useRequestHandler(containerRef, {
+  useRequestHandler(ref, {
     'fetch-user': async (payload) =&gt; {
       const res = await fetch(`/api/users/${payload.id}`);
       return res.json();
     },
-    'save-settings': async (payload) =&gt; {
-      await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
-      return { ok: true };
-    },
   });
 
   return (
-    &lt;div ref={containerRef}&gt;
+    &lt;div ref={ref}&gt;
       &lt;snice-user-card /&gt;
-      &lt;snice-settings-panel /&gt;
     &lt;/div&gt;
   );
-}
-
-// Global handler (null ref = document)
-function GlobalProvider({ children }) {
-  useRequestHandler(null, {
-    'fetch-config': async () =&gt; ({ theme: 'dark', locale: 'en' }),
-  });
-
-  return &lt;&gt;{children}&lt;/&gt;;
 }</snice-code-block>
-<p>The hook automatically cleans up listeners on unmount and re-subscribes only when the set of channel names changes. Route callbacks always use the latest version without re-attaching listeners.</p>
+<p>Route callbacks are ref-stable — no <code>useCallback</code> needed. Listeners re-attach only when channel names change. Cleanup is automatic on unmount.</p>
 </section>
 <section class="doc-file" id="fetcher">
 <h1 id="fetcher-fetch-middleware">Fetch Middleware</h1>
