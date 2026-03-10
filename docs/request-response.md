@@ -330,3 +330,80 @@ class TickerController implements IController {
   }
 }
 ```
+
+## Using Without Decorators
+
+For vanilla JS or React code that needs to respond to `@request` channels without using the decorator system.
+
+### Vanilla JS: createRequestHandler
+
+```javascript
+import { createRequestHandler } from 'snice';
+
+// Attach handlers to any DOM target (events bubble, so ancestors work)
+const cleanup = createRequestHandler(document.getElementById('app'), {
+  'fetch-user': async (payload) => {
+    const res = await fetch(`/api/users/${payload.id}`);
+    return res.json();
+  },
+  'save-settings': async (payload) => {
+    await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
+    return { ok: true };
+  }
+});
+
+// Global handler (catches all bubbling requests)
+const globalCleanup = createRequestHandler(document, {
+  'fetch-user': async (payload) => ({ name: 'Jane', id: payload.id }),
+});
+
+// Remove all listeners when done
+cleanup();
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `passive` | `boolean` | `false` | When true, doesn't stop event propagation (allows multiple handlers) |
+
+### React: useRequestHandler
+
+```tsx
+import { useRef } from 'react';
+import { useRequestHandler } from 'snice/react/useRequestHandler';
+
+function Dashboard() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Routes are ref-stable — no useCallback needed
+  useRequestHandler(containerRef, {
+    'fetch-user': async (payload) => {
+      const res = await fetch(`/api/users/${payload.id}`);
+      return res.json();
+    },
+    'save-settings': async (payload) => {
+      await fetch('/api/settings', { method: 'POST', body: JSON.stringify(payload) });
+      return { ok: true };
+    },
+  });
+
+  return (
+    <div ref={containerRef}>
+      <snice-user-card />
+      <snice-settings-panel />
+    </div>
+  );
+}
+
+// Global handler (null ref = document)
+function GlobalProvider({ children }) {
+  useRequestHandler(null, {
+    'fetch-config': async () => ({ theme: 'dark', locale: 'en' }),
+  });
+
+  return <>{children}</>;
+}
+```
+
+The hook automatically cleans up listeners on unmount and re-subscribes only when the set of channel names changes. Route callbacks always use the latest version without re-attaching listeners.
