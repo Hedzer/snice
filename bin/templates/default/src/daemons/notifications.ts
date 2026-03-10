@@ -134,15 +134,3 @@ export class NotificationsDaemon {
     }
   }
 }
-
-// Singleton instance
-let instance: NotificationsDaemon | null = null;
-
-export function getNotificationsDaemon(): NotificationsDaemon {
-  if (!instance) {
-    // In production, use actual WebSocket URL from env
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
-    instance = new NotificationsDaemon(wsUrl);
-  }
-  return instance;
-}

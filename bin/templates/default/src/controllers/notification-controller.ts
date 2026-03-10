@@ -1,31 +1,26 @@
-import { controller, respond } from 'snice';
-import { getNotificationsDaemon } from '../daemons/notifications';
+import { controller, respond, IController } from 'snice';
 import type { Notification } from '../types/notifications';
 
 @controller('notification-controller')
-export class NotificationController {
-  element!: HTMLElement;
+export class NotificationController implements IController {
+  element: HTMLElement | null = null;
   private notifications: Notification[] = [];
-  private unsubscribe: (() => void) | null = null;
 
   async attach(el: HTMLElement) {
     this.element = el;
-    const daemon = getNotificationsDaemon();
-    this.unsubscribe = daemon.subscribe((notification) => {
-      this.notifications = [notification, ...this.notifications];
-    });
   }
 
-  async detach() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-      this.unsubscribe = null;
-    }
-  }
+  async detach() {}
 
   @respond('get-notifications')
   handleGetNotifications() {
     return this.notifications;
+  }
+
+  @respond('add-notification')
+  handleAddNotification(notification: Notification) {
+    this.notifications = [notification, ...this.notifications];
+    return { added: true };
   }
 
   @respond('clear-notifications')

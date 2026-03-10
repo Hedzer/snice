@@ -1,4 +1,5 @@
 import { initialize } from './router';
+import 'snice/components/theme/theme.css';
 import './styles/global.css';
 
 // Import snice layout and components
@@ -31,13 +32,6 @@ import './pages/profile';
 import './pages/notifications';
 import './pages/settings';
 import './pages/data';
-
-// Import and start daemons
-import { getNotificationsDaemon } from './daemons/notifications';
-
-// Start notifications daemon
-const notificationsDaemon = getNotificationsDaemon();
-notificationsDaemon.start();
 
 // Initialize router
 initialize();

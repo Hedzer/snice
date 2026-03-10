@@ -1,9 +1,9 @@
 import { page } from '../router';
-import { render, styles, html, css, context, observe, ready, dispose } from 'snice';
+import { render, styles, html, css, context, observe, dispose } from 'snice';
 import type { Placard, Context } from 'snice';
 import type { Principal } from '../types/auth';
 import { isAuthenticated } from '../guards/auth';
-import { getNotificationsDaemon } from '../daemons/notifications';
+import type { NotificationsDaemon } from '../daemons/notifications';
 
 const placard: Placard = {
   name: 'dashboard',
@@ -24,14 +24,13 @@ export class DashboardPage extends HTMLElement {
   handleContext(ctx: Context) {
     const principal = ctx.application.principal as Principal | undefined;
     this.userName = principal?.user?.name || 'User';
-  }
 
-  @ready()
-  initialize() {
-    const daemon = getNotificationsDaemon();
-    this.unsubscribe = daemon.subscribe(() => {
-      this.notificationCount++;
-    });
+    const daemon = ctx.application.notifications as NotificationsDaemon;
+    if (daemon && !this.unsubscribe) {
+      this.unsubscribe = daemon.subscribe(() => {
+        this.notificationCount++;
+      });
+    }
   }
 
   @dispose()

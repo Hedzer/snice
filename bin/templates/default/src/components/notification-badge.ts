@@ -1,29 +1,10 @@
-import { element, property, render, styles, ready, dispose, html, css, watch, query } from 'snice';
-import { getNotificationsDaemon } from '../daemons/notifications';
+import { element, property, render, styles, html, css, watch, query } from 'snice';
 
 @element('notification-badge')
 export class NotificationBadge extends HTMLElement {
   @property({ type: Number }) count = 0;
 
-  private unsubscribe: (() => void) | null = null;
-
   @query('.badge') $badge!: HTMLElement;
-
-  @ready()
-  initialize() {
-    const daemon = getNotificationsDaemon();
-    this.unsubscribe = daemon.subscribe(() => {
-      this.count++;
-    });
-  }
-
-  @dispose()
-  cleanup() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-      this.unsubscribe = null;
-    }
-  }
 
   @watch('count')
   onCountChange() {

@@ -55,12 +55,10 @@ export class SettingsPage extends HTMLElement {
   }
 
   private applyTheme(theme: string) {
-    if (theme === 'dark') {
-      document.documentElement.style.colorScheme = 'dark';
-    } else if (theme === 'light') {
-      document.documentElement.style.colorScheme = 'light';
+    if (theme === 'system') {
+      document.documentElement.removeAttribute('data-theme');
     } else {
-      document.documentElement.style.colorScheme = '';
+      document.documentElement.setAttribute('data-theme', theme);
     }
   }
 
