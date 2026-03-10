@@ -21,6 +21,9 @@ snice-code-block::part(container) {
   background: #2a2a3a;
   border-radius: 6px;
 }
+[data-theme="light"] snice-code-block::part(container) {
+  background: #fafafa;
+}
 snice-code-block::part(header) { display: none; }
 snice-code-block::part(code) {
   font-size: 0.8rem;
