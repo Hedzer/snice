@@ -11,7 +11,7 @@ Every component must satisfy ALL items before considered complete.
 - [ ] Component file: `components/<name>/snice-<name>.ts`
 - [ ] Types file: `components/<name>/snice-<name>.types.ts` (interfaces, event maps)
 - [ ] Styles file: `components/<name>/snice-<name>.css`
-- [ ] All CSS uses `var(--snice-property, fallback)` pattern
+- [ ] All CSS uses `var(--snice-property, fallback)` pattern — fallback must be the exact default value from `theme.css`, not an arbitrary value
 - [ ] Spacing/typography in rem, borders/shadows in px
 - [ ] Uses snice decorators (`@query`, `@on`, `@dispatch`, `@ready`, `@dispose`, `@observe`, `@watch`)
 - [ ] Responsive design using container queries (not media queries) for layout breakpoints
