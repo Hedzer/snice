@@ -93,11 +93,11 @@ export class DataPage extends HTMLElement {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      active: 'var(--success-color)',
-      pending: 'var(--warning-color)',
-      archived: 'var(--text-light)'
+      active: 'var(--snice-color-success)',
+      pending: 'var(--snice-color-warning)',
+      archived: 'var(--snice-color-text-secondary)'
     };
-    return colors[status] || 'var(--text-light)';
+    return colors[status] || 'var(--snice-color-text-secondary)';
   }
 
   @render()
@@ -193,12 +193,12 @@ export class DataPage extends HTMLElement {
 
       h1 {
         margin: 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .count {
         font-size: 0.875rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .toolbar {
@@ -219,23 +219,23 @@ export class DataPage extends HTMLElement {
 
       .filter-btn {
         padding: 0.375rem 0.75rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        background: var(--bg-primary);
-        color: var(--text-light);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-md);
+        background: var(--snice-color-background);
+        color: var(--snice-color-text-secondary);
         font-size: 0.8125rem;
         cursor: pointer;
         transition: all 0.15s;
       }
 
       .filter-btn:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+        border-color: var(--snice-color-primary);
+        color: var(--snice-color-primary);
       }
 
       .filter-btn.active {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
+        background: var(--snice-color-primary);
+        border-color: var(--snice-color-primary);
         color: white;
       }
 
@@ -246,8 +246,8 @@ export class DataPage extends HTMLElement {
       }
 
       .data-table {
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-lg);
         overflow: hidden;
       }
 
@@ -255,37 +255,37 @@ export class DataPage extends HTMLElement {
         display: grid;
         grid-template-columns: 1fr 120px 100px;
         padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
+        background: var(--snice-color-background-secondary);
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .table-row {
         display: grid;
         grid-template-columns: 1fr 120px 100px;
         padding: 1rem;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--snice-color-border);
         align-items: center;
         transition: background 0.15s;
       }
 
       .table-row:hover {
-        background: var(--bg-secondary);
+        background: var(--snice-color-background-secondary);
       }
 
       .col-title strong {
         display: block;
-        color: var(--text-color);
+        color: var(--snice-color-text);
         font-size: 0.9375rem;
       }
 
       .description {
         display: block;
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         margin-top: 0.125rem;
       }
 
@@ -294,7 +294,7 @@ export class DataPage extends HTMLElement {
         align-items: center;
         gap: 0.375rem;
         font-size: 0.8125rem;
-        color: var(--text-color);
+        color: var(--snice-color-text);
         text-transform: capitalize;
       }
 
@@ -307,7 +307,7 @@ export class DataPage extends HTMLElement {
 
       .col-date {
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .data-table.compact .table-header {

@@ -3,6 +3,7 @@ import { render, styles, context, dispatch, on, html, css } from 'snice';
 import type { Placard, Context } from 'snice';
 import { isAuthenticated } from '../guards/auth';
 import type { Principal } from '../types/auth';
+import { getUser, setUser } from '../services/storage';
 
 const placard: Placard = {
   name: 'settings',
@@ -71,10 +72,11 @@ export class SettingsPage extends HTMLElement {
   @dispatch('settings-saved')
   saveSettings() {
     if (this.ctx) {
-      const principal = this.ctx.application.principal as Principal;
-      if (principal.user) {
-        principal.user.name = this.displayName;
-        principal.user.email = this.email;
+      const user = getUser();
+      if (user) {
+        user.name = this.displayName;
+        user.email = this.email;
+        setUser(user);
       }
       this.ctx.update();
     }
@@ -179,13 +181,13 @@ export class SettingsPage extends HTMLElement {
 
       h1 {
         margin: 0 0 0.25rem 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .hint {
         margin: 0 0 2rem 0;
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .section {
@@ -195,7 +197,7 @@ export class SettingsPage extends HTMLElement {
 
       h3 {
         margin: 0 0 1.25rem 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .form-group {
@@ -211,7 +213,7 @@ export class SettingsPage extends HTMLElement {
         margin-bottom: 0.375rem;
         font-size: 0.875rem;
         font-weight: 500;
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       snice-input {
@@ -230,22 +232,22 @@ export class SettingsPage extends HTMLElement {
         align-items: center;
         gap: 0.5rem;
         padding: 1rem;
-        background: var(--bg-secondary);
-        border: 2px solid var(--border-color);
-        border-radius: var(--radius-md);
+        background: var(--snice-color-background-secondary);
+        border: 2px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-lg);
         cursor: pointer;
-        color: var(--text-color);
+        color: var(--snice-color-text);
         font-size: 0.875rem;
         transition: border-color 0.2s;
       }
 
       .theme-btn:hover {
-        border-color: var(--primary-color);
+        border-color: var(--snice-color-primary);
       }
 
       .theme-btn.active {
-        border-color: var(--primary-color);
-        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        border-color: var(--snice-color-primary);
+        background: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
       }
 
       .theme-icon {
@@ -261,13 +263,13 @@ export class SettingsPage extends HTMLElement {
       .toggle-label {
         margin: 0;
         font-weight: 500;
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       .toggle-desc {
         margin: 0.25rem 0 0 0;
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
       }
 
       .actions {

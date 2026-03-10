@@ -41,10 +41,7 @@ export class LoginPage extends HTMLElement {
         password: credentials.password
       });
 
-      if (this.ctx && this.ctx.application.principal) {
-        const principal = this.ctx.application.principal as Principal;
-        principal.user = result.user;
-        principal.isAuthenticated = true;
+      if (this.ctx) {
         this.ctx.update();
       }
 
@@ -96,7 +93,7 @@ export class LoginPage extends HTMLElement {
         display: block;
         height: 100vh;
         overflow: hidden;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        background: linear-gradient(135deg, var(--snice-color-primary) 0%, var(--snice-color-primary-hover) 100%);
       }
 
       .container {
@@ -116,7 +113,7 @@ export class LoginPage extends HTMLElement {
       .hint {
         margin: 0.25rem 0;
         font-size: 0.875rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         text-align: center;
       }
     `;

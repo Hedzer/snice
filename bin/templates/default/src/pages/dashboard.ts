@@ -146,12 +146,12 @@ export class DashboardPage extends HTMLElement {
       }
 
       h1 {
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
         margin: 0 0 0.5rem 0;
       }
 
       .subtitle {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         margin: 0;
       }
 
@@ -171,13 +171,13 @@ export class DashboardPage extends HTMLElement {
         display: block;
         font-size: 2rem;
         font-weight: 700;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .stat-label {
         display: block;
         font-size: 0.8125rem;
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         margin-top: 0.25rem;
       }
 
@@ -193,7 +193,7 @@ export class DashboardPage extends HTMLElement {
 
       h3 {
         margin: 0 0 1rem 0;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       ul {
@@ -203,18 +203,18 @@ export class DashboardPage extends HTMLElement {
 
       li {
         margin: 0.5rem 0;
-        color: var(--text-color);
+        color: var(--snice-color-text);
       }
 
       code {
-        background: var(--bg-secondary);
+        background: var(--snice-color-background-secondary);
         padding: 0.125rem 0.375rem;
-        border-radius: var(--radius-sm);
+        border-radius: var(--snice-border-radius-md);
         font-size: 0.8125rem;
       }
 
       p {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         margin: 0 0 0.5rem 0;
       }
 
