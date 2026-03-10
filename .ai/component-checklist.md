@@ -43,9 +43,42 @@ Every component must satisfy ALL items before considered complete.
 ## Documentation
 - [ ] Human docs: `docs/components/<name>.md` — detailed, with examples and explanations
 - [ ] AI docs: `docs/ai/components/<name>.md` — LOW TOKEN, concise: type signatures, bullets, code over prose, no tutorials, pure reference
+- [ ] Both docs follow the **standard section order** (see below)
+- [ ] Both docs are **verified accurate** against source code (properties, methods, events, slots, CSS parts)
 - [ ] Demo page: `components/<name>/demo.html`
 - [ ] Demo uses theme tokens (not hard-coded colors/spacing)
 - [ ] Demo works in both light and dark modes
+
+### Standard Docs Section Order
+
+Both human and AI docs MUST follow this section order. Omit sections that don't apply.
+
+```
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/<name>.md -->
+
+# Component Name
+
+Description paragraph.
+
+## Table of Contents        ← links to all sections below
+## Components               ← only if multi-element (e.g. accordion + accordion-item)
+## Properties               ← table format in human docs, code block in AI docs
+## Methods
+## Events
+## Slots
+## CSS Parts                ← or "## CSS Custom Properties" if applicable
+## Basic Usage              ← simplest example + import statement
+## Examples
+## Keyboard Navigation      ← only if applicable
+## Accessibility
+```
+
+**Rules:**
+- TOC anchor links: lowercase, spaces→hyphens (e.g. `[CSS Parts](#css-parts)`)
+- No `## Importing` section (merge imports into Basic Usage)
+- No `## Browser Support` or `## Common Patterns` sections
+- AI docs use same order, low-token format: type signatures in code blocks, bullets, arrow notation for events
+- AI comment is an invisible HTML comment `<!-- AI: ... -->`
 
 ## MCP Server Catalogue
 - [ ] AI docs file exists at `docs/ai/components/<name>.md` — the MCP server (`bin/mcp-server.js`) auto-discovers components from this directory
