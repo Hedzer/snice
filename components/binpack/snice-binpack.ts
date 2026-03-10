@@ -202,6 +202,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   private dragTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private boundPointerMove: ((e: PointerEvent) => void) | null = null;
   private boundPointerUp: ((e: PointerEvent) => void) | null = null;
+  private pendingLayout: BinpackLayout | null = null;
 
   @ready()
   onReady() {
@@ -381,7 +382,15 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   }
 
   setLayout(layout: BinpackLayout): void {
-    // Build ordered list of named items from the layout
+    // Store for late-arriving items
+    this.pendingLayout = layout;
+    this.applyPendingLayout();
+    this.performLayout();
+  }
+
+  private applyPendingLayout(): void {
+    if (!this.pendingLayout) return;
+    const layout = this.pendingLayout;
     const entries = Object.entries(layout).sort((a, b) => a[1].order - b[1].order);
 
     const namedItems = new Map<string, HTMLElement>();
@@ -427,7 +436,6 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     }
 
     this.items = reordered;
-    this.performLayout();
   }
 
   // -- Template & Styles ----------------------------------------------------
@@ -452,6 +460,10 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
   private handleSlotChange(): void {
     this.collectItems();
     this.observeItems();
+    // If a layout was explicitly set, apply ordering to any new items
+    if (this.pendingLayout) {
+      this.applyPendingLayout();
+    }
     this.scheduleLayout();
   }
 
