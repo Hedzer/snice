@@ -27,7 +27,7 @@ test.describe('PWA Template Functional Tests', () => {
 
     // Create the app
     await execAsync(
-      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName} --template=pwa`,
+      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`,
       { cwd: tempDir }
     );
 
