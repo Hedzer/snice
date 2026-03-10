@@ -1,6 +1,7 @@
-import { element, property, render, styles, context, on, dispatch, html, css, watch, query } from 'snice';
+import { element, property, render, styles, context, on, dispatch, dispose, html, css, watch, query } from 'snice';
 import type { Context } from 'snice';
 import type { Principal, User } from '../types/auth';
+import type { NotificationsDaemon } from '../daemons/notifications';
 import { logout } from '../services/auth';
 
 @element('app-header')
@@ -9,6 +10,8 @@ export class AppHeader extends HTMLElement {
   @property() userAvatar = '';
   @property({ type: Boolean }) authenticated = false;
   @property({ type: Boolean }) menuOpen = false;
+  @property({ type: Number }) notificationCount = 0;
+  private unsubscribeNotifications: (() => void) | null = null;
 
   @query('.user-menu') $menu!: HTMLElement;
 
@@ -19,6 +22,21 @@ export class AppHeader extends HTMLElement {
     this.authenticated = principal?.isAuthenticated || false;
     this.userName = user?.name || '';
     this.userAvatar = user?.avatar || '';
+
+    const daemon = ctx.application.notifications as NotificationsDaemon;
+    if (daemon && !this.unsubscribeNotifications) {
+      this.unsubscribeNotifications = daemon.subscribe(() => {
+        this.notificationCount++;
+      });
+    }
+  }
+
+  @dispose()
+  cleanupNotifications() {
+    if (this.unsubscribeNotifications) {
+      this.unsubscribeNotifications();
+      this.unsubscribeNotifications = null;
+    }
   }
 
   @watch('menuOpen')
@@ -57,7 +75,7 @@ export class AppHeader extends HTMLElement {
             <a href="#/dashboard">Dashboard</a>
             <a href="#/data">Data</a>
             <a href="#/notifications">
-              <notification-badge></notification-badge>
+              <notification-badge .count=${this.notificationCount}></notification-badge>
               Notifications
             </a>
           </nav>
@@ -109,14 +127,14 @@ export class AppHeader extends HTMLElement {
         justify-content: space-between;
         padding: 0 1.5rem;
         height: 60px;
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border-color);
+        background: var(--snice-color-background);
+        border-bottom: 1px solid var(--snice-color-border);
       }
 
       .brand a {
         font-size: 1.25rem;
         font-weight: 700;
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
         text-decoration: none;
       }
 
@@ -127,7 +145,7 @@ export class AppHeader extends HTMLElement {
       }
 
       .nav-links a {
-        color: var(--text-light);
+        color: var(--snice-color-text-secondary);
         text-decoration: none;
         font-size: 0.875rem;
         font-weight: 500;
@@ -137,7 +155,7 @@ export class AppHeader extends HTMLElement {
       }
 
       .nav-links a:hover {
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .user-section {
@@ -152,7 +170,7 @@ export class AppHeader extends HTMLElement {
         border: none;
         cursor: pointer;
         padding: 0.375rem 0.5rem;
-        border-radius: var(--radius-md);
+        border-radius: var(--snice-border-radius-lg);
         color: var(--text-color);
       }
 
@@ -171,9 +189,9 @@ export class AppHeader extends HTMLElement {
         top: 100%;
         margin-top: 0.5rem;
         min-width: 180px;
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        background: var(--snice-color-background);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-lg);
         box-shadow: var(--shadow-lg);
         padding: 0.5rem 0;
         z-index: 100;
@@ -196,11 +214,11 @@ export class AppHeader extends HTMLElement {
       .user-menu a:hover,
       .user-menu button:hover {
         background: var(--bg-secondary);
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
       }
 
       .login-link {
-        color: var(--primary-color);
+        color: var(--snice-color-primary);
         text-decoration: none;
         font-weight: 500;
       }

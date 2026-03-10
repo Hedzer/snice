@@ -1,8 +1,8 @@
 import { page } from '../router';
-import { render, styles, html, css, ready, dispose, watch, on } from 'snice';
-import type { Placard } from 'snice';
+import { render, styles, html, css, context, dispose, watch, on } from 'snice';
+import type { Placard, Context } from 'snice';
 import { isAuthenticated } from '../guards/auth';
-import { getNotificationsDaemon } from '../daemons/notifications';
+import type { NotificationsDaemon } from '../daemons/notifications';
 import type { Notification, NotificationType } from '../types/notifications';
 
 const placard: Placard = {
@@ -19,12 +19,14 @@ export class NotificationsPage extends HTMLElement {
   filter: NotificationType | 'all' = 'all';
   private unsubscribe: (() => void) | null = null;
 
-  @ready()
-  initialize() {
-    const daemon = getNotificationsDaemon();
-    this.unsubscribe = daemon.subscribe((notification) => {
-      this.notifications = [notification, ...this.notifications];
-    });
+  @context()
+  handleContext(ctx: Context) {
+    const daemon = ctx.application.notifications as NotificationsDaemon;
+    if (daemon && !this.unsubscribe) {
+      this.unsubscribe = daemon.subscribe((notification) => {
+        this.notifications = [notification, ...this.notifications];
+      });
+    }
   }
 
   @dispose()
