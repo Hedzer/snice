@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 const args = process.argv.slice(2);
 const command = args[0];
 
-if (command === 'create-app' || command === 'create-react-app') {
+if (command === 'create-app') {
   // Parse arguments - separate flags from positional arguments
   const flags = {};
   const positional = [];
@@ -34,7 +34,7 @@ if (command === 'create-app' || command === 'create-react-app') {
   }
 
   const projectPath = positional[0] || '.';
-  const template = command === 'create-react-app' ? 'react' : (flags.template || 'base');
+  const template = flags.template || 'default';
 
   createApp(projectPath, template);
 } else if (command === 'mcp') {
@@ -79,15 +79,14 @@ if (command === 'create-app' || command === 'create-react-app') {
 Snice CLI
 
 Usage:
-  snice create-app [options] <project-name>
-  snice create-app [options] .                          Initialize in current directory
-  snice create-react-app <project-name>                 Shortcut for --template=react
+  snice create-app <project-name>                       Create a new Snice app
+  snice create-app .                                    Initialize in current directory
   snice build-component <component-name> [options]      Build CDN component
   snice validate                                        Check project for common issues
   snice mcp                                             Start MCP server for AI assistants
 
 Create App Options:
-  --template=<name>                                     Template to use (default: base)
+  --template=react                                      Use React template instead of default
 
 Build Component Options:
   --output=<dir>                                        Output directory (default: ./dist/cdn)
@@ -95,18 +94,12 @@ Build Component Options:
   --minify                                              Minify output (default: true)
   --with-theme                                          Include theme.css in output
 
-Templates:
-  base    - Minimal starter with counter example (default)
-  pwa     - Progressive Web App with auth, middleware, and live notifications
-  react   - React + Snice with routing, guards, layouts, and context
-
 MCP Server:
   Start a Model Context Protocol server for AI-assisted development.
   Connect in Claude Code: claude mcp add snice -- npx snice mcp
 
 Examples:
   snice create-app my-app
-  snice create-app my-app --template=pwa
   snice create-app my-app --template=react
   snice build-component button
   snice build-component button --output=./cdn --format=iife
@@ -114,12 +107,11 @@ Examples:
 `);
 }
 
-function createApp(projectPath, template = 'base') {
+function createApp(projectPath, template = 'default') {
   const targetDir = resolve(process.cwd(), projectPath);
   const projectName = projectPath === '.' ? basename(process.cwd()) : basename(targetDir);
 
   console.log(`\n🚀 Creating Snice app in ${targetDir}...\n`);
-  console.log(`📦 Using template: ${template}\n`);
 
   // Check if directory exists and is empty
   if (projectPath !== '.') {
@@ -148,7 +140,7 @@ function createApp(projectPath, template = 'base') {
   // Check if template exists
   if (!existsSync(templateDir)) {
     console.error(`❌ Template "${template}" not found!`);
-    console.error(`Available templates: base, pwa, react`);
+    console.error(`Available templates: default, react`);
     process.exit(1);
   }
 
