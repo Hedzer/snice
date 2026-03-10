@@ -58,6 +58,7 @@ export { FormLayout } from './form-layout';
 export { Funnel } from './funnel';
 export { Gantt } from './gantt';
 export { Gauge } from './gauge';
+export { Grid } from './grid';
 export { Heatmap } from './heatmap';
 export { Image } from './image';
 export { Input } from './input';

@@ -31,6 +31,12 @@
  * @module snice/react
  */
 
+export { SniceProvider, useSniceContext, useNavigate, useParams, useRoute } from './SniceProvider';
+export type { SniceReactContext, SniceProviderProps, Placard } from './SniceProvider';
+export { SniceRouter, Route } from './SniceRouter';
+export type { SniceRouterProps, RouteProps } from './SniceRouter';
+export { useRequestHandler } from './useRequestHandler';
+
 export { createReactAdapter, useSniceFormValue } from './wrapper';
 export type { AdapterConfig, SniceComponentProps } from './wrapper';
 export type {
@@ -47,9 +53,6 @@ export {
   isFormAssociated,
   waitForComponentDefinition
 } from './utils';
-
-// Component adapters will be generated and exported here
-// This is a placeholder for the generated adapters
 
 // Auto-generated component exports
 export * from './components';
