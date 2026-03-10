@@ -26,6 +26,7 @@ Read these instead of `/docs/*.md` for faster context loading.
 # Create project from template
 npx snice create-app my-app --template=base
 npx snice create-app my-app --template=pwa
+npx snice create-app my-app --template=react  # or: npx snice create-react-app my-app
 
 # Run MCP server
 npx snice mcp
