@@ -88,12 +88,16 @@ Use only when a component needs to request data and wait for a response.
 
 Every `var()` MUST include a fallback value. Components must work without the theme loaded.
 
+**Fallback values must be the concrete default from `theme.css`** — not arbitrary values. If `--snice-color-primary` is `rgb(37 99 235)` in the theme, the fallback must be exactly `rgb(37 99 235)`. This ensures components look identical with or without the theme.
+
+**Override hierarchy:** theme token → component-level variable → hardcoded fallback. The theme overrides everything; the fallback is the last resort, not a creative choice.
+
 ### Pattern: `var(--snice-property, fallback)`
 
 ```css
-/* ✅ Correct */
+/* ✅ Correct — fallback matches theme.css default */
 color: var(--snice-color-text, rgb(23 23 23));
-background: var(--snice-color-background, white);
+background: var(--snice-color-background, rgb(255 255 255));
 padding: var(--snice-spacing-md, 1rem);
 
 /* ❌ NEVER — missing fallback */
@@ -101,15 +105,23 @@ color: var(--snice-color-text);
 
 /* ❌ NEVER — hard-coded without theme var */
 background: #ffffff;
+
+/* ❌ NEVER — fallback doesn't match theme.css default */
+color: var(--snice-color-text, #333);  /* theme default is rgb(23 23 23), not #333 */
 ```
 
 ### Two-Tier Variable Pattern (complex components)
+
+Component-level variables reference theme tokens with correct fallbacks. Internal elements use only the component variable (no fallback needed since `--component-*` is always defined on `:host`).
+
 ```css
 :host {
-  --component-bg: var(--snice-color-background, white);
+  /* Component var → theme token → theme's default as fallback */
+  --component-bg: var(--snice-color-background, rgb(255 255 255));
   --component-text: var(--snice-color-text, rgb(23 23 23));
 }
 .component {
+  /* Uses component var only — always defined above */
   background: var(--component-bg);
   color: var(--component-text);
 }
