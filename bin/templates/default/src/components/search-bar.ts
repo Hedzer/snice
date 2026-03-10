@@ -52,9 +52,9 @@ export class SearchBar extends HTMLElement {
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 0.75rem;
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        background: var(--snice-color-background);
+        border: 1px solid var(--snice-color-border);
+        border-radius: var(--snice-border-radius-lg);
       }
 
       .search-container:focus-within {
