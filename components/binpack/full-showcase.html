@@ -35,246 +35,588 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     }
     .controls {
       display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
       flex-wrap: wrap;
+      align-items: center;
     }
     .controls button {
-      padding: 0.375rem 0.75rem;
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: 4px;
-      background: var(--snice-color-background-element, rgb(252 251 249));
-      color: var(--snice-color-text, rgb(23 23 23));
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
+      background: var(--snice-color-background-element, rgb(30 30 30));
+      color: var(--snice-color-text);
       cursor: pointer;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
+      transition: all 0.15s;
     }
     .controls button:hover {
       background: var(--snice-color-primary, rgb(37 99 235));
       color: white;
+      border-color: transparent;
+    }
+    .controls button.active {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+      border-color: transparent;
+    }
+    .controls .sep {
+      width: 1px;
+      height: 1.2rem;
+      background: var(--snice-color-border, rgb(60 60 60));
     }
     snice-binpack {
-      border: 1px solid var(--snice-color-border, rgb(226 226 226));
-      border-radius: 4px;
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
     }
     .item {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 0.75rem;
       font-weight: 600;
       color: white;
+      user-select: none;
     }
-    .c1 { background: var(--snice-color-primary, rgb(37 99 235)); }
-    .c2 { background: var(--snice-color-success, rgb(22 163 74)); }
-    .c3 { background: var(--snice-color-danger, rgb(220 38 38)); }
-    .c4 { background: rgb(139 92 246); }
-    .c5 { background: rgb(234 179 8); }
-    .c6 { background: rgb(236 72 153); }
-    .c7 { background: rgb(20 184 166); }
-    .c8 { background: rgb(249 115 22); }
     .label {
       text-align: center;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--snice-color-text-tertiary, rgb(136 136 136));
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
     }
+    .side-by-side {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .side-by-side > div { flex: 1; min-width: 280px; }
+    /* Layout output panel */
+    .layout-output {
+      background: var(--snice-color-background-element, rgb(20 20 20));
+      border: 1px solid var(--snice-color-border, rgb(60 60 60));
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.65rem;
+      line-height: 1.5;
+      color: var(--snice-color-text-secondary, rgb(180 180 180));
+      max-height: 10rem;
+      overflow-y: auto;
+      white-space: pre;
+      margin-top: 0.5rem;
+      transition: opacity 0.3s;
+    }
+    .layout-output.flash {
+      animation: flash-bg 0.4s ease;
+    }
+    @keyframes flash-bg {
+      0% { background: rgba(59, 130, 246, 0.15); }
+      100% { background: var(--snice-color-background-element, rgb(20 20 20)); }
+    }
+    /* Dashboard widgets */
+    .widget {
+      border-radius: 8px;
+      font-size: 0.7rem;
+      color: #e0e0e0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+    .widget-hdr {
+      padding: 0.4rem 0.6rem;
+      font-weight: 600;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.7;
+    }
+    .widget-body {
+      flex: 1;
+      padding: 0.2rem 0.6rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .big { font-size: 1.4rem; font-weight: 700; color: #fff; line-height: 1.1; }
+    .sub { font-size: 0.55rem; opacity: 0.6; margin-top: 0.1rem; }
+    .up { color: #4ade80; }
+    /* Colors */
+    .c1 { background: linear-gradient(135deg, #1e3a5f, #2563eb); }
+    .c2 { background: linear-gradient(135deg, #134e4a, #14b8a6); }
+    .c3 { background: linear-gradient(135deg, #3b1764, #8b5cf6); }
+    .c4 { background: linear-gradient(135deg, #4a1d2e, #e11d48); }
+    .c5 { background: linear-gradient(135deg, #1a3320, #16a34a); }
+    .c6 { background: linear-gradient(135deg, #431407, #ea580c); }
+    .c7 { background: linear-gradient(135deg, #1e293b, #334155); }
+    .c8 { background: linear-gradient(135deg, #1a2e05, #65a30d); }
+    .flat1 { background: var(--snice-color-primary, rgb(37 99 235)); }
+    .flat2 { background: var(--snice-color-success, rgb(22 163 74)); }
+    .flat3 { background: var(--snice-color-danger, rgb(220 38 38)); }
+    .flat4 { background: rgb(139 92 246); }
+    .flat5 { background: rgb(234 179 8); }
+    .flat6 { background: rgb(236 72 153); }
+    .flat7 { background: rgb(20 184 166); }
+    .flat8 { background: rgb(249 115 22); }
   </style>
 </head>
 <body>
 
-  <!-- Default vertical packing -->
+  <!-- 1. Draggable dashboard -->
+  <section>
+    <h2>Draggable dashboard — drag widgets to rearrange</h2>
+    <div class="controls">
+      <button onclick="shuffleDash()">Shuffle</button>
+      <button onclick="resetDash()">Reset order</button>
+      <div class="sep"></div>
+      <button onclick="toggleWidget('w-alerts')">Toggle alerts</button>
+      <button onclick="addWidget()">+ Add widget</button>
+      <div class="sep"></div>
+      <button onclick="saveDash()">Save layout</button>
+      <button onclick="loadDash()">Load layout</button>
+    </div>
+    <snice-binpack id="dashboard" draggable gap="8px" column-width="80" row-height="80">
+      <div class="widget c1" name="revenue" style="width:168px;height:168px">
+        <div class="widget-hdr">Revenue</div>
+        <div class="widget-body">
+          <div class="big">$48.2k</div>
+          <div class="sub"><span class="up">&#9650; 12.5%</span> vs last month</div>
+        </div>
+      </div>
+      <div class="widget c2" name="users" style="width:80px;height:80px">
+        <div class="widget-hdr">Users</div>
+        <div class="widget-body"><div class="big" style="font-size:1.1rem">3,842</div></div>
+      </div>
+      <div class="widget c3" name="cpu" style="width:80px;height:80px">
+        <div class="widget-hdr">CPU</div>
+        <div class="widget-body" style="align-items:center">
+          <svg viewBox="0 0 56 56" width="48" height="48"><circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/><circle cx="28" cy="28" r="22" fill="none" stroke="#a78bfa" stroke-width="5" stroke-dasharray="103 138" stroke-dashoffset="-69" stroke-linecap="round"/><text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">74%</text></svg>
+        </div>
+      </div>
+      <div class="widget c4" name="orders" style="width:168px;height:80px">
+        <div class="widget-hdr">Orders</div>
+        <div class="widget-body" style="flex-direction:row;align-items:center;gap:0.8rem">
+          <div><div class="big" style="font-size:1.2rem">284</div><div class="sub">today</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1)"><div style="width:82%;height:100%;border-radius:2px;background:#fb7185"></div></div>
+            <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1)"><div style="width:12%;height:100%;border-radius:2px;background:#fbbf24"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="widget c5" name="memory" style="width:80px;height:80px">
+        <div class="widget-hdr">Mem</div>
+        <div class="widget-body" style="align-items:center">
+          <svg viewBox="0 0 56 56" width="48" height="48"><circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/><circle cx="28" cy="28" r="22" fill="none" stroke="#4ade80" stroke-width="5" stroke-dasharray="83 138" stroke-dashoffset="-69" stroke-linecap="round"/><text x="28" y="32" text-anchor="middle" fill="white" font-size="12" font-weight="700">61%</text></svg>
+        </div>
+      </div>
+      <div class="widget c6" name="alerts" style="width:168px;height:80px">
+        <div class="widget-hdr">Alerts</div>
+        <div class="widget-body" style="font-size:0.6rem;gap:2px">
+          <div style="display:flex;justify-content:space-between"><span style="color:#fbbf24">&#x26a0; DB spike</span><span style="opacity:0.4">2m</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#4ade80">&#x2713; Deploy</span><span style="opacity:0.4">14m</span></div>
+        </div>
+      </div>
+      <div class="widget c7" name="traffic" style="width:256px;height:80px">
+        <div class="widget-hdr">Traffic</div>
+        <div class="widget-body" style="font-size:0.6rem;gap:2px">
+          <div style="display:flex;justify-content:space-between"><span>Organic</span><span style="color:#fff">45%</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Social</span><span style="color:#fff">28%</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Direct</span><span style="color:#fff">18%</span></div>
+        </div>
+      </div>
+      <div class="widget c8" name="uptime" style="width:80px;height:80px">
+        <div class="widget-hdr">Uptime</div>
+        <div class="widget-body" style="align-items:center"><div class="big" style="font-size:1rem">99.9%</div><div class="sub">30d</div></div>
+      </div>
+    </snice-binpack>
+    <div class="layout-output" id="dash-output">// Drag a widget or click "Save layout" to see output</div>
+  </section>
+
+  <!-- 2. Default vertical packing -->
   <section>
     <h2>Default vertical packing</h2>
     <snice-binpack gap="0.5rem">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
-      <div class="item c4" style="width:10rem;height:5rem">4</div>
-      <div class="item c5" style="width:7rem;height:7rem">5</div>
-      <div class="item c6" style="width:4rem;height:4rem">6</div>
-      <div class="item c7" style="width:9rem;height:3rem">7</div>
-      <div class="item c8" style="width:6rem;height:5rem">8</div>
+      <div class="item flat1" style="width:6rem;height:6rem">1</div>
+      <div class="item flat2" style="width:8rem;height:4rem">2</div>
+      <div class="item flat3" style="width:5rem;height:8rem">3</div>
+      <div class="item flat4" style="width:10rem;height:5rem">4</div>
+      <div class="item flat5" style="width:7rem;height:7rem">5</div>
+      <div class="item flat6" style="width:4rem;height:4rem">6</div>
+      <div class="item flat7" style="width:9rem;height:3rem">7</div>
+      <div class="item flat8" style="width:6rem;height:5rem">8</div>
     </snice-binpack>
     <div class="label">gap="0.5rem"</div>
   </section>
 
-  <!-- Horizontal packing -->
+  <!-- 3. Horizontal packing -->
   <section>
     <h2>Horizontal packing</h2>
     <snice-binpack gap="0.5rem" horizontal style="height:16rem;overflow-x:auto">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:4rem;height:8rem">2</div>
-      <div class="item c3" style="width:8rem;height:5rem">3</div>
-      <div class="item c4" style="width:5rem;height:10rem">4</div>
-      <div class="item c5" style="width:7rem;height:4rem">5</div>
-      <div class="item c6" style="width:4rem;height:4rem">6</div>
+      <div class="item flat1" style="width:6rem;height:6rem">1</div>
+      <div class="item flat2" style="width:4rem;height:8rem">2</div>
+      <div class="item flat3" style="width:8rem;height:5rem">3</div>
+      <div class="item flat4" style="width:5rem;height:10rem">4</div>
+      <div class="item flat5" style="width:7rem;height:4rem">5</div>
+      <div class="item flat6" style="width:4rem;height:4rem">6</div>
     </snice-binpack>
     <div class="label">horizontal</div>
   </section>
 
-  <!-- Grid-snapped -->
+  <!-- 4. Grid-snapped -->
   <section>
     <h2>Grid-snapped layout</h2>
     <snice-binpack gap="0.5rem" column-width="100" row-height="100">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
-      <div class="item c4" style="width:10rem;height:5rem">4</div>
-      <div class="item c5" style="width:4rem;height:4rem">5</div>
+      <div class="item flat1" style="width:6rem;height:6rem">1</div>
+      <div class="item flat2" style="width:8rem;height:4rem">2</div>
+      <div class="item flat3" style="width:5rem;height:8rem">3</div>
+      <div class="item flat4" style="width:10rem;height:5rem">4</div>
+      <div class="item flat5" style="width:4rem;height:4rem">5</div>
     </snice-binpack>
     <div class="label">column-width="100" row-height="100"</div>
   </section>
 
-  <!-- Large gap -->
+  <!-- 5. Right-to-left vs left-to-right -->
   <section>
-    <h2>Large gap</h2>
-    <snice-binpack gap="1.5rem">
-      <div class="item c1" style="width:7rem;height:5rem">1</div>
-      <div class="item c2" style="width:7rem;height:5rem">2</div>
-      <div class="item c3" style="width:7rem;height:5rem">3</div>
-      <div class="item c4" style="width:7rem;height:5rem">4</div>
-    </snice-binpack>
-    <div class="label">gap="1.5rem"</div>
-  </section>
-
-  <!-- Right-to-left origin -->
-  <section>
-    <h2>Right-to-left (origin-left=false)</h2>
-    <snice-binpack gap="0.5rem" origin-left="false">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
-      <div class="item c4" style="width:10rem;height:5rem">4</div>
-      <div class="item c5" style="width:7rem;height:7rem">5</div>
-    </snice-binpack>
-    <div class="label">origin-left="false"</div>
-  </section>
-
-  <!-- Custom transition -->
-  <section>
-    <h2>Slow transition with stagger</h2>
-    <div class="controls">
-      <button onclick="document.getElementById('stagger-pack').layout()">Re-layout</button>
+    <h2>Origin direction</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>origin-left (default)</h2>
+        <snice-binpack gap="0.5rem">
+          <div class="item flat1" style="width:6rem;height:4rem">1</div>
+          <div class="item flat2" style="width:8rem;height:4rem">2</div>
+          <div class="item flat3" style="width:5rem;height:6rem">3</div>
+          <div class="item flat4" style="width:7rem;height:3rem">4</div>
+        </snice-binpack>
+      </div>
+      <div>
+        <h2>origin-left="false" (RTL)</h2>
+        <snice-binpack gap="0.5rem" origin-left="false">
+          <div class="item flat1" style="width:6rem;height:4rem">1</div>
+          <div class="item flat2" style="width:8rem;height:4rem">2</div>
+          <div class="item flat3" style="width:5rem;height:6rem">3</div>
+          <div class="item flat4" style="width:7rem;height:3rem">4</div>
+        </snice-binpack>
+      </div>
     </div>
-    <snice-binpack id="stagger-pack" gap="0.5rem" transition-duration="0.8s" stagger="60">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
-      <div class="item c4" style="width:10rem;height:5rem">4</div>
-      <div class="item c5" style="width:7rem;height:7rem">5</div>
-      <div class="item c6" style="width:4rem;height:4rem">6</div>
-    </snice-binpack>
-    <div class="label">transition-duration="0.8s" stagger="60"</div>
   </section>
 
-  <!-- Dynamic add/remove -->
+  <!-- 6. Stagger animation -->
   <section>
-    <h2>Dynamic add / remove</h2>
+    <h2>Stagger animation</h2>
     <div class="controls">
-      <button onclick="addItem()">Add item</button>
-      <button onclick="removeItem()">Remove last</button>
-      <button onclick="document.getElementById('dynamic').layout()">Re-layout</button>
-      <button onclick="document.getElementById('dynamic').reloadItems()">Reload items</button>
+      <button onclick="replayStagger()">Replay animation</button>
     </div>
-    <snice-binpack id="dynamic" gap="0.5rem">
-      <div class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
+    <snice-binpack id="stagger-pack" gap="0.5rem" transition-duration="0.6s" stagger="50">
+      <div class="item flat1" style="width:6rem;height:5rem">1</div>
+      <div class="item flat2" style="width:7rem;height:4rem">2</div>
+      <div class="item flat3" style="width:5rem;height:7rem">3</div>
+      <div class="item flat4" style="width:8rem;height:4rem">4</div>
+      <div class="item flat5" style="width:6rem;height:6rem">5</div>
+      <div class="item flat6" style="width:4rem;height:4rem">6</div>
+      <div class="item flat7" style="width:9rem;height:3rem">7</div>
+      <div class="item flat8" style="width:5rem;height:5rem">8</div>
+    </snice-binpack>
+    <div class="label">transition-duration="0.6s" stagger="50"</div>
+  </section>
+
+  <!-- 7. Dynamic add / remove -->
+  <section>
+    <h2>Dynamic items</h2>
+    <div class="controls">
+      <button onclick="addItem()">+ Add item</button>
+      <button onclick="removeItem()">- Remove last</button>
+      <button onclick="addBurst()">+ Add 5</button>
+      <button onclick="clearAll()">Clear all</button>
+    </div>
+    <snice-binpack id="dynamic" gap="0.5rem" transition-duration="0.4s" stagger="30">
+      <div class="item flat1" style="width:6rem;height:5rem">1</div>
+      <div class="item flat2" style="width:7rem;height:4rem">2</div>
+      <div class="item flat3" style="width:5rem;height:6rem">3</div>
     </snice-binpack>
   </section>
 
-  <!-- Stamp example -->
+  <!-- 8. Stamp -->
   <section>
-    <h2>Stamp (layout around fixed element)</h2>
+    <h2>Stamp — layout around a fixed element</h2>
     <div class="controls">
       <button onclick="toggleStamp()">Toggle stamp</button>
     </div>
     <snice-binpack id="stamp-pack" gap="0.5rem">
-      <div id="stamped" class="item c5" style="width:10rem;height:10rem;opacity:0.6">STAMPED</div>
-      <div class="item c1" style="width:5rem;height:5rem">1</div>
-      <div class="item c2" style="width:6rem;height:4rem">2</div>
-      <div class="item c3" style="width:4rem;height:6rem">3</div>
-      <div class="item c4" style="width:7rem;height:3rem">4</div>
-      <div class="item c6" style="width:4rem;height:4rem">5</div>
+      <div id="stamped" class="item" style="width:10rem;height:10rem;background:rgba(255,255,255,0.08);border:2px dashed rgba(255,255,255,0.2)">FIXED</div>
+      <div class="item flat1" style="width:5rem;height:5rem">1</div>
+      <div class="item flat2" style="width:6rem;height:4rem">2</div>
+      <div class="item flat3" style="width:4rem;height:6rem">3</div>
+      <div class="item flat4" style="width:7rem;height:3rem">4</div>
+      <div class="item flat6" style="width:4rem;height:4rem">5</div>
     </snice-binpack>
   </section>
 
-  <!-- fit() method -->
+  <!-- 9. fit() method -->
   <section>
-    <h2>fit() method</h2>
+    <h2>fit() — position a specific item</h2>
     <div class="controls">
-      <button onclick="fitFirst()">Fit #1 to (200, 0)</button>
+      <button onclick="fitFirst(0, 0)">Fit #1 → (0, 0)</button>
+      <button onclick="fitFirst(200, 0)">Fit #1 → (200, 0)</button>
+      <button onclick="fitFirst(100, 100)">Fit #1 → (100, 100)</button>
     </div>
     <snice-binpack id="fit-pack" gap="0.5rem">
-      <div id="fit-target" class="item c1" style="width:6rem;height:6rem">1</div>
-      <div class="item c2" style="width:8rem;height:4rem">2</div>
-      <div class="item c3" style="width:5rem;height:8rem">3</div>
-      <div class="item c4" style="width:10rem;height:5rem">4</div>
+      <div id="fit-target" class="item flat6" style="width:6rem;height:6rem">1</div>
+      <div class="item flat2" style="width:8rem;height:4rem">2</div>
+      <div class="item flat3" style="width:5rem;height:8rem">3</div>
+      <div class="item flat4" style="width:10rem;height:5rem">4</div>
     </snice-binpack>
   </section>
 
-  <!-- No transition -->
+  <!-- 10. Auto-animation on open -->
   <section>
-    <h2>No transition</h2>
-    <snice-binpack gap="0.5rem" transition-duration="0s">
-      <div class="item c7" style="width:6rem;height:6rem">1</div>
-      <div class="item c8" style="width:8rem;height:4rem">2</div>
-      <div class="item c1" style="width:5rem;height:5rem">3</div>
-      <div class="item c2" style="width:10rem;height:5rem">4</div>
+    <h2>Animated sequence — items entering</h2>
+    <div class="controls">
+      <button onclick="runEnterSequence()">Replay</button>
+    </div>
+    <snice-binpack id="enter-seq" gap="6px" transition-duration="0.5s" stagger="60" style="min-height:12rem">
     </snice-binpack>
-    <div class="label">transition-duration="0s"</div>
+  </section>
+
+  <!-- 11. getLayout / setLayout -->
+  <section>
+    <h2>getLayout() / setLayout() — persist and restore</h2>
+    <div class="controls">
+      <button onclick="captureLayout()">getLayout()</button>
+      <button onclick="restoreLayout()">setLayout()</button>
+      <button onclick="scrambleLayout()">Scramble order</button>
+      <button onclick="toggleHidden()">Toggle "cpu" hidden</button>
+    </div>
+    <snice-binpack id="persist-pack" draggable gap="8px" column-width="80" row-height="80">
+      <div class="item c1" name="alpha" style="width:168px;height:80px">alpha</div>
+      <div class="item c2" name="beta" style="width:80px;height:80px">beta</div>
+      <div class="item c3" name="gamma" style="width:80px;height:168px">gamma</div>
+      <div class="item c4" name="delta" style="width:168px;height:168px">delta</div>
+      <div class="item c5" name="cpu" style="width:80px;height:80px">cpu</div>
+      <div class="item c6" name="zeta" style="width:168px;height:80px">zeta</div>
+    </snice-binpack>
+    <div class="layout-output" id="persist-output">// Click getLayout() to see the layout object</div>
   </section>
 
   <script type="module">
     import './snice-binpack.ts';
 
-    let counter = 3;
-    const colors = [
-      'rgb(37 99 235)', 'rgb(22 163 74)', 'rgb(220 38 38)',
-      'rgb(139 92 246)', 'rgb(234 179 8)', 'rgb(236 72 153)',
-      'rgb(20 184 166)', 'rgb(249 115 22)'
-    ];
-    const sizes = [
-      [80, 80], [120, 60], [60, 100], [140, 70], [90, 90], [100, 50]
-    ];
+    // ── Dashboard controls ──
+    const dash = () => document.getElementById('dashboard');
+    const dashOut = () => document.getElementById('dash-output');
+    let savedLayout = null;
 
-    window.addItem = function() {
+    function showLayout(el, output) {
+      const layout = el.getLayout();
+      output.textContent = JSON.stringify(layout, null, 2);
+      output.classList.remove('flash');
+      void output.offsetWidth;
+      output.classList.add('flash');
+    }
+
+    // Update output on drag
+    document.addEventListener('binpack-drag-item-positioned', (e) => {
+      const pack = e.target.closest('snice-binpack');
+      if (pack?.id === 'dashboard') showLayout(pack, dashOut());
+    });
+
+    window.shuffleDash = () => {
+      const d = dash();
+      const items = [...d.children].filter(c => c.matches('.widget'));
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        d.appendChild(items[j]);
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      d.reloadItems();
+    };
+
+    window.resetDash = () => {
+      const d = dash();
+      const order = ['revenue','users','cpu','orders','memory','alerts','traffic','uptime'];
+      order.forEach(name => {
+        const el = d.querySelector(`[name="${name}"]`);
+        if (el) { el.removeAttribute('hidden'); d.appendChild(el); }
+      });
+      d.reloadItems();
+    };
+
+    window.toggleWidget = (name) => {
+      const el = dash().querySelector(`[name="${name.replace('w-','')}"]`);
+      if (!el) return;
+      el.toggleAttribute('hidden');
+      dash().layout();
+    };
+
+    let widgetCount = 0;
+    const extraNames = ['latency','errors','requests','cache','queue','threads'];
+    const extraColors = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+    window.addWidget = () => {
+      const d = dash();
+      const div = document.createElement('div');
+      const n = extraNames[widgetCount % extraNames.length];
+      const c = extraColors[widgetCount % extraColors.length];
+      div.className = `widget ${c}`;
+      div.setAttribute('name', `${n}-${widgetCount}`);
+      div.style.width = '80px';
+      div.style.height = '80px';
+      div.innerHTML = `<div class="widget-hdr">${n}</div><div class="widget-body"><div class="big" style="font-size:1rem">${Math.floor(Math.random()*100)}%</div></div>`;
+      d.appendChild(div);
+      widgetCount++;
+    };
+
+    window.saveDash = () => {
+      savedLayout = dash().getLayout();
+      showLayout(dash(), dashOut());
+      localStorage.setItem('binpack-demo-layout', JSON.stringify(savedLayout));
+    };
+
+    window.loadDash = () => {
+      const stored = localStorage.getItem('binpack-demo-layout');
+      if (stored) {
+        const layout = JSON.parse(stored);
+        dash().setLayout(layout);
+        showLayout(dash(), dashOut());
+      } else {
+        dashOut().textContent = '// No saved layout found';
+      }
+    };
+
+    // ── Stagger replay ──
+    window.replayStagger = () => {
+      const pack = document.getElementById('stagger-pack');
+      const items = pack.getItemElements();
+      items.forEach(el => { el.style.transform = 'translate(0px, 0px)'; });
+      requestAnimationFrame(() => pack.layout());
+    };
+
+    // ── Dynamic items ──
+    let counter = 3;
+    const colors = ['flat1','flat2','flat3','flat4','flat5','flat6','flat7','flat8'];
+    const sizes = [[80,80],[120,60],[60,100],[140,70],[90,90],[100,50],[80,120],[150,60]];
+
+    window.addItem = () => {
       counter++;
       const pack = document.getElementById('dynamic');
       const div = document.createElement('div');
-      div.className = 'item';
       const [w, h] = sizes[Math.floor(Math.random() * sizes.length)];
+      div.className = `item ${colors[Math.floor(Math.random() * colors.length)]}`;
       div.style.width = w + 'px';
       div.style.height = h + 'px';
-      div.style.background = colors[Math.floor(Math.random() * colors.length)];
       div.textContent = counter;
       pack.appendChild(div);
     };
 
-    window.removeItem = function() {
+    window.removeItem = () => {
       const pack = document.getElementById('dynamic');
-      const last = pack.lastElementChild;
+      const last = pack.querySelector('.item:last-of-type');
       if (last) last.remove();
     };
 
-    let isStamped = false;
-    window.toggleStamp = function() {
-      const pack = document.getElementById('stamp-pack');
-      const stamped = document.getElementById('stamped');
-      if (isStamped) {
-        pack.unstamp(stamped);
-        isStamped = false;
-      } else {
-        pack.stamp(stamped);
-        isStamped = true;
-      }
+    window.addBurst = () => {
+      for (let i = 0; i < 5; i++) setTimeout(addItem, i * 80);
     };
 
-    window.fitFirst = function() {
+    window.clearAll = () => {
+      const pack = document.getElementById('dynamic');
+      pack.querySelectorAll('.item').forEach(el => el.remove());
+      counter = 0;
+    };
+
+    // ── Stamp ──
+    let isStamped = false;
+    window.toggleStamp = () => {
+      const pack = document.getElementById('stamp-pack');
+      const stamped = document.getElementById('stamped');
+      if (isStamped) { pack.unstamp(stamped); isStamped = false; }
+      else { pack.stamp(stamped); isStamped = true; }
+    };
+
+    // ── fit() ──
+    window.fitFirst = (x, y) => {
       const pack = document.getElementById('fit-pack');
       const target = document.getElementById('fit-target');
-      pack.fit(target, 200, 0);
+      pack.fit(target, x, y);
+    };
+
+    // ── Enter sequence animation ──
+    const seqItems = [
+      { w: 160, h: 120, c: 'c1', t: 'A' },
+      { w: 80, h: 80, c: 'c2', t: 'B' },
+      { w: 120, h: 80, c: 'c3', t: 'C' },
+      { w: 80, h: 160, c: 'c4', t: 'D' },
+      { w: 160, h: 80, c: 'c5', t: 'E' },
+      { w: 80, h: 80, c: 'c6', t: 'F' },
+      { w: 200, h: 80, c: 'c7', t: 'G' },
+      { w: 80, h: 80, c: 'c8', t: 'H' },
+      { w: 120, h: 120, c: 'c1', t: 'I' },
+      { w: 80, h: 80, c: 'c4', t: 'J' },
+    ];
+
+    window.runEnterSequence = () => {
+      const pack = document.getElementById('enter-seq');
+      pack.querySelectorAll('.item').forEach(el => el.remove());
+      seqItems.forEach((item, i) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = `item ${item.c}`;
+          div.style.width = item.w + 'px';
+          div.style.height = item.h + 'px';
+          div.textContent = item.t;
+          pack.appendChild(div);
+        }, i * 150);
+      });
+    };
+
+    // Auto-play enter sequence when section scrolls into view
+    const enterObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        runEnterSequence();
+        enterObs.disconnect();
+      }
+    }, { threshold: 0.3 });
+    requestAnimationFrame(() => {
+      const section = document.getElementById('enter-seq')?.closest('section');
+      if (section) enterObs.observe(section);
+    });
+
+    // ── getLayout / setLayout ──
+    let capturedLayout = null;
+    const persistOut = () => document.getElementById('persist-output');
+
+    window.captureLayout = () => {
+      const pack = document.getElementById('persist-pack');
+      capturedLayout = pack.getLayout();
+      showLayout(pack, persistOut());
+    };
+
+    window.restoreLayout = () => {
+      if (!capturedLayout) { persistOut().textContent = '// Capture a layout first'; return; }
+      const pack = document.getElementById('persist-pack');
+      pack.setLayout(capturedLayout);
+      persistOut().textContent = '// Layout restored!\n' + JSON.stringify(capturedLayout, null, 2);
+    };
+
+    window.scrambleLayout = () => {
+      const pack = document.getElementById('persist-pack');
+      const items = [...pack.children].filter(c => c.hasAttribute('name'));
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        pack.appendChild(items[j]);
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      pack.reloadItems();
+    };
+
+    window.toggleHidden = () => {
+      const pack = document.getElementById('persist-pack');
+      const cpu = pack.querySelector('[name="cpu"]');
+      if (cpu) {
+        cpu.toggleAttribute('hidden');
+        pack.layout();
+        showLayout(pack, persistOut());
+      }
     };
   </script>
 </body>
