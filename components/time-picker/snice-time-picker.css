@@ -88,6 +88,10 @@
   cursor: wait;
 }
 
+.input--loading ~ .clock-toggle {
+  visibility: hidden;
+}
+
 .input:disabled {
   background: var(--snice-color-background-secondary, rgb(243 244 246));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
@@ -291,7 +295,9 @@
 /* Spinner */
 .spinner {
   position: absolute;
-  right: 3rem;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
   width: 1em;
   height: 1em;
   pointer-events: none;
