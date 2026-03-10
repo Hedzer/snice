@@ -102,7 +102,7 @@
   cursor: wait;
 }
 
-.input--loading ~ .calendar-toggle {
+.input--loading ~ .toggle-button {
   visibility: hidden;
 }
 
