@@ -36,11 +36,14 @@ describe('React Adapter: Binpack', () => {
       { name: 'originTop', value: 'test' },
       { name: 'transitionDuration', value: 'test' },
       { name: 'stagger', value: 'test' },
-      { name: 'resize', value: 'vertical' }
+      { name: 'resize', value: 'vertical' },
+      { name: 'draggable', value: 'test' },
+      { name: 'dragThrottle', value: 'test' }
     ],
     events: [
       { name: 'onBinpackLayoutComplete' },
-      { name: 'onBinpackFitComplete' }
+      { name: 'onBinpackFitComplete' },
+      { name: 'onBinpackDragItemPositioned' }
     ],
     defaultProps: {}
   });
