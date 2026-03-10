@@ -82,16 +82,19 @@ function DefaultLoading() {
       height: '100%',
       minHeight: '200px',
     },
-  }, createElement('div', {
-    style: {
-      width: '32px',
-      height: '32px',
-      border: '3px solid rgba(128,128,128,0.3)',
-      borderTopColor: 'rgba(128,128,128,0.8)',
-      borderRadius: '50%',
-      animation: 'snice-spin 0.6s linear infinite',
-    },
-  }));
+  },
+    createElement('style', null, '@keyframes snice-spin{to{transform:rotate(360deg)}}'),
+    createElement('div', {
+      style: {
+        width: '32px',
+        height: '32px',
+        border: '3px solid rgba(128,128,128,0.3)',
+        borderTopColor: 'rgba(128,128,128,0.8)',
+        borderRadius: '50%',
+        animation: 'snice-spin 0.6s linear infinite',
+      },
+    }),
+  );
 }
 
 /** Render a page/layout/loading/fallback prop that can be component, string tag, or JSX */
