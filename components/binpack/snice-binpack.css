@@ -1,6 +1,7 @@
 :host {
   display: block;
   position: relative;
+  width: 100%;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style;
   --binpack-gap: 1rem;
