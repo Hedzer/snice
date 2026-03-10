@@ -79,6 +79,43 @@ Set `origin-left="false"` to pack items from the right side.
 </snice-binpack>
 ```
 
+### Draggable Dashboard
+
+Enable `draggable` to let users drag items to rearrange them. A drop placeholder shows where the item will land, and other items reflow around it in real-time. Combine with `column-width` and `row-height` for grid-snapped drop positions.
+
+```html
+<snice-binpack draggable gap="8px" column-width="80" row-height="80">
+  <div style="width: 160px; height: 160px;">Revenue</div>
+  <div style="width: 80px; height: 80px;">CPU</div>
+  <div style="width: 160px; height: 80px;">Orders</div>
+</snice-binpack>
+```
+
+**CSS for drag states:**
+```css
+/* During drag */
+.binpack-dragging {
+  z-index: 100;
+  opacity: 0.9;
+}
+
+/* Animating to final position */
+.binpack-positioning {
+  z-index: 99;
+}
+```
+
+Listen for reorder events:
+```javascript
+const pack = document.querySelector('snice-binpack');
+pack.addEventListener('binpack-drag-item-positioned', (e) => {
+  const { item, x, y } = e.detail;
+  console.log('Item dropped at', x, y);
+  // Get items in visual order
+  const ordered = pack.getItemElements();
+});
+```
+
 ### Dynamic Items
 
 Items can be added or removed dynamically. The layout automatically updates via slot change detection.
@@ -157,6 +194,8 @@ Position a specific item at given coordinates, then reflow the remaining items a
 | `transitionDuration` | `transition-duration` | `string` | `'0.4s'` | CSS transition duration for item movement |
 | `stagger` | `stagger` | `number` | `0` | Delay in ms between each item's transition |
 | `resize` | `resize` | `boolean` | `true` | Auto re-layout on container resize |
+| `draggable` | `draggable` | `boolean` | `false` | Enable drag-to-reorder |
+| `dragThrottle` | `drag-throttle` | `number` | `120` | Throttle interval (ms) for drag layout updates |
 
 ## Events
 
@@ -164,6 +203,7 @@ Position a specific item at given coordinates, then reflow the remaining items a
 |-------|--------|-------------|
 | `binpack-layout-complete` | `{ items: HTMLElement[] }` | Fired after layout completes |
 | `binpack-fit-complete` | `{ item: HTMLElement, x: number, y: number }` | Fired after `fit()` completes |
+| `binpack-drag-item-positioned` | `{ item: HTMLElement, x: number, y: number }` | Fired after a dragged item settles into its new position |
 
 ## Methods
 
