@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binpack</title>
+  <link rel="stylesheet" href="../theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, rgb(136 136 136));
+      margin: 0 0 0.75rem;
+    }
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .controls button {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: 4px;
+      background: var(--snice-color-background-element, rgb(252 251 249));
+      color: var(--snice-color-text, rgb(23 23 23));
+      cursor: pointer;
+      font-size: 0.8125rem;
+    }
+    .controls button:hover {
+      background: var(--snice-color-primary, rgb(37 99 235));
+      color: white;
+    }
+    snice-binpack {
+      border: 1px solid var(--snice-color-border, rgb(226 226 226));
+      border-radius: 4px;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Bin-pack layout (items fill gaps)</h2>
+    <snice-binpack gap="8px" style="max-width: 30rem;">
+      <div class="item" style="width:120px;height:120px;background:var(--snice-color-primary, rgb(37 99 235))">1</div>
+      <div class="item" style="width:180px;height:80px;background:rgb(22 163 74)">2</div>
+      <div class="item" style="width:100px;height:160px;background:rgb(220 38 38)">3</div>
+      <div class="item" style="width:160px;height:100px;background:rgb(139 92 246)">4</div>
+      <div class="item" style="width:80px;height:80px;background:rgb(234 179 8)">5</div>
+      <div class="item" style="width:120px;height:60px;background:rgb(236 72 153)">6</div>
+      <div class="item" style="width:140px;height:140px;background:rgb(20 184 166)">7</div>
+      <div class="item" style="width:100px;height:80px;background:rgb(249 115 22)">8</div>
+      <div class="item" style="width:60px;height:60px;background:rgb(168 85 247)">9</div>
+      <div class="item" style="width:80px;height:120px;background:rgb(14 165 233)">10</div>
+      <div class="item" style="width:140px;height:60px;background:rgb(244 63 94)">11</div>
+      <div class="item" style="width:60px;height:100px;background:rgb(34 197 94)">12</div>
+    </snice-binpack>
+  </section>
+
+  <section>
+    <h2>Full width (wider container)</h2>
+    <snice-binpack gap="8px">
+      <div class="item" style="width:200px;height:150px;background:var(--snice-color-primary, rgb(37 99 235))">1</div>
+      <div class="item" style="width:250px;height:100px;background:rgb(22 163 74)">2</div>
+      <div class="item" style="width:150px;height:200px;background:rgb(220 38 38)">3</div>
+      <div class="item" style="width:180px;height:120px;background:rgb(139 92 246)">4</div>
+      <div class="item" style="width:120px;height:120px;background:rgb(234 179 8)">5</div>
+      <div class="item" style="width:160px;height:80px;background:rgb(236 72 153)">6</div>
+      <div class="item" style="width:200px;height:160px;background:rgb(20 184 166)">7</div>
+      <div class="item" style="width:140px;height:100px;background:rgb(249 115 22)">8</div>
+      <div class="item" style="width:100px;height:80px;background:rgb(168 85 247)">9</div>
+      <div class="item" style="width:180px;height:140px;background:rgb(14 165 233)">10</div>
+    </snice-binpack>
+  </section>
+
+  <section>
+    <h2>Grid-snapped (column-width: 100, row-height: 100)</h2>
+    <snice-binpack gap="8px" column-width="100" row-height="100" style="max-width: 30rem;">
+      <div class="item" style="width:90px;height:90px;background:var(--snice-color-primary, rgb(37 99 235))">1</div>
+      <div class="item" style="width:190px;height:90px;background:rgb(22 163 74)">2</div>
+      <div class="item" style="width:90px;height:190px;background:rgb(220 38 38)">3</div>
+      <div class="item" style="width:190px;height:90px;background:rgb(139 92 246)">4</div>
+      <div class="item" style="width:90px;height:90px;background:rgb(234 179 8)">5</div>
+      <div class="item" style="width:90px;height:90px;background:rgb(236 72 153)">6</div>
+    </snice-binpack>
+  </section>
+
+  <section>
+    <h2>Dynamic add / remove</h2>
+    <div class="controls">
+      <button onclick="addItem()">Add item</button>
+      <button onclick="removeItem()">Remove last</button>
+      <button onclick="document.getElementById('dynamic').layout()">Re-layout</button>
+    </div>
+    <snice-binpack id="dynamic" gap="8px" style="max-width: 30rem;">
+      <div class="item" style="width:120px;height:120px;background:var(--snice-color-primary, rgb(37 99 235))">1</div>
+      <div class="item" style="width:160px;height:80px;background:rgb(22 163 74)">2</div>
+      <div class="item" style="width:100px;height:140px;background:rgb(220 38 38)">3</div>
+    </snice-binpack>
+  </section>
+
+  <script type="module">
+    import './snice-binpack.ts';
+
+    let counter = 3;
+    const colors = [
+      'rgb(37 99 235)', 'rgb(22 163 74)', 'rgb(220 38 38)',
+      'rgb(139 92 246)', 'rgb(234 179 8)', 'rgb(236 72 153)',
+      'rgb(20 184 166)', 'rgb(249 115 22)'
+    ];
+    const sizes = [
+      [80, 80], [120, 60], [60, 100], [140, 70], [90, 90], [100, 50],
+      [160, 80], [80, 120], [120, 120]
+    ];
+
+    window.addItem = function() {
+      counter++;
+      const pack = document.getElementById('dynamic');
+      const div = document.createElement('div');
+      div.className = 'item';
+      const [w, h] = sizes[Math.floor(Math.random() * sizes.length)];
+      div.style.width = w + 'px';
+      div.style.height = h + 'px';
+      div.style.background = colors[Math.floor(Math.random() * colors.length)];
+      div.textContent = counter;
+      pack.appendChild(div);
+    };
+
+    window.removeItem = function() {
+      const pack = document.getElementById('dynamic');
+      const last = pack.lastElementChild;
+      if (last) last.remove();
+    };
+  </script>
+</body>
+</html>
