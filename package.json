@@ -1,6 +1,6 @@
 {
   "name": "snice",
-  "version": "4.34.0",
+  "version": "4.34.1",
   "type": "module",
   "description": "A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.",
   "main": "dist/index.cjs",
