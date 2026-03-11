@@ -1,3 +1,10 @@
+# [4.32.0](https://github.com/Hedzer/snice/compare/v4.31.0...v4.32.0) (2026-03-11)
+
+
+### Features
+
+* **website:** version-stamp dynamic fetches and simplify asset stamping ([3d6ec04](https://github.com/Hedzer/snice/commit/3d6ec049b6dcb62ae3cf366700e4453073961348))
+
 # [4.31.0](https://github.com/Hedzer/snice/compare/v4.30.1...v4.31.0) (2026-03-11)
 
 
