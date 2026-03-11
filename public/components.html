@@ -5254,8 +5254,10 @@ nav.update([
                 { id: 's4', tool: 'pen', color: '#f59e0b', width: 3, points: wave(60, 300, 30, 4, 280, 50), timestamp: 4 },
                 { id: 's5', tool: 'pen', color: '#8b5cf6', width: 4, points: curve([[300,60],[340,160],[280,260],[350,340]], 40), timestamp: 5 },
               ];
-              const el = document.getElementById('demo-paint');
-              if (el) el.addEventListener('ready', function() { el.setStrokes(strokes); }, { once: true });
+              customElements.whenDefined('snice-paint').then(() => {
+                const el = document.getElementById('demo-paint');
+                if (el) el.setStrokes(strokes);
+              });
             })();
           </script>
         </div>
