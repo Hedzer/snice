@@ -77,8 +77,10 @@
                 { id: 'd3', tool: 'pen', color: '#8b5cf6', width: 5, points: curve([[20,300],[100,100],[200,350],[300,150],[380,280]], 50), timestamp: 3 },
                 { id: 'd4', tool: 'pen', color: '#f59e0b', width: 3, points: wave(50, 330, 25, 5, 300, 50), timestamp: 4 },
               ];
-              const el = document.getElementById('demo-draw');
-              if (el) el.addEventListener('ready', function() { el.setStrokes(strokes); }, { once: true });
+              customElements.whenDefined('snice-draw').then(() => {
+                const el = document.getElementById('demo-draw');
+                if (el) el.setStrokes(strokes);
+              });
             })();
           </script>
         </div>
