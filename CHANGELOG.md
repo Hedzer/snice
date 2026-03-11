@@ -1,3 +1,10 @@
+## [4.30.1](https://github.com/Hedzer/snice/compare/v4.30.0...v4.30.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **cdn:** simplify cache headers and make showcase assets immutable ([664e987](https://github.com/Hedzer/snice/commit/664e987b1f18f141d3090e6d3aa703c5a18dc32b))
+
 # [4.30.0](https://github.com/Hedzer/snice/compare/v4.29.0...v4.30.0) (2026-03-11)
 
 
