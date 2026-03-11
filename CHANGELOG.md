@@ -1,3 +1,10 @@
+## [4.33.1](https://github.com/Hedzer/snice/compare/v4.33.0...v4.33.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **icons:** support query strings on image URLs for cache-busted assets ([76f7791](https://github.com/Hedzer/snice/commit/76f7791ee6dc884c3f4874169cbab259e29c590e))
+
 # [4.33.0](https://github.com/Hedzer/snice/compare/v4.32.0...v4.33.0) (2026-03-11)
 
 
