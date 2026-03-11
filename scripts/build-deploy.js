@@ -125,4 +125,45 @@ for (const f of ['llms.txt', 'llms-full.txt']) {
 console.log('Stamping assets...');
 execSync(`node scripts/stamp-assets.js --dir ${siteDir}`, { stdio: 'inherit', cwd: root });
 
+// 5. Verify all local assets are stamped — fail the build if not
+console.log('Verifying stamps...');
+const STAMP_EXT = /\.(?:css|js|json|png|jpe?g|gif|svg|ico|webp|woff2?|md)$/i;
+const HTML_EXT = /\.html$/i;
+const EXTERNAL = /^(?:https?:\/\/|\/\/|data:|#|mailto:)/;
+const ATTR_RE = /(?:src|href|content|image|avatar|cover-image|icon|poster)=["']([^"']+)["']/gi;
+const unstamped = [];
+
+function verifySiteDir(dir) {
+  for (const entry of readdirSync(dir)) {
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      verifySiteDir(fullPath);
+      continue;
+    }
+    if (!entry.endsWith('.html')) continue;
+    const content = readFileSync(fullPath, 'utf-8');
+    let m;
+    while ((m = ATTR_RE.exec(content)) !== null) {
+      const url = m[1];
+      if (EXTERNAL.test(url)) continue;
+      if (STAMP_EXT.test(url.split('?')[0]) && !url.includes('?v=')) {
+        unstamped.push(`${fullPath}: ${url}`);
+      }
+      if (HTML_EXT.test(url.split('?')[0]) && !url.includes('?v=')) {
+        unstamped.push(`${fullPath}: ${url}`);
+      }
+    }
+  }
+}
+
+verifySiteDir(siteDir);
+
+if (unstamped.length > 0) {
+  console.error(`\nFAILED: ${unstamped.length} unstamped asset reference(s) found:\n`);
+  unstamped.forEach(u => console.error('  ' + u));
+  console.error('\nFix stamp-assets.js or the source HTML before deploying.');
+  process.exit(1);
+}
+
+console.log('All asset references stamped.');
 console.log(`Deploy artifact ready at dist/site/ (${showcaseCount} showcases)`);
