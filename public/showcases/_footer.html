@@ -735,14 +735,14 @@
         let combined = '';
         for (const name of candidates) {
           try {
-            const res = await fetch('docs/components/' + name + '.md');
+            const res = await fetch('docs/components/' + name + '.md?v=' + (window.__sv||''));
             if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
           } catch(e) {}
         }
         if (!combined) {
           for (const name of candidates) {
             try {
-              const res = await fetch('docs/ai/components/' + name + '.md');
+              const res = await fetch('docs/ai/components/' + name + '.md?v=' + (window.__sv||''));
               if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
             } catch(e) {}
           }
@@ -770,7 +770,7 @@
         const name = candidates[0];
         const src = isDev
           ? '/components/' + name + '/full-showcase.html'
-          : 'showcase/' + name + '.html';
+          : 'showcase/' + name + '?v=' + (window.__sv||'');
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }

@@ -1,7 +1,7 @@
 <!-- GENERATED FILE — do not edit directly. Source: public/showcases/ fragments, assembled by public/build-showcases.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark');window.__sv='__SNICE_VERSION__';</script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9193,14 +9193,14 @@ weather.data = {
         let combined = '';
         for (const name of candidates) {
           try {
-            const res = await fetch('docs/components/' + name + '.md');
+            const res = await fetch('docs/components/' + name + '.md?v=' + (window.__sv||''));
             if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
           } catch(e) {}
         }
         if (!combined) {
           for (const name of candidates) {
             try {
-              const res = await fetch('docs/ai/components/' + name + '.md');
+              const res = await fetch('docs/ai/components/' + name + '.md?v=' + (window.__sv||''));
               if (res.ok) combined += (combined ? '\n\n---\n\n' : '') + await res.text();
             } catch(e) {}
           }
@@ -9228,7 +9228,7 @@ weather.data = {
         const name = candidates[0];
         const src = isDev
           ? '/components/' + name + '/full-showcase.html'
-          : 'showcase/' + name + '.html';
+          : 'showcase/' + name + '?v=' + (window.__sv||'');
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }

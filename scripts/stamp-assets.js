@@ -32,41 +32,35 @@ function computeContentHash() {
 }
 
 const hash = clean ? null : computeContentHash();
+const version = clean ? null : JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8')).version;
 
 // Asset extensions to cache-bust
 const ASSET_EXT = /\.(?:css|js|png|jpe?g|gif|svg|ico|webp|json|woff2?)$/i;
 
 function stampHtml(content) {
+  // Match local asset paths: dir/file.ext or dir/file.ext?v=old
+  // Captures: $1=prefix char, $2=path, $3=optional old stamp
+  const ASSET_PATH = /(["'(=\s,])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?/gi;
+
+  // Match local .html hrefs: href="page.html" or href="dir/page.html"
+  const HTML_PATH = /(href=["'])((?!https?:\/\/|\/\/|#|mailto:)[\w./-]+\.html)(\?v=[^"']+)?(["'])/gi;
+
   if (clean) {
-    // Remove all ?v=... from local asset URLs
-    content = content.replace(
-      /((?:href|src)=["'])([^"'?#]+)\?v=[a-f0-9]+(["'])/gi,
-      '$1$2$3'
-    );
-    // Remove from grammar JS strings
-    content = content.replace(
-      /(grammars\/[\w.-]+\.json)\?v=[a-f0-9]+/g,
-      '$1'
-    );
+    content = content.replace(ASSET_PATH, '$1$2');
+    content = content.replace(HTML_PATH, '$1$2$4');
     return content;
   }
 
-  // Stamp href="..." and src="..." for local assets (skip external, data:, anchors)
-  content = content.replace(
-    /((?:href|src)=["'])((?!https?:\/\/|\/\/|data:|#|mailto:)[^"'?#]+?)(\?v=[a-f0-9]+)?(["'])/gi,
-    (match, prefix, url, oldVersion, quote) => {
-      if (ASSET_EXT.test(url)) {
-        return `${prefix}${url}?v=${hash}${quote}`;
-      }
-      return match;
-    }
-  );
+  content = content.replace(ASSET_PATH, (match, before, url, oldVersion) => {
+    return `${before}${url}?v=${hash}`;
+  });
 
-  // Stamp grammar references in JS strings: 'grammars/foo.json' or "grammars/foo.json"
-  content = content.replace(
-    /(grammars\/[\w.-]+\.json)(\?v=[a-f0-9]+)?/g,
-    `$1?v=${hash}`
-  );
+  content = content.replace(HTML_PATH, (match, prefix, url, oldVersion, quote) => {
+    return `${prefix}${url}?v=${version}${quote}`;
+  });
+
+  // Replace version placeholder for dynamic fetches
+  content = content.replace(/__SNICE_VERSION__/g, version);
 
   return content;
 }
