@@ -17,6 +17,21 @@ import {
   type GrammarLoadedDetail
 } from './snice-code-block.types';
 
+// Shared grammar fetch cache — all code-block instances wait on the same promise per URL
+const grammarCache = new Map<string, Promise<GrammarDefinition>>();
+
+function fetchGrammarShared(url: string): Promise<GrammarDefinition> {
+  let p = grammarCache.get(url);
+  if (!p) {
+    p = fetch(url).then(r => r.json()).catch(err => {
+      grammarCache.delete(url);
+      throw err;
+    });
+    grammarCache.set(url, p);
+  }
+  return p;
+}
+
 function dedent(text: string): string {
   const lines = text.replace(/^\n+/, '').replace(/\n\s*$/, '').split('\n');
   if (lines.length === 0) return '';
@@ -290,8 +305,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     try {
       switch (this.fetchMode) {
         case 'native': {
-          const response = await fetch(this.grammar);
-          const grammar: GrammarDefinition = await response.json();
+          const grammar: GrammarDefinition = await fetchGrammarShared(this.grammar);
           if (grammar) {
             this.loadedGrammar = grammar;
             this.loadedGrammarUrl = this.grammar;
