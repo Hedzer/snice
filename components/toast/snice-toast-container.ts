@@ -88,6 +88,11 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
 
   @ready()
   init() {
+    // Hoist to document.body so z-index isn't trapped by parent stacking contexts
+    if (this.parentElement && this.parentElement !== document.body) {
+      document.body.appendChild(this);
+    }
+
     // Register as global container if none exists
     if (!(globalThis as any)[TOAST_CONTAINER]) {
       (globalThis as any)[TOAST_CONTAINER] = this;
