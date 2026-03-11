@@ -40,7 +40,7 @@ const ASSET_EXT = /\.(?:css|js|png|jpe?g|gif|svg|ico|webp|json|woff2?)$/i;
 function stampHtml(content) {
   // Match local asset paths: dir/file.ext or dir/file.ext?v=old
   // Captures: $1=prefix char, $2=path, $3=optional old stamp
-  const ASSET_PATH = /(["'(=\s,])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?/gi;
+  const ASSET_PATH = /(["'(=\s,])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?/gi;
 
   // Match local .html hrefs: href="page.html" or href="dir/page.html"
   const HTML_PATH = /(href=["'])((?!https?:\/\/|\/\/|#|mailto:)[\w./-]+\.html)(\?v=[^"']+)?(["'])/gi;
@@ -72,8 +72,7 @@ function processDir(dir) {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {
-      // Recurse into showcases and showcase dirs
-      if (entry === 'showcases' || entry === 'showcase') count += processDir(fullPath);
+      count += processDir(fullPath);
       continue;
     }
     if (!entry.endsWith('.html')) continue;
