@@ -1,3 +1,10 @@
+## [4.34.1](https://github.com/Hedzer/snice/compare/v4.34.0...v4.34.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **cdn:** add HTML no-cache headers and always return modified response in worker ([619e580](https://github.com/Hedzer/snice/commit/619e580b15739b127d9a872294512253ff3241f1))
+
 # [4.34.0](https://github.com/Hedzer/snice/compare/v4.33.1...v4.34.0) (2026-03-11)
 
 
