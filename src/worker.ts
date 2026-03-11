@@ -2,14 +2,18 @@ export default {
   async fetch(request: Request, env: any) {
     const response = await env.ASSETS.fetch(request);
     const url = new URL(request.url);
+    const headers = new Headers(response.headers);
 
-    // Stamped assets (?v=hash): immutable, cache forever
     if (url.searchParams.has('v')) {
-      const headers = new Headers(response.headers);
+      // Stamped assets (?v=hash): immutable, cache forever
       headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-      return new Response(response.body, { status: response.status, headers });
+    } else if (
+      response.headers.get('Content-Type')?.includes('text/html')
+    ) {
+      // HTML pages: always revalidate (304 via ETag is cheap)
+      headers.set('Cache-Control', 'public, no-cache');
     }
 
-    return response;
+    return new Response(response.body, { status: response.status, headers });
   },
 };
