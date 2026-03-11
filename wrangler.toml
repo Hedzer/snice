@@ -1,5 +1,6 @@
 name = "snice"
 compatibility_date = "2025-01-01"
+main = "src/worker.ts"
 
 routes = [
   { pattern = "snice.dev", custom_domain = true },
