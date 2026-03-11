@@ -1,3 +1,10 @@
+## [4.34.2](https://github.com/Hedzer/snice/compare/v4.34.1...v4.34.2) (2026-03-11)
+
+
+### Bug Fixes
+
+* **build:** stop stamping HTML hrefs since HTML revalidates via 304 ([34f0178](https://github.com/Hedzer/snice/commit/34f01784badc38bcd3f8ad05ae6fd9a45321120e))
+
 ## [4.34.1](https://github.com/Hedzer/snice/compare/v4.34.0...v4.34.1) (2026-03-11)
 
 
