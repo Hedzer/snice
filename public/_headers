@@ -1,30 +1,29 @@
-# Stamped assets (carry ?v=hash): immutable, cache forever
-# Browsers won't refetch until the HTML page updates with a new stamp
-/theme/*.css
+# Cache-busted assets: immutable, cache forever
+/theme/*
   Cache-Control: public, max-age=31536000, immutable
 
 /styles.css
   Cache-Control: public, max-age=31536000, immutable
 
-/components/*.js
+/components/*
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*
   Cache-Control: public, max-age=31536000, immutable
 
-/grammars/*.json
+/grammars/*
   Cache-Control: public, max-age=31536000, immutable
 
-# HTML pages: short cache, always revalidate
+/showcase/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML pages: short cache, always revalidate (they carry versioned asset URLs)
 /
   Cache-Control: public, max-age=60, must-revalidate
 
 /*.html
   Cache-Control: public, max-age=60, must-revalidate
 
-/showcase/*.html
-  Cache-Control: public, max-age=60, must-revalidate
-
-# Docs (fetched by More panel)
+# Docs (fetched by help drawer)
 /docs/*
   Cache-Control: public, max-age=3600
