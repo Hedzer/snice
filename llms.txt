@@ -2,7 +2,7 @@
 
 > Decorator-driven web component framework with differential rendering, routing, controllers, and 130+ UI components. Zero dependencies. MIT licensed.
 
-- Version: 4.29.x
+- Version: 4.30.x
 - Website: https://snice.dev
 - npm: https://www.npmjs.com/package/snice
 - CDN: https://cdn.snice.dev

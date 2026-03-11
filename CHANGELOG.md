@@ -1,3 +1,54 @@
+# [4.30.0](https://github.com/Hedzer/snice/compare/v4.29.0...v4.30.0) (2026-03-11)
+
+
+### Bug Fixes
+
+* add command queue to draw and paint for pre-ready API calls ([50ae13c](https://github.com/Hedzer/snice/commit/50ae13c47a351c40db3422867655a6aed15d9bce))
+* center loading spinner and hide calendar toggle in date pickers ([7d8becf](https://github.com/Hedzer/snice/commit/7d8becfd68b81e3aa1a4b03dc695b5366edc66be))
+* center loading spinner and hide clock toggle in time-picker ([490f5f5](https://github.com/Hedzer/snice/commit/490f5f55dd964e32199e029911f5850c2862b891))
+* clean up SniceRouter TS warning and remove unused export ([cd0f942](https://github.com/Hedzer/snice/commit/cd0f94217a9a3d4c01503b75a92fe9d039d7e6cc))
+* clean up unused imports and type annotations in React template ([43e7b1d](https://github.com/Hedzer/snice/commit/43e7b1d0bac5490e0b9d8a917c0172f0f5924d6e))
+* correct loading toggle selector in date-time-picker ([52a32b3](https://github.com/Hedzer/snice/commit/52a32b36e1d108bbf0ed0e5157ccd88dd840ac1e))
+* correct terminal showcase version to 4.29.0 ([f0958e2](https://github.com/Hedzer/snice/commit/f0958e26bf6b4f3a60b718854c93a49711af1eda))
+* **grid:** collision resolution starts from requested position ([25f6654](https://github.com/Hedzer/snice/commit/25f6654367bb733f1271fa625a6094a8c6d4a0d5))
+* **grid:** multi-occupant swap + resize observer loop ([af0d745](https://github.com/Hedzer/snice/commit/af0d745eaa0133d4018e8307b70d57bd48658ff9))
+* **grid:** sort placements for stable swap and sync displaced attributes ([2d4289b](https://github.com/Hedzer/snice/commit/2d4289b57954aca5779044810ae7aefa89156d4b))
+* **grid:** use css/*css*/ template tag pattern ([4277038](https://github.com/Hedzer/snice/commit/42770380dc3771fd00386a65c33db29487f0899d))
+* inline spinner keyframe in React router loading component ([cfab3ee](https://github.com/Hedzer/snice/commit/cfab3eec56af679bf82c71f4f2a654fe0fcd1f4f))
+* set light theme background for code block containers ([6f0cf0b](https://github.com/Hedzer/snice/commit/6f0cf0bfcde33f4b4f4809ac74e75e67a12d8a80))
+* **toast:** hoist container to document.body to escape stacking contexts ([f8cfc22](https://github.com/Hedzer/snice/commit/f8cfc223185bd85e53803f1866ae13aac5196c7f))
+* **toast:** revert to semantic color tokens and use yellow-400 for warning ([85e9c60](https://github.com/Hedzer/snice/commit/85e9c60d53ce8b061ffc0de97513d2f3cad9dac8))
+* **toast:** use 500-level palette tokens for vibrant light-mode colors ([828eb6a](https://github.com/Hedzer/snice/commit/828eb6a3bcbfce977d7639c729e8477a3a39168c))
+* use correct theme token names in default template app-header ([ef9157f](https://github.com/Hedzer/snice/commit/ef9157fdbb2cb61a22e06f7790003816b3fb9387))
+* use correct theme token names in notification-badge and search-bar ([e6242d0](https://github.com/Hedzer/snice/commit/e6242d093bfbbe2b2b7e360e3e271b9e586f1e4b))
+* use correct theme tokens and storage service in default template ([b3a4a2d](https://github.com/Hedzer/snice/commit/b3a4a2d72a8c8147a5bd5f66267584a44b1683cc))
+* use whenDefined for draw and paint showcase initialization ([f1b3ec1](https://github.com/Hedzer/snice/commit/f1b3ec1592514d890f0db1daef234c16dd2c7952))
+
+
+### Features
+
+* add create-react-app CLI command and react template option ([fba3206](https://github.com/Hedzer/snice/commit/fba320692f2669cbbb6a7057ac266bc5cd9c2149))
+* add React app template with routing, guards, and layouts ([c4d73f6](https://github.com/Hedzer/snice/commit/c4d73f638e7aedf4aebb48630fd1388bc96b6232))
+* add React barrel export ([bac0653](https://github.com/Hedzer/snice/commit/bac065315721dd927d5fb96c933ff75f651b561e))
+* add route matching utility for React router ([6de4cdc](https://github.com/Hedzer/snice/commit/6de4cdce8216633431aa36602f31dadbcd320bc2))
+* add SniceProvider and context hooks ([e6df9e2](https://github.com/Hedzer/snice/commit/e6df9e2d49630d01047fcd21c587d3d1b10f3098))
+* add SniceRouter and Route components ([1a9b908](https://github.com/Hedzer/snice/commit/1a9b908dda2d01210e9ac3f4519a2ab278272a44))
+* add success, warning, danger subtle color tokens to theme ([d632265](https://github.com/Hedzer/snice/commit/d632265127b33c99b405af88494670a0e8d8ff7e))
+* expand React template with full auth, middleware, services, and pages ([b7aad11](https://github.com/Hedzer/snice/commit/b7aad116e56094fbead0fda17c17ddc2c6f627e3))
+* export SniceProvider, Router, hooks and Grid from React adapter ([f328d7e](https://github.com/Hedzer/snice/commit/f328d7ef4188ffc8ec91f3b70bf78a40ddb2b5fa))
+* **grid:** add component styles ([14efb6d](https://github.com/Hedzer/snice/commit/14efb6d1b20417aff6161b85f456faabf1e3f5bd))
+* **grid:** add demo page ([15eea84](https://github.com/Hedzer/snice/commit/15eea84ee35a43f9f77bc7325e7a319e9a04f0f4))
+* **grid:** add grid component to website CDN and search aliases ([27aed50](https://github.com/Hedzer/snice/commit/27aed5035786cbb202e6afb2037b82fc3829037a))
+* **grid:** add React adapter and test configuration ([eec8ff6](https://github.com/Hedzer/snice/commit/eec8ff6ee1be13835ff4a928ee68b08a3839edf9))
+* **grid:** add showcase files for snice-grid component ([dc12742](https://github.com/Hedzer/snice/commit/dc12742100ad3ed3b95fc4743df37c637d2ba01e))
+* **grid:** add type definitions ([ac5cdf8](https://github.com/Hedzer/snice/commit/ac5cdf813aa24424319a80451df646ad902a9ea4))
+* **grid:** implement core snice-grid component ([3441843](https://github.com/Hedzer/snice/commit/344184311f31ce9a774aa4223c80c2e32aa27fb2))
+* **grid:** swap-first collision resolution ([0ef6257](https://github.com/Hedzer/snice/commit/0ef6257349ad013cb4260a3f3eabf4487512b761))
+* make router checkGuards async for async guard support ([db150e8](https://github.com/Hedzer/snice/commit/db150e84da8db371637530dd153640b2c64b1a4c))
+* show loading spinner during async route guard checks ([de7be3d](https://github.com/Hedzer/snice/commit/de7be3d9ca2551cd9095ee44365c175e5b2321e3))
+* support async guards in Guard type ([fe90b61](https://github.com/Hedzer/snice/commit/fe90b618bac566584e8581eb577753701596ee8d))
+* update rollup config for full React integration build ([0eacc21](https://github.com/Hedzer/snice/commit/0eacc21e0c53b00fb7361229aab83621c20c399b))
+
 # [4.29.0](https://github.com/Hedzer/snice/compare/v4.28.0...v4.29.0) (2026-03-10)
 
 
