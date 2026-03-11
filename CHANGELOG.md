@@ -1,3 +1,10 @@
+# [4.33.0](https://github.com/Hedzer/snice/compare/v4.32.0...v4.33.0) (2026-03-11)
+
+
+### Features
+
+* **build:** add stamp verification step and fix stamping coverage ([3e1ad86](https://github.com/Hedzer/snice/commit/3e1ad866ebe17fb625446af0fb775f8c8a12b2c7))
+
 # [4.32.0](https://github.com/Hedzer/snice/compare/v4.31.0...v4.32.0) (2026-03-11)
 
 
