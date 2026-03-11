@@ -220,6 +220,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   private currentStroke: Point[] = [];
   private strokes: DrawStroke[] = [];
   private undoneStrokes: DrawStroke[] = [];
+  private _commandQueue: Array<[string, any[]]> = [];
   private drawBrush: DrawBrush;
   private lastPoint: Point | null = null;
   private rafId: number | null = null;
@@ -301,8 +302,8 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.ctx.fillStyle = this.backgroundColor;
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    // Redraw existing strokes
-    this.redraw();
+    // Flush any commands queued before canvas was ready
+    this._flushQueue();
   }
 
   @on('pointerdown', { target: 'canvas' })
@@ -480,6 +481,14 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     });
   }
 
+  private _flushQueue() {
+    const queue = this._commandQueue;
+    this._commandQueue = [];
+    for (const [method, args] of queue) {
+      (this as any)[method](...args);
+    }
+  }
+
   private drawStroke(stroke: DrawStroke) {
     if (!this.ctx || stroke.points.length === 0) return;
 
@@ -514,7 +523,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   clear(): void {
-    if (!this.ctx) return;
+    if (!this.ctx) { this._commandQueue.push(['clear', []]); return; }
 
     this.strokes = [];
     this.undoneStrokes = [];
@@ -525,6 +534,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   undo(): void {
+    if (!this.ctx) { this._commandQueue.push(['undo', []]); return; }
     if (this.strokes.length === 0) return;
 
     const stroke = this.strokes.pop();
@@ -537,6 +547,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   redo(): void {
+    if (!this.ctx) { this._commandQueue.push(['redo', []]); return; }
     if (this.undoneStrokes.length === 0) return;
 
     const stroke = this.undoneStrokes.pop();
@@ -598,6 +609,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   setStrokes(strokes: DrawStroke[]): void {
+    if (!this.ctx) { this._commandQueue.push(['setStrokes', [strokes]]); return; }
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();
