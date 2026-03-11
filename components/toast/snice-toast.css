@@ -1,7 +1,7 @@
 /* Toast Container */
 :host {
   position: fixed;
-  z-index: var(--snice-z-index-tooltip, 1070);
+  z-index: var(--snice-z-index-toast, 9999);
   pointer-events: none;
   display: flex;
   flex-direction: column;
@@ -76,25 +76,25 @@
   transform: translateY(100%);
 }
 
-/* Type variants — use 500-level palette for vibrant solid backgrounds */
+/* Type variants — use semantic tokens for theme-aware colors */
 .toast--success {
-  background-color: hsl(var(--snice-color-green-500, 142 71% 45%));
-  color: rgb(255 255 255);
+  background-color: var(--snice-color-success, hsl(142 76% 36%));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .toast--error {
-  background-color: hsl(var(--snice-color-red-500, 0 84% 60%));
-  color: rgb(255 255 255);
+  background-color: var(--snice-color-danger, hsl(0 72% 51%));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .toast--warning {
-  background-color: hsl(var(--snice-color-yellow-500, 45 93% 47%));
-  color: rgb(255 255 255);
+  background-color: hsl(var(--snice-color-yellow-400, 48 96% 53%));
+  color: rgb(23 23 23);
 }
 
 .toast--info {
-  background-color: hsl(var(--snice-color-blue-500, 217 91% 60%));
-  color: rgb(255 255 255);
+  background-color: var(--snice-color-primary, hsl(217 83% 53%));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 /* Toast icon */

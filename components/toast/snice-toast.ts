@@ -92,8 +92,8 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
       }
 
       .toast--warning {
-        background-color: var(--snice-color-warning, rgb(234 179 8));
-        color: var(--snice-color-text, rgb(23 23 23));
+        background-color: hsl(var(--snice-color-yellow-400, 48 96% 53%));
+        color: rgb(23 23 23);
       }
 
       .toast--info {
