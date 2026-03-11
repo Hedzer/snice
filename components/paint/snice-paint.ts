@@ -40,6 +40,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   private currentStroke: Point[] = [];
   private strokes: PaintStroke[] = [];
   private undoneStrokes: PaintStroke[] = [];
+  private _commandQueue: Array<[string, any[]]> = [];
   private lastPoint: Point | null = null;
   private canvasWidth: number = 0;
   private canvasHeight: number = 0;
@@ -207,7 +208,8 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     this.ctx.fillStyle = this.backgroundColor;
     this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.redraw();
+    // Flush any commands queued before canvas was ready
+    this._flushQueue();
   }
 
   @on('pointerdown', { target: '.paint-canvas' })
@@ -323,6 +325,14 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     this.strokes.forEach(s => this.drawStroke(s));
   }
 
+  private _flushQueue() {
+    const queue = this._commandQueue;
+    this._commandQueue = [];
+    for (const [method, args] of queue) {
+      (this as any)[method](...args);
+    }
+  }
+
   private drawStroke(stroke: PaintStroke) {
     if (!this.ctx || stroke.points.length === 0) return;
 
@@ -381,6 +391,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   undo(): void {
+    if (!this.ctx) { this._commandQueue.push(['undo', []]); return; }
     if (this.strokes.length === 0) return;
     const stroke = this.strokes.pop();
     if (stroke) {
@@ -391,6 +402,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   redo(): void {
+    if (!this.ctx) { this._commandQueue.push(['redo', []]); return; }
     if (this.undoneStrokes.length === 0) return;
     const stroke = this.undoneStrokes.pop();
     if (stroke) {
@@ -401,7 +413,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   clear(): void {
-    if (!this.ctx) return;
+    if (!this.ctx) { this._commandQueue.push(['clear', []]); return; }
     this.strokes = [];
     this.undoneStrokes = [];
     this.ctx.fillStyle = this.backgroundColor;
@@ -441,6 +453,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   setStrokes(strokes: PaintStroke[]): void {
+    if (!this.ctx) { this._commandQueue.push(['setStrokes', [strokes]]); return; }
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();
