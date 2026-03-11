@@ -1,3 +1,15 @@
+# [4.34.0](https://github.com/Hedzer/snice/compare/v4.33.1...v4.34.0) (2026-03-11)
+
+
+### Bug Fixes
+
+* **code-block:** deduplicate grammar fetches with shared promise cache ([c5c53ff](https://github.com/Hedzer/snice/commit/c5c53ff9e6a66d2d4ecb6d5fac5f491b58984eab))
+
+
+### Features
+
+* **website:** add async CDN script tags for all components ([6ce764f](https://github.com/Hedzer/snice/commit/6ce764f8db846f925c601f92f013a21f503a503d))
+
 ## [4.33.1](https://github.com/Hedzer/snice/compare/v4.33.0...v4.33.1) (2026-03-11)
 
 
