@@ -47,7 +47,7 @@ export function renderIcon(icon: string, className = 'icon'): TemplateResult {
   // Auto-detect: Check if it's a file with image extension
   // Must have at least one char before the dot, and no unsupported protocol prefix
   // Covers: SVG, PNG, JPEG variants, GIF, WebP, AVIF, JPEG XL, ICO, BMP, TIFF, HEIC/HEIF, APNG
-  if (/^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)$/i.test(icon)) {
+  if (/^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)(\?.*)?$/i.test(icon)) {
     return html`<img class="${className}" src="${icon}" alt="" part="icon" />`;
   }
 

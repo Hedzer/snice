@@ -38,7 +38,7 @@ const DEFAULT_COLORS = [
   'rgb(82 82 82)',
 ];
 
-const IMG_EXT_RE = /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)$/i;
+const IMG_EXT_RE = /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)(\?.*)?$/i;
 const URL_RE = /^(https?:\/\/|\/|\.\/|\.\.\/|data:)/;
 
 /** Matches the detection logic in utils.ts renderIcon */
