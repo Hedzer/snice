@@ -128,7 +128,6 @@ execSync(`node scripts/stamp-assets.js --dir ${siteDir}`, { stdio: 'inherit', cw
 // 5. Verify all local assets are stamped — fail the build if not
 console.log('Verifying stamps...');
 const STAMP_EXT = /\.(?:css|js|json|png|jpe?g|gif|svg|ico|webp|woff2?|md)$/i;
-const HTML_EXT = /\.html$/i;
 const EXTERNAL = /^(?:https?:\/\/|\/\/|data:|#|mailto:)/;
 const ATTR_RE = /(?:src|href|content|image|avatar|cover-image|icon|poster)=["']([^"']+)["']/gi;
 const unstamped = [];
@@ -146,10 +145,8 @@ function verifySiteDir(dir) {
     while ((m = ATTR_RE.exec(content)) !== null) {
       const url = m[1];
       if (EXTERNAL.test(url)) continue;
+      // Only verify non-HTML assets — HTML revalidates via 304, not stamps
       if (STAMP_EXT.test(url.split('?')[0]) && !url.includes('?v=')) {
-        unstamped.push(`${fullPath}: ${url}`);
-      }
-      if (HTML_EXT.test(url.split('?')[0]) && !url.includes('?v=')) {
         unstamped.push(`${fullPath}: ${url}`);
       }
     }

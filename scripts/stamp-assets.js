@@ -42,7 +42,7 @@ function stampHtml(content) {
   // Captures: $1=prefix char, $2=path, $3=optional old stamp
   const ASSET_PATH = /(["'(=\s,])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?/gi;
 
-  // Match local .html hrefs: href="page.html" or href="dir/page.html"
+  // Clean old .html stamps if present
   const HTML_PATH = /(href=["'])((?!https?:\/\/|\/\/|#|mailto:)[\w./-]+\.html)(\?v=[^"']+)?(["'])/gi;
 
   if (clean) {
@@ -55,8 +55,9 @@ function stampHtml(content) {
     return `${before}${url}?v=${hash}`;
   });
 
+  // Strip any leftover ?v= from HTML hrefs (HTML revalidates via 304, not stamps)
   content = content.replace(HTML_PATH, (match, prefix, url, oldVersion, quote) => {
-    return `${prefix}${url}?v=${version}${quote}`;
+    return `${prefix}${url}${quote}`;
   });
 
   // Replace version placeholder for dynamic fetches
