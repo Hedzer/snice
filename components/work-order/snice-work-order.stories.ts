@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-work-order';
 
 const CUSTOMER = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-leaderboard';
 import type { LeaderboardVariant, LeaderboardSize, LeaderboardEntry } from './snice-leaderboard.types';
 

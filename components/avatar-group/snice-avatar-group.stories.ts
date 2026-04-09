@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-avatar-group';
 import '../avatar/snice-avatar';
 import type { AvatarGroupSize, AvatarGroupItem } from './snice-avatar-group.types';

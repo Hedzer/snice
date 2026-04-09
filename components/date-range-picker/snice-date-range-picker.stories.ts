@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-date-range-picker';
 import type { DateRangePickerSize, DateRangePickerVariant, DateRangeFormat } from './snice-date-range-picker.types';
 

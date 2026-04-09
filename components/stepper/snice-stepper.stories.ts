@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-stepper';
 import './snice-stepper-panel';
 import type { StepperOrientation, Step } from './snice-stepper.types';

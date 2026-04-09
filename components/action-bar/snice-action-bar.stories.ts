@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-action-bar';
 import '../button/snice-button';
 import type { ActionBarPosition, ActionBarSize, ActionBarVariant } from './snice-action-bar.types';

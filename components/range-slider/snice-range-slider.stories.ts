@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-range-slider';
 import type { RangeSliderOrientation } from './snice-range-slider.types';
 

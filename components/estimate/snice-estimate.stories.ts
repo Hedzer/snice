@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-estimate';
 
 const FROM = { name: 'Acme Corp', address: '123 Business Ave, Suite 100', email: 'billing@acme.com', phone: '(555) 123-4567' };

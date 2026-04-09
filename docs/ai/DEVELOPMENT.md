@@ -8,6 +8,7 @@ All components MUST:
 1. Support CDN builds (bundle with runtime)
 2. Have React adapter (React 17+)
 3. Be tested (CDN + React)
+4. Have Storybook stories at `components/<name>/snice-<name>.stories.ts` — one story per `<h2>` section in `full-showcase.html`, using `@storybook/html-vite` and `document.createElement` (see `docs/ai/STORYBOOK.md`)
 
 ## Build Commands
 

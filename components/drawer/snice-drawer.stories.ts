@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-drawer';
 import './snice-drawer-target';
 import type { DrawerPosition, DrawerSize } from './snice-drawer.types';

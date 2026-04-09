@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-user-card';
 import type { UserCardVariant, UserCardStatus, SocialLink } from './snice-user-card.types';
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-time-range-picker';
 import type { TimeRangeGranularity, TimeFormat } from './snice-time-range-picker.types';
 

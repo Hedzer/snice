@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-toast';
 import './snice-toast-container';
 import type { ToastType } from './snice-toast.types';

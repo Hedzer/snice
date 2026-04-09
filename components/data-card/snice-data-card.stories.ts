@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-data-card';
 import type { DataCardVariant, DataCardField } from './snice-data-card.types';
 

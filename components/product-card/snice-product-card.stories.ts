@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-product-card';
 
 const IMG1 = ['https://picsum.photos/seed/shoe/400/400'];

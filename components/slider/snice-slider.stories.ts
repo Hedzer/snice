@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-slider';
 import type { SliderSize, SliderVariant } from './snice-slider.types';
 

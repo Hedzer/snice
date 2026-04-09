@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-form-layout';
 import type { FormLayoutLabelPosition, FormLayoutGap, FormLayoutVariant } from './snice-form-layout.types';
 

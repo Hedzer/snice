@@ -15,6 +15,7 @@ function componentRebuilder() {
         if (!(changedPath.includes('/components/') || changedPath.includes('/src/')) ||
             changedPath.includes('node_modules') || changedPath.includes('/dist/') || changedPath.includes('/public/')) return;
         if (!changedPath.match(/\.(ts|css)$/)) return;
+        if (changedPath.endsWith('.stories.ts')) return;
 
         if (timer) clearTimeout(timer);
         timer = setTimeout(async () => {

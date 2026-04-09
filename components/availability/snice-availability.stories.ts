@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-availability';
 
 const BUSINESS_HOURS = Array.from({ length: 5 }, (_, day) => ({ day, start: '09:00', end: '17:00' }));

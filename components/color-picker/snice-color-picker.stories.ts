@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-color-picker';
 import type { ColorPickerSize, ColorPickerFormat } from './snice-color-picker.types';
 

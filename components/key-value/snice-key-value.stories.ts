@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-key-value';
 import type { KeyValueVariant, KeyValueMode } from './snice-key-value.types';
 

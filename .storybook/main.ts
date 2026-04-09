@@ -15,6 +15,22 @@ const config: StorybookConfig = {
   ],
   async viteFinal(cfg) {
     cfg.plugins = cfg.plugins || [];
+    // Drop Snice dev-only plugins that aren't relevant in Storybook:
+    // - component-rebuilder watches components/**/*.ts and runs `npm run build:core`,
+    //   which would recompile Storybook story files via rollup and fail on `import type`.
+    // - showcase-rebuilder rebuilds public/components.html from fragments (not needed here).
+    // - serve-public-index / cache-headers are for the main dev server's root page.
+    const dropNames = new Set([
+      'component-rebuilder',
+      'showcase-rebuilder',
+      'serve-public-index',
+      'cache-headers',
+    ]);
+    cfg.plugins = cfg.plugins.filter((p: any) => {
+      if (!p) return false;
+      if (Array.isArray(p)) return true;
+      return !dropNames.has(p.name);
+    });
     cfg.plugins.push(
       swc.vite({
         jsc: {

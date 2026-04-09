@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-receipt';
 
 const MERCHANT = { name: 'Coffee House', address: '123 Brew St, Portland OR', phone: '555-0100', email: 'hello@coffee.com', website: 'coffee.com' };

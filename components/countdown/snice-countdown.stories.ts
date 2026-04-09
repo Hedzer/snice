@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-countdown';
 import type { CountdownFormat, CountdownVariant } from './snice-countdown.types';
 
