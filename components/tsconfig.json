@@ -15,5 +15,5 @@
     }
   },
   "include": ["."],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/*.html", "**/demo*", "**/*.md"]
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/*.html", "**/demo*", "**/*.md", "**/*.stories.ts"]
 }
