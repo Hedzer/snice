@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/web-components-vite';
+import type { Preview } from '@storybook/html-vite';
 
 const themeLink = document.createElement('link');
 themeLink.rel = 'stylesheet';

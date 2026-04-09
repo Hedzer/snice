@@ -1,8 +1,8 @@
-import type { StorybookConfig } from '@storybook/web-components-vite';
+import type { StorybookConfig } from '@storybook/html-vite';
 import swc from 'unplugin-swc';
 
 const config: StorybookConfig = {
-  framework: '@storybook/web-components-vite',
+  framework: '@storybook/html-vite',
   stories: ['../components/**/snice-*.stories.ts'],
   addons: [
     '@storybook/addon-essentials',

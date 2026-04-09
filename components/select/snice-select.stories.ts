@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-select';
 import type { SelectSize, SelectOption } from './snice-select.types';
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-input';
 import type { InputType, InputSize, InputVariant } from './snice-input.types';
 

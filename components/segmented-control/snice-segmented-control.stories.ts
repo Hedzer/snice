@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-segmented-control';
 import type { SegmentedControlSize, SegmentedControlOption } from './snice-segmented-control.types';
 
