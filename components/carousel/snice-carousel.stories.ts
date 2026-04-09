@@ -1,0 +1,149 @@
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import './snice-carousel';
+
+type Args = {
+  loop?: boolean;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  activeIndex?: number;
+  autoplay?: boolean;
+  autoplayInterval?: number;
+  autoplayDirection?: 'forward' | 'backward';
+  slidesPerView?: number;
+  spaceBetween?: number;
+};
+
+const SLIDE_COLORS = ['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#8b5cf6', '#ef4444'];
+
+function makeSlide(label: string, colorIdx: number) {
+  const el = document.createElement('div');
+  el.style.cssText = `height:200px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:bold;color:white;border-radius:8px;background:${SLIDE_COLORS[colorIdx % SLIDE_COLORS.length]};`;
+  el.textContent = label;
+  return el;
+}
+
+function makeCarousel(attrs: Record<string, string | boolean>, slides: HTMLElement[]) {
+  const el = document.createElement('snice-carousel');
+  el.style.marginBottom = '1rem';
+  for (const [k, v] of Object.entries(attrs)) {
+    if (typeof v === 'boolean') {
+      if (v) el.toggleAttribute(k, true);
+      else el.setAttribute(k, 'false');
+    } else {
+      el.setAttribute(k, v);
+    }
+  }
+  slides.forEach(s => el.appendChild(s));
+  return el;
+}
+
+function makeSlides(count: number) {
+  return Array.from({ length: count }, (_, i) => makeSlide(String(i + 1), i));
+}
+
+const meta: Meta<Args> = {
+  title: 'Layout/Carousel',
+  component: 'snice-carousel',
+  tags: ['autodocs'],
+  argTypes: {
+    loop:             { control: 'boolean' },
+    showControls:     { control: 'boolean' },
+    showIndicators:   { control: 'boolean' },
+    activeIndex:      { control: 'number' },
+    autoplay:         { control: 'boolean' },
+    autoplayInterval: { control: 'number' },
+    autoplayDirection:{ control: 'select', options: ['forward', 'backward'] },
+    slidesPerView:    { control: 'number' },
+    spaceBetween:     { control: 'number' },
+  },
+  render: (args) => {
+    const attrs: Record<string, string | boolean> = {};
+    if (args.loop             === false) attrs['loop']              = false;
+    if (args.showControls     === false) attrs['show-controls']     = false;
+    if (args.showIndicators   === false) attrs['show-indicators']   = false;
+    if (args.activeIndex      !== undefined) attrs['active-index']  = String(args.activeIndex);
+    if (args.autoplay)                   attrs['autoplay']          = true;
+    if (args.autoplayInterval !== undefined) attrs['autoplay-interval']  = String(args.autoplayInterval);
+    if (args.autoplayDirection !== undefined) attrs['autoplay-direction'] = args.autoplayDirection;
+    if (args.slidesPerView    !== undefined) attrs['slides-per-view']    = String(args.slidesPerView);
+    if (args.spaceBetween     !== undefined) attrs['space-between']      = String(args.spaceBetween);
+    return makeCarousel(attrs, makeSlides(5));
+  },
+};
+export default meta;
+
+type Story = StoryObj<Args>;
+
+export const Default: Story = { args: {} };
+
+// h2: Default (all defaults: loop, controls, indicators, 1 slide per view)
+export const DefaultAllDefaults: Story = {
+  render: () => makeCarousel({}, makeSlides(5)),
+};
+
+// h2: show-controls="false"
+export const ShowControlsFalse: Story = {
+  render: () => makeCarousel({ 'show-controls': false }, makeSlides(3)),
+};
+
+// h2: show-indicators="false"
+export const ShowIndicatorsFalse: Story = {
+  render: () => makeCarousel({ 'show-indicators': false }, makeSlides(3)),
+};
+
+// h2: show-controls="false" show-indicators="false"
+export const ShowControlsFalseShowIndicatorsFalse: Story = {
+  render: () => makeCarousel({ 'show-controls': false, 'show-indicators': false }, makeSlides(3)),
+};
+
+// h2: loop="false"
+export const LoopFalse: Story = {
+  render: () => makeCarousel({ 'loop': false }, makeSlides(3)),
+};
+
+// h2: active-index="2" (start on slide 3)
+export const ActiveIndex2: Story = {
+  render: () => makeCarousel({ 'active-index': '2' }, makeSlides(4)),
+};
+
+// h2: autoplay, autoplay-interval="2000", autoplay-direction="forward"
+export const AutoplayForward: Story = {
+  render: () => makeCarousel({ autoplay: true, 'autoplay-interval': '2000', 'autoplay-direction': 'forward' }, makeSlides(3)),
+};
+
+// h2: autoplay, autoplay-direction="backward"
+export const AutoplayBackward: Story = {
+  render: () => makeCarousel({ autoplay: true, 'autoplay-interval': '2500', 'autoplay-direction': 'backward' }, makeSlides(3)),
+};
+
+// h2: slides-per-view="2"
+export const SlidesPerView2: Story = {
+  render: () => makeCarousel({ 'slides-per-view': '2' }, makeSlides(5)),
+};
+
+// h2: slides-per-view="3", space-between="16"
+export const SlidesPerView3SpaceBetween16: Story = {
+  render: () => makeCarousel({ 'slides-per-view': '3', 'space-between': '16' }, makeSlides(6)),
+};
+
+// h2: slides-per-view="4", space-between="8"
+export const SlidesPerView4SpaceBetween8: Story = {
+  render: () => makeCarousel({ 'slides-per-view': '4', 'space-between': '8' }, makeSlides(6)),
+};
+
+// h2: Single slide
+export const SingleSlide: Story = {
+  render: () => makeCarousel({}, [makeSlide('Only Slide', 0)]),
+};
+
+// h2: Two slides, loop="false"
+export const TwoSlidesLoopFalse: Story = {
+  render: () => makeCarousel({ loop: false }, [makeSlide('First', 0), makeSlide('Second', 1)]),
+};
+
+// h2: slides-per-view="2", space-between="32", autoplay
+export const SlidesPerView2SpaceBetween32Autoplay: Story = {
+  render: () => makeCarousel({ 'slides-per-view': '2', 'space-between': '32', autoplay: true, 'autoplay-interval': '3000' }, [
+    makeSlide('A', 0), makeSlide('B', 1), makeSlide('C', 2), makeSlide('D', 3),
+  ]),
+};
