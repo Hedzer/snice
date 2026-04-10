@@ -96,6 +96,9 @@
     "access": "public"
   },
   "scripts": {
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "prestorybook": "test -f dist/index.esm.js || npm run build:core",
     "dev": "node scripts/dev.js",
     "dev:framework": "vite",
     "sync-versions": "node scripts/sync-template-versions.js",
@@ -148,6 +151,10 @@
     "@semantic-release/gitlab": "^13.2.6",
     "@semantic-release/npm": "^12.0.2",
     "@semantic-release/release-notes-generator": "^14.0.3",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/addon-interactions": "^8.6.12",
+    "@storybook/html": "^8.6.12",
+    "@storybook/html-vite": "^8.6.12",
     "@swc/core": "^1.13.5",
     "@types/node": "^20.0.0",
     "@types/react": "^19.2.2",
@@ -160,6 +167,7 @@
     "react-dom": "^19.2.0",
     "rollup": "^4.50.2",
     "semantic-release": "^24.2.7",
+    "storybook": "^8.6.12",
     "typescript": "^5.9.2",
     "unplugin-swc": "^1.5.7",
     "vite": "^5.0.10",
