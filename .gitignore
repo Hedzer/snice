@@ -92,3 +92,5 @@ public/components/
 # Marketing (keep dir, ignore contents)
 marketing/**
 !marketing/.gitkeep
+
+storybook-static/

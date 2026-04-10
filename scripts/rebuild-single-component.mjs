@@ -34,6 +34,7 @@ function findTsFiles(dir) {
       item.endsWith('.ts') &&
       !item.endsWith('.d.ts') &&
       !item.endsWith('.types.ts') &&
+      !item.endsWith('.stories.ts') &&
       !item.includes('demo') &&
       !item.includes('controller')
     ) {
