@@ -49,6 +49,7 @@ const meta: Meta<Args> = {
   title: 'Specialty/OrgChart',
   component: 'snice-org-chart',
   tags: ['autodocs'],
+  parameters: { layout: 'fullscreen' },
   argTypes: {
     direction: { control: 'select', options: ['top-down', 'left-right'] },
     compact:   { control: 'boolean' },
@@ -56,7 +57,8 @@ const meta: Meta<Args> = {
   render: (args) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     if (args.direction !== undefined) el.setAttribute('direction', args.direction);
     if (args.compact) el.toggleAttribute('compact', true);
     (el as any).data = fullData;
@@ -75,7 +77,8 @@ export const DirectionTopDownDefault: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
     return wrap;
@@ -87,7 +90,8 @@ export const DirectionLeftRight: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('direction', 'left-right');
     (el as any).data = fullData;
     wrap.appendChild(el);
@@ -100,7 +104,8 @@ export const CompactFalseDefault: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
     return wrap;
@@ -112,7 +117,8 @@ export const CompactTrue: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.toggleAttribute('compact', true);
     (el as any).data = fullData;
     wrap.appendChild(el);
@@ -125,7 +131,8 @@ export const CompactLeftRight: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('direction', 'left-right');
     el.toggleAttribute('compact', true);
     (el as any).data = fullData;
@@ -139,7 +146,8 @@ export const WithAvatars: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
     return wrap;
@@ -151,7 +159,8 @@ export const WithoutAvatarsInitials: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = noAvatarData;
     wrap.appendChild(el);
     return wrap;
@@ -163,7 +172,8 @@ export const NodesWithTitle: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: '1', name: 'Jane Doe', title: 'VP of Engineering',
       children: [
@@ -181,7 +191,8 @@ export const NodesWithoutTitle: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: '1', name: 'Team Alpha',
       children: [
@@ -200,7 +211,8 @@ export const SingleNodeNoChildren: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = { id: 'solo', name: 'Standalone Node', title: 'Only member' };
     wrap.appendChild(el);
     return wrap;
@@ -212,7 +224,8 @@ export const DeepHierarchy4Levels: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: 'l0', name: 'Level 0', title: 'Root',
       children: [{
@@ -239,7 +252,8 @@ export const WideHierarchyManySiblings: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: 'boss', name: 'Manager', title: 'Team Lead',
       children: Array.from({ length: 8 }, (_, i) => ({
@@ -256,7 +270,8 @@ export const NoData: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    const el = document.createElement('snice-org-chart');
+    
+    el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     wrap.appendChild(el);
     return wrap;
   },

@@ -49,6 +49,7 @@ const meta: Meta<Args> = {
   title: 'Data/Table',
   component: 'snice-table',
   tags: ['autodocs'],
+  parameters: { layout: 'fullscreen' },
   argTypes: {
     sortable:   { control: 'boolean' },
     selectable: { control: 'boolean' },

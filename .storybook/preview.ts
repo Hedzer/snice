@@ -9,7 +9,7 @@ document.documentElement.setAttribute('data-theme', 'dark');
 
 const preview: Preview = {
   parameters: {
-    layout: 'centered',
+    layout: 'padded',
     backgrounds: {
       default: 'dark',
       values: [

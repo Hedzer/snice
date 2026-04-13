@@ -71,6 +71,7 @@ const meta: Meta<Args> = {
   title: 'Specialty/Kanban',
   component: 'snice-kanban',
   tags: ['autodocs'],
+  parameters: { layout: 'fullscreen' },
   argTypes: {
     allowDragDrop: { control: 'boolean' },
     showCardCount: { control: 'boolean' },

@@ -9,6 +9,7 @@ const meta: Meta<Args> = {
   title: 'Data/Spreadsheet',
   component: 'snice-spreadsheet',
   tags: ['autodocs'],
+  parameters: { layout: 'fullscreen' },
   argTypes: {
     readonly: { control: 'boolean' },
   },
