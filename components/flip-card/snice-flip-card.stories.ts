@@ -184,6 +184,59 @@ export const RichSlotContent: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base, front, back
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo-col { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; }
+      .styled-flip::part(base) {
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+      }
+      .styled-flip::part(front) {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 1.25rem;
+        border: 3px solid #a78bfa;
+      }
+      .styled-flip::part(back) {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 1.25rem;
+        border: 3px solid #38bdf8;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    // Default
+    const col1 = document.createElement('div'); col1.className = 'parts-demo-col';
+    const d = makeFlipCard({ 'click-to-flip': true }, BLUE, 'Front', GREEN, 'Back');
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default (click to flip)';
+    col1.appendChild(d); col1.appendChild(l1); wrap.appendChild(col1);
+
+    // Styled
+    const col2 = document.createElement('div'); col2.className = 'parts-demo-col';
+    const front2 = document.createElement('div');
+    front2.slot = 'front'; front2.style.cssText = 'display:flex;align-items:center;justify-content:center;width:200px;height:140px;color:white;font-weight:700;font-size:1rem;';
+    front2.textContent = 'FRONT';
+    const back2 = document.createElement('div');
+    back2.slot = 'back'; back2.style.cssText = 'display:flex;align-items:center;justify-content:center;width:200px;height:140px;color:#38bdf8;font-weight:700;font-size:1rem;';
+    back2.textContent = 'BACK';
+    const stCard = document.createElement('snice-flip-card');
+    stCard.className = 'styled-flip'; stCard.style.cssText = 'display:inline-block;width:200px;height:140px;';
+    stCard.toggleAttribute('click-to-flip', true);
+    stCard.appendChild(front2); stCard.appendChild(back2);
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(base|front|back) (click to flip)';
+    col2.appendChild(stCard); col2.appendChild(l2); wrap.appendChild(col2);
+
+    return wrap;
+  },
+};
+
 // h2: Edge: Starts Flipped + No Click Flip
 export const EdgeStartsFlippedNoClickFlip: Story = {
   render: () => {

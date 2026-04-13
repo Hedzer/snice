@@ -161,6 +161,79 @@ export const ManyTabsScroll: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Tabs parts: base, nav-container, nav, indicator, panels, scroll-button, scroll-button-start, scroll-button-end
+    // Tab parts: base, label, close
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-tabs::part(base) {
+        border: 2px solid #6366f1;
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+      .styled-tabs::part(nav-container) {
+        background: linear-gradient(90deg, #1e1b4b, #312e81);
+        border-bottom: 2px solid #4f46e5;
+      }
+      .styled-tabs::part(nav) {
+        padding: 0 0.5rem;
+      }
+      .styled-tabs::part(indicator) {
+        background: linear-gradient(90deg, #6366f1, #a78bfa);
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+      }
+      .styled-tabs::part(panels) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+        color: #c7d2fe;
+        min-height: 5rem;
+      }
+      .styled-tabs::part(scroll-button) {
+        background: #4f46e5;
+        color: white;
+        border-radius: 50%;
+      }
+      .styled-tabs snice-tab::part(base) {
+        color: #a5b4fc;
+        padding: 0.75rem 1.25rem;
+      }
+      .styled-tabs snice-tab::part(label) {
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+      }
+      .styled-tabs snice-tab[closable]::part(close) {
+        color: #e879f9;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    // Default
+    const g1 = document.createElement('div');
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    g1.appendChild(l1);
+    g1.appendChild(makeTabs(['Overview', 'Details', 'Settings'], ['Overview content', 'Details content', 'Settings content']));
+    wrap.appendChild(g1);
+
+    // Styled
+    const g2 = document.createElement('div');
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part() styled — base, nav-container, nav, indicator, panels, scroll-button, tab::base, tab::label';
+    g2.appendChild(l2);
+    const stTabs = makeTabs(['Overview', 'Details', 'Settings'], ['Overview content', 'Details content', 'Settings content']);
+    stTabs.className = 'styled-tabs';
+    g2.appendChild(stTabs);
+    wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Two Tabs
 export const TwoTabs: Story = {
   render: () => makeTabs(['On', 'Off'], ['On content', 'Off content']),

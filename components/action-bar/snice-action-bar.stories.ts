@@ -186,6 +186,58 @@ export const KeyboardNavigation: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo-col { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; text-align: center; }
+      .styled-action-bar::part(base) {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 2rem;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.5);
+        padding: 0.25rem;
+        border: 2px solid #a78bfa;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    // Default
+    const col1 = document.createElement('div'); col1.className = 'parts-demo-col';
+    const card1 = document.createElement('div');
+    card1.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
+    card1.textContent = 'Default ::part(base)';
+    const bar1 = document.createElement('snice-action-bar');
+    bar1.setAttribute('position', 'bottom'); bar1.toggleAttribute('no-animation', true);
+    const b1a = document.createElement('snice-button'); b1a.setAttribute('variant', 'text'); b1a.toggleAttribute('circle', true); b1a.setAttribute('size', 'small'); b1a.textContent = '✏️';
+    const b1b = document.createElement('snice-button'); b1b.setAttribute('variant', 'text'); b1b.toggleAttribute('circle', true); b1b.setAttribute('size', 'small'); b1b.textContent = '📋';
+    bar1.appendChild(b1a); bar1.appendChild(b1b); card1.appendChild(bar1);
+    const lbl1 = document.createElement('div'); lbl1.className = 'parts-demo-label'; lbl1.textContent = 'default';
+    col1.appendChild(card1); col1.appendChild(lbl1); wrap.appendChild(col1);
+
+    // Styled
+    const col2 = document.createElement('div'); col2.className = 'parts-demo-col';
+    const card2 = document.createElement('div');
+    card2.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
+    card2.textContent = 'Styled ::part(base)';
+    const bar2 = document.createElement('snice-action-bar');
+    bar2.className = 'styled-action-bar';
+    bar2.setAttribute('position', 'bottom'); bar2.toggleAttribute('no-animation', true);
+    const b2a = document.createElement('snice-button'); b2a.setAttribute('variant', 'text'); b2a.toggleAttribute('circle', true); b2a.setAttribute('size', 'small'); b2a.textContent = '⭐';
+    const b2b = document.createElement('snice-button'); b2b.setAttribute('variant', 'text'); b2b.toggleAttribute('circle', true); b2b.setAttribute('size', 'small'); b2b.textContent = '💾';
+    bar2.appendChild(b2a); bar2.appendChild(b2b); card2.appendChild(bar2);
+    const lbl2 = document.createElement('div'); lbl2.className = 'parts-demo-label'; lbl2.textContent = '::part(base) → gradient + glow';
+    col2.appendChild(card2); col2.appendChild(lbl2); wrap.appendChild(col2);
+
+    return wrap;
+  },
+};
+
 // h2: Programmatic control
 export const ProgrammaticControl: Story = {
   render: () => {

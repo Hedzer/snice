@@ -146,6 +146,43 @@ export const ManyItems: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-sortable::part(base) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
+        border: 2px solid #6366f1;
+        border-radius: 0.75rem;
+        padding: 0.5rem;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const g1 = document.createElement('div');
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    const s1 = makeSortable({ direction: 'vertical' }, ['Item 1', 'Item 2', 'Item 3'].map(t => makeItem(t)));
+    s1.style.maxWidth = '200px';
+    g1.appendChild(l1); g1.appendChild(s1); wrap.appendChild(g1);
+
+    const g2 = document.createElement('div');
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(base) → gradient container';
+    const itemStyle = 'background:rgba(99,102,241,0.15);border:1px solid #4338ca;color:#c7d2fe;border-radius:6px;';
+    const s2 = makeSortable({ direction: 'vertical' }, ['Item 1', 'Item 2', 'Item 3'].map(t => makeItem(t, itemStyle)));
+    s2.className = 'styled-sortable'; s2.style.maxWidth = '200px';
+    g2.appendChild(l2); g2.appendChild(s2); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Single Item
 export const SingleItem: Story = {
   render: () => {

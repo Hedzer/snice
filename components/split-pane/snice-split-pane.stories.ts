@@ -119,6 +119,50 @@ export const VerticalDisabled: Story = {
   render: () => makeSplitPane({ direction: 'vertical', disabled: true }, 'Disabled', 'Cannot resize', 'height:250px;width:100%;'),
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: primary, secondary, divider, handle
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-split::part(primary) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
+        color: #a5b4fc;
+      }
+      .styled-split::part(secondary) {
+        background: linear-gradient(160deg, #1e293b 0%, #0f172a 100%);
+        color: #94a3b8;
+      }
+      .styled-split::part(divider) {
+        background: linear-gradient(180deg, #6366f1, #a78bfa);
+        width: 4px;
+      }
+      .styled-split::part(handle) {
+        background: linear-gradient(135deg, #6366f1, #a78bfa);
+        border: 2px solid #c4b5fd;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+        border-radius: 4px;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    const p1 = makeSplitPane({ direction: 'horizontal' }, 'Primary Pane', 'Secondary Pane');
+    const g1 = document.createElement('div'); g1.appendChild(l1); g1.appendChild(p1); wrap.appendChild(g1);
+
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(primary|secondary|divider|handle)';
+    const p2 = makeSplitPane({ direction: 'horizontal' }, 'Primary Pane', 'Secondary Pane');
+    p2.className = 'styled-split';
+    const g2 = document.createElement('div'); g2.appendChild(l2); g2.appendChild(p2); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Nested Split Panes
 export const NestedSplitPanes: Story = {
   render: () => {

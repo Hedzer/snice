@@ -190,6 +190,47 @@ export const EmptyNoChildren: Story = {
   render: () => makeMasonry({ columns: '3' }, []),
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-masonry::part(base) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+        border: 2px solid #6366f1;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const styledCard = (label: string, minHeight: string) => {
+      const el = document.createElement('div');
+      el.style.cssText = `background:rgba(99,102,241,0.15);border:1px solid #4338ca;border-radius:8px;padding:1rem;font-size:.875rem;min-height:${minHeight};color:#c7d2fe;`;
+      el.textContent = label;
+      return el;
+    };
+    const specs: [string, string][] = [['Card A', '80px'], ['Card B', '40px'], ['Card C', '120px'], ['Card D', '60px'], ['Card E', '90px'], ['Card F', '40px']];
+
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    const m1 = makeMasonry({ columns: '3', gap: '0.75rem' }, specs.map(([l, h]) => makeCard(l, h)));
+    const g1 = document.createElement('div'); g1.appendChild(l1); g1.appendChild(m1); wrap.appendChild(g1);
+
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(base) → gradient container';
+    const m2 = makeMasonry({ columns: '3', gap: '0.75rem' }, specs.map(([l, h]) => styledCard(l, h)));
+    m2.className = 'styled-masonry';
+    const g2 = document.createElement('div'); g2.appendChild(l2); g2.appendChild(m2); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Mixed content heights
 export const MixedContentHeights: Story = {
   render: () => {
