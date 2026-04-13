@@ -53,5 +53,10 @@ export function renderIcon(icon: string, className = 'icon'): TemplateResult {
 
   // Default: text content (emoji, font icon ligature names)
   // All content is escaped - no HTML injection possible
+  // Detect ligature icon names (lowercase words with underscores, e.g. "search", "check_circle")
+  // vs emoji/other text — apply --snice-icon-font (defaults to Material Symbols Outlined)
+  if (/^[a-z][a-z0-9_]*$/.test(icon)) {
+    return html`<span class="${className} snice-icon-ligature" style="font-family:var(--snice-icon-font,'Material Symbols Outlined'),sans-serif" part="icon">${icon}</span>`;
+  }
   return html`<span class="${className}" part="icon">${icon}</span>`;
 }
