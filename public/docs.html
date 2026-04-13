@@ -639,6 +639,30 @@ class HostStyled extends HTMLElement {
     return html`&lt;div&gt;Content&lt;/div&gt;`;
   }
 }</snice-code-block>
+<h3 id="elements-icons">Icons</h3>
+<p>Many Snice components accept an <code>icon</code> property (or <code>prefix-icon</code> / <code>suffix-icon</code> for inputs). The icon value is auto-detected:</p>
+<div class="doc-table-wrap"><table><thead><tr><th>Value</th><th>Rendered As</th></tr></thead><tbody><tr><td><code>"search"</code>, <code>"check_circle"</code></td><td>Ligature icon with icon font</td></tr><tr><td><code>"🔍"</code>, <code>"$"</code></td><td>Text/emoji as-is</td></tr><tr><td><code>"https://example.com/icon.svg"</code></td><td><code><img></code> element</td></tr><tr><td><code>"logo.png"</code>, <code>"icon.svg"</code></td><td><code><img></code> element</td></tr><tr><td><code>"img://url"</code></td><td>Explicit <code><img></code></td></tr><tr><td><code>"text://content"</code></td><td>Explicit <code><span></code></td></tr></tbody></table></div>
+<h4 id="elements-changing-the-icon-font">Changing the Icon Font</h4>
+<p>By default, ligature icons (lowercase words like <code>search</code>, <code>home</code>, <code>check_circle</code>) use <strong>Material Symbols Outlined</strong>. To use a different icon font like Font Awesome, set the <code>--snice-icon-font</code> CSS custom property:</p>
+<snice-code-block language="css" grammar="grammars/css.json">:root {
+  --snice-icon-font: 'Font Awesome 6 Free';
+}</snice-code-block>
+<p>Make sure to load the corresponding font in your HTML:</p>
+<snice-code-block language="html" grammar="grammars/html.json">&lt;!-- Material Symbols (default) --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap&quot;&gt;
+
+&lt;!-- Or Font Awesome --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css&quot;&gt;</snice-code-block>
+<h4 id="elements-icon-slots">Icon Slots</h4>
+<p>For full control over icon rendering (e.g., using a specific icon library class), use named slots instead of the <code>icon</code> attribute:</p>
+<snice-code-block language="html" grammar="grammars/html.json">&lt;snice-input label=&quot;Search&quot;&gt;
+  &lt;span slot=&quot;prefix-icon&quot; class=&quot;fa-solid fa-magnifying-glass&quot;&gt;&lt;/span&gt;
+&lt;/snice-input&gt;
+
+&lt;snice-button&gt;
+  &lt;svg slot=&quot;icon&quot; viewBox=&quot;0 0 24 24&quot;&gt;...&lt;/svg&gt;
+  Submit
+&lt;/snice-button&gt;</snice-code-block>
 <h2 id="elements-template-events">Template Events</h2>
 <p>Handle events directly in templates using <code>@event=${handler}</code> syntax:</p>
 <h3 id="elements-basic-event-handling">Basic Event Handling</h3>

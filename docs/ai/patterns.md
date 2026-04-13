@@ -333,6 +333,24 @@ class MyForm extends HTMLElement {
 }
 ```
 
+## Icons
+```html
+<!-- Auto-detected: URL, file path, emoji, or ligature name -->
+<snice-button icon="search">Search</snice-button>
+<snice-button icon="🔍">Search</snice-button>
+<snice-button icon="/assets/icon.svg">Search</snice-button>
+<snice-input prefix-icon="search" suffix-icon="check_circle"></snice-input>
+
+<!-- Slot for full control -->
+<snice-input label="Amount">
+  <span slot="prefix-icon" class="fa fa-dollar-sign"></span>
+</snice-input>
+```
+```css
+/* Ligature icons use Material Symbols by default. Override: */
+:root { --snice-icon-font: 'Font Awesome 6 Free'; }
+```
+
 ## Keyboard Shortcuts
 ```typescript
 @element('editor')

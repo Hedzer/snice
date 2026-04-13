@@ -632,6 +632,54 @@ class HostStyled extends HTMLElement {
 }
 ```
 
+### Icons
+
+Many Snice components accept an `icon` property (or `prefix-icon` / `suffix-icon` for inputs). The icon value is auto-detected:
+
+| Value | Rendered As |
+|-------|-------------|
+| `"search"`, `"check_circle"` | Ligature icon with icon font |
+| `"🔍"`, `"$"` | Text/emoji as-is |
+| `"https://example.com/icon.svg"` | `<img>` element |
+| `"logo.png"`, `"icon.svg"` | `<img>` element |
+| `"img://url"` | Explicit `<img>` |
+| `"text://content"` | Explicit `<span>` |
+
+#### Changing the Icon Font
+
+By default, ligature icons (lowercase words like `search`, `home`, `check_circle`) use **Material Symbols Outlined**. To use a different icon font like Font Awesome, set the `--snice-icon-font` CSS custom property:
+
+```css
+:root {
+  --snice-icon-font: 'Font Awesome 6 Free';
+}
+```
+
+Make sure to load the corresponding font in your HTML:
+
+```html
+<!-- Material Symbols (default) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+
+<!-- Or Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+```
+
+#### Icon Slots
+
+For full control over icon rendering (e.g., using a specific icon library class), use named slots instead of the `icon` attribute:
+
+```html
+<snice-input label="Search">
+  <span slot="prefix-icon" class="fa-solid fa-magnifying-glass"></span>
+</snice-input>
+
+<snice-button>
+  <svg slot="icon" viewBox="0 0 24 24">...</svg>
+  Submit
+</snice-button>
+```
+
 ## Template Events
 
 Handle events directly in templates using `@event=${handler}` syntax:

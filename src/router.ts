@@ -277,6 +277,7 @@ export function Router(options: RouterOptions): RouterInstance {
       return true;
     } finally {
       if (spinnerTimer) clearTimeout(spinnerTimer);
+      // @ts-ignore — TS narrows spinner to never because it can't track setTimeout mutations
       if (spinner) spinner.remove();
     }
   }
