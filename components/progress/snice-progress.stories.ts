@@ -281,3 +281,98 @@ export const ColorXStripedLinear: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, bar, label (linear); base, circle, circle-bg, circle-bar, label (circular)
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-progress exposes the following CSS parts:
+         Linear variant:
+           ::part(base)       — the track/wrapper element
+           ::part(bar)        — the filled progress bar
+           ::part(label)      — the label text
+         Circular variant:
+           ::part(base)       — the circular wrapper
+           ::part(circle)     — the SVG circle element
+           ::part(circle-bg)  — the track (background) arc
+           ::part(circle-bar) — the filled arc
+           ::part(label)      — the center label text */
+
+      /* Linear styled */
+      .parts-demo .styled-linear::part(base) {
+        border-radius: 999px;
+        background: #1e1b4b;
+        border: 1px solid #4338ca;
+        height: 16px;
+      }
+      .parts-demo .styled-linear::part(bar) {
+        background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+        border-radius: 999px;
+        box-shadow: 0 0 8px #a855f7;
+      }
+      .parts-demo .styled-linear::part(label) {
+        font-weight: 800;
+        color: #fff;
+        font-size: .7rem;
+        letter-spacing: .08em;
+      }
+
+      /* Circular styled */
+      .parts-demo .styled-circular::part(circle-bg) {
+        stroke: #1e1b4b;
+        stroke-width: 6;
+      }
+      .parts-demo .styled-circular::part(circle-bar) {
+        stroke: #a855f7;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 4px #a855f7);
+      }
+      .parts-demo .styled-circular::part(label) {
+        font-weight: 800;
+        color: #c4b5fd;
+        font-size: .9rem;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1.5rem;width:100%;';
+
+    // Linear section
+    const linearLabel1 = document.createElement('p');
+    linearLabel1.textContent = 'Linear — Default';
+    linearLabel1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultLinear = makeProgress({ value: 70, 'show-label': true });
+
+    const linearLabel2 = document.createElement('p');
+    linearLabel2.textContent = 'Linear — Styled via ::part(base/bar/label) — indigo gradient with glow';
+    linearLabel2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledLinear = makeProgress({ value: 70, 'show-label': true });
+    styledLinear.className = 'styled-linear';
+
+    // Circular section
+    const circularLabel1 = document.createElement('p');
+    circularLabel1.textContent = 'Circular — Default';
+    circularLabel1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultCircular = makeProgress({ value: 70, variant: 'circular', 'show-label': true });
+
+    const circularLabel2 = document.createElement('p');
+    circularLabel2.textContent = 'Circular — Styled via ::part(circle-bg/circle-bar/label) — purple arc with glow';
+    circularLabel2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledCircular = makeProgress({ value: 70, variant: 'circular', 'show-label': true });
+    styledCircular.className = 'styled-circular';
+
+    wrap.appendChild(style);
+    wrap.appendChild(linearLabel1);
+    wrap.appendChild(defaultLinear);
+    wrap.appendChild(linearLabel2);
+    wrap.appendChild(styledLinear);
+    wrap.appendChild(circularLabel1);
+    wrap.appendChild(defaultCircular);
+    wrap.appendChild(circularLabel2);
+    wrap.appendChild(styledCircular);
+    return wrap;
+  },
+};

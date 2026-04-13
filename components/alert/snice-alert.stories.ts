@@ -193,3 +193,60 @@ export const AllCombinationsVariantXDismissible: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: icon
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-alert exposes the following CSS parts:
+         ::part(icon) — the icon container element */
+      .parts-demo .default-alert::part(icon) { /* no overrides — browser default */ }
+      .parts-demo .styled-alert::part(icon) {
+        background: #7c3aed;
+        color: #fff;
+        border-radius: 50%;
+        padding: 4px;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        box-shadow: 0 0 0 3px #a78bfa;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;width:100%;';
+
+    const label1 = document.createElement('p');
+    label1.textContent = 'Default (no ::part() overrides)';
+    label1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const defaultAlert = document.createElement('snice-alert') as HTMLElement;
+    defaultAlert.className = 'default-alert';
+    defaultAlert.setAttribute('variant', 'info');
+    defaultAlert.setAttribute('title', 'Default icon');
+    defaultAlert.textContent = 'This alert uses the default icon styling.';
+
+    const label2 = document.createElement('p');
+    label2.textContent = 'Styled via ::part(icon) — purple circle with glow';
+    label2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const styledAlert = document.createElement('snice-alert') as HTMLElement;
+    styledAlert.className = 'styled-alert';
+    styledAlert.setAttribute('variant', 'info');
+    styledAlert.setAttribute('title', 'Styled icon');
+    styledAlert.textContent = 'The icon part has a purple circle background with a glow ring.';
+
+    wrap.appendChild(style);
+    wrap.appendChild(label1);
+    wrap.appendChild(defaultAlert);
+    wrap.appendChild(label2);
+    wrap.appendChild(styledAlert);
+    return wrap;
+  },
+};

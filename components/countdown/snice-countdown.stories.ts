@@ -142,3 +142,83 @@ export const TenSecondCountdown: Story = {
 export const LongTermNextNewYear: Story = {
   render: () => row(makeCountdown({ format: 'dhms', variant: 'flip', target: NEXT_NEW_YEAR })),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, segment, value, label, separator
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-countdown exposes the following CSS parts:
+         ::part(base)      — the root countdown container
+         ::part(segment)   — each time segment wrapper (days/hrs/min/sec)
+         ::part(value)     — the numeric value span inside each segment
+         ::part(label)     — the unit label span inside each segment
+         ::part(separator) — the colon separator between segments */
+      .parts-demo .styled-cd::part(base) {
+        background: #0f172a;
+        border-radius: 12px;
+        padding: 16px 20px;
+        border: 1px solid #334155;
+        display: inline-flex;
+        gap: 4px;
+      }
+      .parts-demo .styled-cd::part(segment) {
+        background: #1e293b;
+        border-radius: 8px;
+        padding: 8px 14px;
+        border: 1px solid #475569;
+        min-width: 56px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .parts-demo .styled-cd::part(value) {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #38bdf8;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 0 12px #38bdf888;
+      }
+      .parts-demo .styled-cd::part(label) {
+        font-size: .6rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+      .parts-demo .styled-cd::part(separator) {
+        color: #38bdf8;
+        font-size: 2rem;
+        font-weight: 900;
+        align-self: flex-start;
+        padding-top: 8px;
+        text-shadow: 0 0 8px #38bdf8;
+      }
+    `;
+
+    const futureTarget = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000 + 42 * 60 * 1000 + 17000).toISOString();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default (no ::part() overrides)';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultCd = makeCountdown({ format: 'dhms', variant: 'simple', target: futureTarget });
+
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(base/segment/value/label/separator) — dark sci-fi theme';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledCd = makeCountdown({ format: 'dhms', variant: 'simple', target: futureTarget });
+    styledCd.className = 'styled-cd';
+
+    wrap.appendChild(style);
+    wrap.appendChild(lbl1);
+    wrap.appendChild(defaultCd);
+    wrap.appendChild(lbl2);
+    wrap.appendChild(styledCd);
+    return wrap;
+  },
+};

@@ -172,3 +172,111 @@ export const ActivitiesWithoutTarget: Story = {
     { id: '2', actor: { name: 'Bob' }, action: 'logged out', type: 'login', timestamp: new Date(now - 600000).toISOString() },
   ])),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, filters, list, entry, icon, content, timestamp, group-header
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-activity-feed exposes the following CSS parts:
+         ::part(base)         — the root feed wrapper
+         ::part(filters)      — the filter tabs bar
+         ::part(list)         — the activity list container
+         ::part(entry)        — each individual activity row
+         ::part(icon)         — the activity icon element
+         ::part(content)      — the text content div per entry
+         ::part(timestamp)    — the timestamp div per entry
+         ::part(group-header) — the group date header */
+      .parts-demo .styled-feed::part(base) {
+        border: 2px solid #059669;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #022c22;
+      }
+      .parts-demo .styled-feed::part(filters) {
+        background: #064e3b;
+        border-bottom: 1px solid #059669;
+        padding: 6px 12px;
+      }
+      .parts-demo .styled-feed::part(list) {
+        padding: 8px 0;
+      }
+      .parts-demo .styled-feed::part(entry) {
+        border-left: 3px solid transparent;
+        transition: border-color .15s, background .15s;
+        padding: 8px 16px;
+      }
+      .parts-demo .styled-feed::part(entry):hover {
+        border-left-color: #10b981;
+        background: #064e3b44;
+      }
+      .parts-demo .styled-feed::part(icon) {
+        background: #065f46;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        border: 1px solid #10b981;
+      }
+      .parts-demo .styled-feed::part(content) {
+        color: #6ee7b7;
+        font-size: .875rem;
+      }
+      .parts-demo .styled-feed::part(timestamp) {
+        color: #34d399;
+        font-size: .7rem;
+        font-weight: 600;
+        letter-spacing: .04em;
+      }
+      .parts-demo .styled-feed::part(group-header) {
+        background: #064e3b;
+        color: #6ee7b7;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        padding: 4px 16px;
+        border-top: 1px solid #05966944;
+        border-bottom: 1px solid #05966944;
+      }
+    `;
+
+    const activities: Activity[] = [
+      { id: '1', actor: { name: 'Alice Park' }, action: 'created', target: 'Project Alpha', type: 'create', timestamp: new Date(now - 600000).toISOString() },
+      { id: '2', actor: { name: 'Bob Lee' }, action: 'commented on', target: 'Issue #42', type: 'comment', timestamp: new Date(now - 1800000).toISOString() },
+      { id: '3', actor: { name: 'Carol Diaz' }, action: 'deployed', target: 'v2.1.0', type: 'deploy', timestamp: new Date(now - 86400000).toISOString() },
+    ];
+
+    const outer = document.createElement('div');
+    outer.className = 'parts-demo';
+    outer.style.cssText = 'display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;';
+
+    const col1 = document.createElement('div');
+    col1.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:280px;';
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultFeed = makeFeed(activities);
+    col1.appendChild(lbl1);
+    col1.appendChild(defaultFeed);
+
+    const col2 = document.createElement('div');
+    col2.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:280px;';
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(base/filters/list/entry/icon/content/timestamp/group-header)';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledFeed = makeFeed(activities);
+    styledFeed.className = 'styled-feed';
+    col2.appendChild(lbl2);
+    col2.appendChild(styledFeed);
+
+    outer.appendChild(style);
+    outer.appendChild(col1);
+    outer.appendChild(col2);
+    return outer;
+  },
+};

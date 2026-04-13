@@ -202,3 +202,77 @@ export const LongMessageText: Story = {
     }),
   ], { open: 'true' })),
 };
+
+// h2: CSS Parts Styling
+// Parts: trigger, icon, panel, panel-header
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-notification-center exposes the following CSS parts:
+         ::part(trigger)      — the bell button that opens the panel
+         ::part(icon)         — the bell icon inside the trigger
+         ::part(panel)        — the dropdown notification panel
+         ::part(panel-header) — the panel header bar */
+      .parts-demo .default-nc::part(trigger) { /* no overrides */ }
+      .parts-demo .styled-nc::part(trigger) {
+        background: linear-gradient(135deg, #7c3aed, #db2777);
+        border-radius: 12px;
+        padding: 8px 14px;
+        border: none;
+        box-shadow: 0 2px 12px rgba(124,58,237,.5);
+      }
+      .parts-demo .styled-nc::part(icon) {
+        font-size: 1.5rem;
+        filter: drop-shadow(0 0 6px #fff);
+      }
+      .parts-demo .styled-nc::part(panel) {
+        border: 2px solid #7c3aed;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(124,58,237,.3);
+      }
+      .parts-demo .styled-nc::part(panel-header) {
+        background: linear-gradient(90deg, #7c3aed22, #db2777 22);
+        font-weight: 700;
+        letter-spacing: .06em;
+        border-bottom: 1px solid #7c3aed66;
+      }
+    `;
+
+    const notifs: NotificationItem[] = [
+      { id: 'a', title: 'Deploy done', message: 'v3.0 is live', timestamp: '5m ago', type: 'success' },
+      { id: 'b', title: 'New follower', message: 'Bob started following you', timestamp: '1h ago', type: 'info' },
+    ];
+
+    const demoWrap = document.createElement('div');
+    demoWrap.className = 'parts-demo';
+    demoWrap.style.cssText = 'display:flex;gap:3rem;align-items:flex-start;flex-wrap:wrap;';
+
+    const col1 = document.createElement('div');
+    col1.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;align-items:flex-start;';
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultNc = document.createElement('snice-notification-center');
+    defaultNc.className = 'default-nc';
+    (defaultNc as any).notifications = notifs;
+    col1.appendChild(lbl1);
+    col1.appendChild(defaultNc);
+
+    const col2 = document.createElement('div');
+    col2.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;align-items:flex-start;';
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(trigger/icon/panel/panel-header)';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledNc = document.createElement('snice-notification-center');
+    styledNc.className = 'styled-nc';
+    (styledNc as any).notifications = notifs;
+    col2.appendChild(lbl2);
+    col2.appendChild(styledNc);
+
+    demoWrap.appendChild(style);
+    demoWrap.appendChild(col1);
+    demoWrap.appendChild(col2);
+    return demoWrap;
+  },
+};

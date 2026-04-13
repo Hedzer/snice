@@ -191,3 +191,57 @@ export const EdgeEmptyLabel: Story = {
     makeChip('', { variant: 'primary', removable: true }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: icon
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-chip exposes the following CSS parts:
+         ::part(icon) — the icon slot container span */
+      .parts-demo .default-chip::part(icon) { /* no overrides */ }
+      .parts-demo .styled-chip::part(icon) {
+        background: #fbbf24;
+        color: #78350f;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .9rem;
+        box-shadow: 0 0 0 2px #f59e0b;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default (no ::part() overrides)';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const defaultChip = document.createElement('snice-chip');
+    defaultChip.className = 'default-chip';
+    defaultChip.setAttribute('label', 'Default icon');
+    defaultChip.setAttribute('icon', 'star');
+
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(icon) — amber circle with ring';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const styledChip = document.createElement('snice-chip');
+    styledChip.className = 'styled-chip';
+    styledChip.setAttribute('label', 'Styled icon');
+    styledChip.setAttribute('icon', 'star');
+
+    wrap.appendChild(style);
+    wrap.appendChild(lbl1);
+    wrap.appendChild(defaultChip);
+    wrap.appendChild(lbl2);
+    wrap.appendChild(styledChip);
+    return wrap;
+  },
+};
