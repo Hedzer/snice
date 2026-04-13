@@ -209,3 +209,80 @@ export const SizeXMaxMatrix: Story = {
     return grid;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, avatar, overflow
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; padding: 1rem; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .7rem; color: #888; }
+
+      /* ::part(base) — the group container */
+      .parts-demo snice-avatar-group.styled-base::part(base) {
+        background: #fef3c7;
+        border: 2px solid #f59e0b;
+        border-radius: 2rem;
+        padding: .35rem .75rem;
+      }
+
+      /* ::part(avatar) — each individual avatar wrapper in the group */
+      .parts-demo snice-avatar-group.styled-avatar::part(avatar) {
+        outline: 3px solid #6366f1;
+        border-radius: 50%;
+        transition: transform .2s;
+      }
+      .parts-demo snice-avatar-group.styled-avatar::part(avatar):hover {
+        transform: translateY(-4px) scale(1.1);
+        z-index: 10;
+      }
+
+      /* ::part(overflow) — the "+N" overflow counter */
+      .parts-demo snice-avatar-group.styled-overflow::part(overflow) {
+        background: linear-gradient(135deg, #6366f1, #ec4899);
+        color: #fff;
+        font-weight: 900;
+        font-size: .9rem;
+        letter-spacing: -.02em;
+        border: none;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeGroup({ size: 'medium', max: 4 }, PEOPLE);
+    demo.appendChild(makeItem('default (no ::part overrides)', def));
+
+    const styledBase = makeGroup({ size: 'medium', max: 4 }, PEOPLE);
+    styledBase.className = 'styled-base';
+    demo.appendChild(makeItem('::part(base) — amber background + border pill', styledBase));
+
+    const styledAvatar = makeGroup({ size: 'medium', max: 4 }, PEOPLE);
+    styledAvatar.className = 'styled-avatar';
+    demo.appendChild(makeItem('::part(avatar) — indigo outline + hover lift', styledAvatar));
+
+    const styledOverflow = makeGroup({ size: 'medium', max: 3 }, PEOPLE);
+    styledOverflow.className = 'styled-overflow';
+    demo.appendChild(makeItem('::part(overflow) — gradient overflow counter', styledOverflow));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

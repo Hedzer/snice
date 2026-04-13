@@ -241,3 +241,64 @@ export const DotXPositionMatrix: Story = {
     makeBadge({ dot: true, variant: 'error', position: 'bottom-left' }, 'BL'),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, badge
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; padding: 1rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; text-align: center; margin-top: .35rem; }
+      .parts-demo .item { display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+
+      /* Default: no overrides */
+
+      /* Styled: override ::part(base) and ::part(badge) */
+      .parts-demo snice-badge.styled::part(base) {
+        outline: 3px dashed #6366f1;
+        border-radius: 4px;
+        padding: 4px;
+        background: #eef2ff;
+      }
+      .parts-demo snice-badge.styled::part(badge) {
+        background: #6366f1;
+        color: #fff;
+        border-radius: 4px;
+        font-weight: 900;
+        font-size: .85rem;
+        min-width: 1.6rem;
+        box-shadow: 0 2px 8px rgba(99,102,241,.5);
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.appendChild(el);
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      return item;
+    };
+
+    // Default
+    const def = makeBadge({ content: '5', variant: 'error' }, '📦');
+    demo.appendChild(makeItem('default (no ::part overrides)', def));
+
+    // Styled base
+    const styled = makeBadge({ content: '5', variant: 'error' }, '📦');
+    styled.className = 'styled';
+    demo.appendChild(makeItem('::part(base) + ::part(badge) styled', styled));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

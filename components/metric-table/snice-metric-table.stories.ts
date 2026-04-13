@@ -250,3 +250,89 @@ export const MultipleSparklineColumns: Story = {
     ],
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, table, row
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; padding: 1rem; max-width: 800px; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+      /* ::part(base) — outer wrapper div */
+      .parts-demo snice-metric-table.styled::part(base) {
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,.3);
+      }
+
+      /* ::part(table) — the <table> element */
+      .parts-demo snice-metric-table.styled::part(table) {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: .85rem;
+        color: #e2e8f0;
+      }
+
+      /* ::part(row) — each <tr> data row */
+      .parts-demo snice-metric-table.styled::part(row) {
+        border-bottom: 1px solid #1e293b;
+        transition: background .15s;
+      }
+      .parts-demo snice-metric-table.styled::part(row):hover {
+        background: #1e293b;
+      }
+      .parts-demo snice-metric-table.styled::part(row):nth-child(odd) {
+        background: rgba(99,102,241,.05);
+      }
+      .parts-demo snice-metric-table.styled::part(row):nth-child(odd):hover {
+        background: #1e293b;
+      }
+    `;
+
+    const columns = [
+      { key: 'metric', label: 'Metric',  type: 'text' },
+      { key: 'q1',     label: 'Q1',      type: 'number' },
+      { key: 'q2',     label: 'Q2',      type: 'number' },
+      { key: 'trend',  label: 'Trend',   sparkline: true },
+    ];
+
+    const data = [
+      { metric: 'Revenue',  q1: 42000, q2: 51000, trend: [42, 45, 48, 47, 51] },
+      { metric: 'Users',    q1: 1200,  q2: 1580,  trend: [12, 14, 15, 15, 16] },
+      { metric: 'Sessions', q1: 8500,  q2: 9200,  trend: [85, 88, 90, 88, 92] },
+      { metric: 'Bounce',   q1: 42,    q2: 38,    trend: [42, 41, 40, 39, 38] },
+    ];
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeTable(columns, data);
+    demo.appendChild(makeItem('default (no ::part overrides)', def));
+
+    const styled = makeTable(columns, data);
+    styled.className = 'styled';
+    demo.appendChild(makeItem('::part(base) + ::part(table) + ::part(row) dark theme', styled));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

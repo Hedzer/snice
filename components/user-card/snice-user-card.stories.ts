@@ -254,3 +254,112 @@ export const EdgeCases: Story = {
     makeCard({ name: 'Broken Avatar', avatar: 'https://invalid-url.example/broken.jpg', role: 'Error Case', status: 'online' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, avatar, status, name, role, contact, social, actions
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 1rem; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
+      /* Styled: custom card shell */
+      .parts-demo snice-user-card.styled::part(base) {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid #334155;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      }
+
+      /* ::part(avatar) — avatar wrapper */
+      .parts-demo snice-user-card.styled::part(avatar) {
+        outline: 3px solid #6366f1;
+        outline-offset: 3px;
+        border-radius: 50%;
+      }
+
+      /* ::part(status) — online/away dot */
+      .parts-demo snice-user-card.styled::part(status) {
+        width: 14px;
+        height: 14px;
+        border: 3px solid #0f172a;
+        box-shadow: 0 0 8px currentColor;
+      }
+
+      /* ::part(name) — display name heading */
+      .parts-demo snice-user-card.styled::part(name) {
+        color: #f1f5f9;
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -.02em;
+      }
+
+      /* ::part(role) — role/title text */
+      .parts-demo snice-user-card.styled::part(role) {
+        color: #818cf8;
+        font-style: italic;
+      }
+
+      /* ::part(contact) — email/phone/location section */
+      .parts-demo snice-user-card.styled::part(contact) {
+        border-top: 1px solid #334155;
+        padding-top: .75rem;
+        color: #94a3b8;
+      }
+
+      /* ::part(social) — social links row */
+      .parts-demo snice-user-card.styled::part(social) {
+        border-top: 1px solid #334155;
+        padding-top: .5rem;
+        filter: invert(1) brightness(2);
+      }
+
+      /* ::part(actions) — action buttons slot */
+      .parts-demo snice-user-card.styled::part(actions) {
+        border-top: 1px solid #334155;
+        padding-top: .75rem;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeCard({
+      name: 'Alice Chen',
+      role: 'Senior Engineer',
+      company: 'Tech Co',
+      email: 'alice@tech.co',
+      status: 'online',
+    }, [{ platform: 'github', url: 'https://github.com/alice' }]);
+    demo.appendChild(makeItem('default (no ::part overrides)', def));
+
+    const styled = makeCard({
+      name: 'Alice Chen',
+      role: 'Senior Engineer',
+      company: 'Tech Co',
+      email: 'alice@tech.co',
+      status: 'online',
+    }, [{ platform: 'github', url: 'https://github.com/alice' }]);
+    styled.className = 'styled';
+    demo.appendChild(makeItem('all parts styled (dark theme)', styled));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};
