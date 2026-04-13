@@ -86,7 +86,7 @@ export function createCdnBuild(componentName, options = {}) {
   // All CDN builds use the shared runtime (external snice imports)
   const baseConfig = {
     input: allComponentPaths.length > 1 ? virtualEntryId : componentPath,
-    external: ['snice', 'snice/symbols', 'snice/transitions'],
+    external: ['snice', 'snice/symbols', 'snice/transitions', 'http', 'https', 'fs', 'url'],
     plugins: [
       // Virtual entry plugin for multi-component bundles
       {
