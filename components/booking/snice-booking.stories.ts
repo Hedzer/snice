@@ -151,3 +151,50 @@ export const ManyTimeSlots: Story = {
     return el;
   },
 };
+
+// CSS Parts: none — snice-booking does not expose shadow parts.
+// Host-level styling is applied directly to the element.
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo .label { font: 700 11px/1 sans-serif; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+      /* snice-booking has no exposed ::part() selectors.
+         Style the host element directly using CSS custom properties or class-based selectors. */
+      .parts-demo .styled { --color-primary: #7c3aed; border: 2px solid #7c3aed; border-radius: 12px; overflow: hidden; }
+    `;
+
+    const BASE = new Date('2026-04-20');
+    const fmt = (d: Date) => d.toISOString().slice(0, 10);
+    const dates = Array.from({ length: 7 }, (_, i) => { const d = new Date(BASE); d.setDate(BASE.getDate() + i); return fmt(d); });
+    const slots = dates.flatMap(d =>
+      ['09:00', '10:00', '11:00', '14:00', '15:00'].map(t => ({ date: d, time: t, duration: 30 }))
+    );
+
+    const makeBooking = (cls: string) => {
+      const el = document.createElement('snice-booking');
+      if (cls) el.classList.add(cls);
+      (el as any).availableDates = dates;
+      (el as any).availableSlots = slots;
+      el.style.cssText = 'display:block;max-width:420px;';
+      return el;
+    };
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-demo');
+
+    const col1 = document.createElement('div');
+    const lbl1 = document.createElement('div'); lbl1.className = 'label'; lbl1.textContent = 'Default';
+    col1.appendChild(lbl1); col1.appendChild(makeBooking(''));
+
+    const col2 = document.createElement('div');
+    const lbl2 = document.createElement('div'); lbl2.className = 'label'; lbl2.textContent = 'Host Styled (no ::part() available)';
+    col2.appendChild(lbl2); col2.appendChild(makeBooking('styled'));
+
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

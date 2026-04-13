@@ -346,3 +346,55 @@ export const NoTrackingInfoStepsOnly: Story = {
     return wrap;
   },
 };
+
+// CSS Parts: base, steps, step, step-indicator, step-content, info
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-direction: column; }
+      .parts-demo .label { font: 700 11px/1 sans-serif; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+      .parts-demo .styled::part(base) { background: #1a1a2e; border: 2px solid #4ade80; border-radius: 12px; padding: 1.5rem; }
+      .parts-demo .styled::part(info) { color: #4ade80; font-weight: 700; margin-bottom: 1rem; font-size: 1rem; }
+      .parts-demo .styled::part(steps) { gap: 0; }
+      .parts-demo .styled::part(step) { color: #f5f5f5; }
+      .parts-demo .styled::part(step-indicator) { background: #0f3460; border: 2px solid #4ade80; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+      .parts-demo .styled::part(step-content) { padding-left: 0.75rem; }
+    `;
+
+    const STEPS = [
+      { label: 'Order Placed', status: 'completed', timestamp: '2026-04-01 09:00', description: 'Your order has been confirmed.' },
+      { label: 'Processing', status: 'completed', timestamp: '2026-04-01 11:30' },
+      { label: 'Shipped', status: 'active', timestamp: '2026-04-02 08:00', description: 'Package in transit via FedEx.' },
+      { label: 'Out for Delivery', status: 'pending' },
+      { label: 'Delivered', status: 'pending' },
+    ];
+
+    const makeTracker = (cls: string) => {
+      const el = document.createElement('snice-order-tracker');
+      if (cls) el.classList.add(cls);
+      el.setAttribute('tracking-number', 'TRK-2026-88321');
+      el.setAttribute('carrier', 'FedEx');
+      (el as any).steps = STEPS;
+      el.style.cssText = 'display:block;max-width:480px;';
+      return el;
+    };
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-demo');
+
+    const col1 = document.createElement('div');
+    const lbl1 = document.createElement('div'); lbl1.className = 'label'; lbl1.textContent = 'Default';
+    col1.appendChild(lbl1); col1.appendChild(makeTracker(''));
+
+    const col2 = document.createElement('div');
+    const lbl2 = document.createElement('div'); lbl2.className = 'label'; lbl2.textContent = 'Styled via ::part()';
+    col2.appendChild(lbl2); col2.appendChild(makeTracker('styled'));
+
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

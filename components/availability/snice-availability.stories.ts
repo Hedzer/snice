@@ -153,3 +153,44 @@ export const FullDayRange024: Story = {
     return el;
   },
 };
+
+// CSS Parts: none — snice-availability does not expose shadow parts.
+// Host-level styling is applied directly to the element.
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo .label { font: 700 11px/1 sans-serif; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+      /* snice-availability has no exposed ::part() selectors.
+         Style the host element directly or use CSS custom properties. */
+      .parts-demo .styled { --color-primary: #10b981; border: 2px solid #10b981; border-radius: 12px; overflow: hidden; }
+    `;
+
+    const RANGES = Array.from({ length: 5 }, (_, day) => ({ day, start: '09:00', end: '17:00' }));
+
+    const makeAvail = (cls: string) => {
+      const el = document.createElement('snice-availability');
+      if (cls) el.classList.add(cls);
+      (el as any).value = RANGES;
+      el.style.cssText = 'display:block;';
+      return el;
+    };
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-demo');
+
+    const col1 = document.createElement('div');
+    const lbl1 = document.createElement('div'); lbl1.className = 'label'; lbl1.textContent = 'Default';
+    col1.appendChild(lbl1); col1.appendChild(makeAvail(''));
+
+    const col2 = document.createElement('div');
+    const lbl2 = document.createElement('div'); lbl2.className = 'label'; lbl2.textContent = 'Host Styled (no ::part() available)';
+    col2.appendChild(lbl2); col2.appendChild(makeAvail('styled'));
+
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};
