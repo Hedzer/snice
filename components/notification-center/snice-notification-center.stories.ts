@@ -36,8 +36,15 @@ function makeCenter(notifications: NotificationItem[], attrs: Record<string, str
 
 function wrap(el: HTMLElement) {
   const w = document.createElement('div');
-  w.style.cssText = 'display:flex;justify-content:flex-end;min-height:420px;position:relative;padding:1rem;';
-  w.appendChild(el);
+  // Mock header bar with bell on the right — gives room below for the dropdown panel
+  const bar = document.createElement('div');
+  bar.style.cssText = 'display:flex;justify-content:flex-end;align-items:center;padding:0.75rem 1rem;border-bottom:1px solid rgba(128,128,128,0.2);';
+  bar.appendChild(el);
+  w.appendChild(bar);
+  // Spacer below so the dropdown has room to render visibly
+  const spacer = document.createElement('div');
+  spacer.style.cssText = 'min-height:28rem;';
+  w.appendChild(spacer);
   return w;
 }
 
