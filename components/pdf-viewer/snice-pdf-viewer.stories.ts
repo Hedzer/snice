@@ -103,3 +103,72 @@ export const NoSrcEmptyState: Story = {
 export const InvalidSrcErrorState: Story = {
   render: () => col(viewer({ src: '/nonexistent.pdf' })),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, toolbar, viewport
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-pdf-viewer::part(base) {}
+
+      /* Styled: base — outermost container */
+      .parts-demo .demo-styled snice-pdf-viewer::part(base) {
+        border: 2px solid #a78bfa;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(167, 139, 250, 0.3);
+      }
+      /* Styled: toolbar — top navigation bar */
+      .parts-demo .demo-styled snice-pdf-viewer::part(toolbar) {
+        background: linear-gradient(90deg, #4c1d95, #5b21b6);
+        color: #ede9fe;
+        padding: 6px 16px;
+        gap: 8px;
+        border-bottom: 1px solid #7c3aed;
+      }
+      /* Styled: viewport — PDF rendering area */
+      .parts-demo .demo-styled snice-pdf-viewer::part(viewport) {
+        background: #1e1b4b;
+      }
+    `;
+
+    const defaultEl = viewer({}, SAMPLE_PDF);
+    defaultEl.style.cssText = 'display:block;height:340px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;width:360px;';
+
+    const styledEl = viewer({}, SAMPLE_PDF);
+    styledEl.style.cssText = 'display:block;height:340px;width:360px;';
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(base, toolbar, viewport))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

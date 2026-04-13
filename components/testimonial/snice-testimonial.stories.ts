@@ -172,3 +172,84 @@ export const NoRating: Story = {
     t({ variant: 'card', quote: 'No rating provided', author: 'No Stars', role: 'Tester' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, quote, author, stars
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-testimonial::part(base) {}
+
+      /* Styled: base — card container */
+      .parts-demo .demo-styled snice-testimonial::part(base) {
+        background: linear-gradient(135deg, #0f172a, #1e1b4b);
+        border: 2px solid #818cf8;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(129, 140, 248, 0.3);
+        color: #e2e8f0;
+      }
+      /* Styled: stars — star rating row */
+      .parts-demo .demo-styled snice-testimonial::part(stars) {
+        color: #fbbf24;
+        font-size: 1.4rem;
+        letter-spacing: 4px;
+        text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+        margin-bottom: 0.75rem;
+      }
+      /* Styled: quote — quoted text */
+      .parts-demo .demo-styled snice-testimonial::part(quote) {
+        font-size: 1.1rem;
+        font-style: italic;
+        color: #c7d2fe;
+        border-left: 4px solid #818cf8;
+        padding-left: 1rem;
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+      }
+      /* Styled: author — author info row */
+      .parts-demo .demo-styled snice-testimonial::part(author) {
+        border-top: 1px solid rgba(129, 140, 248, 0.3);
+        padding-top: 1rem;
+        font-weight: 600;
+        color: #a5b4fc;
+      }
+    `;
+
+    const defaultEl = t({ variant: 'card', quote: 'This product is outstanding!', author: 'Jane Smith', role: 'Product Lead', rating: 5 });
+    const styledEl = t({ variant: 'card', quote: 'This product is outstanding!', author: 'Jane Smith', role: 'Product Lead', rating: 5 });
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(base, stars, quote, author))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const rowEl = document.createElement('div');
+    rowEl.className = 'row';
+    rowEl.appendChild(defaultWrap);
+    rowEl.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(rowEl);
+    return wrap;
+  },
+};
