@@ -48,7 +48,7 @@ const meta: Meta<Args> = {
   render: (args) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     if (args.zoom !== undefined) el.setAttribute('zoom', args.zoom);
     if (args.showDependencies === false) el.setAttribute('show-dependencies', 'false');

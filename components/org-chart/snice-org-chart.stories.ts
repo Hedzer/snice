@@ -57,7 +57,7 @@ const meta: Meta<Args> = {
   render: (args) => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     if (args.direction !== undefined) el.setAttribute('direction', args.direction);
     if (args.compact) el.toggleAttribute('compact', true);
