@@ -179,6 +179,72 @@ export const NoSource: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+// Available parts: base, video, controls, progress
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-vp-default snice-video-player { display:block;max-width:560px; }
+      .parts-demo-vp-styled snice-video-player { display:block;max-width:560px; }
+      .parts-demo-vp-styled snice-video-player::part(base) {
+        border: 3px solid #06b6d4;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 0 0 6px rgba(6,182,212,0.15), 0 8px 32px rgba(6,182,212,0.2);
+        background: #000;
+      }
+      .parts-demo-vp-styled snice-video-player::part(video) {
+        border-radius: 0;
+      }
+      .parts-demo-vp-styled snice-video-player::part(controls) {
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        padding: 16px 20px 12px;
+        gap: 12px;
+      }
+      .parts-demo-vp-styled snice-video-player::part(progress) {
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(6,182,212,0.3);
+        cursor: pointer;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-video-player');
+    defaultEl.setAttribute('src', VIDEO_SRC);
+    defaultEl.setAttribute('poster', POSTER_SRC);
+    defaultEl.toggleAttribute('controls', true);
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-vp-default', defaultEl));
+
+    const styledEl = document.createElement('snice-video-player');
+    styledEl.setAttribute('src', VIDEO_SRC);
+    styledEl.setAttribute('poster', POSTER_SRC);
+    styledEl.toggleAttribute('controls', true);
+    wrap.appendChild(section(
+      'Styled: ::part(base) — cyan border + glow  |  ::part(controls) — gradient overlay  |  ::part(progress) — tinted track',
+      'parts-demo-vp-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};
+
 // h2: Keyboard Shortcuts Reference
 export const KeyboardShortcutsReference: Story = {
   render: () => {

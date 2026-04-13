@@ -126,6 +126,73 @@ export const Bitrate256000: Story = {
   render: () => wrap(note('bitrate=256000 (high quality)'), makeRecorder({ bitrate: 256000 })),
 };
 
+// h2: CSS Parts Styling
+// Available parts: base, controls, progress, visualizer
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-ar-default snice-audio-recorder { display:block;width:360px; }
+      .parts-demo-ar-styled snice-audio-recorder { display:block;width:360px; }
+      .parts-demo-ar-styled snice-audio-recorder::part(base) {
+        background: #0f172a;
+        border: 2px solid #e11d48;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(225,29,72,0.2);
+      }
+      .parts-demo-ar-styled snice-audio-recorder::part(visualizer) {
+        background: #1e293b;
+        border-bottom: 1px solid rgba(225,29,72,0.3);
+        padding: 8px 0;
+      }
+      .parts-demo-ar-styled snice-audio-recorder::part(progress) {
+        background: rgba(225,29,72,0.15);
+        height: 6px;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .parts-demo-ar-styled snice-audio-recorder::part(controls) {
+        background: #1e293b;
+        padding: 12px 16px;
+        gap: 12px;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-audio-recorder');
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-ar-default', defaultEl));
+
+    const styledEl = document.createElement('snice-audio-recorder');
+    wrap.appendChild(section(
+      'Styled: ::part(base) — dark rose border  |  ::part(visualizer) — slate bg  |  ::part(progress) — tinted bar  |  ::part(controls) — dark panel',
+      'parts-demo-ar-styled',
+      styledEl,
+    ));
+
+    const n = document.createElement('p');
+    n.style.cssText = 'font-size:.75rem;color:#888;margin:0;';
+    n.textContent = 'Microphone permission is requested when recording starts. Progress and visualizer parts are visible during/after recording.';
+    wrap.appendChild(n);
+
+    return wrap;
+  },
+};
+
 // h2: Boolean combinations matrix
 export const BooleanCombinationsMatrix: Story = {
   render: () => {

@@ -103,3 +103,66 @@ export const ModeCameraVsAnnotate: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, canvas, sidebar, toolbar
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-ca-default snice-camera-annotate { display:block;width:100%;max-width:700px;height:420px; }
+      .parts-demo-ca-styled snice-camera-annotate { display:block;width:100%;max-width:700px;height:420px; }
+      .parts-demo-ca-styled snice-camera-annotate::part(base) {
+        border: 3px solid #10b981;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(16,185,129,0.2);
+      }
+      .parts-demo-ca-styled snice-camera-annotate::part(canvas) {
+        background: #0f172a;
+      }
+      .parts-demo-ca-styled snice-camera-annotate::part(sidebar) {
+        background: #1e293b;
+        border-left: 2px solid #10b981;
+        min-width: 140px;
+      }
+      .parts-demo-ca-styled snice-camera-annotate::part(toolbar) {
+        background: #10b981;
+        gap: 8px;
+        padding: 8px 12px;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-camera-annotate');
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-ca-default', defaultEl));
+
+    const styledEl = document.createElement('snice-camera-annotate');
+    wrap.appendChild(section(
+      'Styled: ::part(base) — green border  |  ::part(canvas) — dark bg  |  ::part(sidebar) — slate panel  |  ::part(toolbar) — green bar',
+      'parts-demo-ca-styled',
+      styledEl,
+    ));
+
+    const n = document.createElement('p');
+    n.style.cssText = 'font-size:.75rem;color:#888;margin:0;';
+    n.textContent = 'Camera-annotate requires user permission. Capture a frame to enter annotate mode where sidebar and toolbar are visible.';
+    wrap.appendChild(n);
+
+    return wrap;
+  },
+};

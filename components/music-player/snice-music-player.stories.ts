@@ -229,3 +229,63 @@ export const AllVisibilityFlagsOff: Story = {
 export const ShuffleRepeatAllCompact: Story = {
   render: () => row(makePlayer({ shuffle: true, repeat: 'all', compact: true, 'show-playlist': 'false' })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, controls, playlist
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-mp-default snice-music-player { display:block;max-width:500px; }
+      .parts-demo-mp-styled snice-music-player { display:block;max-width:500px; }
+      .parts-demo-mp-styled snice-music-player::part(base) {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 2px solid #7c3aed;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(124,58,237,0.3);
+      }
+      .parts-demo-mp-styled snice-music-player::part(controls) {
+        background: rgba(124,58,237,0.15);
+        border-top: 1px solid rgba(124,58,237,0.3);
+        padding: 16px 20px;
+        gap: 16px;
+      }
+      .parts-demo-mp-styled snice-music-player::part(playlist) {
+        background: rgba(0,0,0,0.3);
+        border-top: 1px solid rgba(124,58,237,0.2);
+        max-height: 200px;
+        overflow-y: auto;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-music-player');
+    (defaultEl as any).tracks = SAMPLE_TRACKS;
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-mp-default', defaultEl));
+
+    const styledEl = document.createElement('snice-music-player');
+    (styledEl as any).tracks = SAMPLE_TRACKS;
+    wrap.appendChild(section(
+      'Styled: ::part(base) — purple gradient  |  ::part(controls) — tinted panel  |  ::part(playlist) — semi-transparent list',
+      'parts-demo-mp-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};

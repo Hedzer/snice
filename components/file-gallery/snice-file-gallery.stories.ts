@@ -180,3 +180,61 @@ export const ListNoDropzoneAddButtonNoAutoUpload: Story = {
 export const SingleFileNoDeleteNoPause: Story = {
   render: () => box(makeGallery({ multiple: false, 'allow-delete': false, 'allow-pause': false })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, dropzone, gallery
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-fg-default snice-file-gallery { display:block; }
+      .parts-demo-fg-styled snice-file-gallery { display:block; }
+      .parts-demo-fg-styled snice-file-gallery::part(base) {
+        background: #0f172a;
+        border: 2px solid #22d3ee;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(34,211,238,0.15);
+      }
+      .parts-demo-fg-styled snice-file-gallery::part(dropzone) {
+        border: 2px dashed #22d3ee;
+        border-radius: 12px;
+        margin: 16px;
+        background: rgba(34,211,238,0.05);
+        transition: background 0.2s;
+      }
+      .parts-demo-fg-styled snice-file-gallery::part(gallery) {
+        padding: 12px 16px 16px;
+        gap: 12px;
+        background: rgba(0,0,0,0.2);
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-file-gallery');
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-fg-default', defaultEl));
+
+    const styledEl = document.createElement('snice-file-gallery');
+    wrap.appendChild(section(
+      'Styled: ::part(base) — dark cyan border  |  ::part(dropzone) — dashed cyan zone  |  ::part(gallery) — semi-transparent grid',
+      'parts-demo-fg-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};
