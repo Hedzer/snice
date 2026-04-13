@@ -165,3 +165,126 @@ export const WithPanels: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: container, step, step-indicator, step-content, step-label,
+//        step-description, step-connector, panels
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+
+      /* Styled: container */
+      .parts-demo .styled-container::part(container) {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+      }
+
+      /* Styled: step-indicator (the circle/number) */
+      .parts-demo .styled-indicator::part(step-indicator) {
+        background: #7c3aed;
+        color: #fff;
+        border-color: #7c3aed;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        font-weight: 900;
+        box-shadow: 0 0 0 3px rgba(124,58,237,.3);
+      }
+
+      /* Styled: step-label */
+      .parts-demo .styled-label::part(step-label) {
+        color: #f97316;
+        font-weight: 700;
+        font-size: 1em;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+      }
+
+      /* Styled: step-description */
+      .parts-demo .styled-desc::part(step-description) {
+        color: #94a3b8;
+        font-style: italic;
+        font-size: .85em;
+      }
+
+      /* Styled: step-connector */
+      .parts-demo .styled-connector::part(step-connector) {
+        background: linear-gradient(90deg, #7c3aed, #2563eb);
+        height: 3px;
+        border-radius: 2px;
+      }
+
+      /* Styled: step (entire step wrapper) */
+      .parts-demo .styled-step::part(step) {
+        background: rgba(99,102,241,0.06);
+        border-radius: 8px;
+        padding: .5rem .75rem;
+      }
+
+      /* Styled: panels area */
+      .parts-demo .styled-panels::part(panels) {
+        background: rgba(251,191,36,0.08);
+        border-radius: 8px;
+        padding: .75rem;
+        border-left: 3px solid #fbbf24;
+      }
+
+      /* Combined */
+      .parts-demo .styled-all::part(container) { background: #0f172a; border-radius: 12px; padding: 1rem 1.5rem; }
+      .parts-demo .styled-all::part(step-indicator) { background: #059669; border-color: #059669; color: #fff; font-weight: 700; }
+      .parts-demo .styled-all::part(step-label) { color: #e2e8f0; font-weight: 600; }
+      .parts-demo .styled-all::part(step-description) { color: #64748b; font-size: .8em; }
+      .parts-demo .styled-all::part(step-connector) { background: #334155; height: 2px; }
+    `;
+    wrap.appendChild(style);
+
+    function row(lbl: string, cls: string, st: Step[] = steps3, attrs: Record<string, string | boolean> = {}) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = lbl;
+      const el = makeStepper(st, { 'current-step': '1', ...attrs });
+      if (cls) el.classList.add(cls);
+      d.appendChild(l);
+      d.appendChild(el);
+      return d;
+    }
+
+    wrap.appendChild(row('Default (no ::part styles)', ''));
+    wrap.appendChild(row('::part(container) — dark container', 'styled-container'));
+    wrap.appendChild(row('::part(step-indicator) — purple glowing circles', 'styled-indicator'));
+    wrap.appendChild(row('::part(step-label) — orange uppercase labels', 'styled-label'));
+    wrap.appendChild(row('::part(step-description) — muted italic descriptions', 'styled-desc', stepsWithDesc));
+    wrap.appendChild(row('::part(step-connector) — gradient connector line', 'styled-connector'));
+    wrap.appendChild(row('::part(step) — tinted step wrapper', 'styled-step'));
+
+    // Panels row
+    const panelsD = document.createElement('div');
+    const panelsL = document.createElement('div');
+    panelsL.className = 'label';
+    panelsL.textContent = '::part(panels) — amber left-border panel area';
+    const elWithPanels = document.createElement('snice-stepper');
+    elWithPanels.setAttribute('current-step', '1');
+    elWithPanels.classList.add('styled-panels');
+    (elWithPanels as any).steps = steps3;
+    for (const t of ['Step 1 content here.', 'Step 2 content here.', 'Step 3 content here.']) {
+      const p = document.createElement('snice-stepper-panel');
+      p.textContent = t;
+      elWithPanels.appendChild(p);
+    }
+    panelsD.appendChild(panelsL);
+    panelsD.appendChild(elWithPanels);
+    wrap.appendChild(panelsD);
+
+    wrap.appendChild(row('Combined: container + indicator + label + description + connector', 'styled-all', stepsWithDesc));
+
+    return wrap;
+  },
+};

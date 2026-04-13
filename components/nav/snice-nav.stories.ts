@@ -179,3 +179,84 @@ export const ItemsWithDescriptions: Story = {
     return makeNav(descPlacards, 'docs', { variant: 'flat', orientation: 'horizontal' });
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, nav, link, icon
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+
+      /* Styled: base */
+      .parts-demo .styled-base::part(base) {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+      }
+
+      /* Styled: nav */
+      .parts-demo .styled-nav::part(nav) {
+        background: rgba(99,102,241,0.08);
+        border-radius: 8px;
+        padding: .25rem;
+        gap: .5rem;
+      }
+
+      /* Styled: link */
+      .parts-demo .styled-link::part(link) {
+        color: #f97316;
+        font-weight: 700;
+        border-radius: 6px;
+        padding: .4rem .75rem;
+        background: rgba(249,115,22,0.08);
+        text-decoration: none;
+        transition: background .15s;
+      }
+
+      /* Styled: icon */
+      .parts-demo .styled-icon::part(icon) {
+        font-size: 1.4em;
+        filter: drop-shadow(0 0 4px #f97316);
+      }
+
+      /* Combined */
+      .parts-demo .styled-all::part(base) { background: #1e293b; border-radius: 12px; padding: .5rem 1rem; }
+      .parts-demo .styled-all::part(nav) { gap: .25rem; }
+      .parts-demo .styled-all::part(link) { color: #94a3b8; font-weight: 600; border-radius: 8px; padding: .4rem .85rem; text-decoration: none; }
+      .parts-demo .styled-all::part(icon) { font-size: 1.2em; }
+    `;
+    wrap.appendChild(style);
+
+    const placards = [
+      { name: 'home', title: 'Home', icon: '🏠', order: 0 },
+      { name: 'products', title: 'Products', icon: '📦', order: 1 },
+      { name: 'settings', title: 'Settings', icon: '⚙️', order: 2 },
+    ];
+
+    function row(lbl: string, cls: string) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = lbl;
+      const nav = makeNav(placards, 'home', { variant: 'flat', orientation: 'horizontal' });
+      nav.classList.add(cls);
+      d.appendChild(l);
+      d.appendChild(nav);
+      return d;
+    }
+
+    wrap.appendChild(row('Default (no ::part styles)', ''));
+    wrap.appendChild(row('::part(base) — dark wrapper background', 'styled-base'));
+    wrap.appendChild(row('::part(nav) — indigo tinted nav area', 'styled-nav'));
+    wrap.appendChild(row('::part(link) — orange pill nav links', 'styled-link'));
+    wrap.appendChild(row('::part(icon) — glowing icons', 'styled-icon'));
+    wrap.appendChild(row('Combined: base + nav + link + icon', 'styled-all'));
+
+    return wrap;
+  },
+};
