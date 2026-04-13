@@ -7,6 +7,22 @@ document.head.appendChild(themeLink);
 
 document.documentElement.setAttribute('data-theme', 'dark');
 
+// Centered column layout — prevents stretching on wide screens.
+// Scoped to .sb-main-padded so layout:'fullscreen' stories stay full-width.
+const layoutStyle = document.createElement('style');
+layoutStyle.textContent = `
+  .sb-main-padded #storybook-root {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  #storybook-docs {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+`;
+document.head.appendChild(layoutStyle);
+
 const preview: Preview = {
   parameters: {
     layout: 'padded',
