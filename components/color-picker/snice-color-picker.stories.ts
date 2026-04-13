@@ -206,3 +206,97 @@ export const RequiredInvalidErrorText: Story = {
     makePicker({ value: '#000000', label: 'Color', required: true, invalid: true, 'error-text': 'A valid color is required' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Available parts: spinner, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: bold status text */
+      .parts-demo__bold snice-color-picker::part(error-text) {
+        color: #c62828;
+        font-weight: 700;
+        font-size: 0.85rem;
+        background: rgba(198,40,40,0.08);
+        border-left: 3px solid #c62828;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0 4px 4px 0;
+      }
+      .parts-demo__bold snice-color-picker::part(helper-text) {
+        color: #1565c0;
+        font-weight: 600;
+        font-style: italic;
+        font-size: 0.75rem;
+        background: rgba(21,101,192,0.06);
+        border-left: 3px solid #1565c0;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0 4px 4px 0;
+      }
+
+      /* Styled: pill-shaped status */
+      .parts-demo__pill snice-color-picker::part(error-text) {
+        background: #ffebee;
+        color: #b71c1c;
+        border-radius: 999px;
+        padding: 0.2rem 0.75rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border: 1px solid rgba(183,28,28,0.3);
+      }
+      .parts-demo__pill snice-color-picker::part(helper-text) {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-radius: 999px;
+        padding: 0.2rem 0.75rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        border: 1px solid rgba(46,125,50,0.3);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makePicker({ label: 'Color', value: '#4f46e5', 'helper-text': 'Pick a color', 'show-input': true }));
+    defaultSection.appendChild(makePicker({ label: 'Invalid Color', value: '#ff1744', invalid: true, 'error-text': 'This color is not allowed', 'show-input': true }));
+    container.appendChild(defaultSection);
+
+    // Bold section
+    const boldSection = document.createElement('div');
+    boldSection.className = 'parts-demo__section parts-demo__bold';
+    const boldLabel = document.createElement('div');
+    boldLabel.className = 'parts-demo__label';
+    boldLabel.textContent = '::part(error-text/helper-text) — Bold bordered style';
+    boldSection.appendChild(boldLabel);
+    boldSection.appendChild(makePicker({ label: 'Brand Color', value: '#1565c0', 'helper-text': 'Choose your brand color', 'show-input': true }));
+    boldSection.appendChild(makePicker({ label: 'Restricted', value: '#c62828', invalid: true, 'error-text': 'Color does not meet contrast requirements', 'show-input': true }));
+    container.appendChild(boldSection);
+
+    // Pill section
+    const pillSection = document.createElement('div');
+    pillSection.className = 'parts-demo__section parts-demo__pill';
+    const pillLabel = document.createElement('div');
+    pillLabel.className = 'parts-demo__label';
+    pillLabel.textContent = '::part(error-text/helper-text) — Pill-shaped badges';
+    pillSection.appendChild(pillLabel);
+    pillSection.appendChild(makePicker({ label: 'Accent Color', value: '#2e7d32', 'helper-text': 'WCAG AA compliant', 'show-input': true }));
+    pillSection.appendChild(makePicker({ label: 'Invalid', value: '#b71c1c', invalid: true, 'error-text': 'Fails WCAG contrast ratio', 'show-input': true }));
+    container.appendChild(pillSection);
+
+    return container;
+  },
+};

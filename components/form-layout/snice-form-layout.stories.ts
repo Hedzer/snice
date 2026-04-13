@@ -271,3 +271,109 @@ export const TwoColumnsLargeGapInlineVariant: Story = {
     return wrap(layout);
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: card panel with branded header bar */
+      .parts-demo__card snice-form-layout::part(base) {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 1.5rem;
+        border-top: 4px solid #5e35b1;
+      }
+
+      /* Styled: dark glass morphism */
+      .parts-demo__glass snice-form-layout::part(base) {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        padding: 1.5rem;
+      }
+
+      /* Styled: pastel notebook */
+      .parts-demo__notebook snice-form-layout::part(base) {
+        background: linear-gradient(to bottom, #e8f0fe 0%, #fce4ec 100%);
+        border: none;
+        border-radius: 8px;
+        border-left: 5px solid #7c4dff;
+        box-shadow: 3px 3px 0 rgba(124,77,255,0.2);
+        padding: 1.5rem 1.5rem 1.5rem 2rem;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    const l1 = makeLayout({ columns: 2 });
+    l1.appendChild(makeField('First Name')); l1.appendChild(makeField('Last Name'));
+    l1.appendChild(makeField('Email', 'email')); l1.appendChild(makeField('Phone', 'tel'));
+    defaultSection.appendChild(wrap(l1));
+    container.appendChild(defaultSection);
+
+    // Card section
+    const cardSection = document.createElement('div');
+    cardSection.className = 'parts-demo__section parts-demo__card';
+    const cardLabel = document.createElement('div');
+    cardLabel.className = 'parts-demo__label';
+    cardLabel.textContent = '::part(base) — Card with accent top border';
+    cardSection.appendChild(cardLabel);
+    const l2 = makeLayout({ columns: 2 });
+    l2.appendChild(makeField('First Name')); l2.appendChild(makeField('Last Name'));
+    l2.appendChild(makeField('Email', 'email')); l2.appendChild(makeField('Phone', 'tel'));
+    cardSection.appendChild(wrap(l2));
+    container.appendChild(cardSection);
+
+    // Glass section
+    const glassSection = document.createElement('div');
+    glassSection.className = 'parts-demo__section parts-demo__glass';
+    glassSection.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e)';
+    glassSection.style.borderRadius = '20px';
+    glassSection.style.padding = '0.5rem';
+    const glassLabel = document.createElement('div');
+    glassLabel.className = 'parts-demo__label';
+    glassLabel.style.padding = '0.5rem';
+    glassLabel.textContent = '::part(base) — Dark glass morphism';
+    glassSection.appendChild(glassLabel);
+    const l3 = makeLayout({ columns: 2 });
+    l3.appendChild(makeField('First Name')); l3.appendChild(makeField('Last Name'));
+    l3.appendChild(makeField('Email', 'email')); l3.appendChild(makeField('Phone', 'tel'));
+    glassSection.appendChild(wrap(l3));
+    container.appendChild(glassSection);
+
+    // Notebook section
+    const notebookSection = document.createElement('div');
+    notebookSection.className = 'parts-demo__section parts-demo__notebook';
+    const notebookLabel = document.createElement('div');
+    notebookLabel.className = 'parts-demo__label';
+    notebookLabel.textContent = '::part(base) — Pastel notebook';
+    notebookSection.appendChild(notebookLabel);
+    const l4 = makeLayout({ columns: 2 });
+    l4.appendChild(makeField('First Name')); l4.appendChild(makeField('Last Name'));
+    l4.appendChild(makeField('Email', 'email')); l4.appendChild(makeField('Phone', 'tel'));
+    notebookSection.appendChild(wrap(l4));
+    container.appendChild(notebookSection);
+
+    return container;
+  },
+};

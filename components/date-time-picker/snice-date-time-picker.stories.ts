@@ -218,3 +218,145 @@ export const ClearablePlusDisabled: Story = {
 export const VariantInlinePlus12hPlusShowSeconds: Story = {
   render: () => row(makePicker({ variant: 'inline', 'time-format': '12h', 'show-seconds': true, label: 'Inline + 12h + Seconds' })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, label, input, toggle, clear, spinner, panel, calendar, time, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: violet glass */
+      .parts-demo__violet snice-date-time-picker::part(base) {
+        background: rgba(94,23,235,0.04);
+        border: 2px solid rgba(94,23,235,0.3);
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(94,23,235,0.1);
+        padding: 0.25rem;
+      }
+      .parts-demo__violet snice-date-time-picker::part(label) {
+        color: #5e17eb;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+      }
+      .parts-demo__violet snice-date-time-picker::part(input) {
+        background: rgba(94,23,235,0.05);
+        border: 1px solid rgba(94,23,235,0.25);
+        border-radius: 8px;
+        color: #3a0ca3;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgba(94,23,235,0.1);
+      }
+      .parts-demo__violet snice-date-time-picker::part(toggle) {
+        background: linear-gradient(135deg, #5e17eb, #7b2ff7);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(94,23,235,0.4);
+        cursor: pointer;
+      }
+      .parts-demo__violet snice-date-time-picker::part(clear) {
+        color: #7b2ff7;
+        opacity: 0.8;
+      }
+      .parts-demo__violet snice-date-time-picker::part(panel) {
+        background: #f5f0ff;
+        border: 1px solid rgba(94,23,235,0.2);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(94,23,235,0.15);
+      }
+      .parts-demo__violet snice-date-time-picker::part(calendar) {
+        border-right: 1px solid rgba(94,23,235,0.1);
+      }
+      .parts-demo__violet snice-date-time-picker::part(time) {
+        background: rgba(94,23,235,0.03);
+      }
+      .parts-demo__violet snice-date-time-picker::part(helper-text) {
+        color: #7b2ff7;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+
+      /* Styled: dark carbon */
+      .parts-demo__carbon snice-date-time-picker::part(base) {
+        background: #111;
+        border: 1px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      }
+      .parts-demo__carbon snice-date-time-picker::part(label) {
+        color: #aaa;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .parts-demo__carbon snice-date-time-picker::part(input) {
+        background: #1e1e1e;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #e8e8e8;
+        font-family: 'Courier New', monospace;
+      }
+      .parts-demo__carbon snice-date-time-picker::part(toggle) {
+        background: #2a2a2a;
+        color: #aaa;
+        border: 1px solid #444;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .parts-demo__carbon snice-date-time-picker::part(panel) {
+        background: #181818;
+        border: 1px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      }
+      .parts-demo__carbon snice-date-time-picker::part(error-text) {
+        color: #f44336;
+        font-weight: 600;
+      }
+      .parts-demo__carbon snice-date-time-picker::part(helper-text) {
+        color: #666;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makePicker({ label: 'Date & Time', 'helper-text': 'Default styles', value: '2025-06-15T14:30' }));
+    container.appendChild(defaultSection);
+
+    // Violet section
+    const violetSection = document.createElement('div');
+    violetSection.className = 'parts-demo__section parts-demo__violet';
+    const violetLabel = document.createElement('div');
+    violetLabel.className = 'parts-demo__label';
+    violetLabel.textContent = '::part(base/label/input/toggle/clear/panel/calendar/time/helper-text) — Violet glass';
+    violetSection.appendChild(violetLabel);
+    violetSection.appendChild(makePicker({ label: 'Event Date & Time', 'helper-text': 'Select when the event starts', value: '2025-06-15T14:30', clearable: true }));
+    container.appendChild(violetSection);
+
+    // Carbon section
+    const carbonSection = document.createElement('div');
+    carbonSection.className = 'parts-demo__section parts-demo__carbon';
+    const carbonLabel = document.createElement('div');
+    carbonLabel.className = 'parts-demo__label';
+    carbonLabel.textContent = '::part(base/label/input/toggle/panel/error-text/helper-text) — Dark carbon';
+    carbonSection.appendChild(carbonLabel);
+    carbonSection.appendChild(makePicker({ label: 'Timestamp', 'helper-text': 'ISO format', value: '2025-12-31T23:59' }));
+    container.appendChild(carbonSection);
+
+    return container;
+  },
+};

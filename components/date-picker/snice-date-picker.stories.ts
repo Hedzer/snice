@@ -222,3 +222,117 @@ export const DisabledValueClearable: Story = {
     makePicker({ disabled: true, clearable: true, value: '2025-06-15', format: 'yyyy-mm-dd', label: 'Disabled (clear hidden)' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Available parts: input, calendar-toggle, clear, spinner, calendar, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: frosted glass / indigo theme */
+      .parts-demo__glass snice-date-picker::part(input) {
+        background: rgba(99,102,241,0.08);
+        border: 2px solid rgba(99,102,241,0.4);
+        border-radius: 10px;
+        color: #312e81;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+      }
+      .parts-demo__glass snice-date-picker::part(calendar-toggle) {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.35rem 0.6rem;
+        box-shadow: 0 2px 6px rgba(99,102,241,0.4);
+        cursor: pointer;
+      }
+      .parts-demo__glass snice-date-picker::part(clear) {
+        color: #6366f1;
+        background: rgba(99,102,241,0.1);
+        border-radius: 50%;
+      }
+      .parts-demo__glass snice-date-picker::part(helper-text) {
+        color: #6366f1;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+
+      /* Styled: dark emerald terminal */
+      .parts-demo__emerald snice-date-picker::part(input) {
+        background: #001a0d;
+        border: 1px solid #00c853;
+        border-radius: 4px;
+        color: #00e676;
+        font-family: 'Courier New', monospace;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        box-shadow: 0 0 8px rgba(0,200,83,0.2);
+      }
+      .parts-demo__emerald snice-date-picker::part(calendar-toggle) {
+        background: #003300;
+        color: #00c853;
+        border: 1px solid #00c853;
+        border-radius: 3px;
+        box-shadow: 0 0 6px rgba(0,200,83,0.4);
+        cursor: pointer;
+      }
+      .parts-demo__emerald snice-date-picker::part(clear) {
+        color: #00c853;
+        opacity: 0.8;
+      }
+      .parts-demo__emerald snice-date-picker::part(error-text) {
+        color: #ff1744;
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+      }
+      .parts-demo__emerald snice-date-picker::part(helper-text) {
+        color: #00c853;
+        font-family: 'Courier New', monospace;
+        font-size: 0.72rem;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makePicker({ label: 'Select Date', clearable: true, 'helper-text': 'Default styles', value: '2025-06-15', format: 'yyyy-mm-dd' }));
+    container.appendChild(defaultSection);
+
+    // Glass section
+    const glassSection = document.createElement('div');
+    glassSection.className = 'parts-demo__section parts-demo__glass';
+    const glassLabel = document.createElement('div');
+    glassLabel.className = 'parts-demo__label';
+    glassLabel.textContent = '::part(input/calendar-toggle/clear/helper-text) — Frosted indigo';
+    glassSection.appendChild(glassLabel);
+    glassSection.appendChild(makePicker({ label: 'Departure Date', clearable: true, 'helper-text': 'Pick your travel date', value: '2025-06-15', format: 'yyyy-mm-dd' }));
+    container.appendChild(glassSection);
+
+    // Emerald section
+    const emeraldSection = document.createElement('div');
+    emeraldSection.className = 'parts-demo__section parts-demo__emerald';
+    const emeraldLabel = document.createElement('div');
+    emeraldLabel.className = 'parts-demo__label';
+    emeraldLabel.textContent = '::part(input/calendar-toggle/clear/error-text/helper-text) — Terminal green';
+    emeraldSection.appendChild(emeraldLabel);
+    emeraldSection.appendChild(makePicker({ label: 'Expiry Date', clearable: true, 'helper-text': 'YYYY-MM-DD format', value: '2025-06-15', format: 'yyyy-mm-dd' }));
+    emeraldSection.appendChild(makePicker({ label: 'Invalid Date', invalid: true, 'error-text': 'INVALID DATE VALUE' }));
+    container.appendChild(emeraldSection);
+
+    return container;
+  },
+};

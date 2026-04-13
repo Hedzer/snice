@@ -231,3 +231,109 @@ export const NamedFormIntegration: Story = {
     makeSlider({ name: 'volume', value: 75, label: 'Volume (name=volume)', 'show-value': true }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Available parts: track, fill, thumb, spinner, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Default (unstyled) */
+      .parts-demo__default snice-slider { width: 280px; }
+
+      /* Styled: neon gradient track + glowing thumb */
+      .parts-demo__styled snice-slider::part(track) {
+        background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 4px;
+        height: 8px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+      }
+      .parts-demo__styled snice-slider::part(fill) {
+        background: linear-gradient(90deg, #e040fb, #00e5ff);
+        border-radius: 4px;
+        box-shadow: 0 0 8px rgba(224,64,251,0.6), 0 0 16px rgba(0,229,255,0.4);
+      }
+      .parts-demo__styled snice-slider::part(thumb) {
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 35% 35%, #fff, #e040fb);
+        border: 3px solid #e040fb;
+        box-shadow: 0 0 12px rgba(224,64,251,0.8), 0 2px 8px rgba(0,0,0,0.4);
+        border-radius: 50%;
+      }
+      .parts-demo__styled snice-slider::part(helper-text) {
+        color: #00e5ff;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+      .parts-demo__styled snice-slider { width: 280px; }
+
+      /* Styled: warm earth tones */
+      .parts-demo__earth snice-slider::part(track) {
+        background: #3d2b1f;
+        border-radius: 2px;
+        height: 6px;
+      }
+      .parts-demo__earth snice-slider::part(fill) {
+        background: linear-gradient(90deg, #8b4513, #d2691e, #f4a460);
+        border-radius: 2px;
+      }
+      .parts-demo__earth snice-slider::part(thumb) {
+        background: radial-gradient(circle, #f4a460, #8b4513);
+        border: 2px solid #8b4513;
+        box-shadow: 0 2px 6px rgba(139,69,19,0.5);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+      }
+      .parts-demo__earth snice-slider::part(error-text) {
+        color: #c0392b;
+        font-weight: 600;
+      }
+      .parts-demo__earth snice-slider { width: 280px; }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section parts-demo__default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    const s1 = makeSlider({ value: 60, label: 'Volume', 'helper-text': 'Default track, fill, and thumb' });
+    defaultSection.appendChild(s1);
+    container.appendChild(defaultSection);
+
+    // Neon styled section
+    const neonSection = document.createElement('div');
+    neonSection.className = 'parts-demo__section parts-demo__styled';
+    const neonLabel = document.createElement('div');
+    neonLabel.className = 'parts-demo__label';
+    neonLabel.textContent = '::part(track) + ::part(fill) + ::part(thumb) — Neon gradient';
+    neonSection.appendChild(neonLabel);
+    const s2 = makeSlider({ value: 60, label: 'Volume', 'helper-text': 'Neon gradient fill + glowing thumb' });
+    neonSection.appendChild(s2);
+    container.appendChild(neonSection);
+
+    // Earth tones styled section
+    const earthSection = document.createElement('div');
+    earthSection.className = 'parts-demo__section parts-demo__earth';
+    const earthLabel = document.createElement('div');
+    earthLabel.className = 'parts-demo__label';
+    earthLabel.textContent = '::part(track) + ::part(fill) + ::part(thumb) + ::part(error-text) — Earth tones';
+    earthSection.appendChild(earthLabel);
+    const s3 = makeSlider({ value: 40, label: 'Warmth', 'error-text': 'Value out of range', invalid: true });
+    earthSection.appendChild(s3);
+    container.appendChild(earthSection);
+
+    return container;
+  },
+};
