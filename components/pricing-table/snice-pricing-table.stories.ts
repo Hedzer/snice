@@ -221,3 +221,88 @@ export const FourPlans: Story = {
 export const TableVariantWithAnnualToggle: Story = {
   render: () => makePT({ variant: 'table' }, defaultPlans),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, toggle, cards, card, cta, table-wrapper, table
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--pt-styled snice-pricing-table::part(base) {
+        background: #0a0a0f;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid rgba(99,102,241,0.3);
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(toggle) {
+        background: rgba(99,102,241,0.1);
+        border: 1px solid rgba(99,102,241,0.4);
+        border-radius: 999px;
+        padding: 0.25rem;
+        gap: 0.25rem;
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(cards) {
+        gap: 1.5rem;
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(card) {
+        border: 1px solid rgba(99,102,241,0.3);
+        border-radius: 12px;
+        background: #12121a;
+        padding: 1.5rem;
+        box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(cta) {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #fff;
+        box-shadow: 0 2px 12px rgba(99,102,241,0.4);
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(table-wrapper) {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(99,102,241,0.3);
+      }
+      .parts-demo--pt-styled snice-pricing-table::part(table) {
+        background: #12121a;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const twoPlans = [
+      { name: 'Free', price: 0, cta: 'Get Started', features: [
+        { text: '5 projects', included: true },
+        { text: 'API access', included: false },
+      ]},
+      { name: 'Pro', price: 29, annualPrice: 24, cta: 'Start Trial', highlighted: true, badge: 'Popular', features: [
+        { text: '5 projects', included: true },
+        { text: 'API access', included: true },
+      ]},
+    ];
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(makePT({ variant: 'cards' }, twoPlans));
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--pt-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(base · toggle · cards · card · cta · table-wrapper · table)';
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(makePT({ variant: 'cards' }, twoPlans));
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

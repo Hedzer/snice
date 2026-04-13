@@ -156,3 +156,69 @@ export const MultipleReactionsOnAMessage: Story = {
     ]});
   }),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, messages, input-area, input-container, input
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--chat-styled snice-chat::part(base) {
+        border: 2px solid #f59e0b;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(245,158,11,0.2);
+      }
+      .parts-demo--chat-styled snice-chat::part(messages) {
+        background: linear-gradient(180deg, #1c1508, #1f1700);
+        padding: 1rem;
+      }
+      .parts-demo--chat-styled snice-chat::part(input-area) {
+        background: #27200a;
+        border-top: 1px solid rgba(245,158,11,0.4);
+        padding: 0.75rem;
+      }
+      .parts-demo--chat-styled snice-chat::part(input-container) {
+        background: #332a0d;
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        padding: 0.25rem 0.5rem;
+      }
+      .parts-demo--chat-styled snice-chat::part(input) {
+        color: #fde68a;
+        background: transparent;
+        caret-color: #f59e0b;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(makeChat({ 'current-user': 'You' }, (el) => {
+      (el as any).addMessage({ type: 'text', content: 'Hello! This is the default style.', author: 'Alice', timestamp: new Date(Date.now() - 60000) });
+      (el as any).addMessage({ type: 'text', content: 'Looking good!', author: 'You', timestamp: new Date() });
+    }));
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--chat-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(base · messages · input-area · input-container · input)';
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(makeChat({ 'current-user': 'You' }, (el) => {
+      (el as any).addMessage({ type: 'text', content: 'Now with amber theme via ::part()!', author: 'Alice', timestamp: new Date(Date.now() - 60000) });
+      (el as any).addMessage({ type: 'text', content: 'Every shadow part styled.', author: 'You', timestamp: new Date() });
+    }));
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};
