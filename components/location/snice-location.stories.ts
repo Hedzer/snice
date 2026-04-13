@@ -359,3 +359,83 @@ export const NoIconDifferentModes: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, icon, content, map
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = makeLoc({
+      mode: 'full',
+      name: 'Eiffel Tower',
+      address: 'Champ de Mars, 5 Av. Anatole France',
+      city: 'Paris',
+      state: 'Île-de-France',
+      country: 'France',
+      latitude: '48.8584',
+      longitude: '2.2945',
+    });
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-location';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-location snice-location::part(base) {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border: 1px solid #e94560;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 20px rgba(233,69,96,0.2);
+        color: #e0e0ff;
+      }
+      .parts-demo-location snice-location::part(icon) {
+        color: #e94560;
+        font-size: 1.5rem;
+        filter: drop-shadow(0 0 6px rgba(233,69,96,0.6));
+      }
+      .parts-demo-location snice-location::part(content) {
+        color: #c8c8e8;
+        font-family: 'Georgia', serif;
+        line-height: 1.6;
+      }
+      .parts-demo-location snice-location::part(map) {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e94560;
+        margin-top: 0.75rem;
+        filter: sepia(0.4) hue-rotate(200deg);
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = makeLoc({
+      mode: 'full',
+      name: 'Eiffel Tower',
+      address: 'Champ de Mars, 5 Av. Anatole France',
+      city: 'Paris',
+      state: 'Île-de-France',
+      country: 'France',
+      latitude: '48.8584',
+      longitude: '2.2945',
+    });
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

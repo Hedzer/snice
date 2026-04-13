@@ -179,3 +179,80 @@ export const SameDataAtAllZoomLevels: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, header, controls, body, task-list, timeline
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = document.createElement('snice-gantt');
+    defaultEl.setAttribute('zoom', 'week');
+    (defaultEl as any).tasks = baseTasks;
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-gantt';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-gantt snice-gantt::part(base) {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      }
+      .parts-demo-gantt snice-gantt::part(header) {
+        background: #161b22;
+        border-bottom: 1px solid #21262d;
+        padding: 0.5rem 1rem;
+      }
+      .parts-demo-gantt snice-gantt::part(controls) {
+        gap: 0.5rem;
+        background: #1f2937;
+        border-radius: 6px;
+        padding: 0.25rem;
+      }
+      .parts-demo-gantt snice-gantt::part(body) {
+        background: #0d1117;
+      }
+      .parts-demo-gantt snice-gantt::part(task-list) {
+        background: #161b22;
+        border-right: 2px solid #58a6ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.8rem;
+      }
+      .parts-demo-gantt snice-gantt::part(timeline) {
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 39px,
+          rgba(88,166,255,0.08) 39px,
+          rgba(88,166,255,0.08) 40px
+        );
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = document.createElement('snice-gantt');
+    styledEl.setAttribute('zoom', 'week');
+    (styledEl as any).tasks = coloredTasks;
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};
