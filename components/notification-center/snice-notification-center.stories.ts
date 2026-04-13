@@ -36,7 +36,7 @@ function makeCenter(notifications: NotificationItem[], attrs: Record<string, str
 
 function wrap(el: HTMLElement) {
   const w = document.createElement('div');
-  w.style.cssText = 'display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-start;min-height:420px;position:relative;padding:1rem;';
+  w.style.cssText = 'display:flex;justify-content:flex-end;min-height:420px;position:relative;padding:1rem;';
   w.appendChild(el);
   return w;
 }
