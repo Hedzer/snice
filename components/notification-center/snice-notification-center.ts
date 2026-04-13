@@ -13,6 +13,9 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
   open = false;
 
   @property()
+  placement: 'start' | 'end' = 'end';
+
+  @property()
   icon = '';
 
   @dispatch('notification-click', { bubbles: true, composed: true })
@@ -109,7 +112,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
           </span>
         </snice-badge>
       </button>
-      <div part="panel" class="panel" ?hidden=${!this.open}>
+      <div part="panel" class="panel panel--${this.placement}" ?hidden=${!this.open}>
         <div part="panel-header" class="panel-header">
           <span class="panel-title">Notifications</span>
           <button class="mark-all-btn" @click=${() => this.markAllAsRead()}>Mark all read</button>

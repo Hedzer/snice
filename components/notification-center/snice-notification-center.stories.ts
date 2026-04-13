@@ -4,6 +4,7 @@ import type { NotificationItem } from './snice-notification-center.types';
 
 type Args = {
   open?: boolean;
+  placement?: 'start' | 'end';
   icon?: string;
 };
 
@@ -34,14 +35,13 @@ function makeCenter(notifications: NotificationItem[], attrs: Record<string, str
   return el;
 }
 
-function wrap(el: HTMLElement) {
+function wrap(el: HTMLElement, align: 'start' | 'end' = 'end') {
   const w = document.createElement('div');
-  // Mock header bar with bell on the right — gives room below for the dropdown panel
   const bar = document.createElement('div');
-  bar.style.cssText = 'display:flex;justify-content:flex-end;align-items:center;padding:0.75rem 1rem;border-bottom:1px solid rgba(128,128,128,0.2);';
+  const justify = align === 'start' ? 'flex-start' : 'flex-end';
+  bar.style.cssText = `display:flex;justify-content:${justify};align-items:center;padding:0.75rem 1rem;border-bottom:1px solid rgba(128,128,128,0.2);`;
   bar.appendChild(el);
   w.appendChild(bar);
-  // Spacer below so the dropdown has room to render visibly
   const spacer = document.createElement('div');
   spacer.style.cssText = 'min-height:28rem;';
   w.appendChild(spacer);
@@ -54,11 +54,13 @@ const meta: Meta<Args> = {
   tags: ['autodocs'],
   argTypes: {
     open: { control: 'boolean' },
+    placement: { control: 'select', options: ['start', 'end'] },
     icon: { control: 'text' },
   },
   render: (args) => {
     const el = document.createElement('snice-notification-center');
     if (args.open) el.toggleAttribute('open', true);
+    if (args.placement) el.setAttribute('placement', args.placement);
     if (args.icon) el.setAttribute('icon', args.icon);
     (el as any).notifications = SAMPLE_NOTIFICATIONS;
     return wrap(el);
@@ -282,4 +284,13 @@ export const CSSPartsStyling: Story = {
     demoWrap.appendChild(col2);
     return demoWrap;
   },
+};
+
+// Placement: start vs end
+export const PlacementStart: Story = {
+  render: () => wrap(makeCenter(SAMPLE_NOTIFICATIONS, { open: 'true', placement: 'start' }), 'start'),
+};
+
+export const PlacementEnd: Story = {
+  render: () => wrap(makeCenter(SAMPLE_NOTIFICATIONS, { open: 'true', placement: 'end' }), 'end'),
 };

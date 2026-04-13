@@ -47,7 +47,6 @@ span.bell-icon-img {
 .panel {
   position: absolute;
   top: 100%;
-  right: 0;
   margin-top: var(--snice-spacing-2xs, 0.25rem);
   width: 22rem;
   max-height: 25rem;
@@ -57,6 +56,14 @@ span.bell-icon-img {
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
   z-index: 1000;
+}
+
+.panel--end {
+  right: 0;
+}
+
+.panel--start {
+  left: 0;
 }
 
 .panel[hidden] {

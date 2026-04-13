@@ -8,9 +8,12 @@ export interface NotificationItem {
   type?: 'info' | 'success' | 'warning' | 'error';
 }
 
+export type NotificationCenterPlacement = 'start' | 'end';
+
 export interface SniceNotificationCenterElement extends HTMLElement {
   notifications: NotificationItem[];
   open: boolean;
+  placement: NotificationCenterPlacement;
   icon: string;
   markAsRead(id: string): void;
   markAllAsRead(): void;
