@@ -343,24 +343,6 @@ onFirstRender() {
     </div>
 
     <div class="dec-section">
-      <h3>Icons</h3>
-      <p class="desc">Components auto-detect icon type from the <code>icon</code> property. Ligature names use <code>--snice-icon-font</code> (defaults to Material Symbols).</p>
-      <snice-code-block language="html" grammar="grammars/snice.json?v=e716039">&lt;!-- Ligature, emoji, URL — all auto-detected --&gt;
-&lt;snice-button icon="search"&gt;Search&lt;/snice-button&gt;
-&lt;snice-input prefix-icon="person" suffix-icon="check_circle"&gt;&lt;/snice-input&gt;
-
-&lt;!-- Change icon font globally --&gt;
-&lt;style&gt;
-  :root { --snice-icon-font: 'Font Awesome 6 Free'; }
-&lt;/style&gt;
-
-&lt;!-- Or use slots for full control --&gt;
-&lt;snice-input label="Amount"&gt;
-  &lt;span slot="prefix-icon" class="fa-solid fa-dollar-sign"&gt;&lt;/span&gt;
-&lt;/snice-input&gt;</snice-code-block>
-    </div>
-
-    <div class="dec-section">
       <h3>Template Syntax</h3>
       <p class="desc">Property binding, conditionals, loops, and event shortcuts.</p>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Property binding
@@ -381,7 +363,7 @@ html`&lt;div @keydown:escape=${this.close}&gt;`</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.34.2 · MIT</span>
+      <span>Snice v4.35.0 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>

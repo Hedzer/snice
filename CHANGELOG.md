@@ -1,3 +1,27 @@
+# [4.35.0](https://github.com/Hedzer/snice/compare/v4.34.2...v4.35.0) (2026-04-13)
+
+
+### Bug Fixes
+
+* **components:** render Material Symbols ligature icons correctly ([ec53247](https://github.com/Hedzer/snice/commit/ec53247de8916c8d90fdabbb7e9032818e0a29aa))
+* **react:** detect all component events in adapter generator ([63955df](https://github.com/Hedzer/snice/commit/63955dfeb94ef2b3809c2f5d2ae22067235d9ec4))
+* rebuild dist and React adapter declarations ([d11131a](https://github.com/Hedzer/snice/commit/d11131ac5bbcc9678ff7460c4589e3164227421b))
+* **storybook:** add centered column layout to prevent stretching ([0dc5160](https://github.com/Hedzer/snice/commit/0dc51600a14fa3e379a9586b6b2cb24b52fdad62))
+* **storybook:** add typography, icon font, and content styles ([3de5155](https://github.com/Hedzer/snice/commit/3de5155dcb42f219c5aa9391a8fad548a977cc9d))
+* **storybook:** fix el not defined in gantt and org-chart stories ([963a7a9](https://github.com/Hedzer/snice/commit/963a7a900552b0caf52c9c14eb7b71fc11217f95))
+* **storybook:** fix layout and sizing for components ([53bf198](https://github.com/Hedzer/snice/commit/53bf19876026d453283056c3a0fd1a83a89b6ab0))
+* **storybook:** notification-center dropdown now visible ([6fdddd1](https://github.com/Hedzer/snice/commit/6fdddd104566b931c6e405527e64eb952514ec8b))
+* **storybook:** right-align notification-center so dropdown is visible ([86381b9](https://github.com/Hedzer/snice/commit/86381b9aa9be4683366e3afffd617c2e6c4eb4fa))
+* **tests:** fix all CLI create-app test failures ([acfdbe4](https://github.com/Hedzer/snice/commit/acfdbe4b0a8fd7980233ea265c5369e834ceb3d7))
+* TS warnings, icon font docs, router fix, jsx config ([9082de0](https://github.com/Hedzer/snice/commit/9082de0a60f0e45053312cdfd9944e929a1b0675))
+
+
+### Features
+
+* **notification-center:** add placement property (start/end) ([1aa3a4b](https://github.com/Hedzer/snice/commit/1aa3a4b78eedf5397f60d5cb01387e28de028080))
+* **storybook:** add CSS parts styling examples + missing component parts ([fba31f0](https://github.com/Hedzer/snice/commit/fba31f0acddf8e7cd56a8d5ea45c45faf02c86b9))
+* **storybook:** add Storybook with stories for all components ([ae6486a](https://github.com/Hedzer/snice/commit/ae6486a7241abe937d24f3a12e0983c19ab7eb6f)), closes [#4](https://github.com/Hedzer/snice/issues/4)
+
 ## [4.34.2](https://github.com/Hedzer/snice/compare/v4.34.1...v4.34.2) (2026-03-11)
 
 
