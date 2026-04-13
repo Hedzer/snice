@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Funnel = createReactAdapter({
     tagName: 'snice-funnel',
     properties: ["data", "variant", "orientation", "showLabels", "showValues", "showPercentages", "animation"],
-    events: {},
+    events: { "funnel-click": "onFunnelClick", "funnel-hover": "onFunnelHover" },
     formAssociated: false
 });
 //# sourceMappingURL=funnel.js.map

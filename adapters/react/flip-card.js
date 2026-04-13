@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const FlipCard = createReactAdapter({
     tagName: 'snice-flip-card',
     properties: ["flipped", "clickToFlip", "direction", "duration"],
-    events: {},
+    events: { "flip-change": "onFlipChange" },
     formAssociated: false
 });
 //# sourceMappingURL=flip-card.js.map

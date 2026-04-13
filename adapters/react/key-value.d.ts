@@ -16,6 +16,10 @@ export interface KeyValueProps extends SniceBaseProps {
     mode?: any;
     showCopy?: any;
     items?: any;
+    onKvAdd?: (event: any) => void;
+    onKvRemove?: (event: any) => void;
+    onKvChange?: (event: any) => void;
+    onKvCopy?: (event: any) => void;
 }
 /**
  * KeyValue - React adapter for snice-key-value

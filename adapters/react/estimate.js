@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Estimate = createReactAdapter({
     tagName: 'snice-estimate',
     properties: ["estimateNumber", "date", "expiryDate", "status", "from", "to", "items", "currency", "taxRate", "discount", "notes", "terms", "variant", "showQr", "qrData", "qrPosition"],
-    events: {},
+    events: { "estimate-accept": "onEstimateAccept", "estimate-decline": "onEstimateDecline", "item-toggle": "onItemToggle" },
     formAssociated: false
 });
 //# sourceMappingURL=estimate.js.map

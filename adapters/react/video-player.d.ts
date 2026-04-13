@@ -13,6 +13,12 @@ export interface VideoPlayerProps extends SniceBaseProps {
     currentTime?: any;
     volume?: any;
     variant?: any;
+    onVideoPlay?: (event: any) => void;
+    onVideoPause?: (event: any) => void;
+    onVideoEnded?: (event: any) => void;
+    onVideoTimeUpdate?: (event: any) => void;
+    onVideoFullscreenChange?: (event: any) => void;
+    onVideoVolumeChange?: (event: any) => void;
 }
 /**
  * VideoPlayer - React adapter for snice-video-player

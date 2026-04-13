@@ -7,6 +7,7 @@ export interface TabsProps extends SniceBaseProps {
     selected?: any;
     noScrollControls?: any;
     transition?: any;
+    onTabChange?: (event: any) => void;
 }
 /**
  * Tabs - React adapter for snice-tabs

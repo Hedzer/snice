@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const EmptyState = createReactAdapter({
     tagName: 'snice-empty-state',
     properties: ["size", "icon", "title", "description", "actionText", "actionHref"],
-    events: {},
+    events: { "empty-state-action": "onEmptyStateAction" },
     formAssociated: false
 });
 //# sourceMappingURL=empty-state.js.map

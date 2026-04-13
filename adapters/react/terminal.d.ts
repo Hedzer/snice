@@ -9,6 +9,9 @@ export interface TerminalProps extends SniceBaseProps {
     readonly?: any;
     maxLines?: any;
     showTimestamps?: any;
+    onTerminalCommand?: (event: any) => void;
+    onTerminalClear?: (event: any) => void;
+    onTerminalReady?: (event: any) => void;
 }
 /**
  * Terminal - React adapter for snice-terminal

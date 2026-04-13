@@ -21,6 +21,11 @@ export interface ProductCardProps extends SniceBaseProps {
     currentImageIndex?: any;
     selectedVariants?: any;
     heartAnimating?: any;
+    onAddToCart?: (event: any) => void;
+    onVariantSelect?: (event: any) => void;
+    onImageClick?: (event: any) => void;
+    onFavorite?: (event: any) => void;
+    onQuickView?: (event: any) => void;
 }
 /**
  * ProductCard - React adapter for snice-product-card

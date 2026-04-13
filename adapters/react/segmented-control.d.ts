@@ -7,6 +7,7 @@ export interface SegmentedControlProps extends SniceBaseProps {
     options?: any;
     size?: any;
     disabled?: any;
+    onValueChange?: (event: any) => void;
 }
 /**
  * SegmentedControl - React adapter for snice-segmented-control

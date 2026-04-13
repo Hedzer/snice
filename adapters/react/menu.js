@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Menu = createReactAdapter({
     tagName: 'snice-menu',
     properties: ["open", "placement", "trigger", "closeOnSelect", "distance"],
-    events: {},
+    events: { "menu-open": "onMenuOpen", "menu-close": "onMenuClose" },
     formAssociated: false
 });
 //# sourceMappingURL=menu.js.map

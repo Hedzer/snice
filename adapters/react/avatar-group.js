@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const AvatarGroup = createReactAdapter({
     tagName: 'snice-avatar-group',
     properties: ["avatars", "max", "size", "overlap"],
-    events: {},
+    events: { "avatar-click": "onAvatarClick", "overflow-click": "onOverflowClick" },
     formAssociated: false
 });
 //# sourceMappingURL=avatar-group.js.map

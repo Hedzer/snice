@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Banner = createReactAdapter({
     tagName: 'snice-banner',
     properties: ["variant", "position", "message", "dismissible", "icon", "actionText", "open"],
-    events: {},
+    events: { "banner-open": "onBannerOpen", "banner-close": "onBannerClose", "banner-action": "onBannerAction" },
     formAssociated: false
 });
 //# sourceMappingURL=banner.js.map

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const AppTiles = createReactAdapter({
     tagName: 'snice-app-tiles',
     properties: ["tiles", "columns", "size", "variant"],
-    events: {},
+    events: { "tile-click": "onTileClick" },
     formAssociated: false
 });
 //# sourceMappingURL=app-tiles.js.map

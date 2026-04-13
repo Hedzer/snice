@@ -13,6 +13,13 @@ export interface CodeBlockProps extends SniceBaseProps {
     fetchMode?: any;
     format?: any;
     theme?: any;
+    onCodeCopy?: (event: any) => void;
+    onCodeBeforeHighlight?: (event: any) => void;
+    onCodeAfterHighlight?: (event: any) => void;
+    onCodeBeforeFormat?: (event: any) => void;
+    onCodeAfterFormat?: (event: any) => void;
+    onGrammarRequest?: (event: any) => void;
+    onGrammarLoaded?: (event: any) => void;
 }
 /**
  * CodeBlock - React adapter for snice-code-block

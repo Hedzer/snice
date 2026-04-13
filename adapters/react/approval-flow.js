@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const ApprovalFlow = createReactAdapter({
     tagName: 'snice-approval-flow',
     properties: ["steps", "orientation", "currentStep"],
-    events: {},
+    events: { "step-approve": "onStepApprove", "step-reject": "onStepReject", "step-comment": "onStepComment" },
     formAssociated: false
 });
 //# sourceMappingURL=approval-flow.js.map

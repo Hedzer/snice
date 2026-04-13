@@ -9,6 +9,7 @@ export interface EmptyStateProps extends SniceBaseProps {
     description?: any;
     actionText?: any;
     actionHref?: any;
+    onEmptyStateAction?: (event: any) => void;
 }
 /**
  * EmptyState - React adapter for snice-empty-state

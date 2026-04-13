@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Availability = createReactAdapter({
     tagName: 'snice-availability',
     properties: ["value", "granularity", "startHour", "endHour", "format", "readonly"],
-    events: {},
+    events: { "availability-change": "onAvailabilityChange" },
     formAssociated: false
 });
 //# sourceMappingURL=availability.js.map

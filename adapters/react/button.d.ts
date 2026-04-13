@@ -16,6 +16,7 @@ export interface ButtonProps extends SniceBaseProps {
     download?: any;
     icon?: any;
     iconPlacement?: any;
+    onButtonClick?: (event: any) => void;
 }
 /**
  * Button - React adapter for snice-button

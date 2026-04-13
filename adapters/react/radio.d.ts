@@ -14,6 +14,7 @@ export interface RadioProps extends SniceBaseProps {
     value?: any;
     label?: any;
     description?: any;
+    onRadioChange?: (event: any) => void;
 }
 /**
  * Radio - React adapter for snice-radio

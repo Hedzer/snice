@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Breadcrumbs = createReactAdapter({
     tagName: 'snice-breadcrumbs',
     properties: ["items", "separator", "size", "maxItems", "collapsed", "renderTrigger"],
-    events: {},
+    events: { "breadcrumb-click": "onBreadcrumbClick" },
     formAssociated: false
 });
 //# sourceMappingURL=breadcrumbs.js.map

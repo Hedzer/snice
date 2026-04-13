@@ -7,6 +7,7 @@ export interface LeaderboardProps extends SniceBaseProps {
     size?: any;
     title?: any;
     entries?: any;
+    onEntryClick?: (event: any) => void;
 }
 /**
  * Leaderboard - React adapter for snice-leaderboard

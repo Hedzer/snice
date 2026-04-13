@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Select = createReactAdapter({
     tagName: 'snice-select',
     properties: ["disabled", "required", "invalid", "readonly", "loading", "multiple", "searchable", "clearable", "allowFreeText", "editable", "remote", "searchDebounce", "open", "size", "name", "value", "label", "placeholder", "maxHeight", "options"],
-    events: {},
+    events: { "select-change": "onSelectChange", "select-open": "onSelectOpen", "select-close": "onSelectClose" },
     formAssociated: false
 });
 //# sourceMappingURL=select.js.map

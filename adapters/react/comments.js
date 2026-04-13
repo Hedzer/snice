@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Comments = createReactAdapter({
     tagName: 'snice-comments',
     properties: ["comments", "currentUser", "allowReplies", "allowLikes", "maxDepth"],
-    events: {},
+    events: { "comment-add": "onCommentAdd", "comment-reply": "onCommentReply", "comment-delete": "onCommentDelete", "comment-like": "onCommentLike" },
     formAssociated: false
 });
 //# sourceMappingURL=comments.js.map

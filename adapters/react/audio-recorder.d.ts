@@ -16,6 +16,12 @@ export interface AudioRecorderProps extends SniceBaseProps {
     recordedUrl?: any;
     isPlaying?: any;
     playbackTime?: any;
+    onRecorderStart?: (event: any) => void;
+    onRecorderError?: (event: any) => void;
+    onRecorderPause?: (event: any) => void;
+    onRecorderResume?: (event: any) => void;
+    onRecorderCancel?: (event: any) => void;
+    onRecorderStop?: (event: any) => void;
 }
 /**
  * AudioRecorder - React adapter for snice-audio-recorder

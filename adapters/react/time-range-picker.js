@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const TimeRangePicker = createReactAdapter({
     tagName: 'snice-time-range-picker',
     properties: ["granularity", "startTime", "endTime", "value", "disabledRanges", "format", "multiple", "readonly", "disabled"],
-    events: {},
+    events: { "time-range-change": "onTimeRangeChange", "time-range-select": "onTimeRangeSelect", "time-range-complete": "onTimeRangeComplete" },
     formAssociated: false
 });
 //# sourceMappingURL=time-range-picker.js.map

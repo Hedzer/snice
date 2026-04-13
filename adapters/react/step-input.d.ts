@@ -11,6 +11,7 @@ export interface StepInputProps extends SniceBaseProps {
     readonly?: any;
     size?: any;
     wrap?: any;
+    onValueChange?: (event: any) => void;
 }
 /**
  * StepInput - React adapter for snice-step-input

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Tabs = createReactAdapter({
     tagName: 'snice-tabs',
     properties: ["placement", "selected", "noScrollControls", "transition"],
-    events: {},
+    events: { "tab-change": "onTabChange" },
     formAssociated: false
 });
 //# sourceMappingURL=tabs.js.map

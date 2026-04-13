@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const MessageStrip = createReactAdapter({
     tagName: 'snice-message-strip',
     properties: ["variant", "dismissable", "icon"],
-    events: {},
+    events: { "dismiss": "onDismiss" },
     formAssociated: false
 });
 //# sourceMappingURL=message-strip.js.map

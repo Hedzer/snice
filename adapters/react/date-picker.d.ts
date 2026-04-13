@@ -22,6 +22,14 @@ export interface DatePickerProps extends SniceBaseProps {
     name?: any;
     showCalendar?: any;
     firstDayOfWeek?: any;
+    onDatepickerInput?: (event: any) => void;
+    onDatepickerChange?: (event: any) => void;
+    onDatepickerFocus?: (event: any) => void;
+    onDatepickerBlur?: (event: any) => void;
+    onDatepickerOpen?: (event: any) => void;
+    onDatepickerClose?: (event: any) => void;
+    onDatepickerClear?: (event: any) => void;
+    onDatepickerSelect?: (event: any) => void;
 }
 /**
  * DatePicker - React adapter for snice-date-picker

@@ -14,6 +14,9 @@ export interface BinpackProps extends SniceBaseProps {
     resize?: any;
     draggable?: any;
     dragThrottle?: any;
+    onBinpackLayoutComplete?: (event: any) => void;
+    onBinpackFitComplete?: (event: any) => void;
+    onBinpackDragItemPositioned?: (event: any) => void;
 }
 /**
  * Binpack - React adapter for snice-binpack

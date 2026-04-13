@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Sortable = createReactAdapter({
     tagName: 'snice-sortable',
     properties: ["direction", "handle", "disabled", "group"],
-    events: {},
+    events: { "sort-start": "onSortStart", "sort-end": "onSortEnd", "sort-change": "onSortChange" },
     formAssociated: false
 });
 //# sourceMappingURL=sortable.js.map

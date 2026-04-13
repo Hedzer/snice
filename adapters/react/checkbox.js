@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Checkbox = createReactAdapter({
     tagName: 'snice-checkbox',
     properties: ["checked", "indeterminate", "disabled", "loading", "required", "invalid", "size", "name", "value", "label"],
-    events: {},
+    events: { "checkbox-change": "onCheckboxChange" },
     formAssociated: false
 });
 //# sourceMappingURL=checkbox.js.map

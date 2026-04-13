@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const SplitButton = createReactAdapter({
     tagName: 'snice-split-button',
     properties: ["label", "actions", "variant", "size", "disabled", "loading", "outline", "pill", "icon", "iconPlacement"],
-    events: {},
+    events: { "primary-click": "onPrimaryClick", "action-click": "onActionClick" },
     formAssociated: false
 });
 //# sourceMappingURL=split-button.js.map

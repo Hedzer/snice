@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Treemap = createReactAdapter({
     tagName: 'snice-treemap',
     properties: ["data", "showLabels", "showValues", "colorScheme", "padding", "animation"],
-    events: {},
+    events: { "treemap-click": "onTreemapClick", "treemap-hover": "onTreemapHover", "treemap-drill": "onTreemapDrill" },
     formAssociated: false
 });
 //# sourceMappingURL=treemap.js.map

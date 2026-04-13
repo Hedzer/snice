@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Draw = createReactAdapter({
     tagName: 'snice-draw',
     properties: ["width", "height", "tool", "color", "strokeWidth", "backgroundColor", "lazy", "lazyRadius", "friction", "smoothing", "autoPolygon", "polygonCurvePoints", "autoCircle", "circlePoints", "disabled"],
-    events: {},
+    events: { "draw-start": "onDrawStart", "draw-end": "onDrawEnd", "draw-clear": "onDrawClear", "draw-undo": "onDrawUndo", "draw-redo": "onDrawRedo" },
     formAssociated: false
 });
 //# sourceMappingURL=draw.js.map

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const SegmentedControl = createReactAdapter({
     tagName: 'snice-segmented-control',
     properties: ["value", "options", "size", "disabled"],
-    events: {},
+    events: { "value-change": "onValueChange" },
     formAssociated: false
 });
 //# sourceMappingURL=segmented-control.js.map

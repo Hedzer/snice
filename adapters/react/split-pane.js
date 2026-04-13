@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const SplitPane = createReactAdapter({
     tagName: 'snice-split-pane',
     properties: ["direction", "primarySize", "minPrimarySize", "minSecondarySize", "snapSize", "disabled"],
-    events: {},
+    events: { "pane-resize": "onPaneResize" },
     formAssociated: false
 });
 //# sourceMappingURL=split-pane.js.map

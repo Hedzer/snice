@@ -6,6 +6,8 @@ export interface DataCardProps extends SniceBaseProps {
     fields?: any;
     editable?: any;
     variant?: any;
+    onFieldChange?: (event: any) => void;
+    onFieldSave?: (event: any) => void;
 }
 /**
  * DataCard - React adapter for snice-data-card

@@ -9,6 +9,10 @@ export interface MapProps extends SniceBaseProps {
     maxZoom?: any;
     markers?: any;
     tileUrl?: any;
+    onMapClick?: (event: any) => void;
+    onMarkerClick?: (event: any) => void;
+    onMapMove?: (event: any) => void;
+    onMapZoom?: (event: any) => void;
 }
 /**
  * Map - React adapter for snice-map

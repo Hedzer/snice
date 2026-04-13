@@ -23,6 +23,9 @@ export interface SelectProps extends SniceBaseProps {
     placeholder?: any;
     maxHeight?: any;
     options?: any;
+    onSelectChange?: (event: any) => void;
+    onSelectOpen?: (event: any) => void;
+    onSelectClose?: (event: any) => void;
 }
 /**
  * Select - React adapter for snice-select

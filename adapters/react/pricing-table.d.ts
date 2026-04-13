@@ -6,6 +6,7 @@ export interface PricingTableProps extends SniceBaseProps {
     plans?: any;
     variant?: any;
     annual?: any;
+    onPlanSelect?: (event: any) => void;
 }
 /**
  * PricingTable - React adapter for snice-pricing-table

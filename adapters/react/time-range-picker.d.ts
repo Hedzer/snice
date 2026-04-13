@@ -12,6 +12,9 @@ export interface TimeRangePickerProps extends SniceBaseProps {
     multiple?: any;
     readonly?: any;
     disabled?: any;
+    onTimeRangeChange?: (event: any) => void;
+    onTimeRangeSelect?: (event: any) => void;
+    onTimeRangeComplete?: (event: any) => void;
 }
 /**
  * TimeRangePicker - React adapter for snice-time-range-picker

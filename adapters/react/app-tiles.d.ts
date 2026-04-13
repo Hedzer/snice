@@ -7,6 +7,7 @@ export interface AppTilesProps extends SniceBaseProps {
     columns?: any;
     size?: any;
     variant?: any;
+    onTileClick?: (event: any) => void;
 }
 /**
  * AppTiles - React adapter for snice-app-tiles

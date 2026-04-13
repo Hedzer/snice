@@ -18,6 +18,8 @@ export interface FileUploadProps extends SniceBaseProps {
     name?: any;
     dragDrop?: any;
     showPreview?: any;
+    onFileUploadChange?: (event: any) => void;
+    onFileUploadError?: (event: any) => void;
 }
 /**
  * FileUpload - React adapter for snice-file-upload

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const ActivityFeed = createReactAdapter({
     tagName: 'snice-activity-feed',
     properties: ["activities", "filter", "groupBy"],
-    events: {},
+    events: { "activity-click": "onActivityClick", "load-more": "onLoadMore" },
     formAssociated: false
 });
 //# sourceMappingURL=activity-feed.js.map

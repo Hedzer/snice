@@ -8,6 +8,8 @@ export interface MenuProps extends SniceBaseProps {
     trigger?: any;
     closeOnSelect?: any;
     distance?: any;
+    onMenuOpen?: (event: any) => void;
+    onMenuClose?: (event: any) => void;
 }
 /**
  * Menu - React adapter for snice-menu

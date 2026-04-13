@@ -13,6 +13,9 @@ export interface CandlestickProps extends SniceBaseProps {
     yAxisFormat?: any;
     zoomEnabled?: any;
     animation?: any;
+    onCandleClick?: (event: any) => void;
+    onCandleHover?: (event: any) => void;
+    onCrosshairMove?: (event: any) => void;
 }
 /**
  * Candlestick - React adapter for snice-candlestick

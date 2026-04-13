@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Tag = createReactAdapter({
     tagName: 'snice-tag',
     properties: ["variant", "size", "removable", "outline", "pill"],
-    events: {},
+    events: { "tag-remove": "onTagRemove" },
     formAssociated: false
 });
 //# sourceMappingURL=tag.js.map

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Textarea = createReactAdapter({
     tagName: 'snice-textarea',
     properties: ["size", "variant", "resize", "value", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "rows", "cols", "maxlength", "minlength", "autocomplete", "name", "autoGrow"],
-    events: {},
+    events: { "textarea-input": "onTextareaInput", "textarea-change": "onTextareaChange", "textarea-focus": "onTextareaFocus", "textarea-blur": "onTextareaBlur" },
     formAssociated: false
 });
 //# sourceMappingURL=textarea.js.map

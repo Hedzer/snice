@@ -6,6 +6,7 @@ export interface MessageStripProps extends SniceBaseProps {
     variant?: any;
     dismissable?: any;
     icon?: any;
+    onDismiss?: (event: any) => void;
 }
 /**
  * MessageStrip - React adapter for snice-message-strip

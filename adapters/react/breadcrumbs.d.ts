@@ -9,6 +9,7 @@ export interface BreadcrumbsProps extends SniceBaseProps {
     maxItems?: any;
     collapsed?: any;
     renderTrigger?: any;
+    onBreadcrumbClick?: (event: any) => void;
 }
 /**
  * Breadcrumbs - React adapter for snice-breadcrumbs

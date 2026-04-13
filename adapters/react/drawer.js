@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Drawer = createReactAdapter({
     tagName: 'snice-drawer',
     properties: ["open", "position", "size", "inline", "breakpoint", "noBackdrop", "noBackdropDismiss", "noEscapeDismiss", "noFocusTrap", "persistent", "pushContent", "contained", "noHeader", "noFooter"],
-    events: {},
+    events: { "drawer-open": "onDrawerOpen", "drawer-close": "onDrawerClose" },
     formAssociated: false
 });
 //# sourceMappingURL=drawer.js.map

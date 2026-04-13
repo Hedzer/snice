@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Recipe = createReactAdapter({
     tagName: 'snice-recipe',
     properties: ["title", "description", "image", "author", "prepTime", "cookTime", "servings", "difficulty", "cuisine", "variant", "ingredients", "steps", "nutrition", "tags", "currentServings", "checkedIngredients", "completedSteps", "activeStep", "timerVersion"],
-    events: {},
+    events: { "recipe-serving-change": "onRecipeServingChange", "recipe-step-complete": "onRecipeStepComplete", "recipe-ingredient-check": "onRecipeIngredientCheck" },
     formAssociated: false
 });
 //# sourceMappingURL=recipe.js.map

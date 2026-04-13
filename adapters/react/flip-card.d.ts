@@ -7,6 +7,7 @@ export interface FlipCardProps extends SniceBaseProps {
     clickToFlip?: any;
     direction?: any;
     duration?: any;
+    onFlipChange?: (event: any) => void;
 }
 /**
  * FlipCard - React adapter for snice-flip-card

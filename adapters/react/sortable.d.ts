@@ -7,6 +7,9 @@ export interface SortableProps extends SniceBaseProps {
     handle?: any;
     disabled?: any;
     group?: any;
+    onSortStart?: (event: any) => void;
+    onSortEnd?: (event: any) => void;
+    onSortChange?: (event: any) => void;
 }
 /**
  * Sortable - React adapter for snice-sortable

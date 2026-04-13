@@ -12,6 +12,10 @@ export interface CameraProps extends SniceBaseProps {
     height?: any;
     aspectRatio?: any;
     objectFit?: any;
+    onCameraStart?: (event: any) => void;
+    onCameraError?: (event: any) => void;
+    onCameraStop?: (event: any) => void;
+    onCameraCapture?: (event: any) => void;
 }
 /**
  * Camera - React adapter for snice-camera

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Location = createReactAdapter({
     tagName: 'snice-location',
     properties: ["mode", "name", "address", "city", "state", "country", "zipCode", "latitude", "longitude", "showMap", "showIcon", "icon", "iconImage", "mapUrl", "clickable"],
-    events: {},
+    events: { "location-click": "onLocationClick" },
     formAssociated: false
 });
 //# sourceMappingURL=location.js.map

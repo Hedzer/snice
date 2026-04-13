@@ -11,6 +11,7 @@ export interface LinkPreviewProps extends SniceBaseProps {
     favicon?: any;
     variant?: any;
     size?: any;
+    onLinkClick?: (event: any) => void;
 }
 /**
  * LinkPreview - React adapter for snice-link-preview

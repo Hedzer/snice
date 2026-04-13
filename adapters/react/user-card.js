@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const UserCard = createReactAdapter({
     tagName: 'snice-user-card',
     properties: ["name", "avatar", "role", "company", "email", "phone", "location", "social", "status", "variant"],
-    events: {},
+    events: { "social-click": "onSocialClick", "action-click": "onActionClick" },
     formAssociated: false
 });
 //# sourceMappingURL=user-card.js.map

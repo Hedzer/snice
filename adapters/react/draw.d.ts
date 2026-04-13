@@ -18,6 +18,11 @@ export interface DrawProps extends SniceBaseProps {
     autoCircle?: any;
     circlePoints?: any;
     disabled?: any;
+    onDrawStart?: (event: any) => void;
+    onDrawEnd?: (event: any) => void;
+    onDrawClear?: (event: any) => void;
+    onDrawUndo?: (event: any) => void;
+    onDrawRedo?: (event: any) => void;
 }
 /**
  * Draw - React adapter for snice-draw

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const FileUpload = createReactAdapter({
     tagName: 'snice-file-upload',
     properties: ["size", "variant", "accept", "multiple", "disabled", "required", "invalid", "label", "helperText", "errorText", "maxSize", "maxFiles", "name", "dragDrop", "showPreview"],
-    events: {},
+    events: { "file-upload-change": "onFileUploadChange", "file-upload-error": "onFileUploadError" },
     formAssociated: false
 });
 //# sourceMappingURL=file-upload.js.map

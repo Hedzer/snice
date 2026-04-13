@@ -17,6 +17,10 @@ export interface ColorPickerProps extends SniceBaseProps {
     showInput?: any;
     showPresets?: any;
     presets?: any;
+    onColorPickerInput?: (event: any) => void;
+    onColorPickerChange?: (event: any) => void;
+    onColorPickerFocus?: (event: any) => void;
+    onColorPickerBlur?: (event: any) => void;
 }
 /**
  * ColorPicker - React adapter for snice-color-picker

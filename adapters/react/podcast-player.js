@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const PodcastPlayer = createReactAdapter({
     tagName: 'snice-podcast-player',
     properties: ["src", "fromRss", "title", "show", "artwork", "description", "playbackRate", "skipForward", "skipBack", "currentTime", "duration", "volume", "muted", "episodes", "currentEpisodeIndex", "sleepTimer"],
-    events: {},
+    events: { "podcast-play": "onPodcastPlay", "podcast-pause": "onPodcastPause", "podcast-ended": "onPodcastEnded", "podcast-time-update": "onPodcastTimeUpdate", "podcast-rate-change": "onPodcastRateChange", "podcast-episode-change": "onPodcastEpisodeChange", "podcast-feed-loaded": "onPodcastFeedLoaded" },
     formAssociated: false
 });
 //# sourceMappingURL=podcast-player.js.map

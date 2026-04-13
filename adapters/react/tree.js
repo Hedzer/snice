@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Tree = createReactAdapter({
     tagName: 'snice-tree',
     properties: ["selectable", "selectionMode", "showCheckboxes", "showIcons", "expandOnClick", "nodes", "selectedNodes", "checkedNodes"],
-    events: {},
+    events: { "tree-node-expand": "onTreeNodeExpand", "tree-node-collapse": "onTreeNodeCollapse", "tree-node-select": "onTreeNodeSelect", "tree-node-check": "onTreeNodeCheck", "tree-node-lazy-load": "onTreeNodeLazyLoad" },
     formAssociated: false
 });
 //# sourceMappingURL=tree.js.map

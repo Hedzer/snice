@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const AudioRecorder = createReactAdapter({
     tagName: 'snice-audio-recorder',
     properties: ["autoStart", "format", "bitrate", "showControls", "showVisualizer", "maxDuration", "showTimer", "showPlayback", "state", "errorMessage", "recordedUrl", "isPlaying", "playbackTime"],
-    events: {},
+    events: { "recorder-start": "onRecorderStart", "recorder-error": "onRecorderError", "recorder-pause": "onRecorderPause", "recorder-resume": "onRecorderResume", "recorder-cancel": "onRecorderCancel", "recorder-stop": "onRecorderStop" },
     formAssociated: false
 });
 //# sourceMappingURL=audio-recorder.js.map

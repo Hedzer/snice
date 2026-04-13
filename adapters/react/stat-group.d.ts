@@ -6,6 +6,7 @@ export interface StatGroupProps extends SniceBaseProps {
     stats?: any;
     columns?: any;
     variant?: any;
+    onStatClick?: (event: any) => void;
 }
 /**
  * StatGroup - React adapter for snice-stat-group

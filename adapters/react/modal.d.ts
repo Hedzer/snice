@@ -12,6 +12,8 @@ export interface ModalProps extends SniceBaseProps {
     noHeader?: any;
     noFooter?: any;
     label?: any;
+    onModalOpen?: (event: any) => void;
+    onModalClose?: (event: any) => void;
 }
 /**
  * Modal - React adapter for snice-modal

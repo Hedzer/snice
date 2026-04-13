@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Waterfall = createReactAdapter({
     tagName: 'snice-waterfall',
     properties: ["data", "orientation", "showValues", "showConnectors", "animated"],
-    events: {},
+    events: { "bar-click": "onBarClick", "bar-hover": "onBarHover" },
     formAssociated: false
 });
 //# sourceMappingURL=waterfall.js.map

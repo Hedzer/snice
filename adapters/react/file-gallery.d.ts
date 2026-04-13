@@ -23,6 +23,7 @@ export interface FileGalleryProps extends SniceBaseProps {
     onUploadError?: (event: any) => void;
     onUploadPause?: (event: any) => void;
     onGalleryError?: (event: any) => void;
+    onCustomActionClick?: (event: any) => void;
 }
 /**
  * FileGallery - React adapter for snice-file-gallery

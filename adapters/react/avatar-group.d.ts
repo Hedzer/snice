@@ -7,6 +7,8 @@ export interface AvatarGroupProps extends SniceBaseProps {
     max?: any;
     size?: any;
     overlap?: any;
+    onAvatarClick?: (event: any) => void;
+    onOverflowClick?: (event: any) => void;
 }
 /**
  * AvatarGroup - React adapter for snice-avatar-group

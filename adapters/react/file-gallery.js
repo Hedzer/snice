@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const FileGallery = createReactAdapter({
     tagName: 'snice-file-gallery',
     properties: ["accept", "multiple", "disabled", "maxSize", "maxFiles", "view", "showProgress", "allowPause", "allowDelete", "autoUpload", "showDropzone", "showAddButton", "showHeader"],
-    events: { "files-change": "onFilesChange", "file-remove": "onFileRemove", "upload-progress": "onUploadProgress", "upload-complete": "onUploadComplete", "upload-error": "onUploadError", "upload-pause": "onUploadPause", "gallery-error": "onGalleryError" },
+    events: { "files-change": "onFilesChange", "file-remove": "onFileRemove", "upload-progress": "onUploadProgress", "upload-complete": "onUploadComplete", "upload-error": "onUploadError", "upload-pause": "onUploadPause", "gallery-error": "onGalleryError", "custom-action-click": "onCustomActionClick" },
     formAssociated: false
 });
 //# sourceMappingURL=file-gallery.js.map

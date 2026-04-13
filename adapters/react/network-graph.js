@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const NetworkGraph = createReactAdapter({
     tagName: 'snice-network-graph',
     properties: ["data", "layout", "chargeStrength", "linkDistance", "zoomEnabled", "dragEnabled", "showLabels", "animation"],
-    events: {},
+    events: { "node-click": "onNodeClick", "edge-click": "onEdgeClick", "node-drag": "onNodeDrag", "graph-zoom": "onGraphZoom" },
     formAssociated: false
 });
 //# sourceMappingURL=network-graph.js.map

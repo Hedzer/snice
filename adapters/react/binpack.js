@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Binpack = createReactAdapter({
     tagName: 'snice-binpack',
     properties: ["gap", "columnWidth", "rowHeight", "horizontal", "originLeft", "originTop", "transitionDuration", "stagger", "resize", "draggable", "dragThrottle"],
-    events: {},
+    events: { "binpack-layout-complete": "onBinpackLayoutComplete", "binpack-fit-complete": "onBinpackFitComplete", "binpack-drag-item-positioned": "onBinpackDragItemPositioned" },
     formAssociated: false
 });
 //# sourceMappingURL=binpack.js.map

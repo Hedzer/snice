@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Candlestick = createReactAdapter({
     tagName: 'snice-candlestick',
     properties: ["data", "showVolume", "showGrid", "showCrosshair", "bullishColor", "bearishColor", "timeFormat", "yAxisFormat", "zoomEnabled", "animation"],
-    events: {},
+    events: { "candle-click": "onCandleClick", "candle-hover": "onCandleHover", "crosshair-move": "onCrosshairMove" },
     formAssociated: false
 });
 //# sourceMappingURL=candlestick.js.map

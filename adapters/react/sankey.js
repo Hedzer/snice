@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Sankey = createReactAdapter({
     tagName: 'snice-sankey',
     properties: ["data", "nodeWidth", "nodePadding", "alignment", "showLabels", "showValues", "animation"],
-    events: {},
+    events: { "sankey-node-click": "onSankeyNodeClick", "sankey-link-click": "onSankeyLinkClick", "sankey-hover": "onSankeyHover" },
     formAssociated: false
 });
 //# sourceMappingURL=sankey.js.map

@@ -23,6 +23,10 @@ export interface TextareaProps extends SniceBaseProps {
     autocomplete?: any;
     name?: any;
     autoGrow?: any;
+    onTextareaInput?: (event: any) => void;
+    onTextareaChange?: (event: any) => void;
+    onTextareaFocus?: (event: any) => void;
+    onTextareaBlur?: (event: any) => void;
 }
 /**
  * Textarea - React adapter for snice-textarea

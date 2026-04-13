@@ -7,6 +7,7 @@ import type { SniceBaseProps } from './types';
 export interface NotificationCenterProps extends SniceBaseProps {
   notifications?: any;
   open?: any;
+  placement?: any;
   icon?: any;
   onNotificationClick?: (event: any) => void;
   onNotificationDismiss?: (event: any) => void;
@@ -31,7 +32,7 @@ export interface NotificationCenterProps extends SniceBaseProps {
  */
 export const NotificationCenter = createReactAdapter<NotificationCenterProps>({
   tagName: 'snice-notification-center',
-  properties: ["notifications","open","icon"],
+  properties: ["notifications","open","placement","icon"],
   events: {"notification-click":"onNotificationClick","notification-dismiss":"onNotificationDismiss","notification-read-all":"onNotificationReadAll"},
   formAssociated: false
 });

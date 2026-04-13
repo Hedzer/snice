@@ -14,6 +14,7 @@ export interface HeatmapProps extends SniceBaseProps {
     tooltipX?: any;
     tooltipY?: any;
     tooltipVisible?: any;
+    onCellClick?: (event: any) => void;
 }
 /**
  * Heatmap - React adapter for snice-heatmap

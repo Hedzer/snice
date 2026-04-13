@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const CodeBlock = createReactAdapter({
     tagName: 'snice-code-block',
     properties: ["language", "showLineNumbers", "startLine", "highlightLines", "copyable", "filename", "grammar", "fetchMode", "format", "theme"],
-    events: {},
+    events: { "code-copy": "onCodeCopy", "code-before-highlight": "onCodeBeforeHighlight", "code-after-highlight": "onCodeAfterHighlight", "code-before-format": "onCodeBeforeFormat", "code-after-format": "onCodeAfterFormat", "grammar-request": "onGrammarRequest", "grammar-loaded": "onGrammarLoaded" },
     formAssociated: false
 });
 //# sourceMappingURL=code-block.js.map

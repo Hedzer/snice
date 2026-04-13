@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const OrderTracker = createReactAdapter({
     tagName: 'snice-order-tracker',
     properties: ["steps", "trackingNumber", "carrier", "variant"],
-    events: {},
+    events: { "step-click": "onStepClick" },
     formAssociated: false
 });
 //# sourceMappingURL=order-tracker.js.map

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Invoice = createReactAdapter({
     tagName: 'snice-invoice',
     properties: ["invoiceNumber", "date", "dueDate", "status", "currency", "taxRate", "discount", "from", "to", "items", "notes", "variant", "showQr", "qrData", "qrPosition"],
-    events: {},
+    events: { "invoice-item-change": "onInvoiceItemChange", "invoice-status-change": "onInvoiceStatusChange" },
     formAssociated: false
 });
 //# sourceMappingURL=invoice.js.map

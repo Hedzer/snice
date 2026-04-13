@@ -6,6 +6,8 @@ export interface KanbanProps extends SniceBaseProps {
     columns?: any;
     allowDragDrop?: any;
     showCardCount?: any;
+    onKanbanCardMove?: (event: any) => void;
+    onKanbanCardClick?: (event: any) => void;
 }
 /**
  * Kanban - React adapter for snice-kanban

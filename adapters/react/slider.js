@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Slider = createReactAdapter({
     tagName: 'snice-slider',
     properties: ["size", "variant", "value", "min", "max", "step", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "name", "showValue", "showTicks", "vertical"],
-    events: {},
+    events: { "slider-input": "onSliderInput", "slider-change": "onSliderChange" },
     formAssociated: false
 });
 //# sourceMappingURL=slider.js.map

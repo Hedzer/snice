@@ -10,6 +10,10 @@ export interface BookingProps extends SniceBaseProps {
     maxDate?: any;
     fields?: any;
     variant?: any;
+    onDateSelect?: (event: any) => void;
+    onSlotSelect?: (event: any) => void;
+    onBookingConfirm?: (event: any) => void;
+    onBookingCancel?: (event: any) => void;
 }
 /**
  * Booking - React adapter for snice-booking

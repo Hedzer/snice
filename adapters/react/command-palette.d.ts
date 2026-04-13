@@ -11,6 +11,11 @@ export interface CommandPaletteProps extends SniceBaseProps {
     showRecentCommands?: any;
     recentCommandsLimit?: any;
     caseSensitive?: any;
+    onCommandPaletteOpen?: (event: any) => void;
+    onCommandPaletteClose?: (event: any) => void;
+    onCommandSelect?: (event: any) => void;
+    onCommandExecute?: (event: any) => void;
+    onCommandSearch?: (event: any) => void;
 }
 /**
  * CommandPalette - React adapter for snice-command-palette

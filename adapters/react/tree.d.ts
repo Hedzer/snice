@@ -11,6 +11,11 @@ export interface TreeProps extends SniceBaseProps {
     nodes?: any;
     selectedNodes?: any;
     checkedNodes?: any;
+    onTreeNodeExpand?: (event: any) => void;
+    onTreeNodeCollapse?: (event: any) => void;
+    onTreeNodeSelect?: (event: any) => void;
+    onTreeNodeCheck?: (event: any) => void;
+    onTreeNodeLazyLoad?: (event: any) => void;
 }
 /**
  * Tree - React adapter for snice-tree

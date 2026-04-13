@@ -5,6 +5,8 @@ import type { SniceBaseProps } from './types';
 export interface AccordionProps extends SniceBaseProps {
     multiple?: any;
     variant?: any;
+    onAccordionOpen?: (event: any) => void;
+    onAccordionClose?: (event: any) => void;
 }
 /**
  * Accordion - React adapter for snice-accordion

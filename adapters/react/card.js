@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Card = createReactAdapter({
     tagName: 'snice-card',
     properties: ["variant", "size", "clickable", "selected", "disabled", "hasHeader", "hasFooter"],
-    events: {},
+    events: { "card-click": "onCardClick" },
     formAssociated: false
 });
 //# sourceMappingURL=card.js.map

@@ -22,6 +22,9 @@ export interface RecipeProps extends SniceBaseProps {
     completedSteps?: any;
     activeStep?: any;
     timerVersion?: any;
+    onRecipeServingChange?: (event: any) => void;
+    onRecipeStepComplete?: (event: any) => void;
+    onRecipeIngredientCheck?: (event: any) => void;
 }
 /**
  * Recipe - React adapter for snice-recipe

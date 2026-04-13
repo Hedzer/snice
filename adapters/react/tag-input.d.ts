@@ -12,6 +12,9 @@ export interface TagInputProps extends SniceBaseProps {
     readonly?: any;
     label?: any;
     name?: any;
+    onTagAdd?: (event: any) => void;
+    onTagRemove?: (event: any) => void;
+    onTagChange?: (event: any) => void;
 }
 /**
  * TagInput - React adapter for snice-tag-input

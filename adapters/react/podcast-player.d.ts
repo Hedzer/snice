@@ -19,6 +19,13 @@ export interface PodcastPlayerProps extends SniceBaseProps {
     episodes?: any;
     currentEpisodeIndex?: any;
     sleepTimer?: any;
+    onPodcastPlay?: (event: any) => void;
+    onPodcastPause?: (event: any) => void;
+    onPodcastEnded?: (event: any) => void;
+    onPodcastTimeUpdate?: (event: any) => void;
+    onPodcastRateChange?: (event: any) => void;
+    onPodcastEpisodeChange?: (event: any) => void;
+    onPodcastFeedLoaded?: (event: any) => void;
 }
 /**
  * PodcastPlayer - React adapter for snice-podcast-player

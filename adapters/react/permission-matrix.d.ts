@@ -7,6 +7,8 @@ export interface PermissionMatrixProps extends SniceBaseProps {
     permissions?: any;
     matrix?: any;
     readonly?: any;
+    onPermissionToggle?: (event: any) => void;
+    onMatrixChange?: (event: any) => void;
 }
 /**
  * PermissionMatrix - React adapter for snice-permission-matrix

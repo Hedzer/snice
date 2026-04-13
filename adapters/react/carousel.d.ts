@@ -13,6 +13,7 @@ export interface CarouselProps extends SniceBaseProps {
     slidesPerView?: any;
     spaceBetween?: any;
     slideCount?: any;
+    onCarouselSlideChange?: (event: any) => void;
 }
 /**
  * Carousel - React adapter for snice-carousel

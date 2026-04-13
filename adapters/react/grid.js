@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Grid = createReactAdapter({
     tagName: 'snice-grid',
     properties: ["gap", "columnWidth", "rowHeight", "columns", "rows", "originLeft", "originTop", "transitionDuration", "stagger", "resize", "draggable", "dragThrottle"],
-    events: {},
+    events: { "grid-layout-complete": "onGridLayoutComplete", "grid-drag-item-positioned": "onGridDragItemPositioned" },
     formAssociated: false
 });
 //# sourceMappingURL=grid.js.map

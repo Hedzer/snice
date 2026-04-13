@@ -11,6 +11,11 @@ export interface FlowProps extends SniceBaseProps {
     panEnabled?: any;
     minimap?: any;
     editable?: any;
+    onNodeDrag?: (event: any) => void;
+    onNodeSelect?: (event: any) => void;
+    onEdgeConnect?: (event: any) => void;
+    onEdgeDisconnect?: (event: any) => void;
+    onCanvasClick?: (event: any) => void;
 }
 /**
  * Flow - React adapter for snice-flow

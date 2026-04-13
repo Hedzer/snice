@@ -12,6 +12,7 @@ export interface RangeSliderProps extends SniceBaseProps {
     showTooltip?: any;
     showLabels?: any;
     orientation?: any;
+    onRangeChange?: (event: any) => void;
 }
 /**
  * RangeSlider - React adapter for snice-range-slider

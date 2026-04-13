@@ -23,6 +23,12 @@ export interface DateTimePickerProps extends SniceBaseProps {
     name?: any;
     variant?: any;
     showPanel?: any;
+    onDatetimepickerClear?: (event: any) => void;
+    onDatetimeChange?: (event: any) => void;
+    onDatetimepickerFocus?: (event: any) => void;
+    onDatetimepickerBlur?: (event: any) => void;
+    onDatetimepickerOpen?: (event: any) => void;
+    onDatetimepickerClose?: (event: any) => void;
 }
 /**
  * DateTimePicker - React adapter for snice-date-time-picker

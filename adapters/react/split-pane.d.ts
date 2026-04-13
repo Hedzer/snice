@@ -9,6 +9,7 @@ export interface SplitPaneProps extends SniceBaseProps {
     minSecondarySize?: any;
     snapSize?: any;
     disabled?: any;
+    onPaneResize?: (event: any) => void;
 }
 /**
  * SplitPane - React adapter for snice-split-pane

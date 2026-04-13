@@ -6,6 +6,8 @@ export interface ActivityFeedProps extends SniceBaseProps {
     activities?: any;
     filter?: any;
     groupBy?: any;
+    onActivityClick?: (event: any) => void;
+    onLoadMore?: (event: any) => void;
 }
 /**
  * ActivityFeed - React adapter for snice-activity-feed

@@ -18,6 +18,7 @@ export interface LocationProps extends SniceBaseProps {
     iconImage?: any;
     mapUrl?: any;
     clickable?: any;
+    onLocationClick?: (event: any) => void;
 }
 /**
  * Location - React adapter for snice-location

@@ -11,6 +11,12 @@ export interface PaintProps extends SniceBaseProps {
     backgroundColor?: any;
     colorSelects?: any;
     disabled?: any;
+    onColorSelect?: (event: any) => void;
+    onPaintStart?: (event: any) => void;
+    onPaintEnd?: (event: any) => void;
+    onPaintClear?: (event: any) => void;
+    onPaintUndo?: (event: any) => void;
+    onPaintRedo?: (event: any) => void;
 }
 /**
  * Paint - React adapter for snice-paint

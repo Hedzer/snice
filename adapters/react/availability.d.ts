@@ -9,6 +9,7 @@ export interface AvailabilityProps extends SniceBaseProps {
     endHour?: any;
     format?: any;
     readonly?: any;
+    onAvailabilityChange?: (event: any) => void;
 }
 /**
  * Availability - React adapter for snice-availability

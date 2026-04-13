@@ -10,6 +10,7 @@ export interface CardProps extends SniceBaseProps {
     disabled?: any;
     hasHeader?: any;
     hasFooter?: any;
+    onCardClick?: (event: any) => void;
 }
 /**
  * Card - React adapter for snice-card

@@ -7,6 +7,9 @@ export interface PdfViewerProps extends SniceBaseProps {
     page?: any;
     zoom?: any;
     fit?: any;
+    onPageChange?: (event: any) => void;
+    onPdfLoaded?: (event: any) => void;
+    onPdfError?: (event: any) => void;
 }
 /**
  * PdfViewer - React adapter for snice-pdf-viewer

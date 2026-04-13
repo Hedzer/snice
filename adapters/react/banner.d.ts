@@ -10,6 +10,9 @@ export interface BannerProps extends SniceBaseProps {
     icon?: any;
     actionText?: any;
     open?: any;
+    onBannerOpen?: (event: any) => void;
+    onBannerClose?: (event: any) => void;
+    onBannerAction?: (event: any) => void;
 }
 /**
  * Banner - React adapter for snice-banner

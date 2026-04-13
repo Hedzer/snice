@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Map = createReactAdapter({
     tagName: 'snice-map',
     properties: ["center", "zoom", "minZoom", "maxZoom", "markers", "tileUrl"],
-    events: {},
+    events: { "map-click": "onMapClick", "marker-click": "onMarkerClick", "map-move": "onMapMove", "map-zoom": "onMapZoom" },
     formAssociated: false
 });
 //# sourceMappingURL=map.js.map

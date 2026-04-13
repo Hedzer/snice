@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Accordion = createReactAdapter({
     tagName: 'snice-accordion',
     properties: ["multiple", "variant"],
-    events: {},
+    events: { "accordion-open": "onAccordionOpen", "accordion-close": "onAccordionClose" },
     formAssociated: false
 });
 //# sourceMappingURL=accordion.js.map

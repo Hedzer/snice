@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Timer = createReactAdapter({
     tagName: 'snice-timer',
     properties: ["mode", "initialTime", "running", "time"],
-    events: {},
+    events: { "timer-start": "onTimerStart", "timer-stop": "onTimerStop", "timer-reset": "onTimerReset", "timer-complete": "onTimerComplete" },
     formAssociated: false
 });
 //# sourceMappingURL=timer.js.map

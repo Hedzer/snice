@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const WorkOrder = createReactAdapter({
     tagName: 'snice-work-order',
     properties: ["woNumber", "date", "dueDate", "priority", "status", "customer", "description", "tasks", "parts", "asset", "laborRate", "notes", "variant", "showQr", "qrData", "qrPosition"],
-    events: {},
+    events: { "task-toggle": "onTaskToggle", "status-change": "onStatusChange", "wo-sign": "onWoSign" },
     formAssociated: false
 });
 //# sourceMappingURL=work-order.js.map

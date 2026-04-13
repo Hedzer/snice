@@ -6,6 +6,10 @@ export interface GanttProps extends SniceBaseProps {
     tasks?: any;
     zoom?: any;
     showDependencies?: any;
+    onTaskClick?: (event: any) => void;
+    onTaskResize?: (event: any) => void;
+    onTaskMove?: (event: any) => void;
+    onTaskLink?: (event: any) => void;
 }
 /**
  * Gantt - React adapter for snice-gantt

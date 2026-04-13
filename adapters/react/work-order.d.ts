@@ -19,6 +19,9 @@ export interface WorkOrderProps extends SniceBaseProps {
     showQr?: any;
     qrData?: any;
     qrPosition?: any;
+    onTaskToggle?: (event: any) => void;
+    onStatusChange?: (event: any) => void;
+    onWoSign?: (event: any) => void;
 }
 /**
  * WorkOrder - React adapter for snice-work-order

@@ -17,8 +17,8 @@ import { createReactAdapter } from './wrapper';
  */
 export const NotificationCenter = createReactAdapter({
     tagName: 'snice-notification-center',
-    properties: ["notifications", "open", "icon"],
-    events: {},
+    properties: ["notifications", "open", "placement", "icon"],
+    events: { "notification-click": "onNotificationClick", "notification-dismiss": "onNotificationDismiss", "notification-read-all": "onNotificationReadAll" },
     formAssociated: false
 });
 //# sourceMappingURL=notification-center.js.map

@@ -17,6 +17,8 @@ export interface DrawerProps extends SniceBaseProps {
     contained?: any;
     noHeader?: any;
     noFooter?: any;
+    onDrawerOpen?: (event: any) => void;
+    onDrawerClose?: (event: any) => void;
 }
 /**
  * Drawer - React adapter for snice-drawer

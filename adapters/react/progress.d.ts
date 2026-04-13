@@ -14,6 +14,7 @@ export interface ProgressProps extends SniceBaseProps {
     striped?: any;
     animated?: any;
     thickness?: any;
+    onProgressChange?: (event: any) => void;
 }
 /**
  * Progress - React adapter for snice-progress

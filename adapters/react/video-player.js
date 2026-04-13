@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const VideoPlayer = createReactAdapter({
     tagName: 'snice-video-player',
     properties: ["src", "poster", "autoplay", "muted", "loop", "controls", "playbackRate", "currentTime", "volume", "variant"],
-    events: {},
+    events: { "video-play": "onVideoPlay", "video-pause": "onVideoPause", "video-ended": "onVideoEnded", "video-time-update": "onVideoTimeUpdate", "video-fullscreen-change": "onVideoFullscreenChange", "video-volume-change": "onVideoVolumeChange" },
     formAssociated: false
 });
 //# sourceMappingURL=video-player.js.map

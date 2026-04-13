@@ -19,6 +19,9 @@ export interface EstimateProps extends SniceBaseProps {
     showQr?: any;
     qrData?: any;
     qrPosition?: any;
+    onEstimateAccept?: (event: any) => void;
+    onEstimateDecline?: (event: any) => void;
+    onItemToggle?: (event: any) => void;
 }
 /**
  * Estimate - React adapter for snice-estimate

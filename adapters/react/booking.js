@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Booking = createReactAdapter({
     tagName: 'snice-booking',
     properties: ["availableDates", "availableSlots", "duration", "minDate", "maxDate", "fields", "variant"],
-    events: {},
+    events: { "date-select": "onDateSelect", "slot-select": "onSlotSelect", "booking-confirm": "onBookingConfirm", "booking-cancel": "onBookingCancel" },
     formAssociated: false
 });
 //# sourceMappingURL=booking.js.map

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const MetricTable = createReactAdapter({
     tagName: 'snice-metric-table',
     properties: ["columns", "data", "sortBy", "sortDirection"],
-    events: {},
+    events: { "sort-change": "onSortChange", "row-click": "onRowClick" },
     formAssociated: false
 });
 //# sourceMappingURL=metric-table.js.map

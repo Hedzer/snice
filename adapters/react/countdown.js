@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Countdown = createReactAdapter({
     tagName: 'snice-countdown',
     properties: ["target", "format", "variant", "days", "hours", "minutes", "seconds"],
-    events: {},
+    events: { "countdown-complete": "onCountdownComplete", "countdown-tick": "onCountdownTick" },
     formAssociated: false
 });
 //# sourceMappingURL=countdown.js.map

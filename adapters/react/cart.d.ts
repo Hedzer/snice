@@ -9,6 +9,11 @@ export interface CartProps extends SniceBaseProps {
     discount?: any;
     couponCode?: any;
     couponInput?: any;
+    onItemAdd?: (event: any) => void;
+    onItemRemove?: (event: any) => void;
+    onQuantityChange?: (event: any) => void;
+    onCouponApply?: (event: any) => void;
+    onCheckout?: (event: any) => void;
 }
 /**
  * Cart - React adapter for snice-cart

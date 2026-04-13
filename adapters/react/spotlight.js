@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Spotlight = createReactAdapter({
     tagName: 'snice-spotlight',
     properties: ["steps", "currentIndex", "active"],
-    events: {},
+    events: { "spotlight-start": "onSpotlightStart", "spotlight-step": "onSpotlightStep", "spotlight-end": "onSpotlightEnd", "spotlight-skip": "onSpotlightSkip" },
     formAssociated: false
 });
 //# sourceMappingURL=spotlight.js.map

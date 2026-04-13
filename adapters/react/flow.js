@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Flow = createReactAdapter({
     tagName: 'snice-flow',
     properties: ["nodes", "edges", "snapToGrid", "gridSize", "zoomEnabled", "panEnabled", "minimap", "editable"],
-    events: {},
+    events: { "node-drag": "onNodeDrag", "node-select": "onNodeSelect", "edge-connect": "onEdgeConnect", "edge-disconnect": "onEdgeDisconnect", "canvas-click": "onCanvasClick" },
     formAssociated: false
 });
 //# sourceMappingURL=flow.js.map

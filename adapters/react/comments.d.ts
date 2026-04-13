@@ -8,6 +8,10 @@ export interface CommentsProps extends SniceBaseProps {
     allowReplies?: any;
     allowLikes?: any;
     maxDepth?: any;
+    onCommentAdd?: (event: any) => void;
+    onCommentReply?: (event: any) => void;
+    onCommentDelete?: (event: any) => void;
+    onCommentLike?: (event: any) => void;
 }
 /**
  * Comments - React adapter for snice-comments

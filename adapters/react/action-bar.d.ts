@@ -9,6 +9,8 @@ export interface ActionBarProps extends SniceBaseProps {
     variant?: any;
     noAnimation?: any;
     noEscapeDismiss?: any;
+    onActionBarOpen?: (event: any) => void;
+    onActionBarClose?: (event: any) => void;
 }
 /**
  * ActionBar - React adapter for snice-action-bar

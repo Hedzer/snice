@@ -13,6 +13,7 @@ export interface CheckboxProps extends SniceBaseProps {
     name?: any;
     value?: any;
     label?: any;
+    onCheckboxChange?: (event: any) => void;
 }
 /**
  * Checkbox - React adapter for snice-checkbox

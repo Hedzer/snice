@@ -8,6 +8,7 @@ export interface TagProps extends SniceBaseProps {
     removable?: any;
     outline?: any;
     pill?: any;
+    onTagRemove?: (event: any) => void;
 }
 /**
  * Tag - React adapter for snice-tag

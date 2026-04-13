@@ -10,6 +10,7 @@ export interface ProgressRingProps extends SniceBaseProps {
     color?: any;
     showValue?: any;
     label?: any;
+    onProgressComplete?: (event: any) => void;
 }
 /**
  * ProgressRing - React adapter for snice-progress-ring

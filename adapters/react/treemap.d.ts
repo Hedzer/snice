@@ -9,6 +9,9 @@ export interface TreemapProps extends SniceBaseProps {
     colorScheme?: any;
     padding?: any;
     animation?: any;
+    onTreemapClick?: (event: any) => void;
+    onTreemapHover?: (event: any) => void;
+    onTreemapDrill?: (event: any) => void;
 }
 /**
  * Treemap - React adapter for snice-treemap

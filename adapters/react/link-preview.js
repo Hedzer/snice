@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const LinkPreview = createReactAdapter({
     tagName: 'snice-link-preview',
     properties: ["url", "title", "description", "image", "siteName", "favicon", "variant", "size"],
-    events: {},
+    events: { "link-click": "onLinkClick" },
     formAssociated: false
 });
 //# sourceMappingURL=link-preview.js.map

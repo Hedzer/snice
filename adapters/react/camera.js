@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Camera = createReactAdapter({
     tagName: 'snice-camera',
     properties: ["autoStart", "facingMode", "mirror", "controlsPosition", "showControls", "width", "height", "aspectRatio", "objectFit"],
-    events: {},
+    events: { "camera-start": "onCameraStart", "camera-error": "onCameraError", "camera-stop": "onCameraStop", "camera-capture": "onCameraCapture" },
     formAssociated: false
 });
 //# sourceMappingURL=camera.js.map

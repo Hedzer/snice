@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const PermissionMatrix = createReactAdapter({
     tagName: 'snice-permission-matrix',
     properties: ["roles", "permissions", "matrix", "readonly"],
-    events: {},
+    events: { "permission-toggle": "onPermissionToggle", "matrix-change": "onMatrixChange" },
     formAssociated: false
 });
 //# sourceMappingURL=permission-matrix.js.map

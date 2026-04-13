@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Pagination = createReactAdapter({
     tagName: 'snice-pagination',
     properties: ["current", "total", "siblings", "showFirst", "showLast", "showPrev", "showNext", "size", "variant"],
-    events: {},
+    events: { "pagination-change": "onPaginationChange" },
     formAssociated: false
 });
 //# sourceMappingURL=pagination.js.map

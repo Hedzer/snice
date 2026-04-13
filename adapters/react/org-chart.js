@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const OrgChart = createReactAdapter({
     tagName: 'snice-org-chart',
     properties: ["data", "direction", "compact", "renderVersion"],
-    events: {},
+    events: { "node-click": "onNodeClick", "node-expand": "onNodeExpand", "node-collapse": "onNodeCollapse" },
     formAssociated: false
 });
 //# sourceMappingURL=org-chart.js.map

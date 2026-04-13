@@ -8,6 +8,8 @@ export interface CropperProps extends SniceBaseProps {
     minWidth?: any;
     minHeight?: any;
     outputType?: any;
+    onCropChange?: (event: any) => void;
+    onCropComplete?: (event: any) => void;
 }
 /**
  * Cropper - React adapter for snice-cropper

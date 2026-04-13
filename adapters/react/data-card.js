@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const DataCard = createReactAdapter({
     tagName: 'snice-data-card',
     properties: ["fields", "editable", "variant"],
-    events: {},
+    events: { "field-change": "onFieldChange", "field-save": "onFieldSave" },
     formAssociated: false
 });
 //# sourceMappingURL=data-card.js.map

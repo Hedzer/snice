@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Login = createReactAdapter({
     tagName: 'snice-login',
     properties: ["variant", "size", "title", "disabled", "loading", "showRememberMe", "showForgotPassword", "actionText", "alertMessage", "alertVariant"],
-    events: {},
+    events: { "login-attempt": "onLoginAttempt", "login-forgot-password": "onLoginForgotPassword", "login-success": "onLoginSuccess", "login-error": "onLoginError" },
     formAssociated: false
 });
 //# sourceMappingURL=login.js.map

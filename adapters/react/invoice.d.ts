@@ -18,6 +18,8 @@ export interface InvoiceProps extends SniceBaseProps {
     showQr?: any;
     qrData?: any;
     qrPosition?: any;
+    onInvoiceItemChange?: (event: any) => void;
+    onInvoiceStatusChange?: (event: any) => void;
 }
 /**
  * Invoice - React adapter for snice-invoice

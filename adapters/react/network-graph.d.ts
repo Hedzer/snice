@@ -11,6 +11,10 @@ export interface NetworkGraphProps extends SniceBaseProps {
     dragEnabled?: any;
     showLabels?: any;
     animation?: any;
+    onNodeClick?: (event: any) => void;
+    onEdgeClick?: (event: any) => void;
+    onNodeDrag?: (event: any) => void;
+    onGraphZoom?: (event: any) => void;
 }
 /**
  * NetworkGraph - React adapter for snice-network-graph

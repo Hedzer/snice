@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const ActionBar = createReactAdapter({
     tagName: 'snice-action-bar',
     properties: ["open", "position", "size", "variant", "noAnimation", "noEscapeDismiss"],
-    events: {},
+    events: { "action-bar-open": "onActionBarOpen", "action-bar-close": "onActionBarClose" },
     formAssociated: false
 });
 //# sourceMappingURL=action-bar.js.map

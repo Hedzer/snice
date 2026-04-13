@@ -15,6 +15,8 @@ export interface GridProps extends SniceBaseProps {
     resize?: any;
     draggable?: any;
     dragThrottle?: any;
+    onGridLayoutComplete?: (event: any) => void;
+    onGridDragItemPositioned?: (event: any) => void;
 }
 /**
  * Grid - React adapter for snice-grid

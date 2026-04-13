@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Rating = createReactAdapter({
     tagName: 'snice-rating',
     properties: ["value", "max", "icon", "size", "readonly", "precision"],
-    events: {},
+    events: { "rating-change": "onRatingChange" },
     formAssociated: false
 });
 //# sourceMappingURL=rating.js.map

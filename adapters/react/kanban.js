@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Kanban = createReactAdapter({
     tagName: 'snice-kanban',
     properties: ["columns", "allowDragDrop", "showCardCount"],
-    events: {},
+    events: { "kanban-card-move": "onKanbanCardMove", "kanban-card-click": "onKanbanCardClick" },
     formAssociated: false
 });
 //# sourceMappingURL=kanban.js.map

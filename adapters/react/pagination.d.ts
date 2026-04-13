@@ -12,6 +12,7 @@ export interface PaginationProps extends SniceBaseProps {
     showNext?: any;
     size?: any;
     variant?: any;
+    onPaginationChange?: (event: any) => void;
 }
 /**
  * Pagination - React adapter for snice-pagination

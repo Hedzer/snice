@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Markdown = createReactAdapter({
     tagName: 'snice-markdown',
     properties: ["sanitize", "theme", "renderedHtml"],
-    events: {},
+    events: { "markdown-render": "onMarkdownRender", "link-click": "onLinkClick" },
     formAssociated: false
 });
 //# sourceMappingURL=markdown.js.map

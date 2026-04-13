@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Cropper = createReactAdapter({
     tagName: 'snice-cropper',
     properties: ["src", "aspectRatio", "minWidth", "minHeight", "outputType"],
-    events: {},
+    events: { "crop-change": "onCropChange", "crop-complete": "onCropComplete" },
     formAssociated: false
 });
 //# sourceMappingURL=cropper.js.map

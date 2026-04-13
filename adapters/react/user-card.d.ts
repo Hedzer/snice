@@ -13,6 +13,8 @@ export interface UserCardProps extends SniceBaseProps {
     social?: any;
     status?: any;
     variant?: any;
+    onSocialClick?: (event: any) => void;
+    onActionClick?: (event: any) => void;
 }
 /**
  * UserCard - React adapter for snice-user-card

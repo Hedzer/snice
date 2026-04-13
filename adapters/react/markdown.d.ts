@@ -6,6 +6,8 @@ export interface MarkdownProps extends SniceBaseProps {
     sanitize?: any;
     theme?: any;
     renderedHtml?: any;
+    onMarkdownRender?: (event: any) => void;
+    onLinkClick?: (event: any) => void;
 }
 /**
  * Markdown - React adapter for snice-markdown

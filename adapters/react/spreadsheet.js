@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Spreadsheet = createReactAdapter({
     tagName: 'snice-spreadsheet',
     properties: ["data", "columns", "readonly"],
-    events: {},
+    events: { "cell-change": "onCellChange", "cell-select": "onCellSelect", "row-select": "onRowSelect", "column-sort": "onColumnSort" },
     formAssociated: false
 });
 //# sourceMappingURL=spreadsheet.js.map

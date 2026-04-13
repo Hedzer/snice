@@ -21,6 +21,8 @@ export interface SliderProps extends SniceBaseProps {
     showValue?: any;
     showTicks?: any;
     vertical?: any;
+    onSliderInput?: (event: any) => void;
+    onSliderChange?: (event: any) => void;
 }
 /**
  * Slider - React adapter for snice-slider

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Progress = createReactAdapter({
     tagName: 'snice-progress',
     properties: ["value", "max", "variant", "size", "color", "indeterminate", "showLabel", "label", "striped", "animated", "thickness"],
-    events: {},
+    events: { "progress-change": "onProgressChange" },
     formAssociated: false
 });
 //# sourceMappingURL=progress.js.map

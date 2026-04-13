@@ -37,6 +37,17 @@ export interface TableProps extends SniceBaseProps {
     lazyLoad?: any;
     lazyLoadThreshold?: any;
     selectedRows?: any;
+    onPageChange?: (event: any) => void;
+    onTableRowSelectionChanged?: (event: any) => void;
+    onTableSelectAllChanged?: (event: any) => void;
+    onSortChange?: (event: any) => void;
+    onFilterChange?: (event: any) => void;
+    onColumnVisibilityChange?: (event: any) => void;
+    onColumnPinChange?: (event: any) => void;
+    onColumnOrderChange?: (event: any) => void;
+    onDensityChange?: (event: any) => void;
+    onRowClicked?: (event: any) => void;
+    onLazyLoad?: (event: any) => void;
 }
 /**
  * Table - React adapter for snice-table

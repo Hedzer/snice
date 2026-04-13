@@ -10,6 +10,8 @@ export interface FunnelProps extends SniceBaseProps {
     showValues?: any;
     showPercentages?: any;
     animation?: any;
+    onFunnelClick?: (event: any) => void;
+    onFunnelHover?: (event: any) => void;
 }
 /**
  * Funnel - React adapter for snice-funnel

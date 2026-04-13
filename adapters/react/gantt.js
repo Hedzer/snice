@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Gantt = createReactAdapter({
     tagName: 'snice-gantt',
     properties: ["tasks", "zoom", "showDependencies"],
-    events: {},
+    events: { "task-click": "onTaskClick", "task-resize": "onTaskResize", "task-move": "onTaskMove", "task-link": "onTaskLink" },
     formAssociated: false
 });
 //# sourceMappingURL=gantt.js.map

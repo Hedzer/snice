@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Book = createReactAdapter({
     tagName: 'snice-book',
     properties: ["currentPage", "coverImage", "title", "author"],
-    events: {},
+    events: { "page-turn": "onPageTurn", "page-flip-start": "onPageFlipStart", "page-flip-end": "onPageFlipEnd" },
     formAssociated: false
 });
 //# sourceMappingURL=book.js.map

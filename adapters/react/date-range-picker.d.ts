@@ -25,6 +25,13 @@ export interface DateRangePickerProps extends SniceBaseProps {
     firstDayOfWeek?: any;
     presets?: any;
     showCalendar?: any;
+    onDaterangeChange?: (event: any) => void;
+    onDaterangeOpen?: (event: any) => void;
+    onDaterangeClose?: (event: any) => void;
+    onDaterangeClear?: (event: any) => void;
+    onDaterangePreset?: (event: any) => void;
+    onDaterangeFocus?: (event: any) => void;
+    onDaterangeBlur?: (event: any) => void;
 }
 /**
  * DateRangePicker - React adapter for snice-date-range-picker

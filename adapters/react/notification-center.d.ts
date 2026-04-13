@@ -5,7 +5,11 @@ import type { SniceBaseProps } from './types';
 export interface NotificationCenterProps extends SniceBaseProps {
     notifications?: any;
     open?: any;
+    placement?: any;
     icon?: any;
+    onNotificationClick?: (event: any) => void;
+    onNotificationDismiss?: (event: any) => void;
+    onNotificationReadAll?: (event: any) => void;
 }
 /**
  * NotificationCenter - React adapter for snice-notification-center

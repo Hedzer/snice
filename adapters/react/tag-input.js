@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const TagInput = createReactAdapter({
     tagName: 'snice-tag-input',
     properties: ["value", "suggestions", "maxTags", "allowDuplicates", "placeholder", "disabled", "readonly", "label", "name"],
-    events: {},
+    events: { "tag-add": "onTagAdd", "tag-remove": "onTagRemove", "tag-change": "onTagChange" },
     formAssociated: false
 });
 //# sourceMappingURL=tag-input.js.map

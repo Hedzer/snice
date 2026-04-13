@@ -9,6 +9,7 @@ export interface RatingProps extends SniceBaseProps {
     size?: any;
     readonly?: any;
     precision?: any;
+    onRatingChange?: (event: any) => void;
 }
 /**
  * Rating - React adapter for snice-rating

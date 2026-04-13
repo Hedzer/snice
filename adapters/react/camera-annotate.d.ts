@@ -6,6 +6,9 @@ export interface CameraAnnotateProps extends SniceBaseProps {
     mode?: any;
     autoRotateColors?: any;
     showLabelsPanel?: any;
+    onCapture?: (event: any) => void;
+    onAnnotate?: (event: any) => void;
+    onAnnotationChange?: (event: any) => void;
 }
 /**
  * CameraAnnotate - React adapter for snice-camera-annotate

@@ -10,6 +10,9 @@ export interface SankeyProps extends SniceBaseProps {
     showLabels?: any;
     showValues?: any;
     animation?: any;
+    onSankeyNodeClick?: (event: any) => void;
+    onSankeyLinkClick?: (event: any) => void;
+    onSankeyHover?: (event: any) => void;
 }
 /**
  * Sankey - React adapter for snice-sankey

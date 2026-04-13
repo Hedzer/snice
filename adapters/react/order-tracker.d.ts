@@ -7,6 +7,7 @@ export interface OrderTrackerProps extends SniceBaseProps {
     trackingNumber?: any;
     carrier?: any;
     variant?: any;
+    onStepClick?: (event: any) => void;
 }
 /**
  * OrderTracker - React adapter for snice-order-tracker

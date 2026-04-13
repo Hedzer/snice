@@ -14,6 +14,7 @@ export interface SwitchProps extends SniceBaseProps {
     label?: any;
     labelOn?: any;
     labelOff?: any;
+    onSwitchChange?: (event: any) => void;
 }
 /**
  * Switch - React adapter for snice-switch

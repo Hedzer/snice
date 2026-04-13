@@ -31,6 +31,11 @@ export interface InputProps extends SniceBaseProps {
     stretch?: any;
     prefixIcon?: any;
     suffixIcon?: any;
+    onInputInput?: (event: any) => void;
+    onInputChange?: (event: any) => void;
+    onInputFocus?: (event: any) => void;
+    onInputBlur?: (event: any) => void;
+    onInputClear?: (event: any) => void;
 }
 /**
  * Input - React adapter for snice-input

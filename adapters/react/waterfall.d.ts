@@ -8,6 +8,8 @@ export interface WaterfallProps extends SniceBaseProps {
     showValues?: any;
     showConnectors?: any;
     animated?: any;
+    onBarClick?: (event: any) => void;
+    onBarHover?: (event: any) => void;
 }
 /**
  * Waterfall - React adapter for snice-waterfall

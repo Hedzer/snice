@@ -7,6 +7,10 @@ export interface TimerProps extends SniceBaseProps {
     initialTime?: any;
     running?: any;
     time?: any;
+    onTimerStart?: (event: any) => void;
+    onTimerStop?: (event: any) => void;
+    onTimerReset?: (event: any) => void;
+    onTimerComplete?: (event: any) => void;
 }
 /**
  * Timer - React adapter for snice-timer

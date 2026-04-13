@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const StatGroup = createReactAdapter({
     tagName: 'snice-stat-group',
     properties: ["stats", "columns", "variant"],
-    events: {},
+    events: { "stat-click": "onStatClick" },
     formAssociated: false
 });
 //# sourceMappingURL=stat-group.js.map

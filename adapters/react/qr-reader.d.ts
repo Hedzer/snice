@@ -13,6 +13,10 @@ export interface QrReaderProps extends SniceBaseProps {
     lastScan?: any;
     errorMessage?: any;
     showSnapshot?: any;
+    onQrScan?: (event: any) => void;
+    onQrError?: (event: any) => void;
+    onCameraReady?: (event: any) => void;
+    onCameraError?: (event: any) => void;
 }
 /**
  * QrReader - React adapter for snice-qr-reader

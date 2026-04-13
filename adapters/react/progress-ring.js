@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const ProgressRing = createReactAdapter({
     tagName: 'snice-progress-ring',
     properties: ["value", "max", "size", "thickness", "color", "showValue", "label"],
-    events: {},
+    events: { "progress-complete": "onProgressComplete" },
     formAssociated: false
 });
 //# sourceMappingURL=progress-ring.js.map

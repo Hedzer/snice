@@ -6,6 +6,10 @@ export interface SpreadsheetProps extends SniceBaseProps {
     data?: any;
     columns?: any;
     readonly?: any;
+    onCellChange?: (event: any) => void;
+    onCellSelect?: (event: any) => void;
+    onRowSelect?: (event: any) => void;
+    onColumnSort?: (event: any) => void;
 }
 /**
  * Spreadsheet - React adapter for snice-spreadsheet

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const PdfViewer = createReactAdapter({
     tagName: 'snice-pdf-viewer',
     properties: ["src", "page", "zoom", "fit"],
-    events: {},
+    events: { "page-change": "onPageChange", "pdf-loaded": "onPdfLoaded", "pdf-error": "onPdfError" },
     formAssociated: false
 });
 //# sourceMappingURL=pdf-viewer.js.map

@@ -7,6 +7,8 @@ export interface MetricTableProps extends SniceBaseProps {
     data?: any;
     sortBy?: any;
     sortDirection?: any;
+    onSortChange?: (event: any) => void;
+    onRowClick?: (event: any) => void;
 }
 /**
  * MetricTable - React adapter for snice-metric-table

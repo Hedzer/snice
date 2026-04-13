@@ -7,6 +7,9 @@ export interface BookProps extends SniceBaseProps {
     coverImage?: any;
     title?: any;
     author?: any;
+    onPageTurn?: (event: any) => void;
+    onPageFlipStart?: (event: any) => void;
+    onPageFlipEnd?: (event: any) => void;
 }
 /**
  * Book - React adapter for snice-book

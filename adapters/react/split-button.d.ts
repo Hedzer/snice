@@ -13,6 +13,8 @@ export interface SplitButtonProps extends SniceBaseProps {
     pill?: any;
     icon?: any;
     iconPlacement?: any;
+    onPrimaryClick?: (event: any) => void;
+    onActionClick?: (event: any) => void;
 }
 /**
  * SplitButton - React adapter for snice-split-button

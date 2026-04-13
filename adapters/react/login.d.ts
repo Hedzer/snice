@@ -13,6 +13,10 @@ export interface LoginProps extends SniceBaseProps {
     actionText?: any;
     alertMessage?: any;
     alertVariant?: any;
+    onLoginAttempt?: (event: any) => void;
+    onLoginForgotPassword?: (event: any) => void;
+    onLoginSuccess?: (event: any) => void;
+    onLoginError?: (event: any) => void;
 }
 /**
  * Login - React adapter for snice-login

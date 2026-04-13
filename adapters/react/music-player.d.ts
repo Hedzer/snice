@@ -19,6 +19,17 @@ export interface MusicPlayerProps extends SniceBaseProps {
     showTrackInfo?: any;
     compact?: any;
     showVolumeSlider?: any;
+    onPlayerPlay?: (event: any) => void;
+    onPlayerPause?: (event: any) => void;
+    onPlayerStop?: (event: any) => void;
+    onPlayerTrackChange?: (event: any) => void;
+    onPlayerTrackEnded?: (event: any) => void;
+    onPlayerSeek?: (event: any) => void;
+    onPlayerVolumeChange?: (event: any) => void;
+    onPlayerShuffleChange?: (event: any) => void;
+    onPlayerRepeatChange?: (event: any) => void;
+    onPlayerTimeUpdate?: (event: any) => void;
+    onPlayerError?: (event: any) => void;
 }
 /**
  * MusicPlayer - React adapter for snice-music-player

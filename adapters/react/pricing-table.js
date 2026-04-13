@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const PricingTable = createReactAdapter({
     tagName: 'snice-pricing-table',
     properties: ["plans", "variant", "annual"],
-    events: {},
+    events: { "plan-select": "onPlanSelect" },
     formAssociated: false
 });
 //# sourceMappingURL=pricing-table.js.map

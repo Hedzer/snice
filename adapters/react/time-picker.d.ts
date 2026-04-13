@@ -23,6 +23,12 @@ export interface TimePickerProps extends SniceBaseProps {
     loading?: any;
     clearable?: any;
     showDropdown?: any;
+    onTimeChange?: (event: any) => void;
+    onTimepickerFocus?: (event: any) => void;
+    onTimepickerBlur?: (event: any) => void;
+    onTimepickerOpen?: (event: any) => void;
+    onTimepickerClose?: (event: any) => void;
+    onTimepickerClear?: (event: any) => void;
 }
 /**
  * TimePicker - React adapter for snice-time-picker

@@ -18,7 +18,7 @@ import { createReactAdapter } from './wrapper';
 export const Leaderboard = createReactAdapter({
     tagName: 'snice-leaderboard',
     properties: ["variant", "size", "title", "entries"],
-    events: {},
+    events: { "entry-click": "onEntryClick" },
     formAssociated: false
 });
 //# sourceMappingURL=leaderboard.js.map

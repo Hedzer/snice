@@ -6,6 +6,9 @@ export interface ApprovalFlowProps extends SniceBaseProps {
     steps?: any;
     orientation?: any;
     currentStep?: any;
+    onStepApprove?: (event: any) => void;
+    onStepReject?: (event: any) => void;
+    onStepComment?: (event: any) => void;
 }
 /**
  * ApprovalFlow - React adapter for snice-approval-flow
