@@ -12,7 +12,9 @@ export interface BannerProps extends SniceBaseProps {
   icon?: any;
   actionText?: any;
   open?: any;
-
+  onBannerOpen?: (event: any) => void;
+  onBannerClose?: (event: any) => void;
+  onBannerAction?: (event: any) => void;
 }
 
 /**
@@ -34,6 +36,6 @@ export interface BannerProps extends SniceBaseProps {
 export const Banner = createReactAdapter<BannerProps>({
   tagName: 'snice-banner',
   properties: ["variant","position","message","dismissible","icon","actionText","open"],
-  events: {},
+  events: {"banner-open":"onBannerOpen","banner-close":"onBannerClose","banner-action":"onBannerAction"},
   formAssociated: false
 });

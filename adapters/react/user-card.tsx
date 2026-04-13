@@ -15,7 +15,8 @@ export interface UserCardProps extends SniceBaseProps {
   social?: any;
   status?: any;
   variant?: any;
-
+  onSocialClick?: (event: any) => void;
+  onActionClick?: (event: any) => void;
 }
 
 /**
@@ -37,6 +38,6 @@ export interface UserCardProps extends SniceBaseProps {
 export const UserCard = createReactAdapter<UserCardProps>({
   tagName: 'snice-user-card',
   properties: ["name","avatar","role","company","email","phone","location","social","status","variant"],
-  events: {},
+  events: {"social-click":"onSocialClick","action-click":"onActionClick"},
   formAssociated: false
 });

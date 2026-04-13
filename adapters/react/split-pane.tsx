@@ -11,7 +11,7 @@ export interface SplitPaneProps extends SniceBaseProps {
   minSecondarySize?: any;
   snapSize?: any;
   disabled?: any;
-
+  onPaneResize?: (event: any) => void;
 }
 
 /**
@@ -33,6 +33,6 @@ export interface SplitPaneProps extends SniceBaseProps {
 export const SplitPane = createReactAdapter<SplitPaneProps>({
   tagName: 'snice-split-pane',
   properties: ["direction","primarySize","minPrimarySize","minSecondarySize","snapSize","disabled"],
-  events: {},
+  events: {"pane-resize":"onPaneResize"},
   formAssociated: false
 });

@@ -39,7 +39,17 @@ export interface TableProps extends SniceBaseProps {
   lazyLoad?: any;
   lazyLoadThreshold?: any;
   selectedRows?: any;
-
+  onPageChange?: (event: any) => void;
+  onTableRowSelectionChanged?: (event: any) => void;
+  onTableSelectAllChanged?: (event: any) => void;
+  onSortChange?: (event: any) => void;
+  onFilterChange?: (event: any) => void;
+  onColumnVisibilityChange?: (event: any) => void;
+  onColumnPinChange?: (event: any) => void;
+  onColumnOrderChange?: (event: any) => void;
+  onDensityChange?: (event: any) => void;
+  onRowClicked?: (event: any) => void;
+  onLazyLoad?: (event: any) => void;
 }
 
 /**
@@ -61,6 +71,6 @@ export interface TableProps extends SniceBaseProps {
 export const Table = createReactAdapter<TableProps>({
   tagName: 'snice-table',
   properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows"],
-  events: {},
+  events: {"page-change":"onPageChange","table-row-selection-changed":"onTableRowSelectionChanged","table-select-all-changed":"onTableSelectAllChanged","sort-change":"onSortChange","filter-change":"onFilterChange","column-visibility-change":"onColumnVisibilityChange","column-pin-change":"onColumnPinChange","column-order-change":"onColumnOrderChange","density-change":"onDensityChange","row-clicked":"onRowClicked","lazy-load":"onLazyLoad"},
   formAssociated: false
 });

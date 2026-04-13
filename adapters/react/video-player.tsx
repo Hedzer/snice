@@ -15,7 +15,12 @@ export interface VideoPlayerProps extends SniceBaseProps {
   currentTime?: any;
   volume?: any;
   variant?: any;
-
+  onVideoPlay?: (event: any) => void;
+  onVideoPause?: (event: any) => void;
+  onVideoEnded?: (event: any) => void;
+  onVideoTimeUpdate?: (event: any) => void;
+  onVideoFullscreenChange?: (event: any) => void;
+  onVideoVolumeChange?: (event: any) => void;
 }
 
 /**
@@ -37,6 +42,6 @@ export interface VideoPlayerProps extends SniceBaseProps {
 export const VideoPlayer = createReactAdapter<VideoPlayerProps>({
   tagName: 'snice-video-player',
   properties: ["src","poster","autoplay","muted","loop","controls","playbackRate","currentTime","volume","variant"],
-  events: {},
+  events: {"video-play":"onVideoPlay","video-pause":"onVideoPause","video-ended":"onVideoEnded","video-time-update":"onVideoTimeUpdate","video-fullscreen-change":"onVideoFullscreenChange","video-volume-change":"onVideoVolumeChange"},
   formAssociated: false
 });

@@ -8,7 +8,7 @@ export interface PricingTableProps extends SniceBaseProps {
   plans?: any;
   variant?: any;
   annual?: any;
-
+  onPlanSelect?: (event: any) => void;
 }
 
 /**
@@ -30,6 +30,6 @@ export interface PricingTableProps extends SniceBaseProps {
 export const PricingTable = createReactAdapter<PricingTableProps>({
   tagName: 'snice-pricing-table',
   properties: ["plans","variant","annual"],
-  events: {},
+  events: {"plan-select":"onPlanSelect"},
   formAssociated: false
 });

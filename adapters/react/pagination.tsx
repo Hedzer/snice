@@ -14,7 +14,7 @@ export interface PaginationProps extends SniceBaseProps {
   showNext?: any;
   size?: any;
   variant?: any;
-
+  onPaginationChange?: (event: any) => void;
 }
 
 /**
@@ -36,6 +36,6 @@ export interface PaginationProps extends SniceBaseProps {
 export const Pagination = createReactAdapter<PaginationProps>({
   tagName: 'snice-pagination',
   properties: ["current","total","siblings","showFirst","showLast","showPrev","showNext","size","variant"],
-  events: {},
+  events: {"pagination-change":"onPaginationChange"},
   formAssociated: false
 });

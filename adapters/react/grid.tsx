@@ -17,7 +17,8 @@ export interface GridProps extends SniceBaseProps {
   resize?: any;
   draggable?: any;
   dragThrottle?: any;
-
+  onGridLayoutComplete?: (event: any) => void;
+  onGridDragItemPositioned?: (event: any) => void;
 }
 
 /**
@@ -39,6 +40,6 @@ export interface GridProps extends SniceBaseProps {
 export const Grid = createReactAdapter<GridProps>({
   tagName: 'snice-grid',
   properties: ["gap","columnWidth","rowHeight","columns","rows","originLeft","originTop","transitionDuration","stagger","resize","draggable","dragThrottle"],
-  events: {},
+  events: {"grid-layout-complete":"onGridLayoutComplete","grid-drag-item-positioned":"onGridDragItemPositioned"},
   formAssociated: false
 });

@@ -9,7 +9,9 @@ export interface SortableProps extends SniceBaseProps {
   handle?: any;
   disabled?: any;
   group?: any;
-
+  onSortStart?: (event: any) => void;
+  onSortEnd?: (event: any) => void;
+  onSortChange?: (event: any) => void;
 }
 
 /**
@@ -31,6 +33,6 @@ export interface SortableProps extends SniceBaseProps {
 export const Sortable = createReactAdapter<SortableProps>({
   tagName: 'snice-sortable',
   properties: ["direction","handle","disabled","group"],
-  events: {},
+  events: {"sort-start":"onSortStart","sort-end":"onSortEnd","sort-change":"onSortChange"},
   formAssociated: false
 });

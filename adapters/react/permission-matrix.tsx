@@ -9,7 +9,8 @@ export interface PermissionMatrixProps extends SniceBaseProps {
   permissions?: any;
   matrix?: any;
   readonly?: any;
-
+  onPermissionToggle?: (event: any) => void;
+  onMatrixChange?: (event: any) => void;
 }
 
 /**
@@ -31,6 +32,6 @@ export interface PermissionMatrixProps extends SniceBaseProps {
 export const PermissionMatrix = createReactAdapter<PermissionMatrixProps>({
   tagName: 'snice-permission-matrix',
   properties: ["roles","permissions","matrix","readonly"],
-  events: {},
+  events: {"permission-toggle":"onPermissionToggle","matrix-change":"onMatrixChange"},
   formAssociated: false
 });

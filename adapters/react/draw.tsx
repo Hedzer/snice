@@ -20,7 +20,11 @@ export interface DrawProps extends SniceBaseProps {
   autoCircle?: any;
   circlePoints?: any;
   disabled?: any;
-
+  onDrawStart?: (event: any) => void;
+  onDrawEnd?: (event: any) => void;
+  onDrawClear?: (event: any) => void;
+  onDrawUndo?: (event: any) => void;
+  onDrawRedo?: (event: any) => void;
 }
 
 /**
@@ -42,6 +46,6 @@ export interface DrawProps extends SniceBaseProps {
 export const Draw = createReactAdapter<DrawProps>({
   tagName: 'snice-draw',
   properties: ["width","height","tool","color","strokeWidth","backgroundColor","lazy","lazyRadius","friction","smoothing","autoPolygon","polygonCurvePoints","autoCircle","circlePoints","disabled"],
-  events: {},
+  events: {"draw-start":"onDrawStart","draw-end":"onDrawEnd","draw-clear":"onDrawClear","draw-undo":"onDrawUndo","draw-redo":"onDrawRedo"},
   formAssociated: false
 });

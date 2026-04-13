@@ -8,7 +8,10 @@ export interface SpotlightProps extends SniceBaseProps {
   steps?: any;
   currentIndex?: any;
   active?: any;
-
+  onSpotlightStart?: (event: any) => void;
+  onSpotlightStep?: (event: any) => void;
+  onSpotlightEnd?: (event: any) => void;
+  onSpotlightSkip?: (event: any) => void;
 }
 
 /**
@@ -30,6 +33,6 @@ export interface SpotlightProps extends SniceBaseProps {
 export const Spotlight = createReactAdapter<SpotlightProps>({
   tagName: 'snice-spotlight',
   properties: ["steps","currentIndex","active"],
-  events: {},
+  events: {"spotlight-start":"onSpotlightStart","spotlight-step":"onSpotlightStep","spotlight-end":"onSpotlightEnd","spotlight-skip":"onSpotlightSkip"},
   formAssociated: false
 });

@@ -16,7 +16,7 @@ export interface RadioProps extends SniceBaseProps {
   value?: any;
   label?: any;
   description?: any;
-
+  onRadioChange?: (event: any) => void;
 }
 
 /**
@@ -38,6 +38,6 @@ export interface RadioProps extends SniceBaseProps {
 export const Radio = createReactAdapter<RadioProps>({
   tagName: 'snice-radio',
   properties: ["checked","disabled","loading","required","invalid","variant","size","name","value","label","description"],
-  events: {},
+  events: {"radio-change":"onRadioChange"},
   formAssociated: false
 });

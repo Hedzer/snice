@@ -15,7 +15,8 @@ export interface CalendarProps extends SniceBaseProps {
   showWeekNumbers?: any;
   firstDayOfWeek?: any;
   locale?: any;
-
+  onCalendarChange?: (event: any) => void;
+  onCalendarEventClick?: (event: any) => void;
 }
 
 /**
@@ -37,6 +38,6 @@ export interface CalendarProps extends SniceBaseProps {
 export const Calendar = createReactAdapter<CalendarProps>({
   tagName: 'snice-calendar',
   properties: ["value","view","events","minDate","maxDate","disabledDates","highlightToday","showWeekNumbers","firstDayOfWeek","locale"],
-  events: {},
+  events: {"calendar-change":"onCalendarChange","calendar-event-click":"onCalendarEventClick"},
   formAssociated: false
 });

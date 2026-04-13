@@ -10,7 +10,8 @@ export interface WaterfallProps extends SniceBaseProps {
   showValues?: any;
   showConnectors?: any;
   animated?: any;
-
+  onBarClick?: (event: any) => void;
+  onBarHover?: (event: any) => void;
 }
 
 /**
@@ -32,6 +33,6 @@ export interface WaterfallProps extends SniceBaseProps {
 export const Waterfall = createReactAdapter<WaterfallProps>({
   tagName: 'snice-waterfall',
   properties: ["data","orientation","showValues","showConnectors","animated"],
-  events: {},
+  events: {"bar-click":"onBarClick","bar-hover":"onBarHover"},
   formAssociated: false
 });

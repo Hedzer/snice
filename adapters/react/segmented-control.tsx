@@ -9,7 +9,7 @@ export interface SegmentedControlProps extends SniceBaseProps {
   options?: any;
   size?: any;
   disabled?: any;
-
+  onValueChange?: (event: any) => void;
 }
 
 /**
@@ -31,6 +31,6 @@ export interface SegmentedControlProps extends SniceBaseProps {
 export const SegmentedControl = createReactAdapter<SegmentedControlProps>({
   tagName: 'snice-segmented-control',
   properties: ["value","options","size","disabled"],
-  events: {},
+  events: {"value-change":"onValueChange"},
   formAssociated: false
 });

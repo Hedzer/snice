@@ -13,7 +13,10 @@ export interface NetworkGraphProps extends SniceBaseProps {
   dragEnabled?: any;
   showLabels?: any;
   animation?: any;
-
+  onNodeClick?: (event: any) => void;
+  onEdgeClick?: (event: any) => void;
+  onNodeDrag?: (event: any) => void;
+  onGraphZoom?: (event: any) => void;
 }
 
 /**
@@ -35,6 +38,6 @@ export interface NetworkGraphProps extends SniceBaseProps {
 export const NetworkGraph = createReactAdapter<NetworkGraphProps>({
   tagName: 'snice-network-graph',
   properties: ["data","layout","chargeStrength","linkDistance","zoomEnabled","dragEnabled","showLabels","animation"],
-  events: {},
+  events: {"node-click":"onNodeClick","edge-click":"onEdgeClick","node-drag":"onNodeDrag","graph-zoom":"onGraphZoom"},
   formAssociated: false
 });

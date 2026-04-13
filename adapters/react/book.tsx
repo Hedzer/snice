@@ -9,7 +9,9 @@ export interface BookProps extends SniceBaseProps {
   coverImage?: any;
   title?: any;
   author?: any;
-
+  onPageTurn?: (event: any) => void;
+  onPageFlipStart?: (event: any) => void;
+  onPageFlipEnd?: (event: any) => void;
 }
 
 /**
@@ -31,6 +33,6 @@ export interface BookProps extends SniceBaseProps {
 export const Book = createReactAdapter<BookProps>({
   tagName: 'snice-book',
   properties: ["currentPage","coverImage","title","author"],
-  events: {},
+  events: {"page-turn":"onPageTurn","page-flip-start":"onPageFlipStart","page-flip-end":"onPageFlipEnd"},
   formAssociated: false
 });

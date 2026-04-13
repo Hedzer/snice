@@ -10,7 +10,8 @@ export interface CropperProps extends SniceBaseProps {
   minWidth?: any;
   minHeight?: any;
   outputType?: any;
-
+  onCropChange?: (event: any) => void;
+  onCropComplete?: (event: any) => void;
 }
 
 /**
@@ -32,6 +33,6 @@ export interface CropperProps extends SniceBaseProps {
 export const Cropper = createReactAdapter<CropperProps>({
   tagName: 'snice-cropper',
   properties: ["src","aspectRatio","minWidth","minHeight","outputType"],
-  events: {},
+  events: {"crop-change":"onCropChange","crop-complete":"onCropComplete"},
   formAssociated: false
 });

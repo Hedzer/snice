@@ -20,7 +20,8 @@ export interface InvoiceProps extends SniceBaseProps {
   showQr?: any;
   qrData?: any;
   qrPosition?: any;
-
+  onInvoiceItemChange?: (event: any) => void;
+  onInvoiceStatusChange?: (event: any) => void;
 }
 
 /**
@@ -42,6 +43,6 @@ export interface InvoiceProps extends SniceBaseProps {
 export const Invoice = createReactAdapter<InvoiceProps>({
   tagName: 'snice-invoice',
   properties: ["invoiceNumber","date","dueDate","status","currency","taxRate","discount","from","to","items","notes","variant","showQr","qrData","qrPosition"],
-  events: {},
+  events: {"invoice-item-change":"onInvoiceItemChange","invoice-status-change":"onInvoiceStatusChange"},
   formAssociated: false
 });

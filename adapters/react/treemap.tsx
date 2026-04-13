@@ -11,7 +11,9 @@ export interface TreemapProps extends SniceBaseProps {
   colorScheme?: any;
   padding?: any;
   animation?: any;
-
+  onTreemapClick?: (event: any) => void;
+  onTreemapHover?: (event: any) => void;
+  onTreemapDrill?: (event: any) => void;
 }
 
 /**
@@ -33,6 +35,6 @@ export interface TreemapProps extends SniceBaseProps {
 export const Treemap = createReactAdapter<TreemapProps>({
   tagName: 'snice-treemap',
   properties: ["data","showLabels","showValues","colorScheme","padding","animation"],
-  events: {},
+  events: {"treemap-click":"onTreemapClick","treemap-hover":"onTreemapHover","treemap-drill":"onTreemapDrill"},
   formAssociated: false
 });

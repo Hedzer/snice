@@ -11,7 +11,8 @@ export interface ActionBarProps extends SniceBaseProps {
   variant?: any;
   noAnimation?: any;
   noEscapeDismiss?: any;
-
+  onActionBarOpen?: (event: any) => void;
+  onActionBarClose?: (event: any) => void;
 }
 
 /**
@@ -33,6 +34,6 @@ export interface ActionBarProps extends SniceBaseProps {
 export const ActionBar = createReactAdapter<ActionBarProps>({
   tagName: 'snice-action-bar',
   properties: ["open","position","size","variant","noAnimation","noEscapeDismiss"],
-  events: {},
+  events: {"action-bar-open":"onActionBarOpen","action-bar-close":"onActionBarClose"},
   formAssociated: false
 });

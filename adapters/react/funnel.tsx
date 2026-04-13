@@ -12,7 +12,8 @@ export interface FunnelProps extends SniceBaseProps {
   showValues?: any;
   showPercentages?: any;
   animation?: any;
-
+  onFunnelClick?: (event: any) => void;
+  onFunnelHover?: (event: any) => void;
 }
 
 /**
@@ -34,6 +35,6 @@ export interface FunnelProps extends SniceBaseProps {
 export const Funnel = createReactAdapter<FunnelProps>({
   tagName: 'snice-funnel',
   properties: ["data","variant","orientation","showLabels","showValues","showPercentages","animation"],
-  events: {},
+  events: {"funnel-click":"onFunnelClick","funnel-hover":"onFunnelHover"},
   formAssociated: false
 });

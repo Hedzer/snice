@@ -25,6 +25,7 @@ export interface FileGalleryProps extends SniceBaseProps {
   onUploadError?: (event: any) => void;
   onUploadPause?: (event: any) => void;
   onGalleryError?: (event: any) => void;
+  onCustomActionClick?: (event: any) => void;
 }
 
 /**
@@ -46,6 +47,6 @@ export interface FileGalleryProps extends SniceBaseProps {
 export const FileGallery = createReactAdapter<FileGalleryProps>({
   tagName: 'snice-file-gallery',
   properties: ["accept","multiple","disabled","maxSize","maxFiles","view","showProgress","allowPause","allowDelete","autoUpload","showDropzone","showAddButton","showHeader"],
-  events: {"files-change":"onFilesChange","file-remove":"onFileRemove","upload-progress":"onUploadProgress","upload-complete":"onUploadComplete","upload-error":"onUploadError","upload-pause":"onUploadPause","gallery-error":"onGalleryError"},
+  events: {"files-change":"onFilesChange","file-remove":"onFileRemove","upload-progress":"onUploadProgress","upload-complete":"onUploadComplete","upload-error":"onUploadError","upload-pause":"onUploadPause","gallery-error":"onGalleryError","custom-action-click":"onCustomActionClick"},
   formAssociated: false
 });

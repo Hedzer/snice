@@ -11,7 +11,9 @@ export interface TerminalProps extends SniceBaseProps {
   readonly?: any;
   maxLines?: any;
   showTimestamps?: any;
-
+  onTerminalCommand?: (event: any) => void;
+  onTerminalClear?: (event: any) => void;
+  onTerminalReady?: (event: any) => void;
 }
 
 /**
@@ -33,6 +35,6 @@ export interface TerminalProps extends SniceBaseProps {
 export const Terminal = createReactAdapter<TerminalProps>({
   tagName: 'snice-terminal',
   properties: ["renderTrigger","prompt","cwd","readonly","maxLines","showTimestamps"],
-  events: {},
+  events: {"terminal-command":"onTerminalCommand","terminal-clear":"onTerminalClear","terminal-ready":"onTerminalReady"},
   formAssociated: false
 });

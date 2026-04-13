@@ -23,7 +23,8 @@ export interface SliderProps extends SniceBaseProps {
   showValue?: any;
   showTicks?: any;
   vertical?: any;
-
+  onSliderInput?: (event: any) => void;
+  onSliderChange?: (event: any) => void;
 }
 
 /**
@@ -45,6 +46,6 @@ export interface SliderProps extends SniceBaseProps {
 export const Slider = createReactAdapter<SliderProps>({
   tagName: 'snice-slider',
   properties: ["size","variant","value","min","max","step","label","helperText","errorText","disabled","readonly","loading","required","invalid","name","showValue","showTicks","vertical"],
-  events: {},
+  events: {"slider-input":"onSliderInput","slider-change":"onSliderChange"},
   formAssociated: false
 });

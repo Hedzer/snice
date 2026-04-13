@@ -19,7 +19,10 @@ export interface ColorPickerProps extends SniceBaseProps {
   showInput?: any;
   showPresets?: any;
   presets?: any;
-
+  onColorPickerInput?: (event: any) => void;
+  onColorPickerChange?: (event: any) => void;
+  onColorPickerFocus?: (event: any) => void;
+  onColorPickerBlur?: (event: any) => void;
 }
 
 /**
@@ -41,6 +44,6 @@ export interface ColorPickerProps extends SniceBaseProps {
 export const ColorPicker = createReactAdapter<ColorPickerProps>({
   tagName: 'snice-color-picker',
   properties: ["size","value","format","label","helperText","errorText","disabled","loading","required","invalid","name","showInput","showPresets","presets"],
-  events: {},
+  events: {"color-picker-input":"onColorPickerInput","color-picker-change":"onColorPickerChange","color-picker-focus":"onColorPickerFocus","color-picker-blur":"onColorPickerBlur"},
   formAssociated: false
 });

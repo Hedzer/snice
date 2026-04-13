@@ -13,7 +13,11 @@ export interface CommandPaletteProps extends SniceBaseProps {
   showRecentCommands?: any;
   recentCommandsLimit?: any;
   caseSensitive?: any;
-
+  onCommandPaletteOpen?: (event: any) => void;
+  onCommandPaletteClose?: (event: any) => void;
+  onCommandSelect?: (event: any) => void;
+  onCommandExecute?: (event: any) => void;
+  onCommandSearch?: (event: any) => void;
 }
 
 /**
@@ -35,6 +39,6 @@ export interface CommandPaletteProps extends SniceBaseProps {
 export const CommandPalette = createReactAdapter<CommandPaletteProps>({
   tagName: 'snice-command-palette',
   properties: ["open","commands","placeholder","noResultsText","maxResults","showRecentCommands","recentCommandsLimit","caseSensitive"],
-  events: {},
+  events: {"command-palette-open":"onCommandPaletteOpen","command-palette-close":"onCommandPaletteClose","command-select":"onCommandSelect","command-execute":"onCommandExecute","command-search":"onCommandSearch"},
   formAssociated: false
 });

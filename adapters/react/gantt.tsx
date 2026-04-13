@@ -8,7 +8,10 @@ export interface GanttProps extends SniceBaseProps {
   tasks?: any;
   zoom?: any;
   showDependencies?: any;
-
+  onTaskClick?: (event: any) => void;
+  onTaskResize?: (event: any) => void;
+  onTaskMove?: (event: any) => void;
+  onTaskLink?: (event: any) => void;
 }
 
 /**
@@ -30,6 +33,6 @@ export interface GanttProps extends SniceBaseProps {
 export const Gantt = createReactAdapter<GanttProps>({
   tagName: 'snice-gantt',
   properties: ["tasks","zoom","showDependencies"],
-  events: {},
+  events: {"task-click":"onTaskClick","task-resize":"onTaskResize","task-move":"onTaskMove","task-link":"onTaskLink"},
   formAssociated: false
 });

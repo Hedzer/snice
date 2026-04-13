@@ -11,7 +11,11 @@ export interface CartProps extends SniceBaseProps {
   discount?: any;
   couponCode?: any;
   couponInput?: any;
-
+  onItemAdd?: (event: any) => void;
+  onItemRemove?: (event: any) => void;
+  onQuantityChange?: (event: any) => void;
+  onCouponApply?: (event: any) => void;
+  onCheckout?: (event: any) => void;
 }
 
 /**
@@ -33,6 +37,6 @@ export interface CartProps extends SniceBaseProps {
 export const Cart = createReactAdapter<CartProps>({
   tagName: 'snice-cart',
   properties: ["items","currency","taxRate","discount","couponCode","couponInput"],
-  events: {},
+  events: {"item-add":"onItemAdd","item-remove":"onItemRemove","quantity-change":"onQuantityChange","coupon-apply":"onCouponApply","checkout":"onCheckout"},
   formAssociated: false
 });

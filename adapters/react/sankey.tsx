@@ -12,7 +12,9 @@ export interface SankeyProps extends SniceBaseProps {
   showLabels?: any;
   showValues?: any;
   animation?: any;
-
+  onSankeyNodeClick?: (event: any) => void;
+  onSankeyLinkClick?: (event: any) => void;
+  onSankeyHover?: (event: any) => void;
 }
 
 /**
@@ -34,6 +36,6 @@ export interface SankeyProps extends SniceBaseProps {
 export const Sankey = createReactAdapter<SankeyProps>({
   tagName: 'snice-sankey',
   properties: ["data","nodeWidth","nodePadding","alignment","showLabels","showValues","animation"],
-  events: {},
+  events: {"sankey-node-click":"onSankeyNodeClick","sankey-link-click":"onSankeyLinkClick","sankey-hover":"onSankeyHover"},
   formAssociated: false
 });

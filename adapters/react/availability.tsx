@@ -11,7 +11,7 @@ export interface AvailabilityProps extends SniceBaseProps {
   endHour?: any;
   format?: any;
   readonly?: any;
-
+  onAvailabilityChange?: (event: any) => void;
 }
 
 /**
@@ -33,6 +33,6 @@ export interface AvailabilityProps extends SniceBaseProps {
 export const Availability = createReactAdapter<AvailabilityProps>({
   tagName: 'snice-availability',
   properties: ["value","granularity","startHour","endHour","format","readonly"],
-  events: {},
+  events: {"availability-change":"onAvailabilityChange"},
   formAssociated: false
 });

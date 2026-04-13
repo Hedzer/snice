@@ -19,7 +19,8 @@ export interface DrawerProps extends SniceBaseProps {
   contained?: any;
   noHeader?: any;
   noFooter?: any;
-
+  onDrawerOpen?: (event: any) => void;
+  onDrawerClose?: (event: any) => void;
 }
 
 /**
@@ -41,6 +42,6 @@ export interface DrawerProps extends SniceBaseProps {
 export const Drawer = createReactAdapter<DrawerProps>({
   tagName: 'snice-drawer',
   properties: ["open","position","size","inline","breakpoint","noBackdrop","noBackdropDismiss","noEscapeDismiss","noFocusTrap","persistent","pushContent","contained","noHeader","noFooter"],
-  events: {},
+  events: {"drawer-open":"onDrawerOpen","drawer-close":"onDrawerClose"},
   formAssociated: false
 });

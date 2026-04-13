@@ -8,7 +8,10 @@ export interface SpreadsheetProps extends SniceBaseProps {
   data?: any;
   columns?: any;
   readonly?: any;
-
+  onCellChange?: (event: any) => void;
+  onCellSelect?: (event: any) => void;
+  onRowSelect?: (event: any) => void;
+  onColumnSort?: (event: any) => void;
 }
 
 /**
@@ -30,6 +33,6 @@ export interface SpreadsheetProps extends SniceBaseProps {
 export const Spreadsheet = createReactAdapter<SpreadsheetProps>({
   tagName: 'snice-spreadsheet',
   properties: ["data","columns","readonly"],
-  events: {},
+  events: {"cell-change":"onCellChange","cell-select":"onCellSelect","row-select":"onRowSelect","column-sort":"onColumnSort"},
   formAssociated: false
 });

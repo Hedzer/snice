@@ -12,7 +12,10 @@ export interface BookingProps extends SniceBaseProps {
   maxDate?: any;
   fields?: any;
   variant?: any;
-
+  onDateSelect?: (event: any) => void;
+  onSlotSelect?: (event: any) => void;
+  onBookingConfirm?: (event: any) => void;
+  onBookingCancel?: (event: any) => void;
 }
 
 /**
@@ -34,6 +37,6 @@ export interface BookingProps extends SniceBaseProps {
 export const Booking = createReactAdapter<BookingProps>({
   tagName: 'snice-booking',
   properties: ["availableDates","availableSlots","duration","minDate","maxDate","fields","variant"],
-  events: {},
+  events: {"date-select":"onDateSelect","slot-select":"onSlotSelect","booking-confirm":"onBookingConfirm","booking-cancel":"onBookingCancel"},
   formAssociated: false
 });

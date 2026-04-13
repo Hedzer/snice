@@ -15,7 +15,8 @@ export interface SplitButtonProps extends SniceBaseProps {
   pill?: any;
   icon?: any;
   iconPlacement?: any;
-
+  onPrimaryClick?: (event: any) => void;
+  onActionClick?: (event: any) => void;
 }
 
 /**
@@ -37,6 +38,6 @@ export interface SplitButtonProps extends SniceBaseProps {
 export const SplitButton = createReactAdapter<SplitButtonProps>({
   tagName: 'snice-split-button',
   properties: ["label","actions","variant","size","disabled","loading","outline","pill","icon","iconPlacement"],
-  events: {},
+  events: {"primary-click":"onPrimaryClick","action-click":"onActionClick"},
   formAssociated: false
 });

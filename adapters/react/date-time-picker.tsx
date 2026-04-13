@@ -25,7 +25,12 @@ export interface DateTimePickerProps extends SniceBaseProps {
   name?: any;
   variant?: any;
   showPanel?: any;
-
+  onDatetimepickerClear?: (event: any) => void;
+  onDatetimeChange?: (event: any) => void;
+  onDatetimepickerFocus?: (event: any) => void;
+  onDatetimepickerBlur?: (event: any) => void;
+  onDatetimepickerOpen?: (event: any) => void;
+  onDatetimepickerClose?: (event: any) => void;
 }
 
 /**
@@ -47,6 +52,6 @@ export interface DateTimePickerProps extends SniceBaseProps {
 export const DateTimePicker = createReactAdapter<DateTimePickerProps>({
   tagName: 'snice-date-time-picker',
   properties: ["size","value","dateFormat","timeFormat","min","max","showSeconds","loading","clearable","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","showPanel"],
-  events: {},
+  events: {"datetimepicker-clear":"onDatetimepickerClear","datetime-change":"onDatetimeChange","datetimepicker-focus":"onDatetimepickerFocus","datetimepicker-blur":"onDatetimepickerBlur","datetimepicker-open":"onDatetimepickerOpen","datetimepicker-close":"onDatetimepickerClose"},
   formAssociated: false
 });

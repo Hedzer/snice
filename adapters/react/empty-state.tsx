@@ -11,7 +11,7 @@ export interface EmptyStateProps extends SniceBaseProps {
   description?: any;
   actionText?: any;
   actionHref?: any;
-
+  onEmptyStateAction?: (event: any) => void;
 }
 
 /**
@@ -33,6 +33,6 @@ export interface EmptyStateProps extends SniceBaseProps {
 export const EmptyState = createReactAdapter<EmptyStateProps>({
   tagName: 'snice-empty-state',
   properties: ["size","icon","title","description","actionText","actionHref"],
-  events: {},
+  events: {"empty-state-action":"onEmptyStateAction"},
   formAssociated: false
 });

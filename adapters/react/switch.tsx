@@ -16,7 +16,7 @@ export interface SwitchProps extends SniceBaseProps {
   label?: any;
   labelOn?: any;
   labelOff?: any;
-
+  onSwitchChange?: (event: any) => void;
 }
 
 /**
@@ -38,6 +38,6 @@ export interface SwitchProps extends SniceBaseProps {
 export const Switch = createReactAdapter<SwitchProps>({
   tagName: 'snice-switch',
   properties: ["checked","disabled","loading","required","invalid","size","name","value","label","labelOn","labelOff"],
-  events: {},
+  events: {"switch-change":"onSwitchChange"},
   formAssociated: false
 });

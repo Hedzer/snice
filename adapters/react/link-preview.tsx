@@ -13,7 +13,7 @@ export interface LinkPreviewProps extends SniceBaseProps {
   favicon?: any;
   variant?: any;
   size?: any;
-
+  onLinkClick?: (event: any) => void;
 }
 
 /**
@@ -35,6 +35,6 @@ export interface LinkPreviewProps extends SniceBaseProps {
 export const LinkPreview = createReactAdapter<LinkPreviewProps>({
   tagName: 'snice-link-preview',
   properties: ["url","title","description","image","siteName","favicon","variant","size"],
-  events: {},
+  events: {"link-click":"onLinkClick"},
   formAssociated: false
 });

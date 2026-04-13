@@ -15,7 +15,10 @@ export interface LoginProps extends SniceBaseProps {
   actionText?: any;
   alertMessage?: any;
   alertVariant?: any;
-
+  onLoginAttempt?: (event: any) => void;
+  onLoginForgotPassword?: (event: any) => void;
+  onLoginSuccess?: (event: any) => void;
+  onLoginError?: (event: any) => void;
 }
 
 /**
@@ -37,6 +40,6 @@ export interface LoginProps extends SniceBaseProps {
 export const Login = createReactAdapter<LoginProps>({
   tagName: 'snice-login',
   properties: ["variant","size","title","disabled","loading","showRememberMe","showForgotPassword","actionText","alertMessage","alertVariant"],
-  events: {},
+  events: {"login-attempt":"onLoginAttempt","login-forgot-password":"onLoginForgotPassword","login-success":"onLoginSuccess","login-error":"onLoginError"},
   formAssociated: false
 });

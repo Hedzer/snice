@@ -8,7 +8,9 @@ export interface ApprovalFlowProps extends SniceBaseProps {
   steps?: any;
   orientation?: any;
   currentStep?: any;
-
+  onStepApprove?: (event: any) => void;
+  onStepReject?: (event: any) => void;
+  onStepComment?: (event: any) => void;
 }
 
 /**
@@ -30,6 +32,6 @@ export interface ApprovalFlowProps extends SniceBaseProps {
 export const ApprovalFlow = createReactAdapter<ApprovalFlowProps>({
   tagName: 'snice-approval-flow',
   properties: ["steps","orientation","currentStep"],
-  events: {},
+  events: {"step-approve":"onStepApprove","step-reject":"onStepReject","step-comment":"onStepComment"},
   formAssociated: false
 });

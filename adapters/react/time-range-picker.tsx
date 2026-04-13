@@ -14,7 +14,9 @@ export interface TimeRangePickerProps extends SniceBaseProps {
   multiple?: any;
   readonly?: any;
   disabled?: any;
-
+  onTimeRangeChange?: (event: any) => void;
+  onTimeRangeSelect?: (event: any) => void;
+  onTimeRangeComplete?: (event: any) => void;
 }
 
 /**
@@ -36,6 +38,6 @@ export interface TimeRangePickerProps extends SniceBaseProps {
 export const TimeRangePicker = createReactAdapter<TimeRangePickerProps>({
   tagName: 'snice-time-range-picker',
   properties: ["granularity","startTime","endTime","value","disabledRanges","format","multiple","readonly","disabled"],
-  events: {},
+  events: {"time-range-change":"onTimeRangeChange","time-range-select":"onTimeRangeSelect","time-range-complete":"onTimeRangeComplete"},
   formAssociated: false
 });

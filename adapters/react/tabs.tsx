@@ -9,7 +9,7 @@ export interface TabsProps extends SniceBaseProps {
   selected?: any;
   noScrollControls?: any;
   transition?: any;
-
+  onTabChange?: (event: any) => void;
 }
 
 /**
@@ -31,6 +31,6 @@ export interface TabsProps extends SniceBaseProps {
 export const Tabs = createReactAdapter<TabsProps>({
   tagName: 'snice-tabs',
   properties: ["placement","selected","noScrollControls","transition"],
-  events: {},
+  events: {"tab-change":"onTabChange"},
   formAssociated: false
 });

@@ -8,7 +8,9 @@ export interface NotificationCenterProps extends SniceBaseProps {
   notifications?: any;
   open?: any;
   icon?: any;
-
+  onNotificationClick?: (event: any) => void;
+  onNotificationDismiss?: (event: any) => void;
+  onNotificationReadAll?: (event: any) => void;
 }
 
 /**
@@ -30,6 +32,6 @@ export interface NotificationCenterProps extends SniceBaseProps {
 export const NotificationCenter = createReactAdapter<NotificationCenterProps>({
   tagName: 'snice-notification-center',
   properties: ["notifications","open","icon"],
-  events: {},
+  events: {"notification-click":"onNotificationClick","notification-dismiss":"onNotificationDismiss","notification-read-all":"onNotificationReadAll"},
   formAssociated: false
 });

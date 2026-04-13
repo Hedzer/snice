@@ -8,7 +8,8 @@ export interface MarkdownProps extends SniceBaseProps {
   sanitize?: any;
   theme?: any;
   renderedHtml?: any;
-
+  onMarkdownRender?: (event: any) => void;
+  onLinkClick?: (event: any) => void;
 }
 
 /**
@@ -30,6 +31,6 @@ export interface MarkdownProps extends SniceBaseProps {
 export const Markdown = createReactAdapter<MarkdownProps>({
   tagName: 'snice-markdown',
   properties: ["sanitize","theme","renderedHtml"],
-  events: {},
+  events: {"markdown-render":"onMarkdownRender","link-click":"onLinkClick"},
   formAssociated: false
 });

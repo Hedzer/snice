@@ -14,7 +14,10 @@ export interface CameraProps extends SniceBaseProps {
   height?: any;
   aspectRatio?: any;
   objectFit?: any;
-
+  onCameraStart?: (event: any) => void;
+  onCameraError?: (event: any) => void;
+  onCameraStop?: (event: any) => void;
+  onCameraCapture?: (event: any) => void;
 }
 
 /**
@@ -36,6 +39,6 @@ export interface CameraProps extends SniceBaseProps {
 export const Camera = createReactAdapter<CameraProps>({
   tagName: 'snice-camera',
   properties: ["autoStart","facingMode","mirror","controlsPosition","showControls","width","height","aspectRatio","objectFit"],
-  events: {},
+  events: {"camera-start":"onCameraStart","camera-error":"onCameraError","camera-stop":"onCameraStop","camera-capture":"onCameraCapture"},
   formAssociated: false
 });

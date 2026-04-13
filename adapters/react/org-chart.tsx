@@ -9,7 +9,9 @@ export interface OrgChartProps extends SniceBaseProps {
   direction?: any;
   compact?: any;
   renderVersion?: any;
-
+  onNodeClick?: (event: any) => void;
+  onNodeExpand?: (event: any) => void;
+  onNodeCollapse?: (event: any) => void;
 }
 
 /**
@@ -31,6 +33,6 @@ export interface OrgChartProps extends SniceBaseProps {
 export const OrgChart = createReactAdapter<OrgChartProps>({
   tagName: 'snice-org-chart',
   properties: ["data","direction","compact","renderVersion"],
-  events: {},
+  events: {"node-click":"onNodeClick","node-expand":"onNodeExpand","node-collapse":"onNodeCollapse"},
   formAssociated: false
 });

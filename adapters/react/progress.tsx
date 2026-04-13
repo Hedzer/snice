@@ -16,7 +16,7 @@ export interface ProgressProps extends SniceBaseProps {
   striped?: any;
   animated?: any;
   thickness?: any;
-
+  onProgressChange?: (event: any) => void;
 }
 
 /**
@@ -38,6 +38,6 @@ export interface ProgressProps extends SniceBaseProps {
 export const Progress = createReactAdapter<ProgressProps>({
   tagName: 'snice-progress',
   properties: ["value","max","variant","size","color","indeterminate","showLabel","label","striped","animated","thickness"],
-  events: {},
+  events: {"progress-change":"onProgressChange"},
   formAssociated: false
 });

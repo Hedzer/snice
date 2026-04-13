@@ -15,7 +15,13 @@ export interface CodeBlockProps extends SniceBaseProps {
   fetchMode?: any;
   format?: any;
   theme?: any;
-
+  onCodeCopy?: (event: any) => void;
+  onCodeBeforeHighlight?: (event: any) => void;
+  onCodeAfterHighlight?: (event: any) => void;
+  onCodeBeforeFormat?: (event: any) => void;
+  onCodeAfterFormat?: (event: any) => void;
+  onGrammarRequest?: (event: any) => void;
+  onGrammarLoaded?: (event: any) => void;
 }
 
 /**
@@ -37,6 +43,6 @@ export interface CodeBlockProps extends SniceBaseProps {
 export const CodeBlock = createReactAdapter<CodeBlockProps>({
   tagName: 'snice-code-block',
   properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format","theme"],
-  events: {},
+  events: {"code-copy":"onCodeCopy","code-before-highlight":"onCodeBeforeHighlight","code-after-highlight":"onCodeAfterHighlight","code-before-format":"onCodeBeforeFormat","code-after-format":"onCodeAfterFormat","grammar-request":"onGrammarRequest","grammar-loaded":"onGrammarLoaded"},
   formAssociated: false
 });

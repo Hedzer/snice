@@ -9,7 +9,7 @@ export interface AppTilesProps extends SniceBaseProps {
   columns?: any;
   size?: any;
   variant?: any;
-
+  onTileClick?: (event: any) => void;
 }
 
 /**
@@ -31,6 +31,6 @@ export interface AppTilesProps extends SniceBaseProps {
 export const AppTiles = createReactAdapter<AppTilesProps>({
   tagName: 'snice-app-tiles',
   properties: ["tiles","columns","size","variant"],
-  events: {},
+  events: {"tile-click":"onTileClick"},
   formAssociated: false
 });

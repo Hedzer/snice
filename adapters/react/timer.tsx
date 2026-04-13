@@ -9,7 +9,10 @@ export interface TimerProps extends SniceBaseProps {
   initialTime?: any;
   running?: any;
   time?: any;
-
+  onTimerStart?: (event: any) => void;
+  onTimerStop?: (event: any) => void;
+  onTimerReset?: (event: any) => void;
+  onTimerComplete?: (event: any) => void;
 }
 
 /**
@@ -31,6 +34,6 @@ export interface TimerProps extends SniceBaseProps {
 export const Timer = createReactAdapter<TimerProps>({
   tagName: 'snice-timer',
   properties: ["mode","initialTime","running","time"],
-  events: {},
+  events: {"timer-start":"onTimerStart","timer-stop":"onTimerStop","timer-reset":"onTimerReset","timer-complete":"onTimerComplete"},
   formAssociated: false
 });

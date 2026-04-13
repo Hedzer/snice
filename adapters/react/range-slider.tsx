@@ -14,7 +14,7 @@ export interface RangeSliderProps extends SniceBaseProps {
   showTooltip?: any;
   showLabels?: any;
   orientation?: any;
-
+  onRangeChange?: (event: any) => void;
 }
 
 /**
@@ -36,6 +36,6 @@ export interface RangeSliderProps extends SniceBaseProps {
 export const RangeSlider = createReactAdapter<RangeSliderProps>({
   tagName: 'snice-range-slider',
   properties: ["min","max","step","valueLow","valueHigh","disabled","showTooltip","showLabels","orientation"],
-  events: {},
+  events: {"range-change":"onRangeChange"},
   formAssociated: false
 });

@@ -15,7 +15,7 @@ export interface CheckboxProps extends SniceBaseProps {
   name?: any;
   value?: any;
   label?: any;
-
+  onCheckboxChange?: (event: any) => void;
 }
 
 /**
@@ -37,6 +37,6 @@ export interface CheckboxProps extends SniceBaseProps {
 export const Checkbox = createReactAdapter<CheckboxProps>({
   tagName: 'snice-checkbox',
   properties: ["checked","indeterminate","disabled","loading","required","invalid","size","name","value","label"],
-  events: {},
+  events: {"checkbox-change":"onCheckboxChange"},
   formAssociated: false
 });

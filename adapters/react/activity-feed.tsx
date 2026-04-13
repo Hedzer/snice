@@ -8,7 +8,8 @@ export interface ActivityFeedProps extends SniceBaseProps {
   activities?: any;
   filter?: any;
   groupBy?: any;
-
+  onActivityClick?: (event: any) => void;
+  onLoadMore?: (event: any) => void;
 }
 
 /**
@@ -30,6 +31,6 @@ export interface ActivityFeedProps extends SniceBaseProps {
 export const ActivityFeed = createReactAdapter<ActivityFeedProps>({
   tagName: 'snice-activity-feed',
   properties: ["activities","filter","groupBy"],
-  events: {},
+  events: {"activity-click":"onActivityClick","load-more":"onLoadMore"},
   formAssociated: false
 });

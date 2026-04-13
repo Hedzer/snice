@@ -18,7 +18,10 @@ export interface KeyValueProps extends SniceBaseProps {
   mode?: any;
   showCopy?: any;
   items?: any;
-
+  onKvAdd?: (event: any) => void;
+  onKvRemove?: (event: any) => void;
+  onKvChange?: (event: any) => void;
+  onKvCopy?: (event: any) => void;
 }
 
 /**
@@ -40,6 +43,6 @@ export interface KeyValueProps extends SniceBaseProps {
 export const KeyValue = createReactAdapter<KeyValueProps>({
   tagName: 'snice-key-value',
   properties: ["label","autoExpand","rows","showDescription","keyPlaceholder","valuePlaceholder","disabled","readonly","name","variant","mode","showCopy","items"],
-  events: {},
+  events: {"kv-add":"onKvAdd","kv-remove":"onKvRemove","kv-change":"onKvChange","kv-copy":"onKvCopy"},
   formAssociated: false
 });

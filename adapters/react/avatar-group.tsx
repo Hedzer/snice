@@ -9,7 +9,8 @@ export interface AvatarGroupProps extends SniceBaseProps {
   max?: any;
   size?: any;
   overlap?: any;
-
+  onAvatarClick?: (event: any) => void;
+  onOverflowClick?: (event: any) => void;
 }
 
 /**
@@ -31,6 +32,6 @@ export interface AvatarGroupProps extends SniceBaseProps {
 export const AvatarGroup = createReactAdapter<AvatarGroupProps>({
   tagName: 'snice-avatar-group',
   properties: ["avatars","max","size","overlap"],
-  events: {},
+  events: {"avatar-click":"onAvatarClick","overflow-click":"onOverflowClick"},
   formAssociated: false
 });

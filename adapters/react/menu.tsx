@@ -10,7 +10,8 @@ export interface MenuProps extends SniceBaseProps {
   trigger?: any;
   closeOnSelect?: any;
   distance?: any;
-
+  onMenuOpen?: (event: any) => void;
+  onMenuClose?: (event: any) => void;
 }
 
 /**
@@ -32,6 +33,6 @@ export interface MenuProps extends SniceBaseProps {
 export const Menu = createReactAdapter<MenuProps>({
   tagName: 'snice-menu',
   properties: ["open","placement","trigger","closeOnSelect","distance"],
-  events: {},
+  events: {"menu-open":"onMenuOpen","menu-close":"onMenuClose"},
   formAssociated: false
 });

@@ -27,7 +27,13 @@ export interface DateRangePickerProps extends SniceBaseProps {
   firstDayOfWeek?: any;
   presets?: any;
   showCalendar?: any;
-
+  onDaterangeChange?: (event: any) => void;
+  onDaterangeOpen?: (event: any) => void;
+  onDaterangeClose?: (event: any) => void;
+  onDaterangeClear?: (event: any) => void;
+  onDaterangePreset?: (event: any) => void;
+  onDaterangeFocus?: (event: any) => void;
+  onDaterangeBlur?: (event: any) => void;
 }
 
 /**
@@ -49,6 +55,6 @@ export interface DateRangePickerProps extends SniceBaseProps {
 export const DateRangePicker = createReactAdapter<DateRangePickerProps>({
   tagName: 'snice-date-range-picker',
   properties: ["start","end","size","variant","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","columns","firstDayOfWeek","presets","showCalendar"],
-  events: {},
+  events: {"daterange-change":"onDaterangeChange","daterange-open":"onDaterangeOpen","daterange-close":"onDaterangeClose","daterange-clear":"onDaterangeClear","daterange-preset":"onDaterangePreset","daterange-focus":"onDaterangeFocus","daterange-blur":"onDaterangeBlur"},
   formAssociated: false
 });

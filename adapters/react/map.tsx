@@ -11,7 +11,10 @@ export interface MapProps extends SniceBaseProps {
   maxZoom?: any;
   markers?: any;
   tileUrl?: any;
-
+  onMapClick?: (event: any) => void;
+  onMarkerClick?: (event: any) => void;
+  onMapMove?: (event: any) => void;
+  onMapZoom?: (event: any) => void;
 }
 
 /**
@@ -33,6 +36,6 @@ export interface MapProps extends SniceBaseProps {
 export const Map = createReactAdapter<MapProps>({
   tagName: 'snice-map',
   properties: ["center","zoom","minZoom","maxZoom","markers","tileUrl"],
-  events: {},
+  events: {"map-click":"onMapClick","marker-click":"onMarkerClick","map-move":"onMapMove","map-zoom":"onMapZoom"},
   formAssociated: false
 });

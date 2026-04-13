@@ -38,14 +38,26 @@ function extractPropertiesFromFile(filePath) {
     }
 
     // Look for @dispatch decorators (custom events)
-    const dispatchRegex = /@dispatch\(\s*['"]([^'"]+)['"]\s*\)/g;
+    // Matches both @dispatch('name') and @dispatch('name', { options })
+    const dispatchRegex = /@dispatch\(\s*['"]([^'"]+)['"]/g;
     while ((match = dispatchRegex.exec(content)) !== null) {
       const eventName = match[1];
-      // Convert event name to React callback name (e.g., 'button-click' -> 'onButtonClick')
       const callbackName = 'on' + eventName.split('-').map(part =>
         part.charAt(0).toUpperCase() + part.slice(1)
       ).join('');
       events[eventName] = callbackName;
+    }
+
+    // Also catch inline dispatchEvent(new CustomEvent('name', ...)) calls
+    const inlineRegex = /dispatchEvent\(\s*new\s+CustomEvent\(\s*['"]([^'"]+)['"]/g;
+    while ((match = inlineRegex.exec(content)) !== null) {
+      const eventName = match[1];
+      if (!events[eventName]) {
+        const callbackName = 'on' + eventName.split('-').map(part =>
+          part.charAt(0).toUpperCase() + part.slice(1)
+        ).join('');
+        events[eventName] = callbackName;
+      }
     }
 
     // Detect if form-associated

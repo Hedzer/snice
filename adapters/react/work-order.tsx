@@ -21,7 +21,9 @@ export interface WorkOrderProps extends SniceBaseProps {
   showQr?: any;
   qrData?: any;
   qrPosition?: any;
-
+  onTaskToggle?: (event: any) => void;
+  onStatusChange?: (event: any) => void;
+  onWoSign?: (event: any) => void;
 }
 
 /**
@@ -43,6 +45,6 @@ export interface WorkOrderProps extends SniceBaseProps {
 export const WorkOrder = createReactAdapter<WorkOrderProps>({
   tagName: 'snice-work-order',
   properties: ["woNumber","date","dueDate","priority","status","customer","description","tasks","parts","asset","laborRate","notes","variant","showQr","qrData","qrPosition"],
-  events: {},
+  events: {"task-toggle":"onTaskToggle","status-change":"onStatusChange","wo-sign":"onWoSign"},
   formAssociated: false
 });

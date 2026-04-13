@@ -15,7 +15,10 @@ export interface QrReaderProps extends SniceBaseProps {
   lastScan?: any;
   errorMessage?: any;
   showSnapshot?: any;
-
+  onQrScan?: (event: any) => void;
+  onQrError?: (event: any) => void;
+  onCameraReady?: (event: any) => void;
+  onCameraError?: (event: any) => void;
 }
 
 /**
@@ -37,6 +40,6 @@ export interface QrReaderProps extends SniceBaseProps {
 export const QrReader = createReactAdapter<QrReaderProps>({
   tagName: 'snice-qr-reader',
   properties: ["autoStart","camera","pickFirst","manualSnap","scanSpeed","tapStart","scanning","lastScan","errorMessage","showSnapshot"],
-  events: {},
+  events: {"qr-scan":"onQrScan","qr-error":"onQrError","camera-ready":"onCameraReady","camera-error":"onCameraError"},
   formAssociated: false
 });

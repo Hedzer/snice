@@ -13,7 +13,7 @@ export interface StepInputProps extends SniceBaseProps {
   readonly?: any;
   size?: any;
   wrap?: any;
-
+  onValueChange?: (event: any) => void;
 }
 
 /**
@@ -35,6 +35,6 @@ export interface StepInputProps extends SniceBaseProps {
 export const StepInput = createReactAdapter<StepInputProps>({
   tagName: 'snice-step-input',
   properties: ["value","min","max","step","disabled","readonly","size","wrap"],
-  events: {},
+  events: {"value-change":"onValueChange"},
   formAssociated: false
 });

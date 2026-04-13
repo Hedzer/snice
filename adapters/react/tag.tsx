@@ -10,7 +10,7 @@ export interface TagProps extends SniceBaseProps {
   removable?: any;
   outline?: any;
   pill?: any;
-
+  onTagRemove?: (event: any) => void;
 }
 
 /**
@@ -32,6 +32,6 @@ export interface TagProps extends SniceBaseProps {
 export const Tag = createReactAdapter<TagProps>({
   tagName: 'snice-tag',
   properties: ["variant","size","removable","outline","pill"],
-  events: {},
+  events: {"tag-remove":"onTagRemove"},
   formAssociated: false
 });

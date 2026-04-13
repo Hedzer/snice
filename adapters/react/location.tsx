@@ -20,7 +20,7 @@ export interface LocationProps extends SniceBaseProps {
   iconImage?: any;
   mapUrl?: any;
   clickable?: any;
-
+  onLocationClick?: (event: any) => void;
 }
 
 /**
@@ -42,6 +42,6 @@ export interface LocationProps extends SniceBaseProps {
 export const Location = createReactAdapter<LocationProps>({
   tagName: 'snice-location',
   properties: ["mode","name","address","city","state","country","zipCode","latitude","longitude","showMap","showIcon","icon","iconImage","mapUrl","clickable"],
-  events: {},
+  events: {"location-click":"onLocationClick"},
   formAssociated: false
 });

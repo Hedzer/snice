@@ -13,7 +13,11 @@ export interface FlowProps extends SniceBaseProps {
   panEnabled?: any;
   minimap?: any;
   editable?: any;
-
+  onNodeDrag?: (event: any) => void;
+  onNodeSelect?: (event: any) => void;
+  onEdgeConnect?: (event: any) => void;
+  onEdgeDisconnect?: (event: any) => void;
+  onCanvasClick?: (event: any) => void;
 }
 
 /**
@@ -35,6 +39,6 @@ export interface FlowProps extends SniceBaseProps {
 export const Flow = createReactAdapter<FlowProps>({
   tagName: 'snice-flow',
   properties: ["nodes","edges","snapToGrid","gridSize","zoomEnabled","panEnabled","minimap","editable"],
-  events: {},
+  events: {"node-drag":"onNodeDrag","node-select":"onNodeSelect","edge-connect":"onEdgeConnect","edge-disconnect":"onEdgeDisconnect","canvas-click":"onCanvasClick"},
   formAssociated: false
 });

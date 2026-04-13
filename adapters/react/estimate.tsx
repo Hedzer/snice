@@ -21,7 +21,9 @@ export interface EstimateProps extends SniceBaseProps {
   showQr?: any;
   qrData?: any;
   qrPosition?: any;
-
+  onEstimateAccept?: (event: any) => void;
+  onEstimateDecline?: (event: any) => void;
+  onItemToggle?: (event: any) => void;
 }
 
 /**
@@ -43,6 +45,6 @@ export interface EstimateProps extends SniceBaseProps {
 export const Estimate = createReactAdapter<EstimateProps>({
   tagName: 'snice-estimate',
   properties: ["estimateNumber","date","expiryDate","status","from","to","items","currency","taxRate","discount","notes","terms","variant","showQr","qrData","qrPosition"],
-  events: {},
+  events: {"estimate-accept":"onEstimateAccept","estimate-decline":"onEstimateDecline","item-toggle":"onItemToggle"},
   formAssociated: false
 });

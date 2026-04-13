@@ -16,7 +16,9 @@ export interface BinpackProps extends SniceBaseProps {
   resize?: any;
   draggable?: any;
   dragThrottle?: any;
-
+  onBinpackLayoutComplete?: (event: any) => void;
+  onBinpackFitComplete?: (event: any) => void;
+  onBinpackDragItemPositioned?: (event: any) => void;
 }
 
 /**
@@ -38,6 +40,6 @@ export interface BinpackProps extends SniceBaseProps {
 export const Binpack = createReactAdapter<BinpackProps>({
   tagName: 'snice-binpack',
   properties: ["gap","columnWidth","rowHeight","horizontal","originLeft","originTop","transitionDuration","stagger","resize","draggable","dragThrottle"],
-  events: {},
+  events: {"binpack-layout-complete":"onBinpackLayoutComplete","binpack-fit-complete":"onBinpackFitComplete","binpack-drag-item-positioned":"onBinpackDragItemPositioned"},
   formAssociated: false
 });

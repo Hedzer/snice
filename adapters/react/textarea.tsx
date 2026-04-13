@@ -25,7 +25,10 @@ export interface TextareaProps extends SniceBaseProps {
   autocomplete?: any;
   name?: any;
   autoGrow?: any;
-
+  onTextareaInput?: (event: any) => void;
+  onTextareaChange?: (event: any) => void;
+  onTextareaFocus?: (event: any) => void;
+  onTextareaBlur?: (event: any) => void;
 }
 
 /**
@@ -47,6 +50,6 @@ export interface TextareaProps extends SniceBaseProps {
 export const Textarea = createReactAdapter<TextareaProps>({
   tagName: 'snice-textarea',
   properties: ["size","variant","resize","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","rows","cols","maxlength","minlength","autocomplete","name","autoGrow"],
-  events: {},
+  events: {"textarea-input":"onTextareaInput","textarea-change":"onTextareaChange","textarea-focus":"onTextareaFocus","textarea-blur":"onTextareaBlur"},
   formAssociated: false
 });

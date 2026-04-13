@@ -8,7 +8,8 @@ export interface DataCardProps extends SniceBaseProps {
   fields?: any;
   editable?: any;
   variant?: any;
-
+  onFieldChange?: (event: any) => void;
+  onFieldSave?: (event: any) => void;
 }
 
 /**
@@ -30,6 +31,6 @@ export interface DataCardProps extends SniceBaseProps {
 export const DataCard = createReactAdapter<DataCardProps>({
   tagName: 'snice-data-card',
   properties: ["fields","editable","variant"],
-  events: {},
+  events: {"field-change":"onFieldChange","field-save":"onFieldSave"},
   formAssociated: false
 });

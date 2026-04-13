@@ -12,7 +12,8 @@ export interface CountdownProps extends SniceBaseProps {
   hours?: any;
   minutes?: any;
   seconds?: any;
-
+  onCountdownComplete?: (event: any) => void;
+  onCountdownTick?: (event: any) => void;
 }
 
 /**
@@ -34,6 +35,6 @@ export interface CountdownProps extends SniceBaseProps {
 export const Countdown = createReactAdapter<CountdownProps>({
   tagName: 'snice-countdown',
   properties: ["target","format","variant","days","hours","minutes","seconds"],
-  events: {},
+  events: {"countdown-complete":"onCountdownComplete","countdown-tick":"onCountdownTick"},
   formAssociated: false
 });

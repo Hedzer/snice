@@ -9,7 +9,7 @@ export interface OrderTrackerProps extends SniceBaseProps {
   trackingNumber?: any;
   carrier?: any;
   variant?: any;
-
+  onStepClick?: (event: any) => void;
 }
 
 /**
@@ -31,6 +31,6 @@ export interface OrderTrackerProps extends SniceBaseProps {
 export const OrderTracker = createReactAdapter<OrderTrackerProps>({
   tagName: 'snice-order-tracker',
   properties: ["steps","trackingNumber","carrier","variant"],
-  events: {},
+  events: {"step-click":"onStepClick"},
   formAssociated: false
 });

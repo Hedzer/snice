@@ -15,7 +15,9 @@ export interface CandlestickProps extends SniceBaseProps {
   yAxisFormat?: any;
   zoomEnabled?: any;
   animation?: any;
-
+  onCandleClick?: (event: any) => void;
+  onCandleHover?: (event: any) => void;
+  onCrosshairMove?: (event: any) => void;
 }
 
 /**
@@ -37,6 +39,6 @@ export interface CandlestickProps extends SniceBaseProps {
 export const Candlestick = createReactAdapter<CandlestickProps>({
   tagName: 'snice-candlestick',
   properties: ["data","showVolume","showGrid","showCrosshair","bullishColor","bearishColor","timeFormat","yAxisFormat","zoomEnabled","animation"],
-  events: {},
+  events: {"candle-click":"onCandleClick","candle-hover":"onCandleHover","crosshair-move":"onCrosshairMove"},
   formAssociated: false
 });

@@ -18,7 +18,7 @@ export interface ButtonProps extends SniceBaseProps {
   download?: any;
   icon?: any;
   iconPlacement?: any;
-
+  onButtonClick?: (event: any) => void;
 }
 
 /**
@@ -40,6 +40,6 @@ export interface ButtonProps extends SniceBaseProps {
 export const Button = createReactAdapter<ButtonProps>({
   tagName: 'snice-button',
   properties: ["variant","size","type","disabled","loading","outline","pill","circle","href","target","download","icon","iconPlacement"],
-  events: {},
+  events: {"button-click":"onButtonClick"},
   formAssociated: false
 });

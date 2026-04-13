@@ -9,7 +9,7 @@ export interface FlipCardProps extends SniceBaseProps {
   clickToFlip?: any;
   direction?: any;
   duration?: any;
-
+  onFlipChange?: (event: any) => void;
 }
 
 /**
@@ -31,6 +31,6 @@ export interface FlipCardProps extends SniceBaseProps {
 export const FlipCard = createReactAdapter<FlipCardProps>({
   tagName: 'snice-flip-card',
   properties: ["flipped","clickToFlip","direction","duration"],
-  events: {},
+  events: {"flip-change":"onFlipChange"},
   formAssociated: false
 });

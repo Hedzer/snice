@@ -25,7 +25,12 @@ export interface TimePickerProps extends SniceBaseProps {
   loading?: any;
   clearable?: any;
   showDropdown?: any;
-
+  onTimeChange?: (event: any) => void;
+  onTimepickerFocus?: (event: any) => void;
+  onTimepickerBlur?: (event: any) => void;
+  onTimepickerOpen?: (event: any) => void;
+  onTimepickerClose?: (event: any) => void;
+  onTimepickerClear?: (event: any) => void;
 }
 
 /**
@@ -47,6 +52,6 @@ export interface TimePickerProps extends SniceBaseProps {
 export const TimePicker = createReactAdapter<TimePickerProps>({
   tagName: 'snice-time-picker',
   properties: ["value","format","step","minTime","maxTime","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","size","loading","clearable","showDropdown"],
-  events: {},
+  events: {"time-change":"onTimeChange","timepicker-focus":"onTimepickerFocus","timepicker-blur":"onTimepickerBlur","timepicker-open":"onTimepickerOpen","timepicker-close":"onTimepickerClose","timepicker-clear":"onTimepickerClear"},
   formAssociated: false
 });

@@ -9,7 +9,8 @@ export interface MetricTableProps extends SniceBaseProps {
   data?: any;
   sortBy?: any;
   sortDirection?: any;
-
+  onSortChange?: (event: any) => void;
+  onRowClick?: (event: any) => void;
 }
 
 /**
@@ -31,6 +32,6 @@ export interface MetricTableProps extends SniceBaseProps {
 export const MetricTable = createReactAdapter<MetricTableProps>({
   tagName: 'snice-metric-table',
   properties: ["columns","data","sortBy","sortDirection"],
-  events: {},
+  events: {"sort-change":"onSortChange","row-click":"onRowClick"},
   formAssociated: false
 });

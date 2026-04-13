@@ -12,7 +12,7 @@ export interface ProgressRingProps extends SniceBaseProps {
   color?: any;
   showValue?: any;
   label?: any;
-
+  onProgressComplete?: (event: any) => void;
 }
 
 /**
@@ -34,6 +34,6 @@ export interface ProgressRingProps extends SniceBaseProps {
 export const ProgressRing = createReactAdapter<ProgressRingProps>({
   tagName: 'snice-progress-ring',
   properties: ["value","max","size","thickness","color","showValue","label"],
-  events: {},
+  events: {"progress-complete":"onProgressComplete"},
   formAssociated: false
 });

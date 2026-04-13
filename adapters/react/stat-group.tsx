@@ -8,7 +8,7 @@ export interface StatGroupProps extends SniceBaseProps {
   stats?: any;
   columns?: any;
   variant?: any;
-
+  onStatClick?: (event: any) => void;
 }
 
 /**
@@ -30,6 +30,6 @@ export interface StatGroupProps extends SniceBaseProps {
 export const StatGroup = createReactAdapter<StatGroupProps>({
   tagName: 'snice-stat-group',
   properties: ["stats","columns","variant"],
-  events: {},
+  events: {"stat-click":"onStatClick"},
   formAssociated: false
 });

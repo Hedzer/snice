@@ -9,7 +9,9 @@ export interface PdfViewerProps extends SniceBaseProps {
   page?: any;
   zoom?: any;
   fit?: any;
-
+  onPageChange?: (event: any) => void;
+  onPdfLoaded?: (event: any) => void;
+  onPdfError?: (event: any) => void;
 }
 
 /**
@@ -31,6 +33,6 @@ export interface PdfViewerProps extends SniceBaseProps {
 export const PdfViewer = createReactAdapter<PdfViewerProps>({
   tagName: 'snice-pdf-viewer',
   properties: ["src","page","zoom","fit"],
-  events: {},
+  events: {"page-change":"onPageChange","pdf-loaded":"onPdfLoaded","pdf-error":"onPdfError"},
   formAssociated: false
 });
