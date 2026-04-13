@@ -1,3 +1,10 @@
+## [4.35.1](https://github.com/Hedzer/snice/compare/v4.35.0...v4.35.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* **cdn:** mark Node.js builtins as external for pdf-viewer ([dc327a6](https://github.com/Hedzer/snice/commit/dc327a6f1a87d539251c881e6201286f34109c48))
+
 # [4.35.0](https://github.com/Hedzer/snice/compare/v4.34.2...v4.35.0) (2026-04-13)
 
 
