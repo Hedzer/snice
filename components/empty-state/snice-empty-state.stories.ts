@@ -206,3 +206,89 @@ export const EdgeLongTitleAndDescription: Story = {
 export const EdgeDefaultsOnly: Story = {
   render: () => box(makeEmptyState({})),
 };
+
+// h2: CSS Parts Styling
+// Parts available: container, icon, title, description, action
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'es-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .es-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+      .es-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.4rem;
+      }
+      .es-parts-demo .demo-box { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      /* Styled empty-state parts */
+      .es-parts-demo .styled-es::part(container) {
+        background: linear-gradient(135deg, #1a0533, #2d0e5c);
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        border: 1px solid #5b21b6;
+      }
+      .es-parts-demo .styled-es::part(icon) {
+        font-size: 3rem;
+        background: rgba(139, 92, 246, 0.2);
+        border-radius: 50%;
+        width: 5rem;
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        border: 2px solid #7c3aed;
+      }
+      .es-parts-demo .styled-es::part(title) {
+        color: #c4b5fd;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+      }
+      .es-parts-demo .styled-es::part(description) {
+        color: #a78bfa;
+        font-size: 0.875rem;
+        margin: 0 0 1.5rem;
+      }
+      .es-parts-demo .styled-es::part(action) {
+        background: #7c3aed;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .es-parts-demo .styled-es::part(action):hover {
+        background: #6d28d9;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const makeBox = (label: string, el: HTMLElement): HTMLElement => {
+      const b = document.createElement('div');
+      b.className = 'demo-box';
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      b.appendChild(lbl);
+      b.appendChild(el);
+      return b;
+    };
+
+    const defaultEl = makeEmptyState({ icon: '📭', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
+    wrap.appendChild(makeBox('Default (no ::part() styles)', box(defaultEl)));
+
+    const styledEl = makeEmptyState({ icon: '📭', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
+    styledEl.classList.add('styled-es');
+    wrap.appendChild(makeBox('Styled via ::part() — container, icon, title, description, action', styledEl));
+
+    return wrap;
+  },
+};

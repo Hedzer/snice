@@ -227,3 +227,87 @@ export const CircleContainFixedSize: Story = {
     makeImg({ src: 'https://picsum.photos/seed/ee/400/200', variant: 'circle', fit: 'cover', width: '150px', height: '150px', alt: 'Circle cover' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts available: container, placeholder, image
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'img-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .img-parts-demo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+      .img-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.5rem;
+      }
+      .img-parts-demo .demo-box { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      /* Styled image parts */
+      .img-parts-demo .styled-img::part(container) {
+        border: 3px solid #f59e0b;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+        overflow: hidden;
+      }
+      .img-parts-demo .styled-img::part(image) {
+        filter: saturate(1.4) contrast(1.1);
+        transition: filter 0.3s, transform 0.3s;
+      }
+      .img-parts-demo .styled-img::part(image):hover {
+        filter: saturate(1.8) brightness(1.1);
+        transform: scale(1.05);
+      }
+
+      /* Styled placeholder parts */
+      .img-parts-demo .styled-placeholder::part(container) {
+        border: 2px dashed #6366f1;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .img-parts-demo .styled-placeholder::part(placeholder) {
+        background: linear-gradient(135deg, #1e1b4b, #312e81, #3730a3);
+        animation: custom-pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes custom-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+    `;
+    wrap.appendChild(style);
+
+    const box1 = document.createElement('div');
+    box1.className = 'demo-box';
+    const lbl1 = document.createElement('div');
+    lbl1.className = 'demo-label';
+    lbl1.textContent = 'Default (no ::part() styles)';
+    box1.appendChild(lbl1);
+    box1.appendChild(makeImg({ src: 'https://picsum.photos/seed/img1/300/200', variant: 'rounded', width: '280px', height: '180px', alt: 'Default image' }));
+    wrap.appendChild(box1);
+
+    const box2 = document.createElement('div');
+    box2.className = 'demo-box';
+    const lbl2 = document.createElement('div');
+    lbl2.className = 'demo-label';
+    lbl2.textContent = 'Styled via ::part() — container, image (hover for effect)';
+    box2.appendChild(lbl2);
+    const styledImg = makeImg({ src: 'https://picsum.photos/seed/img2/300/200', variant: 'square', width: '280px', height: '180px', alt: 'Styled image' });
+    styledImg.classList.add('styled-img');
+    box2.appendChild(styledImg);
+    wrap.appendChild(box2);
+
+    const box3 = document.createElement('div');
+    box3.className = 'demo-box';
+    const lbl3 = document.createElement('div');
+    lbl3.className = 'demo-label';
+    lbl3.textContent = 'Styled placeholder via ::part(placeholder)';
+    box3.appendChild(lbl3);
+    const placeholderImg = makeImg({ variant: 'rounded', width: '280px', height: '180px', alt: 'Placeholder' });
+    placeholderImg.classList.add('styled-placeholder');
+    box3.appendChild(placeholderImg);
+    wrap.appendChild(box3);
+
+    return wrap;
+  },
+};

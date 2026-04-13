@@ -269,3 +269,84 @@ export const SelectableFalse: Story = {
     return box;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available on snice-tree: container, content
+// Parts available on snice-tree-item: content, loading, expander, checkbox, icon, label, children, icon-image, icon-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'tree-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .tree-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+      .tree-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.4rem;
+      }
+
+      /* Styled tree parts */
+      .tree-parts-demo .styled-tree snice-tree::part(container) {
+        background: #0a0f1e;
+        border-radius: 10px;
+        padding: 0.5rem;
+        border: 1px solid #1e3356;
+      }
+      .tree-parts-demo .styled-tree snice-tree::part(content) {
+        padding: 0.25rem 0;
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(content) {
+        border-radius: 6px;
+        padding: 0.3rem 0.5rem;
+        margin: 1px 0;
+        transition: background 0.15s;
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(content):hover {
+        background: rgba(56, 139, 253, 0.12);
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(expander) {
+        color: #388bfd;
+        font-size: 0.8rem;
+        width: 1.2rem;
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(label) {
+        color: #c9d1d9;
+        font-size: 0.875rem;
+        font-family: 'Fira Code', monospace;
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(icon) {
+        font-size: 0.9rem;
+        margin-right: 0.25rem;
+      }
+      .tree-parts-demo .styled-tree snice-tree-item::part(children) {
+        border-left: 1px dashed #1e3356;
+        margin-left: 0.5rem;
+        padding-left: 0.5rem;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const makeDemo = (label: string, cls: string): HTMLElement => {
+      const box = document.createElement('div');
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      box.appendChild(lbl);
+      const outer = document.createElement('div');
+      outer.style.cssText = 'max-width:360px;';
+      if (cls) outer.classList.add(cls);
+      const tree = document.createElement('snice-tree') as any;
+      tree.toggleAttribute('show-icons', true);
+      tree.nodes = JSON.parse(JSON.stringify(fileTree));
+      outer.appendChild(tree);
+      box.appendChild(outer);
+      return box;
+    };
+
+    wrap.appendChild(makeDemo('Default (no ::part() styles)', ''));
+    wrap.appendChild(makeDemo('Styled via ::part() — container, content, expander, label, icon, children', 'styled-tree'));
+
+    return wrap;
+  },
+};

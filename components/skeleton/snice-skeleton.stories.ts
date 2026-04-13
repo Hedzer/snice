@@ -200,3 +200,69 @@ export const ListSkeletonPattern: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available: base, bone
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'sk-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .sk-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 700px; align-items: start; }
+      .sk-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.5rem;
+      }
+      .sk-parts-demo .demo-box { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      /* Style the base container */
+      .sk-parts-demo .styled-sk::part(base) {
+        gap: 0.75rem;
+        padding: 0.5rem;
+        background: rgba(16, 185, 129, 0.05);
+        border-radius: 8px;
+      }
+      /* Style each individual bone */
+      .sk-parts-demo .styled-sk::part(bone) {
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.15) 25%,
+          rgba(16, 185, 129, 0.4) 50%,
+          rgba(16, 185, 129, 0.15) 75%
+        );
+        background-size: 200% 100%;
+        animation: emerald-shimmer 1.8s ease-in-out infinite;
+        border-radius: 6px;
+      }
+      @keyframes emerald-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `;
+    wrap.appendChild(style);
+
+    const box1 = document.createElement('div');
+    box1.className = 'demo-box';
+    const lbl1 = document.createElement('div');
+    lbl1.className = 'demo-label';
+    lbl1.textContent = 'Default (no ::part() styles)';
+    box1.appendChild(lbl1);
+    box1.appendChild(makeSkeleton({ variant: 'text', count: 4, height: '16px' }));
+    wrap.appendChild(box1);
+
+    const box2 = document.createElement('div');
+    box2.className = 'demo-box';
+    const lbl2 = document.createElement('div');
+    lbl2.className = 'demo-label';
+    lbl2.textContent = 'Styled via ::part() — base, bone (custom emerald shimmer)';
+    box2.appendChild(lbl2);
+    const styledSk = makeSkeleton({ variant: 'text', count: 4, height: '16px' });
+    styledSk.classList.add('styled-sk');
+    box2.appendChild(styledSk);
+    wrap.appendChild(box2);
+
+    return wrap;
+  },
+};
