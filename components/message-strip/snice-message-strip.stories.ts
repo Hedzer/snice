@@ -231,3 +231,123 @@ export const RichSlotContent: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: icon, content, dismiss
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; max-width: 640px; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: .25rem; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .25rem; }
+
+      /* ::part(icon) — the leading icon area */
+      .parts-demo snice-message-strip.styled-icon::part(icon) {
+        background: #1e1b4b;
+        color: #818cf8;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        align-self: center;
+      }
+
+      /* ::part(content) — the message text area */
+      .parts-demo snice-message-strip.styled-content::part(content) {
+        font-family: 'Courier New', monospace;
+        font-size: .85rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        color: #065f46;
+        background: #d1fae5;
+        border-radius: 4px;
+        padding: .25rem .5rem;
+      }
+
+      /* ::part(dismiss) — the × dismiss button */
+      .parts-demo snice-message-strip.styled-dismiss::part(dismiss) {
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: .85rem;
+        font-weight: 900;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(239,68,68,.4);
+        transition: transform .15s;
+      }
+      .parts-demo snice-message-strip.styled-dismiss::part(dismiss):hover {
+        transform: scale(1.15);
+      }
+
+      /* Combined: all three parts styled */
+      .parts-demo snice-message-strip.styled-all::part(icon) {
+        color: #6366f1;
+        font-size: 1.25rem;
+      }
+      .parts-demo snice-message-strip.styled-all::part(content) {
+        font-weight: 600;
+        color: #1e1b4b;
+      }
+      .parts-demo snice-message-strip.styled-all::part(dismiss) {
+        background: #6366f1;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: .15rem .5rem;
+        font-size: .75rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeStrip('Default message strip — no part overrides applied.', { variant: 'info', dismissable: true });
+    demo.appendChild(makeItem('default', def));
+
+    const icon = makeStrip('Custom ::part(icon) styling — rounded dark bubble.', { variant: 'info', dismissable: true });
+    icon.className = 'styled-icon';
+    demo.appendChild(makeItem('::part(icon) — dark rounded bubble', icon));
+
+    const content = makeStrip('Custom ::part(content) styling — monospace success theme.', { variant: 'success', dismissable: true });
+    content.className = 'styled-content';
+    demo.appendChild(makeItem('::part(content) — monospace green bg', content));
+
+    const dismiss = makeStrip('Custom ::part(dismiss) — bold red dismiss button with hover scale.', { variant: 'warning', dismissable: true });
+    dismiss.className = 'styled-dismiss';
+    demo.appendChild(makeItem('::part(dismiss) — red circle with hover', dismiss));
+
+    const all = makeStrip('All three parts styled together for a coherent custom theme.', { variant: 'danger', dismissable: true });
+    all.className = 'styled-all';
+    demo.appendChild(makeItem('all parts combined', all));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

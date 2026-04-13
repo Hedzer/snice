@@ -242,3 +242,109 @@ export const FullCombinationSparklineSentimentColorValueSlots: Story = {
     return row(el);
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: container, header, main, label, value, trend, trend-icon, trend-value, sparkline
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 1.5rem; flex-wrap: wrap; padding: 1rem; align-items: flex-start; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+      /* ::part(container) — outer KPI card */
+      .parts-demo snice-kpi.styled::part(container) {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border: 1px solid #334155;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      }
+
+      /* ::part(header) — header section */
+      .parts-demo snice-kpi.styled::part(header) {
+        padding: 1rem 1rem .5rem;
+      }
+
+      /* ::part(main) — label + value block */
+      .parts-demo snice-kpi.styled::part(main) {
+        gap: .25rem;
+      }
+
+      /* ::part(label) — metric label */
+      .parts-demo snice-kpi.styled::part(label) {
+        color: #64748b;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+      }
+
+      /* ::part(value) — the big number */
+      .parts-demo snice-kpi.styled::part(value) {
+        color: #f1f5f9;
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -.04em;
+        line-height: 1;
+      }
+
+      /* ::part(trend) — trend wrapper */
+      .parts-demo snice-kpi.styled::part(trend) {
+        background: rgba(16,185,129,.15);
+        border: 1px solid rgba(16,185,129,.3);
+        border-radius: 1rem;
+        padding: .15rem .6rem;
+        align-self: flex-start;
+        margin-top: .25rem;
+      }
+
+      /* ::part(trend-icon) — arrow icon */
+      .parts-demo snice-kpi.styled::part(trend-icon) {
+        color: #10b981;
+        font-size: 1rem;
+      }
+
+      /* ::part(trend-value) — "+12%" text */
+      .parts-demo snice-kpi.styled::part(trend-value) {
+        color: #10b981;
+        font-weight: 700;
+        font-size: .8rem;
+      }
+
+      /* ::part(sparkline) — sparkline chart area */
+      .parts-demo snice-kpi.styled::part(sparkline) {
+        border-top: 1px solid #1e293b;
+        padding: .5rem 1rem;
+        opacity: .8;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeKpi({ label: 'Revenue', value: '$45,200', sentiment: 'up', 'trend-value': '+12%', 'show-sparkline': '' }, TREND_UP);
+    demo.appendChild(makeItem('default', def));
+
+    const styled = makeKpi({ label: 'Revenue', value: '$45,200', sentiment: 'up', 'trend-value': '+12%', 'show-sparkline': '' }, TREND_UP);
+    styled.className = 'styled';
+    demo.appendChild(makeItem('all parts styled (dark)', styled));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

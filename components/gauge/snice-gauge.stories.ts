@@ -209,3 +209,72 @@ export const EdgeValueExceedsMax: Story = {
 export const EdgeValueBelowMin: Story = {
   render: () => row(makeGauge({ value: -20, min: 0, max: 100, label: 'Clamped' })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, value, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .gauge-parts-demo { display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: flex-start; }
+      .gauge-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+      .gauge-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; text-align: center; }
+
+      /* Styled: ::part(base) background, border */
+      .gauge-parts-demo--styled snice-gauge::part(base) {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 0 20px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        border: 1px solid rgba(99,102,241,0.4);
+      }
+
+      /* Styled: ::part(value) - the numeric text */
+      .gauge-parts-demo--styled snice-gauge::part(value) {
+        color: #e0e7ff;
+        font-size: 1.4rem;
+        font-weight: 800;
+        text-shadow: 0 0 12px rgba(99,102,241,0.8);
+        letter-spacing: -0.5px;
+      }
+
+      /* Styled: ::part(label) - the descriptive text */
+      .gauge-parts-demo--styled snice-gauge::part(label) {
+        color: #a5b4fc;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'gauge-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'gauge-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'gauge-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeGauge({ value: 72, variant: 'primary', label: 'CPU', size: 'medium' }));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'gauge-parts-demo__item gauge-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'gauge-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(value) ::part(label)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeGauge({ value: 72, variant: 'primary', label: 'CPU', size: 'medium' }));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

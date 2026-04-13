@@ -215,3 +215,61 @@ export const NegativeResult: Story = {
 export const EmptyData: Story = {
   render: () => makeWaterfall({ 'show-values': true, 'show-connectors': true }, []),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, chart
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .waterfall-parts-demo { display: flex; flex-direction: column; gap: 2rem; }
+      .waterfall-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .waterfall-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outermost container */
+      .waterfall-parts-demo--styled snice-waterfall::part(base) {
+        background: linear-gradient(135deg, #0c0a1e 0%, #1a1040 100%);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid rgba(139,92,246,0.3);
+        box-shadow: 0 8px 40px rgba(139,92,246,0.2);
+      }
+
+      /* Styled: ::part(chart) - the chart rendering area */
+      .waterfall-parts-demo--styled snice-waterfall::part(chart) {
+        filter: saturate(1.4) brightness(1.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'waterfall-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'waterfall-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'waterfall-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeWaterfall({ 'show-values': true, 'show-connectors': true }, profitLoss));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'waterfall-parts-demo__item waterfall-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'waterfall-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(chart)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeWaterfall({ 'show-values': true, 'show-connectors': true }, profitLoss));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

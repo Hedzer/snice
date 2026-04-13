@@ -72,15 +72,15 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
         [data-snice-spotlight-portal] .btn-skip { border: none; background: none; color: var(--snice-color-text-tertiary, rgb(115 115 115)); padding: var(--snice-spacing-2xs, 0.25rem); }
         [data-snice-spotlight-portal] .btn-skip:hover { color: var(--snice-color-text, rgb(23 23 23)); }
       </style>
-      <div class="overlay">
-        <div class="backdrop"></div>
-        <div class="cutout"></div>
-        <div class="popover">
-          <div class="popover-title"></div>
-          <div class="popover-description"></div>
+      <div class="overlay" part="base">
+        <div class="backdrop" part="backdrop"></div>
+        <div class="cutout" part="cutout"></div>
+        <div class="popover" part="popover">
+          <div class="popover-title" part="title"></div>
+          <div class="popover-description" part="description"></div>
           <div class="popover-footer">
-            <span class="step-indicator"></span>
-            <div class="popover-actions"></div>
+            <span class="step-indicator" part="step-indicator"></span>
+            <div class="popover-actions" part="actions"></div>
           </div>
         </div>
       </div>
@@ -148,6 +148,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
       const skipBtn = document.createElement('button');
       skipBtn.className = 'btn btn-skip';
+      skipBtn.setAttribute('part', 'button-skip');
       skipBtn.textContent = 'Skip';
       skipBtn.addEventListener('click', () => this.skip());
       actionsEl.appendChild(skipBtn);
@@ -155,6 +156,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       if (!isFirst) {
         const backBtn = document.createElement('button');
         backBtn.className = 'btn';
+        backBtn.setAttribute('part', 'button-back');
         backBtn.textContent = 'Back';
         backBtn.addEventListener('click', () => this.prev());
         actionsEl.appendChild(backBtn);
@@ -162,6 +164,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'btn btn-primary';
+      nextBtn.setAttribute('part', 'button-next');
       nextBtn.textContent = isLast ? 'Done' : 'Next';
       nextBtn.addEventListener('click', () => this.next());
       actionsEl.appendChild(nextBtn);

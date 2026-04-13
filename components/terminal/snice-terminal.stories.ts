@@ -260,3 +260,98 @@ export const HashPrompt: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: container, output, input-line, prompt, input, line, timestamp, line-content
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Styled: container — outermost terminal wrapper */
+      .parts-demo .demo-styled snice-terminal::part(container) {
+        background: #0d1117;
+        border: 2px solid #00ff41;
+        border-radius: 8px;
+        box-shadow: 0 0 30px rgba(0, 255, 65, 0.35), inset 0 0 60px rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      /* Styled: output — scrollable output area */
+      .parts-demo .demo-styled snice-terminal::part(output) {
+        min-height: 100px;
+        margin-bottom: 0.5rem;
+      }
+      /* Styled: input-line — row containing prompt + input */
+      .parts-demo .demo-styled snice-terminal::part(input-line) {
+        border-top: 1px solid rgba(0, 255, 65, 0.25);
+        padding-top: 0.5rem;
+      }
+      /* Styled: prompt — prompt symbol/text */
+      .parts-demo .demo-styled snice-terminal::part(prompt) {
+        color: #00ff41;
+        font-weight: 700;
+        margin-right: 6px;
+        text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+      }
+      /* Styled: input — text input field */
+      .parts-demo .demo-styled snice-terminal::part(input) {
+        color: #00ff41;
+        caret-color: #00ff41;
+        background: transparent;
+      }
+      /* Styled: line — individual output lines */
+      .parts-demo .demo-styled snice-terminal::part(line) {
+        padding: 1px 0;
+        border-left: 2px solid transparent;
+        padding-left: 6px;
+      }
+      /* Styled: timestamp — per-line timestamp */
+      .parts-demo .demo-styled snice-terminal::part(timestamp) {
+        color: #3a3a3a;
+        font-size: 0.7rem;
+        margin-right: 8px;
+      }
+      /* Styled: line-content — text of each line */
+      .parts-demo .demo-styled snice-terminal::part(line-content) {
+        color: #c0ffc0;
+      }
+    `;
+
+    function makeTerm(className: string) {
+      const el = document.createElement('snice-terminal') as any;
+      el.style.cssText = 'display:block;width:420px;height:200px;';
+      customElements.whenDefined('snice-terminal').then(() => {
+        if (typeof el.writeln === 'function') {
+          el.writeln('System initialized', 'info');
+          el.writeln('Loading modules... done', 'output');
+          el.writeln('ERROR: disk almost full', 'error');
+          el.writeln('Ready.', 'output');
+        }
+      });
+
+      const wrap = document.createElement('div');
+      wrap.className = className;
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = className === 'demo-default' ? 'Default' : 'Styled (::part(container, output, input-line, prompt, input, line, timestamp, line-content))';
+      wrap.appendChild(label);
+      wrap.appendChild(el);
+      return wrap;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(makeTerm('demo-default'));
+    row.appendChild(makeTerm('demo-styled'));
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

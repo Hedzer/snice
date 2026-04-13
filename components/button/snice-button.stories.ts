@@ -230,3 +230,82 @@ export const AllBooleanStatesCombined: Story = {
     makeBtn('primary', 'L', { circle: true, loading: true }),
   ),
 };
+
+// Available CSS Parts: base, spinner, icon, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(row(
+      makeBtn('primary', 'Primary', { icon: '⭐' }),
+      makeBtn('success', 'Success'),
+      makeBtn('danger',  'Danger'),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-button';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-button snice-button::part(base) {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        border: 2px solid #c0392b;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.5);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: transform 0.15s, box-shadow 0.15s;
+        color: #fff;
+      }
+      .parts-demo-button snice-button::part(base):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(240, 147, 251, 0.65);
+      }
+      .parts-demo-button snice-button::part(label) {
+        font-size: 0.8rem;
+        color: #fff;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      }
+      .parts-demo-button snice-button::part(icon) {
+        filter: drop-shadow(0 0 4px rgba(255,255,255,0.8));
+        font-size: 1.1em;
+      }
+      .parts-demo-button snice-button::part(spinner) {
+        border-color: rgba(255,255,255,0.3);
+        border-top-color: #fff;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const btn1 = document.createElement('snice-button');
+    btn1.setAttribute('variant', 'primary');
+    btn1.setAttribute('icon', '⭐');
+    btn1.textContent = 'Styled Button';
+
+    const btn2 = document.createElement('snice-button');
+    btn2.setAttribute('variant', 'success');
+    btn2.textContent = 'Also Styled';
+
+    const btn3 = document.createElement('snice-button');
+    btn3.setAttribute('variant', 'danger');
+    btn3.toggleAttribute('loading', true);
+    btn3.textContent = 'Loading';
+
+    styledSection.appendChild(row(btn1, btn2, btn3));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

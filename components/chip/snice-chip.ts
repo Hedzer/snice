@@ -54,6 +54,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
            tabindex="${this.disabled ? '-1' : '0'}"
            aria-disabled="${this.disabled}"
            aria-selected="${this.selected}"
+           part="base"
            @click=${(e: MouseEvent) => this.handleChipClick(e)}
            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
         <if ${this.avatar}>

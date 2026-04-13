@@ -246,6 +246,73 @@ export const InlineMode: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base, header, title, body, footer, close, backdrop
+    const style = document.createElement('style');
+    style.textContent = `
+      .styled-drawer::part(base) {
+        background: linear-gradient(180deg, #1e1b4b 0%, #1e293b 100%);
+        border-right: 3px solid #6366f1;
+        box-shadow: 4px 0 32px rgba(99, 102, 241, 0.4);
+      }
+      .styled-drawer::part(header) {
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        border-bottom: 2px solid #6366f1;
+        padding: 1rem;
+      }
+      .styled-drawer::part(title) {
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .styled-drawer::part(body) {
+        color: #c7d2fe;
+        padding: 1rem;
+      }
+      .styled-drawer::part(footer) {
+        background: rgba(99, 102, 241, 0.1);
+        border-top: 1px solid #4338ca;
+        padding: 0.75rem 1rem;
+        color: #a5b4fc;
+        font-size: 0.75rem;
+      }
+      .styled-drawer::part(close) {
+        color: #a5b4fc;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;';
+
+    // Default
+    const box1 = makeBox('200px');
+    const lbl1 = document.createElement('span');
+    lbl1.style.cssText = 'position:absolute;top:.5rem;right:.5rem;font-size:.65rem;color:#888;z-index:9999;background:rgba(0,0,0,0.4);padding:.15rem .4rem;border-radius:4px;';
+    lbl1.textContent = 'default';
+    const title1 = document.createElement('span'); title1.slot = 'title'; title1.textContent = 'Default';
+    const ftr1 = document.createElement('div'); ftr1.slot = 'footer'; ftr1.textContent = 'Footer';
+    const d1 = makeDrawer({ position: 'left', size: 'small', contained: true, open: true, 'no-backdrop': true, 'no-escape-dismiss': true }, title1, makeNav('Dashboard', 'Settings'), ftr1);
+    box1.appendChild(lbl1); box1.appendChild(d1); wrap.appendChild(box1);
+
+    // Styled
+    const box2 = makeBox('200px');
+    const lbl2 = document.createElement('span');
+    lbl2.style.cssText = 'position:absolute;top:.5rem;right:.5rem;font-size:.65rem;color:#888;z-index:9999;background:rgba(0,0,0,0.4);padding:.15rem .4rem;border-radius:4px;';
+    lbl2.textContent = '::part() styled';
+    const title2 = document.createElement('span'); title2.slot = 'title'; title2.textContent = 'Styled';
+    const ftr2 = document.createElement('div'); ftr2.slot = 'footer'; ftr2.textContent = 'Styled Footer';
+    const d2 = makeDrawer({ position: 'left', size: 'small', contained: true, open: true, 'no-backdrop': true, 'no-escape-dismiss': true }, title2, makeNav('Dashboard', 'Settings'), ftr2);
+    d2.className = 'styled-drawer';
+    box2.appendChild(lbl2); box2.appendChild(d2); wrap.appendChild(box2);
+
+    return wrap;
+  },
+};
+
 // h2: Position + Size Combos
 export const PositionSizeCombos: Story = {
   render: () => {

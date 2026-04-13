@@ -198,6 +198,54 @@ export const EmptyValue: Story = {
   render: () => row(makeQr({ value: '' })),
 };
 
+// h2: CSS Parts Styling
+// Available parts: base
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-qr-default snice-qr-code {}
+      .parts-demo-qr-styled snice-qr-code::part(base) {
+        background: #1e1b4b;
+        border: 3px solid #818cf8;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 0 0 6px rgba(129,140,248,0.2), 0 8px 32px rgba(129,140,248,0.15);
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, ...els: HTMLElement[]) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      const row2 = document.createElement('div');
+      row2.style.cssText = 'display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;';
+      els.forEach(el => row2.appendChild(el));
+      sec.appendChild(row2);
+      return sec;
+    }
+
+    const defaultEl = makeQr({ value: DEFAULT_VALUE, size: 180 });
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-qr-default', defaultEl));
+
+    const styledEl = makeQr({ value: DEFAULT_VALUE, size: 180 });
+    wrap.appendChild(section(
+      'Styled: ::part(base) — dark indigo bg + indigo border + glow ring',
+      'parts-demo-qr-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};
+
 // h2: Dot style x Render mode matrix
 export const DotStyleXRenderModeMatrix: Story = {
   render: () => {

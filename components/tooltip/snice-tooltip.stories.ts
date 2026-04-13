@@ -273,3 +273,90 @@ export const OpenAttributeManualControl: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available: trigger, tooltip, content, arrow
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'tt-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .tt-parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; }
+      .tt-parts-demo .demo-row { display: flex; align-items: center; gap: 2rem; padding: 1.5rem 0; }
+      .tt-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; min-width: 160px;
+      }
+
+      /* Styled tooltip trigger */
+      .tt-parts-demo .styled-tt::part(trigger) {
+        outline: 2px dashed #f59e0b;
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      /* Styled tooltip popup */
+      .tt-parts-demo .styled-tt::part(tooltip) {
+        background: linear-gradient(135deg, #1e3a5f, #0f2540);
+        border: 1px solid #3b82f6;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      }
+      /* Styled tooltip content text */
+      .tt-parts-demo .styled-tt::part(content) {
+        color: #93c5fd;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        padding: 0.4rem 0.8rem;
+      }
+      /* Styled arrow */
+      .tt-parts-demo .styled-tt::part(arrow) {
+        border-top-color: #3b82f6;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const row1 = document.createElement('div');
+    row1.className = 'demo-row';
+    const lbl1 = document.createElement('div');
+    lbl1.className = 'demo-label';
+    lbl1.textContent = 'Default (hover to see)';
+    row1.appendChild(lbl1);
+    row1.appendChild(makeTooltip('Default tooltip', { arrow: true }, makeBtn('Hover me')));
+    wrap.appendChild(row1);
+
+    const row2 = document.createElement('div');
+    row2.className = 'demo-row';
+    const lbl2 = document.createElement('div');
+    lbl2.className = 'demo-label';
+    lbl2.textContent = 'Styled via ::part() (hover to see)';
+    row2.appendChild(lbl2);
+    const styledTt = document.createElement('snice-tooltip');
+    styledTt.className = 'styled-tt';
+    styledTt.setAttribute('content', 'Styled tooltip!');
+    styledTt.toggleAttribute('arrow', true);
+    styledTt.appendChild(makeBtn('Hover me'));
+    row2.appendChild(styledTt);
+    wrap.appendChild(row2);
+
+    const row3 = document.createElement('div');
+    row3.className = 'demo-row';
+    const lbl3 = document.createElement('div');
+    lbl3.className = 'demo-label';
+    lbl3.textContent = 'Styled — open (always visible)';
+    row3.appendChild(lbl3);
+    const alwaysOpen = document.createElement('snice-tooltip');
+    alwaysOpen.className = 'styled-tt';
+    alwaysOpen.setAttribute('content', 'Always visible!');
+    alwaysOpen.setAttribute('trigger', 'manual');
+    alwaysOpen.toggleAttribute('open', true);
+    alwaysOpen.toggleAttribute('arrow', true);
+    alwaysOpen.appendChild(makeBtn('Trigger button'));
+    row3.appendChild(alwaysOpen);
+    wrap.appendChild(row3);
+
+    return wrap;
+  },
+};

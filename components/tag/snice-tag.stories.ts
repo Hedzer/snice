@@ -180,3 +180,83 @@ export const AllVariants: Story = {
     return wrap;
   },
 };
+
+// Available CSS Parts: base, icon, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(row(
+      makeTag('primary', 'Primary'),
+      makeTag('success', 'Success'),
+      makeTag('danger',  'Danger'),
+      makeTag('warning', 'Warning'),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-tag';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-tag snice-tag::part(base) {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border: 1.5px solid #38bdf8;
+        border-radius: 6px;
+        box-shadow: 0 0 8px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+        padding: 0.25rem 0.65rem;
+        transition: box-shadow 0.2s;
+      }
+      .parts-demo-tag snice-tag::part(base):hover {
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+      }
+      .parts-demo-tag snice-tag::part(label) {
+        color: #7dd3fc;
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .parts-demo-tag snice-tag::part(icon) {
+        color: #38bdf8;
+        filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.7));
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const t1 = document.createElement('snice-tag');
+    t1.setAttribute('variant', 'primary');
+    t1.textContent = 'Custom';
+
+    const t2 = document.createElement('snice-tag');
+    t2.setAttribute('variant', 'success');
+    const icon2 = document.createElement('span');
+    icon2.slot = 'icon';
+    icon2.textContent = '✓';
+    t2.appendChild(icon2);
+    t2.appendChild(document.createTextNode(' Verified'));
+
+    const t3 = document.createElement('snice-tag');
+    t3.setAttribute('variant', 'danger');
+    t3.textContent = 'Alert';
+
+    const t4 = document.createElement('snice-tag');
+    t4.setAttribute('variant', 'warning');
+    t4.textContent = 'Beta';
+
+    styledSection.appendChild(row(t1, t2, t3, t4));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

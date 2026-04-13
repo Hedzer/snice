@@ -191,3 +191,71 @@ export const EmptyNoData: Story = {
     return el;
   },
 };
+
+// CSS Parts: base
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo snice-permission-matrix { display: block; }
+      .parts-demo .label { font: 700 11px/1 sans-serif; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+      .parts-demo .styled::part(base) {
+        background: #0f172a;
+        border: 2px solid #38bdf8;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 32px rgba(56,189,248,0.2);
+      }
+    `;
+
+    const ROLES = [
+      { id: 'admin', name: 'Admin', description: 'Full access' },
+      { id: 'manager', name: 'Manager', description: 'Manage team' },
+      { id: 'editor', name: 'Editor', description: 'Content editing' },
+      { id: 'viewer', name: 'Viewer', description: 'Read only' },
+    ];
+    const PERMISSIONS = [
+      { id: 'users:read', name: 'View Users', group: 'Users' },
+      { id: 'users:write', name: 'Edit Users', group: 'Users' },
+      { id: 'users:delete', name: 'Delete Users', group: 'Users' },
+      { id: 'content:read', name: 'View Content', group: 'Content' },
+      { id: 'content:write', name: 'Edit Content', group: 'Content' },
+      { id: 'billing:read', name: 'View Billing', group: 'Billing' },
+      { id: 'billing:write', name: 'Manage Billing', group: 'Billing' },
+      { id: 'reports:read', name: 'View Reports', group: 'Reports' },
+    ];
+    const MATRIX = {
+      admin: ['users:read', 'users:write', 'users:delete', 'content:read', 'content:write', 'billing:read', 'billing:write', 'reports:read'],
+      manager: ['users:read', 'users:write', 'content:read', 'content:write', 'billing:read', 'reports:read'],
+      editor: ['content:read', 'content:write', 'reports:read'],
+      viewer: ['content:read', 'reports:read'],
+    };
+
+    const makeMatrix = (cls: string) => {
+      const el = document.createElement('snice-permission-matrix');
+      if (cls) el.classList.add(cls);
+      (el as any).roles = ROLES;
+      (el as any).permissions = PERMISSIONS;
+      (el as any).matrix = MATRIX;
+      return el;
+    };
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-demo');
+
+    const col1 = document.createElement('div');
+    const lbl1 = document.createElement('div'); lbl1.className = 'label'; lbl1.textContent = 'Default';
+    col1.appendChild(lbl1); col1.appendChild(makeMatrix(''));
+
+    const col2 = document.createElement('div');
+    const lbl2 = document.createElement('div'); lbl2.className = 'label'; lbl2.textContent = 'Styled via ::part(base)';
+    col2.appendChild(lbl2); col2.appendChild(makeMatrix('styled'));
+
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

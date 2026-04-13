@@ -261,3 +261,66 @@ export const NoData: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, tree, node
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = document.createElement('snice-org-chart');
+    (defaultEl as any).data = noAvatarData;
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-org-chart';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-org-chart snice-org-chart::part(base) {
+        background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+        border-radius: 12px;
+        padding: 2rem;
+        overflow: auto;
+      }
+      .parts-demo-org-chart snice-org-chart::part(tree) {
+        gap: 2rem;
+      }
+      .parts-demo-org-chart snice-org-chart::part(node) {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px;
+        color: #e0f2fe;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        backdrop-filter: blur(8px);
+        transition: background 0.2s, box-shadow 0.2s;
+      }
+      .parts-demo-org-chart snice-org-chart::part(node):hover {
+        background: rgba(56,189,248,0.2);
+        box-shadow: 0 6px 24px rgba(56,189,248,0.3);
+        border-color: #38bdf8;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = document.createElement('snice-org-chart');
+    (styledEl as any).data = noAvatarData;
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

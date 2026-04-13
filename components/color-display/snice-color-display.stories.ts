@@ -174,3 +174,65 @@ export const Palette: Story = {
     makeCD({ value: '#0f172a', label: 'Gray 900', 'swatch-size': 'large', format: 'hsl' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: container, swatch, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--cd-styled snice-color-display::part(container) {
+        background: #18181b;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        gap: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      }
+      .parts-demo--cd-styled snice-color-display::part(swatch) {
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.2);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
+      }
+      .parts-demo--cd-styled snice-color-display::part(label) {
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        color: #e4e4e7;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    const defaultRow = document.createElement('div');
+    defaultRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:.5rem;';
+    colors.forEach(c => defaultRow.appendChild(makeCD({ value: c, 'swatch-size': 'medium' })));
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(defaultRow);
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--cd-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(container · swatch · label)';
+    const styledRow = document.createElement('div');
+    styledRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:.5rem;';
+    colors.forEach(c => styledRow.appendChild(makeCD({ value: c, 'swatch-size': 'medium' })));
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(styledRow);
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

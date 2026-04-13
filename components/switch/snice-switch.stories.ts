@@ -184,3 +184,80 @@ export const AllVariants: Story = {
     makeSw({ label: 'With state labels', 'label-on': 'On', 'label-off': 'Off', checked: true }),
   ),
 };
+
+// Available CSS Parts: input, track, thumb, spinner, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeSw({ label: 'Off state' }),
+      makeSw({ label: 'On state', checked: true }),
+      makeSw({ label: 'Loading', loading: true }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-switch';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-switch snice-switch::part(track) {
+        background: #1f2937;
+        border: 2px solid #374151;
+        border-radius: 100px;
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+      }
+      .parts-demo-switch snice-switch[checked]::part(track) {
+        background: linear-gradient(135deg, #059669, #10b981);
+        border-color: #34d399;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.55), inset 0 2px 4px rgba(0,0,0,0.2);
+      }
+      .parts-demo-switch snice-switch::part(thumb) {
+        background: linear-gradient(135deg, #6b7280, #9ca3af);
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        transition: background 0.3s, box-shadow 0.3s;
+      }
+      .parts-demo-switch snice-switch[checked]::part(thumb) {
+        background: linear-gradient(135deg, #ecfdf5, #ffffff);
+        box-shadow: 0 2px 12px rgba(16, 185, 129, 0.6);
+      }
+      .parts-demo-switch snice-switch::part(label) {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+      .parts-demo-switch snice-switch[checked]::part(label) {
+        color: #34d399;
+        font-weight: 700;
+      }
+      .parts-demo-switch snice-switch::part(spinner) {
+        border-color: rgba(16, 185, 129, 0.3);
+        border-top-color: #10b981;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeSw({ label: 'Styled off' }),
+      makeSw({ label: 'Styled on', checked: true }),
+      makeSw({ label: 'Styled loading', loading: true }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

@@ -89,7 +89,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     const displayValue = this.formatColor(this.value, this.format);
 
     return html/*html*/`
-      <div class="${wrapperClasses}">
+      <div class="${wrapperClasses}" part="base">
         <if ${this.label}>
           <label class="${labelClasses}">
             ${this.label}

@@ -218,3 +218,124 @@ export const VerticalShowLabels: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: track, range, thumb-low, thumb-high, label-min, label-max
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+      .parts-demo__default snice-range-slider { width: 280px; }
+
+      /* Styled: ocean gradient range + distinct thumbs */
+      .parts-demo__ocean snice-range-slider::part(track) {
+        background: #0d2137;
+        height: 8px;
+        border-radius: 4px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+      }
+      .parts-demo__ocean snice-range-slider::part(range) {
+        background: linear-gradient(90deg, #00b4db, #0083b0);
+        box-shadow: 0 0 10px rgba(0,180,219,0.5);
+      }
+      .parts-demo__ocean snice-range-slider::part(thumb-low) {
+        background: radial-gradient(circle, #80deea, #00838f);
+        border: 3px solid #00b4db;
+        box-shadow: 0 0 10px rgba(0,180,219,0.7);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
+      .parts-demo__ocean snice-range-slider::part(thumb-high) {
+        background: radial-gradient(circle, #b2ebf2, #006064);
+        border: 3px solid #0083b0;
+        box-shadow: 0 0 10px rgba(0,131,176,0.7);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
+      .parts-demo__ocean snice-range-slider::part(label-min),
+      .parts-demo__ocean snice-range-slider::part(label-max) {
+        color: #00b4db;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+      .parts-demo__ocean snice-range-slider { width: 280px; }
+
+      /* Styled: fire range */
+      .parts-demo__fire snice-range-slider::part(track) {
+        background: #1a0a00;
+        height: 6px;
+        border-radius: 3px;
+      }
+      .parts-demo__fire snice-range-slider::part(range) {
+        background: linear-gradient(90deg, #ff6200, #ffca28);
+        box-shadow: 0 0 12px rgba(255,98,0,0.6);
+      }
+      .parts-demo__fire snice-range-slider::part(thumb-low) {
+        background: #ff6200;
+        border: 2px solid #ff9800;
+        box-shadow: 0 0 8px rgba(255,98,0,0.8);
+        border-radius: 3px;
+        width: 14px;
+        height: 22px;
+      }
+      .parts-demo__fire snice-range-slider::part(thumb-high) {
+        background: #ffca28;
+        border: 2px solid #ff9800;
+        box-shadow: 0 0 8px rgba(255,202,40,0.8);
+        border-radius: 3px;
+        width: 14px;
+        height: 22px;
+      }
+      .parts-demo__fire snice-range-slider::part(label-min),
+      .parts-demo__fire snice-range-slider::part(label-max) {
+        color: #ff9800;
+        font-weight: 700;
+      }
+      .parts-demo__fire snice-range-slider { width: 280px; }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section parts-demo__default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    const r1 = makeRange({ 'value-low': 25, 'value-high': 75, 'show-labels': true });
+    defaultSection.appendChild(r1);
+    container.appendChild(defaultSection);
+
+    // Ocean styled section
+    const oceanSection = document.createElement('div');
+    oceanSection.className = 'parts-demo__section parts-demo__ocean';
+    const oceanLabel = document.createElement('div');
+    oceanLabel.className = 'parts-demo__label';
+    oceanLabel.textContent = '::part(track/range/thumb-low/thumb-high/label-min/label-max) — Ocean gradient';
+    oceanSection.appendChild(oceanLabel);
+    const r2 = makeRange({ 'value-low': 20, 'value-high': 70, 'show-labels': true });
+    oceanSection.appendChild(r2);
+    container.appendChild(oceanSection);
+
+    // Fire styled section
+    const fireSection = document.createElement('div');
+    fireSection.className = 'parts-demo__section parts-demo__fire';
+    const fireLabel = document.createElement('div');
+    fireLabel.className = 'parts-demo__label';
+    fireLabel.textContent = '::part(track/range/thumb-low/thumb-high/label-min/label-max) — Fire gradient';
+    fireSection.appendChild(fireLabel);
+    const r3 = makeRange({ 'value-low': 30, 'value-high': 80, 'show-labels': true });
+    fireSection.appendChild(r3);
+    container.appendChild(fireSection);
+
+    return container;
+  },
+};

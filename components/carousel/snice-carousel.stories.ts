@@ -141,6 +141,72 @@ export const TwoSlidesLoopFalse: Story = {
   render: () => makeCarousel({ loop: false }, [makeSlide('First', 0), makeSlide('Second', 1)]),
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: viewport, slides-container, container, controls, button-prev, button-next, indicators, indicator
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-carousel::part(container) {
+        background: #0f0a1e;
+        border: 2px solid #6366f1;
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+      .styled-carousel::part(viewport) {
+        border-radius: 0.85rem 0.85rem 0 0;
+      }
+      .styled-carousel::part(controls) {
+        background: rgba(15, 10, 30, 0.9);
+        padding: 0.5rem;
+        border-top: 1px solid #4338ca;
+      }
+      .styled-carousel::part(button-prev),
+      .styled-carousel::part(button-next) {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 2.25rem;
+        height: 2.25rem;
+        box-shadow: 0 2px 12px rgba(99, 102, 241, 0.5);
+        cursor: pointer;
+      }
+      .styled-carousel::part(indicators) {
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        background: rgba(15, 10, 30, 0.9);
+        border-top: 1px solid #4338ca;
+        justify-content: center;
+      }
+      .styled-carousel::part(indicator) {
+        background: #4338ca;
+        border-radius: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        border: none;
+        cursor: pointer;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    const c1 = makeCarousel({}, makeSlides(4));
+    const g1 = document.createElement('div'); g1.appendChild(l1); g1.appendChild(c1); wrap.appendChild(g1);
+
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(container|viewport|controls|button-prev|button-next|indicators|indicator)';
+    const c2 = makeCarousel({}, makeSlides(4));
+    c2.className = 'styled-carousel';
+    const g2 = document.createElement('div'); g2.appendChild(l2); g2.appendChild(c2); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: slides-per-view="2", space-between="32", autoplay
 export const SlidesPerView2SpaceBetween32Autoplay: Story = {
   render: () => makeCarousel({ 'slides-per-view': '2', 'space-between': '32', autoplay: true, 'autoplay-interval': '3000' }, [

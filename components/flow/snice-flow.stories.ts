@@ -255,3 +255,64 @@ export const ZoomEnabledFalsePanEnabledFalse: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, canvas, nodes, minimap
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = document.createElement('snice-flow');
+    defaultEl.style.cssText = 'display:block;height:300px;';
+    (defaultEl as any).nodes = basicNodes;
+    (defaultEl as any).edges = basicEdges;
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-flow';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-flow snice-flow::part(base) {
+        border: 2px solid #7c3aed;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(124,58,237,0.25);
+      }
+      .parts-demo-flow snice-flow::part(canvas) {
+        stroke: rgba(124,58,237,0.4);
+      }
+      .parts-demo-flow snice-flow::part(nodes) {
+        filter: drop-shadow(0 2px 8px rgba(124,58,237,0.4));
+      }
+      .parts-demo-flow snice-flow::part(minimap) {
+        background: rgba(15,10,30,0.9);
+        border: 1px solid #7c3aed;
+        border-radius: 6px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = document.createElement('snice-flow');
+    styledEl.style.cssText = 'display:block;height:300px;';
+    (styledEl as any).nodes = basicNodes;
+    (styledEl as any).edges = basicEdges;
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

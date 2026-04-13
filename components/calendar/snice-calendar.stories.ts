@@ -220,3 +220,76 @@ export const ManyEventsOverflowWithNMore: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, header, grid
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;';
+
+    // Default
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = document.createElement('snice-calendar');
+    defaultEl.style.cssText = 'max-width:340px;display:block;';
+    defaultEl.toggleAttribute('highlight-today', true);
+    (defaultEl as any).events = [
+      { id: 1, title: 'Meeting', start: addDays(today, 2), color: '#2563eb' },
+      { id: 2, title: 'Review', start: addDays(today, 5), color: '#16a34a' },
+    ];
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(defaultEl);
+    wrap.appendChild(defaultSection);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-calendar';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-calendar snice-calendar::part(base) {
+        background: #1e1b4b;
+        border: 1px solid #4338ca;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(67,56,202,0.4);
+        max-width: 340px;
+      }
+      .parts-demo-calendar snice-calendar::part(header) {
+        background: linear-gradient(135deg, #312e81, #4338ca);
+        color: #e0e7ff;
+        padding: 1rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.05em;
+      }
+      .parts-demo-calendar snice-calendar::part(grid) {
+        background: #1e1b4b;
+        padding: 0.75rem;
+        gap: 2px;
+        color: #c7d2fe;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = document.createElement('snice-calendar');
+    styledEl.style.cssText = 'max-width:340px;display:block;';
+    styledEl.toggleAttribute('highlight-today', true);
+    (styledEl as any).events = [
+      { id: 1, title: 'Meeting', start: addDays(today, 2), color: '#818cf8' },
+      { id: 2, title: 'Review', start: addDays(today, 5), color: '#a5b4fc' },
+    ];
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

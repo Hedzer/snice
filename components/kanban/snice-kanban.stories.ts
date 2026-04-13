@@ -191,3 +191,68 @@ export const ManyCards: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, column-header, column-cards
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    const defaultEl = document.createElement('snice-kanban');
+    (defaultEl as any).columns = basicColumns;
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-kanban';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-kanban snice-kanban::part(base) {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid #0f3460;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      }
+      .parts-demo-kanban snice-kanban::part(column-header) {
+        background: linear-gradient(135deg, #0f3460, #533483);
+        color: #e0e0ff;
+        border-radius: 8px 8px 0 0;
+        padding: 0.75rem 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-bottom: 2px solid #e94560;
+      }
+      .parts-demo-kanban snice-kanban::part(column-cards) {
+        background: rgba(255,255,255,0.04);
+        border-radius: 0 0 8px 8px;
+        padding: 0.75rem;
+        min-height: 80px;
+        border: 1px solid rgba(233,69,96,0.2);
+        border-top: none;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledEl = document.createElement('snice-kanban');
+    (styledEl as any).columns = basicColumns;
+    styledSection.appendChild(styledEl);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

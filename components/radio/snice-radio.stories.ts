@@ -201,3 +201,78 @@ export const AllVariants: Story = {
     makeRadio({ variant: 'block', label: 'Block variant', description: 'Block description', checked: true }),
   ),
 };
+
+// Available CSS Parts: input, radio, dot, spinner, content, label, description
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeRadio({ label: 'Option A', name: 'def', value: 'a', checked: true }),
+      makeRadio({ label: 'Option B', name: 'def', value: 'b' }),
+      makeRadio({ variant: 'block', label: 'Block Option', description: 'With description', name: 'defb', value: 'x', checked: true }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-radio';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-radio snice-radio::part(radio) {
+        border: 2px solid #f59e0b;
+        background: #1c1407;
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
+        transition: box-shadow 0.2s;
+        width: 20px;
+        height: 20px;
+      }
+      .parts-demo-radio snice-radio[checked]::part(radio) {
+        border-color: #fbbf24;
+        box-shadow: 0 0 16px rgba(245, 158, 11, 0.65);
+        background: #451a03;
+      }
+      .parts-demo-radio snice-radio::part(dot) {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
+      }
+      .parts-demo-radio snice-radio::part(label) {
+        color: #fde68a;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .parts-demo-radio snice-radio::part(description) {
+        color: #b45309;
+        font-size: 0.78rem;
+        font-style: italic;
+      }
+      .parts-demo-radio snice-radio::part(content) {
+        gap: 2px;
+      }
+      .parts-demo-radio snice-radio::part(spinner) {
+        border-color: rgba(245, 158, 11, 0.3);
+        border-top-color: #f59e0b;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeRadio({ label: 'Styled Option A', name: 'sty', value: 'a', checked: true }),
+      makeRadio({ label: 'Styled Option B', name: 'sty', value: 'b' }),
+      makeRadio({ variant: 'block', label: 'Styled Block', description: 'Custom description styling', name: 'styb', value: 'x', checked: true }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

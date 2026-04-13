@@ -191,3 +191,94 @@ export const SizeXSeparatorMatrix: Story = {
     makeBreadcrumbs(BASIC_ITEMS, { size: 'large',  separator: '»' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, list, link, separator, ellipsis
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+
+      /* Default (no ::part styling) */
+      .parts-demo .default-bc {}
+
+      /* Styled: base */
+      .parts-demo .styled-base::part(base) {
+        background: #1e293b;
+        padding: .5rem 1rem;
+        border-radius: 8px;
+      }
+
+      /* Styled: list */
+      .parts-demo .styled-list::part(list) {
+        gap: 1rem;
+      }
+
+      /* Styled: link */
+      .parts-demo .styled-link::part(link) {
+        color: #f97316;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      /* Styled: separator */
+      .parts-demo .styled-sep::part(separator) {
+        color: #a855f7;
+        font-size: 1.2em;
+        font-weight: 900;
+      }
+
+      /* Styled: ellipsis */
+      .parts-demo .styled-ellipsis::part(ellipsis) {
+        background: #0ea5e9;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0 .4rem;
+        font-weight: 700;
+      }
+
+      /* Combined */
+      .parts-demo .styled-all::part(base) { background: #0f172a; padding: .5rem 1rem; border-radius: 10px; }
+      .parts-demo .styled-all::part(link) { color: #34d399; font-weight: 600; }
+      .parts-demo .styled-all::part(separator) { color: #64748b; }
+    `;
+    wrap.appendChild(style);
+
+    const items = BASIC_ITEMS;
+    const deepItems = [
+      { label: 'Root', href: '#' },
+      { label: 'A', href: '#' },
+      { label: 'B', href: '#' },
+      { label: 'C', href: '#' },
+      { label: 'D', href: '#' },
+      { label: 'Current' },
+    ];
+
+    function row(label: string, cls: string, bc: HTMLElement) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = label;
+      bc.classList.add(cls);
+      d.appendChild(l);
+      d.appendChild(bc);
+      return d;
+    }
+
+    wrap.appendChild(row('Default (no ::part styles)', 'default-bc', makeBreadcrumbs(items)));
+    wrap.appendChild(row('::part(base) — dark background container', 'styled-base', makeBreadcrumbs(items)));
+    wrap.appendChild(row('::part(list) — wider gap between crumbs', 'styled-list', makeBreadcrumbs(items)));
+    wrap.appendChild(row('::part(link) — orange bold underlined links', 'styled-link', makeBreadcrumbs(items)));
+    wrap.appendChild(row('::part(separator) — purple bold separator', 'styled-sep', makeBreadcrumbs(items)));
+    wrap.appendChild(row('::part(ellipsis) — blue pill ellipsis (max-items=3)', 'styled-ellipsis', makeBreadcrumbs(deepItems, { 'max-items': '3' })));
+    wrap.appendChild(row('Combined: base + link + separator', 'styled-all', makeBreadcrumbs(items)));
+
+    return wrap;
+  },
+};

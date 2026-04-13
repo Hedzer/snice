@@ -197,3 +197,66 @@ export const LongTitleAndDescription: Story = {
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
   })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, info, controls
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-pp-default snice-podcast-player { display:block;max-width:480px; }
+      .parts-demo-pp-styled snice-podcast-player { display:block;max-width:480px; }
+      .parts-demo-pp-styled snice-podcast-player::part(base) {
+        background: #0c0a09;
+        border: 2px solid #d97706;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 32px rgba(217,119,6,0.25);
+      }
+      .parts-demo-pp-styled snice-podcast-player::part(info) {
+        background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid rgba(217,119,6,0.2);
+      }
+      .parts-demo-pp-styled snice-podcast-player::part(controls) {
+        background: #1c1917;
+        padding: 16px 20px;
+        gap: 12px;
+        border-top: 1px solid rgba(217,119,6,0.15);
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-podcast-player');
+    defaultEl.setAttribute('src', SRC1);
+    defaultEl.setAttribute('title', 'Getting Started with Web Components');
+    defaultEl.setAttribute('show', 'Dev Talks');
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-pp-default', defaultEl));
+
+    const styledEl = document.createElement('snice-podcast-player');
+    styledEl.setAttribute('src', SRC1);
+    styledEl.setAttribute('title', 'Getting Started with Web Components');
+    styledEl.setAttribute('show', 'Dev Talks');
+    wrap.appendChild(section(
+      'Styled: ::part(base) — dark amber border  |  ::part(info) — stone gradient header  |  ::part(controls) — dark controls bar',
+      'parts-demo-pp-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};

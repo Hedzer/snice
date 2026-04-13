@@ -162,3 +162,90 @@ export const IconsTrendsColorsCombined: Story = {
     { label: 'Rating',   value: '4.8',     trend: 'neutral', trendValue: '0%',   icon: '⭐', color: '#f59e0b' },
   ], { variant: 'card' }),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, stat
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; padding: 1rem; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+      /* ::part(base) — the stat group container */
+      .parts-demo snice-stat-group.styled-base::part(base) {
+        background: linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%);
+        border: 1px solid #4c1d95;
+        border-radius: 16px;
+        padding: 1rem;
+        box-shadow: 0 4px 24px rgba(79,70,229,.2);
+      }
+
+      /* ::part(stat) — each individual stat cell */
+      .parts-demo snice-stat-group.styled-stat::part(stat) {
+        background: #fff;
+        border: 2px solid #6366f1;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        box-shadow: 4px 4px 0 #6366f1;
+        transition: transform .15s, box-shadow .15s;
+        cursor: default;
+      }
+      .parts-demo snice-stat-group.styled-stat::part(stat):hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #6366f1;
+      }
+
+      /* Combined: both base + stat */
+      .parts-demo snice-stat-group.styled-both::part(base) {
+        background: #fef3c7;
+        border: 2px solid #f59e0b;
+        border-radius: 16px;
+        padding: .75rem;
+        gap: .5rem;
+      }
+      .parts-demo snice-stat-group.styled-both::part(stat) {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeGroup(BASE_STATS, { variant: 'card' });
+    demo.appendChild(makeItem('default (no ::part overrides)', def));
+
+    const styledBase = makeGroup(BASE_STATS, { variant: 'card' });
+    styledBase.className = 'styled-base';
+    demo.appendChild(makeItem('::part(base) — dark indigo container', styledBase));
+
+    const styledStat = makeGroup(BASE_STATS, { variant: 'card' });
+    styledStat.className = 'styled-stat';
+    demo.appendChild(makeItem('::part(stat) — outlined cards with hover lift', styledStat));
+
+    const styledBoth = makeGroup(BASE_STATS, { variant: 'card' });
+    styledBoth.className = 'styled-both';
+    demo.appendChild(makeItem('::part(base) + ::part(stat) — amber theme', styledBoth));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

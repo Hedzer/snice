@@ -146,3 +146,83 @@ export const AllVariants: Story = {
     makeTI({ label: 'Readonly', readonly: true }, ['Read', 'Only']),
   ),
 };
+
+// Available CSS Parts: base, label, container, tag, tag-text, input, suggestions
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makeTI({ label: 'Skills', placeholder: 'Add a tag...' }, ['TypeScript', 'React']));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-tag-input';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-tag-input snice-tag-input::part(label) {
+        color: #e879f9;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .parts-demo-tag-input snice-tag-input::part(container) {
+        background: linear-gradient(135deg, #1a0033, #2d0057);
+        border: 2px solid #c026d3;
+        border-radius: 12px;
+        box-shadow: 0 0 16px rgba(192, 38, 211, 0.3);
+        padding: 0.4rem 0.6rem;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .parts-demo-tag-input snice-tag-input::part(tag) {
+        background: linear-gradient(135deg, #86198f, #a21caf);
+        border: 1px solid #e879f9;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(168, 28, 175, 0.5);
+        padding: 0.15rem 0.55rem;
+      }
+      .parts-demo-tag-input snice-tag-input::part(tag-text) {
+        color: #fae8ff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+      .parts-demo-tag-input snice-tag-input::part(input) {
+        background: transparent;
+        color: #f0abfc;
+        font-size: 0.875rem;
+        caret-color: #e879f9;
+        min-width: 80px;
+      }
+      .parts-demo-tag-input snice-tag-input::part(input)::placeholder {
+        color: rgba(232, 121, 249, 0.4);
+        font-style: italic;
+      }
+      .parts-demo-tag-input snice-tag-input::part(suggestions) {
+        background: #1a0033;
+        border: 2px solid #c026d3;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(192, 38, 211, 0.4);
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const ti = makeTI({ label: 'Styled Tags', placeholder: 'Add tags...' }, ['TypeScript', 'React'], LANGS);
+    styledSection.appendChild(ti);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

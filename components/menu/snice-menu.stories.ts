@@ -467,3 +467,111 @@ export const DisabledSelectedStatesCombined: Story = {
     return c;
   },
 };
+
+// h2: CSS Parts Styling
+// snice-menu parts: trigger, image-left, image-right, panel, content
+// snice-menu-item parts: item, icon, label, shortcut
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap2 = document.createElement('div');
+    wrap2.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; font-family: sans-serif; padding-bottom: 18rem; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+      .parts-demo .row { display: flex; align-items: flex-start; gap: .75rem; flex-wrap: wrap; }
+
+      /* Styled: trigger */
+      .parts-demo .styled-trigger::part(trigger) {
+        background: linear-gradient(135deg, #7c3aed, #2563eb);
+        color: #fff;
+        border-radius: 8px;
+        padding: .5rem 1.25rem;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* Styled: panel */
+      .parts-demo .styled-panel::part(panel) {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      }
+
+      /* Styled: menu-item item part */
+      .parts-demo .styled-items snice-menu-item::part(item) {
+        border-radius: 6px;
+        margin: 2px 4px;
+        padding: .5rem .75rem;
+      }
+
+      /* Styled: menu-item label part */
+      .parts-demo .styled-labels snice-menu-item::part(label) {
+        color: #f97316;
+        font-weight: 700;
+        font-size: 1em;
+        letter-spacing: .02em;
+      }
+
+      /* Styled: menu-item icon part */
+      .parts-demo .styled-icons snice-menu-item::part(icon) {
+        font-size: 1.3em;
+        filter: hue-rotate(120deg);
+      }
+
+      /* Styled: menu-item shortcut part */
+      .parts-demo .styled-shortcuts snice-menu-item::part(shortcut) {
+        background: #7c3aed;
+        color: #fff;
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: .7em;
+        font-weight: 700;
+        border: none;
+      }
+
+      /* Combined */
+      .parts-demo .styled-all::part(trigger) { background: #0f172a; color: #38bdf8; border: 1px solid #334155; border-radius: 8px; padding: .5rem 1rem; font-weight: 700; cursor: pointer; }
+      .parts-demo .styled-all::part(panel) { background: #0f172a; border: 1px solid #334155; border-radius: 10px; }
+      .parts-demo .styled-all snice-menu-item::part(item) { border-radius: 4px; margin: 2px 4px; }
+      .parts-demo .styled-all snice-menu-item::part(label) { color: #e2e8f0; }
+      .parts-demo .styled-all snice-menu-item::part(shortcut) { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 4px; padding: 1px 5px; font-size: .7em; }
+    `;
+    wrap2.appendChild(style);
+
+    const items = [
+      { value: 'new', label: 'New File', icon: '📄', shortcut: '⌘N' },
+      { value: 'save', label: 'Save', icon: '💾', shortcut: '⌘S' },
+      { value: 'exit', label: 'Exit', icon: '🚪' },
+    ];
+
+    function demoRow(lbl: string, cls: string) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = lbl;
+      const r = document.createElement('div');
+      r.className = 'row';
+      const m = makeMenu('Open Menu', items, { open: true });
+      m.classList.add(cls);
+      r.appendChild(m);
+      d.appendChild(l);
+      d.appendChild(r);
+      return d;
+    }
+
+    wrap2.appendChild(demoRow('Default (no ::part styles)', ''));
+    wrap2.appendChild(demoRow('::part(trigger) — gradient purple-blue button', 'styled-trigger'));
+    wrap2.appendChild(demoRow('::part(panel) — dark dropdown panel', 'styled-panel'));
+    wrap2.appendChild(demoRow('snice-menu-item::part(item) — rounded items with margin', 'styled-items'));
+    wrap2.appendChild(demoRow('snice-menu-item::part(label) — orange bold labels', 'styled-labels'));
+    wrap2.appendChild(demoRow('snice-menu-item::part(icon) — hue-shifted icons', 'styled-icons'));
+    wrap2.appendChild(demoRow('snice-menu-item::part(shortcut) — purple pill shortcuts', 'styled-shortcuts'));
+    wrap2.appendChild(demoRow('Combined: trigger + panel + item + label + shortcut', 'styled-all'));
+
+    return wrap2;
+  },
+};

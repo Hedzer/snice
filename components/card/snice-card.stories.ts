@@ -261,6 +261,79 @@ export const EdgeCaseVeryLongContent: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base, header, body, footer
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo-col { display: flex; flex-direction: column; gap: 0.5rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; }
+      .styled-card::part(base) {
+        border: 2px solid #6366f1;
+        border-radius: 1rem;
+        background: linear-gradient(160deg, #1e1b4b 0%, #312e81 100%);
+        color: #e0e7ff;
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.35);
+      }
+      .styled-card::part(header) {
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        color: #fff;
+        border-bottom: 2px solid #6366f1;
+        border-radius: 0.85rem 0.85rem 0 0;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+      .styled-card::part(body) {
+        padding: 1.25rem;
+        font-size: 0.875rem;
+        color: #c7d2fe;
+      }
+      .styled-card::part(footer) {
+        background: rgba(99, 102, 241, 0.15);
+        border-top: 1px solid #4338ca;
+        color: #a5b4fc;
+        font-size: 0.75rem;
+        border-radius: 0 0 0.85rem 0.85rem;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    // Default card
+    const col1 = document.createElement('div'); col1.className = 'parts-demo-col';
+    const def = document.createElement('snice-card');
+    def.setAttribute('variant', 'elevated'); def.style.maxWidth = '240px';
+    const defHdr = document.createElement('span'); defHdr.slot = 'header'; defHdr.textContent = 'Default Header';
+    def.appendChild(defHdr);
+    const defP = document.createElement('p'); defP.textContent = 'Default body styles with no ::part() overrides applied.';
+    def.appendChild(defP);
+    const defFtr = document.createElement('span'); defFtr.slot = 'footer'; defFtr.textContent = 'Default footer';
+    def.appendChild(defFtr);
+    const lbl1 = document.createElement('div'); lbl1.className = 'parts-demo-label'; lbl1.textContent = 'default';
+    col1.appendChild(def); col1.appendChild(lbl1); wrap.appendChild(col1);
+
+    // Styled card
+    const col2 = document.createElement('div'); col2.className = 'parts-demo-col';
+    const styled = document.createElement('snice-card');
+    styled.className = 'styled-card'; styled.setAttribute('variant', 'elevated'); styled.style.maxWidth = '240px';
+    const stHdr = document.createElement('span'); stHdr.slot = 'header'; stHdr.textContent = 'Styled Header';
+    styled.appendChild(stHdr);
+    const stP = document.createElement('p'); stP.textContent = 'All four parts styled: base, header, body, and footer.';
+    styled.appendChild(stP);
+    const stFtr = document.createElement('span'); stFtr.slot = 'footer'; stFtr.textContent = 'Styled footer';
+    styled.appendChild(stFtr);
+    const lbl2 = document.createElement('div'); lbl2.className = 'parts-demo-label'; lbl2.textContent = '::part(base|header|body|footer)';
+    col2.appendChild(styled); col2.appendChild(lbl2); wrap.appendChild(col2);
+
+    return wrap;
+  },
+};
+
 // h2: Edge case: single character content
 export const EdgeCaseSingleCharacterContent: Story = {
   render: () => {

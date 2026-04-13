@@ -171,3 +171,96 @@ export const MixedSomeWithWithoutDescriptionAndTimestamp: Story = {
 export const EmptyItemsArray: Story = {
   render: () => makeTimeline({}, []),
 };
+
+// h2: CSS Parts Styling
+// Parts available: container, item, marker, icon, content, timestamp, title, description
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'tl-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .tl-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+      .tl-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.5rem;
+      }
+      .tl-parts-demo .demo-box { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      /* Styled timeline parts */
+      .tl-parts-demo .styled-tl::part(container) {
+        padding: 1rem 0;
+      }
+      .tl-parts-demo .styled-tl::part(item) {
+        background: rgba(6, 78, 59, 0.15);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        transition: border-color 0.2s;
+      }
+      .tl-parts-demo .styled-tl::part(item):hover {
+        border-color: rgba(16, 185, 129, 0.6);
+      }
+      .tl-parts-demo .styled-tl::part(marker) {
+        background: linear-gradient(135deg, #059669, #10b981);
+        border-radius: 50%;
+        width: 2.5rem;
+        height: 2.5rem;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+      }
+      .tl-parts-demo .styled-tl::part(icon) {
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .tl-parts-demo .styled-tl::part(timestamp) {
+        color: #34d399;
+        font-size: 0.72rem;
+        font-family: 'Fira Code', monospace;
+        letter-spacing: 0.04em;
+      }
+      .tl-parts-demo .styled-tl::part(title) {
+        color: #a7f3d0;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .tl-parts-demo .styled-tl::part(description) {
+        color: #6ee7b7;
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
+        opacity: 0.85;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const items = [
+      { timestamp: '2024-01-10', title: 'Project Started', description: 'Initial planning and setup', variant: 'success' },
+      { timestamp: '2024-02-15', title: 'Milestone Reached', description: 'Design phase complete', variant: 'info' },
+      { timestamp: '2024-03-01', title: 'Launch', description: 'v1.0 shipped to users', variant: 'success' },
+    ];
+
+    const box1 = document.createElement('div');
+    box1.className = 'demo-box';
+    const lbl1 = document.createElement('div');
+    lbl1.className = 'demo-label';
+    lbl1.textContent = 'Default (no ::part() styles)';
+    box1.appendChild(lbl1);
+    box1.appendChild(makeTimeline({}, items));
+    wrap.appendChild(box1);
+
+    const box2 = document.createElement('div');
+    box2.className = 'demo-box';
+    const lbl2 = document.createElement('div');
+    lbl2.className = 'demo-label';
+    lbl2.textContent = 'Styled via ::part() — item, marker, icon, timestamp, title, description';
+    box2.appendChild(lbl2);
+    const styledTl = makeTimeline({}, items);
+    styledTl.classList.add('styled-tl');
+    box2.appendChild(styledTl);
+    wrap.appendChild(box2);
+
+    return wrap;
+  },
+};

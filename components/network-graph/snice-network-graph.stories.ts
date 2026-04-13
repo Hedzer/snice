@@ -306,3 +306,74 @@ export const EmptyGraph: Story = {
 export const AllDisabledNoZoomNoDragNoLabels: Story = {
   render: () => makeGraph({ layout: 'circular', 'zoom-enabled': false, 'drag-enabled': false, 'show-labels': false }, basicData),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, canvas, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .network-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .network-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .network-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outermost container */
+      .network-parts-demo--styled snice-network-graph::part(base) {
+        background: radial-gradient(ellipse at center, #0f1729 0%, #060d1f 100%);
+        border-radius: 16px;
+        border: 1px solid rgba(56,189,248,0.3);
+        box-shadow: 0 0 60px rgba(56,189,248,0.1), 0 8px 32px rgba(0,0,0,0.6);
+      }
+
+      /* Styled: ::part(canvas) - the SVG drawing surface */
+      .network-parts-demo--styled snice-network-graph::part(canvas) {
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      /* Styled: ::part(tooltip) - hover node tooltip */
+      .network-parts-demo--styled snice-network-graph::part(tooltip) {
+        background: #0c4a6e;
+        color: #bae6fd;
+        border: 1px solid #38bdf8;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        font-family: monospace;
+        box-shadow: 0 0 20px rgba(56,189,248,0.4);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'network-parts-demo';
+
+    const graphStyle = 'display:block;height:320px;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'network-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'network-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeGraph({ layout: 'circular', 'show-labels': true }, basicData, graphStyle));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'network-parts-demo__item network-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'network-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(canvas) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeGraph({ layout: 'circular', 'show-labels': true }, basicData, 'display:block;height:320px;border-radius:16px;overflow:hidden;'));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

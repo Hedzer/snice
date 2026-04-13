@@ -292,3 +292,83 @@ export const Empty: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, canvas, legend
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Default: no ::part() overrides */
+
+      /* Styled: target base, canvas, legend */
+      .parts-demo--styled snice-chart::part(base) {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 12px;
+        padding: 8px;
+        box-shadow: 0 4px 24px rgba(99,102,241,0.25);
+      }
+      .parts-demo--styled snice-chart::part(canvas) {
+        border-radius: 8px;
+        outline: 2px solid rgba(99,102,241,0.5);
+      }
+      .parts-demo--styled snice-chart::part(legend) {
+        background: rgba(99,102,241,0.15);
+        border-radius: 6px;
+        padding: 4px 8px;
+        margin-top: 4px;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    // Default (unstyled)
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'default';
+    const defaultEl = document.createElement('snice-chart');
+    defaultEl.setAttribute('type', 'bar');
+    defaultEl.setAttribute('height', '200');
+    (defaultEl as any).labels = ['Jan', 'Feb', 'Mar', 'Apr'];
+    (defaultEl as any).datasets = [
+      { label: 'Sales', data: [30, 50, 40, 60], backgroundColor: '#6366f1' },
+      { label: 'Costs', data: [20, 35, 28, 42], backgroundColor: '#a5b4fc' },
+    ];
+    (defaultEl as any).options = { legend: { position: 'top' } };
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(defaultEl);
+
+    // Styled with ::part()
+    const styledItem = document.createElement('div');
+    styledItem.className = 'parts-demo__item parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(canvas) ::part(legend)';
+    const styledEl = document.createElement('snice-chart');
+    styledEl.setAttribute('type', 'bar');
+    styledEl.setAttribute('height', '200');
+    (styledEl as any).labels = ['Jan', 'Feb', 'Mar', 'Apr'];
+    (styledEl as any).datasets = [
+      { label: 'Sales', data: [30, 50, 40, 60], backgroundColor: '#6366f1' },
+      { label: 'Costs', data: [20, 35, 28, 42], backgroundColor: '#a5b4fc' },
+    ];
+    (styledEl as any).options = { legend: { position: 'top' } };
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(styledEl);
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

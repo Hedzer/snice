@@ -195,7 +195,7 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
   @render({ once: true })
   renderContent() {
     return html/*html*/`
-      <div class="tiles"></div>
+      <div class="tiles" part="base"></div>
       <div hidden><slot></slot></div>
     `;
   }

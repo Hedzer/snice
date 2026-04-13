@@ -181,3 +181,78 @@ export const CompactXFahrenheit: Story = {
     makeWeather({ variant: 'compact', unit: 'fahrenheit' }, { temp: 85, condition: 'Sunny', humidity: 30, wind: 8 }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, current, details, forecast
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo snice-weather { display:block; }
+      .parts-demo--styled snice-weather::part(base) {
+        background: linear-gradient(135deg, #1e3a5f, #0f2744);
+        border: 2px solid #3b82f6;
+        border-radius: 16px;
+        padding: 1.5rem;
+      }
+      .parts-demo--styled snice-weather::part(current) {
+        background: rgba(59,130,246,0.15);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .parts-demo--styled snice-weather::part(details) {
+        border-top: 1px solid rgba(59,130,246,0.4);
+        padding-top: 0.75rem;
+        color: #93c5fd;
+        font-size: 0.875rem;
+      }
+      .parts-demo--styled snice-weather::part(forecast) {
+        background: rgba(59,130,246,0.08);
+        border-radius: 8px;
+        margin-top: 0.75rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const data = {
+      temp: 22, condition: 'Partly Cloudy', humidity: 65, wind: 12,
+      forecast: [
+        { day: 'Mon', high: 24, low: 18, condition: 'Sunny' },
+        { day: 'Tue', high: 20, low: 15, condition: 'Rain' },
+        { day: 'Wed', high: 22, low: 16, condition: 'Cloudy' },
+      ],
+    };
+
+    // Default (unstyled)
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    const w1 = document.createElement('snice-weather');
+    (w1 as any).data = data;
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(w1);
+
+    // Styled
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(base · current · details · forecast)';
+    const w2 = document.createElement('snice-weather');
+    (w2 as any).data = data;
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(w2);
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

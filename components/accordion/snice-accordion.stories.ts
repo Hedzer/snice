@@ -191,6 +191,65 @@ export const AllItemsOpenWithMultiple: Story = {
   ], { multiple: true }),
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts on snice-accordion-item: header, icon, title, content, content-inner
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-acc snice-accordion-item::part(header) {
+        background: linear-gradient(90deg, #1e1b4b, #312e81);
+        color: #a5b4fc;
+        border-bottom: 1px solid #4338ca;
+        padding: 0.875rem 1rem;
+      }
+      .styled-acc snice-accordion-item::part(title) {
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+      }
+      .styled-acc snice-accordion-item::part(icon) {
+        color: #6366f1;
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+      .styled-acc snice-accordion-item::part(content) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+      }
+      .styled-acc snice-accordion-item::part(content-inner) {
+        color: #c7d2fe;
+        border-left: 3px solid #6366f1;
+        margin: 0.5rem 1rem;
+        padding: 0.5rem 0.75rem;
+        background: rgba(99, 102, 241, 0.08);
+        border-radius: 0 0.5rem 0.5rem 0;
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    const a1 = makeAccordion([
+      { id: 'cp1', header: 'First Item', content: 'Default styles, no ::part() overrides.', open: true },
+      { id: 'cp2', header: 'Second Item', content: 'Another item.' },
+    ]);
+    const col1 = document.createElement('div'); col1.appendChild(l1); col1.appendChild(a1); wrap.appendChild(col1);
+
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(header|icon|title|content|content-inner)';
+    const a2 = makeAccordion([
+      { id: 'sp1', header: 'Styled Header', content: 'Content with gradient background and indigo left border.', open: true },
+      { id: 'sp2', header: 'Another Item', content: 'All parts styled with indigo/violet theme.' },
+    ]);
+    a2.className = 'styled-acc';
+    const col2 = document.createElement('div'); col2.appendChild(l2); col2.appendChild(a2); wrap.appendChild(col2);
+
+    return wrap;
+  },
+};
+
 // h2: Mixed: disabled + open + normal
 export const MixedDisabledOpenNormal: Story = {
   render: () => makeAccordion([

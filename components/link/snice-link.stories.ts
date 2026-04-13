@@ -192,3 +192,90 @@ export const InlineWithText: Story = {
     return p;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: link, external-icon
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+
+      /* Styled: link part */
+      .parts-demo .styled-link::part(link) {
+        color: #f97316;
+        font-weight: 700;
+        font-size: 1.1em;
+        text-decoration: underline wavy #f97316;
+        text-underline-offset: 4px;
+        letter-spacing: .02em;
+        transition: color .2s;
+      }
+
+      /* Styled: external-icon part */
+      .parts-demo .styled-icon::part(external-icon) {
+        color: #7c3aed;
+        font-size: 1.3em;
+        font-weight: 900;
+        margin-left: .15em;
+      }
+
+      /* Combined: both link + external-icon */
+      .parts-demo .styled-both::part(link) {
+        color: #0ea5e9;
+        font-weight: 700;
+        border-bottom: 2px solid #0ea5e9;
+        text-decoration: none;
+        padding-bottom: 1px;
+      }
+      .parts-demo .styled-both::part(external-icon) {
+        color: #f43f5e;
+        font-size: 1.1em;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function row(label: string, cls: string, ...els: HTMLElement[]) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = label;
+      d.appendChild(l);
+      const r = document.createElement('div');
+      r.style.cssText = 'display:flex;gap:1rem;align-items:center;flex-wrap:wrap;';
+      els.forEach(el => { el.classList.add(cls); r.appendChild(el); });
+      d.appendChild(r);
+      return d;
+    }
+
+    wrap.appendChild(row(
+      'Default (no ::part styles)',
+      '',
+      makeLink('Default Link', { href: '#' }),
+      makeLink('External Link', { href: 'https://example.com', external: true }),
+    ));
+    wrap.appendChild(row(
+      '::part(link) — orange wavy underline, bold',
+      'styled-link',
+      makeLink('Styled Link', { href: '#' }),
+      makeLink('Primary Styled', { href: '#', variant: 'primary' }),
+    ));
+    wrap.appendChild(row(
+      '::part(external-icon) — purple bold arrow icon',
+      'styled-icon',
+      makeLink('External with styled icon', { href: 'https://example.com', external: true }),
+    ));
+    wrap.appendChild(row(
+      'Combined: ::part(link) + ::part(external-icon)',
+      'styled-both',
+      makeLink('Both parts styled', { href: 'https://example.com', external: true }),
+      makeLink('Internal too', { href: '#' }),
+    ));
+
+    return wrap;
+  },
+};

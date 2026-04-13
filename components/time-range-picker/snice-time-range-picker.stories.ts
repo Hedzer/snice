@@ -169,3 +169,95 @@ export const EdgeCases: Story = {
     makePicker({ granularity: 15, 'start-time': '09:00', 'end-time': '09:45' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, header, slots
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: teal data-viz theme */
+      .parts-demo__teal snice-time-range-picker::part(base) {
+        background: #0a1628;
+        border: 1px solid #00bcd4;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,188,212,0.2);
+        padding: 0.5rem;
+      }
+      .parts-demo__teal snice-time-range-picker::part(header) {
+        background: linear-gradient(135deg, #006064, #00838f);
+        color: #e0f7fa;
+        border-radius: 8px 8px 0 0;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        border-bottom: 1px solid rgba(0,188,212,0.3);
+      }
+      .parts-demo__teal snice-time-range-picker::part(slots) {
+        background: rgba(0,188,212,0.05);
+        border-radius: 0 0 8px 8px;
+        gap: 2px;
+      }
+
+      /* Styled: warm papaya */
+      .parts-demo__papaya snice-time-range-picker::part(base) {
+        background: #fff8f0;
+        border: 2px solid #ff8f00;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(255,143,0,0.15);
+      }
+      .parts-demo__papaya snice-time-range-picker::part(header) {
+        background: linear-gradient(135deg, #ff6f00, #ffa000);
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+      }
+      .parts-demo__papaya snice-time-range-picker::part(slots) {
+        background: #fffde7;
+        border-radius: 0 0 10px 10px;
+        padding: 0.25rem;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makePicker({ 'start-time': '09:00', 'end-time': '17:00', granularity: 60 }));
+    container.appendChild(defaultSection);
+
+    // Teal section
+    const tealSection = document.createElement('div');
+    tealSection.className = 'parts-demo__section parts-demo__teal';
+    const tealLabel = document.createElement('div');
+    tealLabel.className = 'parts-demo__label';
+    tealLabel.textContent = '::part(base/header/slots) — Teal data-viz';
+    tealSection.appendChild(tealLabel);
+    tealSection.appendChild(makePicker({ 'start-time': '09:00', 'end-time': '17:00', granularity: 60 }));
+    container.appendChild(tealSection);
+
+    // Papaya section
+    const papayaSection = document.createElement('div');
+    papayaSection.className = 'parts-demo__section parts-demo__papaya';
+    const papayaLabel = document.createElement('div');
+    papayaLabel.className = 'parts-demo__label';
+    papayaLabel.textContent = '::part(base/header/slots) — Warm papaya';
+    papayaSection.appendChild(papayaLabel);
+    papayaSection.appendChild(makePicker({ 'start-time': '08:00', 'end-time': '12:00', granularity: 30 }));
+    container.appendChild(papayaSection);
+
+    return container;
+  },
+};

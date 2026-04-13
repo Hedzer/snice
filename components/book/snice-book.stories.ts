@@ -170,3 +170,67 @@ export const EdgeCaseNoPages: Story = {
     return col(book);
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, book
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 3rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-book::part(base) {}
+      .parts-demo .demo-default snice-book::part(book) {}
+
+      /* Styled: base — outermost perspective container */
+      .parts-demo .demo-styled snice-book::part(base) {
+        filter: drop-shadow(0 16px 48px rgba(168, 85, 247, 0.5));
+      }
+      /* Styled: book — the 3D book element */
+      .parts-demo .demo-styled snice-book::part(book) {
+        outline: 3px solid #a855f7;
+        outline-offset: 4px;
+        border-radius: 4px;
+      }
+    `;
+
+    function makeBook() {
+      const book = document.createElement('snice-book');
+      book.setAttribute('cover-image', 'https://picsum.photos/300/400?random=12');
+      return book;
+    }
+
+    const defaultEl = makeBook();
+    const styledEl = makeBook();
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(base, book))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

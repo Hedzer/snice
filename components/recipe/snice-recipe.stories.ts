@@ -213,3 +213,106 @@ export const ManyServings12: Story = {
 export const LongPrepCookTimes: Story = {
   render: () => col(setup({ prepTime: 120, cookTime: 480, title: 'Slow-Cooked Brisket', difficulty: 'hard' })),
 };
+
+// h2: CSS Parts Styling
+// Parts: container, hero, header, meta, content, ingredients, steps, nutrition, controls
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Styled: container — outermost recipe wrapper */
+      .parts-demo .demo-styled snice-recipe::part(container) {
+        border: 2px solid #fb923c;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(251, 146, 60, 0.25);
+        max-width: 480px;
+      }
+      /* Styled: hero — hero image area */
+      .parts-demo .demo-styled snice-recipe::part(hero) {
+        border-bottom: 3px solid #fb923c;
+      }
+      /* Styled: header — title + description section */
+      .parts-demo .demo-styled snice-recipe::part(header) {
+        background: linear-gradient(135deg, #7c2d12, #9a3412);
+        color: #ffedd5;
+        padding: 1.25rem;
+      }
+      /* Styled: meta — time / serving info strip */
+      .parts-demo .demo-styled snice-recipe::part(meta) {
+        background: #431407;
+        border-top: 1px solid rgba(251, 146, 60, 0.4);
+        border-bottom: 1px solid rgba(251, 146, 60, 0.4);
+        color: #fed7aa;
+        padding: 0.75rem 1.25rem;
+      }
+      /* Styled: content — main body area */
+      .parts-demo .demo-styled snice-recipe::part(content) {
+        background: #1c0a00;
+        padding: 1.25rem;
+        color: #fde8d0;
+      }
+      /* Styled: ingredients — ingredients list */
+      .parts-demo .demo-styled snice-recipe::part(ingredients) {
+        border-left: 4px solid #fb923c;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      /* Styled: steps — steps list */
+      .parts-demo .demo-styled snice-recipe::part(steps) {
+        border-left: 4px solid #fcd34d;
+        padding-left: 1rem;
+      }
+      /* Styled: nutrition — nutrition facts */
+      .parts-demo .demo-styled snice-recipe::part(nutrition) {
+        background: rgba(251, 146, 60, 0.1);
+        border-top: 1px dashed #fb923c;
+        padding: 0.75rem 1.25rem;
+        color: #fed7aa;
+      }
+      /* Styled: controls — prev/next step buttons */
+      .parts-demo .demo-styled snice-recipe::part(controls) {
+        background: #431407;
+        padding: 0.75rem 1.25rem;
+        border-top: 1px solid rgba(251, 146, 60, 0.4);
+      }
+    `;
+
+    const defaultEl = setup({ prepTime: 30, cookTime: 45, servings: 4, difficulty: 'medium' });
+    defaultEl.style.cssText = 'display:block;max-width:480px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden;';
+
+    const styledEl = setup({ prepTime: 30, cookTime: 45, servings: 4, difficulty: 'medium' });
+    styledEl.style.cssText = 'display:block;max-width:480px;';
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(container, hero, header, meta, content, ingredients, steps, nutrition, controls))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

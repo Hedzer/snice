@@ -252,3 +252,62 @@ export const ProgrammaticHideClear: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, icon, content
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-toast exposes the following CSS parts:
+         ::part(base)    — the root toast wrapper
+         ::part(icon)    — the icon element
+         ::part(content) — the message text container */
+      .parts-demo .default-toast::part(base) { /* no overrides */ }
+      .parts-demo .styled-toast::part(base) {
+        border: 2px solid #10b981;
+        border-radius: 12px;
+        background: #022c22;
+        box-shadow: 0 4px 24px rgba(16,185,129,.35);
+      }
+      .parts-demo .styled-toast::part(icon) {
+        font-size: 1.4rem;
+        filter: drop-shadow(0 0 4px #34d399);
+      }
+      .parts-demo .styled-toast::part(content) {
+        font-weight: 700;
+        letter-spacing: .04em;
+        color: #6ee7b7;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const label1 = document.createElement('p');
+    label1.textContent = 'Default (no ::part() overrides)';
+    label1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const defaultToast = document.createElement('snice-toast');
+    defaultToast.className = 'default-toast';
+    defaultToast.setAttribute('type', 'success');
+    defaultToast.setAttribute('message', 'Operation completed successfully.');
+
+    const label2 = document.createElement('p');
+    label2.textContent = 'Styled via ::part(base/icon/content) — dark green with glow';
+    label2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const styledToast = document.createElement('snice-toast');
+    styledToast.className = 'styled-toast';
+    styledToast.setAttribute('type', 'success');
+    styledToast.setAttribute('message', 'Operation completed successfully.');
+
+    wrap.appendChild(style);
+    wrap.appendChild(label1);
+    wrap.appendChild(defaultToast);
+    wrap.appendChild(label2);
+    wrap.appendChild(styledToast);
+    return wrap;
+  },
+};

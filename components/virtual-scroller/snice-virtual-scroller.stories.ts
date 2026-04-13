@@ -180,6 +180,42 @@ export const ContainerHeights: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-vs::part(base) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+        border: 2px solid #6366f1;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const styledRow = (item: VsItem) =>
+      `<div style="padding:0 1rem;display:flex;align-items:center;height:100%;border-bottom:1px solid #4338ca;font-size:.875rem;color:#c7d2fe;">${item.data.name}</div>`;
+
+    const g1 = document.createElement('div');
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    g1.appendChild(l1); g1.appendChild(makeScroller('300px', 48, makeItems(100), defaultRender)); wrap.appendChild(g1);
+
+    const g2 = document.createElement('div');
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(base) → gradient + indigo border';
+    const vs2 = makeScroller('300px', 48, makeItems(100), styledRow);
+    vs2.className = 'styled-vs'; vs2.style.border = 'none';
+    g2.appendChild(l2); g2.appendChild(vs2); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Empty List
 export const EmptyList: Story = {
   render: () => {

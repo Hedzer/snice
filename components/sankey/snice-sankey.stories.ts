@@ -214,3 +214,72 @@ export const NoData: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, chart, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .sankey-parts-demo { display: flex; flex-direction: column; gap: 2rem; }
+      .sankey-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .sankey-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outer host wrapper */
+      .sankey-parts-demo--styled snice-sankey::part(base) {
+        background: #030712;
+        border-radius: 16px;
+        border: 1px solid rgba(99,102,241,0.25);
+        padding: 16px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      }
+
+      /* Styled: ::part(chart) - the SVG rendering area */
+      .sankey-parts-demo--styled snice-sankey::part(chart) {
+        filter: saturate(1.5) brightness(1.15);
+        border-radius: 8px;
+      }
+
+      /* Styled: ::part(tooltip) - hover tooltip */
+      .sankey-parts-demo--styled snice-sankey::part(tooltip) {
+        background: #1e1b4b;
+        color: #e0e7ff;
+        border: 1px solid #6366f1;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'sankey-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'sankey-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'sankey-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeSankey({ 'show-labels': true, 'show-values': true }, basicData));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'sankey-parts-demo__item sankey-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'sankey-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(chart) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeSankey({ 'show-labels': true, 'show-values': true }, basicData));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

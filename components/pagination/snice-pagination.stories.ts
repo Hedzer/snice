@@ -196,3 +196,88 @@ export const FewPages: Story = {
 export const ManyPages: Story = {
   render: () => makePagination({ current: '50', total: '100' }),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, button (all nav buttons share this), first-button, prev-button,
+//        pages, ellipsis, next-button, last-button
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 1.5rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: .7rem; color: #888; margin-bottom: .25rem; }
+
+      /* Styled: base */
+      .parts-demo .styled-base::part(base) {
+        background: #1e293b;
+        padding: .5rem 1rem;
+        border-radius: 10px;
+      }
+
+      /* Styled: all buttons via shared part */
+      .parts-demo .styled-buttons::part(button) {
+        background: #7c3aed;
+        color: #fff;
+        border-color: #7c3aed;
+        border-radius: 50%;
+        font-weight: 700;
+      }
+
+      /* Styled: first-button and last-button specifically */
+      .parts-demo .styled-first-last::part(first-button),
+      .parts-demo .styled-first-last::part(last-button) {
+        background: #059669;
+        color: #fff;
+        border-color: #059669;
+        font-weight: 900;
+      }
+
+      /* Styled: pages container */
+      .parts-demo .styled-pages::part(pages) {
+        background: rgba(251,191,36,0.15);
+        border-radius: 6px;
+        padding: 0 .5rem;
+        gap: .25rem;
+      }
+
+      /* Styled: ellipsis */
+      .parts-demo .styled-ellipsis::part(ellipsis) {
+        color: #f97316;
+        font-weight: 900;
+        font-size: 1.1em;
+        letter-spacing: .15em;
+      }
+
+      /* Combined */
+      .parts-demo .styled-all::part(base) { background: #0f172a; padding: .5rem 1rem; border-radius: 12px; }
+      .parts-demo .styled-all::part(button) { border-radius: 6px; background: #334155; color: #e2e8f0; border-color: #475569; }
+      .parts-demo .styled-all::part(pages) { gap: .2rem; }
+      .parts-demo .styled-all::part(ellipsis) { color: #94a3b8; }
+    `;
+    wrap.appendChild(style);
+
+    function row(label: string, cls: string, el: HTMLElement) {
+      const d = document.createElement('div');
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = label;
+      el.classList.add(cls);
+      d.appendChild(l);
+      d.appendChild(el);
+      return d;
+    }
+
+    wrap.appendChild(row('Default (no ::part styles)', '', makePagination({ current: '5', total: '10' })));
+    wrap.appendChild(row('::part(base) — dark container background', 'styled-base', makePagination({ current: '5', total: '10' })));
+    wrap.appendChild(row('::part(button) — purple circle all nav buttons', 'styled-buttons', makePagination({ current: '5', total: '10' })));
+    wrap.appendChild(row('::part(first-button) + ::part(last-button) — green jump buttons', 'styled-first-last', makePagination({ current: '5', total: '10' })));
+    wrap.appendChild(row('::part(pages) — yellow-tinted pages area', 'styled-pages', makePagination({ current: '5', total: '10' })));
+    wrap.appendChild(row('::part(ellipsis) — orange bold ellipsis (many pages)', 'styled-ellipsis', makePagination({ current: '50', total: '100' })));
+    wrap.appendChild(row('Combined: base + button + pages + ellipsis', 'styled-all', makePagination({ current: '50', total: '100' })));
+
+    return wrap;
+  },
+};

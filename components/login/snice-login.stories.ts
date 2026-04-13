@@ -340,3 +340,87 @@ export const MultipleSlotsCombined: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, header, title, form, footer
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-login exposes the following CSS parts:
+         ::part(base)   — the outer login card wrapper
+         ::part(header) — the header section containing title/logo
+         ::part(title)  — the h1 title element
+         ::part(form)   — the <form> element
+         ::part(footer) — the footer section */
+      .parts-demo .default-login::part(base)   { /* no overrides */ }
+      .parts-demo .styled-login::part(base) {
+        border: 2px solid #d946ef;
+        border-radius: 16px;
+        background: linear-gradient(160deg, #0f0f1a 60%, #1a0a2a);
+        box-shadow: 0 0 40px rgba(217,70,239,.25);
+        max-width: 400px;
+      }
+      .parts-demo .styled-login::part(header) {
+        background: linear-gradient(90deg, #7c3aed22, #d946ef22);
+        border-bottom: 1px solid #d946ef44;
+        padding: 1.5rem;
+        border-radius: 14px 14px 0 0;
+      }
+      .parts-demo .styled-login::part(title) {
+        color: #e879f9;
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: .06em;
+        text-shadow: 0 0 12px #d946ef88;
+      }
+      .parts-demo .styled-login::part(form) {
+        padding: 1.5rem;
+      }
+      .parts-demo .styled-login::part(footer) {
+        border-top: 1px solid #d946ef22;
+        padding: 1rem 1.5rem;
+        background: #0f0f1a;
+        border-radius: 0 0 14px 14px;
+        font-size: .8rem;
+        color: #a855f7;
+        text-align: center;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;';
+
+    const col1 = document.createElement('div');
+    col1.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;';
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultLogin = document.createElement('snice-login');
+    defaultLogin.className = 'default-login';
+    defaultLogin.setAttribute('title', 'Welcome Back');
+    col1.appendChild(lbl1);
+    col1.appendChild(defaultLogin);
+
+    const col2 = document.createElement('div');
+    col2.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;';
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(base/header/title/form/footer)';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledLogin = document.createElement('snice-login');
+    styledLogin.className = 'styled-login';
+    styledLogin.setAttribute('title', 'Welcome Back');
+    const footerEl = document.createElement('div');
+    footerEl.slot = 'footer';
+    footerEl.textContent = "No account? Sign up";
+    styledLogin.appendChild(footerEl);
+    col2.appendChild(lbl2);
+    col2.appendChild(styledLogin);
+
+    wrap.appendChild(style);
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

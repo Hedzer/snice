@@ -246,3 +246,47 @@ export const ManyStepsTour: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: (none — snice-spotlight exposes no CSS shadow parts)
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const note = document.createElement('p');
+    note.style.cssText = 'margin:0;padding:.75rem 1rem;background:rgba(255,200,0,0.1);border:1px solid rgba(255,200,0,0.3);border-radius:8px;font-size:.875rem;color:#aaa;';
+    note.textContent = 'snice-spotlight does not expose any CSS shadow parts (part="..."). Customise the overlay appearance via CSS custom properties instead.';
+    wrap.appendChild(note);
+
+    const demoArea = document.createElement('div');
+    demoArea.style.cssText = 'border:1px solid rgba(128,128,128,0.3);border-radius:8px;padding:1.5rem;';
+    const t1 = document.createElement('div');
+    t1.id = 'sp-csp-t1';
+    t1.style.cssText = 'display:inline-block;padding:.5rem 1rem;border:1px solid rgba(128,128,128,0.3);border-radius:4px;margin:.5rem;';
+    t1.textContent = 'Target A';
+    const t2 = document.createElement('div');
+    t2.id = 'sp-csp-t2';
+    t2.style.cssText = t1.style.cssText;
+    t2.textContent = 'Target B';
+    const btn = document.createElement('button');
+    btn.style.cssText = 'padding:.5rem 1rem;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:.875rem;margin-top:.75rem;display:block;';
+    btn.textContent = 'Start Tour';
+    const spotlight = document.createElement('snice-spotlight');
+    spotlight.id = 'sp-csp';
+    demoArea.appendChild(t1);
+    demoArea.appendChild(t2);
+    demoArea.appendChild(btn);
+    wrap.appendChild(demoArea);
+    wrap.appendChild(spotlight);
+    btn.onclick = () => (spotlight as any).start();
+    setTimeout(() => {
+      (spotlight as any).steps = [
+        { target: '#sp-csp-t1', title: 'Target A', description: 'No ::part() selectors available.' },
+        { target: '#sp-csp-t2', title: 'Target B', description: 'Use CSS custom properties for theming.' },
+      ];
+    }, 0);
+    return wrap;
+  },
+};

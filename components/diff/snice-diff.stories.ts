@@ -154,3 +154,76 @@ export const LargeDiff50LinesScatteredChanges: Story = {
     return col(makeDiff(oldLines.join('\n'), newLines.join('\n'), { 'context-lines': '2' }));
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, header, content
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-diff::part(base) {}
+
+      /* Styled: base — outermost container */
+      .parts-demo .demo-styled snice-diff::part(base) {
+        border: 2px solid #4ade80;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);
+      }
+      /* Styled: header — filename / meta bar */
+      .parts-demo .demo-styled snice-diff::part(header) {
+        background: linear-gradient(90deg, #14532d, #166534);
+        color: #bbf7d0;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #4ade80;
+      }
+      /* Styled: content — diff lines area */
+      .parts-demo .demo-styled snice-diff::part(content) {
+        background: #0a1a0a;
+        padding: 0.5rem 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+      }
+    `;
+
+    const oldCode = 'const x = 1;\nconst y = 2;\nconsole.log(x + y);';
+    const newCode = 'const x = 10;\nconst y = 2;\nconst z = x * y;\nconsole.log(z);';
+
+    const defaultEl = makeDiff(oldCode, newCode);
+    const styledEl = makeDiff(oldCode, newCode);
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(base, header, content))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

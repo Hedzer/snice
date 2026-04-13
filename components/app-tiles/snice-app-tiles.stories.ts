@@ -292,3 +292,58 @@ export const EdgeCaseVeryLongName: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: icon (on ligature/text icons only)
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--at-styled snice-app-tiles::part(icon) {
+        font-size: 1.75rem;
+        text-shadow: 0 0 12px currentColor, 0 2px 8px rgba(0,0,0,0.5);
+        filter: drop-shadow(0 0 6px rgba(255,255,255,0.3));
+        transform: scale(1.15);
+        display: inline-block;
+        transition: transform 0.15s ease;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const tiles = [
+      { id: '1', name: 'Mail',     icon: '✉️' },
+      { id: '2', name: 'Calendar', icon: '📅' },
+      { id: '3', name: 'Drive',    icon: '📁' },
+      { id: '4', name: 'Photos',   icon: '🖼️' },
+    ];
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    const dWrap = document.createElement('div');
+    dWrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+    dWrap.appendChild(makeAT({ columns: '4' }, tiles));
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(dWrap);
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--at-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(icon) — glow + scale effect on ligature icons';
+    const sWrap = document.createElement('div');
+    sWrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+    sWrap.appendChild(makeAT({ columns: '4' }, tiles));
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(sWrap);
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

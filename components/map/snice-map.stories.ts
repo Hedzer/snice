@@ -263,3 +263,59 @@ export const DifferentCenterSydney: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, tiles, markers, controls
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    // Default
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    wrap.appendChild(defaultLabel);
+    wrap.appendChild(makeMap({ center: { lat: 48.8566, lng: 2.3522 }, zoom: 5, markers: europeanCities }));
+
+    // Styled with ::part()
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-map';
+
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-map snice-map::part(base) {
+        border: 3px solid #f59e0b;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(245,158,11,0.3);
+      }
+      .parts-demo-map snice-map::part(tiles) {
+        filter: sepia(0.6) hue-rotate(180deg) saturate(1.4) brightness(0.85);
+      }
+      .parts-demo-map snice-map::part(markers) {
+        filter: drop-shadow(0 2px 6px rgba(245,158,11,0.8));
+      }
+      .parts-demo-map snice-map::part(controls) {
+        background: rgba(15,15,20,0.85);
+        border: 1px solid #f59e0b;
+        border-radius: 8px;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        color: #f59e0b;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    const styledMap = makeMap({ center: { lat: 48.8566, lng: 2.3522 }, zoom: 5, markers: europeanCities });
+    styledSection.appendChild(styledMap);
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

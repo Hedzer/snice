@@ -216,3 +216,77 @@ export const AllowRepliesFalsePlusAllowLikesFalseMinimal: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, input-area, list
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .col { display: flex; flex-direction: column; gap: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-comments::part(base) {}
+
+      /* Styled: base — outermost container */
+      .parts-demo .demo-styled snice-comments::part(base) {
+        border: 2px solid #34d399;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(52, 211, 153, 0.2);
+        background: #0a1a14;
+      }
+      /* Styled: input-area — new comment input section */
+      .parts-demo .demo-styled snice-comments::part(input-area) {
+        background: #064e3b;
+        padding: 1.25rem;
+        border-bottom: 2px solid #34d399;
+      }
+      /* Styled: list — comments list area */
+      .parts-demo .demo-styled snice-comments::part(list) {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    `;
+
+    const sampleComments = [
+      { id: 'c1', author: 'Alice', text: 'Great post! Really helpful content.', timestamp: new Date(Date.now() - 3600000).toISOString(), likes: 4 },
+      { id: 'c2', author: 'Bob', text: 'I agree with Alice, very insightful.', timestamp: new Date(Date.now() - 1800000).toISOString(), likes: 1 },
+    ];
+
+    function makeComments(className: string) {
+      const el = document.createElement('snice-comments') as any;
+      el.setAttribute('current-user', 'Me');
+      el.style.cssText = 'display:block;width:460px;';
+      customElements.whenDefined('snice-comments').then(() => {
+        el.currentUser = 'Me';
+        el.comments = sampleComments;
+      });
+
+      const wrap = document.createElement('div');
+      wrap.className = className;
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = className === 'demo-default' ? 'Default' : 'Styled (::part(base, input-area, list))';
+      wrap.appendChild(label);
+      wrap.appendChild(el);
+      return wrap;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(makeComments('demo-default'));
+    row.appendChild(makeComments('demo-styled'));
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

@@ -237,3 +237,66 @@ export const MixedBlockElements: Story = {
     md('## Section\n\nParagraph text.\n\n> A quote\n\n- A list item\n\n```\nA code block\n```\n\nAnother paragraph.\n\n| Col A | Col B |\n|-------|-------|\n| 1 | 2 |'),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Default (unstyled) */
+      .parts-demo .demo-default snice-markdown::part(base) {}
+
+      /* Styled: base — custom background, border, border-radius, padding */
+      .parts-demo .demo-styled snice-markdown::part(base) {
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        border: 2px solid #7c3aed;
+        border-radius: 16px;
+        padding: 2rem;
+        color: #e2d9f3;
+        box-shadow: 0 0 32px rgba(124, 58, 237, 0.4);
+      }
+    `;
+
+    const content = '# Styled Markdown\n\nThis content is rendered inside a **custom-styled** shadow part.\n\n- Item one\n- Item two\n\n> A blockquote inside the styled part.';
+
+    const defaultEl = document.createElement('snice-markdown');
+    defaultEl.style.cssText = 'display:block;max-width:480px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;';
+    defaultEl.textContent = content;
+
+    const styledEl = document.createElement('snice-markdown');
+    styledEl.style.cssText = 'display:block;max-width:480px;';
+    styledEl.textContent = content;
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(base))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

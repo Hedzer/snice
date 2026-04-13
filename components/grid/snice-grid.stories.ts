@@ -230,6 +230,48 @@ export const GetLayoutSetLayout: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: base
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo-label { font-size: 0.65rem; color: #888; margin-bottom: 0.25rem; }
+      .styled-grid::part(base) {
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+        border: 2px solid #6366f1;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+      }
+    `;
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.className = 'parts-demo';
+
+    const items = () => [
+      makeGridItem('A', 0, { 'grid-col': '0', 'grid-row': '0' }),
+      makeGridItem('B', 1, { 'grid-col': '1', 'grid-row': '0' }),
+      makeGridItem('C', 2, { 'grid-col': '2', 'grid-row': '0' }),
+      makeGridItem('D', 3, { 'grid-col': '0', 'grid-row': '1', 'grid-colspan': '2' }),
+      makeGridItem('E', 4, { 'grid-col': '2', 'grid-row': '1' }),
+    ];
+
+    const g1 = document.createElement('div');
+    const l1 = document.createElement('div'); l1.className = 'parts-demo-label'; l1.textContent = 'default';
+    g1.appendChild(l1); g1.appendChild(makeGrid({ gap: '8px', 'column-width': '80', 'row-height': '80' }, items())); wrap.appendChild(g1);
+
+    const g2 = document.createElement('div');
+    const l2 = document.createElement('div'); l2.className = 'parts-demo-label'; l2.textContent = '::part(base) → gradient container';
+    const styled = makeGrid({ gap: '8px', 'column-width': '80', 'row-height': '80' }, items());
+    styled.className = 'styled-grid'; styled.style.border = 'none';
+    g2.appendChild(l2); g2.appendChild(styled); wrap.appendChild(g2);
+
+    return wrap;
+  },
+};
+
 // h2: Dashboard example — drag widgets to rearrange
 export const DashboardExample: Story = {
   render: () => {

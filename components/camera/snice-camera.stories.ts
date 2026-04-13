@@ -180,3 +180,61 @@ export const CustomControlsSlot: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, controls
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-camera-default snice-camera { display:block;width:320px;height:240px; }
+      .parts-demo-camera-styled snice-camera { display:block;width:320px;height:240px; }
+      .parts-demo-camera-styled snice-camera::part(base) {
+        border: 3px solid #6366f1;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 0 0 4px rgba(99,102,241,0.25);
+      }
+      .parts-demo-camera-styled snice-camera::part(controls) {
+        background: rgba(99,102,241,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 0 0 13px 13px;
+        padding: 12px 16px;
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const defaultEl = document.createElement('snice-camera');
+    defaultEl.setAttribute('show-controls', 'true');
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-camera-default', defaultEl));
+
+    const styledEl = document.createElement('snice-camera');
+    styledEl.setAttribute('show-controls', 'true');
+    wrap.appendChild(section(
+      'Styled: ::part(base) — indigo border + glow  |  ::part(controls) — indigo overlay',
+      'parts-demo-camera-styled',
+      styledEl,
+    ));
+
+    const note2 = document.createElement('p');
+    note2.style.cssText = 'font-size:.75rem;color:#888;margin:0;';
+    note2.textContent = 'Camera requires user permission. Parts are visible once the stream starts.';
+    wrap.appendChild(note2);
+
+    return wrap;
+  },
+};

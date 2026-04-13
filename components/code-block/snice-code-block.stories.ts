@@ -198,3 +198,91 @@ export const VeryLongLine: Story = {
     cb("const veryLongVariableName = 'This is an extremely long string that should trigger horizontal scrolling in the code block to verify overflow handling works correctly without breaking layout';", { language: 'javascript' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: container, header, filename, copy-button, content, pre, code
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; font-family: sans-serif; }
+      .parts-demo .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+      .parts-demo .row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+      /* Styled: container — outermost wrapper */
+      .parts-demo .demo-styled snice-code-block::part(container) {
+        border: 2px solid #f59e0b;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+      }
+      /* Styled: header — top bar with filename + copy button */
+      .parts-demo .demo-styled snice-code-block::part(header) {
+        background: linear-gradient(90deg, #78350f, #92400e);
+        padding: 8px 16px;
+        border-bottom: 1px solid #f59e0b;
+      }
+      /* Styled: filename — filename label in header */
+      .parts-demo .demo-styled snice-code-block::part(filename) {
+        color: #fde68a;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+      }
+      /* Styled: copy-button — clipboard button */
+      .parts-demo .demo-styled snice-code-block::part(copy-button) {
+        background: #f59e0b;
+        color: #1a1a1a;
+        border-radius: 6px;
+        padding: 2px 10px;
+        font-weight: 700;
+      }
+      /* Styled: content — scrollable code area */
+      .parts-demo .demo-styled snice-code-block::part(content) {
+        background: #1a0f00;
+        padding: 1rem;
+      }
+      /* Styled: pre — preformatted block */
+      .parts-demo .demo-styled snice-code-block::part(pre) {
+        margin: 0;
+        font-size: 0.9rem;
+      }
+      /* Styled: code — code element */
+      .parts-demo .demo-styled snice-code-block::part(code) {
+        color: #fde68a;
+      }
+    `;
+
+    const snippet = 'function greet(name) {\n  return `Hello, ${name}!`;\n}\nconsole.log(greet("World"));';
+
+    const defaultEl = cb(snippet, { language: 'javascript', filename: 'greet.js' });
+    const styledEl = cb(snippet, { language: 'javascript', filename: 'greet.js' });
+
+    const defaultWrap = document.createElement('div');
+    defaultWrap.className = 'demo-default';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'label';
+    defaultLabel.textContent = 'Default';
+    defaultWrap.appendChild(defaultLabel);
+    defaultWrap.appendChild(defaultEl);
+
+    const styledWrap = document.createElement('div');
+    styledWrap.className = 'demo-styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'label';
+    styledLabel.textContent = 'Styled (::part(container, header, filename, copy-button, content, pre, code))';
+    styledWrap.appendChild(styledLabel);
+    styledWrap.appendChild(styledEl);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.appendChild(defaultWrap);
+    row.appendChild(styledWrap);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.appendChild(style);
+    wrap.appendChild(row);
+    return wrap;
+  },
+};

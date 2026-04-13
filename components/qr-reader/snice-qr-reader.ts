@@ -76,10 +76,10 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="qr-reader-container">
-        <div class="qr-reader-viewport" @click=${this.tapStart ? () => this.handleTap() : null}>
-          <video autoplay playsinline muted style="${this.showSnapshot ? 'display: none;' : ''}"></video>
-          <canvas style="${this.showSnapshot ? '' : 'display: none;'}"></canvas>
+      <div class="qr-reader-container" part="base">
+        <div class="qr-reader-viewport" part="viewport" @click=${this.tapStart ? () => this.handleTap() : null}>
+          <video part="video" autoplay playsinline muted style="${this.showSnapshot ? 'display: none;' : ''}"></video>
+          <canvas part="canvas" style="${this.showSnapshot ? '' : 'display: none;'}"></canvas>
 
           <if ${!this.scanning && !this.errorMessage}>
             <div class="qr-reader-overlay">
@@ -105,19 +105,19 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
           </if>
 
           <if ${this.lastScan}>
-            <div class="qr-reader-result">
+            <div class="qr-reader-result" part="result">
               <strong>Scanned:</strong> ${this.lastScan}
             </div>
           </if>
 
           <if ${this.errorMessage}>
-            <div class="qr-reader-error">${this.errorMessage}</div>
+            <div class="qr-reader-error" part="error-text">${this.errorMessage}</div>
           </if>
         </div>
 
-        <div class="qr-reader-controls">
+        <div class="qr-reader-controls" part="controls">
           <if ${!this.scanning}>
-            <button class="qr-btn start" @click=${() => this.start()} title="${this.manualSnap ? 'Open Camera' : 'Start Scanning'}">
+            <button class="qr-btn start" part="button-start" @click=${() => this.start()} title="${this.manualSnap ? 'Open Camera' : 'Start Scanning'}">
               <if ${this.manualSnap}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
@@ -145,21 +145,21 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
             </button>
           </if>
           <if ${this.scanning && !this.manualSnap}>
-            <button class="qr-btn stop" @click=${() => this.stop()} title="Stop Scanning">
+            <button class="qr-btn stop" part="button-stop" @click=${() => this.stop()} title="Stop Scanning">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="6" y="6" width="12" height="12"></rect>
               </svg>
             </button>
           </if>
           <if ${this.scanning && this.manualSnap}>
-            <button class="qr-btn" @click=${() => this.snap()} title="Take Snapshot">
+            <button class="qr-btn" part="button-start" @click=${() => this.snap()} title="Take Snapshot">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
               </svg>
             </button>
           </if>
-          <button class="qr-btn switch" @click=${() => this.switchCamera()} title="Switch Camera">
+          <button class="qr-btn switch" part="button-switch" @click=${() => this.switchCamera()} title="Switch Camera">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 3v6h6M19 21v-6h-6"/>
               <path d="M3 13a8 8 0 0 1 11-7.5M21 11a8 8 0 0 1-11 7.5"/>

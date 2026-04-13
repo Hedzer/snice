@@ -233,3 +233,158 @@ export const EdgeNoItems: Story = {
     return el;
   },
 };
+
+// CSS Parts: base, header, logo, title, meta, status, parties, party, party-name, party-label,
+//            party-detail, table, table-header, table-row, table-cell, discount-row, tax-row,
+//            summary, summary-row, summary-label, summary-value, total, notes, notes-label,
+//            notes-content, qr, qr-container, footer
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-demo snice-invoice { max-width: 640px; display: block; }
+      .parts-demo .label { font: 700 11px/1 sans-serif; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+      .parts-demo .styled::part(base) { background: #0d1117; border: 2px solid #58a6ff; border-radius: 12px; overflow: hidden; font-family: 'Courier New', monospace; }
+      .parts-demo .styled::part(header) { background: #161b22; border-bottom: 2px solid #58a6ff; padding: 1.5rem; }
+      .parts-demo .styled::part(logo) { border-radius: 8px; }
+      .parts-demo .styled::part(title) { color: #58a6ff; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+      .parts-demo .styled::part(meta) { color: #8b949e; font-size: 0.85rem; }
+      .parts-demo .styled::part(status) { background: #1f6feb; color: #fff; border-radius: 4px; padding: 2px 10px; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; }
+      .parts-demo .styled::part(parties) { display: grid; gap: 1.5rem; background: #0d1117; padding: 1.25rem; }
+      .parts-demo .styled::part(party) { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; }
+      .parts-demo .styled::part(party-name) { color: #e6edf3; font-weight: 700; font-size: 1rem; }
+      .parts-demo .styled::part(party-label) { color: #58a6ff; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+      .parts-demo .styled::part(party-detail) { color: #8b949e; font-size: 0.85rem; }
+      .parts-demo .styled::part(table) { width: 100%; border-collapse: collapse; }
+      .parts-demo .styled::part(table-header) { background: #161b22; color: #58a6ff; padding: 0.5rem 1rem; text-align: left; border-bottom: 1px solid #30363d; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+      .parts-demo .styled::part(table-row) { border-bottom: 1px solid #21262d; }
+      .parts-demo .styled::part(table-cell) { color: #e6edf3; padding: 0.75rem 1rem; }
+      .parts-demo .styled::part(discount-row) { color: #3fb950; }
+      .parts-demo .styled::part(tax-row) { color: #d29922; }
+      .parts-demo .styled::part(summary) { background: #161b22; border-top: 2px solid #30363d; padding: 1rem 1.5rem; }
+      .parts-demo .styled::part(summary-row) { display: flex; justify-content: space-between; padding: 0.25rem 0; }
+      .parts-demo .styled::part(summary-label) { color: #8b949e; }
+      .parts-demo .styled::part(summary-value) { color: #e6edf3; font-weight: 600; }
+      .parts-demo .styled::part(total) { color: #58a6ff; font-size: 1.2rem; font-weight: 900; border-top: 1px solid #58a6ff; margin-top: 0.5rem; padding-top: 0.5rem; }
+      .parts-demo .styled::part(notes) { background: #0d1117; padding: 1rem 1.5rem; border-top: 1px solid #30363d; }
+      .parts-demo .styled::part(notes-label) { color: #58a6ff; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+      .parts-demo .styled::part(notes-content) { color: #8b949e; font-size: 0.9rem; font-style: italic; }
+      .parts-demo .styled::part(qr-container) { padding: 1rem; background: #fff; border-radius: 8px; display: inline-block; }
+      .parts-demo .styled::part(footer) { background: #161b22; border-top: 1px solid #30363d; padding: 0.75rem 1.5rem; color: #8b949e; font-size: 0.8rem; }
+    `;
+
+    const FROM = { name: 'GitCorp Solutions', address: '1 Developer Way, San Francisco, CA', email: 'billing@gitcorp.io' };
+    const TO = { name: 'Enterprise Client', address: '100 Business Blvd, Austin, TX', email: 'accounts@enterprise.com' };
+    const ITEMS = [
+      { description: 'Platform License (annual)', quantity: 1, unitPrice: 4800 },
+      { description: 'Support Package', quantity: 12, unitPrice: 200 },
+      { description: 'Onboarding Services', quantity: 8, unitPrice: 150 },
+    ];
+
+    const makeInvoice = (cls: string) => {
+      const el = document.createElement('snice-invoice');
+      if (cls) el.classList.add(cls);
+      el.setAttribute('invoice-number', 'INV-2026-0042');
+      el.setAttribute('date', '2026-04-01');
+      el.setAttribute('due-date', '2026-04-30');
+      el.setAttribute('status', 'sent');
+      el.setAttribute('currency', 'USD');
+      el.setAttribute('tax-rate', '8.25');
+      el.setAttribute('discount', '500');
+      el.setAttribute('notes', 'Thank you for your business. Payment due within 30 days.');
+      (el as any).from = FROM;
+      (el as any).to = TO;
+      (el as any).items = ITEMS;
+      el.style.cssText = 'display:block;max-width:640px;';
+      return el;
+    };
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-demo');
+
+    const col1 = document.createElement('div');
+    const lbl1 = document.createElement('div'); lbl1.className = 'label'; lbl1.textContent = 'Default';
+    col1.appendChild(lbl1); col1.appendChild(makeInvoice(''));
+
+    const col2 = document.createElement('div');
+    const lbl2 = document.createElement('div'); lbl2.className = 'label'; lbl2.textContent = 'Styled via ::part() — Developer Theme';
+    col2.appendChild(lbl2); col2.appendChild(makeInvoice('styled'));
+
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};
+
+export const CSSPartsAdvanced: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-adv { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .parts-adv snice-invoice { display: block; max-width: 620px; }
+
+      /* Corporate theme */
+      .parts-adv .corp::part(base) { background: #fff; border: 1px solid #d0d5dd; border-radius: 8px; font-family: Arial, sans-serif; }
+      .parts-adv .corp::part(header) { background: #1d3557; padding: 1.5rem; }
+      .parts-adv .corp::part(title) { color: #fff; font-size: 1.75rem; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; }
+      .parts-adv .corp::part(meta) { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+      .parts-adv .corp::part(status) { background: #e63946; color: #fff; border-radius: 3px; padding: 2px 8px; font-weight: 700; font-size: 0.75rem; }
+      .parts-adv .corp::part(parties) { padding: 1.5rem; }
+      .parts-adv .corp::part(party) { border-left: 3px solid #1d3557; padding-left: 1rem; }
+      .parts-adv .corp::part(party-name) { color: #1d3557; font-weight: 700; }
+      .parts-adv .corp::part(party-label) { color: #6b7280; font-size: 0.75rem; text-transform: uppercase; }
+      .parts-adv .corp::part(party-detail) { color: #374151; font-size: 0.875rem; }
+      .parts-adv .corp::part(table-header) { background: #1d3557; color: #fff; padding: 0.625rem 1rem; }
+      .parts-adv .corp::part(table-row) { border-bottom: 1px solid #e5e7eb; }
+      .parts-adv .corp::part(table-cell) { color: #374151; padding: 0.625rem 1rem; }
+      .parts-adv .corp::part(discount-row) { color: #059669; }
+      .parts-adv .corp::part(tax-row) { color: #d97706; }
+      .parts-adv .corp::part(summary) { background: #f9fafb; border-top: 2px solid #1d3557; padding: 1rem 1.5rem; }
+      .parts-adv .corp::part(summary-label) { color: #6b7280; }
+      .parts-adv .corp::part(summary-value) { color: #111827; font-weight: 600; }
+      .parts-adv .corp::part(total) { color: #1d3557; font-weight: 900; font-size: 1.1rem; }
+      .parts-adv .corp::part(notes-label) { color: #1d3557; font-weight: 700; }
+      .parts-adv .corp::part(notes-content) { color: #6b7280; }
+      .parts-adv .corp::part(footer) { background: #1d3557; color: rgba(255,255,255,0.7); font-size: 0.8rem; padding: 0.75rem 1.5rem; }
+    `;
+
+    const FROM = { name: 'Meridian Partners LLC', address: '500 Park Avenue, New York, NY 10022', email: 'finance@meridian.com', phone: '+1 (212) 555-0100' };
+    const TO = { name: 'Global Ventures Inc.', address: '1200 Corporate Drive, Chicago, IL 60601', email: 'ap@globalventures.com' };
+    const ITEMS = [
+      { description: 'Strategic Consulting (Q1)', quantity: 80, unitPrice: 350, tax: 0 },
+      { description: 'Market Research Report', quantity: 1, unitPrice: 12000 },
+      { description: 'Executive Workshop (2 days)', quantity: 2, unitPrice: 5000 },
+    ];
+
+    const el = document.createElement('snice-invoice');
+    el.classList.add('corp');
+    el.setAttribute('invoice-number', 'MP-2026-0099');
+    el.setAttribute('date', '2026-04-09');
+    el.setAttribute('due-date', '2026-05-09');
+    el.setAttribute('status', 'overdue');
+    el.setAttribute('currency', 'USD');
+    el.setAttribute('tax-rate', '8.875');
+    el.setAttribute('discount', '2000');
+    el.setAttribute('notes', 'Wire transfers only. Include invoice number as reference. Late payments subject to 1.5% monthly interest.');
+    (el as any).from = FROM;
+    (el as any).to = TO;
+    (el as any).items = ITEMS;
+    el.style.cssText = 'display:block;max-width:640px;';
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+    wrap.classList.add('parts-adv');
+
+    const col = document.createElement('div');
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'font:700 11px/1 sans-serif;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;';
+    lbl.textContent = 'Corporate Theme via ::part()';
+    col.appendChild(lbl);
+    col.appendChild(el);
+    wrap.appendChild(col);
+    return wrap;
+  },
+};

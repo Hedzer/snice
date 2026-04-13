@@ -338,6 +338,74 @@ export const LongScrollableContent: Story = {
   },
 };
 
+// h2: CSS Parts Styling
+export const CSSPartsStyling: Story = {
+  render: () => {
+    // Parts: backdrop, panel, header, body, footer, close
+    const style = document.createElement('style');
+    style.textContent = `
+      .styled-modal::part(backdrop) {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(139, 92, 246, 0.6));
+        backdrop-filter: blur(6px);
+      }
+      .styled-modal::part(panel) {
+        border: 2px solid #6366f1;
+        border-radius: 1.25rem;
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+        background: linear-gradient(160deg, #1e1b4b 0%, #1e293b 100%);
+        color: #e0e7ff;
+      }
+      .styled-modal::part(header) {
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        color: white;
+        border-bottom: 2px solid #6366f1;
+        border-radius: 1.1rem 1.1rem 0 0;
+        font-weight: 700;
+      }
+      .styled-modal::part(body) {
+        color: #c7d2fe;
+        padding: 1.5rem;
+      }
+      .styled-modal::part(footer) {
+        background: rgba(99, 102, 241, 0.1);
+        border-top: 1px solid #4338ca;
+        border-radius: 0 0 1.1rem 1.1rem;
+      }
+      .styled-modal::part(close) {
+        color: #a5b4fc;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+      }
+    `;
+    document.head.appendChild(style);
+
+    const id = 'modal-css-parts-story';
+    const modal = document.createElement('snice-modal');
+    modal.id = id;
+    modal.className = 'styled-modal';
+    modal.setAttribute('label', 'Styled Modal');
+    const hdr = document.createElement('h3'); hdr.slot = 'header'; hdr.style.margin = '0'; hdr.textContent = 'CSS Parts Demo';
+    modal.appendChild(hdr);
+    const p = document.createElement('p');
+    p.textContent = 'This modal uses ::part() selectors to style backdrop, panel, header, body, footer, and close button.';
+    modal.appendChild(p);
+    const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
+    ftrDiv.style.cssText = 'display:flex;gap:.5rem;justify-content:flex-end;';
+    const closeBtn = document.createElement('button');
+    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid #4338ca;border-radius:6px;background:#312e81;color:#a5b4fc;cursor:pointer;font-size:.875rem;';
+    closeBtn.textContent = 'Close';
+    closeBtn.addEventListener('click', () => (modal as any).close?.());
+    ftrDiv.appendChild(closeBtn);
+    modal.appendChild(ftrDiv);
+
+    const desc = document.createElement('p');
+    desc.style.cssText = 'font-size:.8rem;color:#888;margin-bottom:.5rem;';
+    desc.textContent = 'Styled parts: backdrop, panel, header, body, footer, close';
+    const btn = triggerButton('Open Styled Modal', id);
+    return storyContainer(desc, btn, modal);
+  },
+};
+
 // h2: Size x No header matrix
 export const SizeXNoHeaderMatrix: Story = {
   render: () => {

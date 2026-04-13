@@ -264,3 +264,256 @@ export const ViewModeCopyNoLabel: Story = {
 export const NameFormIntegration: Story = {
   render: () => col(makeKv({ name: 'headers', label: 'HTTP Headers (name=headers)' })),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, title, empty, rows, row, key-input, value-input, description-input,
+//                  delete-button, view-row, view-key, view-value, view-desc, copy-button
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: HTTP headers inspector */
+      .parts-demo__http snice-key-value::part(base) {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      }
+      .parts-demo__http snice-key-value::part(title) {
+        color: #58a6ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #21262d;
+        padding-bottom: 0.5rem;
+      }
+      .parts-demo__http snice-key-value::part(row) {
+        background: #161b22;
+        border: 1px solid #21262d;
+        border-radius: 6px;
+        margin-bottom: 4px;
+      }
+      .parts-demo__http snice-key-value::part(key-input) {
+        background: transparent;
+        color: #79c0ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        border: none;
+        font-weight: 600;
+      }
+      .parts-demo__http snice-key-value::part(value-input) {
+        background: transparent;
+        color: #a5d6a7;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        border: none;
+      }
+      .parts-demo__http snice-key-value::part(delete-button) {
+        color: #f85149;
+        background: rgba(248,81,73,0.1);
+        border: 1px solid rgba(248,81,73,0.2);
+        border-radius: 4px;
+      }
+      .parts-demo__http snice-key-value::part(view-row) {
+        background: #161b22;
+        border: 1px solid #21262d;
+        border-radius: 6px;
+        padding: 0.4rem 0.75rem;
+      }
+      .parts-demo__http snice-key-value::part(view-key) {
+        color: #79c0ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .parts-demo__http snice-key-value::part(view-value) {
+        color: #a5d6a7;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+      }
+      .parts-demo__http snice-key-value::part(copy-button) {
+        color: #8b949e;
+        background: rgba(139,148,158,0.1);
+        border: 1px solid rgba(139,148,158,0.2);
+        border-radius: 4px;
+      }
+
+      /* Styled: spreadsheet / excel */
+      .parts-demo__sheet snice-key-value::part(base) {
+        background: #fff;
+        border: 1px solid #d0d7de;
+        border-radius: 4px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+      }
+      .parts-demo__sheet snice-key-value::part(title) {
+        background: #217346;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 3px 3px 0 0;
+      }
+      .parts-demo__sheet snice-key-value::part(row) {
+        border-bottom: 1px solid #d0d7de;
+        border-radius: 0;
+        background: #fff;
+      }
+      .parts-demo__sheet snice-key-value::part(row):nth-child(even) {
+        background: #f6f8fa;
+      }
+      .parts-demo__sheet snice-key-value::part(key-input) {
+        background: transparent;
+        color: #24292f;
+        font-size: 0.85rem;
+        border: none;
+        font-weight: 600;
+        border-right: 1px solid #d0d7de;
+      }
+      .parts-demo__sheet snice-key-value::part(value-input) {
+        background: transparent;
+        color: #24292f;
+        font-size: 0.85rem;
+        border: none;
+      }
+      .parts-demo__sheet snice-key-value::part(delete-button) {
+        color: #cf222e;
+        background: transparent;
+        border: none;
+      }
+      .parts-demo__sheet snice-key-value::part(empty) {
+        color: #8c959f;
+        font-style: italic;
+        font-size: 0.85rem;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makeKv({ label: 'Key-Value Pairs' }));
+    container.appendChild(defaultSection);
+
+    // HTTP section
+    const httpSection = document.createElement('div');
+    httpSection.className = 'parts-demo__section parts-demo__http';
+    const httpLabel = document.createElement('div');
+    httpLabel.className = 'parts-demo__label';
+    httpLabel.textContent = '::part(base/title/row/key-input/value-input/delete-button/view-row/view-key/view-value/copy-button) — GitHub dark';
+    httpSection.appendChild(httpLabel);
+    httpSection.appendChild(makeKv({ label: 'HTTP Headers', 'show-copy': true }));
+    container.appendChild(httpSection);
+
+    // Spreadsheet section
+    const sheetSection = document.createElement('div');
+    sheetSection.className = 'parts-demo__section parts-demo__sheet';
+    const sheetLabel = document.createElement('div');
+    sheetLabel.className = 'parts-demo__label';
+    sheetLabel.textContent = '::part(base/title/row/key-input/value-input/delete-button/empty) — Spreadsheet';
+    sheetSection.appendChild(sheetLabel);
+    sheetSection.appendChild(makeKv({ label: 'Configuration' }));
+    container.appendChild(sheetSection);
+
+    return container;
+  },
+};
+
+// h2: CSS Parts Advanced
+// Demonstrates view-mode parts: view-row, view-key, view-value, view-desc, copy-button
+export const CSSPartsAdvanced: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-adv { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-adv__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-adv__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* View mode: badge-style key/value */
+      .parts-adv__badge snice-key-value::part(base) {
+        background: #fafafa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+      }
+      .parts-adv__badge snice-key-value::part(title) {
+        color: #212121;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .parts-adv__badge snice-key-value::part(view-row) {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.35rem 0;
+        border-bottom: 1px dashed #eee;
+      }
+      .parts-adv__badge snice-key-value::part(view-key) {
+        background: #e3f2fd;
+        color: #1565c0;
+        border-radius: 999px;
+        padding: 0.15rem 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        min-width: 80px;
+        text-align: center;
+      }
+      .parts-adv__badge snice-key-value::part(view-value) {
+        background: #f3e5f5;
+        color: #4a148c;
+        border-radius: 999px;
+        padding: 0.15rem 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+      .parts-adv__badge snice-key-value::part(view-desc) {
+        color: #9e9e9e;
+        font-style: italic;
+        font-size: 0.7rem;
+        padding: 0 0.65rem;
+      }
+      .parts-adv__badge snice-key-value::part(copy-button) {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid rgba(46,125,50,0.3);
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.7rem;
+        cursor: pointer;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-adv';
+    container.appendChild(style);
+
+    const badgeSection = document.createElement('div');
+    badgeSection.className = 'parts-adv__section parts-adv__badge';
+    const badgeLabel = document.createElement('div');
+    badgeLabel.className = 'parts-adv__label';
+    badgeLabel.textContent = '::part(view-row/view-key/view-value/view-desc/copy-button) — Badge pill style (view mode)';
+    badgeSection.appendChild(badgeLabel);
+    const kv = makeKv({ label: 'Metadata', mode: 'view', 'show-copy': true, 'show-description': true });
+    badgeSection.appendChild(kv);
+    container.appendChild(badgeSection);
+
+    return container;
+  },
+};

@@ -197,3 +197,77 @@ export const SizeXColorMatrix: Story = {
     );
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, track, fill, center, label, value
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-progress-ring exposes the following CSS parts:
+         ::part(base)   — the root progress-ring wrapper
+         ::part(track)  — the background SVG arc (track ring)
+         ::part(fill)   — the foreground SVG arc (filled progress)
+         ::part(center) — the center content overlay div
+         ::part(label)  — the descriptive label span
+         ::part(value)  — the percentage value span */
+      .parts-demo .styled-ring::part(base) {
+        filter: drop-shadow(0 4px 16px rgba(236,72,153,.4));
+      }
+      .parts-demo .styled-ring::part(track) {
+        stroke: #1e1b4b;
+        stroke-width: 8;
+      }
+      .parts-demo .styled-ring::part(fill) {
+        stroke: url(#ring-gradient) #ec4899;
+        stroke-linecap: round;
+        stroke-width: 8;
+      }
+      .parts-demo .styled-ring::part(center) {
+        background: radial-gradient(circle, #2d1a47, #0f0f1a);
+        border-radius: 50%;
+      }
+      .parts-demo .styled-ring::part(value) {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #f472b6;
+        text-shadow: 0 0 8px #ec489988;
+      }
+      .parts-demo .styled-ring::part(label) {
+        font-size: .65rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: #a78bfa;
+        font-weight: 700;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;gap:3rem;align-items:center;flex-wrap:wrap;';
+
+    const col1 = document.createElement('div');
+    col1.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;';
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultRing = makeRing({ value: 72, size: 'large', 'show-value': true, label: 'Progress' });
+    col1.appendChild(lbl1);
+    col1.appendChild(defaultRing);
+
+    const col2 = document.createElement('div');
+    col2.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;';
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(base/track/fill/center/value/label)';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledRing = makeRing({ value: 72, size: 'large', 'show-value': true, label: 'Progress' });
+    styledRing.className = 'styled-ring';
+    col2.appendChild(lbl2);
+    col2.appendChild(styledRing);
+
+    wrap.appendChild(style);
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

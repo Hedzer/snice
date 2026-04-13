@@ -197,3 +197,80 @@ export const EdgeCaseEmptyMessage: Story = {
     makeBanner('warning', '', { dismissible: true, 'action-text': 'Act' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: banner, icon, message, action, close
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-banner exposes the following CSS parts:
+         ::part(banner)  — the root banner container
+         ::part(icon)    — the icon slot element
+         ::part(message) — the message text span
+         ::part(action)  — the action button
+         ::part(close)   — the close/dismiss button */
+      .parts-demo .styled-banner::part(banner) {
+        background: linear-gradient(90deg, #0f172a, #1e3a5f);
+        border-left: 4px solid #38bdf8;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(56,189,248,.2);
+      }
+      .parts-demo .styled-banner::part(icon) {
+        font-size: 1.4rem;
+        filter: drop-shadow(0 0 4px #38bdf8);
+      }
+      .parts-demo .styled-banner::part(message) {
+        font-weight: 600;
+        color: #bae6fd;
+        letter-spacing: .03em;
+      }
+      .parts-demo .styled-banner::part(action) {
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .parts-demo .styled-banner::part(close) {
+        color: #38bdf8;
+        opacity: 1;
+        font-size: 1.1rem;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;width:100%;';
+
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default (no ::part() overrides)';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const defaultBanner = document.createElement('snice-banner');
+    defaultBanner.setAttribute('variant', 'info');
+    defaultBanner.setAttribute('message', 'Your session expires in 5 minutes.');
+    defaultBanner.setAttribute('action-text', 'Renew');
+    defaultBanner.toggleAttribute('dismissible', true);
+
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(banner/icon/message/action/close) — dark blue with sky glow';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+
+    const styledBanner = document.createElement('snice-banner');
+    styledBanner.className = 'styled-banner';
+    styledBanner.setAttribute('variant', 'info');
+    styledBanner.setAttribute('message', 'Your session expires in 5 minutes.');
+    styledBanner.setAttribute('action-text', 'Renew');
+    styledBanner.toggleAttribute('dismissible', true);
+
+    wrap.appendChild(style);
+    wrap.appendChild(lbl1);
+    wrap.appendChild(defaultBanner);
+    wrap.appendChild(lbl2);
+    wrap.appendChild(styledBanner);
+    return wrap;
+  },
+};

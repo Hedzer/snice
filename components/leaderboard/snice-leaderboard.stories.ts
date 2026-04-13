@@ -217,3 +217,89 @@ export const ManyEntries10Plus: Story = {
     return makeLeaderboard(manyEntries, { title: 'Large List' });
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, title, list, empty
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; padding: 1rem; }
+      .parts-demo .item { display: flex; flex-direction: column; gap: .4rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+      /* ::part(base) — outer container */
+      .parts-demo snice-leaderboard.styled::part(base) {
+        background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+        border: 1px solid #4c1d95;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(79,70,229,.25);
+        overflow: hidden;
+      }
+
+      /* ::part(title) — the board title heading */
+      .parts-demo snice-leaderboard.styled::part(title) {
+        color: #c4b5fd;
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        padding: 1rem 1rem .5rem;
+        border-bottom: 1px solid #4c1d95;
+        margin: 0;
+      }
+
+      /* ::part(list) — the <ol> entries list */
+      .parts-demo snice-leaderboard.styled::part(list) {
+        padding: .5rem 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      /* ::part(empty) — shown when no entries */
+      .parts-demo snice-leaderboard.empty-styled::part(base) {
+        background: #fef2f2;
+        border: 2px dashed #fca5a5;
+        border-radius: 12px;
+      }
+      .parts-demo snice-leaderboard.empty-styled::part(empty) {
+        color: #ef4444;
+        font-weight: 700;
+        font-size: .9rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      item.appendChild(el);
+      return item;
+    };
+
+    const def = makeLeaderboard(SAMPLE_ENTRIES, { title: 'Top Players' });
+    demo.appendChild(makeItem('default', def));
+
+    const styled = makeLeaderboard(SAMPLE_ENTRIES, { title: 'Top Players' });
+    styled.className = 'styled';
+    demo.appendChild(makeItem('::part(base) + ::part(title) + ::part(list) dark purple', styled));
+
+    const empty = makeLeaderboard([], { title: 'No Data' });
+    empty.className = 'empty-styled';
+    demo.appendChild(makeItem('::part(empty) — styled empty state', empty));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

@@ -121,3 +121,62 @@ export const OnDarkBackground: Story = {
     return bg;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, circle, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-spinner exposes the following CSS parts:
+         ::part(base)   — the root spinner wrapper div
+         ::part(circle) — the SVG arc element
+         ::part(label)  — the loading label text span */
+      .parts-demo .styled-spinner::part(base) {
+        background: rgba(251,191,36,.08);
+        border-radius: 50%;
+        padding: 8px;
+        box-shadow: 0 0 16px rgba(251,191,36,.3);
+      }
+      .parts-demo .styled-spinner::part(circle) {
+        stroke: #fbbf24;
+        filter: drop-shadow(0 0 4px #fbbf24);
+      }
+      .parts-demo .styled-spinner::part(label) {
+        color: #fbbf24;
+        font-weight: 700;
+        font-size: .8rem;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;gap:3rem;align-items:center;flex-wrap:wrap;';
+
+    const col1 = document.createElement('div');
+    col1.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;';
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultSpinner = makeSpinner({ size: 'large', label: 'Loading...' });
+    col1.appendChild(lbl1);
+    col1.appendChild(defaultSpinner);
+
+    const col2 = document.createElement('div');
+    col2.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;';
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled ::part(base/circle/label)';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledSpinner = makeSpinner({ size: 'large', label: 'Loading...' });
+    styledSpinner.className = 'styled-spinner';
+    col2.appendChild(lbl2);
+    col2.appendChild(styledSpinner);
+
+    wrap.appendChild(style);
+    wrap.appendChild(col1);
+    wrap.appendChild(col2);
+    return wrap;
+  },
+};

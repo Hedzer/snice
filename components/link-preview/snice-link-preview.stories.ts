@@ -200,3 +200,63 @@ export const VariantXSizeMatrix: Story = {
     return wrap;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts: base, content, title
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--lp-styled snice-link-preview::part(base) {
+        border: 2px solid #7c3aed;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #1e1035, #2d1b69);
+        box-shadow: 0 4px 24px rgba(124,58,237,0.25);
+      }
+      .parts-demo--lp-styled snice-link-preview::part(content) {
+        padding: 1.25rem 1.5rem;
+        background: rgba(124,58,237,0.1);
+      }
+      .parts-demo--lp-styled snice-link-preview::part(title) {
+        color: #c4b5fd;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        text-decoration: underline;
+        text-decoration-color: rgba(196,181,253,0.4);
+      }
+    `;
+    wrap.appendChild(style);
+
+    const attrs = {
+      url: 'https://example.com',
+      title: 'Link Preview with Part Styling',
+      description: 'Styled via ::part(base), ::part(content), and ::part(title) selectors.',
+      image: 'https://picsum.photos/seed/lp-parts/600/300',
+      'site-name': 'example.com',
+    };
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(makeLp(attrs));
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--lp-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(base · content · title)';
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(makeLp(attrs));
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

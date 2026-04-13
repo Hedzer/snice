@@ -426,3 +426,77 @@ export const HeadingOnlyNoDescription: Story = {
     return list;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available on snice-list: container, search, loading, sentinel
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'list-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .list-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+      .list-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.4rem;
+      }
+
+      /* Styled list parts */
+      .list-parts-demo .styled-list::part(container) {
+        background: linear-gradient(180deg, #0f172a, #1e293b);
+        border: 2px solid #334155;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .list-parts-demo .styled-list::part(search) {
+        background: #1e293b;
+        border-bottom: 2px solid #3b82f6;
+        padding: 0.6rem 1rem;
+      }
+      .list-parts-demo .styled-list::part(loading) {
+        background: #0f172a;
+        color: #60a5fa;
+        text-align: center;
+        padding: 1.5rem;
+      }
+      .list-parts-demo .styled-list::part(sentinel) {
+        height: 2px;
+        background: #3b82f6;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const makeList = (label: string, cls: string, items: Array<{ heading: string; description: string }>): HTMLElement => {
+      const box = document.createElement('div');
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      box.appendChild(lbl);
+      const list = document.createElement('snice-list') as any;
+      list.style.cssText = 'max-width:360px;display:block;';
+      list.toggleAttribute('searchable', true);
+      list.toggleAttribute('dividers', true);
+      if (cls) list.classList.add(cls);
+      for (const item of items) {
+        const li = document.createElement('snice-list-item');
+        li.setAttribute('heading', item.heading);
+        li.setAttribute('description', item.description);
+        list.appendChild(li);
+      }
+      box.appendChild(list);
+      return box;
+    };
+
+    const items = [
+      { heading: 'Inbox', description: '3 unread messages' },
+      { heading: 'Drafts', description: '2 saved drafts' },
+      { heading: 'Sent', description: 'Last sent 2h ago' },
+    ];
+
+    wrap.appendChild(makeList('Default (no ::part() styles)', '', items));
+    wrap.appendChild(makeList('Styled via ::part() — container, search, loading, sentinel', 'styled-list', items));
+
+    return wrap;
+  },
+};

@@ -214,3 +214,64 @@ export const SingleColumn: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available: base, formula-bar, status-bar, context-menu
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ss-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .ss-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .ss-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.4rem;
+      }
+
+      /* Styled: base, formula-bar, status-bar */
+      .ss-parts-demo .styled-ss::part(base) {
+        background: #0d1117;
+        border: 2px solid #238636;
+        border-radius: 8px;
+      }
+      .ss-parts-demo .styled-ss::part(formula-bar) {
+        background: #161b22;
+        border-bottom: 2px solid #238636;
+        color: #58a6ff;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
+        padding: 0.35rem 0.75rem;
+      }
+      .ss-parts-demo .styled-ss::part(status-bar) {
+        background: #1c2128;
+        border-top: 1px solid #30363d;
+        color: #8b949e;
+        font-size: 0.72rem;
+        padding: 0.25rem 0.75rem;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const makeDemo = (label: string, cls: string): HTMLElement => {
+      const box = document.createElement('div');
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      box.appendChild(lbl);
+      const el = document.createElement('snice-spreadsheet') as any;
+      el.style.cssText = 'height:220px;display:block;';
+      if (cls) el.classList.add(cls);
+      el.columns = [{ header: 'Item' }, { header: 'Q1', type: 'number' }, { header: 'Q2', type: 'number' }];
+      el.data = [['Revenue', 120000, 145000], ['Expenses', 87000, 92000], ['Profit', 33000, 53000]];
+      box.appendChild(el);
+      return box;
+    };
+
+    wrap.appendChild(makeDemo('Default (no ::part() styles)', ''));
+    wrap.appendChild(makeDemo('Styled via ::part() — base, formula-bar, status-bar', 'styled-ss'));
+
+    return wrap;
+  },
+};

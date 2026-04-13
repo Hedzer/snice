@@ -202,3 +202,56 @@ export const SlotColors: Story = {
     el.appendChild(input);
   })),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, toolbar, canvas-wrap, canvas
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo--paint-styled snice-paint::part(base) {
+        border: 2px solid #10b981;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 0 4px rgba(16,185,129,0.15);
+      }
+      .parts-demo--paint-styled snice-paint::part(toolbar) {
+        background: linear-gradient(90deg, #064e3b, #065f46);
+        border-bottom: 1px solid #10b981;
+        padding: 0.5rem;
+      }
+      .parts-demo--paint-styled snice-paint::part(canvas-wrap) {
+        background: #f0fdf4;
+      }
+      .parts-demo--paint-styled snice-paint::part(canvas) {
+        border: none;
+        cursor: crosshair;
+        filter: saturate(1.2);
+      }
+    `;
+    wrap.appendChild(style);
+
+    const defaultBox = document.createElement('div');
+    defaultBox.className = 'parts-demo';
+    const defaultLabel = document.createElement('p');
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.75rem;color:#888;text-transform:uppercase;letter-spacing:.05em;';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultBox.appendChild(defaultLabel);
+    defaultBox.appendChild(makePaint({}));
+
+    const styledBox = document.createElement('div');
+    styledBox.className = 'parts-demo parts-demo--paint-styled';
+    const styledLabel = document.createElement('p');
+    styledLabel.style.cssText = defaultLabel.style.cssText;
+    styledLabel.textContent = 'Styled via ::part(base · toolbar · canvas-wrap · canvas)';
+    styledBox.appendChild(styledLabel);
+    styledBox.appendChild(makePaint({}));
+
+    wrap.appendChild(defaultBox);
+    wrap.appendChild(styledBox);
+    return wrap;
+  },
+};

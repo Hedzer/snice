@@ -220,3 +220,109 @@ export const FormName: Story = {
     makePicker({ name: 'date_range', label: 'Date Range (name=date_range)' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Available parts: input, calendar-toggle, clear, spinner, calendar, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; font-family: sans-serif; }
+      .parts-demo__section { display: flex; flex-direction: column; gap: 0.75rem; }
+      .parts-demo__label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; }
+
+      /* Styled: rose gold / warm luxury */
+      .parts-demo__luxury snice-date-range-picker::part(input) {
+        background: linear-gradient(135deg, #fff9f5, #fff0e8);
+        border: 2px solid #d4876a;
+        border-radius: 10px;
+        color: #6b3020;
+        font-weight: 600;
+        box-shadow: 0 2px 10px rgba(212,135,106,0.2);
+      }
+      .parts-demo__luxury snice-date-range-picker::part(calendar-toggle) {
+        background: linear-gradient(135deg, #d4876a, #b85c3a);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 3px 8px rgba(184,92,58,0.4);
+        cursor: pointer;
+      }
+      .parts-demo__luxury snice-date-range-picker::part(clear) {
+        color: #d4876a;
+        font-weight: 700;
+      }
+      .parts-demo__luxury snice-date-range-picker::part(helper-text) {
+        color: #b85c3a;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+
+      /* Styled: midnight blue */
+      .parts-demo__midnight snice-date-range-picker::part(input) {
+        background: #0a0e27;
+        border: 1px solid #3d5afe;
+        border-radius: 6px;
+        color: #82b1ff;
+        font-family: monospace;
+        box-shadow: 0 0 10px rgba(61,90,254,0.25);
+      }
+      .parts-demo__midnight snice-date-range-picker::part(calendar-toggle) {
+        background: #1a237e;
+        color: #82b1ff;
+        border: 1px solid #3d5afe;
+        border-radius: 5px;
+        box-shadow: 0 0 8px rgba(61,90,254,0.4);
+        cursor: pointer;
+      }
+      .parts-demo__midnight snice-date-range-picker::part(clear) {
+        color: #3d5afe;
+        opacity: 0.85;
+      }
+      .parts-demo__midnight snice-date-range-picker::part(error-text) {
+        color: #ff5252;
+        font-weight: 600;
+      }
+      .parts-demo__midnight snice-date-range-picker::part(helper-text) {
+        color: #448aff;
+        font-size: 0.72rem;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.className = 'parts-demo';
+    container.appendChild(style);
+
+    // Default section
+    const defaultSection = document.createElement('div');
+    defaultSection.className = 'parts-demo__section';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'parts-demo__label';
+    defaultLabel.textContent = 'Default (no ::part() styles)';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(makePicker({ label: 'Date Range', clearable: true, 'helper-text': 'Default styles' }));
+    container.appendChild(defaultSection);
+
+    // Luxury section
+    const luxSection = document.createElement('div');
+    luxSection.className = 'parts-demo__section parts-demo__luxury';
+    const luxLabel = document.createElement('div');
+    luxLabel.className = 'parts-demo__label';
+    luxLabel.textContent = '::part(input/calendar-toggle/clear/helper-text) — Rose gold luxury';
+    luxSection.appendChild(luxLabel);
+    luxSection.appendChild(makePicker({ label: 'Booking Period', clearable: true, 'helper-text': 'Select check-in and check-out dates' }));
+    container.appendChild(luxSection);
+
+    // Midnight section
+    const midSection = document.createElement('div');
+    midSection.className = 'parts-demo__section parts-demo__midnight';
+    const midLabel = document.createElement('div');
+    midLabel.className = 'parts-demo__label';
+    midLabel.textContent = '::part(input/calendar-toggle/clear/error-text/helper-text) — Midnight blue';
+    midSection.appendChild(midLabel);
+    midSection.appendChild(makePicker({ label: 'Report Window', clearable: true, 'helper-text': 'YYYY-MM-DD' }));
+    container.appendChild(midSection);
+
+    return container;
+  },
+};

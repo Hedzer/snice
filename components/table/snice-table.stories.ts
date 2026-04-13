@@ -327,3 +327,146 @@ export const EmptyTable: Story = {
     return table;
   },
 };
+
+// h2: CSS Parts Styling
+// Parts available on snice-table: superheader
+// Parts available on snice-header: container, checkbox-cell, cell, sort-indicator, filter-button
+// Parts available on snice-row: container, checkbox-cell, cell
+// Parts available on snice-cell: content
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .parts-demo .demo-box { display: flex; flex-direction: column; gap: 0.5rem; }
+      .parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem;
+      }
+
+      /* Styled table: superheader, header cells, row cells */
+      .parts-demo .styled-table snice-header::part(container) {
+        background: linear-gradient(135deg, #1e3a5f, #2d5986);
+        border-radius: 6px 6px 0 0;
+      }
+      .parts-demo .styled-table snice-header::part(cell) {
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border-bottom: 2px solid #4a90d9;
+      }
+      .parts-demo .styled-table snice-header::part(sort-indicator) {
+        color: #4af;
+        font-size: 1rem;
+      }
+      .parts-demo .styled-table snice-row::part(container) {
+        border-bottom: 1px solid rgba(74, 144, 217, 0.2);
+        transition: background 0.15s;
+      }
+      .parts-demo .styled-table snice-row::part(container):hover {
+        background: rgba(74, 144, 217, 0.08);
+      }
+      .parts-demo .styled-table snice-row::part(cell) {
+        color: #c8e0ff;
+        padding: 0.6rem 0.75rem;
+      }
+      .parts-demo .styled-table snice-cell::part(content) {
+        font-size: 0.85rem;
+      }
+      .parts-demo .styled-table snice-table::part(superheader) {
+        background: #162b44;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px 8px 0 0;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const makeDemo = (label: string, className: string, sortable: boolean): HTMLElement => {
+      const box = document.createElement('div');
+      box.className = 'demo-box';
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      box.appendChild(lbl);
+      const table = document.createElement('snice-table') as any;
+      if (className) table.classList.add(className);
+      if (sortable) table.toggleAttribute('sortable', true);
+      table.toggleAttribute('hoverable', true);
+      table.setColumns(COLUMNS.slice(0, 3));
+      table.setData(DATA.slice(0, 4));
+      requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
+      box.appendChild(table);
+      return box;
+    };
+
+    wrap.appendChild(makeDemo('Default (no ::part() styles)', '', true));
+    wrap.appendChild(makeDemo('Styled via ::part() — header, cells, rows, content', 'styled-table', true));
+
+    return wrap;
+  },
+};
+
+// h2: CSS Parts Advanced
+// Demonstrates checkbox-cell, filter-button, and row checkbox-cell parts
+export const CSSPartsAdvanced: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo-adv';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-adv { display: flex; flex-direction: column; gap: 1.5rem; }
+      .parts-demo-adv .adv-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem;
+      }
+
+      /* Style checkbox-cell in header and rows */
+      .parts-demo-adv snice-header::part(checkbox-cell) {
+        background: #2a1a4a;
+        border-right: 2px solid #7c3aed;
+        min-width: 3rem;
+      }
+      .parts-demo-adv snice-row::part(checkbox-cell) {
+        background: rgba(124, 58, 237, 0.08);
+        border-right: 2px solid #7c3aed44;
+      }
+      /* Style the header cell column labels */
+      .parts-demo-adv snice-header::part(cell) {
+        background: #1a0a2e;
+        color: #c4b5fd;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      /* Style data cells */
+      .parts-demo-adv snice-row::part(cell) {
+        color: #e2d9f3;
+      }
+      /* Style cell inner content */
+      .parts-demo-adv snice-cell::part(content) {
+        border-radius: 4px;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'adv-label';
+    lbl.textContent = 'Styled: checkbox-cell, header cell, row cell, cell content via ::part()';
+    wrap.appendChild(lbl);
+
+    const table = document.createElement('snice-table') as any;
+    table.toggleAttribute('selectable', true);
+    table.toggleAttribute('sortable', true);
+    table.toggleAttribute('hoverable', true);
+    table.setColumns(COLUMNS.slice(0, 4));
+    table.setData(DATA.slice(0, 4));
+    requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
+    wrap.appendChild(table);
+
+    return wrap;
+  },
+};

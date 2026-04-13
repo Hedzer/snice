@@ -124,3 +124,59 @@ export const MinDimensions: Story = {
 export const NoSrc: Story = {
   render: () => row(makeCropper({})),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, image-container, crop-area
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-cropper-default snice-cropper { display:block;width:400px;height:300px; }
+      .parts-demo-cropper-styled snice-cropper { display:block;width:400px;height:300px; }
+      .parts-demo-cropper-styled snice-cropper::part(base) {
+        border: 3px solid #f59e0b;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(245,158,11,0.25);
+      }
+      .parts-demo-cropper-styled snice-cropper::part(image-container) {
+        background: #1c1917;
+      }
+      .parts-demo-cropper-styled snice-cropper::part(crop-area) {
+        border: 2px dashed #f59e0b;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+      }
+    `;
+    wrap.appendChild(style);
+
+    function section(title: string, className: string, el: HTMLElement) {
+      const sec = document.createElement('div');
+      sec.className = className;
+      const h = document.createElement('div');
+      h.style.cssText = 'font-size:.7rem;color:#888;margin-bottom:.5rem;font-family:monospace;';
+      h.textContent = title;
+      sec.appendChild(h);
+      sec.appendChild(el);
+      return sec;
+    }
+
+    const IMG = 'https://picsum.photos/seed/cropparts/600/400';
+
+    const defaultEl = document.createElement('snice-cropper');
+    defaultEl.setAttribute('src', IMG);
+    wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-cropper-default', defaultEl));
+
+    const styledEl = document.createElement('snice-cropper');
+    styledEl.setAttribute('src', IMG);
+    wrap.appendChild(section(
+      'Styled: ::part(base) — amber border  |  ::part(image-container) — dark bg  |  ::part(crop-area) — dashed amber frame',
+      'parts-demo-cropper-styled',
+      styledEl,
+    ));
+
+    return wrap;
+  },
+};

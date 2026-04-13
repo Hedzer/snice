@@ -187,3 +187,74 @@ export const MixedContentRow: Story = {
     makeAvatar({ name: 'Rounded', shape: 'rounded', size: 'large' }),
   ),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, image, fallback
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo { display: flex; gap: 2rem; align-items: flex-end; flex-wrap: wrap; padding: 1rem; }
+      .parts-demo .item { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+      .parts-demo .label { font-size: .65rem; color: #888; text-align: center; }
+
+      /* Styled: ::part(base) — avatar container */
+      .parts-demo snice-avatar.styled-base::part(base) {
+        border: 3px solid #f59e0b;
+        box-shadow: 0 0 0 4px rgba(245,158,11,.25);
+        border-radius: 0;
+        transform: rotate(5deg);
+      }
+
+      /* Styled: ::part(fallback) — initials/icon container */
+      .parts-demo snice-avatar.styled-fallback::part(fallback) {
+        background: linear-gradient(135deg, #6366f1, #ec4899);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 900;
+        letter-spacing: .05em;
+      }
+
+      /* Styled: ::part(image) — the img element */
+      .parts-demo snice-avatar.styled-image::part(image) {
+        filter: grayscale(1) sepia(0.4) hue-rotate(200deg);
+        border: 3px solid #10b981;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.appendChild(style);
+
+    const demo = document.createElement('div');
+    demo.className = 'parts-demo';
+
+    const makeItem = (label: string, el: HTMLElement) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.appendChild(el);
+      const lbl = document.createElement('div');
+      lbl.className = 'label';
+      lbl.textContent = label;
+      item.appendChild(lbl);
+      return item;
+    };
+
+    const def = makeAvatar({ name: 'Alice Chen', size: 'large' });
+    demo.appendChild(makeItem('default', def));
+
+    const styledBase = makeAvatar({ name: 'Alice Chen', size: 'large' });
+    styledBase.className = 'styled-base';
+    demo.appendChild(makeItem('::part(base) border + rotate', styledBase));
+
+    const styledFallback = makeAvatar({ name: 'Alice Chen', size: 'large' });
+    styledFallback.className = 'styled-fallback';
+    demo.appendChild(makeItem('::part(fallback) gradient bg', styledFallback));
+
+    const styledImage = makeAvatar({ src: 'https://i.pravatar.cc/200?img=3', name: 'Bob', size: 'large' });
+    styledImage.className = 'styled-image';
+    demo.appendChild(makeItem('::part(image) filter + border', styledImage));
+
+    wrap.appendChild(demo);
+    return wrap;
+  },
+};

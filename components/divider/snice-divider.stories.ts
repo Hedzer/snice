@@ -242,3 +242,66 @@ export const VerticalCustomColor: Story = {
     return container;
   },
 };
+
+
+// h2: CSS Parts Styling
+// Parts available: base, line, text
+// Note: when no text attr is set, only base+line are rendered (single element); with text, base wraps two line divs and a text span
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'divider-parts-demo';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .divider-parts-demo { display: flex; flex-direction: column; gap: 2rem; max-width: 500px; }
+      .divider-parts-demo .demo-label {
+        font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem;
+      }
+      .divider-parts-demo .demo-section { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      /* Styled divider: line gets gradient, text gets styled */
+      .divider-parts-demo .styled-div::part(base) {
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .divider-parts-demo .styled-div::part(line) {
+        background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+        height: 2px;
+        border: none;
+      }
+      .divider-parts-demo .styled-div::part(text) {
+        color: #7c3aed;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+    `;
+    wrap.appendChild(style);
+
+    const addSection = (label: string, el: HTMLElement) => {
+      const section = document.createElement('div');
+      section.className = 'demo-section';
+      const lbl = document.createElement('div');
+      lbl.className = 'demo-label';
+      lbl.textContent = label;
+      section.appendChild(lbl);
+      section.appendChild(el);
+      wrap.appendChild(section);
+    };
+
+    addSection('Default (no ::part() styles)', makeDivider({ text: 'Section Header' }));
+    addSection('Styled via ::part() — line (gradient), text (purple)', (() => { const d = makeDivider({ text: 'Section Header' }); d.classList.add('styled-div'); return d; })());
+    addSection('Default plain divider (no text — uses base+line as single element)', makeDivider({}));
+    addSection('Styled plain divider via ::part(base)', (() => {
+      const d = makeDivider({});
+      d.classList.add('styled-div');
+      return d;
+    })());
+
+    return wrap;
+  },
+};

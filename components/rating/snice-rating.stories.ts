@@ -187,3 +187,51 @@ export const Empty: Story = {
 export const Full: Story = {
   render: () => row(makeRating({ value: 5, max: 5 })),
 };
+
+// h2: CSS Parts Styling
+// Parts: base, star
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* snice-rating exposes the following CSS parts:
+         ::part(base) — the root rating container
+         ::part(star) — each individual star span */
+      .parts-demo .styled-rating::part(base) {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: 8px 12px;
+        border: 1px solid #f59e0b44;
+        box-shadow: 0 2px 12px rgba(245,158,11,.15);
+        display: inline-flex;
+      }
+      .parts-demo .styled-rating::part(star) {
+        font-size: 2rem;
+        filter: drop-shadow(0 0 4px #f59e0b);
+        transition: transform .15s;
+      }
+    `;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'parts-demo';
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const lbl1 = document.createElement('p');
+    lbl1.textContent = 'Default (no ::part() overrides)';
+    lbl1.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const defaultRating = makeRating({ value: 4, max: 5 });
+
+    const lbl2 = document.createElement('p');
+    lbl2.textContent = 'Styled via ::part(base/star) — dark card, glowing stars';
+    lbl2.style.cssText = 'margin:0;font-size:.75rem;opacity:.6;';
+    const styledRating = makeRating({ value: 4, max: 5 });
+    styledRating.className = 'styled-rating';
+
+    wrap.appendChild(style);
+    wrap.appendChild(lbl1);
+    wrap.appendChild(defaultRating);
+    wrap.appendChild(lbl2);
+    wrap.appendChild(styledRating);
+    return wrap;
+  },
+};
