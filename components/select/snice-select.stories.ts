@@ -203,3 +203,138 @@ export const AllVariants: Story = {
     makeSelect({ size: 'large',  label: 'Large Disabled',  disabled: true }),
   ),
 };
+
+// Available CSS Parts: label, input, arrow, trigger, value, spinner, dropdown, search, search-input, options, option
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(makeSelect({ label: 'Fruit', placeholder: 'Select a fruit' })));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-select';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-select snice-select::part(label) {
+        color: #10b981;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .parts-demo-select snice-select::part(trigger) {
+        background: linear-gradient(135deg, #064e3b, #065f46);
+        border: 2px solid #10b981;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      }
+      .parts-demo-select snice-select::part(value) {
+        color: #a7f3d0;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .parts-demo-select snice-select::part(arrow) {
+        color: #10b981;
+        font-size: 1.1em;
+      }
+      .parts-demo-select snice-select::part(spinner) {
+        border-color: rgba(16, 185, 129, 0.3);
+        border-top-color: #10b981;
+      }
+    `;
+    styledSection.appendChild(style);
+    styledSection.appendChild(col(makeSelect({ label: 'Styled Select', placeholder: 'Pick an option' })));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};
+
+export const CSSPartsAdvanced: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const label = document.createElement('h3');
+    label.textContent = 'Dropdown, options, and search parts';
+    label.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    wrap.appendChild(label);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-select-adv';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-select-adv snice-select::part(dropdown) {
+        background: #1e1b4b;
+        border: 2px solid #6366f1;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        padding: 4px;
+      }
+      .parts-demo-select-adv snice-select::part(options) {
+        padding: 2px 0;
+      }
+      .parts-demo-select-adv snice-select::part(option) {
+        color: #c7d2fe;
+        border-radius: 8px;
+        margin: 2px 4px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        transition: background 0.1s;
+      }
+      .parts-demo-select-adv snice-select::part(option):hover {
+        background: rgba(99, 102, 241, 0.3);
+        color: #e0e7ff;
+      }
+      .parts-demo-select-adv snice-select::part(search) {
+        padding: 0.4rem 0.5rem;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .parts-demo-select-adv snice-select::part(search-input) {
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid #6366f1;
+        border-radius: 6px;
+        color: #e0e7ff;
+        font-size: 0.85rem;
+        padding: 0.3rem 0.5rem;
+      }
+      .parts-demo-select-adv snice-select::part(trigger) {
+        background: linear-gradient(135deg, #1e1b4b, #2d2b6b);
+        border: 2px solid #6366f1;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+      }
+      .parts-demo-select-adv snice-select::part(value) {
+        color: #c7d2fe;
+        font-weight: 500;
+      }
+      .parts-demo-select-adv snice-select::part(arrow) {
+        color: #818cf8;
+      }
+      .parts-demo-select-adv snice-select::part(label) {
+        color: #818cf8;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+      }
+    `;
+    styledSection.appendChild(style);
+    styledSection.appendChild(col(makeSelect({ label: 'Advanced Parts', placeholder: 'Open to see styled dropdown', searchable: true })));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

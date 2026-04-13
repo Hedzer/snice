@@ -187,3 +187,68 @@ export const AllVariants: Story = {
     makeSC(FOUR_OPTS, { value: 'active' }),
   ),
 };
+
+// Available CSS Parts: base, indicator, segment
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeSC(VIEW_OPTS, { value: 'day' }),
+      makeSC(FOUR_OPTS, { value: 'active' }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-segmented';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-segmented snice-segmented-control::part(base) {
+        background: #0c0a1e;
+        border: 2px solid #4f46e5;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.35);
+        padding: 3px;
+        gap: 2px;
+      }
+      .parts-demo-segmented snice-segmented-control::part(indicator) {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(79, 70, 229, 0.6);
+      }
+      .parts-demo-segmented snice-segmented-control::part(segment) {
+        color: #6366f1;
+        font-weight: 600;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        border-radius: 10px;
+        padding: 0.35rem 1rem;
+        transition: color 0.2s;
+      }
+      .parts-demo-segmented snice-segmented-control [aria-selected="true"]::part(segment) {
+        color: #ffffff;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeSC(VIEW_OPTS, { value: 'week' }),
+      makeSC(FOUR_OPTS, { value: 'draft' }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

@@ -197,3 +197,73 @@ export const SmallDataset5Candles: Story = {
 export const LargeDataset200Candles: Story = {
   render: () => makeChart({ 'show-volume': true }, data200),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, canvas, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .candle-parts-demo { display: flex; flex-direction: column; gap: 2rem; }
+      .candle-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .candle-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outer container */
+      .candle-parts-demo--styled snice-candlestick::part(base) {
+        background: #0a0a0f;
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid rgba(16,185,129,0.3);
+        box-shadow: 0 0 40px rgba(16,185,129,0.1);
+      }
+
+      /* Styled: ::part(canvas) - the SVG drawing surface */
+      .candle-parts-demo--styled snice-candlestick::part(canvas) {
+        border-radius: 8px;
+        outline: 1px solid rgba(16,185,129,0.2);
+      }
+
+      /* Styled: ::part(tooltip) - hover crosshair tooltip */
+      .candle-parts-demo--styled snice-candlestick::part(tooltip) {
+        background: #064e3b;
+        color: #6ee7b7;
+        border: 1px solid #10b981;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: monospace;
+        box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'candle-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'candle-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'candle-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeChart({}, data60));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'candle-parts-demo__item candle-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'candle-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(canvas) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeChart({ 'bullish-color': '#10b981', 'bearish-color': '#ef4444' }, data60));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

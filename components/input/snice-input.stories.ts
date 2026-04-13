@@ -234,3 +234,86 @@ export const SizeXVariantMatrix: Story = {
     return g;
   },
 };
+
+// Available CSS Parts: wrapper, label, container, prefix-icon, input, clear, spinner, password-toggle, suffix-icon, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeInput({ label: 'Text Input', placeholder: 'Enter text...', 'prefix-icon': '🔍', clearable: true }),
+      makeInput({ label: 'With helper', 'helper-text': 'Helper text below', placeholder: 'Type here...' }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-input';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-input snice-input::part(wrapper) {
+        gap: 6px;
+      }
+      .parts-demo-input snice-input::part(label) {
+        color: #7c3aed;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .parts-demo-input snice-input::part(container) {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border: 2px solid #7c3aed;
+        border-radius: 12px;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2), inset 0 1px 3px rgba(0,0,0,0.4);
+      }
+      .parts-demo-input snice-input::part(input) {
+        color: #e0e0ff;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95rem;
+        background: transparent;
+        caret-color: #a78bfa;
+      }
+      .parts-demo-input snice-input::part(prefix-icon) {
+        color: #a78bfa;
+        font-size: 1.1em;
+      }
+      .parts-demo-input snice-input::part(suffix-icon) {
+        color: #a78bfa;
+      }
+      .parts-demo-input snice-input::part(clear) {
+        color: #f87171;
+        opacity: 0.8;
+      }
+      .parts-demo-input snice-input::part(helper-text) {
+        color: #a78bfa;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+      .parts-demo-input snice-input::part(error-text) {
+        color: #f87171;
+        font-weight: 600;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeInput({ label: 'Styled Input', placeholder: 'Type something...', 'prefix-icon': '🔍', clearable: true }),
+      makeInput({ label: 'With helper', 'helper-text': 'Custom helper styling', placeholder: 'Type here...' }),
+      makeInput({ label: 'With error', invalid: true, 'error-text': 'Custom error styling', value: 'bad value' }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

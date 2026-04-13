@@ -182,3 +182,72 @@ export const EdgeLabelsOnly: Story = {
 export const EdgeValuesOnly: Story = {
   render: () => makeFunnel({ 'show-labels': false, 'show-values': true, 'show-percentages': false }, stages, 'display:block;max-width:500px;'),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, chart, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .funnel-parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+      .funnel-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .funnel-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outermost wrapper */
+      .funnel-parts-demo--styled snice-funnel::part(base) {
+        background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+        border-radius: 16px;
+        padding: 16px;
+        border: 1px solid rgba(99,102,241,0.3);
+        box-shadow: 0 8px 32px rgba(99,102,241,0.2);
+      }
+
+      /* Styled: ::part(chart) - the SVG chart area */
+      .funnel-parts-demo--styled snice-funnel::part(chart) {
+        filter: saturate(1.4) brightness(1.1);
+        border-radius: 8px;
+      }
+
+      /* Styled: ::part(tooltip) - hover tooltip */
+      .funnel-parts-demo--styled snice-funnel::part(tooltip) {
+        background: #312e81;
+        color: #e0e7ff;
+        border: 1px solid #4f46e5;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        box-shadow: 0 4px 16px rgba(79,70,229,0.5);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'funnel-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'funnel-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'funnel-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeFunnel({ 'show-labels': true, 'show-values': true }, stages, 'display:block;max-width:400px;'));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'funnel-parts-demo__item funnel-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'funnel-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(chart) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeFunnel({ 'show-labels': true, 'show-values': true }, coloredStages, 'display:block;max-width:400px;'));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

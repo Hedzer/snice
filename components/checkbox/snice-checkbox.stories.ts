@@ -182,3 +182,68 @@ export const AllVariants: Story = {
     makeCB({ label: 'Required',      required: true }),
   ),
 };
+
+// Available CSS Parts: input, checkbox, spinner, label
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeCB({ label: 'Unchecked checkbox' }),
+      makeCB({ label: 'Checked checkbox', checked: true }),
+      makeCB({ label: 'Loading checkbox', loading: true }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-checkbox';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-checkbox snice-checkbox::part(checkbox) {
+        background: linear-gradient(135deg, #2d1b69, #1a0a4a);
+        border: 2px solid #7c3aed;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+        width: 22px;
+        height: 22px;
+        transition: box-shadow 0.2s, border-color 0.2s;
+      }
+      .parts-demo-checkbox snice-checkbox[checked]::part(checkbox) {
+        background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        border-color: #a78bfa;
+        box-shadow: 0 0 16px rgba(124, 58, 237, 0.7);
+      }
+      .parts-demo-checkbox snice-checkbox::part(label) {
+        color: #c4b5fd;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+      }
+      .parts-demo-checkbox snice-checkbox::part(spinner) {
+        border-color: rgba(167, 139, 250, 0.3);
+        border-top-color: #a78bfa;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeCB({ label: 'Styled unchecked', size: 'medium' }),
+      makeCB({ label: 'Styled checked', checked: true, size: 'medium' }),
+      makeCB({ label: 'Styled loading', loading: true, size: 'medium' }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

@@ -179,3 +179,79 @@ export const EdgeEmptyData: Story = {
 export const EdgeSparseData: Story = {
   render: () => makeHeatmap({}, generateData(52).filter(() => Math.random() > 0.8)),
 };
+
+// h2: CSS Parts Styling
+// Available parts: base, grid-area, grid, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .heatmap-parts-demo { display: flex; gap: 2rem; flex-direction: column; }
+      .heatmap-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .heatmap-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outermost container */
+      .heatmap-parts-demo--styled snice-heatmap::part(base) {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      }
+
+      /* Styled: ::part(grid-area) - the scrollable area containing the grid */
+      .heatmap-parts-demo--styled snice-heatmap::part(grid-area) {
+        border-radius: 8px;
+        background: rgba(22,27,34,0.8);
+        padding: 4px;
+      }
+
+      /* Styled: ::part(grid) - the heatmap grid */
+      .heatmap-parts-demo--styled snice-heatmap::part(grid) {
+        filter: saturate(1.5) contrast(1.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      /* ::part(tooltip) - hover tooltip */
+      .heatmap-parts-demo--styled snice-heatmap::part(tooltip) {
+        background: #1f2937;
+        color: #f9fafb;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'heatmap-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'heatmap-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'heatmap-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeHeatmap({ 'color-scheme': 'green', weeks: 26, 'show-labels': 'true' }, data26));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'heatmap-parts-demo__item heatmap-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'heatmap-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(grid-area) ::part(grid) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeHeatmap({ 'color-scheme': 'green', weeks: 26, 'show-labels': 'true', 'show-tooltip': 'true' }, data26));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};

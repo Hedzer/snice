@@ -238,3 +238,71 @@ export const LoadingXVariant: Story = {
     makeTA({ loading: true, variant: 'underlined', label: 'Loading Underlined', value: 'Processing...' }),
   ),
 };
+
+// Available CSS Parts: textarea, spinner, error-text, helper-text
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;max-width:500px;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(col(
+      makeTA({ label: 'Notes', placeholder: 'Enter notes...', rows: '3', 'helper-text': 'Helper text here' }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-textarea';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-textarea snice-textarea::part(textarea) {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        border: 2px solid #00d2ff;
+        border-radius: 10px;
+        color: #e0f7fa;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        box-shadow: 0 0 12px rgba(0, 210, 255, 0.3), inset 0 1px 4px rgba(0,0,0,0.5);
+        caret-color: #00d2ff;
+        padding: 0.75rem;
+      }
+      .parts-demo-textarea snice-textarea::part(textarea)::placeholder {
+        color: rgba(0, 210, 255, 0.45);
+        font-style: italic;
+      }
+      .parts-demo-textarea snice-textarea::part(spinner) {
+        border-color: rgba(0, 210, 255, 0.3);
+        border-top-color: #00d2ff;
+      }
+      .parts-demo-textarea snice-textarea::part(helper-text) {
+        color: #4dd0e1;
+        font-style: italic;
+        font-size: 0.75rem;
+      }
+      .parts-demo-textarea snice-textarea::part(error-text) {
+        color: #ff6b6b;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(col(
+      makeTA({ label: 'Styled Notes', placeholder: 'Enter styled notes...', rows: '3', 'helper-text': 'Custom styled helper text' }),
+      makeTA({ label: 'With Error', invalid: true, 'error-text': 'Custom error styling', value: 'Bad input', rows: '2' }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

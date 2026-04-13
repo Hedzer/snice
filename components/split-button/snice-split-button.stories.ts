@@ -202,3 +202,93 @@ export const AllVariants: Story = {
     ...VARIANTS.map(v => makeSB({ variant: v, label: v.charAt(0).toUpperCase() + v.slice(1) })),
   ),
 };
+
+// Available CSS Parts: base, primary, spinner, divider, toggle, menu, menu-items, action
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:2rem;';
+
+    const defaultSection = document.createElement('div');
+    const defaultLabel = document.createElement('h3');
+    defaultLabel.textContent = 'Default';
+    defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    defaultSection.appendChild(defaultLabel);
+    defaultSection.appendChild(row(
+      makeSB({ label: 'Save', variant: 'primary' }),
+      makeSB({ label: 'Deploy', variant: 'success' }),
+    ));
+    wrap.appendChild(defaultSection);
+
+    const styledSection = document.createElement('div');
+    styledSection.className = 'parts-demo-split-button';
+    const styledLabel = document.createElement('h3');
+    styledLabel.textContent = 'Styled with ::part()';
+    styledLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
+    styledSection.appendChild(styledLabel);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .parts-demo-split-button snice-split-button::part(base) {
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(234, 88, 12, 0.4);
+        overflow: hidden;
+      }
+      .parts-demo-split-button snice-split-button::part(primary) {
+        background: linear-gradient(135deg, #ea580c, #dc2626);
+        border: none;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        padding: 0 1.25rem;
+        transition: filter 0.2s;
+      }
+      .parts-demo-split-button snice-split-button::part(primary):hover {
+        filter: brightness(1.15);
+      }
+      .parts-demo-split-button snice-split-button::part(divider) {
+        background: rgba(255,255,255,0.35);
+        width: 1px;
+      }
+      .parts-demo-split-button snice-split-button::part(toggle) {
+        background: linear-gradient(135deg, #c2410c, #b91c1c);
+        border: none;
+        color: #fff;
+        transition: filter 0.2s;
+      }
+      .parts-demo-split-button snice-split-button::part(toggle):hover {
+        filter: brightness(1.2);
+      }
+      .parts-demo-split-button snice-split-button::part(spinner) {
+        border-color: rgba(255,255,255,0.3);
+        border-top-color: #fff;
+      }
+      .parts-demo-split-button snice-split-button::part(menu) {
+        background: #1c0a00;
+        border: 2px solid #ea580c;
+        border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(234, 88, 12, 0.45);
+      }
+      .parts-demo-split-button snice-split-button::part(action) {
+        color: #fed7aa;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        transition: background 0.15s;
+      }
+      .parts-demo-split-button snice-split-button::part(action):hover {
+        background: rgba(234, 88, 12, 0.25);
+        color: #ffedd5;
+      }
+    `;
+    styledSection.appendChild(style);
+
+    styledSection.appendChild(row(
+      makeSB({ label: 'Styled Save', variant: 'primary' }),
+      makeSB({ label: 'Styled Deploy', variant: 'danger' }),
+    ));
+    wrap.appendChild(styledSection);
+
+    return wrap;
+  },
+};

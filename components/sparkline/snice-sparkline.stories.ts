@@ -228,6 +228,99 @@ export const CustomMinMax: Story = {
   ),
 };
 
+// h2: CSS Parts Styling
+// Available parts: svg, bar, area, line, dot, container
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .spark-parts-demo { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+      .spark-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+      .spark-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(svg) - the SVG wrapper */
+      .spark-parts-demo--styled-svg snice-sparkline::part(svg) {
+        background: #1e1b4b;
+        border-radius: 6px;
+        padding: 2px;
+        outline: 2px solid #6366f1;
+      }
+
+      /* Styled: ::part(line) - the line path */
+      .spark-parts-demo--styled-line snice-sparkline::part(line) {
+        stroke: #f43f5e;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 4px #f43f5e);
+      }
+
+      /* Styled: ::part(area) - the fill area */
+      .spark-parts-demo--styled-area snice-sparkline::part(area) {
+        fill: rgba(99,102,241,0.4);
+        stroke: none;
+      }
+
+      /* Styled: ::part(dot) - individual data points */
+      .spark-parts-demo--styled-dot snice-sparkline::part(dot) {
+        fill: #fbbf24;
+        stroke: #1e1b4b;
+        stroke-width: 2;
+        r: 4;
+      }
+
+      /* Styled: ::part(bar) - bar chart bars */
+      .spark-parts-demo--styled-bar snice-sparkline::part(bar) {
+        fill: #10b981;
+        rx: 3;
+        opacity: 0.85;
+      }
+
+      /* Styled: ::part(container) - the host container */
+      .spark-parts-demo--styled-container snice-sparkline::part(container) {
+        background: rgba(16,185,129,0.1);
+        border-radius: 4px;
+        padding: 2px;
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'spark-parts-demo';
+
+    const entries: [string, string, object][] = [
+      ['default (no ::part)', '', { type: 'line', showArea: true, showDots: true }],
+      ['::part(svg)', 'spark-parts-demo--styled-svg', { type: 'line' }],
+      ['::part(line)', 'spark-parts-demo--styled-line', { type: 'line' }],
+      ['::part(area)', 'spark-parts-demo--styled-area', { type: 'area', showArea: true }],
+      ['::part(dot)', 'spark-parts-demo--styled-dot', { type: 'line', showDots: true }],
+      ['::part(bar)', 'spark-parts-demo--styled-bar', { type: 'bar' }],
+      ['::part(container)', 'spark-parts-demo--styled-container', { type: 'line' }],
+    ];
+
+    entries.forEach(([lbl, cls, props]) => {
+      const item = document.createElement('div');
+      item.className = 'spark-parts-demo__item' + (cls ? ' ' + cls : '');
+      const labelEl = document.createElement('div');
+      labelEl.className = 'spark-parts-demo__label';
+      labelEl.textContent = lbl;
+      const el = document.createElement('snice-sparkline');
+      (el as any).data = [10, 25, 15, 35, 20, 40, 28, 45];
+      if ((props as any).type) el.setAttribute('type', (props as any).type);
+      if ((props as any).showDots) (el as any).showDots = true;
+      if ((props as any).showArea) (el as any).showArea = true;
+      el.setAttribute('width', '100');
+      el.setAttribute('height', '36');
+      item.appendChild(labelEl);
+      item.appendChild(el);
+      wrap.appendChild(item);
+    });
+
+    container.appendChild(wrap);
+    return container;
+  },
+};
+
 // h2: Edge Cases
 export const EdgeCases: Story = {
   render: () => {

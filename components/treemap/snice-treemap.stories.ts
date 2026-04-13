@@ -271,3 +271,80 @@ export const TwoItemsExtremeRatio: Story = {
     return el;
   },
 };
+
+// h2: CSS Parts Styling
+// Available parts: breadcrumbs, base, chart, tooltip
+export const CSSPartsStyling: Story = {
+  render: () => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .treemap-parts-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .treemap-parts-demo__item { display: flex; flex-direction: column; gap: 0.5rem; }
+      .treemap-parts-demo__label { font-size: 0.7rem; color: #888; font-family: monospace; }
+
+      /* Styled: ::part(base) - outer container */
+      .treemap-parts-demo--styled snice-treemap::part(base) {
+        border-radius: 12px;
+        overflow: hidden;
+        outline: 2px solid rgba(99,102,241,0.5);
+        box-shadow: 0 8px 32px rgba(99,102,241,0.25);
+      }
+
+      /* Styled: ::part(chart) - chart rendering area */
+      .treemap-parts-demo--styled snice-treemap::part(chart) {
+        filter: saturate(1.3) contrast(1.1);
+      }
+
+      /* Styled: ::part(breadcrumbs) - drill-down nav trail */
+      .treemap-parts-demo--styled snice-treemap::part(breadcrumbs) {
+        background: #1e1b4b;
+        color: #a5b4fc;
+        border-bottom: 1px solid rgba(99,102,241,0.3);
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        font-weight: 600;
+      }
+
+      /* Styled: ::part(tooltip) - hover tooltip */
+      .treemap-parts-demo--styled snice-treemap::part(tooltip) {
+        background: #312e81;
+        color: #e0e7ff;
+        border: 1px solid #6366f1;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(99,102,241,0.5);
+      }
+    `;
+
+    const container = document.createElement('div');
+    container.appendChild(style);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'treemap-parts-demo';
+
+    // Default
+    const defaultItem = document.createElement('div');
+    defaultItem.className = 'treemap-parts-demo__item';
+    const defaultLabel = document.createElement('div');
+    defaultLabel.className = 'treemap-parts-demo__label';
+    defaultLabel.textContent = 'default';
+    defaultItem.appendChild(defaultLabel);
+    defaultItem.appendChild(makeTreemap({ 'show-labels': true, 'show-values': true }, sampleData, 'display:block;height:260px;'));
+
+    // Styled
+    const styledItem = document.createElement('div');
+    styledItem.className = 'treemap-parts-demo__item treemap-parts-demo--styled';
+    const styledLabel = document.createElement('div');
+    styledLabel.className = 'treemap-parts-demo__label';
+    styledLabel.textContent = '::part(base) ::part(chart) ::part(breadcrumbs) ::part(tooltip)';
+    styledItem.appendChild(styledLabel);
+    styledItem.appendChild(makeTreemap({ 'show-labels': true, 'show-values': true, 'color-scheme': 'purple' }, sampleData, 'display:block;height:260px;'));
+
+    wrap.appendChild(defaultItem);
+    wrap.appendChild(styledItem);
+    container.appendChild(wrap);
+    return container;
+  },
+};
