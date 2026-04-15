@@ -1,3 +1,10 @@
+## [4.36.1](https://github.com/Hedzer/snice/compare/v4.36.0...v4.36.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* use separate style tags for inherited stylesheets ([d31a5da](https://github.com/Hedzer/snice/commit/d31a5dae51ad7bf6203d2fa2d8ab19850e912c6a))
+
 # [4.36.0](https://github.com/Hedzer/snice/compare/v4.35.1...v4.36.0) (2026-04-15)
 
 
