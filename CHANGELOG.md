@@ -1,3 +1,10 @@
+# [4.36.0](https://github.com/Hedzer/snice/compare/v4.35.1...v4.36.0) (2026-04-15)
+
+
+### Features
+
+* element inheritance support ([bbb924e](https://github.com/Hedzer/snice/commit/bbb924e11ac49d47a63f29778db546b51a3e9bb6))
+
 ## [4.35.1](https://github.com/Hedzer/snice/compare/v4.35.0...v4.35.1) (2026-04-13)
 
 
