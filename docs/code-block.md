@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/components/code-block.md -->
 # Code Block Component Documentation
 
 `snice-code-block` is a code display component with syntax highlighting, line numbers, and copy-to-clipboard support. It uses a JSON-driven grammar system inspired by Monaco/Monarch for tokenization.

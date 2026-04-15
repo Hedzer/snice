@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md -->
 # Fetch Middleware
 
 Snice provides a context-aware fetch implementation with middleware support, allowing you to intercept and modify HTTP requests and responses globally across your application.

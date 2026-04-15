@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md -->
 # Controllers API Documentation
 
 Controllers handle data fetching, business logic, and server communication separately from visual components. They can be attached to any HTML element, including native elements.

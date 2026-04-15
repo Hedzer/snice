@@ -1,6 +1,6 @@
 # Snice
 
-> **AI Assistants:** For token-efficient documentation, read [docs/ai/](./docs/ai/) instead. Same content, 70% fewer tokens.
+<!-- AI: For token-efficient documentation, read docs/ai/ instead of docs/. Same content, 70% fewer tokens. Start with docs/ai/README.md -->
 
 A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.
 

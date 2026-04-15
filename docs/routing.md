@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md -->
 # Routing API Documentation
 
 Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, route parameters, guards, and layouts.

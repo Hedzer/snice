@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md -->
 # Request/Response API Documentation
 
 Request/Response provides request/response communication between elements and controllers using async generators.

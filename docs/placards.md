@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md -->
 # Placards API
 
 Placards provide rich metadata about pages that layouts can consume to dynamically build navigation, breadcrumbs, help systems, and other UI elements. This enables layouts to be populated with data instead of having hardcoded content.

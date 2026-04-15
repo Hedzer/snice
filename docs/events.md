@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md -->
 # Events API Documentation
 
 Event handling in Snice provides two powerful approaches: **template event syntax** and the **`@on` decorator**. The `@on` decorator works in **both elements AND controllers** with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.

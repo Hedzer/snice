@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md -->
 # Elements API Documentation
 
 Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior using web components.

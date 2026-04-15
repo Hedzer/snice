@@ -1,3 +1,4 @@
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/STORYBOOK.md -->
 # Storybook
 
 Storybook provides an interactive component explorer for Snice components. Each component has its own story file that documents its variants, sizes, and states.
