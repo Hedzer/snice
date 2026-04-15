@@ -331,9 +331,11 @@ describe('element inheritance', () => {
       if (sheets && sheets.length > 0) {
         expect(sheets.length).toBe(2); // parent + child
       } else {
-        const cssText = sr.querySelector('style')!.textContent || '';
-        expect(cssText).toMatch(/color:\s*red/);
-        expect(cssText).toMatch(/font-weight:\s*bold/);
+        const tags = sr.querySelectorAll('style');
+        expect(tags.length).toBe(2);
+        const allCss = [...tags].map(s => s.textContent).join('\n');
+        expect(allCss).toMatch(/color:\s*red/);
+        expect(allCss).toMatch(/font-weight:\s*bold/);
       }
     });
 

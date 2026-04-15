@@ -343,10 +343,12 @@ export function applyStyles(element: HTMLElement): void {
       return;
     }
 
-    // Fallback to <style> tag — concatenate all CSS
-    const style = document.createElement('style');
-    style.textContent = allResults.map(r => r.cssText).join('\n');
-    element.shadowRoot.appendChild(style);
+    // Fallback — one <style> tag per stylesheet, preserving cascade order
+    for (const r of allResults) {
+      const style = document.createElement('style');
+      style.textContent = r.cssText;
+      element.shadowRoot.appendChild(style);
+    }
   } catch (error) {
     console.error('Error applying styles:', error);
   }
