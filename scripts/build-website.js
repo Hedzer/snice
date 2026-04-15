@@ -715,6 +715,7 @@ html\`\${this.items.map(item =&gt; html\`&lt;li key=\${item.id}&gt;\${item.name}
 html\`&lt;input @keydown:ctrl+s=\${this.save}&gt;\`
 html\`&lt;div @keydown:escape=\${this.close}&gt;\`</snice-code-block>
     </div>
+
   </main>
 ${footer}
 </body>

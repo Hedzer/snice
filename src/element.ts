@@ -368,7 +368,49 @@ export function applyElementFunctionality(constructor: any) {
     };
 }
 
+/**
+ * Walk the prototype chain and merge parent element metadata into the child.
+ * Called once at class definition time — zero per-instance cost.
+ * Skips plain HTMLElement (no metadata to merge).
+ *
+ * Only merges PROPERTIES (stored via context.metadata at decoration time)
+ * and formAssociated. Other handler registrations (@watch, @on, @ready, etc.)
+ * inherit automatically via TC39 addInitializer — parent initializers run
+ * during child instance construction.
+ */
+function mergeParentMetadata(constructor: any) {
+  let parent = Object.getPrototypeOf(constructor);
+
+  // Collect ancestors bottom-up, then merge top-down so the deepest parent goes first
+  const ancestors: any[] = [];
+  while (parent && parent !== HTMLElement && parent !== Function.prototype) {
+    ancestors.push(parent);
+    parent = Object.getPrototypeOf(parent);
+  }
+  ancestors.reverse();
+
+  for (const ancestor of ancestors) {
+    // Properties (Map) — parent first, child overrides
+    if (ancestor[PROPERTIES]) {
+      if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
+      for (const [key, value] of ancestor[PROPERTIES]) {
+        if (!constructor[PROPERTIES].has(key)) {
+          constructor[PROPERTIES].set(key, value);
+        }
+      }
+    }
+
+    // formAssociated — inherit if parent is form-associated
+    if (ancestor.formAssociated && !constructor.formAssociated) {
+      constructor.formAssociated = true;
+    }
+  }
+}
+
 function defineElement(tagName: string, constructor: any, context: ClassDecoratorContext, options?: ElementOptions) {
+  // Merge metadata from parent @element classes (inheritance support)
+  mergeParentMetadata(constructor);
+
   if (context.metadata && (context.metadata as any)[PROPERTIES]) {
     if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
     for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
@@ -426,8 +468,12 @@ export function property(options?: PropertyOptions) {
       // Always store property options on constructor for runtime access
       constructor[PROPERTIES].set(propertyKey, finalOptions);
 
-      // Set up the property descriptor on first access
-      if (!Object.hasOwn(this.constructor.prototype, propertyKey)) {
+      // Set up the property descriptor — re-define if a subclass overrides
+      // the property with different options (different closure captures)
+      const definerKey = `__propDef_${propertyKey}`;
+      const existingDefiner = this.constructor.prototype[definerKey];
+      if (!existingDefiner || existingDefiner !== options) {
+        this.constructor.prototype[definerKey] = options;
         const descriptor: PropertyDescriptor = {
           get(this: any) {
             // attribute: false — use internal storage only, no DOM sync
@@ -581,13 +627,15 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
 export function watch(...propertyNames: string[]) {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
-    const initKey = `__watch_init_${methodName}`;
 
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
+      // Dedup by method reference — allows child classes to register
+      // their own method with the same name as a parent's
+      if (!constructor.__watchMethods) constructor.__watchMethods = new Set();
+      if (constructor.__watchMethods.has(target)) return;
+      constructor.__watchMethods.add(target);
 
       if (!constructor[PROPERTY_WATCHERS]) {
         constructor[PROPERTY_WATCHERS] = new Map();
@@ -670,11 +718,12 @@ export function context() {
 
 function registerHandler(symbol: symbol, prefix: string, target: any, context: ClassMethodDecoratorContext, extra?: any) {
   const methodName = context.name as string;
-  const initKey = `__${prefix}_init_${methodName}`;
   context.addInitializer(function(this: any) {
     const constructor = this.constructor as any;
-    if (constructor[initKey]) return;
-    constructor[initKey] = true;
+    const setKey = `__${prefix}Methods`;
+    if (!constructor[setKey]) constructor[setKey] = new Set();
+    if (constructor[setKey].has(target)) return;
+    constructor[setKey].add(target);
     if (!constructor[symbol]) constructor[symbol] = [];
     constructor[symbol].push({ methodName, method: target, ...extra });
   });

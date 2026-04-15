@@ -50,6 +50,7 @@
 <a href="#elements-queries" class="sub">Queries</a>
 <a href="#elements-styling" class="sub">Styling</a>
 <a href="#elements-template-events" class="sub">Template Events</a>
+<a href="#elements-extending-elements" class="sub">Extending Elements</a>
 <a href="#elements-advanced-examples" class="sub">Advanced Examples</a>
 <a href="#routing">Routing</a>
 <a href="#routing-router-setup" class="sub">Router Setup</a>
@@ -742,6 +743,61 @@ class FormHandler extends HTMLElement {
     console.log('Input changed:', input.value);
   }
 }</snice-code-block>
+<h2 id="elements-extending-elements">Extending Elements</h2>
+<p>Elements can extend other elements — including Snice's built-in components. The child inherits the parent's properties, watchers, event handlers, lifecycle hooks, and styles, then adds or overrides its own.</p>
+<h3 id="elements-example-currency-input">Example: Currency Input</h3>
+<p>Extend <code>snice-input</code> to create an input that prefixes a currency symbol, restricts to numeric entry, and formats the value on blur:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, property, watch, on, render, styles, html, css } from 'snice';
+import 'snice/components/input/snice-input';
+import { SniceInput } from 'snice/components/input/snice-input';
+
+@element('currency-input')
+class CurrencyInput extends SniceInput {
+  @property() currency = 'USD';
+
+  // Snice input already has: value, label, placeholder, disabled,
+  // size, variant, error-text, helper-text, clearable, prefix-icon,
+  // suffix-icon, and all associated watchers and events.
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.updatePrefix();
+  }
+
+  @watch('currency')
+  updatePrefix() {
+    const symbols: Record&lt;string, string&gt; = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+    this.prefixIcon = symbols[this.currency] || this.currency;
+  }
+
+  @on('input', 'input')
+  restrictNumeric(e: InputEvent) {
+    const input = e.target as HTMLInputElement;
+    input.value = input.value.replace(/[^\d.]/g, '');
+    this.value = input.value;
+  }
+
+  @on('blur', 'input')
+  formatValue() {
+    const num = parseFloat(this.value);
+    if (!isNaN(num)) {
+      this.value = num.toFixed(2);
+    }
+  }
+
+  @styles()
+  currencyStyles() {
+    return css`
+      /* Parent input styles are inherited — add currency-specific tweaks */
+      :host { --input-text-align: right; }
+    `;
+  }
+}</snice-code-block>
+<snice-code-block language="html" grammar="grammars/html.json">&lt;currency-input label=&quot;Price&quot; currency=&quot;EUR&quot; placeholder=&quot;0.00&quot;&gt;&lt;/currency-input&gt;</snice-code-block>
+<p>The <code>currency-input</code> inherits everything from <code>snice-input</code> — label rendering, variants, sizes, validation, focus/blur events, clearable, keyboard handling — without re-implementing any of it. It adds a currency symbol prefix, numeric restriction, and formatting.</p>
+<h3 id="elements-what-inherits">What inherits</h3>
+<div class="doc-table-wrap"><table><thead><tr><th>Feature</th><th>Behavior</th></tr></thead><tbody><tr><td><code>@property</code></td><td>Child gets all parent properties. Child can override defaults or type.</td></tr><tr><td><code>@watch</code></td><td>Both parent and child watchers fire.</td></tr><tr><td><code>@on</code></td><td>Both parent and child handlers fire.</td></tr><tr><td><code>@ready</code>, <code>@dispose</code></td><td>Both fire.</td></tr><tr><td><code>@dispatch</code></td><td>Inherited via prototype.</td></tr><tr><td><code>@render</code></td><td>Child <strong>replaces</strong> parent's render. If child doesn't declare <code>@render</code>, parent's is used.</td></tr><tr><td><code>@styles</code></td><td><strong>Concatenated</strong> — parent styles first, child second (child wins via cascade).</td></tr><tr><td><code>formAssociated</code></td><td>Inherited.</td></tr></tbody></table></div>
+<p>Each child class needs its own <code>@element('tag-name')</code> with a unique tag name.</p>
 <h2 id="elements-advanced-examples">Advanced Examples</h2>
 <h3 id="elements-form-component">Form Component</h3>
 <p>Elements handle visual behavior — they render the form and emit events. Business logic (API calls, validation) belongs in controllers:</p>

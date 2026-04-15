@@ -5,7 +5,7 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS } from './symbols';
 
 /**
  * Options for @render decorator
@@ -288,7 +288,12 @@ export function render(options: RenderOptions = {}) {
 export function styles() {
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     context.addInitializer(function (this: any) {
-      // Store the styles method
+      // Collect parent styles methods before overwriting with child's
+      if (this[STYLES_METHOD] && !this[PARENT_STYLES_METHODS]) {
+        this[PARENT_STYLES_METHODS] = [this[STYLES_METHOD]];
+      } else if (this[STYLES_METHOD] && this[PARENT_STYLES_METHODS]) {
+        this[PARENT_STYLES_METHODS].push(this[STYLES_METHOD]);
+      }
       this[STYLES_METHOD] = originalMethod;
     });
 
@@ -309,12 +314,21 @@ export function applyStyles(element: HTMLElement): void {
   (element as any)[STYLES_APPLIED] = true;
 
   try {
+    // Collect all CSS results: parent styles first, then child styles
+    const allResults: CSSResult[] = [];
+    const parentMethods = (element as any)[PARENT_STYLES_METHODS] as Array<(...args: any[]) => any> | undefined;
+    if (parentMethods) {
+      for (const method of parentMethods) {
+        const r = method.call(element);
+        if (isCSSResult(r)) allResults.push(r);
+      }
+    }
     const result = stylesMethod.call(element);
-
     if (!isCSSResult(result)) {
       console.warn('Styles method must return css`` template result');
       return;
     }
+    allResults.push(result);
 
     // Ensure shadow root exists
     if (!element.shadowRoot) {
@@ -324,14 +338,14 @@ export function applyStyles(element: HTMLElement): void {
     if (!element.shadowRoot) return;
 
     // Prefer constructable stylesheets
-    if (result.styleSheet && 'adoptedStyleSheets' in element.shadowRoot) {
-      element.shadowRoot.adoptedStyleSheets = [result.styleSheet];
+    if (allResults.every(r => !!r.styleSheet) && 'adoptedStyleSheets' in element.shadowRoot) {
+      element.shadowRoot.adoptedStyleSheets = allResults.map(r => r.styleSheet!);
       return;
     }
 
-    // Fallback to <style> tag
+    // Fallback to <style> tag — concatenate all CSS
     const style = document.createElement('style');
-    style.textContent = result.cssText;
+    style.textContent = allResults.map(r => r.cssText).join('\n');
     element.shadowRoot.appendChild(style);
   } catch (error) {
     console.error('Error applying styles:', error);

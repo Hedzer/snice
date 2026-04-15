@@ -25,6 +25,34 @@ class Counter extends HTMLElement {
 }
 ```
 
+## Extending Elements
+```typescript
+import { SniceInput } from 'snice/components/input/snice-input';
+
+@element('currency-input')
+class CurrencyInput extends SniceInput {
+  @property() currency = 'USD';
+  connectedCallback() { super.connectedCallback(); this.updatePrefix(); }
+  @watch('currency') updatePrefix() {
+    this.prefixIcon = { USD:'$', EUR:'€', GBP:'£', JPY:'¥' }[this.currency] || this.currency;
+  }
+  @on('input','input') restrictNumeric(e: InputEvent) {
+    const input = e.target as HTMLInputElement;
+    input.value = input.value.replace(/[^\d.]/g, '');
+    this.value = input.value;
+  }
+  @on('blur','input') formatValue() {
+    const n = parseFloat(this.value); if (!isNaN(n)) this.value = n.toFixed(2);
+  }
+  @styles() s() { return css`:host{--input-text-align:right}`; }
+}
+```
+- Properties: inherited, child can override defaults/type
+- @watch/@on/@ready/@dispose: both parent+child fire
+- @render: child replaces parent (inherits if not declared)
+- @styles: concatenated (parent first, child wins via cascade)
+- Each class needs unique `@element('tag-name')`
+
 ## Controller
 ```typescript
 @controller('data-loader')

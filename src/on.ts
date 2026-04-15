@@ -76,16 +76,13 @@ export function on(
 
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
-    const initKey = `__on_init_${methodName}_${selector || ''}_${JSON.stringify(eventName)}`;
-
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Only initialize once per class, not per instance
-      if (constructor[initKey]) {
-        return;
-      }
-      constructor[initKey] = true;
+      // Dedup by method reference — allows child to register same-named methods
+      if (!constructor.__onMethods) constructor.__onMethods = new Set();
+      if (constructor.__onMethods.has(originalMethod)) return;
+      constructor.__onMethods.add(originalMethod);
 
       if (!constructor[ON_HANDLERS]) {
         constructor[ON_HANDLERS] = [];

@@ -159,13 +159,12 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
 export function respond(requestName: string, options?: RespondOptions) {
   return function (target: any, context: ClassMethodDecoratorContext) {
     const propertyKey = context.name as string;
-    const initKey = `__respond_init_${requestName}_${propertyKey}`;
-
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
+      if (!constructor.__respondMethods) constructor.__respondMethods = new Set();
+      if (constructor.__respondMethods.has(target)) return;
+      constructor.__respondMethods.add(target);
 
       if (!constructor[CHANNEL_HANDLERS]) {
         constructor[CHANNEL_HANDLERS] = [];

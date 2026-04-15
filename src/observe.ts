@@ -38,13 +38,12 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
   
   return function (target: any, context: ClassMethodDecoratorContext) {
     const propertyKey = context.name as string;
-    const initKey = `__observe_init_${propertyKey}`;
-
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
+      if (!constructor.__observeMethods) constructor.__observeMethods = new Set();
+      if (constructor.__observeMethods.has(target)) return;
+      constructor.__observeMethods.add(target);
 
       if (!constructor[OBSERVERS]) {
         constructor[OBSERVERS] = [];

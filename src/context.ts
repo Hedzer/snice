@@ -42,13 +42,12 @@ export interface ContextOptions {
 export function context(options: ContextOptions = {}) {
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
-    const initKey = `__context_init_${methodName}`;
-
     context.addInitializer(function (this: any) {
       const constructor = this.constructor as any;
 
-      if (constructor[initKey]) return;
-      constructor[initKey] = true;
+      if (!constructor.__contextMethods) constructor.__contextMethods = new Set();
+      if (constructor.__contextMethods.has(originalMethod)) return;
+      constructor.__contextMethods.add(originalMethod);
 
       if (!constructor[CONTEXT_HANDLERS]) {
         constructor[CONTEXT_HANDLERS] = [];

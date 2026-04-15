@@ -77,6 +77,7 @@ export const RENDER_TIMERS = getSymbol('render-timers');
 export const RENDER_CALLBACKS = getSymbol('render-callbacks');
 export const STYLES_METHOD = getSymbol('styles-method');
 export const STYLES_APPLIED = getSymbol('styles-applied');
+export const PARENT_STYLES_METHODS = getSymbol('parent-styles-methods');
 
 // Navigation context symbols
 export const CONTEXT_HANDLER = getSymbol('context-handler');
