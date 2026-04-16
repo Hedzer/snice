@@ -254,6 +254,12 @@ export function applyElementFunctionality(constructor: any) {
         console.error(`Error setting up observers for ${this.tagName}:`, error);
       }
 
+      // Yield a microtask so child elements' microtask-deferred renders
+      // complete before @ready handlers run. Children queued their render
+      // microtask when they connected (earlier in the queue), so they
+      // drain before this one.
+      await new Promise<void>(r => queueMicrotask(r));
+
       // Run @ready handlers serially, awaiting each
       if (readyHandlers) {
         for (const handler of readyHandlers) {
