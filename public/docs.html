@@ -139,6 +139,7 @@
       <p>Complete API reference for the Snice framework.</p>
     </div>
     <section class="doc-file" id="elements">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="elements-elements-api-documentation">Elements API Documentation</h1>
 <p>Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior using web components.</p>
 <h2 id="elements-basic-usage">Basic Usage</h2>
@@ -977,6 +978,7 @@ class ConditionalContent extends HTMLElement {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="routing">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="routing-routing-api-documentation">Routing API Documentation</h1>
 <p>Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, route parameters, guards, and layouts.</p>
 <h2 id="routing-router-setup">Router Setup</h2>
@@ -1891,6 +1893,7 @@ class LoginPage extends HTMLElement {
 <p>Manually register a route without using the <code>@page</code> decorator.</p>
 </section>
 <section class="doc-file" id="events">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="events-events-api-documentation">Events API Documentation</h1>
 <p>Event handling in Snice provides two powerful approaches: <strong>template event syntax</strong> and the <strong><code>@on</code> decorator</strong>. The <code>@on</code> decorator works in <strong>both elements AND controllers</strong> with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the <code>@dispatch</code> decorator enables automatic custom event dispatching.</p>
 <h2 id="events-template-event-syntax-preferred-for-elements">Template Event Syntax (Preferred for Elements)</h2>
@@ -2569,6 +2572,7 @@ class KeyboardController implements IController {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="controllers">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="controllers-controllers-api-documentation">Controllers API Documentation</h1>
 <p>Controllers handle data fetching, business logic, and server communication separately from visual components. They can be attached to any HTML element, including native elements.</p>
 <h2 id="controllers-basic-usage">Basic Usage</h2>
@@ -2926,6 +2930,7 @@ class WebSocketController implements IController {
 <p>The framework automatically cleans up <code>@on</code> handlers, observers, and <code>@respond</code> handlers during detach. Manual cleanup in <code>detach()</code> is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).</p>
 </section>
 <section class="doc-file" id="observe">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="observe-observe-api-documentation">Observe API Documentation</h1>
 <p>The <code>@observe</code> decorator provides lifecycle-managed observation of external changes like viewport intersection, element resize, media queries, and DOM mutations.</p>
 <h2 id="observe-overview">Overview</h2>
@@ -3398,6 +3403,7 @@ class DynamicForm extends HTMLElement {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="request-response">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="request-response-request-response-api-documentation">Request/Response API Documentation</h1>
 <p>Request/Response provides request/response communication between elements and controllers using async generators.</p>
 <h2 id="request-response-why-request-response">Why Request/Response?</h2>
@@ -3715,6 +3721,7 @@ function Dashboard() {
 <p>Route callbacks are ref-stable — no <code>useCallback</code> needed. Listeners re-attach only when channel names change. Cleanup is automatic on unmount.</p>
 </section>
 <section class="doc-file" id="fetcher">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="fetcher-fetch-middleware">Fetch Middleware</h1>
 <p>Snice provides a context-aware fetch implementation with middleware support, allowing you to intercept and modify HTTP requests and responses globally across your application.</p>
 <h2 id="fetcher-overview">Overview</h2>
@@ -4076,6 +4083,7 @@ interface Fetcher {
 </ul>
 </section>
 <section class="doc-file" id="placards">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="placards-placards-api">Placards API</h1>
 <p>Placards provide rich metadata about pages that layouts can consume to dynamically build navigation, breadcrumbs, help systems, and other UI elements. This enables layouts to be populated with data instead of having hardcoded content.</p>
 <h2 id="placards-overview">Overview</h2>
@@ -4425,6 +4433,7 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="code-block">
+<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/components/code-block.md --></p>
 <h1 id="code-block-code-block-component-documentation">Code Block Component Documentation</h1>
 <p><code>snice-code-block</code> is a code display component with syntax highlighting, line numbers, and copy-to-clipboard support. It uses a JSON-driven grammar system inspired by Monaco/Monarch for tokenization.</p>
 <h2 id="code-block-basic-usage">Basic Usage</h2>
@@ -4648,7 +4657,7 @@ getGrammar('myLang');</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v4.36.1 · MIT</span>
+      <span>Snice v4.36.2 · MIT</span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>

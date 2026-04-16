@@ -1,3 +1,11 @@
+## [4.36.2](https://github.com/Hedzer/snice/compare/v4.36.1...v4.36.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* [@ready](https://github.com/ready) waits for child elements to render ([1ba42e9](https://github.com/Hedzer/snice/commit/1ba42e9a8696ce0d1c09d13e3248e125f5d2eaac))
+* add invisible AI doc redirects to all human docs ([e7af091](https://github.com/Hedzer/snice/commit/e7af091aff12ab9c51e58553b74806260bbcb190))
+
 ## [4.36.1](https://github.com/Hedzer/snice/compare/v4.36.0...v4.36.1) (2026-04-15)
 
 
