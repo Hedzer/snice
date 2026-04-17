@@ -1,3 +1,10 @@
+# [4.37.0](https://github.com/Hedzer/snice/compare/v4.36.2...v4.37.0) (2026-04-17)
+
+
+### Features
+
+* explicit placard href and async visibleOn guards ([679c445](https://github.com/Hedzer/snice/commit/679c445047abe949269b6c9cbd79e6da3fd23af6))
+
 ## [4.36.2](https://github.com/Hedzer/snice/compare/v4.36.1...v4.36.2) (2026-04-16)
 
 
