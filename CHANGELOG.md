@@ -1,3 +1,15 @@
+# [4.38.0](https://github.com/Hedzer/snice/compare/v4.37.0...v4.38.0) (2026-04-17)
+
+
+### Bug Fixes
+
+* click-outside uses composedPath for nested shadow DOM ([d100078](https://github.com/Hedzer/snice/commit/d1000785d80900c20942350b61b65e05bf5fb627))
+
+
+### Features
+
+* add chip shape variants (pill, rounded, square) ([72cf795](https://github.com/Hedzer/snice/commit/72cf795f096920ed962097012ca28a06a83c267d))
+
 # [4.37.0](https://github.com/Hedzer/snice/compare/v4.36.2...v4.37.0) (2026-04-17)
 
 
