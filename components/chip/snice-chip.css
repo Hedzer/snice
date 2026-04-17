@@ -37,14 +37,26 @@
   --chip-height: 1.5rem;
   --chip-padding: 0 0.5rem;
   --chip-font-size: var(--snice-font-size-xs, 0.75rem);
-  --chip-border-radius: 12px;
 }
 
 :host([size="large"]) {
   --chip-height: 2.5rem;
   --chip-padding: 0 1rem;
   --chip-font-size: var(--snice-font-size-md, 1rem);
-  --chip-border-radius: 20px;
+}
+
+/* Shapes */
+:host([shape="rounded"]) {
+  --chip-border-radius: 6px;
+}
+
+:host([shape="square"]) {
+  --chip-border-radius: 0;
+}
+
+:host([shape="pill"]),
+:host(:not([shape])) {
+  --chip-border-radius: 9999px;
 }
 
 /* Variants */

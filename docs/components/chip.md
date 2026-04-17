@@ -20,6 +20,7 @@ Compact elements for tags, filters, selections, or categorizations. Supports ico
 | `label` | `string` | `''` | Text label for the chip |
 | `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Color variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Chip size |
+| `shape` | `'pill' \| 'rounded' \| 'square'` | `'pill'` | Chip shape (fully round, rounded rectangle, or rectangle) |
 | `removable` | `boolean` | `false` | Show remove button |
 | `selected` | `boolean` | `false` | Show selected state |
 | `disabled` | `boolean` | `false` | Disable the chip |
@@ -78,6 +79,16 @@ Use the `size` attribute to change the chip size.
 <snice-chip label="Small" size="small"></snice-chip>
 <snice-chip label="Medium" size="medium"></snice-chip>
 <snice-chip label="Large" size="large"></snice-chip>
+```
+
+### Shapes
+
+Use the `shape` attribute to change the chip corner style.
+
+```html
+<snice-chip label="Pill" shape="pill"></snice-chip>
+<snice-chip label="Rounded" shape="rounded"></snice-chip>
+<snice-chip label="Square" shape="square"></snice-chip>
 ```
 
 ### Removable Chips

@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-chip';
-import type { ChipVariant, ChipSize } from './snice-chip.types';
+import type { ChipVariant, ChipSize, ChipShape } from './snice-chip.types';
 
 type Args = {
   label?: string;
   variant?: ChipVariant;
   size?: ChipSize;
+  shape?: ChipShape;
   removable?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -15,6 +16,7 @@ type Args = {
 
 const VARIANTS: ChipVariant[] = ['default', 'primary', 'success', 'warning', 'error', 'info'];
 const SIZES: ChipSize[] = ['small', 'medium', 'large'];
+const SHAPES: ChipShape[] = ['pill', 'rounded', 'square'];
 
 function makeChip(label: string, attrs: Record<string, string | boolean> = {}) {
   const el = document.createElement('snice-chip');
@@ -48,6 +50,7 @@ const meta: Meta<Args> = {
     label:    { control: 'text' },
     variant:  { control: 'select', options: VARIANTS },
     size:     { control: 'select', options: SIZES },
+    shape:    { control: 'select', options: SHAPES },
     removable:{ control: 'boolean' },
     selected: { control: 'boolean' },
     disabled: { control: 'boolean' },
@@ -59,6 +62,7 @@ const meta: Meta<Args> = {
     el.setAttribute('label', args.label ?? 'Chip');
     if (args.variant  !== undefined) el.setAttribute('variant', String(args.variant));
     if (args.size     !== undefined) el.setAttribute('size',    String(args.size));
+    if (args.shape    !== undefined) el.setAttribute('shape',   String(args.shape));
     if (args.icon     !== undefined) el.setAttribute('icon',    String(args.icon));
     if (args.avatar   !== undefined) el.setAttribute('avatar',  String(args.avatar));
     if (args.removable) el.toggleAttribute('removable', true);
@@ -97,6 +101,18 @@ export const AllSizes: Story = {
 export const SizesXVariants: Story = {
   render: () => col(
     ...SIZES.map(s => row(...VARIANTS.map(v => makeChip(v, { size: s, variant: v })))),
+  ),
+};
+
+// h2: All shapes
+export const AllShapes: Story = {
+  render: () => row(...SHAPES.map(sh => makeChip(sh.charAt(0).toUpperCase() + sh.slice(1), { shape: sh, variant: 'primary' }))),
+};
+
+// h2: Shapes x Variants
+export const ShapesXVariants: Story = {
+  render: () => col(
+    ...SHAPES.map(sh => row(...VARIANTS.map(v => makeChip(v, { shape: sh, variant: v })))),
   ),
 };
 

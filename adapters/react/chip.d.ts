@@ -6,6 +6,7 @@ export interface ChipProps extends SniceBaseProps {
     label?: any;
     variant?: any;
     size?: any;
+    shape?: any;
     removable?: any;
     selected?: any;
     disabled?: any;

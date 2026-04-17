@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Chip = createReactAdapter({
     tagName: 'snice-chip',
-    properties: ["label", "variant", "size", "removable", "selected", "disabled", "icon", "avatar"],
+    properties: ["label", "variant", "size", "shape", "removable", "selected", "disabled", "icon", "avatar"],
     events: { "chip-click": "onChipClick", "chip-remove": "onChipRemove" },
     formAssociated: false
 });

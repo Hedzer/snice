@@ -1,7 +1,7 @@
 import { element, property, watch, query, dispatch, on, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-chip.css?inline';
-import type { ChipVariant, ChipSize, SniceChipElement } from './snice-chip.types';
+import type { ChipVariant, ChipSize, ChipShape, SniceChipElement } from './snice-chip.types';
 
 @element('snice-chip')
 export class SniceChip extends HTMLElement implements SniceChipElement {
@@ -13,6 +13,9 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
   @property({  })
   size: ChipSize = 'medium';
+
+  @property({  })
+  shape: ChipShape = 'pill';
 
   @property({ type: Boolean,  })
   removable = false;

@@ -8,6 +8,7 @@ Compact element for tags, filters, or selections.
 label: string = '';
 variant: 'default'|'primary'|'success'|'warning'|'error'|'info' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
+shape: 'pill'|'rounded'|'square' = 'pill';
 removable: boolean = false;
 selected: boolean = false;
 disabled: boolean = false;

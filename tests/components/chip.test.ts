@@ -26,6 +26,7 @@ describe('snice-chip', () => {
       expect(chip.label).toBe('');
       expect(chip.variant).toBe('default');
       expect(chip.size).toBe('medium');
+      expect(chip.shape).toBe('pill');
       expect(chip.disabled).toBe(false);
       expect(chip.removable).toBe(false);
       expect(chip.selected).toBe(false);
@@ -96,6 +97,44 @@ describe('snice-chip', () => {
 
         expect(chip.size).toBe(size);
       });
+    });
+  });
+
+  describe('shapes', () => {
+    const shapes = ['pill', 'rounded', 'square'];
+
+    shapes.forEach(shape => {
+      it(`should support ${shape} shape and reflect as attribute`, async () => {
+        chip = await createComponent<SniceChipElement>('snice-chip', {
+          label: 'Test',
+          shape,
+        });
+        await wait(200);
+
+        expect(chip.shape).toBe(shape);
+        expect((chip as HTMLElement).getAttribute('shape')).toBe(shape);
+      });
+    });
+
+    it('defaults to pill when shape attribute is absent', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', { label: 'Test' });
+      await wait(200);
+      expect(chip.shape).toBe('pill');
+    });
+
+    it('stylesheet has shape selectors for each variant', async () => {
+      const { readFileSync } = await import('fs');
+      const { join } = await import('path');
+      const cssContent = readFileSync(
+        join(__dirname, '../../components/chip/snice-chip.css'),
+        'utf8'
+      );
+      expect(cssContent).toMatch(/:host\(\[shape="pill"\]\)/);
+      expect(cssContent).toMatch(/:host\(\[shape="rounded"\]\)/);
+      expect(cssContent).toMatch(/:host\(\[shape="square"\]\)/);
+      expect(cssContent).toMatch(/--chip-border-radius:\s*9999px/);
+      expect(cssContent).toMatch(/--chip-border-radius:\s*6px/);
+      expect(cssContent).toMatch(/--chip-border-radius:\s*0/);
     });
   });
 
