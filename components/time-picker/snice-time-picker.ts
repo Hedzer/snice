@@ -507,9 +507,9 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   private setupClickOutside() {
     document.addEventListener('click', (e) => {
-      if (!this.contains(e.target as Node) && this.showDropdown) {
-        this.close();
-      }
+      if (!this.showDropdown) return;
+      if (e.composedPath().includes(this)) return;
+      this.close();
     });
   }
 

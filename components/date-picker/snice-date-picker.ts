@@ -535,9 +535,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private setupCalendarClickOutside() {
     document.addEventListener('click', (e) => {
-      if (!this.contains(e.target as Node) && this.showCalendar) {
-        this.close();
-      }
+      if (!this.showCalendar) return;
+      if (e.composedPath().includes(this)) return;
+      this.close();
     });
   }
 

@@ -147,9 +147,9 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
 
   private setupGlobalListeners() {
     this.outsideClickHandler = (e: MouseEvent) => {
-      if (!this.contains(e.target as Node) && this.isOpen) {
-        this.closeMenu();
-      }
+      if (!this.isOpen) return;
+      if (e.composedPath().includes(this)) return;
+      this.closeMenu();
     };
 
     this.globalKeyHandler = (e: KeyboardEvent) => {

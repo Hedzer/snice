@@ -47,9 +47,8 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   }
 
   private handleDocumentClick = (e: Event) => {
-    if (!this.contains(e.target as Node)) {
-      this.showSuggestions = false;
-    }
+    if (e.composedPath().includes(this)) return;
+    this.showSuggestions = false;
   };
 
   @watch('value')

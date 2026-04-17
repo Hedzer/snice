@@ -51,9 +51,8 @@ export class SniceMentions extends HTMLElement implements SniceMentionsElement {
   }
 
   private handleDocumentClick = (e: Event) => {
-    if (!this.contains(e.target as Node)) {
-      this.showDropdown = false;
-    }
+    if (e.composedPath().includes(this)) return;
+    this.showDropdown = false;
   };
 
   @watch('value')

@@ -789,9 +789,10 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   private setupClickOutside() {
     document.addEventListener('click', (e) => {
-      if (!this.contains(e.target as Node) && this.showCalendar) {
-        this.close();
-      }
+      if (!this.showCalendar) return;
+      const path = e.composedPath();
+      if (path.includes(this)) return;
+      this.close();
     });
   }
 
