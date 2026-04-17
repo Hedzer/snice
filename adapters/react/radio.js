@@ -1,3 +1,6 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/radio/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
 /**
  * Radio - React adapter for snice-radio

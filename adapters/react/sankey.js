@@ -1,3 +1,6 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/sankey/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
 /**
  * Sankey - React adapter for snice-sankey

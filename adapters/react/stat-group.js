@@ -1,3 +1,6 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/stat-group/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
 /**
  * StatGroup - React adapter for snice-stat-group

@@ -8,6 +8,7 @@ import { getUser, setUser } from '../services/storage';
 const placard: Placard = {
   name: 'settings',
   title: 'Settings',
+  href: '#/settings',
   icon: '\u2699\ufe0f',
   show: true,
   order: 4

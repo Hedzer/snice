@@ -1,3 +1,6 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/flow/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
 /**
  * Flow - React adapter for snice-flow

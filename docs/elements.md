@@ -1000,7 +1000,7 @@ class NavBar extends HTMLElement {
         ${this.placards
           .filter(p => p.show !== false)
           .map(p => html`
-            <a href="#/${p.name}" class="${this.currentRoute === p.name ? 'active' : ''}">
+            <a href="${p.href || ''}" class="${this.currentRoute === p.name ? 'active' : ''}">
               ${p.icon} ${p.title}
             </a>
           `)}

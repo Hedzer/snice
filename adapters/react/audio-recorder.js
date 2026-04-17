@@ -1,3 +1,6 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/audio-recorder/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
 /**
  * AudioRecorder - React adapter for snice-audio-recorder

@@ -8,6 +8,7 @@ import { isAuthenticated } from '../guards/auth';
 const placard: Placard = {
   name: 'settings',
   title: 'Settings',
+  href: '#/settings',
   icon: '\u2699',
   show: true,
   order: 2,

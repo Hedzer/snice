@@ -20,6 +20,12 @@ export interface Placard<T = any> {
   title: string;
 
   /**
+   * URL for navigation links. Used directly as the anchor href.
+   * Consumer controls routing mode (hash `#/path`, history `/path`, external, etc.).
+   */
+  href?: string;
+
+  /**
    * Longer description of the page's purpose.
    * Used in tooltips, search results, or help text.
    */

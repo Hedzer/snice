@@ -8,6 +8,7 @@ import type { Notification, NotificationType } from '../types/notifications';
 const placard: Placard = {
   name: 'notifications',
   title: 'Notifications',
+  href: '#/notifications',
   icon: '\ud83d\udd14',
   show: true,
   order: 3

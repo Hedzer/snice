@@ -144,7 +144,7 @@ class AppShell extends HTMLElement implements Layout {
   @render()
   renderContent() {
     return html`
-      <nav>${this.placards.map(p => html`<a href="#/${p.name}">${p.title}</a>`)}</nav>
+      <nav>${this.placards.map(p => html`<a href="${p.href || ''}">${p.title}</a>`)}</nav>
       <slot name="page"></slot>
     `;
   }

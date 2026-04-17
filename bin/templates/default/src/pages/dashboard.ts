@@ -8,6 +8,7 @@ import type { NotificationsDaemon } from '../daemons/notifications';
 const placard: Placard = {
   name: 'dashboard',
   title: 'Dashboard',
+  href: '#/dashboard',
   icon: '\ud83d\udcca',
   show: true,
   order: 1

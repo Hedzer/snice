@@ -6,6 +6,7 @@ import type { DashboardAppContext } from '../types/app';
 const placard: Placard = {
   name: 'settings',
   title: 'Settings',
+  href: '#/settings',
   icon: '\u{2699}\u{FE0F}',
   show: true,
   order: 3,

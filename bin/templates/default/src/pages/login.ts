@@ -8,6 +8,7 @@ import 'snice/components/login/snice-login';
 const placard: Placard = {
   name: 'login',
   title: 'Login',
+  href: '#/login',
   show: false
 };
 

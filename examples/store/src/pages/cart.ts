@@ -7,7 +7,7 @@ import { removeFromCart, updateQuantity, getCartTotal, getCartCount } from '../s
 @page({
   tag: 'cart-page',
   routes: ['/cart'],
-  placard: { name: 'cart', title: 'Cart', icon: 'shopping-cart', order: 2 },
+  placard: { name: 'cart', title: 'Cart', href: '#/cart', icon: 'shopping-cart', order: 2 },
 })
 class CartPage extends HTMLElement {
   @property({ type: Array }) items: CartItem[] = [];

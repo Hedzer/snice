@@ -7,6 +7,7 @@ import { generateMetrics, generateTimeSeries, generateCategoryData, generateActi
 const placard: Placard = {
   name: 'overview',
   title: 'Overview',
+  href: '#/overview',
   icon: '\u{1f4ca}',
   show: true,
   order: 1,

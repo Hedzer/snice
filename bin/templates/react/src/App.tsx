@@ -60,42 +60,42 @@ export function App() {
         page={DashboardPage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', show: true, order: 1 }}
+        placard={{ name: 'dashboard', title: 'Dashboard', href: '#/', icon: '\ud83d\udcca', show: true, order: 1 }}
       />
       <Route
         path="/dashboard"
         page={DashboardPage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'dashboard', title: 'Dashboard', icon: '\ud83d\udcca', show: false }}
+        placard={{ name: 'dashboard', title: 'Dashboard', href: '#/dashboard', icon: '\ud83d\udcca', show: false }}
       />
       <Route
         path="/profile"
         page={ProfilePage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'profile', title: 'Profile', icon: '\ud83d\udc64', show: true, order: 2 }}
+        placard={{ name: 'profile', title: 'Profile', href: '#/profile', icon: '\ud83d\udc64', show: true, order: 2 }}
       />
       <Route
         path="/notifications"
         page={NotificationsPage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'notifications', title: 'Notifications', icon: '\ud83d\udd14', show: true, order: 3 }}
+        placard={{ name: 'notifications', title: 'Notifications', href: '#/notifications', icon: '\ud83d\udd14', show: true, order: 3 }}
       />
       <Route
         path="/settings"
         page={SettingsPage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'settings', title: 'Settings', icon: '\u2699\ufe0f', show: true, order: 4 }}
+        placard={{ name: 'settings', title: 'Settings', href: '#/settings', icon: '\u2699\ufe0f', show: true, order: 4 }}
       />
       <Route
         path="/data"
         page={DataPage}
         guard={isAuthenticated}
         guardRedirect="/login"
-        placard={{ name: 'data', title: 'Data', icon: '\ud83d\udcca', show: true, order: 5 }}
+        placard={{ name: 'data', title: 'Data', href: '#/data', icon: '\ud83d\udcca', show: true, order: 5 }}
       />
     </SniceRouter>
   );

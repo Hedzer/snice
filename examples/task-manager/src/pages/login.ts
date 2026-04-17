@@ -8,6 +8,7 @@ import { login } from '../services/auth';
 const placard: Placard = {
   name: 'login',
   title: 'Login',
+  href: '#/login',
   show: false,
 };
 

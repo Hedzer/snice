@@ -91,7 +91,10 @@ function generateReactComponent(componentName, metadata) {
 
   const basePropsType = isFormAssociated ? 'SniceFormProps' : 'SniceBaseProps';
 
-  return `import { createReactAdapter } from './wrapper';
+  return `// GENERATED FILE — DO NOT EDIT.
+// Source: components/${componentName}/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
+import { createReactAdapter } from './wrapper';
 import type { ${basePropsType} } from './types';
 
 /**

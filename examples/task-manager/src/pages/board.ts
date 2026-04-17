@@ -10,6 +10,7 @@ import * as taskService from '../services/tasks';
 const placard: Placard = {
   name: 'board',
   title: 'Board',
+  href: '#/board',
   icon: '\u2630',
   show: true,
   order: 1,

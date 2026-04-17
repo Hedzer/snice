@@ -651,7 +651,7 @@ class AppShell extends HTMLElement implements Layout {
               .filter(p => p.show !== false)
               .map(p => html`
                 <a
-                  href="#/${p.name}"
+                  href="${p.href || ''}"
                   class="${this.currentRoute === p.name ? 'active' : ''}"
                 >
                   ${p.icon || ''} ${p.title}

@@ -15,6 +15,8 @@ const banner = `/*!
  * ${packageJson.description}
  * (c) 2024
  * Released under the ${packageJson.license} License.
+ *
+ * GENERATED FILE — DO NOT EDIT. Source: src/. Rebuild: npm run build:core
  */`;
 
 

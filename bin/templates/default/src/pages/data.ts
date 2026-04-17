@@ -14,6 +14,7 @@ interface DataItem {
 const placard: Placard = {
   name: 'data',
   title: 'Data',
+  href: '#/data',
   icon: '\ud83d\udcca',
   show: true,
   order: 5

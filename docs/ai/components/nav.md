@@ -36,30 +36,38 @@ isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 
 ```typescript
 nav.update([
-  { name: 'home', title: 'Home', icon: '🏠', order: 0 },
-  { name: 'products', title: 'Products', order: 1 },
+  { name: 'home', title: 'Home', href: '#/', icon: '🏠', order: 0 },
+  { name: 'products', title: 'Products', href: '#/products', order: 1 },
 ], undefined, 'home');
 ```
+
+Placard `href` is used as-is for the link — consumer picks routing mode (`#/path`, `/path`, full URL).
 
 ## Examples
 
 ```typescript
 // Hierarchical
 nav.update([
-  { name: 'products', title: 'Products', order: 0 },
-  { name: 'electronics', title: 'Electronics', parent: 'products', order: 0 },
+  { name: 'products', title: 'Products', href: '#/products', order: 0 },
+  { name: 'electronics', title: 'Electronics', href: '#/products/electronics', parent: 'products', order: 0 },
 ]);
 
 // Grouped
 nav.update([
-  { name: 'home', title: 'Home', group: 'Main', order: 0 },
-  { name: 'profile', title: 'Profile', group: 'Account', order: 0 },
+  { name: 'home', title: 'Home', href: '#/', group: 'Main', order: 0 },
+  { name: 'profile', title: 'Profile', href: '#/profile', group: 'Account', order: 0 },
 ]);
 
-// Conditional visibility
+// Sync conditional visibility
 nav.update([
-  { name: 'admin', title: 'Admin', visibleOn: (ctx) => ctx.user?.isAdmin },
+  { name: 'admin', title: 'Admin', href: '#/admin', visibleOn: (ctx) => ctx.user?.isAdmin },
 ], { user: { isAdmin: true } });
+
+// Async visibility — hidden until resolves true; silent on false/reject
+nav.update([
+  { name: 'billing', title: 'Billing', href: '#/billing',
+    visibleOn: async () => (await fetch('/api/perms').then(r => r.json())).includes('billing') },
+], appContext);
 ```
 
 ## Accessibility

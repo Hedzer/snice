@@ -7,6 +7,7 @@ import { type ReactNode } from 'react';
 export interface Placard {
     name: string;
     title: string;
+    href?: string;
     description?: string;
     icon?: string;
     tooltip?: string;

@@ -9,7 +9,7 @@ import { addToCart, getCartTotal, getCartCount } from '../services/cart';
 @page({
   tag: 'home-page',
   routes: ['/', '/home'],
-  placard: { name: 'home', title: 'Home', icon: 'home', order: 0 },
+  placard: { name: 'home', title: 'Home', href: '#/', icon: 'home', order: 0 },
 })
 class HomePage extends HTMLElement {
   @property({ type: Array }) featuredProducts: Product[] = [];

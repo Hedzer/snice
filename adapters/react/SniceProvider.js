@@ -1,8 +1,10 @@
 /*!
- * snice v4.36.1
+ * snice v4.36.2
  * A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.
  * (c) 2024
  * Released under the MIT License.
+ *
+ * GENERATED FILE — DO NOT EDIT. Source: src/. Rebuild: npm run build:core
  */
 import { jsx } from 'react/jsx-runtime';
 import { createContext, useMemo, useContext } from 'react';

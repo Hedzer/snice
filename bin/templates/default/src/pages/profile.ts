@@ -8,6 +8,7 @@ import { logout } from '../services/auth';
 const placard: Placard = {
   name: 'profile',
   title: 'Profile',
+  href: '#/profile',
   icon: '\ud83d\udc64',
   show: true,
   order: 2

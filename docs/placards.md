@@ -24,6 +24,7 @@ import { page } from './router'; // page comes from Router(), not from 'snice'
 const placard: Placard<AppContext> = {
   name: 'dashboard',
   title: 'Dashboard',
+  href: '#/dashboard',
   description: 'Main analytics and overview dashboard',
   icon: '📊',
   show: true,
@@ -52,6 +53,7 @@ interface Placard<T = any> {
 
   // Core display
   title: string;
+  href?: string;
   description?: string;
   icon?: string;
 
@@ -90,6 +92,11 @@ interface Placard<T = any> {
 **`title`** (required)
 - Display name shown in navigation and breadcrumbs
 - Should be concise and descriptive
+
+**`href`** (optional)
+- URL used as the anchor `href` when this placard renders in nav or breadcrumbs
+- Consumer controls routing mode — use `#/path` for hash routing, `/path` for pushstate, full URLs for external links
+- If omitted, links render with empty href
 
 **`description`** (optional)
 - Longer description of the page's purpose
@@ -153,12 +160,21 @@ parent: 'users'  // Child of the 'users' page
 ### Dynamic Visibility
 
 **`visibleOn`** (optional)
-- Guard functions for layouts to evaluate when building navigation menus
-- The router passes all placards to layouts unfiltered — layouts must check `visibleOn` themselves
-- Reuses the same guard type as route protection
+- Guard functions that determine if the placard appears in nav
+- Can return `boolean` or `Promise<boolean>`
+- Sync guards: evaluated on every render
+- Async guards: placard is hidden until the promise resolves `true`; silently hidden on `false` or rejection
+- Multiple guards must all pass (AND)
 
 ```typescript
+// sync
 visibleOn: [isAuthenticated, hasAdminRole]
+
+// async — nav item appears only once the permission check resolves true
+visibleOn: async (ctx) => {
+  const perms = await fetch('/api/me/permissions').then(r => r.json());
+  return perms.includes('admin');
+}
 ```
 
 ### Extensibility
@@ -263,7 +279,7 @@ class AppShell extends HTMLElement implements Layout {
             .filter(p => p.show !== false && !p.parent)
             .map(p => html`
               <a
-                href="#/${p.name}"
+                href="${p.href || ''}"
                 class="${this.currentRoute === p.name ? 'active' : ''}"
               >
                 ${p.icon} ${p.title}
@@ -306,7 +322,7 @@ class SidebarLayout extends HTMLElement implements Layout {
                 .sort((a, b) => (a.order || 0) - (b.order || 0))
                 .map(p => html`
                   <li>
-                    <a href="#/${p.name}" title="${p.tooltip || ''}">
+                    <a href="${p.href || ''}" title="${p.tooltip || ''}">
                       ${p.icon} ${p.title}
                     </a>
                   </li>
@@ -348,7 +364,7 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
       <nav class="breadcrumbs">
         ${this.breadcrumbs.map((p, i) => html`
           ${i > 0 ? html`<span class="separator">/</span>` : ''}
-          <a href="#/${p.name}">${p.title}</a>
+          <a href="${p.href || ''}">${p.title}</a>
         `)}
       </nav>
       <main>

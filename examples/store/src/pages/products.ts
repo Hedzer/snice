@@ -8,7 +8,7 @@ import { addToCart, getCartTotal, getCartCount } from '../services/cart';
 @page({
   tag: 'products-page',
   routes: ['/products'],
-  placard: { name: 'products', title: 'Products', icon: 'grid', order: 1 },
+  placard: { name: 'products', title: 'Products', href: '#/products', icon: 'grid', order: 1 },
 })
 class ProductsPage extends HTMLElement {
   @property({ type: Array }) products: Product[] = [];

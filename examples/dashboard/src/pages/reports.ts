@@ -7,6 +7,7 @@ import { generateReportData } from '../services/mock-data';
 const placard: Placard = {
   name: 'reports',
   title: 'Reports',
+  href: '#/reports',
   icon: '\u{1f4c4}',
   show: true,
   order: 2,

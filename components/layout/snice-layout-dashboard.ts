@@ -88,7 +88,7 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
       <snice-breadcrumbs
         items='${JSON.stringify(breadcrumbs.map(p => ({
           label: p.title,
-          href: `#/${p.name}`,
+          href: p.href || '',
           icon: p.icon
         })))}'
         separator="/">

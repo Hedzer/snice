@@ -86,10 +86,10 @@ The default variant renders a simple list of navigation items.
 
 <script type="module">
   document.getElementById('flatNav').update([
-    { name: 'home', title: 'Home', order: 0 },
-    { name: 'products', title: 'Products', order: 1 },
-    { name: 'services', title: 'Services', order: 2 },
-    { name: 'contact', title: 'Contact', order: 3 },
+    { name: 'home', title: 'Home', href: '#/', order: 0 },
+    { name: 'products', title: 'Products', href: '#/products', order: 1 },
+    { name: 'services', title: 'Services', href: '#/services', order: 2 },
+    { name: 'contact', title: 'Contact', href: '#/contact', order: 3 },
   ]);
 </script>
 ```
@@ -103,9 +103,9 @@ Use the `parent` property on placards to create nested navigation.
 
 <script type="module">
   document.getElementById('hierNav').update([
-    { name: 'products', title: 'Products', order: 0 },
-    { name: 'electronics', title: 'Electronics', parent: 'products', order: 0 },
-    { name: 'clothing', title: 'Clothing', parent: 'products', order: 1 },
+    { name: 'products', title: 'Products', href: '#/products', order: 0 },
+    { name: 'electronics', title: 'Electronics', href: '#/products/electronics', parent: 'products', order: 0 },
+    { name: 'clothing', title: 'Clothing', href: '#/products/clothing', parent: 'products', order: 1 },
   ]);
 </script>
 ```
@@ -119,10 +119,10 @@ Use the `group` property on placards to organize items into labeled groups.
 
 <script type="module">
   document.getElementById('groupNav').update([
-    { name: 'home', title: 'Home', group: 'Main', order: 0 },
-    { name: 'dashboard', title: 'Dashboard', group: 'Main', order: 1 },
-    { name: 'profile', title: 'Profile', group: 'Account', order: 0 },
-    { name: 'settings', title: 'Settings', group: 'Account', order: 1 },
+    { name: 'home', title: 'Home', href: '#/', group: 'Main', order: 0 },
+    { name: 'dashboard', title: 'Dashboard', href: '#/dashboard', group: 'Main', order: 1 },
+    { name: 'profile', title: 'Profile', href: '#/profile', group: 'Account', order: 0 },
+    { name: 'settings', title: 'Settings', href: '#/settings', group: 'Account', order: 1 },
   ]);
 </script>
 ```
@@ -139,9 +139,9 @@ Use `orientation="vertical"` for sidebar-style navigation.
 
 ```typescript
 nav.update([
-  { name: 'dashboard', title: 'Dashboard', icon: '📊', order: 0 },
-  { name: 'analytics', title: 'Analytics', icon: '📈', order: 1 },
-  { name: 'settings', title: 'Settings', icon: '⚙️', order: 2 },
+  { name: 'dashboard', title: 'Dashboard', href: '#/dashboard', icon: '📊', order: 0 },
+  { name: 'analytics', title: 'Analytics', href: '#/analytics', icon: '📈', order: 1 },
+  { name: 'settings', title: 'Settings', href: '#/settings', icon: '⚙️', order: 2 },
 ]);
 ```
 
@@ -151,14 +151,30 @@ Use `visibleOn` guards to conditionally show navigation items.
 
 ```typescript
 nav.update([
-  { name: 'home', title: 'Home', order: 0 },
+  { name: 'home', title: 'Home', href: '#/', order: 0 },
   {
     name: 'admin',
     title: 'Admin',
+    href: '#/admin',
     order: 1,
     visibleOn: (ctx) => ctx.user?.isAdmin
   },
 ], { user: { isAdmin: true } });
+
+// Async guard — item hidden until promise resolves true
+nav.update([
+  { name: 'home', title: 'Home', href: '#/', order: 0 },
+  {
+    name: 'billing',
+    title: 'Billing',
+    href: '#/billing',
+    order: 1,
+    visibleOn: async (ctx) => {
+      const perms = await fetch('/api/me/permissions').then(r => r.json());
+      return perms.includes('billing');
+    }
+  },
+], appContext);
 ```
 
 ### Active Route Tracking

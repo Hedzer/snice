@@ -307,4 +307,117 @@ describe('snice-nav', () => {
     expect(link?.getAttribute('data-custom')).toBe('value');
     expect(link?.getAttribute('data-another')).toBe('123');
   });
+
+  it('uses placard.href directly for link href', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    const placards: Placard[] = [
+      { name: 'home', title: 'Home', href: '/custom-home', order: 0 },
+      { name: 'about', title: 'About', href: '#/about', order: 1 },
+    ];
+
+    nav.update(placards);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.[0].getAttribute('href')).toBe('/custom-home');
+    expect(links?.[1].getAttribute('href')).toBe('#/about');
+  });
+
+  it('renders empty href when placard.href is missing', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    const placards: Placard[] = [
+      { name: 'home', title: 'Home', order: 0 },
+    ];
+
+    nav.update(placards);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const link = nav.shadowRoot?.querySelector('a.nav__link');
+    expect(link?.getAttribute('href')).toBe('');
+  });
+
+  it('async visibleOn: hides item until guard resolves true', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    let resolveGuard: (v: boolean) => void;
+    const guardPromise = new Promise<boolean>(r => { resolveGuard = r; });
+
+    const placards: Placard[] = [
+      { name: 'always', title: 'Always', href: '#/always', order: 0 },
+      { name: 'gated', title: 'Gated', href: '#/gated', order: 1, visibleOn: () => guardPromise },
+    ];
+
+    nav.update(placards, {} as any);
+    await new Promise(r => setTimeout(r, 50));
+
+    let links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.length).toBe(1);
+    expect(links?.[0].textContent).toContain('Always');
+
+    resolveGuard!(true);
+    await new Promise(r => setTimeout(r, 50));
+
+    links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.length).toBe(2);
+    const labels = Array.from(links!).map(l => l.textContent);
+    expect(labels.some(t => t?.includes('Gated'))).toBe(true);
+  });
+
+  it('async visibleOn: stays hidden when guard resolves false', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    const placards: Placard[] = [
+      { name: 'always', title: 'Always', href: '#/always', order: 0 },
+      { name: 'gated', title: 'Gated', href: '#/gated', order: 1, visibleOn: () => Promise.resolve(false) },
+    ];
+
+    nav.update(placards, {} as any);
+    await new Promise(r => setTimeout(r, 50));
+
+    const links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.length).toBe(1);
+  });
+
+  it('async visibleOn: rejected promise keeps item hidden', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    const placards: Placard[] = [
+      { name: 'always', title: 'Always', href: '#/always', order: 0 },
+      { name: 'gated', title: 'Gated', href: '#/gated', order: 1, visibleOn: () => Promise.reject(new Error('boom')) },
+    ];
+
+    nav.update(placards, {} as any);
+    await new Promise(r => setTimeout(r, 50));
+
+    const links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.length).toBe(1);
+  });
+
+  it('async visibleOn: late resolution after re-render does not add stale items', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    let resolveGuard: (v: boolean) => void;
+    const guardPromise = new Promise<boolean>(r => { resolveGuard = r; });
+
+    const placards1: Placard[] = [
+      { name: 'stale', title: 'Stale', href: '#/stale', order: 0, visibleOn: () => guardPromise },
+    ];
+    nav.update(placards1, {} as any);
+    await new Promise(r => setTimeout(r, 20));
+
+    const placards2: Placard[] = [
+      { name: 'fresh', title: 'Fresh', href: '#/fresh', order: 0 },
+    ];
+    nav.update(placards2, {} as any);
+    await new Promise(r => setTimeout(r, 20));
+
+    resolveGuard!(true);
+    await new Promise(r => setTimeout(r, 50));
+
+    const links = nav.shadowRoot?.querySelectorAll('a.nav__link');
+    expect(links?.length).toBe(1);
+    expect(links?.[0].textContent).toContain('Fresh');
+  });
 });

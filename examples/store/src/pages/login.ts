@@ -7,7 +7,7 @@ import { mockLogin, storeUser } from '../services/auth';
 @page({
   tag: 'login-page',
   routes: ['/login'],
-  placard: { name: 'login', title: 'Login', show: false },
+  placard: { name: 'login', title: 'Login', href: '#/login', show: false },
 })
 class LoginPage extends HTMLElement {
   @property() email = '';
