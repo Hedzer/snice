@@ -327,6 +327,7 @@ export function applyElementFunctionality(constructor: any) {
 
         const currentValue = this[PROPERTY_VALUES]?.[propName];
         const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
+
         if (currentValue === parsedValue) break;
 
         ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
@@ -422,6 +423,13 @@ function defineElement(tagName: string, constructor: any, context: ClassDecorato
     for (const [key, value] of (context.metadata as any)[PROPERTIES]) {
       constructor[PROPERTIES].set(key, value);
     }
+  } else if (_pendingProperties.length > 0) {
+    // Symbol.metadata unavailable — drain the pending stack
+    if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
+    const pending = _pendingProperties.pop()!;
+    for (const [key, value] of pending) {
+      constructor[PROPERTIES].set(key, value);
+    }
   }
   if (options?.formAssociated) constructor.formAssociated = true;
   applyElementFunctionality(constructor);
@@ -444,17 +452,25 @@ export function layout(tagName: string) {
     return defineElement(tagName, constructor, context);
   };
 }
+// Fallback stack for environments where Symbol.metadata is unavailable.
+// @property pushes entries; @element pops them. Works because field decorators
+// run synchronously before the class decorator in the same static block.
+const _pendingProperties: Map<string, PropertyOptions>[] = [];
+
 export function property(options?: PropertyOptions) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
     const propertyKey = context.name as string;
     // Use metadata to store property information at decoration time
-    if (!context.metadata) {
-      (context as any).metadata = {};
+    if (context.metadata) {
+      if (!(context.metadata as any)[PROPERTIES]) {
+        (context.metadata as any)[PROPERTIES] = new Map();
+      }
+      (context.metadata as any)[PROPERTIES].set(propertyKey, options || {});
+    } else {
+      // Symbol.metadata unavailable — use the pending stack instead
+      if (_pendingProperties.length === 0) _pendingProperties.push(new Map());
+      _pendingProperties[_pendingProperties.length - 1].set(propertyKey, options || {});
     }
-    if (!(context.metadata as any)[PROPERTIES]) {
-      (context.metadata as any)[PROPERTIES] = new Map();
-    }
-    (context.metadata as any)[PROPERTIES].set(propertyKey, options || {});
 
 
     // Return a field initializer function for new decorators
@@ -544,9 +560,9 @@ export function property(options?: PropertyOptions) {
                 this.setAttribute?.(attributeName, attributeValue);
               }
 
-              setTimeout(() => {
+              queueMicrotask(() => {
                 this[SETTING_FROM_PROPERTY]?.delete(attributeName.toLowerCase());
-              }, 0);
+              });
             }
 
             invokeWatchers(this, this.constructor, propertyKey, oldValue, newValue);

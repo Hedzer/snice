@@ -1,5 +1,13 @@
 # [4.38.0](https://github.com/Hedzer/snice/compare/v4.37.0...v4.38.0) (2026-04-17)
 
+### Bug Fixes
+
+* **property:** include `@property` attributes in `observedAttributes` when `Symbol.metadata` is unavailable (older browsers / non-standard environments), preventing silent `attributeChangedCallback` failures for externally-set attributes
+* **property:** use `queueMicrotask` instead of `setTimeout` to clear the `SETTING_FROM_PROPERTY` guard, eliminating a race condition where rapid attribute changes could be incorrectly suppressed
+* **context:** unconditionally clear pending timers on element disconnect, not only for debounced handlers
+* **parts:** fix attribute-name parser regex to include `:` and `+` so event bindings like `@keydown:Enter` and `@keydown:ctrl+s` are parsed correctly
+
+
 
 ### Bug Fixes
 

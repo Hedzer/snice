@@ -147,7 +147,7 @@ export function cleanupContextHandler(element: HTMLElement) {
 
   // Clear any pending debounce timer
   for (const handler of handlers) {
-    if (handler.options.debounce && (element as any)[CONTEXT_TIMER]) {
+    if ((element as any)[CONTEXT_TIMER]) {
       clearTimeout((element as any)[CONTEXT_TIMER]);
       delete (element as any)[CONTEXT_TIMER];
     }
