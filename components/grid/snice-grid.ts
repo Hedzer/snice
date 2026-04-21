@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, parseDuration } from 'snice';
 import { html, css } from 'snice';
 import cssContent from './snice-grid.css?inline';
 import type { SniceGridElement, GridLayout, GridLayoutEntry, GridLayoutCompleteDetail, GridDragItemPositionedDetail } from './snice-grid.types';
@@ -718,13 +718,13 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     this.dragItem = null;
     this.performLayout();
 
-    // Safety timeout
+    // Safety timeout — interpret unit correctly (ms stays ms, s → *1000).
     setTimeout(() => {
       if (item.classList.contains('grid-positioning')) {
         item.classList.remove('grid-positioning');
         this.hidePlaceholder();
       }
-    }, parseFloat(this.transitionDuration) * 1000 + 100);
+    }, parseDuration(this.transitionDuration).milliseconds() + 100);
   }
 
   private showPlaceholder(item: HTMLElement): void {

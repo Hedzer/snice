@@ -46,11 +46,16 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   @query('.checkbox-wrapper')
   wrapper?: HTMLElement;
 
+  // Only handle clicks where the native <input> didn't already toggle itself.
+  // If the event's composed path includes the shadow <input>, the browser
+  // already toggled the checkbox and the @change listener on the <label>
+  // will sync state — skip to avoid double-toggle / double-event.
   @on('click')
-  handleCheckboxClick() {
-    if (!this.disabled && !this.loading) {
-      this.toggle();
-    }
+  handleCheckboxClick(e: Event) {
+    if (this.disabled || this.loading) return;
+    const inputEl = this.shadowRoot?.querySelector('input[type="checkbox"]');
+    if (inputEl && e.composedPath().includes(inputEl)) return;
+    this.toggle();
   }
 
   @render()

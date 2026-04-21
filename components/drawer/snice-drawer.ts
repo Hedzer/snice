@@ -365,6 +365,10 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       document.removeEventListener('keydown', this.boundHandleEscape);
     }
     this.teardownBreakpointListener();
+    // Release body scroll lock if the drawer was open when disconnected
+    if (this.open && !this.contained) {
+      document.body.style.overflow = '';
+    }
   }
 
   // Public API

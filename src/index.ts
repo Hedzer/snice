@@ -33,6 +33,10 @@ export { waitForElementDefined, waitForElementReady, waitForAllCustomElements, s
 // v3.0.0 render debugging utilities (for testing/debugging only)
 export { trackRenders } from './render-debug';
 
+// Shared utilities
+export { parseDuration } from './utils';
+export type { Duration } from './utils';
+
 // v3.0.0 method decorators
 export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTimers, clearMemoizeCache, resetOnce } from './method-decorators';
 

@@ -62,6 +62,7 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
   private getRemaining(): number {
     if (!this.target) return 0;
     const targetDate = new Date(this.target).getTime();
+    if (isNaN(targetDate)) return 0;
     return Math.max(0, targetDate - Date.now());
   }
 

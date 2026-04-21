@@ -1,4 +1,4 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, render, styles, watch, html, css } from 'snice';
 import cssContent from './snice-image.css?inline';
 import type { ImageVariant, ImageSize, ImageFit, SniceImageElement } from './snice-image.types';
 
@@ -141,5 +141,11 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   private handleImageLoad() {
     this.imageError = false;
     this.imageLoaded = true;
+  }
+
+  @watch('src')
+  private onSrcChange() {
+    this.imageLoaded = false;
+    this.imageError = false;
   }
 }

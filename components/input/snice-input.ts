@@ -14,6 +14,25 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
+  /**
+   * Form-associated lifecycle callback: invoked when the containing form is
+   * reset. Clear the value so the visible field matches the form state.
+   */
+  formResetCallback() {
+    this.value = '';
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+  }
+
+  /**
+   * Form-associated lifecycle callback: invoked when the fieldset or form
+   * disables the element.
+   */
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({  })
   type: InputType = 'text';
 

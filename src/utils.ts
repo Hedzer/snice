@@ -115,6 +115,51 @@ export function getAttrName(opts: PropertyOptions, propName: string): string {
 }
 
 /**
+ * Duration helper returned by {@link parseDuration}. Exposes the parsed
+ * value in multiple units without repeated regex parsing at call sites.
+ */
+export interface Duration {
+  milliseconds(): number;
+  seconds(): number;
+  minutes(): number;
+}
+
+/**
+ * Parse a duration string into a unit-aware Duration.
+ * Recognized suffixes: `ms` (milliseconds), `s` (seconds), `m` (minutes),
+ * `h` (hours). Plain numbers with no suffix are treated as milliseconds.
+ * Unparseable input yields a zero-duration.
+ *
+ * @example
+ *   parseDuration('200ms').milliseconds() // 200
+ *   parseDuration('0.4s').milliseconds()  // 400
+ *   parseDuration('0.4s').seconds()       // 0.4
+ */
+export function parseDuration(value: string): Duration {
+  const v = String(value).trim();
+  const num = parseFloat(v);
+  let ms: number;
+  if (isNaN(num)) {
+    ms = 0;
+  } else if (/ms$/i.test(v)) {
+    ms = num;
+  } else if (/s$/i.test(v)) {
+    ms = num * 1000;
+  } else if (/m$/i.test(v)) {
+    ms = num * 60000;
+  } else if (/h$/i.test(v)) {
+    ms = num * 3600000;
+  } else {
+    ms = num;
+  }
+  return {
+    milliseconds: () => ms,
+    seconds: () => ms / 1000,
+    minutes: () => ms / 60000,
+  };
+}
+
+/**
  * Lazy-init a Set on a symbol key
  */
 export function ensureSet<T>(obj: any, sym: symbol): Set<T> {

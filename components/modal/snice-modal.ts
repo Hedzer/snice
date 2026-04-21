@@ -174,23 +174,29 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   private trapFocus(e: KeyboardEvent) {
     if (!this.panel) return;
 
-    const focusableElements = this.panel.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    const focusable = Array.from(focusableElements);
+    const FOCUS_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    // Collect focusables from BOTH the shadow panel AND any slotted (light DOM)
+    // children the consumer puts inside <snice-modal>. The shadow-only query
+    // would miss <input> etc. that users provide as children.
+    const shadowFocusable = Array.from(this.panel.querySelectorAll<HTMLElement>(FOCUS_SELECTOR));
+    const lightFocusable = Array.from(this.querySelectorAll<HTMLElement>(FOCUS_SELECTOR));
+    const focusable = [...shadowFocusable, ...lightFocusable].filter(el => !(el as any).disabled);
+    if (focusable.length === 0) return;
+
     const firstFocusable = focusable[0];
     const lastFocusable = focusable[focusable.length - 1];
 
+    // Active element can be in the shadow root or in light DOM
+    const active = (this.shadowRoot as any)?.activeElement ?? document.activeElement;
+
     if (e.shiftKey) {
-      // Shift + Tab
-      if (document.activeElement === firstFocusable) {
+      if (active === firstFocusable) {
         lastFocusable?.focus();
         e.preventDefault();
       }
     } else {
-      // Tab
-      if (document.activeElement === lastFocusable) {
+      if (active === lastFocusable) {
         firstFocusable?.focus();
         e.preventDefault();
       }
