@@ -1326,7 +1326,7 @@ export class SniceTable extends HTMLElement {
   }
 
 
-  @watch('selector-options')
+  @watch('selectorOptions')
   handleSelectorOptionsChange() {
     // Update CSS class to show/hide selector
     if (this.selectorOptions.length === 0) {
@@ -1356,13 +1356,13 @@ export class SniceTable extends HTMLElement {
     this.renderBody();
   }
 
-  @watch('selected-rows')
+  @watch('selectedRows')
   handleSelectedRowsChange() {
     this.updateRowSelectionState();
     this.updateSelectAllState();
   }
 
-  @watch('current-sort')
+  @watch('currentSort')
   handleSortChange() {
     this.renderHeader();
   }

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Paint = createReactAdapter({
     tagName: 'snice-paint',
-    properties: ["color", "strokeWidth", "minStrokeWidth", "maxStrokeWidth", "controls", "backgroundColor", "colorSelects", "disabled"],
+    properties: ["color", "strokeWidth", "minStrokeWidth", "maxStrokeWidth", "controls", "backgroundColor", "colorSelects", "disabled", "_tool"],
     events: { "color-select": "onColorSelect", "paint-start": "onPaintStart", "paint-end": "onPaintEnd", "paint-clear": "onPaintClear", "paint-undo": "onPaintUndo", "paint-redo": "onPaintRedo" },
     formAssociated: false
 });

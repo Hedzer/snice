@@ -6,6 +6,8 @@ export interface MusicPlayerProps extends SniceBaseProps {
     tracks?: any;
     currentTrackIndex?: any;
     currentTrack?: any;
+    currentTime?: any;
+    duration?: any;
     volume?: any;
     muted?: any;
     shuffle?: any;

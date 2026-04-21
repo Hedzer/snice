@@ -11,6 +11,7 @@ export interface PaintProps extends SniceBaseProps {
     backgroundColor?: any;
     colorSelects?: any;
     disabled?: any;
+    _tool?: any;
     onColorSelect?: (event: any) => void;
     onPaintStart?: (event: any) => void;
     onPaintEnd?: (event: any) => void;

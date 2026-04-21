@@ -16,6 +16,7 @@ export interface KeyValueProps extends SniceBaseProps {
     mode?: any;
     showCopy?: any;
     items?: any;
+    copyFeedback?: any;
     onKvAdd?: (event: any) => void;
     onKvRemove?: (event: any) => void;
     onKvChange?: (event: any) => void;

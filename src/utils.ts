@@ -1,5 +1,5 @@
 import { SimpleArray, PropertyOptions } from './types';
-import { PROPERTY_WATCHERS } from './symbols';
+import { PROPERTY_WATCHERS, PROPERTIES } from './symbols';
 
 /**
  * Detects the type constructor from an initial value
@@ -136,12 +136,24 @@ export function ensureObj(obj: any, sym: symbol): Record<string, any> {
 export function invokeWatchers(instance: any, constructor: any, propName: string, oldValue: any, newValue: any): void {
   const watchers = constructor[PROPERTY_WATCHERS];
   if (!watchers) return;
-  if (watchers.has(propName)) {
-    for (const w of watchers.get(propName)) {
-      try { w.method.call(instance, oldValue, newValue, propName); }
-      catch (e) { console.error(`Error in @watch('${propName}') method ${w.methodName}:`, e); }
+
+  // Look up watchers by the JS property name AND the explicit `attribute:`
+  // name (if declared). Lets `@watch('show-dropdown')` match a property
+  // declared as `@property({ attribute: 'show-dropdown' }) showDropdown`.
+  const keys: string[] = [propName];
+  const propOpts = constructor[PROPERTIES]?.get(propName);
+  const attrName = propOpts && typeof propOpts.attribute === 'string' ? propOpts.attribute : null;
+  if (attrName && attrName !== propName) keys.push(attrName);
+
+  for (const key of keys) {
+    if (watchers.has(key)) {
+      for (const w of watchers.get(key)) {
+        try { w.method.call(instance, oldValue, newValue, propName); }
+        catch (e) { console.error(`Error in @watch('${key}') method ${w.methodName}:`, e); }
+      }
     }
   }
+
   if (watchers.has('*')) {
     for (const w of watchers.get('*')) {
       try { w.method.call(instance, oldValue, newValue, propName); }

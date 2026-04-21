@@ -567,7 +567,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   private scrollSelectedIntoView() {
     const selectedItems = this.shadowRoot?.querySelectorAll('.selector-item--selected');
     selectedItems?.forEach(item => {
-      item.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      item.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
     });
   }
 
