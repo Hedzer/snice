@@ -13,7 +13,9 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
   @property({ type: String, attribute: 'current-track' })
   currentTrack: string = '';
 
+  @property({ type: Number, attribute: false })
   currentTime: number = 0;
+  @property({ type: Number, attribute: false })
   duration: number = 0;
 
   @property({ type: Number })

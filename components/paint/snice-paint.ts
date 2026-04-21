@@ -33,6 +33,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   private _colors: string[] = DEFAULT_COLORS;
   private _customSelectColors: string[] = [];
   private _customSelectUsed: Set<number> = new Set();
+  @property({ attribute: false })
   private _tool: 'pen' | 'eraser' = 'pen';
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;

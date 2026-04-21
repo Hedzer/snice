@@ -57,6 +57,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   private usingSlotMode = false;
 
   /** Copy button feedback state */
+  @property({ type: Boolean, attribute: false })
   private copyFeedback = false;
 
   @dispatch('kv-add', { bubbles: true, composed: true })

@@ -48,11 +48,14 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
   @property({ type: Number, attribute: 'sleep-timer' })
   sleepTimer: number = 0;
 
+  @property({ attribute: false })
   state: PodcastPlayerState = 'stopped';
 
   private audioElement: HTMLAudioElement | null = null;
   private sleepTimerInterval: number | null = null;
+  @property({ type: Number, attribute: false })
   private sleepTimerRemaining: number = 0;
+  @property({ type: Boolean, attribute: false })
   private showVolumeSlider: boolean = false;
 
   @query('.podcast-progress')

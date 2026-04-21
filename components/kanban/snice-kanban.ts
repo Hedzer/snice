@@ -17,7 +17,9 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
   private sourceColumnId: string | number | null = null;
   private dragOverCard: KanbanCard | null = null;
   private dropIndex: number | null = null;
+  @property({ type: Array, attribute: false })
   private labelFilters: string[] = [];
+  @property({ attribute: false })
   private searchQuery: string = '';
 
   @dispatch('kanban-card-move', { bubbles: true, composed: true })
@@ -118,21 +120,15 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
 
   filterByLabels(labels: string[]): void {
     this.labelFilters = labels;
-    // Trigger re-render by reassigning columns
-    this.columns = this.columns;
   }
 
   search(query: string): void {
     this.searchQuery = query.toLowerCase();
-    // Trigger re-render by reassigning columns
-    this.columns = this.columns;
   }
 
   clearFilters(): void {
     this.labelFilters = [];
     this.searchQuery = '';
-    // Trigger re-render by reassigning columns
-    this.columns = this.columns;
   }
 
   private getLabelText(label: string | KanbanLabel): string {

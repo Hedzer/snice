@@ -27,9 +27,13 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   @property() label: string = '';
   @property() name: string = '';
 
+  @property({ attribute: false })
   private inputValue: string = '';
+  @property({ type: Array, attribute: false })
   private filteredSuggestions: string[] = [];
+  @property({ type: Boolean, attribute: false })
   private showSuggestions: boolean = false;
+  @property({ type: Number, attribute: false })
   private highlightedIndex: number = -1;
 
   @query('.tag-input-field')

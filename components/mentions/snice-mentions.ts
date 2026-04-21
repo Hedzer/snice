@@ -32,8 +32,11 @@ export class SniceMentions extends HTMLElement implements SniceMentionsElement {
   @query('.mentions__textarea')
   private textarea?: HTMLTextAreaElement;
 
+  @property({ type: Boolean, attribute: false })
   private showDropdown = false;
+  @property({ type: Array, attribute: false })
   private filteredUsers: MentionUser[] = [];
+  @property({ type: Number, attribute: false })
   private highlightedIndex = -1;
   private queryStart = -1;
   private currentQuery = '';
