@@ -8,6 +8,7 @@ type Args = {
   size?: ChipSize;
   shape?: ChipShape;
   removable?: boolean;
+  selectable?: boolean;
   selected?: boolean;
   disabled?: boolean;
   icon?: string;
@@ -52,6 +53,7 @@ const meta: Meta<Args> = {
     size:     { control: 'select', options: SIZES },
     shape:    { control: 'select', options: SHAPES },
     removable:{ control: 'boolean' },
+    selectable:{ control: 'boolean' },
     selected: { control: 'boolean' },
     disabled: { control: 'boolean' },
     icon:     { control: 'text' },
@@ -66,6 +68,7 @@ const meta: Meta<Args> = {
     if (args.icon     !== undefined) el.setAttribute('icon',    String(args.icon));
     if (args.avatar   !== undefined) el.setAttribute('avatar',  String(args.avatar));
     if (args.removable) el.toggleAttribute('removable', true);
+    if (args.selectable) el.toggleAttribute('selectable', true);
     if (args.selected)  el.toggleAttribute('selected',  true);
     if (args.disabled)  el.toggleAttribute('disabled',  true);
     const wrap = document.createElement('div');
@@ -114,6 +117,16 @@ export const ShapesXVariants: Story = {
   render: () => col(
     ...SHAPES.map(sh => row(...VARIANTS.map(v => makeChip(v, { shape: sh, variant: v })))),
   ),
+};
+
+// h2: Selectable (click to toggle selected state)
+export const Selectable: Story = {
+  render: () => row(...VARIANTS.map(v => makeChip(v.charAt(0).toUpperCase() + v.slice(1), { variant: v, selectable: true }))),
+};
+
+// h2: Selectable + Selected
+export const SelectableSelected: Story = {
+  render: () => row(...VARIANTS.map(v => makeChip(v.charAt(0).toUpperCase() + v.slice(1), { variant: v, selectable: true, selected: true }))),
 };
 
 // h2: Removable

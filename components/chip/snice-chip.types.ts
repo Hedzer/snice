@@ -8,6 +8,7 @@ export interface SniceChipElement extends HTMLElement {
   size: ChipSize;
   shape: ChipShape;
   removable: boolean;
+  selectable: boolean;
   selected: boolean;
   disabled: boolean;
   icon: string;

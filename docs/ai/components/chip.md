@@ -10,6 +10,7 @@ variant: 'default'|'primary'|'success'|'warning'|'error'|'info' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
 shape: 'pill'|'rounded'|'square' = 'pill';
 removable: boolean = false;
+selectable: boolean = false;  // click/keyboard toggles selected; chips are read-only by default
 selected: boolean = false;
 disabled: boolean = false;
 icon: string = '';      // URL, image file, emoji. Use slot for icon fonts.

@@ -2341,7 +2341,8 @@ tiles.addEventListener('tile-click',
           <snice-chip label="Error" variant="error"></snice-chip>
           <snice-chip label="Info" variant="info"></snice-chip>
           <snice-chip label="Removable" removable></snice-chip>
-          <snice-chip label="Selected" variant="primary" selected></snice-chip>
+          <snice-chip label="Selectable" variant="primary" selectable></snice-chip>
+          <snice-chip label="Selected" variant="primary" selectable selected></snice-chip>
           <snice-chip label="Small" size="small" variant="success"></snice-chip>
           <snice-chip label="Large" size="large" variant="warning"></snice-chip>
           <snice-chip label="Pill" shape="pill"></snice-chip>
@@ -2352,9 +2353,14 @@ tiles.addEventListener('tile-click',
           <span class="code-lang">html</span>
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-chip label="React" variant="primary"&gt;&lt;/snice-chip&gt;
 
+&lt;!-- Click-to-toggle selection --&gt;
+&lt;snice-chip label="Filter" selectable&gt;&lt;/snice-chip&gt;
+
+&lt;!-- Pre-selected (still requires selectable to toggle) --&gt;
 &lt;snice-chip
   label="Done"
   variant="success"
+  selectable
   selected
 &gt;&lt;/snice-chip&gt;
 

@@ -262,6 +262,113 @@ describe('snice-chip', () => {
     });
   });
 
+  describe('selectable', () => {
+    it('defaults to non-selectable (selectable=false)', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', { label: 'Test' });
+      expect(chip.selectable).toBe(false);
+    });
+
+    it('does not toggle selected when clicked and not selectable', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', { label: 'Test' });
+      await wait(100);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+
+    it('does not toggle selected on Enter/Space when not selectable', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', { label: 'Test' });
+      await wait(100);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+      chipEl.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+
+    it('toggles selected when clicked and selectable=true', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', {
+        label: 'Test',
+        selectable: true,
+      });
+      await wait(100);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(true);
+      chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+
+    it('toggles selected on Enter/Space when selectable=true', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', {
+        label: 'Test',
+        selectable: true,
+      });
+      await wait(100);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(true);
+      chipEl.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+
+    it('still dispatches chip-click when not selectable', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', { label: 'Test' });
+      await wait(100);
+      let fired = false;
+      (chip as HTMLElement).addEventListener('chip-click', () => { fired = true; });
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(fired).toBe(true);
+    });
+
+    it('programmatic selected still works regardless of selectable', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', {
+        label: 'Test',
+        selected: true,
+      });
+      await wait(200);
+      expect(chip.selected).toBe(true);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      expect(chipEl.classList.contains('chip--selected')).toBe(true);
+    });
+
+    it('removable + selectable: remove-button click does not toggle selected', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', {
+        label: 'Test',
+        selectable: true,
+        removable: true,
+      });
+      await wait(200);
+      const removeBtn = queryShadow(chip as HTMLElement, '.chip-remove') as HTMLElement;
+      expect(removeBtn).toBeTruthy();
+      removeBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+
+    it('removable overrides selectable for click toggle (removable primary action)', async () => {
+      chip = await createComponent<SniceChipElement>('snice-chip', {
+        label: 'Test',
+        selectable: true,
+        removable: true,
+      });
+      await wait(200);
+      const chipEl = queryShadow(chip as HTMLElement, '.chip') as HTMLElement;
+      chipEl.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await wait(20);
+      expect(chip.selected).toBe(false);
+    });
+  });
+
   describe('disabled state', () => {
     it('should apply disabled attribute', async () => {
       chip = await createComponent<SniceChipElement>('snice-chip', {

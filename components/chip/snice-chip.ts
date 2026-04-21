@@ -21,6 +21,9 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   removable = false;
 
   @property({ type: Boolean,  })
+  selectable = false;
+
+  @property({ type: Boolean,  })
   selected = false;
 
   @property({ type: Boolean,  })
@@ -98,7 +101,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     const target = event.target as HTMLElement;
     if (target.closest('.chip-remove')) return;
 
-    if (!this.removable) {
+    if (this.selectable && !this.removable) {
       this.selected = !this.selected;
     }
 
@@ -116,8 +119,10 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      if (!this.removable) {
+      if (this.selectable && !this.removable) {
         this.selected = !this.selected;
+        this.dispatchChipClick();
+      } else if (!this.removable) {
         this.dispatchChipClick();
       }
     } else if ((event.key === 'Delete' || event.key === 'Backspace') && this.removable) {

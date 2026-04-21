@@ -22,7 +22,8 @@ Compact elements for tags, filters, selections, or categorizations. Supports ico
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Chip size |
 | `shape` | `'pill' \| 'rounded' \| 'square'` | `'pill'` | Chip shape (fully round, rounded rectangle, or rectangle) |
 | `removable` | `boolean` | `false` | Show remove button |
-| `selected` | `boolean` | `false` | Show selected state |
+| `selectable` | `boolean` | `false` | Allow click/keyboard to toggle `selected`. Chips are read-only by default |
+| `selected` | `boolean` | `false` | Selected state (set programmatically, or toggled when `selectable`) |
 | `disabled` | `boolean` | `false` | Disable the chip |
 | `icon` | `string` | `''` | Icon (URL, image file, emoji). Use slot for icon fonts. |
 | `avatar` | `string` | `''` | Avatar image URL |
@@ -90,6 +91,23 @@ Use the `shape` attribute to change the chip corner style.
 <snice-chip label="Rounded" shape="rounded"></snice-chip>
 <snice-chip label="Square" shape="square"></snice-chip>
 ```
+
+### Selectable Chips
+
+Chips are **read-only by default** — clicks fire `chip-click` events but do not change the `selected` state. Add the `selectable` attribute to opt into click/keyboard toggling.
+
+```html
+<!-- Read-only (clicks fire chip-click, selected does not toggle) -->
+<snice-chip label="Tag"></snice-chip>
+
+<!-- Click/Enter/Space toggles selected -->
+<snice-chip label="Filter" selectable></snice-chip>
+
+<!-- Pre-selected, still togglable -->
+<snice-chip label="Active" selectable selected></snice-chip>
+```
+
+The `selected` property/attribute can always be set programmatically to reflect external state. `selectable` only governs whether user interaction toggles it.
 
 ### Removable Chips
 

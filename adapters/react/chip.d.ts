@@ -8,6 +8,7 @@ export interface ChipProps extends SniceBaseProps {
     size?: any;
     shape?: any;
     removable?: any;
+    selectable?: any;
     selected?: any;
     disabled?: any;
     icon?: any;
