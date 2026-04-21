@@ -289,7 +289,7 @@ function prepareTemplate(result: TemplateResult): Template {
           } else if (char === '=') {
             // Extract attribute name (look backwards for it)
             let attrStart = j - 1;
-            while (attrStart >= 0 && /[\w\-\.@\?]/.test(str[attrStart])) {
+            while (attrStart >= 0 && /[\w\-\.@\?:\+]/.test(str[attrStart])) {
               attrStart--;
             }
             currentAttrName = str.substring(attrStart + 1, j).trim();
@@ -316,7 +316,7 @@ function prepareTemplate(result: TemplateResult): Template {
         if (trimmed.endsWith('=')) {
           // Extract attribute name
           let attrStart = trimmed.length - 2;
-          while (attrStart >= 0 && /[\w\-\.@\?\/]/.test(trimmed[attrStart])) {
+          while (attrStart >= 0 && /[\w\-\.@\?\/:\+]/.test(trimmed[attrStart])) {
             attrStart--;
           }
           currentAttrName = trimmed.substring(attrStart + 1, trimmed.length - 1).trim();

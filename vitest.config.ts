@@ -2,6 +2,12 @@ import { defineConfig } from 'vitest/config';
 import swc from 'unplugin-swc';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      'snice/transitions': new URL('./src/transitions.ts', import.meta.url).pathname,
+      'snice': new URL('./src/index.ts', import.meta.url).pathname,
+    },
+  },
   plugins: [
     swc.vite({
       jsc: {
