@@ -1,3 +1,10 @@
+## [4.38.1](https://github.com/Hedzer/snice/compare/v4.38.0...v4.38.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* resolve property-setter race condition and template attribute parsing bugs ([f4f8ae6](https://github.com/Hedzer/snice/commit/f4f8ae620b8077665d8f816a1a4634fbebb0203c))
+
 # [4.38.0](https://github.com/Hedzer/snice/compare/v4.37.0...v4.38.0) (2026-04-17)
 
 ### Bug Fixes
