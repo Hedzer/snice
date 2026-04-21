@@ -18,6 +18,7 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
     let debounceTimeout: any;
     let throttleLastCall = 0;
     let throttleTimeout: any;
+    const throttleTrailingResolvers: Array<{ resolve: (v: any) => void; reject: (e: any) => void }> = [];
 
     return async function (this: any, ...args: any[]) {
       const actualRequest = async () => {
@@ -133,16 +134,26 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
         return actualRequest();
       }
 
-      // Throttle: already has pending timeout
-      if (throttleTimeout) return Promise.resolve();
+      // Throttle: already has pending trailing call — attach to it
+      if (throttleTimeout) {
+        return new Promise((resolve, reject) => {
+          throttleTrailingResolvers.push({ resolve, reject });
+        });
+      }
 
       // Throttle: schedule trailing call
       return new Promise((resolve, reject) => {
+        throttleTrailingResolvers.push({ resolve, reject });
         throttleTimeout = setTimeout(async () => {
           throttleLastCall = Date.now();
           throttleTimeout = null;
-          try { resolve(await actualRequest()); }
-          catch (error) { reject(error); }
+          const resolvers = throttleTrailingResolvers.splice(0);
+          try {
+            const result = await actualRequest();
+            for (const r of resolvers) r.resolve(result);
+          } catch (error) {
+            for (const r of resolvers) r.reject(error);
+          }
         }, remaining);
       });
     };

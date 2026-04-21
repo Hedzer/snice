@@ -285,7 +285,7 @@ export function useNativeElementControllers() {
             // Process the node itself
             processElement(node);
             // Process all descendants with controller attribute
-            node.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
+            node.querySelectorAll('[controller]').forEach(processElement);
           }
         });
       }
@@ -293,7 +293,7 @@ export function useNativeElementControllers() {
   });
 
   function startObserving() {
-    document.querySelectorAll('[controller]:not([class*="-"])').forEach(processElement);
+    document.querySelectorAll('[controller]').forEach(processElement);
     observer.observe(document.body, {
       attributes: true,
       attributeFilter: ['controller'],

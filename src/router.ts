@@ -445,11 +445,15 @@ export function Router(options: RouterOptions): RouterInstance {
    * @example
    * navigate('/login');
    */
+  let navGeneration = 0;
   async function navigate(path: string): Promise<void> {
     const target = doc.querySelector(options.target);
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
+
+    const myGen = ++navGeneration;
+    const stale = () => myGen !== navGeneration;
 
     collectPlacards();
     win.scrollTo(0, 0);
@@ -459,6 +463,7 @@ export function Router(options: RouterOptions): RouterInstance {
     if (isHomePath) {
       const homeRoute = routes.find(r => r.route.match('/'));
       if (!(await checkGuards(homeRoute?.guards, {}, target))) return;
+      if (stale()) return;
       const { element, transition, layout } = createHomeElement();
       await renderPage(target, element, transition, layout, path, {});
       return;
@@ -469,6 +474,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
     // Resolve route
     const routeResult = await resolveRoute(path, target);
+    if (stale()) return;
 
     // Guards failed (403 already rendered by checkGuards)
     if (routeResult.result === RouteResult.GUARDS_FAILED) return;

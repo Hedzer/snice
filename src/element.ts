@@ -9,6 +9,7 @@ import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE,
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
+import { clearDebounceTimers, clearThrottleTimers } from './method-decorators';
 import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
@@ -308,6 +309,9 @@ export function applyElementFunctionality(constructor: any) {
       cleanupContextHandler(this);
       // Cleanup @observe observers
       cleanupObservers(this);
+      // Cleanup pending @debounce / @throttle timers so they don't fire on a dead element
+      clearDebounceTimers(this);
+      clearThrottleTimers(this);
     };
     
     constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string, newValue: string) {

@@ -11,10 +11,13 @@ export type { Transition };
 /**
  * Parse CSS property string into an object
  */
-function parseStyles(styleString: string): Record<string, string> {
+export function parseStyles(styleString: string): Record<string, string> {
   const styles: Record<string, string> = {};
   styleString.split(';').forEach(rule => {
-    const [prop, value] = rule.split(':').map(s => s.trim());
+    const idx = rule.indexOf(':');
+    if (idx === -1) return;
+    const prop = rule.slice(0, idx).trim();
+    const value = rule.slice(idx + 1).trim();
     if (prop && value) {
       styles[prop] = value;
     }

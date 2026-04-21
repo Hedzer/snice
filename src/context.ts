@@ -109,17 +109,25 @@ export function setupContextHandler(element: HTMLElement) {
         }
       };
 
+      // Per-handler timer slot to avoid debounce/throttle handlers on the same
+      // element overwriting each other's state.
+      const timerSlot = (element as any)[CONTEXT_TIMER] ||
+        ((element as any)[CONTEXT_TIMER] = {} as Record<string, any>);
+      const timerKey = methodName;
+
       if (options.debounce) {
-        clearTimeout((element as any)[CONTEXT_TIMER]);
-        (element as any)[CONTEXT_TIMER] = setTimeout(callMethod, options.debounce);
+        clearTimeout(timerSlot[timerKey]?.timeout);
+        timerSlot[timerKey] = {
+          timeout: setTimeout(callMethod, options.debounce),
+        };
         return;
       }
 
       if (options.throttle) {
         const now = Date.now();
-        const lastCall = (element as any)[CONTEXT_TIMER] || 0;
+        const lastCall = timerSlot[timerKey]?.lastCall || 0;
         if (now - lastCall >= options.throttle) {
-          (element as any)[CONTEXT_TIMER] = now;
+          timerSlot[timerKey] = { lastCall: now };
           callMethod();
         }
         return;
@@ -145,12 +153,16 @@ export function cleanupContextHandler(element: HTMLElement) {
     return;
   }
 
-  // Clear any pending debounce timer
-  for (const handler of handlers) {
-    if ((element as any)[CONTEXT_TIMER]) {
-      clearTimeout((element as any)[CONTEXT_TIMER]);
-      delete (element as any)[CONTEXT_TIMER];
+  // Clear any pending debounce timers (per-handler slots)
+  const timerSlot = (element as any)[CONTEXT_TIMER];
+  if (timerSlot && typeof timerSlot === 'object') {
+    for (const key of Object.keys(timerSlot)) {
+      if (timerSlot[key]?.timeout) clearTimeout(timerSlot[key].timeout);
     }
+    delete (element as any)[CONTEXT_TIMER];
+  }
+
+  for (const handler of handlers) {
 
     // Clean up wrapped method
     const wrappedMethodName = `__wrapped_${handler.methodName}`;
