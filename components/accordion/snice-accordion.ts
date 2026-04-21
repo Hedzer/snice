@@ -1,4 +1,4 @@
-import { element, property, ready, queryAll, render, styles, html, css as cssTag } from 'snice';
+import { element, property, ready, dispose, queryAll, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-accordion.css?inline';
 import type { SniceAccordionElement, SniceAccordionItemElement, AccordionOpenEvent, AccordionCloseEvent } from './snice-accordion.types';
 
@@ -56,9 +56,16 @@ export class SniceAccordion extends HTMLElement implements SniceAccordionElement
     this.updateItems();
 
     // Listen for accordion-item-toggle events
-    this.addEventListener('accordion-item-toggle', (e: Event) => {
-      this.handleItemToggle(e as CustomEvent<{ itemId: string; open: boolean }>);
-    });
+    this.addEventListener('accordion-item-toggle', this.onItemToggle);
+  }
+
+  private onItemToggle = (e: Event) => {
+    this.handleItemToggle(e as CustomEvent<{ itemId: string; open: boolean }>);
+  };
+
+  @dispose()
+  cleanup() {
+    this.removeEventListener('accordion-item-toggle', this.onItemToggle);
   }
 
   private updateItems() {

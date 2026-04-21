@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-range-picker.css?inline';
 import type {
   DateRangePickerSize,
@@ -787,13 +787,19 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     }
   }
 
+  private clickOutsideHandler = (e: MouseEvent) => {
+    if (!this.showCalendar) return;
+    if (e.composedPath().includes(this)) return;
+    this.close();
+  };
+
   private setupClickOutside() {
-    document.addEventListener('click', (e) => {
-      if (!this.showCalendar) return;
-      const path = e.composedPath();
-      if (path.includes(this)) return;
-      this.close();
-    });
+    document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @dispose()
+  private cleanupClickOutside() {
+    document.removeEventListener('click', this.clickOutsideHandler);
   }
 
   // --- Watchers ---

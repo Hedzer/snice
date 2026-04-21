@@ -261,12 +261,15 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     } else {
       // Direct event handling - on the element itself
       // If element has shadow root, listen on both shadow root AND host element
-      // to catch events from inside shadow DOM (with correct target) and on host itself
+      // to catch events from inside shadow DOM (with correct target) and on host itself.
       const shadowRoot = (targetElement as any).shadowRoot;
-      // Use Symbol.for() with method name to ensure symbols are shared across Snice instances
-      // Method names are unique within a class, so this prevents double-firing of the same handler
-      // while allowing multiple different handlers on the same event
-      const handledSymbol = Symbol.for(`snice:event-handled:${handler.methodName}`);
+      // Per-handler private Symbol so dedup is scoped to THIS handler's two
+      // listeners (shadowRoot + host). Using Symbol.for() with the method name
+      // would collide across components that share a method name (e.g. a parent
+      // and nested child both defining `handleClick`), causing the parent's
+      // handler to be silently swallowed when events bubble up through a
+      // shadow boundary.
+      const handledSymbol = Symbol();
 
       const wrappedMethod = (event: Event) => {
         if ((event as any)[handledSymbol]) return;

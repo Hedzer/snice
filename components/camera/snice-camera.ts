@@ -5,7 +5,7 @@ import cameraStyles from './snice-camera.css?inline';
 @element('snice-camera')
 export class SniceCamera extends HTMLElement implements SniceCameraElement {
   @property({ type: Boolean, attribute: 'auto-start' })
-  autoStart: boolean = true;
+  autoStart: boolean = false;
 
   @property({ type: String, attribute: 'facing-mode' })
   facingMode: CameraFacingMode = 'user';

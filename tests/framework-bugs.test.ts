@@ -12,7 +12,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 // ---------------------------------------------------------------------------
 
 describe('@on: same method name across nested components does not collide', () => {
-  it.fails('parent and child both have @on(click) handleClick; clicking inside child fires both', async () => {
+  it('parent and child both have @on(click) handleClick; clicking inside child fires both', async () => {
     const calls: string[] = [];
 
     @element('on-collide-child')
@@ -80,7 +80,7 @@ describe('document listeners are removed on disconnect', () => {
       .length;
   }
 
-  it.fails('cropper: document mousemove/mouseup listeners are removed on disconnect', async () => {
+  it('cropper: document mousemove/mouseup listeners are removed on disconnect', async () => {
     await import('../components/cropper/snice-cropper');
     const el = document.createElement('snice-cropper') as any;
     document.body.appendChild(el);
@@ -93,7 +93,7 @@ describe('document listeners are removed on disconnect', () => {
     expect(leftover('mouseup')).toBe(0);
   });
 
-  it.fails('date-picker: document click listener is removed on disconnect', async () => {
+  it('date-picker: document click listener is removed on disconnect', async () => {
     await import('../components/date-picker/snice-date-picker');
     const el = document.createElement('snice-date-picker') as any;
     document.body.appendChild(el);
@@ -105,7 +105,7 @@ describe('document listeners are removed on disconnect', () => {
     expect(leftover('click')).toBe(0);
   });
 
-  it.fails('tag-input: document click listener is removed on disconnect', async () => {
+  it('tag-input: document click listener is removed on disconnect', async () => {
     await import('../components/tag-input/snice-tag-input');
     const el = document.createElement('snice-tag-input') as any;
     document.body.appendChild(el);
@@ -123,7 +123,7 @@ describe('document listeners are removed on disconnect', () => {
 // ---------------------------------------------------------------------------
 
 describe('terminal: user input is not rendered as raw HTML', () => {
-  it.fails('typing an HTML tag at the prompt renders it as text, not an element', async () => {
+  it('typing an HTML tag at the prompt renders it as text, not an element', async () => {
     await import('../components/terminal/snice-terminal');
     const el = document.createElement('snice-terminal') as any;
     document.body.appendChild(el);
@@ -170,7 +170,7 @@ describe('camera: does not auto-request getUserMedia on default mount', () => {
     });
   });
 
-  it.fails('default <snice-camera> does not call getUserMedia on connect', async () => {
+  it('default <snice-camera> does not call getUserMedia on connect', async () => {
     await import('../components/camera/snice-camera');
     const el = document.createElement('snice-camera') as any;
     document.body.appendChild(el);

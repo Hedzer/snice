@@ -9,6 +9,7 @@ import type { SniceBaseProps } from './types';
  */
 export interface CameraAnnotateProps extends SniceBaseProps {
   mode?: any;
+  autoStart?: any;
   autoRotateColors?: any;
   showLabelsPanel?: any;
   onCapture?: (event: any) => void;
@@ -34,7 +35,7 @@ export interface CameraAnnotateProps extends SniceBaseProps {
  */
 export const CameraAnnotate = createReactAdapter<CameraAnnotateProps>({
   tagName: 'snice-camera-annotate',
-  properties: ["mode","autoRotateColors","showLabelsPanel"],
+  properties: ["mode","autoStart","autoRotateColors","showLabelsPanel"],
   events: {"capture":"onCapture","annotate":"onAnnotate","annotation-change":"onAnnotationChange"},
   formAssociated: false
 });

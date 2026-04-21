@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, query, html, css } from 'snice';
+import { element, property, render, styles, dispatch, dispose, watch, query, html, css } from 'snice';
 import type { GanttZoom, GanttTask, SniceGanttElement } from './snice-gantt.types';
 import ganttStyles from './snice-gantt.css?inline';
 
@@ -256,6 +256,9 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
 
   // --- Drag handlers ---
 
+  private dragMouseMove: ((e: MouseEvent) => void) | null = null;
+  private dragMouseUp: (() => void) | null = null;
+
   private handleBarMouseDown(e: MouseEvent, task: GanttTask, type: 'move' | 'resize-left' | 'resize-right'): void {
     e.preventDefault();
     this.dragState = {
@@ -266,15 +269,30 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
       origEnd: task.end,
     };
 
-    const onMouseMove = (ev: MouseEvent) => this.handleDragMove(ev);
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    this.dragMouseMove = (ev: MouseEvent) => this.handleDragMove(ev);
+    this.dragMouseUp = () => {
+      this.teardownDrag();
       this.handleDragEnd();
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', this.dragMouseMove);
+    document.addEventListener('mouseup', this.dragMouseUp);
+  }
+
+  private teardownDrag() {
+    if (this.dragMouseMove) {
+      document.removeEventListener('mousemove', this.dragMouseMove);
+      this.dragMouseMove = null;
+    }
+    if (this.dragMouseUp) {
+      document.removeEventListener('mouseup', this.dragMouseUp);
+      this.dragMouseUp = null;
+    }
+  }
+
+  @dispose()
+  private cleanupDrag() {
+    this.teardownDrag();
   }
 
   private handleDragMove(e: MouseEvent): void {

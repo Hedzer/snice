@@ -261,7 +261,8 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   }
 
 
-  // ANSI color parsing
+  // ANSI color parsing. Escapes HTML first so untrusted input cannot inject
+  // markup; only the ANSI escape sequences produce real <span> tags.
   private parseAnsiColors(text: string): string {
     const ansiColorMap: Record<number, string> = {
       30: '#000000', // Black
@@ -282,24 +283,36 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
       97: '#ffffff'  // Bright White
     };
 
-    // Replace ANSI escape sequences with HTML spans
-    return text.replace(/\x1b\[([0-9;]+)m/g, (match, codes) => {
-      const codeList = codes.split(';').map(Number);
+    const escape = (s: string) => s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
-      // Handle reset code
+    // Split on ANSI escape sequences, escape text segments, pass through
+    // recognized color/reset codes as <span> tags.
+    const parts: string[] = [];
+    const re = /\x1b\[([0-9;]+)m/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(text)) !== null) {
+      parts.push(escape(text.slice(lastIndex, match.index)));
+      const codeList = match[1].split(';').map(Number);
       if (codeList.includes(0)) {
-        return '</span>';
-      }
-
-      // Handle color codes
-      for (const code of codeList) {
-        if (ansiColorMap[code]) {
-          return `<span style="color: ${ansiColorMap[code]}">`;
+        parts.push('</span>');
+      } else {
+        for (const code of codeList) {
+          if (ansiColorMap[code]) {
+            parts.push(`<span style="color: ${ansiColorMap[code]}">`);
+            break;
+          }
         }
       }
-
-      return '';
-    });
+      lastIndex = match.index + match[0].length;
+    }
+    parts.push(escape(text.slice(lastIndex)));
+    return parts.join('');
   }
 
   // Public API

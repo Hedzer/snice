@@ -13,6 +13,9 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
   @property()
   mode: CameraAnnotateMode = 'camera';
 
+  @property({ type: Boolean, attribute: 'auto-start' })
+  autoStart: boolean = false;
+
   @property({ type: Boolean, attribute: 'auto-rotate-colors' })
   autoRotateColors: boolean = true;
 
@@ -51,7 +54,7 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
 
   @ready()
   async init() {
-    if (this.mode === 'camera') {
+    if (this.autoStart && this.mode === 'camera') {
       await this.startCamera();
     }
   }

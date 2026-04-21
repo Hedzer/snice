@@ -4,6 +4,7 @@ import type { SniceBaseProps } from './types';
  */
 export interface CameraAnnotateProps extends SniceBaseProps {
     mode?: any;
+    autoStart?: any;
     autoRotateColors?: any;
     showLabelsPanel?: any;
     onCapture?: (event: any) => void;

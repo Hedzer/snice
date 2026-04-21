@@ -1,4 +1,4 @@
-import { element, property, query, dispatch, ready, render, styles, watch, html, css as cssTag } from 'snice';
+import { element, property, query, dispatch, ready, dispose, render, styles, watch, html, css as cssTag } from 'snice';
 import cssContent from './snice-cropper.css?inline';
 import type { CropperOutputType, CropRect, SniceCropperElement } from './snice-cropper.types';
 
@@ -48,6 +48,12 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
   init() {
     document.addEventListener('mousemove', this.onMouseMove);
     document.addEventListener('mouseup', this.onMouseUp);
+  }
+
+  @dispose()
+  cleanup() {
+    document.removeEventListener('mousemove', this.onMouseMove);
+    document.removeEventListener('mouseup', this.onMouseUp);
   }
 
   @watch('src')

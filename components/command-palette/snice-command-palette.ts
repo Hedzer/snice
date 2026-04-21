@@ -45,12 +45,14 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
   private recentCommands: string[] = [];
   private commandMap = new Map<string, CommandItem>();
 
+  private boundKeydown = this.handleGlobalKeydown.bind(this);
+
   connectedCallback() {
-    this.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
+    this.addEventListener('keydown', this.boundKeydown);
   }
 
   disconnectedCallback() {
-    this.removeEventListener('keydown', this.handleGlobalKeydown.bind(this));
+    this.removeEventListener('keydown', this.boundKeydown);
   }
 
   @ready()

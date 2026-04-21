@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 
@@ -533,12 +533,19 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.render();
   }
 
+  private clickOutsideHandler = (e: MouseEvent) => {
+    if (!this.showCalendar) return;
+    if (e.composedPath().includes(this)) return;
+    this.close();
+  };
+
   private setupCalendarClickOutside() {
-    document.addEventListener('click', (e) => {
-      if (!this.showCalendar) return;
-      if (e.composedPath().includes(this)) return;
-      this.close();
-    });
+    document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @dispose()
+  private cleanupClickOutside() {
+    document.removeEventListener('click', this.clickOutsideHandler);
   }
 
   private handleInput(e: Event) {

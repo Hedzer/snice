@@ -88,6 +88,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     this.clearTimeouts();
     window.removeEventListener('scroll', this.scrollHandler, { capture: true } as EventListenerOptions);
     window.removeEventListener('resize', this.scrollHandler);
+    document.removeEventListener('click', this.handleClickOutside);
     cancelAnimationFrame(this.rafId);
     if (this.portalElement) {
       this.portalElement.remove();

@@ -1,4 +1,4 @@
-import { element, property, styles, dispatch, ready, watch, css } from 'snice';
+import { element, property, styles, dispatch, ready, dispose, watch, css } from 'snice';
 import type { SniceAvailabilityElement, AvailabilityFormat, AvailabilityRange } from './snice-availability.types';
 import cssContent from './snice-availability.css?inline';
 
@@ -27,6 +27,24 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
   private isDragging = false;
   private dragMode: 'add' | 'remove' = 'add';
   private dragStartCell: string | null = null;
+  private mouseUpAttached = false;
+
+  private handleMouseUp = () => {
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.dragStartCell = null;
+      this.syncToValue();
+      this.emitChange();
+    }
+  };
+
+  @dispose()
+  private cleanupMouseUp() {
+    if (this.mouseUpAttached) {
+      document.removeEventListener('mouseup', this.handleMouseUp);
+      this.mouseUpAttached = false;
+    }
+  }
 
   @dispatch('availability-change', { bubbles: true, composed: true })
   private emitChange() {
@@ -216,20 +234,10 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
     gridWrapper.appendChild(grid);
     this.container.appendChild(gridWrapper);
 
-    // Mouse up listener
-    if (!this.readonly) {
-      const onMouseUp = () => {
-        if (this.isDragging) {
-          this.isDragging = false;
-          this.dragStartCell = null;
-          this.syncToValue();
-          this.emitChange();
-        }
-      };
-
-      // Remove previous listener if exists
-      document.removeEventListener('mouseup', onMouseUp);
-      document.addEventListener('mouseup', onMouseUp);
+    // Mouse up listener (attached once per instance; re-wired via @ready + @dispose)
+    if (!this.readonly && !this.mouseUpAttached) {
+      document.addEventListener('mouseup', this.handleMouseUp);
+      this.mouseUpAttached = true;
     }
 
     // Footer

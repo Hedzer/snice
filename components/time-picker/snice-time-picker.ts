@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-time-picker.css?inline';
 import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize, SniceTimePickerElement } from './snice-time-picker.types';
 
@@ -505,12 +505,19 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     }
   }
 
+  private clickOutsideHandler = (e: MouseEvent) => {
+    if (!this.showDropdown) return;
+    if (e.composedPath().includes(this)) return;
+    this.close();
+  };
+
   private setupClickOutside() {
-    document.addEventListener('click', (e) => {
-      if (!this.showDropdown) return;
-      if (e.composedPath().includes(this)) return;
-      this.close();
-    });
+    document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @dispose()
+  private cleanupClickOutside() {
+    document.removeEventListener('click', this.clickOutsideHandler);
   }
 
   @watch('value')
