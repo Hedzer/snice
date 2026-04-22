@@ -2,9 +2,28 @@ import { element, property, query, on, watch, dispatch, ready, render, styles, h
 import cssContent from './snice-radio.css?inline';
 import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 
-@element('snice-radio')
+@element('snice-radio', { formAssociated: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
+  internals!: ElementInternals;
   private _isUpdatingGroup = false;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.checked = false;
+    if (this.internals) {
+      this.internals.setFormValue(null);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
 
   @property({ type: Boolean,  })
   checked = false;

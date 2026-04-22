@@ -2,8 +2,29 @@ import { element, property, query, watch, dispatch, ready, dispose, render, styl
 import cssContent from './snice-range-slider.css?inline';
 import type { RangeSliderOrientation, SniceRangeSliderElement } from './snice-range-slider.types';
 
-@element('snice-range-slider')
+@element('snice-range-slider', { formAssociated: true })
 export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.valueLow = this.min;
+    this.valueHigh = this.max;
+    if (this.internals) {
+      this.internals.setFormValue(`${this.valueLow},${this.valueHigh}`);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Number })
   min = 0;
 

@@ -2,8 +2,28 @@ import { element, property, query, watch, render, styles, html, css, ready, on }
 import cssContent from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 
-@element('snice-checkbox')
+@element('snice-checkbox', { formAssociated: true })
 export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.checked = false;
+    if (this.internals) {
+      this.internals.setFormValue(null);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Boolean,  })
   checked = false;
 

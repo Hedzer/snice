@@ -13,6 +13,18 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     }
   }
 
+  formResetCallback() {
+    this.selectedFiles = [];
+    if (this.input) this.input.value = '';
+    if (this.internals) {
+      this.internals.setFormValue('');
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({  })
   size: FileUploadSize = 'medium';
 

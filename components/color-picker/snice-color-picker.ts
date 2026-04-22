@@ -13,6 +13,17 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     }
   }
 
+  formResetCallback() {
+    this.value = '';
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({  })
   size: ColorPickerSize = 'medium';
 

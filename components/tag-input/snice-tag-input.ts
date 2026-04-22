@@ -2,8 +2,28 @@ import { element, property, render, styles, dispatch, ready, dispose, watch, que
 import type { SniceTagInputElement } from './snice-tag-input.types';
 import tagInputStyles from './snice-tag-input.css?inline';
 
-@element('snice-tag-input')
+@element('snice-tag-input', { formAssociated: true })
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.value = [];
+    if (this.internals) {
+      this.internals.setFormValue('');
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Array, attribute: false })
   value: string[] = [];
 

@@ -2,8 +2,28 @@ import { element, property, query, watch, dispatch, ready, render, styles, html,
 import cssContent from './snice-step-input.css?inline';
 import type { StepInputSize, SniceStepInputElement } from './snice-step-input.types';
 
-@element('snice-step-input')
+@element('snice-step-input', { formAssociated: true })
 export class SniceStepInput extends HTMLElement implements SniceStepInputElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.value = isFinite(this.min) ? this.min : 0;
+    if (this.internals) {
+      this.internals.setFormValue(String(this.value));
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Number })
   value = 0;
 

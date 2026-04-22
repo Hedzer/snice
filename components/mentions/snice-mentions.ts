@@ -12,8 +12,28 @@ import type {
 /** Mention marker format: @[Name](id) */
 const MENTION_REGEX = /@\[([^\]]+)\]\(([^)]+)\)/g;
 
-@element('snice-mentions')
+@element('snice-mentions', { formAssociated: true })
 export class SniceMentions extends HTMLElement implements SniceMentionsElement {
+  internals!: ElementInternals;
+
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  formResetCallback() {
+    this.value = '';
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property()
   value = '';
 
