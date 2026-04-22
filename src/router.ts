@@ -495,9 +495,14 @@ export function Router(options: RouterOptions): RouterInstance {
     container: Element,
     oldElement: HTMLElement,
     newElement: HTMLElement,
-    transition: Transition
+    transition: Transition,
+    atGen: number = navGeneration
   ): Promise<void> {
-    return performTransitionUtil(container, oldElement, newElement, transition);
+    // `isStale` returns true when a newer navigate() has been kicked off.
+    // The transition util checks this at each async boundary and bails so
+    // we don't remove an element the newer transition now owns.
+    const isStale = () => atGen !== navGeneration;
+    return performTransitionUtil(container, oldElement, newElement, transition, isStale);
   }
 
   return {

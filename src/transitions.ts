@@ -66,7 +66,13 @@ export async function performTransition(
   container: Element,
   oldElement: HTMLElement,
   newElement: HTMLElement,
-  transition: Transition = {}
+  transition: Transition = {},
+  /**
+   * Called at each async boundary — if it returns true, this transition has
+   * been superseded by a newer navigation. We abort cleanup so we don't tear
+   * down elements now owned by the newer transition.
+   */
+  isStale: () => boolean = () => false,
 ): Promise<void> {
   const outDuration = transition.outDuration || 300;
   const inDuration = transition.inDuration || 300;
@@ -102,9 +108,18 @@ export async function performTransition(
     case TransitionMode.SEQUENTIAL:
       Object.assign(oldElement.style, outStyles);
       await new Promise(resolve => setTimeout(resolve, outDuration));
+      if (isStale()) { if (newElement.parentNode === container) newElement.remove(); return; }
       Object.assign(newElement.style, inEndStyles);
       await new Promise(resolve => setTimeout(resolve, inDuration));
       break;
+  }
+
+  if (isStale()) {
+    // A newer navigation took over while we were animating. Don't touch
+    // oldElement (the newer transition owns it now) and remove OUR newElement
+    // since the newer transition appended its own.
+    if (newElement.parentNode === container) newElement.remove();
+    return;
   }
 
   // Cleanup
