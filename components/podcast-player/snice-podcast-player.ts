@@ -221,13 +221,13 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             <button
               class="podcast-btn podcast-btn-speed ${rateIsNotOne ? 'active' : ''}"
               @click=${() => this.cyclePlaybackRate()}
-              title="Playback speed"
+              aria-label="Playback speed"              title="Playback speed"
             >${this.playbackRate}x</button>
 
             <button
               class="podcast-btn"
               @click=${() => this.doSkipBack()}
-              title="Skip back ${this.skipBack}s"
+              aria-label="Skip back ${this.skipBack}s"              title="Skip back ${this.skipBack}s"
               ?disabled=${!hasSource}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -240,7 +240,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             <button
               class="podcast-btn podcast-btn-play"
               @click=${() => this.toggle()}
-              title="${isPlaying ? 'Pause' : 'Play'}"
+              aria-label="${isPlaying ? 'Pause' : 'Play'}"              title="${isPlaying ? 'Pause' : 'Play'}"
               ?disabled=${!hasSource}
             >
               <if ${isPlaying}>
@@ -259,7 +259,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             <button
               class="podcast-btn"
               @click=${() => this.doSkipForward()}
-              title="Skip forward ${this.skipForward}s"
+              aria-label="Skip forward ${this.skipForward}s"              title="Skip forward ${this.skipForward}s"
               ?disabled=${!hasSource}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -272,7 +272,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             <button
               class="podcast-btn podcast-btn-sleep ${hasSleepTimer ? 'active' : ''}"
               @click=${() => this.cycleSleepTimer()}
-              title="Sleep timer"
+              aria-label="Sleep timer"              title="Sleep timer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -294,7 +294,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
             <button
               class="podcast-btn"
               @click=${() => this.toggleVolumeSlider()}
-              title="Volume"
+              aria-label="Volume"              title="Volume"
             >
               <if ${isMutedOrZero}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

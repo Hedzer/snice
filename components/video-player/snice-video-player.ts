@@ -512,7 +512,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
 
             <div class="video-controls-row">
               <div class="video-controls-left">
-                <button class="video-btn video-btn-play" @click=${() => this.toggle()} title="${isPlaying ? 'Pause' : 'Play'}">
+                <button class="video-btn video-btn-play" @click=${() => this.toggle()} aria-label="${isPlaying ? "Pause" : "Play"}" title="${isPlaying ? "Pause" : "Play"}">
                   <if ${isPlaying}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                       <rect x="6" y="4" width="4" height="16"></rect>
@@ -527,7 +527,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
                 </button>
 
                 <div class="video-volume">
-                  <button class="video-btn video-btn-volume" @click=${() => this.toggleMute()} title="${isMutedOrZero ? 'Unmute' : 'Mute'}">
+                  <button class="video-btn video-btn-volume" @click=${() => this.toggleMute()} aria-label="${isMutedOrZero ? 'Unmute' : 'Mute'}" title="${isMutedOrZero ? 'Unmute' : 'Mute'}">
                     <if ${isMutedOrZero}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 5L6 9H2v6h4l5 4V5z"/>
@@ -563,18 +563,18 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
               </div>
 
               <div class="video-controls-right">
-                <button class="video-btn video-rate-btn" @click=${() => this.cyclePlaybackRate()} title="Playback speed">
+                <button class="video-btn video-rate-btn" @click=${() => this.cyclePlaybackRate()} aria-label="Playback speed" title="Playback speed">
                   ${this.playbackRate}x
                 </button>
 
-                <button class="video-btn video-btn-pip" @click=${() => this.requestPictureInPicture()} title="Picture-in-Picture">
+                <button class="video-btn video-btn-pip" @click=${() => this.requestPictureInPicture()} aria-label="Picture-in-Picture" title="Picture-in-Picture">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
                     <rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" opacity="0.5"/>
                   </svg>
                 </button>
 
-                <button class="video-btn video-btn-fullscreen" @click=${() => this.toggleFullscreen()} title="Fullscreen">
+                <button class="video-btn video-btn-fullscreen" @click=${() => this.toggleFullscreen()} aria-label="Fullscreen" title="Fullscreen">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                   </svg>

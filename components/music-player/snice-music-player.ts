@@ -229,7 +229,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               <button
                 class="player-btn player-btn-shuffle ${this.shuffle ? 'active' : ''}"
                 @click=${() => this.toggleShuffle()}
-                title="Shuffle"
+                aria-label="Shuffle"                title="Shuffle"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
@@ -239,7 +239,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               <button
                 class="player-btn player-btn-prev"
                 @click=${() => this.previous()}
-                title="Previous"
+                aria-label="Previous"                title="Previous"
                 ?disabled=${this.tracks.length === 0}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -250,7 +250,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               <button
                 class="player-btn player-btn-play-pause ${this.state === 'playing' ? 'playing' : ''}"
                 @click=${() => this.state === 'playing' ? this.pause() : this.play()}
-                title="${this.state === 'playing' ? 'Pause' : 'Play'}"
+                aria-label="${this.state === 'playing' ? 'Pause' : 'Play'}"                title="${this.state === 'playing' ? 'Pause' : 'Play'}"
                 ?disabled=${this.tracks.length === 0}
               >
                 <if ${this.state === 'playing'}>
@@ -269,7 +269,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               <button
                 class="player-btn player-btn-next"
                 @click=${() => this.next()}
-                title="Next"
+                aria-label="Next"                title="Next"
                 ?disabled=${this.tracks.length === 0}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -280,7 +280,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
               <button
                 class="player-btn player-btn-repeat ${this.repeat !== 'off' ? 'active' : ''}"
                 @click=${() => this.cycleRepeat()}
-                title="Repeat ${this.repeat}"
+                aria-label="Repeat ${this.repeat}"                title="Repeat ${this.repeat}"
               >
                 <if ${this.repeat === 'one'}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -313,7 +313,7 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
             <button
               class="player-btn player-btn-volume"
               @click=${() => this.toggleVolumeSlider()}
-              title="Volume"
+              aria-label="Volume"              title="Volume"
             >
               <if ${this.muted || this.volume === 0}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

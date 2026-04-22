@@ -127,7 +127,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
           </div>
 
           <div class="recorder-controls" part="controls">
-            <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" @click=${() => this.handleTogglePlayback()} title="${this.isPlaying ? 'Pause' : 'Play'}">
+            <button class="recorder-btn ${this.isPlaying ? 'pause' : 'play'}" @click=${() => this.handleTogglePlayback()} aria-label="${this.isPlaying ? 'Pause' : 'Play'}" title="${this.isPlaying ? 'Pause' : 'Play'}">
               <if ${this.isPlaying}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <rect x="6" y="4" width="4" height="16"></rect>
@@ -141,7 +141,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
               </if>
             </button>
             <if ${this.showControls}>
-              <button class="recorder-btn record" @click=${() => this.reset()} title="Record Again">
+              <button class="recorder-btn record" @click=${() => this.reset()} aria-label="Record Again" title="Record Again">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="12" r="8"/>
                 </svg>
@@ -191,7 +191,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'inactive') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn record" @click=${() => this.start()} title="Start Recording">
+          <button class="recorder-btn record" @click=${() => this.start()} aria-label="Start Recording" title="Start Recording">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="12" r="8"/>
             </svg>
@@ -203,19 +203,19 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'recording') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
+          <button class="recorder-btn cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <button class="recorder-btn pause" @click=${() => this.pause()} title="Pause">
+          <button class="recorder-btn pause" @click=${() => this.pause()} aria-label="Pause" title="Pause">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="4" width="4" height="16"></rect>
               <rect x="14" y="4" width="4" height="16"></rect>
             </svg>
           </button>
-          <button class="recorder-btn stop" @click=${() => this.stop()} title="Stop">
+          <button class="recorder-btn stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="6" width="12" height="12"></rect>
             </svg>
@@ -227,18 +227,18 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     if (this.state === 'paused') {
       return html/*html*/`
         <div class="recorder-controls" part="controls">
-          <button class="recorder-btn cancel" @click=${() => this.cancel()} title="Cancel">
+          <button class="recorder-btn cancel" @click=${() => this.cancel()} aria-label="Cancel" title="Cancel">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <button class="recorder-btn record" @click=${() => this.resume()} title="Resume">
+          <button class="recorder-btn record" @click=${() => this.resume()} aria-label="Resume" title="Resume">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </button>
-          <button class="recorder-btn stop" @click=${() => this.stop()} title="Stop">
+          <button class="recorder-btn stop" @click=${() => this.stop()} aria-label="Stop" title="Stop">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <rect x="6" y="6" width="12" height="12"></rect>
             </svg>
