@@ -50,6 +50,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
   private commandMap = new Map<string, CommandItem>();
 
   private boundKeydown = this.handleGlobalKeydown.bind(this);
+  private listboxId = `snice-command-palette-list-${Math.random().toString(36).slice(2, 10)}`;
 
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydown);
@@ -332,11 +333,17 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
         <if ${this.open}>
           <div class="command-palette__backdrop" @click="${(e: MouseEvent) => this.handleBackdropClick(e)}"></div>
 
-          <div class="command-palette__container" part="container">
+          <div class="command-palette__container" part="container"
+               role="dialog" aria-modal="true" aria-label="Command palette">
             <div class="command-palette__search" part="search">
               <input
                 class="command-palette__input"
                 type="text"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls="${this.listboxId}"
+                aria-autocomplete="list"
+                aria-label="${this.placeholder}"
                 placeholder="${this.placeholder}"
                 .value="${this.searchQuery}"
                 @input="${(e: Event) => this.handleSearchInput(e)}"
@@ -346,7 +353,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
               />
             </div>
 
-            <div class="command-palette__results" part="results">
+            <div class="command-palette__results" part="results" id="${this.listboxId}" role="listbox">
               <if ${this.filteredCommands.length === 0}>
                 <div class="command-palette__empty" part="empty">${this.noResultsText}</div>
               </if>

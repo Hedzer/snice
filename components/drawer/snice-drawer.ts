@@ -68,15 +68,21 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
 
   @render()
   render() {
+    const titleId = this.titleId;
+    // If there's a slotted title, reference it; otherwise fall back to a
+    // static label so the dialog is never announced without a name.
     return html/*html*/`
       <div class="drawer-backdrop" part="backdrop"></div>
 
-      <div class="drawer" role="dialog" aria-modal="true" tabindex="-1" part="base">
+      <div class="drawer" role="dialog" aria-modal="true"
+           aria-labelledby="${this.noHeader ? '' : titleId}"
+           aria-label="${this.noHeader ? 'Drawer' : ''}"
+           tabindex="-1" part="base">
         <span class="focus-trap-start" tabindex="0"></span>
 
         <if ${!this.noHeader}>
           <div class="drawer-header" part="header">
-            <h2 class="drawer-title" part="title">
+            <h2 class="drawer-title" part="title" id="${titleId}">
               <slot name="title"></slot>
             </h2>
             <if ${!this.persistent}>
@@ -133,6 +139,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   }
 
   private _isHandlingOpenChange = false;
+  private titleId = `snice-drawer-title-${Math.random().toString(36).slice(2, 10)}`;
 
   /** Returns true if the drawer is currently in inline mode (either via `inline` prop or active breakpoint). */
   private isInlineActive(): boolean {

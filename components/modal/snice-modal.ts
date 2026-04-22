@@ -42,25 +42,32 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
 
   private previousFocus: HTMLElement | null = null;
   private lockedBodyScroll = false;
+  private headerId = `snice-modal-header-${Math.random().toString(36).slice(2, 10)}`;
 
   @render()
   render() {
     const modalClass = `modal${this.open ? ' modal--open' : ''}`;
     const panelClass = `modal__panel modal__panel--${this.size}`;
     const ariaHidden = this.open ? 'false' : 'true';
+    // Prefer explicit label; reference slotted header via aria-labelledby.
+    // Always provide a non-empty aria-label fallback so SRs never announce
+    // an empty dialog name (aria-labelledby will override when present).
+    const useHeaderForLabel = !this.label && !this.noHeader;
+    const ariaLabel = this.label || 'Dialog';
 
     return html/*html*/`
       <div class="${modalClass}"
            role="dialog"
            aria-modal="true"
-           aria-label="${this.label}"
+           aria-label="${ariaLabel}"
+           aria-labelledby="${useHeaderForLabel ? this.headerId : ''}"
            aria-hidden="${ariaHidden}"
            @click=${this.handleBackdropClick}
            @keydown=${this.handleKeydown}>
         <div class="modal__backdrop" part="backdrop"></div>
         <div class="${panelClass}" part="panel">
           <if ${!this.noHeader}>
-            <div class="modal__header" part="header">
+            <div class="modal__header" part="header" id="${this.headerId}">
               <slot name="header"></slot>
               <if ${!this.noCloseButton}>
                 <button class="modal__close"
