@@ -74,11 +74,16 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           return;
         }
 
+        // Record the LATEST detail so the trailing dispatch carries fresh
+        // data, not the first-suppressed-call detail captured by closure.
+        timers.latestDetail = detail;
         if (!timers.throttleTimeout) {
           timers.throttleTimeout = setTimeout(() => {
             timers.throttleLastCall = Date.now();
             timers.throttleTimeout = null;
-            doDispatch(detail);
+            const d = timers.latestDetail;
+            timers.latestDetail = undefined;
+            doDispatch(d);
           }, remaining);
         }
       };

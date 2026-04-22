@@ -210,7 +210,9 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
     let debounceTimeout: any;
     let throttleLastCall = 0;
     let throttleTimeout: any;
-    
+    const throttleTrailingResolvers: Array<{ resolve: (v: any) => void; reject: (e: any) => void }> = [];
+    let throttleLatestArgs: any[] | null = null;
+
     // Create wrapped method with timing if needed
     const createTimedMethod = (originalMethod: Function) => {
       if (handler.options?.debounce) {
@@ -231,18 +233,30 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
 
         if (remaining <= 0) {
           clearTimeout(throttleTimeout);
+          throttleTimeout = null;
           throttleLastCall = now;
           return originalMethod(...args);
         }
 
-        if (throttleTimeout) return Promise.resolve(undefined);
-
+        // Remember the LATEST args so the trailing call uses fresh input,
+        // and queue every suppressed caller's resolver so they all receive
+        // the trailing result instead of `undefined`.
+        throttleLatestArgs = args;
         return new Promise((resolve, reject) => {
+          throttleTrailingResolvers.push({ resolve, reject });
+          if (throttleTimeout) return; // already scheduled
           throttleTimeout = setTimeout(async () => {
             throttleLastCall = Date.now();
             throttleTimeout = null;
-            try { resolve(await originalMethod(...args)); }
-            catch (error) { reject(error); }
+            const resolvers = throttleTrailingResolvers.splice(0);
+            const finalArgs = throttleLatestArgs ?? args;
+            throttleLatestArgs = null;
+            try {
+              const result = await originalMethod(...finalArgs);
+              for (const r of resolvers) r.resolve(result);
+            } catch (error) {
+              for (const r of resolvers) r.reject(error);
+            }
           }, remaining);
         });
       };
