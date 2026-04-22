@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, watch, query, on, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, watch, query, on, html, css, isSafeUrl } from 'snice';
 import type { PdfFitMode, SnicePdfViewerElement } from './snice-pdf-viewer.types';
 import viewerStyles from './snice-pdf-viewer.css?inline';
 
@@ -186,12 +186,14 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
 
   print(): void {
     if (!this.src) return;
+    if (!isSafeUrl(this.src, { allowed: ['http:', 'https:', 'blob:'] })) return;
     const printWindow = window.open(this.src);
     if (printWindow) printWindow.addEventListener('load', () => printWindow.print());
   }
 
   download(): void {
     if (!this.src) return;
+    if (!isSafeUrl(this.src, { allowed: ['http:', 'https:', 'blob:'] })) return;
     const a = document.createElement('a');
     a.href = this.src;
     a.download = this.src.split('/').pop() || 'document.pdf';

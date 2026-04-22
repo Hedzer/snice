@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, html, css, isSafeUrl } from 'snice';
 import { renderIcon } from '../utils';
 import type { SniceLocationElement, LocationData, LocationDisplayMode } from './snice-location.types';
 import locationStyles from './snice-location.css?inline';
@@ -105,7 +105,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
       url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.getFullAddress())}`;
     }
 
-    if (url) {
+    if (url && isSafeUrl(url)) {
       window.open(url, '_blank');
     }
   }
@@ -121,7 +121,10 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     const coords = this.getCoordinates();
 
     if (this.mapUrl) {
-      return this.mapUrl;
+      // Only return caller-supplied URLs that are safe to embed. Reject
+      // javascript:/data:/vbscript: and anything else that could execute
+      // in the embedding document's origin.
+      return isSafeUrl(this.mapUrl) ? this.mapUrl : '';
     }
 
     if (coords) {

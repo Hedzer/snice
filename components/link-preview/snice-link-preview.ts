@@ -1,4 +1,4 @@
-import { element, property, dispatch, on, render, styles, html, css } from 'snice';
+import { element, property, dispatch, on, render, styles, html, css, isSafeUrl } from 'snice';
 import cssContent from './snice-link-preview.css?inline';
 import type { LinkPreviewVariant, LinkPreviewSize, SniceLinkPreviewElement } from './snice-link-preview.types';
 
@@ -30,7 +30,7 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
 
   @on('click')
   private handleClick() {
-    if (this.url) {
+    if (this.url && isSafeUrl(this.url)) {
       this.dispatchLinkClick();
       window.open(this.url, '_blank', 'noopener,noreferrer');
     }

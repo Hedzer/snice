@@ -3,6 +3,17 @@ import type { VideoVariant, SniceVideoPlayerElement } from './snice-video-player
 import playerStyles from './snice-video-player.css?inline';
 
 const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
+
+// Encode user-supplied URLs for use inside a CSS `url('...')` context.
+// Escapes single quotes, backslashes, and newlines so the attacker cannot
+// break out of the url() literal and inject additional CSS declarations.
+function encodePosterUrl(src: string): string {
+  return String(src ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, ' ')
+    .replace(/\r/g, ' ');
+}
 const SEEK_STEP = 5;
 const VOLUME_STEP = 0.1;
 const CONTROLS_HIDE_DELAY = 3000;
@@ -461,7 +472,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
         <if ${this.showPoster && this.poster}>
           <div
             class="video-poster"
-            style="background-image: url('${this.poster}')"
+            style="background-image: url('${encodePosterUrl(this.poster)}')"
             @click=${() => this.handlePosterClick()}
           >
             <div class="video-poster-play">
