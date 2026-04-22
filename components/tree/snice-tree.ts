@@ -159,9 +159,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     // Query items directly — they were just appended to the DOM in updateTreeItemsDOM
     const items = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
     if (items) {
+      const total = this.nodes.length;
       items.forEach((item, index) => {
         if (this.nodes[index] && (item as any).setNode) {
-          (item as any).setNode(this.nodes[index], 0);
+          (item as any).setNode(this.nodes[index], 0, index + 1, total);
         }
       });
     }

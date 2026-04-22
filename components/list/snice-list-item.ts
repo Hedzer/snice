@@ -22,7 +22,7 @@ export class SniceListItem extends HTMLElement {
     if (this.disabled) classes.push('list-item--disabled');
 
     return html/*html*/`
-      <div class="${classes.join(' ')}">
+      <div class="${classes.join(' ')}" role="listitem" aria-disabled="${this.disabled ? 'true' : 'false'}">
         <slot name="before"></slot>
         <div class="list-item__content">
           <if ${this.heading}>

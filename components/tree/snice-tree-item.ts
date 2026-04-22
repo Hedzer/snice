@@ -46,9 +46,14 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     return !!(this._node.children && this._node.children.length > 0) || !!this._node.lazy;
   }
 
-  setNode(node: TreeNode, level: number) {
+  private _posInSet = 1;
+  private _setSize = 1;
+
+  setNode(node: TreeNode, level: number, posInSet: number = 1, setSize: number = 1) {
     this._node = node;
     this._level = level;
+    this._posInSet = posInSet;
+    this._setSize = setSize;
 
     // Sync internal state
     if (node.expanded !== undefined) {
@@ -98,9 +103,10 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     if (!this.shadowRoot || !this.hasChildren) return;
 
     const childItems = this.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+    const total = this.node.children?.length || 0;
     this.node.children?.forEach((child, index) => {
       if (childItems[index] && (childItems[index] as any).setNode) {
-        (childItems[index] as any).setNode(child, this.level + 1);
+        (childItems[index] as any).setNode(child, this.level + 1, index + 1, total);
       }
     });
   }
@@ -227,6 +233,10 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
       content.setAttribute('aria-selected', this.selected.toString());
       content.setAttribute('aria-disabled', (this.node.disabled || false).toString());
       content.setAttribute('aria-busy', this.loading.toString());
+      // Level is 1-indexed for ARIA; internal _level starts at 0.
+      content.setAttribute('aria-level', String(this._level + 1));
+      content.setAttribute('aria-setsize', String(this._setSize));
+      content.setAttribute('aria-posinset', String(this._posInSet));
 
       if (this.hasChildren) {
         content.setAttribute('aria-expanded', this.expanded.toString());
