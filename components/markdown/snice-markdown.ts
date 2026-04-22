@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, ready, on, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, dispatch, watch, ready, on, html, css, unsafeHTML, escapeAttr } from 'snice';
 import type { MarkdownTheme, SniceMarkdownElement } from './snice-markdown.types';
 import markdownStyles from './snice-markdown.css?inline';
 
@@ -119,14 +119,18 @@ function parseMarkdown(md: string): string {
     return `<ol>${items}</ol>`;
   });
 
-  // Images
-  result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+  // Images — escape src attribute and alt text so payloads like
+  //   ![x](/ onerror="...")  cannot break out of the attribute context.
+  result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt, src) =>
+    `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}">`);
 
-  // Links
-  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  // Links — same escaping for href + text.
+  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, href) =>
+    `<a href="${escapeAttr(href)}">${escapeHtml(text)}</a>`);
 
   // Autolinks (GFM)
-  result = result.replace(/(^|[^"(])(https?:\/\/[^\s<>]+)/g, '$1<a href="$2">$2</a>');
+  result = result.replace(/(^|[^"(])(https?:\/\/[^\s<>]+)/g, (_m, lead, url) =>
+    `${lead}<a href="${escapeAttr(url)}">${escapeHtml(url)}</a>`);
 
   // Bold and italic (process bold first)
   result = result.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');

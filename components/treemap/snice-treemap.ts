@@ -1,4 +1,4 @@
-import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css } from 'snice';
+import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css, escapeHtml } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
 
@@ -352,11 +352,11 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     parts += `<rect class="treemap__rect-stroke" x="${rect.x}" y="${rect.y}" width="${rect.width}" height="${rect.height}" />`;
 
     if (showLabel) {
-      parts += `<text class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${rect.node.label}</text>`;
+      parts += `<text class="treemap__label" x="${cx}" y="${labelY}" style="font-size: ${fontSize}px">${escapeHtml(rect.node.label)}</text>`;
     }
 
     if (showValue) {
-      parts += `<text class="treemap__value" x="${cx}" y="${valueY}">${sumValues(rect.node).toLocaleString()}</text>`;
+      parts += `<text class="treemap__value" x="${cx}" y="${valueY}">${escapeHtml(sumValues(rect.node).toLocaleString())}</text>`;
     }
 
     return parts;
@@ -394,7 +394,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     el.style.display = '';
     let html = '';
 
-    html += `<button class="treemap__breadcrumb" data-drill-root>${this._cachedData.label || 'Root'}</button>`;
+    html += `<button class="treemap__breadcrumb" data-drill-root>${escapeHtml(this._cachedData.label || 'Root')}</button>`;
 
     for (let i = 0; i < this._drillPathState.length; i++) {
       const node = this._drillPathState[i];
@@ -403,9 +403,9 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
       html += '<span class="treemap__separator">/</span>';
 
       if (isLast) {
-        html += `<span class="treemap__breadcrumb treemap__breadcrumb--current">${node.label}</span>`;
+        html += `<span class="treemap__breadcrumb treemap__breadcrumb--current">${escapeHtml(node.label)}</span>`;
       } else {
-        html += `<button class="treemap__breadcrumb" data-drill-index="${i}">${node.label}</button>`;
+        html += `<button class="treemap__breadcrumb" data-drill-index="${i}">${escapeHtml(node.label)}</button>`;
       }
     }
 

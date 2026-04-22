@@ -356,7 +356,9 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     const newLines: TerminalLine[] = lines.map(line => ({
       id: crypto.randomUUID(),
       type: line.type || 'output',
-      content: line.content,
+      // Route through parseAnsiColors so content is HTML-escaped first
+      // (same safety path as write()); bypassing this was a stored XSS vector.
+      content: this.parseAnsiColors(line.content),
       timestamp: new Date()
     }));
 

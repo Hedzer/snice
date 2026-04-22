@@ -1,4 +1,4 @@
-import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css } from 'snice';
+import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css, escapeHtml, escapeAttr } from 'snice';
 import cssContent from './snice-flow.css?inline';
 import type { FlowNode, FlowEdge, SniceFlowElement } from './snice-flow.types';
 
@@ -577,7 +577,7 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       if (edge.label) {
         const mx = (p1.x + p2.x) / 2;
         const my = (p1.y + p2.y) / 2;
-        parts += `<text class="flow__edge-label" x="${mx}" y="${my - 8}">${edge.label}</text>`;
+        parts += `<text class="flow__edge-label" x="${mx}" y="${my - 8}">${escapeHtml(edge.label)}</text>`;
       }
     }
 
@@ -603,10 +603,10 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
 
       const headerBg = node.color ? `background:${node.color};color:white;` : '';
 
-      nodesHtml += `<div class="${cls.join(' ')}" data-node-id="${node.id}" style="left:${x}px;top:${y}px;width:${scaledW}px;transform-origin:top left;transform:scale(1);">`;
+      nodesHtml += `<div class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${scaledW}px;transform-origin:top left;transform:scale(1);">`;
       nodesHtml += `<div class="flow__node-header" style="${headerBg}">`;
-      if (node.type) nodesHtml += `<span class="flow__node-type">${node.type}</span>`;
-      nodesHtml += `<span>${node.label || node.id}</span>`;
+      if (node.type) nodesHtml += `<span class="flow__node-type">${escapeHtml(node.type)}</span>`;
+      nodesHtml += `<span>${escapeHtml(node.label || node.id)}</span>`;
       nodesHtml += `</div>`;
       nodesHtml += `<div class="flow__node-body">`;
 
@@ -617,9 +617,9 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
         for (const port of inputs) {
           const connected = this.isPortConnected(node.id, port.id, false);
           const pcls = ['flow__port', connected ? 'flow__port--connected' : ''].filter(Boolean).join(' ');
-          nodesHtml += `<div class="${pcls}" data-port-id="${port.id}" data-port-type="input" data-node-id="${node.id}">`;
+          nodesHtml += `<div class="${pcls}" data-port-id="${escapeAttr(port.id)}" data-port-type="input" data-node-id="${escapeAttr(node.id)}">`;
           nodesHtml += `<span class="flow__port-dot"></span>`;
-          if (port.label) nodesHtml += `<span>${port.label}</span>`;
+          if (port.label) nodesHtml += `<span>${escapeHtml(port.label)}</span>`;
           nodesHtml += `</div>`;
         }
         nodesHtml += `</div>`;
@@ -632,8 +632,8 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
         for (const port of outputs) {
           const connected = this.isPortConnected(node.id, port.id, true);
           const pcls = ['flow__port', 'flow__port--output', connected ? 'flow__port--connected' : ''].filter(Boolean).join(' ');
-          nodesHtml += `<div class="${pcls}" data-port-id="${port.id}" data-port-type="output" data-node-id="${node.id}">`;
-          if (port.label) nodesHtml += `<span>${port.label}</span>`;
+          nodesHtml += `<div class="${pcls}" data-port-id="${escapeAttr(port.id)}" data-port-type="output" data-node-id="${escapeAttr(node.id)}">`;
+          if (port.label) nodesHtml += `<span>${escapeHtml(port.label)}</span>`;
           nodesHtml += `<span class="flow__port-dot"></span>`;
           nodesHtml += `</div>`;
         }

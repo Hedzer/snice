@@ -1,17 +1,6 @@
-import { element, property, query, watch, dispatch, ready, on, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, on, render, styles, html, css, isSafeUrl } from 'snice';
 import cssContent from './snice-app-tiles.css?inline';
 import type { SniceAppTilesElement, AppTile, AppTilesVariant, TileClickDetail } from './snice-app-tiles.types';
-
-// Guards against `javascript:`, `data:`, `vbscript:` URL schemes being opened
-// as a tile href. Relative paths and standard web/app schemes are allowed.
-function isSafeHref(href: string): boolean {
-  const trimmed = href.trim().toLowerCase();
-  if (!trimmed) return false;
-  if (trimmed.startsWith('javascript:')) return false;
-  if (trimmed.startsWith('data:')) return false;
-  if (trimmed.startsWith('vbscript:')) return false;
-  return true;
-}
 
 /**
  * <snice-app-tile> — declarative child element for app tiles.
@@ -118,7 +107,7 @@ export class SniceAppTiles extends HTMLElement implements SniceAppTilesElement {
 
   private handleTileClick(tile: AppTile, index: number) {
     this.emitTileClick({ tile, index });
-    if (tile.href && isSafeHref(tile.href)) {
+    if (tile.href && isSafeUrl(tile.href)) {
       window.open(tile.href, '_self');
     }
   }

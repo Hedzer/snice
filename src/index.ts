@@ -34,7 +34,7 @@ export { waitForElementDefined, waitForElementReady, waitForAllCustomElements, s
 export { trackRenders } from './render-debug';
 
 // Shared utilities
-export { parseDuration } from './utils';
+export { parseDuration, escapeHtml, escapeAttr, isSafeUrl } from './utils';
 export type { Duration } from './utils';
 
 // v3.0.0 method decorators

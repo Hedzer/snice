@@ -118,7 +118,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
 
       const entries = Object.entries(json).map(([key, value]) => {
         const renderedValue = this.renderExpanded(value, depth + 1);
-        return `<div class="json-line"><span class="json-key">${key}:</span> ${renderedValue}</div>`;
+        return `<div class="json-line"><span class="json-key">${escHtml(key)}:</span> ${renderedValue}</div>`;
       }).join('');
       return `<div class="json-object">{${entries}}</div>`;
     }
@@ -131,7 +131,16 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
     if (value === undefined) return '<span class="json-undefined">undefined</span>';
     if (typeof value === 'boolean') return `<span class="json-boolean">${value}</span>`;
     if (typeof value === 'number') return `<span class="json-number">${value}</span>`;
-    if (typeof value === 'string') return `<span class="json-string">"${value}"</span>`;
-    return String(value);
+    if (typeof value === 'string') return `<span class="json-string">"${escHtml(value)}"</span>`;
+    return escHtml(String(value));
   }
+}
+
+function escHtml(s: string): string {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

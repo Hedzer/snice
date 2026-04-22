@@ -115,6 +115,60 @@ export function getAttrName(opts: PropertyOptions, propName: string): string {
 }
 
 /**
+ * Escape HTML text-node content. Use for text that will be interpolated
+ * into an HTML string (not an attribute value).
+ */
+export function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Escape HTML attribute value. Use for anything interpolated inside a
+ * quoted attribute (e.g. `href="${...}"`). Escapes both quote styles so
+ * the value cannot close the attribute or the surrounding tag.
+ */
+export function escapeAttr(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Validate a URL's scheme against a safe-list. Rejects `javascript:`,
+ * `data:`, `vbscript:`, and any scheme not in the allowed set. Pass to
+ * `window.open`, `iframe.src`, `<a href>`, etc. when the URL originates
+ * from user input.
+ *
+ * @example
+ *   if (!isSafeUrl(url)) return;
+ *   window.open(url, '_blank');
+ */
+export function isSafeUrl(
+  url: string,
+  opts: { allowed?: readonly string[] } = {}
+): boolean {
+  const s = String(url ?? '').trim();
+  if (!s) return false;
+  const allowed = opts.allowed ?? ['http:', 'https:', 'mailto:', 'tel:'];
+  // Relative paths and hash/query-only URLs are fine
+  if (/^[#?/]/.test(s)) return true;
+  try {
+    const u = new URL(s, 'http://__snice-base/');
+    if (u.origin === 'http://__snice-base') return true; // relative
+    return allowed.includes(u.protocol);
+  } catch {
+    // Unparseable URL: only safe as a relative path
+    return /^[\w\-./]+$/.test(s);
+  }
+}
+
+/**
  * Duration helper returned by {@link parseDuration}. Exposes the parsed
  * value in multiple units without repeated regex parsing at call sites.
  */

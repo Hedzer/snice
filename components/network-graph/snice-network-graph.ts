@@ -1,21 +1,6 @@
-import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css } from 'snice';
+import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css, escapeHtml, escapeAttr } from 'snice';
 import cssContent from './snice-network-graph.css?inline';
 import type { NetworkNode, NetworkEdge, NetworkGraphData, LayoutType, SniceNetworkGraphElement } from './snice-network-graph.types';
-
-function escHtml(s: string): string {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-function escAttr(s: string): string {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 interface SimNode extends NetworkNode {
   x: number;
@@ -463,7 +448,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       const edgeColor = se.edge.color || '';
       const weight = se.edge.weight || 1;
       const path = this.renderEdgePath(se);
-      const strokeAttr = edgeColor ? ` stroke="${escAttr(edgeColor)}"` : '';
+      const strokeAttr = edgeColor ? ` stroke="${escapeAttr(edgeColor)}"` : '';
       const cls = ['network-graph__edge'];
       if (hasHover && connected) cls.push('network-graph__edge--highlighted');
       if (hasHover && !connected) cls.push('network-graph__edge--dimmed');
@@ -474,7 +459,7 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
         const labelCls = hasHover && !connected ? 'network-graph__edge-label network-graph__edge-label--dimmed' : 'network-graph__edge-label';
         const mx = (se.source.x + se.target.x) / 2;
         const my = (se.source.y + se.target.y) / 2;
-        parts += `<text class="${labelCls}" x="${mx}" y="${my}">${escHtml(se.edge.label)}</text>`;
+        parts += `<text class="${labelCls}" x="${mx}" y="${my}">${escapeHtml(se.edge.label)}</text>`;
       }
     });
 
@@ -495,12 +480,12 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
       if (!connected) cls.push('network-graph__node--dimmed');
       if (isDragging) cls.push('network-graph__node--dragging');
 
-      parts += `<g class="${cls.join(' ')}" data-node-id="${escAttr(node.id)}">`;
-      parts += `<circle class="network-graph__node-circle" cx="${node.x}" cy="${node.y}" r="${r}" fill="${escAttr(fill)}" />`;
+      parts += `<g class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}">`;
+      parts += `<circle class="network-graph__node-circle" cx="${node.x}" cy="${node.y}" r="${r}" fill="${escapeAttr(fill)}" />`;
 
       if (this.showLabels && (node.label || node.id)) {
         const labelCls = !connected ? 'network-graph__node-label network-graph__node-label--dimmed' : 'network-graph__node-label';
-        parts += `<text class="${labelCls}" x="${node.x}" y="${node.y + r + 14}">${escHtml(node.label || node.id)}</text>`;
+        parts += `<text class="${labelCls}" x="${node.x}" y="${node.y + r + 14}">${escapeHtml(node.label || node.id)}</text>`;
       }
 
       parts += `</g>`;

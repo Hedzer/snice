@@ -17,8 +17,12 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   estimatedItemHeight = 50;
 
   @property({ attribute: false })
-  renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement = (item, index) => {
-    return `<div>${JSON.stringify(item.data)}</div>`;
+  renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement = (item, _index) => {
+    // Default renderer escapes data so it cannot inject markup. Callers that
+    // need HTML should provide their own renderItem and escape appropriately.
+    const el = document.createElement('div');
+    el.textContent = typeof item.data === 'string' ? item.data : JSON.stringify(item.data);
+    return el;
   };
 
   @query('.scroller')
@@ -124,7 +128,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
             const actualIndex = this.visibleStart + idx;
             const itemContent = typeof renderFn === 'function'
               ? renderFn(item, actualIndex)
-              : `<div>${JSON.stringify(item.data)}</div>`;
+              : this.renderItem(item, actualIndex);
 
             if (typeof itemContent === 'string') {
               return html/*html*/`
@@ -137,11 +141,12 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
               `;
             }
 
+            // HTMLElement return — render it as an actual child.
             return html/*html*/`
               <div
                 class="scroller__item"
                 style="top: ${idx * this.itemHeight}px; height: ${item.height || this.itemHeight}px;"
-                data-index="${actualIndex}"></div>
+                data-index="${actualIndex}">${itemContent as any}</div>
             `;
           })}
         </div>
