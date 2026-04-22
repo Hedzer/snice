@@ -179,6 +179,31 @@ export class SniceTabs extends HTMLElement {
     }
   }
 
+  @on('keydown', '.tabs__nav')
+  handleNavKeydown(e: KeyboardEvent) {
+    if (!this.tabs || this.tabs.length === 0) return;
+    const count = this.tabs.length;
+    const isHorizontal = this.placement === 'top' || this.placement === 'bottom';
+    const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+    const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+
+    let next = this.selected;
+    if (e.key === prevKey) {
+      next = (this.selected - 1 + count) % count;
+    } else if (e.key === nextKey) {
+      next = (this.selected + 1) % count;
+    } else if (e.key === 'Home') {
+      next = 0;
+    } else if (e.key === 'End') {
+      next = count - 1;
+    } else {
+      return;
+    }
+    e.preventDefault();
+    this.selectTab(next);
+    (this.tabs[next] as HTMLElement)?.focus();
+  }
+
   setupTabs() {
     this.updateSelection();
     this.updateIndicator();
