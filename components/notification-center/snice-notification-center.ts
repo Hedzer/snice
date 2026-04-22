@@ -98,7 +98,12 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
     `);
 
     return html`
-      <button part="trigger" class="bell-button" aria-label="Notifications" @click=${() => this.togglePanel()}>
+      <button part="trigger" class="bell-button"
+              aria-label="Notifications"
+              aria-haspopup="dialog"
+              aria-expanded="${this.open ? 'true' : 'false'}"
+              aria-controls="snice-notif-panel"
+              @click=${() => this.togglePanel()}>
         <snice-badge count=${unread} variant="error" size="small" position="top-right">
           <span class="bell-icon" part="icon">
             <slot name="icon">
@@ -112,9 +117,11 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
           </span>
         </snice-badge>
       </button>
-      <div part="panel" class="panel panel--${this.placement}" ?hidden=${!this.open}>
+      <div part="panel" class="panel panel--${this.placement}" ?hidden=${!this.open}
+           id="snice-notif-panel" role="dialog" aria-modal="false"
+           aria-labelledby="snice-notif-title">
         <div part="panel-header" class="panel-header">
-          <span class="panel-title">Notifications</span>
+          <span class="panel-title" id="snice-notif-title">Notifications</span>
           <button class="mark-all-btn" @click=${() => this.markAllAsRead()}>Mark all read</button>
         </div>
         ${this.notifications.length > 0

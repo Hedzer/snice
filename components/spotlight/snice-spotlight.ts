@@ -75,9 +75,10 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       <div class="overlay" part="base">
         <div class="backdrop" part="backdrop"></div>
         <div class="cutout" part="cutout"></div>
-        <div class="popover" part="popover">
-          <div class="popover-title" part="title"></div>
-          <div class="popover-description" part="description"></div>
+        <div class="popover" part="popover" role="dialog" aria-modal="true"
+             aria-labelledby="snice-spotlight-title" aria-describedby="snice-spotlight-desc">
+          <div class="popover-title" part="title" id="snice-spotlight-title"></div>
+          <div class="popover-description" part="description" id="snice-spotlight-desc"></div>
           <div class="popover-footer">
             <span class="step-indicator" part="step-indicator"></span>
             <div class="popover-actions" part="actions"></div>
