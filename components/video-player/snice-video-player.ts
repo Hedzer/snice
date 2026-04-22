@@ -31,16 +31,16 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
   @property({ type: Number }) volume: number = 1;
   @property() variant: VideoVariant = 'default';
 
-  duration: number = 0;
+  @property({ type: Number, attribute: false }) duration: number = 0;
 
-  private playing: boolean = false;
-  private loading: boolean = false;
-  private showPoster: boolean = true;
-  private controlsVisible: boolean = false;
+  @property({ type: Boolean, attribute: false }) private playing: boolean = false;
+  @property({ type: Boolean, attribute: false }) private loading: boolean = false;
+  @property({ type: Boolean, attribute: false }) private showPoster: boolean = true;
+  @property({ type: Boolean, attribute: false }) private controlsVisible: boolean = false;
   private controlsTimer: number | null = null;
-  private bufferedPercent: number = 0;
+  @property({ type: Number, attribute: false }) private bufferedPercent: number = 0;
   private previousVolume: number = 1;
-  private isSeeking: boolean = false;
+  @property({ type: Boolean, attribute: false }) private isSeeking: boolean = false;
 
   @query('.video-container') private container?: HTMLElement;
   @query('video') private videoEl?: HTMLVideoElement;

@@ -213,6 +213,13 @@ export class SniceDoc extends HTMLElement {
       { format: 'text', label: 'Plain Text (.txt)' },
     ];
 
+    const closeHandler = (e: MouseEvent) => {
+      if (!menu.contains(e.target as Node)) {
+        menu.remove();
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+
     formats.forEach(f => {
       const item = document.createElement('button');
       item.className = 'download-menu-item';
@@ -220,6 +227,7 @@ export class SniceDoc extends HTMLElement {
       item.addEventListener('click', () => {
         this.downloadAs(f.format);
         menu.remove();
+        document.removeEventListener('click', closeHandler);
       });
       menu.appendChild(item);
     });
@@ -229,12 +237,6 @@ export class SniceDoc extends HTMLElement {
       toolbar.appendChild(menu);
     }
 
-    const closeHandler = (e: MouseEvent) => {
-      if (!menu.contains(e.target as Node)) {
-        menu.remove();
-        document.removeEventListener('click', closeHandler);
-      }
-    };
     setTimeout(() => document.addEventListener('click', closeHandler), 0);
   }
 

@@ -39,9 +39,13 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
   @query('.command-palette__input')
   searchInput?: HTMLInputElement;
 
+  @property({ attribute: false })
   private searchQuery = '';
+  @property({ type: Number, attribute: false })
   private activeIndex = 0;
+  @property({ type: Array, attribute: false })
   private filteredCommands: CommandItem[] = [];
+  @property({ type: Array, attribute: false })
   private recentCommands: string[] = [];
   private commandMap = new Map<string, CommandItem>();
 
@@ -239,6 +243,71 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     return { query: this.searchQuery, results: this.filteredCommands, palette: this };
   }
 
+  private renderGroups(categories: string[], grouped: Map<string, CommandItem[]>): unknown {
+    const out: unknown[] = [];
+    for (const category of categories) {
+      const commands = grouped.get(category) || [];
+      if (category) {
+        out.push(html/*html*/`<div class="command-palette__category" part="category">${category}</div>`);
+      }
+      for (const command of commands) {
+        out.push(this.renderItem(command));
+      }
+    }
+    return out;
+  }
+
+  private renderItem(command: CommandItem): unknown {
+    const globalIndex = this.filteredCommands.indexOf(command);
+    const itemClasses = [
+      'command-palette__item',
+      globalIndex === this.activeIndex ? 'command-palette__item--active' : '',
+      command.disabled ? 'command-palette__item--disabled' : ''
+    ].filter(Boolean).join(' ');
+
+    return html/*html*/`
+      <button
+        class="${itemClasses}"
+        part="item"
+        @click="${() => this.handleItemClick(command)}"
+        @mouseenter="${() => { this.activeIndex = globalIndex; }}">
+
+        <if ${command.icon || command.iconImage}>
+          <div class="command-palette__item-icon" part="item-icon">
+            <if ${command.iconImage}>
+              <img
+                class="command-palette__item-icon-image"
+                src="${command.iconImage}"
+                alt=""
+                part="item-icon-image"
+              />
+            </if>
+            <if ${!command.iconImage && command.icon}>
+              ${command.icon}
+            </if>
+          </div>
+        </if>
+
+        <div class="command-palette__item-content" part="item-content">
+          <div class="command-palette__item-label" part="item-label">
+            ${command.label}
+          </div>
+          <if ${command.description}>
+            <div class="command-palette__item-description" part="item-description">
+              ${command.description}
+            </div>
+          </if>
+        </div>
+
+        <if ${command.shortcut}>
+          <div class="command-palette__item-shortcut" part="item-shortcut">
+            ${command.shortcut}
+          </div>
+        </if>
+      </button>
+    `;
+  }
+
   @render()
   render() {
     const paletteClasses = [
@@ -283,64 +352,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
               </if>
 
               <if ${this.filteredCommands.length > 0}>
-                ${categories.map(category => {
-                  const commands = grouped.get(category) || [];
-                  return html/*html*/`
-                    <if ${category}>
-                      <div class="command-palette__category" part="category">${category}</div>
-                    </if>
-                    ${commands.map((command, index) => {
-                      const globalIndex = this.filteredCommands.indexOf(command);
-                      const itemClasses = [
-                        'command-palette__item',
-                        globalIndex === this.activeIndex ? 'command-palette__item--active' : '',
-                        command.disabled ? 'command-palette__item--disabled' : ''
-                      ].filter(Boolean).join(' ');
-
-                      return html/*html*/`
-                        <button
-                          class="${itemClasses}"
-                          part="item"
-                          @click="${() => this.handleItemClick(command)}"
-                          @mouseenter="${() => { this.activeIndex = globalIndex; }}">
-
-                          <if ${command.icon || command.iconImage}>
-                            <div class="command-palette__item-icon" part="item-icon">
-                              <if ${command.iconImage}>
-                                <img
-                                  class="command-palette__item-icon-image"
-                                  src="${command.iconImage}"
-                                  alt=""
-                                  part="item-icon-image"
-                                />
-                              </if>
-                              <if ${!command.iconImage && command.icon}>
-                                ${command.icon}
-                              </if>
-                            </div>
-                          </if>
-
-                          <div class="command-palette__item-content" part="item-content">
-                            <div class="command-palette__item-label" part="item-label">
-                              ${command.label}
-                            </div>
-                            <if ${command.description}>
-                              <div class="command-palette__item-description" part="item-description">
-                                ${command.description}
-                              </div>
-                            </if>
-                          </div>
-
-                          <if ${command.shortcut}>
-                            <div class="command-palette__item-shortcut" part="item-shortcut">
-                              ${command.shortcut}
-                            </div>
-                          </if>
-                        </button>
-                      `;
-                    })}
-                  `;
-                })}
+                ${this.renderGroups(categories, grouped)}
               </if>
             </div>
           </div>

@@ -4,7 +4,12 @@ import { wait } from './test-utils';
 // Component bug audit: batch 3. Each test is expected to FAIL today
 // (`.fails`) and will flip to red once someone fixes the bug.
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+  document.body.style.overflow = '';
+  const locks = (globalThis as any)[Symbol.for('snice:modal-body-locks')];
+  if (locks?.clear) locks.clear();
+});
 
 // ---------------------------------------------------------------------------
 // app-tiles: window.open(tile.href) trusts raw href → javascript: URL runs.

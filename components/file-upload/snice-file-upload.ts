@@ -64,7 +64,9 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   @query('.upload-area')
   uploadArea?: HTMLElement;
 
+  @property({ type: Boolean, attribute: false })
   private isDragOver = false;
+  @property({ type: Array, attribute: false })
   private selectedFiles: File[] = [];
 
   get files(): FileList | null {

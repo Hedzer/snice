@@ -80,9 +80,16 @@ class RenderScheduler {
     this.scheduled = false;
 
     for (const element of elements) {
+      // Skip elements that were disconnected between scheduling and flush.
+      if (!element.isConnected) continue;
       const options = (element as any)[RENDER_OPTIONS] || {};
       performRender(element, options);
     }
+  }
+
+  /** Remove a disconnected element from the queue */
+  remove(element: HTMLElement): void {
+    this.pending.delete(element);
   }
 }
 
@@ -138,8 +145,18 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
       return;
     }
 
-    // Different template or first render
-    if (instance) element.shadowRoot!.innerHTML = '';
+    // Different template or first render. Remove only non-<style> children so
+    // the fallback @styles path (Safari <=16 / jsdom / SSR — no
+    // adoptedStyleSheets) doesn't lose its style tags on template switch.
+    if (instance) {
+      const root = element.shadowRoot!;
+      const toRemove: ChildNode[] = [];
+      for (const child of Array.from(root.childNodes)) {
+        if (child.nodeType === 1 && (child as Element).tagName === 'STYLE') continue;
+        toRemove.push(child);
+      }
+      for (const node of toRemove) node.remove();
+    }
 
     instance = new TemplateInstance(result);
     (element as any)[RENDER_INSTANCE] = instance;

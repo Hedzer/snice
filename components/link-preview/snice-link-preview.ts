@@ -7,7 +7,7 @@ export class SniceLinkPreview extends HTMLElement implements SniceLinkPreviewEle
   @property()
   url = '';
 
-  @property()
+  @property({ attribute: false })
   title = '';
 
   @property()

@@ -122,74 +122,39 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     setTimeout(() => this.scrollToBottom(), 0);
   }
 
-  @dispatch('message-send')
-  private emitMessageSend(
-    message: string,
-    attachments?: File[]
-  ): CustomEvent<{ message: string; attachments?: File[] }> {
-    return new CustomEvent('message-send', {
-      detail: { message, attachments },
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('message-send', { bubbles: true, composed: true })
+  private emitMessageSend(message: string, attachments?: File[]) {
+    return { message, attachments };
   }
 
-  @dispatch('message-edit')
-  private emitMessageEdit(
-    messageId: string,
-    newContent: string
-  ): CustomEvent<{ messageId: string; newContent: string }> {
-    return new CustomEvent('message-edit', {
-      detail: { messageId, newContent },
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('message-edit', { bubbles: true, composed: true })
+  private emitMessageEdit(messageId: string, newContent: string) {
+    return { messageId, newContent };
   }
 
-  @dispatch('message-delete')
-  private emitMessageDelete(messageId: string): CustomEvent<{ messageId: string }> {
-    return new CustomEvent('message-delete', {
-      detail: { messageId },
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('message-delete', { bubbles: true, composed: true })
+  private emitMessageDelete(messageId: string) {
+    return { messageId };
   }
 
-  @dispatch('message-react')
-  private emitMessageReact(
-    messageId: string,
-    emoji: string
-  ): CustomEvent<{ messageId: string; emoji: string }> {
-    return new CustomEvent('message-react', {
-      detail: { messageId, emoji },
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('message-react', { bubbles: true, composed: true })
+  private emitMessageReact(messageId: string, emoji: string) {
+    return { messageId, emoji };
   }
 
-  @dispatch('message-thread')
-  private emitMessageThread(messageId: string): CustomEvent<{ messageId: string }> {
-    return new CustomEvent('message-thread', {
-      detail: { messageId },
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('message-thread', { bubbles: true, composed: true })
+  private emitMessageThread(messageId: string) {
+    return { messageId };
   }
 
-  @dispatch('typing-start')
-  private emitTypingStart(): CustomEvent<{}> {
-    return new CustomEvent('typing-start', {
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('typing-start', { bubbles: true, composed: true })
+  private emitTypingStart() {
+    return {};
   }
 
-  @dispatch('typing-stop')
-  private emitTypingStop(): CustomEvent<{}> {
-    return new CustomEvent('typing-stop', {
-      bubbles: true,
-      composed: true,
-    });
+  @dispatch('typing-stop', { bubbles: true, composed: true })
+  private emitTypingStop() {
+    return {};
   }
 
   /**

@@ -105,10 +105,16 @@ export class SniceTabs extends HTMLElement {
     }
   }
 
+  private pendingTimeouts: Set<number> = new Set();
+
   @dispose()
   private cleanupResize() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    for (const id of this.pendingTimeouts) {
+      clearTimeout(id);
+    }
+    this.pendingTimeouts.clear();
   }
 
   @watch('selected')
@@ -236,20 +242,28 @@ export class SniceTabs extends HTMLElement {
       (oldPanel as any).transitionDuration = outDuration;
       
       // Hide old panel well before transition completes to avoid flicker
-      setTimeout(() => {
+      const hideId = window.setTimeout(() => {
+        this.pendingTimeouts.delete(hideId);
+        if (!this.isConnected || !oldPanel.isConnected) return;
         oldPanel.hidden = true;
         oldPanel.removeAttribute('transition-out');
       }, outDuration - 50); // Hide 50ms early to prevent flicker
-      
+      this.pendingTimeouts.add(hideId);
+
       // Clean up new panel transition attribute and unlock height
-      setTimeout(() => {
-        newPanel.removeAttribute('transition-in');
+      const cleanupId = window.setTimeout(() => {
+        this.pendingTimeouts.delete(cleanupId);
+        if (!this.isConnected) return;
+        if (newPanel.isConnected) {
+          newPanel.removeAttribute('transition-in');
+        }
         if (this.panelsContainer) {
           // Reset to auto height without animation to prevent bounce
           this.panelsContainer.style.height = '';
           this.panelsContainer.style.overflow = '';
         }
       }, maxDuration);
+      this.pendingTimeouts.add(cleanupId);
     } else {
       // No transition - immediate switch
       this.panels.forEach((panel, index) => {

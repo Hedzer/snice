@@ -13,7 +13,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
   @property({ attribute: 'from-rss' })
   fromRss: string = '';
 
-  @property() title: string = '';
+  @property({ attribute: false }) title: string = '';
   @property() show: string = '';
   @property() artwork: string = '';
   @property() description: string = '';
@@ -442,11 +442,21 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
     this.playbackRate = rate;
   }
 
+  private pendingSeekListener: (() => void) | null = null;
+
   loadEpisode(index: number): void {
     if (index < 0 || index >= this.episodes.length) return;
 
     // Save position of current episode before switching
     this.savePosition();
+
+    // Cancel any previous pending seek-on-metadata — rapid episode switching
+    // would otherwise stack listeners and cause the wrong position to be
+    // applied when the new episode's metadata loads.
+    if (this.pendingSeekListener && this.audioElement) {
+      this.audioElement.removeEventListener('loadedmetadata', this.pendingSeekListener);
+      this.pendingSeekListener = null;
+    }
 
     const episode = this.episodes[index];
     this.currentEpisodeIndex = index;
@@ -460,11 +470,14 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
     // Restore saved position for this episode
     const saved = this.getSavedPosition(episode.src);
     if (saved > 0) {
-      // Wait for metadata to load before seeking
       const onLoaded = () => {
         this.seekTo(saved);
-        this.audioElement?.removeEventListener('loadedmetadata', onLoaded);
+        if (this.audioElement && this.pendingSeekListener === onLoaded) {
+          this.audioElement.removeEventListener('loadedmetadata', onLoaded);
+          this.pendingSeekListener = null;
+        }
       };
+      this.pendingSeekListener = onLoaded;
       this.audioElement?.addEventListener('loadedmetadata', onLoaded);
     }
   }

@@ -312,14 +312,16 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     this.dispatchCloseEvent();
   }
 
-  private getFocusableElements(): NodeListOf<Element> {
-    if (!this.drawerElement) return document.querySelectorAll('none');
-    
-    return this.drawerElement.querySelectorAll(
+  private getFocusableElements(): Element[] {
+    if (!this.drawerElement) return [];
+    const selector =
       'a[href], button:not([disabled]), textarea:not([disabled]), ' +
       'input:not([disabled]), select:not([disabled]), ' +
-      '[tabindex]:not([tabindex="-1"])'
-    );
+      '[tabindex]:not([tabindex="-1"])';
+    // Include slotted (light DOM) focusables, same fix as modal.
+    const shadow = Array.from(this.drawerElement.querySelectorAll(selector));
+    const light = Array.from(this.querySelectorAll(selector));
+    return [...shadow, ...light];
   }
 
   private _lastEventType: string | null = null;

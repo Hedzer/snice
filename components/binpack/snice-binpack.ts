@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, parseDuration } from 'snice';
 import { html, css } from 'snice';
 import cssContent from './snice-binpack.css?inline';
 import type { SniceBinpackElement, BinpackLayoutCompleteDetail, BinpackFitCompleteDetail, BinpackDragItemPositionedDetail, BinpackLayout, BinpackLayoutEntry, Rect } from './snice-binpack.types';
@@ -801,7 +801,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
         item.classList.remove('binpack-positioning');
         this.hidePlaceholder();
       }
-    }, parseFloat(this.transitionDuration) * 1000 + 100);
+    }, parseDuration(this.transitionDuration).milliseconds() + 100);
   }
 
   private updateShiftTargets(): void {

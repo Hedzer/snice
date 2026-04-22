@@ -83,10 +83,33 @@ export async function performTransition(
   const inEndStyles = transition.in ? parseStyles(transition.in) : { opacity: '1' };
 
   const containerStyle = (container as HTMLElement).style;
-  const originalPosition = containerStyle.position;
   const isLayoutElement = container.tagName.includes('-') && container.shadowRoot;
 
-  if (!isLayoutElement) containerStyle.position = 'relative';
+  // Track the position we were ORIGINALLY given, not what a concurrent
+  // transition may have already written. The first transition to touch this
+  // container wins; subsequent overlapping transitions reuse the same value
+  // and the last one to finish restores it.
+  const POS_KEY = Symbol.for('snice:transition-original-position');
+  const POS_COUNT = Symbol.for('snice:transition-count');
+  const c = container as any;
+  if (!isLayoutElement) {
+    if (!(POS_KEY in c)) {
+      c[POS_KEY] = containerStyle.position;
+      c[POS_COUNT] = 0;
+    }
+    c[POS_COUNT]++;
+    containerStyle.position = 'relative';
+  }
+
+  const restorePosition = () => {
+    if (isLayoutElement) return;
+    c[POS_COUNT]--;
+    if (c[POS_COUNT] <= 0) {
+      containerStyle.position = c[POS_KEY];
+      delete c[POS_KEY];
+      delete c[POS_COUNT];
+    }
+  };
 
   const isSlotted = oldElement.hasAttribute('slot') || newElement.hasAttribute('slot');
 
@@ -108,7 +131,11 @@ export async function performTransition(
     case TransitionMode.SEQUENTIAL:
       Object.assign(oldElement.style, outStyles);
       await new Promise(resolve => setTimeout(resolve, outDuration));
-      if (isStale()) { if (newElement.parentNode === container) newElement.remove(); return; }
+      if (isStale()) {
+        if (newElement.parentNode === container) newElement.remove();
+        restorePosition();
+        return;
+      }
       Object.assign(newElement.style, inEndStyles);
       await new Promise(resolve => setTimeout(resolve, inDuration));
       break;
@@ -119,6 +146,7 @@ export async function performTransition(
     // oldElement (the newer transition owns it now) and remove OUR newElement
     // since the newer transition appended its own.
     if (newElement.parentNode === container) newElement.remove();
+    restorePosition();
     return;
   }
 
@@ -130,7 +158,7 @@ export async function performTransition(
     newElement.style[prop as any] = '';
   });
 
-  if (!isLayoutElement) containerStyle.position = originalPosition;
+  restorePosition();
 }
 
 /**

@@ -377,7 +377,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: null, needsNewLayout: true };
   }
 
-  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean, currentPath: string, routeParams: RouteParams): Promise<void> {
+  async function renderWithLayout(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layoutElement: HTMLElement | null, needsNewLayout: boolean, currentPath: string, routeParams: RouteParams, stale?: () => boolean): Promise<void> {
     const currentLayout = layoutElement || getCurrentLayoutElement(target);
     if (!currentLayout) {
       return;
@@ -392,12 +392,16 @@ export function Router(options: RouterOptions): RouterInstance {
     if (shouldTransition) {
       pageElement.setAttribute('slot', 'page');
       await performTransition(currentLayout, oldPageInLayout!, pageElement, transition!);
+      if (stale && stale()) return;
       if (needsNewLayout) {
         target.innerHTML = '';
         target.appendChild(currentLayout);
       }
       return;
     }
+
+    // Guard before committing DOM changes.
+    if (stale && stale()) return;
 
     const existingPages = currentLayout.querySelectorAll('[slot="page"]');
     existingPages.forEach(page => page.remove());
@@ -410,32 +414,36 @@ export function Router(options: RouterOptions): RouterInstance {
     }
   }
 
-  async function renderDirect(target: Element, pageElement: HTMLElement, transition: Transition | undefined): Promise<void> {
+  async function renderDirect(target: Element, pageElement: HTMLElement, transition: Transition | undefined, stale?: () => boolean): Promise<void> {
     const currentElementInTarget = target.children[0] as HTMLElement | null;
     const shouldTransition = !!(transition && currentElementInTarget);
-    
+
     if (shouldTransition) {
       await performTransition(target, currentElementInTarget!, pageElement, transition!);
       return;
     }
-    
+
+    // Guard against superseded navigation before committing DOM.
+    if (stale && stale()) return;
     target.innerHTML = '';
     target.appendChild(pageElement);
   }
 
-  async function renderPage(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layout: string | false | undefined, path: string, routeParams: RouteParams): Promise<void> {
+  async function renderPage(target: Element, pageElement: HTMLElement, transition: Transition | undefined, layout: string | false | undefined, path: string, routeParams: RouteParams, stale?: () => boolean): Promise<void> {
     const layoutToUse = determineLayout(layout);
     const { element: layoutElement, needsNewLayout } = setupLayout(layoutToUse);
     const finalTransition = transition || options.transition;
 
     const hasLayout = layoutElement !== null || getCurrentLayoutElement(target) !== null;
     if (hasLayout) {
-      await renderWithLayout(target, pageElement, finalTransition, layoutElement, needsNewLayout, path, routeParams);
+      await renderWithLayout(target, pageElement, finalTransition, layoutElement, needsNewLayout, path, routeParams, stale);
+      if (stale && stale()) return;
       emitContextUpdate(target, path, routeParams);
       return;
     }
 
-    await renderDirect(target, pageElement, finalTransition);
+    await renderDirect(target, pageElement, finalTransition, stale);
+    if (stale && stale()) return;
     emitContextUpdate(target, path, routeParams);
   }
 
@@ -465,7 +473,7 @@ export function Router(options: RouterOptions): RouterInstance {
       if (!(await checkGuards(homeRoute?.guards, {}, target))) return;
       if (stale()) return;
       const { element, transition, layout } = createHomeElement();
-      await renderPage(target, element, transition, layout, path, {});
+      await renderPage(target, element, transition, layout, path, {}, stale);
       return;
     }
 
@@ -482,7 +490,7 @@ export function Router(options: RouterOptions): RouterInstance {
     // Route matched
     if (routeResult.result === RouteResult.SUCCESS) {
       const { element, transition, layout, routeParams = {} } = routeResult;
-      await renderPage(target, element!, transition, layout, path, routeParams);
+      await renderPage(target, element!, transition, layout, path, routeParams, stale);
       return;
     }
 

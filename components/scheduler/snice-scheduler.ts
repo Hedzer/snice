@@ -1,4 +1,4 @@
-import { element, property, styles, dispatch, ready, watch, css } from 'snice';
+import { element, property, styles, dispatch, ready, watch, dispose, css } from 'snice';
 import type { SniceSchedulerElement, SchedulerView, SchedulerResource, SchedulerEvent } from './snice-scheduler.types';
 import cssContent from './snice-scheduler.css?inline';
 
@@ -41,6 +41,15 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
     origResourceId?: string | number;
     previewEl?: HTMLElement;
   } | null = null;
+  private activeDragCleanup: (() => void) | null = null;
+
+  @dispose()
+  cleanup() {
+    if (this.activeDragCleanup) {
+      this.activeDragCleanup();
+      this.activeDragCleanup = null;
+    }
+  }
 
   @dispatch('event-create', { bubbles: true, composed: true })
   private emitEventCreate(event: SchedulerEvent) {
@@ -464,6 +473,7 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
     const onMouseUp = (ev: MouseEvent) => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
+      this.activeDragCleanup = null;
 
       if (!this.dragState || this.dragState.type !== 'create') return;
 
@@ -491,6 +501,11 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+    this.activeDragCleanup = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      this.dragState = null;
+    };
   }
 
   private handleEventMoveStart(e: MouseEvent, ev: SchedulerEvent): void {
@@ -544,6 +559,7 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
     const onMouseUp = () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
+      this.activeDragCleanup = null;
 
       if (!this.dragState || this.dragState.type !== 'move') return;
 
@@ -557,6 +573,11 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+    this.activeDragCleanup = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      this.dragState = null;
+    };
   }
 
   private handleEventResizeStart(e: MouseEvent, ev: SchedulerEvent, side: 'left' | 'right'): void {
@@ -606,6 +627,7 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
     const onMouseUp = () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
+      this.activeDragCleanup = null;
 
       if (!this.dragState || this.dragState.type !== 'resize') return;
 
@@ -619,6 +641,11 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+    this.activeDragCleanup = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      this.dragState = null;
+    };
   }
 
   private getCellWidthPx(): number {

@@ -1,4 +1,4 @@
-import { element, property, render, styles, query, dispatch, html, css } from 'snice';
+import { element, property, render, styles, query, dispatch, ready, dispose, html, css } from 'snice';
 import type { CameraFacingMode, CapturedImage, SniceCameraElement, ControlsPosition } from './snice-camera.types';
 import cameraStyles from './snice-camera.css?inline';
 
@@ -46,15 +46,20 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     return css/*css*/`${cameraStyles}`;
   }
 
-  async connectedCallback() {
-    ;
-    // Check for multiple cameras
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(d => d.kind === 'videoinput');
-      this.hasMultipleCameras = videoDevices.length > 1;
-    } catch (error) {
-      this.hasMultipleCameras = false;
+  private deviceCheckDone = false;
+
+  @ready()
+  async init() {
+    // Check for multiple cameras — only once per instance lifetime.
+    if (!this.deviceCheckDone) {
+      this.deviceCheckDone = true;
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        this.hasMultipleCameras = videoDevices.length > 1;
+      } catch {
+        this.hasMultipleCameras = false;
+      }
     }
 
     if (this.autoStart) {
@@ -63,8 +68,8 @@ export class SniceCamera extends HTMLElement implements SniceCameraElement {
     }
   }
 
-  disconnectedCallback() {
-    ;
+  @dispose()
+  cleanup() {
     this.stop();
   }
 

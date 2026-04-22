@@ -92,6 +92,11 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       this.animationFrame = null;
     }
 
+    if (this.playbackInterval !== null) {
+      clearInterval(this.playbackInterval);
+      this.playbackInterval = null;
+    }
+
     this.analyser = null;
     this.visualizerData = null;
 

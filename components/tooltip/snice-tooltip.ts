@@ -385,9 +385,10 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
   }
 
   private handleClickOutside = (e: MouseEvent) => {
-    if (!this.contains(e.target as Node)) {
-      this.hide();
-    }
+    const path = e.composedPath();
+    if (path.includes(this)) return;
+    if (this.portalElement && path.includes(this.portalElement)) return;
+    this.hide();
   };
 
   private createPortalElement(): HTMLElement {

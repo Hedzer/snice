@@ -7,6 +7,13 @@ import type { KeyValueItem, KeyValueVariant, KeyValueMode, SniceKeyValueElement,
 export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   internals!: ElementInternals;
 
+  constructor() {
+    super();
+    if (typeof this.attachInternals == 'function') {
+      this.internals = this.attachInternals();
+    }
+  }
+
   @property()
   label = '';
 

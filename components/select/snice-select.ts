@@ -14,6 +14,18 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.internals = this.attachInternals();
     }
   }
+
+  formResetCallback() {
+    this.value = '';
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Boolean,  })
   disabled = false;
 
@@ -358,12 +370,13 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private setupGlobalListeners() {
     // Create bound handlers
     this.outsideClickHandler = (e: MouseEvent) => {
-      if (!this.contains(e.target as Node) && this.open) {
-        if (this.editable) {
-          this.commitEditableValue();
-        }
-        this.closeDropdown();
+      if (!this.open) return;
+      const path = e.composedPath();
+      if (path.includes(this)) return;
+      if (this.editable) {
+        this.commitEditableValue();
       }
+      this.closeDropdown();
     };
 
     this.globalKeyHandler = (e: KeyboardEvent) => {

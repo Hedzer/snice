@@ -179,19 +179,33 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
     this.updateCheckboxStatesOnly();
   }
 
-  private buildNodeMap() {
-    this.nodeMap.clear();
+  private internalNodes: TreeNode[] = [];
 
-    const addToMap = (nodes: TreeNode[]) => {
-      for (const node of nodes) {
-        this.nodeMap.set(node.id, node);
-        if (node.children) {
-          addToMap(node.children);
-        }
+  private buildNodeMap() {
+    const prevMap = this.nodeMap;
+    this.nodeMap = new Map<string, TreeNode>();
+
+    // Clone nodes so internal state mutation (selected/checked) does NOT leak
+    // back to the caller's data. When rebuilding (e.g. the array was re-assigned
+    // via `this.nodes = [...this.nodes]` to force a re-render), preserve any
+    // existing clones' internal state by id.
+    const buildClone = (node: TreeNode): TreeNode => {
+      const existing = prevMap.get(node.id);
+      const clone: TreeNode = { ...node };
+      if (existing) {
+        if (existing.selected !== undefined) clone.selected = existing.selected;
+        if (existing.checked !== undefined) clone.checked = existing.checked;
+        if (existing.expanded !== undefined) clone.expanded = existing.expanded;
+        if (existing.indeterminate !== undefined) clone.indeterminate = existing.indeterminate;
       }
+      if (node.children) {
+        clone.children = node.children.map(buildClone);
+      }
+      this.nodeMap.set(node.id, clone);
+      return clone;
     };
 
-    addToMap(this.nodes);
+    this.internalNodes = this.nodes.map(buildClone);
   }
 
   private syncNodeStates() {
@@ -265,16 +279,10 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   }
 
   private deselectAllNodes() {
-    // Recursively deselect all nodes
-    const deselect = (nodes: TreeNode[]) => {
-      for (const node of nodes) {
-        node.selected = false;
-        if (node.children) {
-          deselect(node.children);
-        }
-      }
-    };
-    deselect(this.nodes);
+    // Mutate only internal clones, never the caller's input.
+    for (const node of this.nodeMap.values()) {
+      node.selected = false;
+    }
   }
 
   @on('tree-item-check')
@@ -614,30 +622,18 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   }
 
   expandAll() {
-    const expandRecursive = (nodes: TreeNode[]) => {
-      for (const node of nodes) {
-        if (node.children && node.children.length > 0) {
-          node.expanded = true;
-          expandRecursive(node.children);
-        }
+    for (const node of this.nodeMap.values()) {
+      if (node.children && node.children.length > 0) {
+        node.expanded = true;
       }
-    };
-
-    expandRecursive(this.nodes);
+    }
     this.nodes = [...this.nodes];
   }
 
   collapseAll() {
-    const collapseRecursive = (nodes: TreeNode[]) => {
-      for (const node of nodes) {
-        node.expanded = false;
-        if (node.children) {
-          collapseRecursive(node.children);
-        }
-      }
-    };
-
-    collapseRecursive(this.nodes);
+    for (const node of this.nodeMap.values()) {
+      node.expanded = false;
+    }
     this.nodes = [...this.nodes];
   }
 

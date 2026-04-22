@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-range-slider.css?inline';
 import type { RangeSliderOrientation, SniceRangeSliderElement } from './snice-range-slider.types';
 
@@ -257,12 +257,13 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private stopDragging() {
+    const wasDragging = this.draggingThumb !== null;
     this.draggingThumb = null;
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     document.removeEventListener('touchmove', this.handleTouchMove);
     document.removeEventListener('touchend', this.handleTouchEnd);
-    this.emitRangeChange();
+    if (wasDragging && this.isConnected) this.emitRangeChange();
   }
 
   private handleMouseMove = (e: MouseEvent) => {
@@ -367,7 +368,8 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     return { valueLow: this.valueLow, valueHigh: this.valueHigh, component: this };
   }
 
-  disconnectedCallback() {
+  @dispose()
+  cleanup() {
     this.stopDragging();
   }
 }

@@ -11,7 +11,7 @@ export class SniceLeaderboard extends HTMLElement implements SniceLeaderboardEle
   @property()
   size: LeaderboardSize = 'medium';
 
-  @property({ attribute: 'title' })
+  @property({ attribute: false })
   title = '';
 
   /** Internal entries list for rendering. Private — use setEntries() or child elements. */

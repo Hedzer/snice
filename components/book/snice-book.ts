@@ -61,7 +61,13 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   onCoverChange() {
     if (!this.$book) return;
     const img = this.$book.querySelector('.book__page--1 img') as HTMLImageElement;
-    if (img) img.src = this.coverImage;
+    if (img) {
+      img.src = this.coverImage;
+    } else {
+      // No <img> exists — the initial render skipped it because coverImage was
+      // empty. Rebuild the cover so the new image shows up.
+      this.buildPages();
+    }
   }
 
   @on('keydown')

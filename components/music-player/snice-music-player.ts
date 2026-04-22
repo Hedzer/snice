@@ -73,43 +73,47 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
     return css/*css*/`${playerStyles}`;
   }
 
+  private audioListenerController: AbortController | null = null;
+
   @ready()
   init() {
     this.audioElement = new Audio();
     this.audioElement.volume = this.volume;
     this.audioElement.muted = this.muted;
+    this.audioListenerController = new AbortController();
+    const signal = this.audioListenerController.signal;
 
     // Set up audio event listeners
     this.audioElement.addEventListener('loadedmetadata', () => {
       this.duration = this.audioElement!.duration;
       this.state = this.state === 'loading' ? 'paused' : this.state;
-    });
+    }, { signal });
 
     this.audioElement.addEventListener('play', () => {
       this.state = 'playing';
       this.startUpdateInterval();
-    });
+    }, { signal });
 
     this.audioElement.addEventListener('pause', () => {
       if (!this.audioElement!.ended) {
         this.state = 'paused';
       }
       this.stopUpdateInterval();
-    });
+    }, { signal });
 
     this.audioElement.addEventListener('ended', () => {
       this.handleTrackEnded();
-    });
+    }, { signal });
 
     this.audioElement.addEventListener('error', () => {
       this.state = 'error';
       this.emitError(new Error('Failed to load track'));
-    });
+    }, { signal });
 
     this.audioElement.addEventListener('timeupdate', () => {
       this.currentTime = this.audioElement!.currentTime;
       this.emitTimeUpdate();
-    });
+    }, { signal });
 
     // Load first track if available
     if (this.tracks.length > 0) {
@@ -121,6 +125,11 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
   cleanup() {
     this.stop();
     this.stopUpdateInterval();
+
+    if (this.audioListenerController) {
+      this.audioListenerController.abort();
+      this.audioListenerController = null;
+    }
 
     if (this.audioElement) {
       this.audioElement.pause();

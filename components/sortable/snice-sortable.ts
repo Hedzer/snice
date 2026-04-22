@@ -67,12 +67,14 @@ export class SniceSortable extends HTMLElement implements SniceSortableElement {
 
   private getItemFromEvent(e: DragEvent): HTMLElement | null {
     const target = e.target as HTMLElement;
+    const path = e.composedPath();
     if (this.handle) {
       const handleEl = target.closest(this.handle);
       if (!handleEl) return null;
       return handleEl.closest('[draggable]') as HTMLElement || target;
     }
-    return this.items.find(item => item === target || item.contains(target)) || null;
+    // Use composedPath so targets inside nested shadow DOM still match.
+    return this.items.find(item => path.includes(item)) || null;
   }
 
   private onDragStart = (e: DragEvent) => {

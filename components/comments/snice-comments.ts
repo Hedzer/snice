@@ -51,6 +51,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
   @query('.comments__new-input')
   private newInput?: HTMLTextAreaElement;
 
+  @property({ attribute: false })
   private replyingTo: string | null = null;
   private replyText = '';
   private newCommentText = '';

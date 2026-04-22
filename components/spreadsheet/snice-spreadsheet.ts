@@ -1,4 +1,4 @@
-import { element, property, query, ready, render, styles, dispatch, watch, on, html, css } from 'snice';
+import { element, property, query, ready, render, styles, dispatch, watch, on, dispose, html, css } from 'snice';
 import type { SpreadsheetColumn, CellPosition, CellRange, UndoEntry, SniceSpreadsheetElement } from './snice-spreadsheet.types';
 import sheetStyles from './snice-spreadsheet.css?inline';
 
@@ -52,6 +52,16 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   @ready()
   init() {
     this.rebuild();
+  }
+
+  @dispose()
+  cleanup() {
+    if (this.boundDragMove) { document.removeEventListener('mousemove', this.boundDragMove); this.boundDragMove = null; }
+    if (this.boundDragUp) { document.removeEventListener('mouseup', this.boundDragUp); this.boundDragUp = null; }
+    if (this.boundResizeMove) { document.removeEventListener('mousemove', this.boundResizeMove); this.boundResizeMove = null; }
+    if (this.boundResizeUp) { document.removeEventListener('mouseup', this.boundResizeUp); this.boundResizeUp = null; }
+    if (this.boundCloseContext) { document.removeEventListener('mousedown', this.boundCloseContext); this.boundCloseContext = null; }
+    if (this.boundCloseContextKey) { document.removeEventListener('keydown', this.boundCloseContextKey); this.boundCloseContextKey = null; }
   }
 
   @watch('data', 'columns')
@@ -191,6 +201,8 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     }
   }
 
+  private resolvingCells: Set<string> = new Set();
+
   private resolveRange(rangeStr: string): any[] {
     const parts = rangeStr.split(':');
     if (parts.length === 2) {
@@ -201,8 +213,17 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       for (let r = start.row; r <= end.row; r++) {
         for (let c = start.col; c <= end.col; c++) {
           if (r < this.data.length && c < (this.data[r]?.length || 0)) {
+            const key = `${r},${c}`;
+            if (this.resolvingCells.has(key)) continue;
             const raw = this.data[r][c];
-            const val = typeof raw === 'string' && raw.startsWith('=') ? this.resolveValue(raw) : raw;
+            let val: any;
+            if (typeof raw === 'string' && raw.startsWith('=')) {
+              this.resolvingCells.add(key);
+              try { val = this.resolveValue(raw); }
+              finally { this.resolvingCells.delete(key); }
+            } else {
+              val = raw;
+            }
             const num = typeof val === 'number' ? val : parseFloat(val);
             if (!isNaN(num)) values.push(num);
           }
@@ -212,8 +233,15 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     }
     const ref = this.parseCellRef(rangeStr.trim());
     if (ref && ref.row < this.data.length && ref.col < (this.data[ref.row]?.length || 0)) {
-      const val = this.resolveValue(this.data[ref.row][ref.col]);
-      return [typeof val === 'number' ? val : parseFloat(val)].filter(v => !isNaN(v));
+      const key = `${ref.row},${ref.col}`;
+      if (this.resolvingCells.has(key)) return [];
+      this.resolvingCells.add(key);
+      try {
+        const val = this.resolveValue(this.data[ref.row][ref.col]);
+        return [typeof val === 'number' ? val : parseFloat(val)].filter(v => !isNaN(v));
+      } finally {
+        this.resolvingCells.delete(key);
+      }
     }
     return [];
   }
@@ -514,6 +542,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     switch (action) {
       case 'cut': this.handleCopyCells(); this.clearSelectedCells(); break;
       case 'copy': this.handleCopyCells(); break;
+      case 'paste': this.pasteFromClipboard(row, col); break;
       case 'insert-row-above': this.insertRow(row); break;
       case 'insert-row-below': this.insertRow(row + 1); break;
       case 'delete-row': this.deleteRow(row); break;
@@ -696,6 +725,23 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       e.clipboardData?.setData('text/plain', String(this.getCell(this.selectedCell.row, this.selectedCell.col) ?? ''));
     }
     e.preventDefault();
+  }
+
+  private async pasteFromClipboard(row: number, col: number) {
+    if (this.readonly) return;
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text) return;
+      const rows = text.split('\n').filter(r => r.length > 0);
+      for (let r = 0; r < rows.length; r++) {
+        const cells = rows[r].split('\t');
+        for (let c = 0; c < cells.length; c++) {
+          this.setCell(row + r, col + c, cells[c]);
+        }
+      }
+    } catch {
+      // Clipboard read not available / permission denied — silently no-op.
+    }
   }
 
   @on('paste')

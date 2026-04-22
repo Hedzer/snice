@@ -128,7 +128,10 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
       margin: this.margin
     } as any);
 
-    this.applyOverlays();
+    // Defer overlay pass to next frame so the QR library has finished drawing
+    // to the canvas. Without this, applyOverlays reads empty imgData when
+    // margin>0 and the first render comes out blank.
+    requestAnimationFrame(() => this.applyOverlays());
   }
 
   private applyOverlays() {

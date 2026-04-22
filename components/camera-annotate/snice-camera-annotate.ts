@@ -38,13 +38,18 @@ export class SniceCameraAnnotate extends HTMLElement implements SniceCameraAnnot
   // Drawing state
   private isDrawing: boolean = false;
   private currentPoints: { x: number; y: number }[] = [];
+  @property({ type: Array, attribute: false })
   private strokes: AnnotationStroke[] = [];
+  @property({ type: Array, attribute: false })
   private annotations: Annotation[] = [];
+  @property({ attribute: false })
   private activeColor: string = PRESET_COLORS[0];
   private colorIndex: number = 0;
+  @property({ type: Number, attribute: false })
   private strokeWidth: number = 3;
 
   // Highlight state
+  @property({ attribute: false })
   private highlightedAnnotationId: string | null = null;
 
   @styles()

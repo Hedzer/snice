@@ -71,8 +71,13 @@ export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult 
   };
 
   // Try to create constructable stylesheet for better performance
-  // This will be cached and reused across instances
-  if (typeof CSSStyleSheet !== 'undefined' && 'adoptedStyleSheets' in Document.prototype) {
+  // This will be cached and reused across instances. Guard against envs
+  // without a Document global (SSR, workers).
+  if (
+    typeof CSSStyleSheet !== 'undefined' &&
+    typeof Document !== 'undefined' &&
+    'adoptedStyleSheets' in Document.prototype
+  ) {
     try {
       const sheet = new CSSStyleSheet();
       (sheet as any).replaceSync(cssText);

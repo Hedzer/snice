@@ -1,4 +1,4 @@
-import { element, property, query, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import { element, property, query, watch, ready, dispose, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-modal.css?inline';
 import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
@@ -41,6 +41,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   backdrop?: HTMLElement;
 
   private previousFocus: HTMLElement | null = null;
+  private lockedBodyScroll = false;
 
   @render()
   render() {
@@ -99,6 +100,14 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     }
   }
 
+  @dispose()
+  cleanup() {
+    if (this.lockedBodyScroll) {
+      document.body.style.overflow = '';
+      this.lockedBodyScroll = false;
+    }
+  }
+
   @watch('open')
   handleOpenChange() {
     // Handle side effects when modal opens/closes
@@ -142,6 +151,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
 
     // Lock body scroll
     document.body.style.overflow = 'hidden';
+    this.lockedBodyScroll = true;
 
     // Focus first focusable element or modal itself
     requestAnimationFrame(() => {
@@ -159,12 +169,17 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   }
 
   private hideModal() {
-    // Restore body scroll
-    document.body.style.overflow = '';
+    // Restore body scroll (only if we locked it)
+    if (this.lockedBodyScroll) {
+      document.body.style.overflow = '';
+      this.lockedBodyScroll = false;
+    }
 
-    // Restore previous focus
+    // Restore previous focus (only if still in the DOM)
     if (this.previousFocus) {
-      this.previousFocus.focus();
+      if (this.previousFocus.isConnected) {
+        this.previousFocus.focus();
+      }
       this.previousFocus = null;
     }
 

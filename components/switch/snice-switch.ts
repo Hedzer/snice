@@ -13,6 +13,17 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     }
   }
 
+  formResetCallback() {
+    this.checked = false;
+    if (this.internals) {
+      this.internals.setFormValue(null);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({ type: Boolean,  })
   checked = false;
 

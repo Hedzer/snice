@@ -1,4 +1,4 @@
-import { element, property, render, styles, html, css, dispatch } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 import cssContent from './snice-link.css?inline';
 import type { LinkVariant, LinkTarget, SniceLinkElement } from './snice-link.types';
 
@@ -30,7 +30,6 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
     return css/*css*/`${cssContent}`;
   }
 
-  @dispatch('click')
   private handleClick(e: MouseEvent) {
     if (this.disabled) {
       e.preventDefault();

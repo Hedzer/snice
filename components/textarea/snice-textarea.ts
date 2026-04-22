@@ -13,6 +13,17 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     }
   }
 
+  formResetCallback() {
+    this.value = '';
+    if (this.internals) {
+      this.internals.setFormValue(this.value);
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
   @property({  })
   size: TextareaSize = 'medium';
 

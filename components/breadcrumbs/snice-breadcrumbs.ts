@@ -45,12 +45,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
             const isActive = item.active || isLast;
             const isHidden = hasCollapsed && index > 0 && index < visibleItems.length - 2;
             const itemClass = `breadcrumb-item${isActive ? ' breadcrumb-item--active' : ''}${isHidden ? ' breadcrumb-item--hidden' : ''}`;
+            const allIndex = allItems.indexOf(item);
 
             return html/*html*/`
               <li class="${itemClass}">
                 <if ${item.href && !isActive}>
                   <a part="link" href="${item.href}"
                      class="breadcrumb-link"
+                     data-index="${allIndex}"
                      aria-current="${isActive ? 'page' : ''}"
                      tabindex="0">
                     ${this.renderItemIcon(item)}
@@ -120,20 +122,20 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     }
 
     // Handle breadcrumb link click
-    if (target.matches('.breadcrumb-link')) {
-      const link = target as HTMLAnchorElement;
-      const label = link.textContent?.trim() || '';
+    const link = target.closest('.breadcrumb-link') as HTMLAnchorElement | null;
+    if (link) {
       const href = link.getAttribute('href') || '';
-
-      // Find the item index
+      const idxAttr = link.getAttribute('data-index');
       const allItems = this.getAllItems();
-      const index = allItems.findIndex(item => item.label === label);
+      const index = idxAttr !== null ? parseInt(idxAttr, 10) : -1;
+      const item = index >= 0 && index < allItems.length ? allItems[index] : undefined;
+      const label = item?.label ?? link.textContent?.trim() ?? '';
 
       this.dispatchEvent(new CustomEvent('breadcrumb-click', {
         bubbles: true,
         composed: true,
         detail: {
-          item: allItems[index],
+          item,
           index,
           href,
           label

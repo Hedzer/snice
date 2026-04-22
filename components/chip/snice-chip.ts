@@ -41,6 +41,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
   @query('.chip-remove')
   removeButton?: HTMLButtonElement;
 
+  @property({ type: Boolean, attribute: false })
   private hasIconSlot = false;
 
   @on('slotchange', { target: 'slot[name="icon"]' })

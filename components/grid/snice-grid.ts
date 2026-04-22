@@ -119,7 +119,9 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
       this.setupDragListeners();
     }
     this.performLayout();
-    setTimeout(() => this.setAttribute('ready', ''), 10);
+    // Wait for the browser to commit layout before flagging ready so
+    // CSS transitions on items don't animate from their initial position.
+    requestAnimationFrame(() => requestAnimationFrame(() => this.setAttribute('ready', '')));
   }
 
   @dispose()
@@ -719,7 +721,10 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     this.performLayout();
 
     // Safety timeout — interpret unit correctly (ms stays ms, s → *1000).
+    // Also remove the transitionend listener to prevent leak when drag snaps
+    // to the same cell and no transition fires.
     setTimeout(() => {
+      item.removeEventListener('transitionend', onTransitionEnd);
       if (item.classList.contains('grid-positioning')) {
         item.classList.remove('grid-positioning');
         this.hidePlaceholder();

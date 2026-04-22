@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, watch, html, css } from 'snice';
+import { element, property, render, styles, dispatch, watch, dispose, html, css } from 'snice';
 import cssContent from './snice-recipe.css?inline';
 import type { RecipeDifficulty, RecipeVariant, RecipeIngredient, RecipeStep, RecipeNutrition, SniceRecipeElement } from './snice-recipe.types';
 
@@ -197,6 +197,14 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
 
     this.activeTimers.set(stepIndex, { remaining, intervalId, done: false });
     this.timerVersion++;
+  }
+
+  @dispose()
+  cleanup() {
+    for (const [, timer] of this.activeTimers.entries()) {
+      clearInterval(timer.intervalId);
+    }
+    this.activeTimers.clear();
   }
 
   private cancelTimer(stepIndex: number): void {

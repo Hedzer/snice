@@ -115,10 +115,19 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   }
 
   private pendingPage: number | null = null;
+  private currentRenderTask: { cancel: () => void; promise: Promise<unknown> } | null = null;
 
   private async renderPage(): Promise<void> {
     if (!this.pdfDoc) return;
     if (this.page < 1 || this.page > this.totalPages) return;
+
+    // Cancel any in-flight render so we don't waste CPU or hold the canvas
+    // while the user is clicking through pages.
+    if (this.currentRenderTask) {
+      try { this.currentRenderTask.cancel(); } catch { /* ignore */ }
+      this.currentRenderTask = null;
+    }
+
     // If a render is already in flight, remember the requested page and
     // re-render once it finishes. Previously, rapid page/zoom changes were
     // silently dropped.
@@ -159,9 +168,13 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
       this.canvas.width = viewport.width;
       this.canvas.height = viewport.height;
 
-      await page.render({ canvasContext: ctx, viewport }).promise;
+      const task = page.render({ canvasContext: ctx, viewport });
+      this.currentRenderTask = task;
+      await task.promise;
+      this.currentRenderTask = null;
       this.rendering = false;
     } catch {
+      this.currentRenderTask = null;
       this.rendering = false;
     }
 

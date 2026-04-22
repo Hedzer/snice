@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-slider.css?inline';
 import type { SliderSize, SliderVariant, SniceSliderElement } from './snice-slider.types';
 
@@ -11,6 +11,17 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+  }
+
+  formResetCallback() {
+    this.value = this.min;
+    if (this.internals) {
+      this.internals.setFormValue(String(this.value));
+    }
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   @property({  })
@@ -251,12 +262,13 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private stopDragging() {
+    const wasDragging = this.isDragging;
     this.isDragging = false;
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     document.removeEventListener('touchmove', this.handleTouchMove);
     document.removeEventListener('touchend', this.handleTouchEnd);
-    this.dispatchChangeEvent();
+    if (wasDragging && this.isConnected) this.dispatchChangeEvent();
   }
 
   private handleMouseMove = (e: MouseEvent) => {
@@ -422,7 +434,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     this.input?.setCustomValidity(message);
   }
 
-  disconnectedCallback() {
+  @dispose()
+  cleanup() {
     this.stopDragging();
   }
 }
