@@ -16,7 +16,9 @@ let contextIdCounter = 0;
  * Represents the bundled router state that can notify registered elements of changes
  */
 export class Context {
-  private [REGISTERED_ELEMENTS] = new WeakMap<HTMLElement, string>();
+  // Stores the SET of wrapped-method names per element so that classes with
+  // multiple @context() handlers register every method, not just the last one.
+  private [REGISTERED_ELEMENTS] = new WeakMap<HTMLElement, Set<string>>();
   private [REGISTERED_ELEMENTS_SET] = new Set<HTMLElement>();
   private [IS_UPDATING] = false;
 
@@ -65,7 +67,13 @@ export class Context {
    * @internal Used by @context decorator
    */
   [CONTEXT_REGISTER](element: HTMLElement, methodName: string): void {
-    (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, string>).set(element, methodName);
+    const map = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
+    let names = map.get(element);
+    if (!names) {
+      names = new Set<string>();
+      map.set(element, names);
+    }
+    names.add(methodName);
     (this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>).add(element);
   }
 
@@ -74,7 +82,7 @@ export class Context {
    * @internal Used by @context decorator cleanup
    */
   [CONTEXT_UNREGISTER](element: HTMLElement): void {
-    (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, string>).delete(element);
+    (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>).delete(element);
     (this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>).delete(element);
   }
 
@@ -107,18 +115,21 @@ export class Context {
 
     this[IS_UPDATING] = true;
 
-    // Notify all registered elements by calling their methods directly
+    // Notify all registered elements by calling EVERY registered method
+    // name on each. Classes with multiple @context() methods get all fired.
     const elementsSet = this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>;
-    const elementsMap = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, string>;
+    const elementsMap = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
 
     for (const element of elementsSet) {
-      const methodName = elementsMap.get(element);
-      if (methodName && typeof (element as any)[methodName] === 'function') {
-        try {
-          (element as any)[methodName](this);
-        } catch (error) {
-          // Log error but continue notifying other elements
-          console.error(`Error calling @context method ${methodName}:`, error);
+      const names = elementsMap.get(element);
+      if (!names) continue;
+      for (const methodName of names) {
+        if (typeof (element as any)[methodName] === 'function') {
+          try {
+            (element as any)[methodName](this);
+          } catch (error) {
+            console.error(`Error calling @context method ${methodName}:`, error);
+          }
         }
       }
     }
@@ -131,9 +142,12 @@ export class Context {
    * @internal Used by @context decorator
    */
   [CONTEXT_NOTIFY_ELEMENT](element: HTMLElement): void {
-    const methodName = (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, string>).get(element);
-    if (methodName && typeof (element as any)[methodName] === 'function') {
-      (element as any)[methodName](this);
+    const names = (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>).get(element);
+    if (!names) return;
+    for (const methodName of names) {
+      if (typeof (element as any)[methodName] === 'function') {
+        (element as any)[methodName](this);
+      }
     }
   }
 }
