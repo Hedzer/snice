@@ -1380,18 +1380,21 @@ export class SniceTable extends HTMLElement {
     // Tool column headers — must match createRow order
     if (this.rowReorder && this.rowDnD.isEnabled()) {
       const th = document.createElement('th');
+      th.setAttribute('scope', 'col');
       th.className = 'drag-handle-cell';
       headerRow.appendChild(th);
     }
 
     if (this.masterDetail.isEnabled()) {
       const th = document.createElement('th');
+      th.setAttribute('scope', 'col');
       th.className = 'detail-toggle-cell';
       headerRow.appendChild(th);
     }
 
     if (this.selectable) {
       const selectCell = document.createElement('th');
+      selectCell.setAttribute('scope', 'col');
       selectCell.className = 'select-column';
       const filteredData = this.getFilteredData();
       const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
@@ -1420,6 +1423,14 @@ export class SniceTable extends HTMLElement {
 
       const th = document.createElement('th');
       th.setAttribute('data-key', column.key);
+      th.setAttribute('scope', 'col');
+      // Reflect current sort direction for SR users.
+      if (this.sortable && column.sortable !== false) {
+        const sortState = this.currentSort.find(s => s.column === column.key);
+        if (sortState?.direction === 'asc') th.setAttribute('aria-sort', 'ascending');
+        else if (sortState?.direction === 'desc') th.setAttribute('aria-sort', 'descending');
+        else th.setAttribute('aria-sort', 'none');
+      }
 
       // Apply column width
       const state = this.columnManager.getState(column.key);
