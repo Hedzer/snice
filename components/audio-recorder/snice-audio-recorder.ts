@@ -94,6 +94,11 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
     this.analyser = null;
     this.visualizerData = null;
+
+    if (this.recordedUrl) {
+      URL.revokeObjectURL(this.recordedUrl);
+      this.recordedUrl = '';
+    }
   }
 
   @render()
@@ -258,11 +263,19 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     return 4;
   }
 
+  private wasCanceled = false;
+
   async start(): Promise<void> {
     try {
       this.errorMessage = '';
       this.audioChunks = [];
-      this.recordedUrl = '';
+      this.duration = 0;
+      this.wasCanceled = false;
+      // Revoke the previous recording's blob URL so it doesn't leak
+      if (this.recordedUrl) {
+        URL.revokeObjectURL(this.recordedUrl);
+        this.recordedUrl = '';
+      }
 
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -280,6 +293,12 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
       };
 
       this.mediaRecorder.onstop = () => {
+        // Suppress the native onstop → recorder-stop emit path when the user
+        // explicitly cancelled; cancel() fires its own event.
+        if (this.wasCanceled) {
+          this.wasCanceled = false;
+          return;
+        }
         this.handleRecordingComplete();
       };
 
@@ -364,6 +383,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
 
   cancel(): void {
     if (this.mediaRecorder) {
+      this.wasCanceled = true;
       this.mediaRecorder.stop();
     }
 

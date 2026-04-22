@@ -148,7 +148,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     if (!isArrowKey) return;
 
     e.preventDefault();
-    const radios = Array.from(document.querySelectorAll<SniceRadio>(`snice-radio[name="${this.name}"]:not([disabled])`));
+    const radios = this.findGroupRadios().filter(r => !r.disabled);
     if (radios.length < 2) return;
 
     const currentIndex = radios.indexOf(this);
@@ -237,10 +237,8 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
     const exceptElement = except || this;
 
-    // Find all radios with the same name and uncheck them
-    const radios = document.querySelectorAll(`snice-radio[name="${this.name}"]`) as NodeListOf<SniceRadio>;
-
-    radios.forEach(radio => {
+    // Find all radios with the same name in the correct scope and uncheck them
+    this.findGroupRadios().forEach(radio => {
       if (radio !== exceptElement && radio.checked) {
         // Set flag to prevent recursive watch handler calls
         radio._isUpdatingGroup = true;
@@ -248,6 +246,24 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
         radio._isUpdatingGroup = false;
       }
     });
+  }
+
+  /**
+   * Find all radios in the same group as this one. Scope rules:
+   *   1. If the radio is inside a <form>, only search within that form.
+   *   2. Otherwise search within the enclosing root (document or shadow root).
+   * This correctly coordinates radios that live inside a web component's
+   * shadow DOM (where `document.querySelectorAll` would never find them)
+   * and prevents two unrelated forms from cross-contaminating.
+   */
+  private findGroupRadios(): SniceRadio[] {
+    if (!this.name) return [];
+    const form = this.closest('form');
+    const scope: ParentNode = form
+      ?? (this.getRootNode() as unknown as ParentNode)
+      ?? document;
+    const selector = `snice-radio[name="${CSS.escape(this.name)}"]`;
+    return Array.from((scope as any).querySelectorAll(selector) as NodeListOf<SniceRadio>);
   }
 
   @dispatch('radio-change', { bubbles: true, composed: true })

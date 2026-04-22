@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, watch, ready, dispatch, on, render, styles, html, css } from 'snice';
+import { element, property, query, queryAll, watch, ready, dispose, dispatch, on, render, styles, html, css } from 'snice';
 import cssContent from './snice-tabs.css?inline';
 import type { TabsPlacement, SniceTabElement, SniceTabPanelElement, TabChangeDetail, TabSelectDetail } from './snice-tabs.types';
 import { transitions } from '../transitions';
@@ -88,20 +88,27 @@ export class SniceTabs extends HTMLElement {
     return css/*css*/`${cssContent}`;
   }
 
+  private resizeObserver?: ResizeObserver;
+
   @ready()
   init() {
     this.setupTabs();
     this.updateScrollButtons();
 
-    // Update scroll buttons on resize
-    const resizeObserver = new ResizeObserver(() => {
+    this.resizeObserver = new ResizeObserver(() => {
       this.updateScrollButtons();
       this.updateIndicator();
     });
 
     if (this.nav) {
-      resizeObserver.observe(this.nav);
+      this.resizeObserver.observe(this.nav);
     }
+  }
+
+  @dispose()
+  private cleanupResize() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
   }
 
   @watch('selected')

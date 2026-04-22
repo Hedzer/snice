@@ -657,17 +657,25 @@ export function watch(...propertyNames: string[]) {
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Dedup by method reference — allows child classes to register
-      // their own method with the same name as a parent's
-      if (!constructor.__watchMethods) constructor.__watchMethods = new Set();
-      if (constructor.__watchMethods.has(target)) return;
-      constructor.__watchMethods.add(target);
+      // Dedup by (method reference, propertyName) so that multiple @watch
+      // decorators on the same method register for each key independently,
+      // while still preventing duplicate registration when child classes
+      // inherit/override a method with the same name.
+      if (!constructor.__watchMethods) constructor.__watchMethods = new Map();
+      let registered: Set<string> = constructor.__watchMethods.get(target);
+      if (!registered) {
+        registered = new Set<string>();
+        constructor.__watchMethods.set(target, registered);
+      }
 
       if (!constructor[PROPERTY_WATCHERS]) {
         constructor[PROPERTY_WATCHERS] = new Map();
       }
 
       for (const propertyName of propertyNames) {
+        if (registered.has(propertyName)) continue;
+        registered.add(propertyName);
+
         if (!constructor[PROPERTY_WATCHERS].has(propertyName)) {
           constructor[PROPERTY_WATCHERS].set(propertyName, []);
         }

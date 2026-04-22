@@ -244,7 +244,8 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   onReady() {
     requestAnimationFrame(() => {
       this.initCanvas();
-      this.startLoop();
+      // Do not start the rAF loop on init — it's started on pointerdown and
+      // stopped on pointerup so we don't burn a frame every tick while idle.
     });
   }
 
@@ -323,6 +324,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
 
     this.canvas?.setPointerCapture(e.pointerId);
 
+    this.startLoop();
     this.emitDrawStart(point);
   }
 
@@ -370,6 +372,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     }
 
     this.canvas?.releasePointerCapture(e.pointerId);
+    this.stopLoop();
   }
 
   private getPointerPosition(e: PointerEvent): Point {

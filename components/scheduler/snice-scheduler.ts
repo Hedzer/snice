@@ -747,7 +747,10 @@ export class SniceScheduler extends HTMLElement implements SniceSchedulerElement
   @watch('startHour')
   @watch('endHour')
   handlePropertyChange() {
-    if (this.container) {
+    if (this.container && !this.dragState) {
+      // Skip full re-renders while a drag is in progress — the drag handler
+      // mutates `this.events` on every mousemove, and rebuilding the grid
+      // destroys the DOM node the user is currently interacting with.
       this.renderGrid();
     }
   }

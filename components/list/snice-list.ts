@@ -41,7 +41,10 @@ export class SniceList extends HTMLElement {
     }) as EventListener);
 
     if (this.infinite) {
-      this.setupInfiniteScroll();
+      // @ready can fire before the first shadow DOM render is flushed,
+      // so the sentinel may not exist yet. Defer one microtask so the
+      // IntersectionObserver attaches reliably.
+      queueMicrotask(() => this.setupInfiniteScroll());
     }
   }
 

@@ -114,14 +114,24 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
     }
   }
 
+  private pendingPage: number | null = null;
+
   private async renderPage(): Promise<void> {
-    if (!this.pdfDoc || this.rendering) return;
+    if (!this.pdfDoc) return;
     if (this.page < 1 || this.page > this.totalPages) return;
+    // If a render is already in flight, remember the requested page and
+    // re-render once it finishes. Previously, rapid page/zoom changes were
+    // silently dropped.
+    if (this.rendering) {
+      this.pendingPage = this.page;
+      return;
+    }
 
     this.rendering = true;
+    const targetPage = this.page;
 
     try {
-      const page = await this.pdfDoc.getPage(this.page);
+      const page = await this.pdfDoc.getPage(targetPage);
       const baseViewport = page.getViewport({ scale: 1 });
 
       let scale = this.zoom;
@@ -153,6 +163,14 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
       this.rendering = false;
     } catch {
       this.rendering = false;
+    }
+
+    // If the user changed the page while we were rendering, render again.
+    if (this.pendingPage !== null && this.pendingPage !== targetPage) {
+      this.pendingPage = null;
+      this.renderPage();
+    } else {
+      this.pendingPage = null;
     }
   }
 

@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-file-upload.css?inline';
 import type { FileUploadSize, FileUploadVariant, SniceFileUploadElement } from './snice-file-upload.types';
 
@@ -151,9 +151,31 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     `;
   }
 
+  // Cache of blob URLs per File so re-renders reuse the same URL and we can
+  // revoke on removal/disconnect. Without this, every re-render creates a
+  // fresh URL and never revokes the old ones.
+  private previewUrls = new WeakMap<File, string>();
+
+  private getPreviewUrl(file: File): string {
+    let url = this.previewUrls.get(file);
+    if (!url) {
+      url = URL.createObjectURL(file);
+      this.previewUrls.set(file, url);
+    }
+    return url;
+  }
+
+  private revokePreviewUrl(file: File) {
+    const url = this.previewUrls.get(file);
+    if (url) {
+      URL.revokeObjectURL(url);
+      this.previewUrls.delete(file);
+    }
+  }
+
   private renderFileItem(file: File, index: number) {
     const isImage = file.type.startsWith('image/');
-    const fileUrl = isImage && this.showPreview ? URL.createObjectURL(file) : '';
+    const fileUrl = isImage && this.showPreview ? this.getPreviewUrl(file) : '';
     const formattedSize = this.formatFileSize(file.size);
 
     return html/*html*/`
@@ -320,9 +342,15 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   removeFile(index: number) {
     if (index >= 0 && index < this.selectedFiles.length) {
-      this.selectedFiles.splice(index, 1);
+      const [removed] = this.selectedFiles.splice(index, 1);
+      this.revokePreviewUrl(removed);
       this.updateFormValue();
       this.dispatchChangeEvent();
     }
+  }
+
+  @dispose()
+  private cleanupPreviews() {
+    for (const file of this.selectedFiles) this.revokePreviewUrl(file);
   }
 }
