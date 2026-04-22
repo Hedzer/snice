@@ -116,10 +116,14 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    const content = this.shadowRoot?.innerHTML || '';
+    // Clone the shadow tree and expand each <slot> into its assigned nodes so
+    // light-DOM children (slotted QR code, barcode, etc.) are included in the
+    // print output. Plain innerHTML drops slotted content entirely.
     const stylesText = Array.from(this.shadowRoot?.querySelectorAll('style') || [])
       .map(s => s.textContent)
       .join('\n');
+
+    const content = this.buildPrintableContent();
 
     printWindow.document.write(
       `<!DOCTYPE html><html><head><style>${stylesText}</style></head><body>${content}</body></html>`
@@ -127,6 +131,38 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
     printWindow.document.close();
     printWindow.print();
     printWindow.close();
+  }
+
+  private buildPrintableContent(): string {
+    if (!this.shadowRoot) return '';
+    const container = document.createElement('div');
+    for (const node of Array.from(this.shadowRoot.childNodes)) {
+      if (node.nodeType === 1 && (node as Element).tagName === 'STYLE') continue;
+      container.appendChild(this.cloneExpandingSlots(node));
+    }
+    return container.innerHTML;
+  }
+
+  private cloneExpandingSlots(node: Node): Node {
+    if (node.nodeType === 1 && (node as Element).tagName === 'SLOT') {
+      const slot = node as HTMLSlotElement;
+      const assigned = slot.assignedNodes({ flatten: true });
+      const frag = document.createDocumentFragment();
+      if (assigned.length > 0) {
+        for (const n of assigned) frag.appendChild(n.cloneNode(true));
+      } else {
+        // Fallback content inside the <slot>
+        for (const n of Array.from(slot.childNodes)) {
+          frag.appendChild(this.cloneExpandingSlots(n));
+        }
+      }
+      return frag;
+    }
+    const clone = node.cloneNode(false);
+    for (const child of Array.from(node.childNodes)) {
+      clone.appendChild(this.cloneExpandingSlots(child));
+    }
+    return clone;
   }
 
   private renderDivider(): unknown {
