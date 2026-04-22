@@ -127,6 +127,9 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   passwordToggle?: HTMLButtonElement;
 
   private showPassword = false;
+  // Stable per-instance ids for label + aria-describedby wiring.
+  private inputId = `snice-input-${Math.random().toString(36).slice(2, 10)}`;
+  private descId = `${this.inputId}-desc`;
 
   @render()
   render() {
@@ -147,7 +150,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     return html/*html*/`
       <div class="input-wrapper" part="wrapper">
         <if ${this.label}>
-          <label class="${labelClasses}" part="label">
+          <label class="${labelClasses}" part="label" for="${this.inputId}">
             ${this.label}
           </label>
         </if>
@@ -163,12 +166,15 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
           <input
             class="${inputClasses}"
+            id="${this.inputId}"
             type="${this.type}"
             value="${this.value}"
             placeholder="${this.placeholder}"
             ?disabled="${this.disabled || this.loading}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
+            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             min="${this.min || ''}"
             max="${this.max || ''}"
             step="${this.step || ''}"
@@ -232,10 +238,10 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span class="error-text" part="error-text" id="${this.descId}" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span class="helper-text" part="helper-text" id="${this.descId}">${this.helperText}</span>
           </when>
           <default>
           </default>

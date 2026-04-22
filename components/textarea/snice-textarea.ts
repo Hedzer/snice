@@ -87,6 +87,9 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   @query('.textarea')
   textarea?: HTMLTextAreaElement;
 
+  private inputId = `snice-textarea-${Math.random().toString(36).slice(2, 10)}`;
+  private descId = `${this.inputId}-desc`;
+
   @render()
   render() {
     const textareaClasses = [
@@ -108,7 +111,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     return html/*html*/`
       <div class="textarea-wrapper">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" for="${this.inputId}">
             ${this.label}
           </label>
         </if>
@@ -116,11 +119,14 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
         <div class="textarea-container">
           <textarea
             class="${textareaClasses}"
+            id="${this.inputId}"
             .value="${this.value}"
             placeholder="${this.placeholder}"
             ?disabled="${this.disabled || this.loading}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
+            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             rows="${this.rows}"
             cols="${this.cols > 0 ? this.cols : ''}"
             maxlength="${this.maxlength > 0 ? this.maxlength : ''}"
@@ -147,10 +153,10 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span class="error-text" part="error-text" id="${this.descId}" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span class="helper-text" part="helper-text" id="${this.descId}">${this.helperText}</span>
           </when>
           <default></default>
         </case>
