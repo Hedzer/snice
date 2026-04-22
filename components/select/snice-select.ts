@@ -77,8 +77,16 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @property({  })
   label = '';
 
+  @property({ attribute: 'helper-text' })
+  helperText = '';
+
+  @property({ attribute: 'error-text' })
+  errorText = '';
+
   @property({  })
   placeholder = 'Select an option';
+
+  private descId = `snice-select-desc-${Math.random().toString(36).slice(2, 10)}`;
 
   @property({  attribute: 'max-height' })
   maxHeight = '200px';
@@ -212,8 +220,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             type="button"
             class="${triggerClasses}"
             aria-haspopup="listbox"
-            aria-expanded="false"
+            aria-expanded="${this.open ? 'true' : 'false'}"
             aria-label="${this.label || 'Select'}"
+            aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
+            aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="trigger"
             @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
             @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
@@ -265,6 +275,15 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           </div>
         </div>
 
+        <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
+          <when value="error">
+            <span class="select-error-text" part="error-text" id="${this.descId}" role="alert">${this.errorText}</span>
+          </when>
+          <when value="helper">
+            <span class="select-helper-text" part="helper-text" id="${this.descId}">${this.helperText}</span>
+          </when>
+          <default></default>
+        </case>
       </div>
     `;
   }

@@ -91,6 +91,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   input?: HTMLInputElement;
 
   private isDragging = false;
+  private labelId = `snice-slider-label-${Math.random().toString(36).slice(2, 10)}`;
+  private descId = `snice-slider-desc-${Math.random().toString(36).slice(2, 10)}`;
 
   @render()
   render() {
@@ -130,7 +132,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     return html/*html*/`
       <div class="${wrapperClasses}">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" id="${this.labelId}">
             ${this.label}
           </label>
         </if>
@@ -153,6 +155,9 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
               aria-valuemax="${this.max}"
               aria-valuenow="${this.value}"
               aria-disabled="${this.disabled || this.loading}"
+              aria-labelledby="${this.label ? this.labelId : ''}"
+              aria-label="${this.label ? '' : 'Slider'}"
+              aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
               @mousedown=${this.handleThumbMouseDown}
               @touchstart=${this.handleThumbTouchStart}
               @keydown=${this.handleKeyDown}
@@ -190,10 +195,10 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span class="error-text" part="error-text" id="${this.descId}" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span class="helper-text" part="helper-text" id="${this.descId}">${this.helperText}</span>
           </when>
           <default></default>
         </case>

@@ -75,6 +75,9 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   @query('.switch-state-label--off')
   offLabel?: HTMLElement;
 
+  private inputId = `snice-switch-${Math.random().toString(36).slice(2, 10)}`;
+  private labelId = `${this.inputId}-label`;
+
   @render()
   render() {
     const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}${this.loading ? ' switch-wrapper--loading' : ''}`;
@@ -82,8 +85,9 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
 
     return html/*html*/`
-      <label class="${wrapperClasses}">
+      <label class="${wrapperClasses}" for="${this.inputId}">
         <input
+          id="${this.inputId}"
           type="checkbox"
           class="switch-input"
           ?checked="${this.checked}"
@@ -93,6 +97,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
           value="${this.value}"
           aria-invalid="${this.invalid}"
           aria-checked="${this.checked}"
+          aria-labelledby="${this.label ? this.labelId : ''}"
           role="switch"
           part="input"
         />
@@ -110,7 +115,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
         </span>
 
         <if ${this.label}>
-          <span class="${labelClasses}" part="label">
+          <span class="${labelClasses}" part="label" id="${this.labelId}">
             ${this.label}
           </span>
         </if>
