@@ -365,6 +365,24 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       this.updateView();
     }
   }
+
+  @watch('locale')
+  @watch('firstDayOfWeek')
+  handleWeekdayInputsChange() {
+    if (!this.grid) return;
+    // Rebuild the weekday header row so the new locale / start-of-week is reflected.
+    const existing = this.grid.querySelectorAll('.calendar__weekday');
+    existing.forEach(el => el.remove());
+    const weekdays = this.getWeekdays();
+    weekdays.forEach((day, i) => {
+      const weekdayEl = document.createElement('div');
+      weekdayEl.className = 'calendar__weekday';
+      weekdayEl.textContent = day;
+      // Insert before the first day cell so header row stays at the top
+      this.grid.insertBefore(weekdayEl, this.grid.children[i] || null);
+    });
+    this.updateView();
+  }
 }
 
 declare global {

@@ -156,21 +156,36 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
 
   @styles()
   styles() {
-    const slideWidth = 100 / this.slidesPerView;
-    const gapAdjustment = this.spaceBetween * (this.slidesPerView - 1) / this.slidesPerView;
-
+    // Slide sizing uses CSS custom properties so slidesPerView / spaceBetween
+    // can be updated reactively via @watch without needing to re-adopt the
+    // stylesheet. See applySlideSizing().
     return css/*css*/`
       ${cssContent}
       ::slotted(*) {
         flex: 0 0 auto;
-        width: calc(${slideWidth}% - ${gapAdjustment}px);
-        margin-right: ${this.spaceBetween}px;
+        width: calc(var(--carousel-slide-width, 100%) - var(--carousel-gap-adjust, 0px));
+        margin-right: var(--carousel-space-between, 0px);
         box-sizing: border-box;
       }
       ::slotted(*:last-child) {
         margin-right: 0;
       }
     `;
+  }
+
+  @ready()
+  private initSlideSizing() {
+    this.applySlideSizing();
+  }
+
+  @watch('slidesPerView')
+  @watch('spaceBetween')
+  private applySlideSizing() {
+    const slideWidth = 100 / this.slidesPerView;
+    const gapAdjustment = this.spaceBetween * (this.slidesPerView - 1) / this.slidesPerView;
+    this.style.setProperty('--carousel-slide-width', `${slideWidth}%`);
+    this.style.setProperty('--carousel-gap-adjust', `${gapAdjustment}px`);
+    this.style.setProperty('--carousel-space-between', `${this.spaceBetween}px`);
   }
 
   // Public API

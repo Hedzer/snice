@@ -10,6 +10,7 @@ export interface SpotlightProps extends SniceBaseProps {
     onSpotlightStep?: (event: any) => void;
     onSpotlightEnd?: (event: any) => void;
     onSpotlightSkip?: (event: any) => void;
+    onSpotlightTargetMissing?: (event: any) => void;
 }
 /**
  * Spotlight - React adapter for snice-spotlight

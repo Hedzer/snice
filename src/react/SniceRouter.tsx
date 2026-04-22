@@ -197,7 +197,14 @@ export function SniceRouter({
   );
 
   const matchedRoute = match ? parsedRoutes[match.index] : null;
-  const params = match?.params ?? {};
+  // Stable params reference across renders so downstream `useMemo` deps
+  // (SniceProvider value, guard effect) don't churn on every render when
+  // nothing actually changed.
+  const params = useMemo(
+    () => match?.params ?? {},
+    // Re-create only when the param content actually changes
+    [JSON.stringify(match?.params ?? {})],
+  );
 
   // Run guards
   useEffect(() => {

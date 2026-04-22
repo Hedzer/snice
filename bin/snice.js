@@ -64,7 +64,8 @@ if (command === 'create-app') {
   const componentName = positional[0];
   const outputDir = flags.output || './dist/cdn';
   const formats = flags.format ? flags.format.split(',') : ['iife'];
-  const minify = flags.minify !== false;
+  // Accept `--minify=false`, `--no-minify`, etc. String 'false' must not be truthy.
+  const minify = flags.minify !== false && flags.minify !== 'false' && flags['no-minify'] !== true;
   const withTheme = flags['with-theme'] === true;
 
   if (!componentName) {

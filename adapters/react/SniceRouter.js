@@ -120,7 +120,12 @@ function SniceRouter({ mode, context = {}, layout: defaultLayout, loading, fallb
     // Match current path
     const match = useMemo(() => matchRoutes(routeConfigs, currentPath), [routeConfigs, currentPath]);
     const matchedRoute = match ? parsedRoutes[match.index] : null;
-    const params = match?.params ?? {};
+    // Stable params reference across renders so downstream `useMemo` deps
+    // (SniceProvider value, guard effect) don't churn on every render when
+    // nothing actually changed.
+    const params = useMemo(() => match?.params ?? {}, 
+    // Re-create only when the param content actually changes
+    [JSON.stringify(match?.params ?? {})]);
     // Run guards
     useEffect(() => {
         if (!matchedRoute) {

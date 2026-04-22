@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, query, queryAll, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-segmented-control.css?inline';
 import type { SegmentedControlSize, SegmentedControlOption, SniceSegmentedControlElement } from './snice-segmented-control.types';
 
@@ -68,6 +68,8 @@ export class SniceSegmentedControl extends HTMLElement implements SniceSegmented
     return css/*css*/`${cssContent}`;
   }
 
+  private resizeObserver?: ResizeObserver;
+
   @ready()
   init() {
     // If no value set, select first non-disabled option
@@ -81,6 +83,19 @@ export class SniceSegmentedControl extends HTMLElement implements SniceSegmented
     requestAnimationFrame(() => {
       this.updateIndicator();
     });
+
+    // Re-measure the indicator when the container resizes so responsive
+    // layouts don't leave it stuck at a stale pixel offset.
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
+      this.resizeObserver.observe(this);
+    }
+  }
+
+  @dispose()
+  private cleanupResize() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
   }
 
   private handleSegmentClick(option: SegmentedControlOption) {

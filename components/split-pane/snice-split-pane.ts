@@ -74,33 +74,42 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
 
   private handleDividerMouseDown = (e: MouseEvent) => {
     if (this.disabled) return;
-
     e.preventDefault();
-    this.isDragging = true;
-    this.classList.add('dragging');
-    this.dividerElement.classList.add('divider--dragging');
-
-    this.startPosition = this.direction === 'horizontal' ? e.clientX : e.clientY;
-    this.startSize = this.primarySize;
-
+    this.beginDrag(e.clientX, e.clientY);
     document.addEventListener('mousemove', this.handleMouseMove);
     document.addEventListener('mouseup', this.handleMouseUp);
   };
 
-  private handleMouseMove = (e: MouseEvent) => {
-    if (!this.isDragging) return;
+  private handleDividerTouchStart = (e: TouchEvent) => {
+    if (this.disabled) return;
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    this.beginDrag(t.clientX, t.clientY);
+    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
+    document.addEventListener('touchend', this.handleTouchEnd);
+    document.addEventListener('touchcancel', this.handleTouchEnd);
+  };
 
+  private beginDrag(clientX: number, clientY: number) {
+    this.isDragging = true;
+    this.classList.add('dragging');
+    this.dividerElement.classList.add('divider--dragging');
+    this.startPosition = this.direction === 'horizontal' ? clientX : clientY;
+    this.startSize = this.primarySize;
+  }
+
+  private updateDragPosition(clientX: number, clientY: number) {
     const containerSize = this.direction === 'horizontal'
       ? this.offsetWidth
       : this.offsetHeight;
 
-    const currentPosition = this.direction === 'horizontal' ? e.clientX : e.clientY;
+    const currentPosition = this.direction === 'horizontal' ? clientX : clientY;
     const delta = currentPosition - this.startPosition;
     const deltaPercentage = (delta / containerSize) * 100;
 
     let newSize = this.startSize + deltaPercentage;
 
-    // Apply snapping
     if (this.snapSize > 0) {
       const remainder = newSize % this.snapSize;
       if (remainder < this.snapSize / 2) {
@@ -111,15 +120,37 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     }
 
     this.setPrimarySize(newSize);
-  };
+  }
 
-  private handleMouseUp = () => {
+  private endDrag() {
     this.isDragging = false;
     this.classList.remove('dragging');
     this.dividerElement.classList.remove('divider--dragging');
+  }
 
+  private handleMouseMove = (e: MouseEvent) => {
+    if (!this.isDragging) return;
+    this.updateDragPosition(e.clientX, e.clientY);
+  };
+
+  private handleMouseUp = () => {
+    this.endDrag();
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
+  };
+
+  private handleTouchMove = (e: TouchEvent) => {
+    if (!this.isDragging || e.touches.length !== 1) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    this.updateDragPosition(t.clientX, t.clientY);
+  };
+
+  private handleTouchEnd = () => {
+    this.endDrag();
+    document.removeEventListener('touchmove', this.handleTouchMove);
+    document.removeEventListener('touchend', this.handleTouchEnd);
+    document.removeEventListener('touchcancel', this.handleTouchEnd);
   };
 
   @render()
@@ -136,7 +167,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       <div
         part="divider"
         class="divider ${this.disabled ? 'divider--disabled' : ''}"
-        @mousedown=${this.handleDividerMouseDown}>
+        @mousedown=${this.handleDividerMouseDown}
+        @touchstart=${this.handleDividerTouchStart}>
         <div part="handle" class="divider__handle"></div>
       </div>
 

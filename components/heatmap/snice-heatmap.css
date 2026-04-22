@@ -1,7 +1,10 @@
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  /* `contain: paint` would establish a containing block for position: fixed
+     descendants, breaking the tooltip's viewport coordinates. Keep the
+     weaker `layout style` containment for perf without that side-effect. */
+  contain: layout style;
   --cell-size: 12px;
   --cell-gap: 3px;
   
