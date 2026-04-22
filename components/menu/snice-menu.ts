@@ -103,6 +103,55 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     }
   }
 
+  @on('keydown')
+  handleKeydown(e: KeyboardEvent) {
+    if (!this.open) {
+      // Enter/Space on trigger opens the menu and focuses first item
+      if ((e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') &&
+          (e.target as HTMLElement).closest?.('.menu__trigger')) {
+        e.preventDefault();
+        this.openMenu();
+        requestAnimationFrame(() => this.focusItemAt(0));
+      }
+      return;
+    }
+
+    // While open
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.closeMenu();
+      this.triggerElement?.focus();
+      return;
+    }
+
+    const items = this.getFocusableItems();
+    if (items.length === 0) return;
+    const current = items.indexOf(document.activeElement as HTMLElement);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.focusItemAt((current + 1) % items.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.focusItemAt((current - 1 + items.length) % items.length);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      this.focusItemAt(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      this.focusItemAt(items.length - 1);
+    }
+  }
+
+  private getFocusableItems(): HTMLElement[] {
+    return Array.from(this.querySelectorAll('snice-menu-item, [role="menuitem"]')) as HTMLElement[];
+  }
+
+  private focusItemAt(index: number) {
+    const items = this.getFocusableItems();
+    items[index]?.focus();
+  }
+
   @dispatch('menu-open', { bubbles: true, composed: true })
   private dispatchOpenEvent(): MenuOpenDetail {
     return { menu: this };
@@ -123,7 +172,11 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
 
     return html/*html*/`
       <div class="menu">
-        <div class="menu__trigger" part="trigger">
+        <div class="menu__trigger" part="trigger"
+             tabindex="0"
+             role="button"
+             aria-haspopup="menu"
+             aria-expanded="${this.open ? 'true' : 'false'}">
           <span class="menu__image-left" part="image-left">
             <slot name="image-left"></slot>
           </span>
