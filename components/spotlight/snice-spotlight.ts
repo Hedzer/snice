@@ -248,7 +248,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     const target = document.querySelector(step.target);
     if (target) {
       // Use instant scroll so getBoundingClientRect is accurate immediately
-      target.scrollIntoView({ behavior: 'instant', block: 'center' });
+      target.scrollIntoView?.({ behavior: 'instant', block: 'center' });
     }
     // _updatePosition emits spotlight-target-missing if the target is gone
     this._updatePosition();

@@ -170,7 +170,19 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
     `;
   }
 
+  // Monotonic generation counter to serialize start/switchCamera. If a
+  // second start fires before the first resolves, the first's awaited stream
+  // is stopped on arrival and not assigned to `this.stream`.
+  private startGeneration = 0;
+
   async start(): Promise<void> {
+    const myGen = ++this.startGeneration;
+    // Stop any in-flight stream owned by a previous start() call
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+
     try {
       this.errorMessage = '';
 
@@ -182,15 +194,26 @@ export class SniceQRReader extends HTMLElement implements SniceQRReaderElement {
         }
       };
 
-      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.video.srcObject = this.stream;
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (myGen !== this.startGeneration) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      this.stream = stream;
+      this.video.srcObject = stream;
 
       await this.video.play();
+      if (myGen !== this.startGeneration) {
+        stream.getTracks().forEach(track => track.stop());
+        if (this.stream === stream) this.stream = null;
+        return;
+      }
 
       this.scanning = true;
       this.emitCameraReady();
       this.startScanning();
     } catch (error) {
+      if (myGen !== this.startGeneration) return;
       this.errorMessage = error instanceof Error ? error.message : 'Camera access denied';
       this.emitCameraError(error);
     }
