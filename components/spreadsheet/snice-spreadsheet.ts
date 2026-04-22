@@ -779,12 +779,16 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     }
 
     const colCount = this.getColumnCount();
-    let h = '<table class="spreadsheet-table"><thead><tr>';
-    h += '<th class="spreadsheet-row-num">&nbsp;</th>';
+    const rowCount = this.data.length;
+    let h = `<table class="spreadsheet-table" role="grid" aria-rowcount="${rowCount + 1}" aria-colcount="${colCount + 1}"><thead><tr role="row" aria-rowindex="1">`;
+    h += '<th class="spreadsheet-row-num" scope="col" aria-colindex="1">&nbsp;</th>';
     for (let c = 0; c < colCount; c++) {
       const header = this.columns[c]?.header || this.colToLetter(c);
       const width = this.getColWidth(c);
-      h += `<th class="spreadsheet-th" data-col="${c}" style="width:${width}px;position:relative">`;
+      const sortAttr = this.sortCol === c
+        ? (this.sortDir === 'asc' ? 'ascending' : 'descending')
+        : 'none';
+      h += `<th class="spreadsheet-th" scope="col" data-col="${c}" aria-colindex="${c + 2}" aria-sort="${sortAttr}" style="width:${width}px;position:relative">`;
       h += `<span class="spreadsheet-th-sort">${this.esc(header)}`;
       if (this.sortCol === c) {
         h += `<span class="spreadsheet-th-sort-icon active">${this.sortDir === 'asc' ? '\u25B2' : '\u25BC'}</span>`;
@@ -793,12 +797,12 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       h += `<div class="spreadsheet-resize-handle" data-resize-col="${c}"></div>`;
       h += '</th>';
     }
-    h += '<th class="spreadsheet-add-col-header" data-action="add-col">+</th>';
+    h += '<th class="spreadsheet-add-col-header" data-action="add-col" aria-label="Add column">+</th>';
     h += '</tr></thead><tbody>';
 
     for (let r = 0; r < this.data.length; r++) {
-      h += '<tr>';
-      h += `<td class="spreadsheet-row-num" data-row="${r}">${r + 1}</td>`;
+      h += `<tr role="row" aria-rowindex="${r + 2}">`;
+      h += `<th class="spreadsheet-row-num" scope="row" data-row="${r}" aria-colindex="1">${r + 1}</th>`;
       for (let c = 0; c < colCount; c++) {
         const rawValue = this.data[r]?.[c];
         const displayValue = this.resolveValue(rawValue);
@@ -811,7 +815,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
         const contentClass = cellType === 'number' ? 'spreadsheet-cell spreadsheet-cell-number'
           : cellType === 'boolean' ? 'spreadsheet-cell spreadsheet-cell-boolean'
           : 'spreadsheet-cell';
-        h += `<td class="spreadsheet-td" data-row="${r}" data-col="${c}" style="width:${width}px">`;
+        h += `<td class="spreadsheet-td" role="gridcell" data-row="${r}" data-col="${c}" aria-colindex="${c + 2}" style="width:${width}px">`;
         h += `<span class="${contentClass}">${display}</span>`;
         h += '</td>';
       }

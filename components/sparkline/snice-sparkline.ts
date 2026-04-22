@@ -90,9 +90,18 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
     return path;
   }
 
+  private sparklineSummary(): string {
+    if (this.data.length === 0) return 'Empty sparkline';
+    const { min, max } = this.getMinMax();
+    const first = this.data[0];
+    const last = this.data[this.data.length - 1];
+    const trend = last > first ? 'up' : last < first ? 'down' : 'flat';
+    return `${this.type} sparkline, ${this.data.length} points, min ${min}, max ${max}, trend ${trend}`;
+  }
+
   private buildSVGString(): string {
     if (this.data.length === 0) {
-      return `<svg class="sparkline__svg" width="${this.width}" height="${this.height}" viewBox="0 0 ${this.width} ${this.height}" part="svg"></svg>`;
+      return `<svg class="sparkline__svg" width="${this.width}" height="${this.height}" viewBox="0 0 ${this.width} ${this.height}" part="svg" role="img" aria-label="Empty sparkline"></svg>`;
     }
 
     const { min, max } = this.getMinMax();
@@ -167,7 +176,8 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
       svgContent = elements;
     }
 
-    return `<svg class="sparkline__svg" width="${this.width}" height="${this.height}" viewBox="0 0 ${this.width} ${this.height}" part="svg">${svgContent}</svg>`;
+    const summary = this.sparklineSummary();
+    return `<svg class="sparkline__svg" width="${this.width}" height="${this.height}" viewBox="0 0 ${this.width} ${this.height}" part="svg" role="img" aria-label="${summary}"><title>${summary}</title>${svgContent}</svg>`;
   }
 
   @render()

@@ -39,6 +39,76 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   private header!: HTMLElement;
   private grid!: HTMLElement;
   private dayCells: HTMLElement[] = [];
+  private focusedDate: Date | null = null;
+
+  private computeRovingIndex(days: Date[]): number {
+    // Prefer: focused → selected → today → first in-month day
+    const same = (a: Date, b: Date) =>
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+
+    if (this.focusedDate) {
+      const idx = days.findIndex(d => same(d, this.focusedDate!));
+      if (idx >= 0) return idx;
+    }
+    const selected = this.selected?.[0];
+    if (selected) {
+      const s = selected instanceof Date ? selected : new Date(selected);
+      const idx = days.findIndex(d => same(d, s));
+      if (idx >= 0) return idx;
+    }
+    const today = new Date();
+    const tIdx = days.findIndex(d => same(d, today));
+    if (tIdx >= 0) return tIdx;
+    return days.findIndex(d => d.getMonth() === this.displayDate.getMonth());
+  }
+
+  private handleGridKeydown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
+    const currentDate = (target as any).__date as Date | undefined;
+    if (!currentDate) return;
+
+    let delta: number | null = null;
+    let monthStep: 1 | -1 | null = null;
+    switch (e.key) {
+      case 'ArrowLeft':  delta = -1; break;
+      case 'ArrowRight': delta = 1; break;
+      case 'ArrowUp':    delta = -7; break;
+      case 'ArrowDown':  delta = 7; break;
+      case 'Home':       delta = -currentDate.getDay(); break;
+      case 'End':        delta = 6 - currentDate.getDay(); break;
+      case 'PageUp':     monthStep = -1; break;
+      case 'PageDown':   monthStep = 1; break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        this.handleDayClick(currentDate);
+        return;
+      default: return;
+    }
+    e.preventDefault();
+    const next = new Date(currentDate);
+    if (delta !== null) next.setDate(currentDate.getDate() + delta);
+    if (monthStep !== null) next.setMonth(currentDate.getMonth() + monthStep);
+
+    // If moved outside the displayed month, navigate.
+    if (next.getMonth() !== this.displayDate.getMonth() ||
+        next.getFullYear() !== this.displayDate.getFullYear()) {
+      this.displayDate = new Date(next.getFullYear(), next.getMonth(), 1);
+    }
+    this.focusedDate = next;
+    this.updateView();
+    // Move focus to the newly-selected cell after DOM update.
+    const sameAs = (d: Date, e2: Date) =>
+      d.getFullYear() === e2.getFullYear() &&
+      d.getMonth() === e2.getMonth() &&
+      d.getDate() === e2.getDate();
+    requestAnimationFrame(() => {
+      const cell = this.dayCells.find(c => sameAs((c as any).__date, next));
+      cell?.focus();
+    });
+  };
 
   @dispatch('calendar-change', { bubbles: true, composed: true })
   private dispatchChange() {
@@ -116,10 +186,20 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       this.grid.appendChild(weekdayEl);
     });
 
+    // Mark grid for a11y
+    this.grid.setAttribute('role', 'grid');
+    this.grid.setAttribute('aria-label', 'Calendar');
+    this.grid.addEventListener('keydown', this.handleGridKeydown);
+
     // Create 42 day cells
     for (let i = 0; i < 42; i++) {
       const dayCell = document.createElement('div');
       dayCell.className = 'calendar__day';
+      dayCell.setAttribute('role', 'gridcell');
+      // Roving tabindex: only one cell is tabbable at a time. Start by
+      // making the first cell tabbable; updateView re-targets the focused
+      // date so today/selected gets the 0.
+      dayCell.setAttribute('tabindex', i === 0 ? '0' : '-1');
 
       const dayNumber = document.createElement('div');
       dayNumber.className = 'calendar__day-number';
@@ -149,6 +229,9 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     const days = this.getMonthDays();
     const currentMonth = this.displayDate.getMonth();
 
+    // Resolve which cell should be tab-stoppable (roving tabindex).
+    const rovingIndex = this.computeRovingIndex(days);
+
     days.forEach((date, i) => {
       const cell = this.dayCells[i];
       if (!cell) return;
@@ -159,12 +242,19 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       const isDisabled = this.isDisabled(date);
       const dayEvents = this.getEventsForDate(date);
 
-      // Update classes
+      // Update classes (preserving role)
       cell.className = 'calendar__day';
       if (isOtherMonth) cell.classList.add('calendar__day--other-month');
       if (isToday) cell.classList.add('calendar__day--today');
       if (isSelected) cell.classList.add('calendar__day--selected');
       if (isDisabled) cell.classList.add('calendar__day--disabled');
+
+      cell.setAttribute('role', 'gridcell');
+      cell.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      cell.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+      cell.setAttribute('tabindex', i === rovingIndex ? '0' : '-1');
+      cell.setAttribute('aria-label', date.toLocaleDateString(this.locale, { dateStyle: 'full' }));
+      (cell as any).__date = date;
 
       // Update day number
       const dayNumber = cell.querySelector('.calendar__day-number') as HTMLElement;

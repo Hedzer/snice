@@ -650,7 +650,68 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     } else if (e.key === 'Escape' && this.showCalendar) {
       this.close();
       this.focus();
+    } else if (this.showCalendar && this.calendarView === 'days') {
+      // Arrow / Home / End / PageUp / PageDown navigation over the day grid.
+      const delta = this.dayGridDelta(e.key);
+      if (delta === null) return;
+      e.preventDefault();
+      const current = this.getFocusedCalendarDate();
+      const next = new Date(current);
+      if (typeof delta === 'number') {
+        next.setDate(current.getDate() + delta);
+      } else if (delta === 'month+') {
+        next.setMonth(current.getMonth() + 1);
+      } else if (delta === 'month-') {
+        next.setMonth(current.getMonth() - 1);
+      } else if (delta === 'year+') {
+        next.setFullYear(current.getFullYear() + 1);
+      } else if (delta === 'year-') {
+        next.setFullYear(current.getFullYear() - 1);
+      }
+      this.viewDate = next;
+      this.updateCalendarGrid();
+      this.focusCalendarDate(next);
     }
+  }
+
+  private dayGridDelta(key: string): number | 'month+' | 'month-' | 'year+' | 'year-' | null {
+    switch (key) {
+      case 'ArrowLeft': return -1;
+      case 'ArrowRight': return 1;
+      case 'ArrowUp': return -7;
+      case 'ArrowDown': return 7;
+      case 'Home': {
+        const d = this.getFocusedCalendarDate();
+        return -d.getDay();
+      }
+      case 'End': {
+        const d = this.getFocusedCalendarDate();
+        return 6 - d.getDay();
+      }
+      case 'PageUp':
+        return 'month-';
+      case 'PageDown':
+        return 'month+';
+    }
+    return null;
+  }
+
+  private getFocusedCalendarDate(): Date {
+    const focused = this.shadowRoot?.querySelector('[data-date]:focus') as HTMLElement | null;
+    if (focused) {
+      const dateStr = focused.getAttribute('data-date');
+      if (dateStr) return new Date(dateStr + 'T00:00:00');
+    }
+    if (this.value) return new Date(this.value);
+    return new Date(this.viewDate);
+  }
+
+  private focusCalendarDate(date: Date) {
+    requestAnimationFrame(() => {
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const btn = this.shadowRoot?.querySelector(`[data-date="${dateStr}"]`) as HTMLElement | null;
+      btn?.focus();
+    });
   }
 
   private handleNavigation(nav: string) {

@@ -39,6 +39,17 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
   private hiddenDatasets: Set<number> = new Set();
 
+  private chartSummary(): string {
+    const kinds: Record<string, string> = {
+      line: 'Line chart', bar: 'Bar chart', area: 'Area chart',
+      pie: 'Pie chart', radar: 'Radar chart', scatter: 'Scatter plot'
+    };
+    const base = kinds[this.type] || 'Chart';
+    const dsCount = this.datasets.length;
+    const ptCount = this.datasets.reduce((n, d) => n + (d.data?.length || 0), 0);
+    return `${base} with ${dsCount} dataset${dsCount === 1 ? '' : 's'} and ${ptCount} data point${ptCount === 1 ? '' : 's'}`;
+  }
+
   @property({ type: Number, attribute: false })
   private renderTrigger: number = 0;
 
@@ -77,7 +88,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       <div class="chart-container ${animated ? 'animated' : ''}" part="base">
         ${legendPosition !== 'none' ? this.renderLegend() : ''}
         <div class="chart-canvas" part="canvas">
-          <canvas class="chart-render-canvas"></canvas>
+          <canvas class="chart-render-canvas" role="img" aria-label="${this.chartSummary()}"></canvas>
         </div>
         <div class="chart-tooltip ${this.tooltipVisible ? 'visible' : ''}"
              style="left: ${this.tooltipX}px; top: ${this.tooltipY}px;">
@@ -523,7 +534,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
       .join('');
 
     return `
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${this.chartSummary()}">
+        <title>${this.chartSummary()}</title>
         ${gridSVG}
         ${axesSVG}
         <g transform="translate(${padding.left}, ${padding.top})">
@@ -822,7 +834,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     let currentAngle = -Math.PI / 2;
 
     return html/*html*/`
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${this.chartSummary()}">
+        <title>${this.chartSummary()}</title>
         ${dataset.data.map((value, index) => {
           const val = typeof value === 'number' ? value : 0;
           const angle = (total as number) > 0 ? (val / (total as number)) * 2 * Math.PI : 0;
@@ -879,7 +892,8 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     ));
 
     return html/*html*/`
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${this.chartSummary()}">
+        <title>${this.chartSummary()}</title>
         <!-- Radar grid -->
         ${[0.2, 0.4, 0.6, 0.8, 1].map(ratio => {
           const r = radius * ratio;

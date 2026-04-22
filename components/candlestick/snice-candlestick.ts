@@ -597,6 +597,7 @@ export class SniceCandlestick extends HTMLElement implements SniceCandlestickEle
            @mouseup=${this.handleMouseUp}
            @wheel=${this.handleWheel}>
         <svg class="candlestick__svg" part="canvas" viewBox="0 0 ${this.svgWidth} ${this.svgHeight}" preserveAspectRatio="none" role="img" aria-label="Candlestick chart with ${this.data.length} data points">
+          <title>Candlestick chart with ${this.data.length} OHLC data points</title>
           <g class="candlestick__chart-content"></g>
           <g class="candlestick__crosshair-group"></g>
         </svg>
