@@ -22,6 +22,93 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
   @property({ attribute: false })
   private searchQuery: string = '';
 
+  // Keyboard DnD state: which card is "picked up" for the keyboard user.
+  @property({ attribute: false })
+  private kbGrabbedCardId: string | number | null = null;
+  @property({ attribute: false })
+  private kbLiveMessage: string = '';
+
+  private handleCardKeydown(card: KanbanCard, columnId: string | number, e: KeyboardEvent) {
+    // Space / Enter picks up or drops.
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      if (this.kbGrabbedCardId === card.id) {
+        // Drop in current column at current position.
+        this.kbGrabbedCardId = null;
+        this.kbLiveMessage = `Dropped ${card.title}`;
+      } else if (this.kbGrabbedCardId === null) {
+        this.kbGrabbedCardId = card.id;
+        this.kbLiveMessage = `Picked up ${card.title}. Use arrow keys to move, space to drop, escape to cancel.`;
+      }
+      return;
+    }
+    if (e.key === 'Escape' && this.kbGrabbedCardId !== null) {
+      e.preventDefault();
+      this.kbGrabbedCardId = null;
+      this.kbLiveMessage = 'Cancelled';
+      return;
+    }
+    // Only move while grabbed.
+    if (this.kbGrabbedCardId !== card.id) return;
+
+    const cols = this.filteredColumns;
+    const colIdx = cols.findIndex(c => c.id === columnId);
+    const cardIdx = cols[colIdx]?.cards.findIndex(c => c.id === card.id) ?? -1;
+    if (colIdx < 0 || cardIdx < 0) return;
+
+    if (e.key === 'ArrowLeft' && colIdx > 0) {
+      e.preventDefault();
+      this.moveCardTo(card, columnId, cols[colIdx - 1].id, cols[colIdx - 1].cards.length);
+    } else if (e.key === 'ArrowRight' && colIdx < cols.length - 1) {
+      e.preventDefault();
+      this.moveCardTo(card, columnId, cols[colIdx + 1].id, cols[colIdx + 1].cards.length);
+    } else if (e.key === 'ArrowUp' && cardIdx > 0) {
+      e.preventDefault();
+      this.reorderWithinColumn(columnId, cardIdx, cardIdx - 1);
+    } else if (e.key === 'ArrowDown' && cardIdx < (cols[colIdx]?.cards.length - 1)) {
+      e.preventDefault();
+      this.reorderWithinColumn(columnId, cardIdx, cardIdx + 1);
+    }
+  }
+
+  private moveCardTo(card: KanbanCard, fromColId: string | number, toColId: string | number, insertAt: number) {
+    const next = this.columns.map(col => {
+      if (col.id === fromColId) return { ...col, cards: col.cards.filter(c => c.id !== card.id) };
+      return col;
+    }).map(col => {
+      if (col.id === toColId) {
+        const newCards = [...col.cards];
+        newCards.splice(insertAt, 0, card);
+        return { ...col, cards: newCards };
+      }
+      return col;
+    });
+    this.columns = next;
+    this.dispatchCardMove(card, fromColId, toColId);
+    this.kbLiveMessage = `Moved ${card.title} to ${this.columns.find(c => c.id === toColId)?.title}`;
+    requestAnimationFrame(() => this.focusCard(card.id));
+  }
+
+  private reorderWithinColumn(columnId: string | number, from: number, to: number) {
+    this.columns = this.columns.map(col => {
+      if (col.id !== columnId) return col;
+      const newCards = [...col.cards];
+      const [moved] = newCards.splice(from, 1);
+      newCards.splice(to, 0, moved);
+      return { ...col, cards: newCards };
+    });
+    const card = this.columns.find(c => c.id === columnId)?.cards[to];
+    if (card) {
+      this.kbLiveMessage = `Reordered ${card.title}`;
+      requestAnimationFrame(() => this.focusCard(card.id));
+    }
+  }
+
+  private focusCard(cardId: string | number) {
+    const el = this.shadowRoot?.querySelector(`[data-card-id="${cardId}"]`) as HTMLElement | null;
+    el?.focus();
+  }
+
   @dispatch('kanban-card-move', { bubbles: true, composed: true })
   private dispatchCardMove(card: KanbanCard, fromColumn: string | number, toColumn: string | number) {
     return { card, fromColumn, toColumn, kanban: this };
@@ -320,10 +407,15 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
   @render()
   template() {
     return html/*html*/`
-      <div class="kanban" part="base">
+      <div class="kanban" part="base" role="list" aria-label="Kanban board">
+        <div class="kanban__live" role="status" aria-live="polite" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+          ${this.kbLiveMessage}
+        </div>
         ${this.filteredColumns.map(column => html/*html*/`
             <div
               class="column ${column.collapsed ? 'column--collapsed' : ''}"
+              role="listitem"
+              aria-label="${column.title} column, ${column.cards.length} cards"
               @dragover=${(e: DragEvent) => this.handleColumnDragOver(e)}
               @dragenter=${(e: DragEvent) => this.handleColumnDragEnter(e)}
               @dragleave=${(e: DragEvent) => this.handleColumnDragLeave(e)}
@@ -337,21 +429,28 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                 </div>
               </div>
 
-              <div class="column__cards ${column.cards.length === 0 ? 'column__cards--empty' : ''}" part="column-cards">
+              <div class="column__cards ${column.cards.length === 0 ? 'column__cards--empty' : ''}" part="column-cards" role="list" aria-label="${column.title} cards">
                 <if ${column.cards.length === 0}>
                   <div>No cards</div>
                 </if>
 
                 ${column.cards.map(card => html`
                   <div
-                    class="card"
+                    class="card ${this.kbGrabbedCardId === card.id ? 'card--grabbed' : ''}"
                     draggable="${this.allowDragDrop}"
+                    role="button"
+                    tabindex="0"
+                    aria-grabbed="${this.kbGrabbedCardId === card.id ? 'true' : 'false'}"
+                    aria-label="${card.title}${card.description ? ', ' + card.description : ''}"
+                    data-card-id="${card.id}"
+                    data-column-id="${column.id}"
                     style="${card.color ? `border-left-color: ${card.color}; view-transition-name: card-${card.id}` : `view-transition-name: card-${card.id}`}"
                     @dragstart=${(e: DragEvent) => this.handleCardDragStart(card, column.id, e)}
                     @dragend=${(e: DragEvent) => this.handleCardDragEnd(e)}
                     @dragover=${(e: DragEvent) => this.handleCardDragOver(card, column.id, e)}
                     @dragenter=${(e: DragEvent) => this.handleCardDragEnter(e)}
                     @dragleave=${(e: DragEvent) => this.handleCardDragLeave(e)}
+                    @keydown=${(e: KeyboardEvent) => this.handleCardKeydown(card, column.id, e)}
                     @click=${() => this.handleCardClick(card)}>
                     <div class="card__title">${card.title}</div>
                     <if ${card.description}>
