@@ -35,7 +35,7 @@ function makeSplitPane(attrs: Record<string, string | boolean>, primaryContent: 
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/SplitPane',
+  title: 'SplitPane',
   component: 'snice-split-pane',
   tags: ['autodocs'],
   argTypes: {

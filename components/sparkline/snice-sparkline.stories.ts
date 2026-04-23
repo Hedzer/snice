@@ -61,7 +61,7 @@ function labelEl(text: string) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Sparkline',
+  title: 'Sparkline',
   component: 'snice-sparkline',
   tags: ['autodocs'],
   argTypes: {

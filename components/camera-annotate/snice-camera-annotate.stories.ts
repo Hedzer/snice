@@ -24,7 +24,7 @@ function note(text: string) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/CameraAnnotate',
+  title: 'CameraAnnotate',
   component: 'snice-camera-annotate',
   tags: ['autodocs'],
   argTypes: {

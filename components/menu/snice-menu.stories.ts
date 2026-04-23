@@ -76,7 +76,7 @@ function wrap(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Menu',
+  title: 'Menu',
   component: 'snice-menu',
   tags: ['autodocs'],
   argTypes: {

@@ -42,7 +42,7 @@ function makeSlides(count: number) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Carousel',
+  title: 'Carousel',
   component: 'snice-carousel',
   tags: ['autodocs'],
   argTypes: {

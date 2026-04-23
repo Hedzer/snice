@@ -30,7 +30,7 @@ function makeLoc(attrs: Record<string, string | boolean> = {}): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Location',
+  title: 'Location',
   component: 'snice-location',
   tags: ['autodocs'],
   argTypes: {

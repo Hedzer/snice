@@ -42,7 +42,7 @@ function makeBinpack(attrs: Record<string, string | boolean>, items: HTMLElement
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Binpack',
+  title: 'Binpack',
   component: 'snice-binpack',
   tags: ['autodocs'],
   argTypes: {

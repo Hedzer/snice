@@ -37,7 +37,7 @@ const depTasks = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Gantt',
+  title: 'Gantt',
   component: 'snice-gantt',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },

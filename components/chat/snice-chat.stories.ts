@@ -11,7 +11,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Chat',
+  title: 'Chat',
   component: 'snice-chat',
   tags: ['autodocs'],
   argTypes: {

@@ -42,7 +42,7 @@ function row(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Tooltip',
+  title: 'Tooltip',
   component: 'snice-tooltip',
   tags: ['autodocs'],
   argTypes: {

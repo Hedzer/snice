@@ -50,7 +50,7 @@ function makeMap(opts: {
 }
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Map',
+  title: 'Map',
   component: 'snice-map',
   tags: ['autodocs'],
   argTypes: {

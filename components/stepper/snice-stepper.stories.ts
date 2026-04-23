@@ -34,7 +34,7 @@ function makeStepper(steps: Step[], attrs: Record<string, string | boolean> = {}
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Stepper',
+  title: 'Stepper',
   component: 'snice-stepper',
   tags: ['autodocs'],
   argTypes: {

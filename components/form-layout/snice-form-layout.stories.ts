@@ -45,7 +45,7 @@ function wrap(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/FormLayout',
+  title: 'FormLayout',
   component: 'snice-form-layout',
   tags: ['autodocs'],
   argTypes: {

@@ -42,7 +42,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/ColorPicker',
+  title: 'ColorPicker',
   component: 'snice-color-picker',
   tags: ['autodocs'],
   argTypes: {

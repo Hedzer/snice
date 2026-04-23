@@ -26,7 +26,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/WorkOrder',
+  title: 'WorkOrder',
   component: 'snice-work-order',
   tags: ['autodocs'],
   argTypes: {

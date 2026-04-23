@@ -9,7 +9,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Comments',
+  title: 'Comments',
   component: 'snice-comments',
   tags: ['autodocs'],
   argTypes: {

@@ -49,7 +49,7 @@ function cell(labelText: string, el: HTMLElement) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/VideoPlayer',
+  title: 'VideoPlayer',
   component: 'snice-video-player',
   tags: ['autodocs'],
   argTypes: {

@@ -28,7 +28,7 @@ const sum = x + y;
 const product = x * y;`;
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Diff',
+  title: 'Diff',
   component: 'snice-diff',
   tags: ['autodocs'],
   argTypes: {

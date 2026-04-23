@@ -61,6 +61,27 @@
   color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
+/* active-style="text": color-only active state, no background fill.
+   Hover previews the active color at a muted opacity — never a fill. */
+:host([active-style="text"]) .nav__link,
+:host([active-style="text"]) .nav__link:hover,
+:host([active-style="text"]) .nav__link--active,
+:host([active-style="text"]) .nav__link--active:hover {
+  background-color: transparent;
+}
+
+:host([active-style="text"]) .nav__link:hover {
+  color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 60%, transparent);
+}
+
+:host([active-style="text"]) .nav__link--active {
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+:host([active-style="text"]) .nav__link--active:hover {
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
+}
+
 .nav__icon {
   display: inline-flex;
   align-items: center;

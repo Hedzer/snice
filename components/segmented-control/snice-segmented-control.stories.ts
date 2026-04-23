@@ -54,7 +54,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/SegmentedControl',
+  title: 'SegmentedControl',
   component: 'snice-segmented-control',
   tags: ['autodocs'],
   argTypes: {

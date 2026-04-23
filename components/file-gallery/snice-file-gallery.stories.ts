@@ -35,7 +35,7 @@ function box(el: HTMLElement) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/FileGallery',
+  title: 'FileGallery',
   component: 'snice-file-gallery',
   tags: ['autodocs'],
   argTypes: {

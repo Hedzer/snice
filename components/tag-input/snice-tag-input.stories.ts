@@ -32,7 +32,7 @@ function col(...els: HTMLElement[]) {
 const LANGS = ['JavaScript', 'TypeScript', 'Python', 'Rust', 'Go', 'Java', 'C#', 'Ruby', 'Swift', 'Kotlin'];
 
 const meta: Meta<Args> = {
-  title: 'Form/TagInput',
+  title: 'TagInput',
   component: 'snice-tag-input',
   tags: ['autodocs'],
   argTypes: {

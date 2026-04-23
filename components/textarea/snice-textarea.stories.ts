@@ -48,7 +48,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Textarea',
+  title: 'Textarea',
   component: 'snice-textarea',
   tags: ['autodocs'],
   argTypes: {

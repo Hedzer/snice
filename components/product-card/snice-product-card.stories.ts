@@ -25,7 +25,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/ProductCard',
+  title: 'ProductCard',
   component: 'snice-product-card',
   tags: ['autodocs'],
   argTypes: {

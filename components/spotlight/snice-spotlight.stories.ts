@@ -4,7 +4,7 @@ import './snice-spotlight';
 type Args = Record<string, never>;
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Spotlight',
+  title: 'Spotlight',
   component: 'snice-spotlight',
   tags: ['autodocs'],
   argTypes: {},

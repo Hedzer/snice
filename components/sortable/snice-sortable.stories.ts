@@ -37,7 +37,7 @@ function makeSortable(attrs: Record<string, string | boolean>, items: HTMLElemen
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Sortable',
+  title: 'Sortable',
   component: 'snice-sortable',
   tags: ['autodocs'],
   argTypes: {

@@ -31,7 +31,7 @@ function row(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Avatar',
+  title: 'Avatar',
   component: 'snice-avatar',
   tags: ['autodocs'],
   argTypes: {

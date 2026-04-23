@@ -1,14 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-nav';
-import type { NavVariant, NavOrientation } from './snice-nav.types';
+import type { NavVariant, NavOrientation, NavActiveStyle } from './snice-nav.types';
 
 type Args = {
   variant?: NavVariant;
   orientation?: NavOrientation;
+  activeStyle?: NavActiveStyle;
 };
 
 const VARIANTS: NavVariant[] = ['flat', 'grouped', 'hierarchical'];
 const ORIENTATIONS: NavOrientation[] = ['horizontal', 'vertical'];
+const ACTIVE_STYLES: NavActiveStyle[] = ['fill', 'text'];
 
 const basicPlacards = [
   { name: 'home', title: 'Home', order: 0 },
@@ -51,17 +53,19 @@ function makeNav(placards: any[], route: string, attrs: Record<string, string> =
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Nav',
+  title: 'Nav',
   component: 'snice-nav',
   tags: ['autodocs'],
   argTypes: {
     variant:     { control: 'select', options: VARIANTS },
     orientation: { control: 'select', options: ORIENTATIONS },
+    activeStyle: { control: 'select', options: ACTIVE_STYLES, name: 'active-style' },
   },
   render: (args) => {
     const el = document.createElement('snice-nav');
     if (args.variant)     el.setAttribute('variant', args.variant);
     if (args.orientation) el.setAttribute('orientation', args.orientation);
+    if (args.activeStyle) el.setAttribute('active-style', args.activeStyle);
     el.style.cssText = 'display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;padding:.5rem;';
     (el as any).update(basicPlacards, undefined, 'home');
     return el;
@@ -71,7 +75,22 @@ export default meta;
 
 type Story = StoryObj<Args>;
 
-export const Default: Story = { args: { variant: 'flat', orientation: 'horizontal' } };
+export const Default: Story = { args: { variant: 'flat', orientation: 'horizontal', activeStyle: 'fill' } };
+
+// h2: Active style — fill (default)
+export const ActiveStyleFill: Story = {
+  render: () => makeNav(basicPlacards, 'products', { variant: 'flat', orientation: 'horizontal', 'active-style': 'fill' }),
+};
+
+// h2: Active style — text (color-only highlight)
+export const ActiveStyleText: Story = {
+  render: () => makeNav(basicPlacards, 'products', { variant: 'flat', orientation: 'horizontal', 'active-style': 'text' }),
+};
+
+// h2: Active style — text (vertical)
+export const ActiveStyleTextVertical: Story = {
+  render: () => makeNav(basicPlacards, 'products', { variant: 'flat', orientation: 'vertical', 'active-style': 'text' }, 'max-width:220px;'),
+};
 
 // h2: Variant: flat + Orientation: horizontal
 export const VariantFlatHorizontal: Story = {
@@ -244,7 +263,7 @@ export const CSSPartsStyling: Story = {
       l.className = 'label';
       l.textContent = lbl;
       const nav = makeNav(placards, 'home', { variant: 'flat', orientation: 'horizontal' });
-      nav.classList.add(cls);
+      if (cls) nav.classList.add(cls);
       d.appendChild(l);
       d.appendChild(nav);
       return d;

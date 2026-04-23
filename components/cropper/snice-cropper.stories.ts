@@ -28,7 +28,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/Cropper',
+  title: 'Cropper',
   component: 'snice-cropper',
   tags: ['autodocs'],
   argTypes: {

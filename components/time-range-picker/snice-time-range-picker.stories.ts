@@ -34,7 +34,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/TimeRangePicker',
+  title: 'TimeRangePicker',
   component: 'snice-time-range-picker',
   tags: ['autodocs'],
   argTypes: {

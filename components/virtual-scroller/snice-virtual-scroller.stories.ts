@@ -34,7 +34,7 @@ function makeScroller(height: string, itemHeight: number, items: VsItem[], rende
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/VirtualScroller',
+  title: 'VirtualScroller',
   component: 'snice-virtual-scroller',
   tags: ['autodocs'],
   argTypes: {

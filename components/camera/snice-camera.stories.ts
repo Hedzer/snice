@@ -30,7 +30,7 @@ function note(text: string) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/Camera',
+  title: 'Camera',
   component: 'snice-camera',
   tags: ['autodocs'],
   argTypes: {

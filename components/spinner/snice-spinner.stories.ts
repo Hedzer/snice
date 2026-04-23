@@ -35,7 +35,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Spinner',
+  title: 'Spinner',
   component: 'snice-spinner',
   tags: ['autodocs'],
   argTypes: {

@@ -35,7 +35,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Banner',
+  title: 'Banner',
   component: 'snice-banner',
   tags: ['autodocs'],
   argTypes: {

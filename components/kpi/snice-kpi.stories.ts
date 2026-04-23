@@ -45,7 +45,7 @@ function grid(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Kpi',
+  title: 'Kpi',
   component: 'snice-kpi',
   tags: ['autodocs'],
   argTypes: {

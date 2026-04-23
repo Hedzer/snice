@@ -34,7 +34,7 @@ function stack(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Breadcrumbs',
+  title: 'Breadcrumbs',
   component: 'snice-breadcrumbs',
   tags: ['autodocs'],
   argTypes: {

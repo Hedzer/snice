@@ -38,7 +38,7 @@ function makeTreemap(attrs: Record<string, string | number | boolean>, data: obj
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Treemap',
+  title: 'Treemap',
   component: 'snice-treemap',
   tags: ['autodocs'],
   argTypes: {

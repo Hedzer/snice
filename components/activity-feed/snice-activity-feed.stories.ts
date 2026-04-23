@@ -35,7 +35,7 @@ function wrap(el: HTMLElement) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/ActivityFeed',
+  title: 'ActivityFeed',
   component: 'snice-activity-feed',
   tags: ['autodocs'],
   argTypes: {

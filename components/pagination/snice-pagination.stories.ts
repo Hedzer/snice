@@ -44,7 +44,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Pagination',
+  title: 'Pagination',
   component: 'snice-pagination',
   tags: ['autodocs'],
   argTypes: {

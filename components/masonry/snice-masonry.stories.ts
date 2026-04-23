@@ -39,7 +39,7 @@ const BASE_CARDS: CardSpec[] = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Layout/Masonry',
+  title: 'Masonry',
   component: 'snice-masonry',
   tags: ['autodocs'],
   argTypes: {

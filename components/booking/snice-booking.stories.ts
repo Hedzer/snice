@@ -21,7 +21,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/Booking',
+  title: 'Booking',
   component: 'snice-booking',
   tags: ['autodocs'],
   argTypes: {

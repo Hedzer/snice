@@ -35,7 +35,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Radio',
+  title: 'Radio',
   component: 'snice-radio',
   tags: ['autodocs'],
   argTypes: {

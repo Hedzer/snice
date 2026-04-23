@@ -42,7 +42,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Toast',
+  title: 'Toast',
   component: 'snice-toast',
   tags: ['autodocs'],
   argTypes: {

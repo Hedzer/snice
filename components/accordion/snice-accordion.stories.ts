@@ -32,7 +32,7 @@ function makeAccordion(items: Array<{ id: string; header: string; content: strin
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Accordion',
+  title: 'Accordion',
   component: 'snice-accordion',
   tags: ['autodocs'],
   argTypes: {

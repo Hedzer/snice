@@ -44,7 +44,7 @@ function row(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Badge',
+  title: 'Badge',
   component: 'snice-badge',
   tags: ['autodocs'],
   argTypes: {

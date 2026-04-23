@@ -45,7 +45,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Countdown',
+  title: 'Countdown',
   component: 'snice-countdown',
   tags: ['autodocs'],
   argTypes: {

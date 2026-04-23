@@ -13,7 +13,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/ApprovalFlow',
+  title: 'ApprovalFlow',
   component: 'snice-approval-flow',
   tags: ['autodocs'],
   argTypes: {

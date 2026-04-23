@@ -49,7 +49,7 @@ function makeTree(attrs: Record<string, boolean | string> = {}, nodes = fileTree
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Tree',
+  title: 'Tree',
   component: 'snice-tree',
   tags: ['autodocs'],
   argTypes: {

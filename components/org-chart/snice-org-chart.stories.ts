@@ -46,7 +46,7 @@ const noAvatarData = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/OrgChart',
+  title: 'OrgChart',
   component: 'snice-org-chart',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },

@@ -35,7 +35,7 @@ function wrap(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/AudioRecorder',
+  title: 'AudioRecorder',
   component: 'snice-audio-recorder',
   tags: ['autodocs'],
   argTypes: {

@@ -48,7 +48,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Input',
+  title: 'Input',
   component: 'snice-input',
   tags: ['autodocs'],
   argTypes: {

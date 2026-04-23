@@ -45,7 +45,7 @@ function makeGraph(attrs: Record<string, string | boolean | number>, data: objec
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/NetworkGraph',
+  title: 'NetworkGraph',
   component: 'snice-network-graph',
   tags: ['autodocs'],
   argTypes: {

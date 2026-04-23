@@ -26,7 +26,7 @@ function makeGroup(stats: StatItem[], attrs: Record<string, string> = {}): HTMLE
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/StatGroup',
+  title: 'StatGroup',
   component: 'snice-stat-group',
   tags: ['autodocs'],
   argTypes: {

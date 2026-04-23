@@ -14,7 +14,7 @@ type Args = {
 const LANGUAGES = ['javascript', 'typescript', 'html', 'css', 'json', 'python', 'bash', 'plaintext'];
 
 const meta: Meta<Args> = {
-  title: 'Specialty/CodeBlock',
+  title: 'CodeBlock',
   component: 'snice-code-block',
   tags: ['autodocs'],
   argTypes: {

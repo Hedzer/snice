@@ -46,7 +46,7 @@ function makePalette(commands: CommandItem[], attrs: Record<string, string | boo
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/CommandPalette',
+  title: 'CommandPalette',
   component: 'snice-command-palette',
   tags: ['autodocs'],
   argTypes: {

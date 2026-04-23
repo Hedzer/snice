@@ -35,7 +35,7 @@ function row(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Image',
+  title: 'Image',
   component: 'snice-image',
   tags: ['autodocs'],
   argTypes: {

@@ -34,7 +34,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Card',
+  title: 'Card',
   component: 'snice-card',
   tags: ['autodocs'],
   argTypes: {

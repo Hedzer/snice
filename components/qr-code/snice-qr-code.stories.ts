@@ -32,7 +32,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/QrCode',
+  title: 'QrCode',
   component: 'snice-qr-code',
   tags: ['autodocs'],
   argTypes: {

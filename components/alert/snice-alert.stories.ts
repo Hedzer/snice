@@ -40,7 +40,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Alert',
+  title: 'Alert',
   component: 'snice-alert',
   tags: ['autodocs'],
   argTypes: {

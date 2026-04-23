@@ -23,7 +23,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/PermissionMatrix',
+  title: 'PermissionMatrix',
   component: 'snice-permission-matrix',
   tags: ['autodocs'],
   argTypes: {

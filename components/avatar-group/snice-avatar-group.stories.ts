@@ -38,7 +38,7 @@ function row(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/AvatarGroup',
+  title: 'AvatarGroup',
   component: 'snice-avatar-group',
   tags: ['autodocs'],
   argTypes: {

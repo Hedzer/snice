@@ -20,7 +20,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/Availability',
+  title: 'Availability',
   component: 'snice-availability',
   tags: ['autodocs'],
   argTypes: {

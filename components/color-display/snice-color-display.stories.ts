@@ -11,7 +11,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/ColorDisplay',
+  title: 'ColorDisplay',
   component: 'snice-color-display',
   tags: ['autodocs'],
   argTypes: {

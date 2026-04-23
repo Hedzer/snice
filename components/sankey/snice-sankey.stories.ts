@@ -48,7 +48,7 @@ function makeSankey(attrs: Record<string, string | number | boolean>, data: obje
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Sankey',
+  title: 'Sankey',
   component: 'snice-sankey',
   tags: ['autodocs'],
   argTypes: {

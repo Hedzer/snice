@@ -52,7 +52,7 @@ function grid(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Select',
+  title: 'Select',
   component: 'snice-select',
   tags: ['autodocs'],
   argTypes: {

@@ -44,7 +44,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Slider',
+  title: 'Slider',
   component: 'snice-slider',
   tags: ['autodocs'],
   argTypes: {

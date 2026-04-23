@@ -35,7 +35,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/Estimate',
+  title: 'Estimate',
   component: 'snice-estimate',
   tags: ['autodocs'],
   argTypes: {

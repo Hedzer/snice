@@ -30,7 +30,7 @@ function makeLeaderboard(entries: LeaderboardEntry[], attrs: Record<string, stri
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Leaderboard',
+  title: 'Leaderboard',
   component: 'snice-leaderboard',
   tags: ['autodocs'],
   argTypes: {

@@ -45,7 +45,7 @@ function makeGrid(attrs: Record<string, string | boolean>, items: HTMLElement[])
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Grid',
+  title: 'Grid',
   component: 'snice-grid',
   tags: ['autodocs'],
   argTypes: {

@@ -47,7 +47,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/FileUpload',
+  title: 'FileUpload',
   component: 'snice-file-upload',
   tags: ['autodocs'],
   argTypes: {

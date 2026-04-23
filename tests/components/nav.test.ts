@@ -55,6 +55,19 @@ describe('snice-nav', () => {
     expect(nav.orientation).toBe('vertical');
   });
 
+  it('defaults active-style to fill', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+    expect(nav.activeStyle).toBe('fill');
+  });
+
+  it('accepts active-style="text" via attribute', async () => {
+    nav = document.createElement('snice-nav') as SniceNavElement;
+    nav.setAttribute('active-style', 'text');
+    document.body.appendChild(nav);
+    await nav.ready;
+    expect(nav.activeStyle).toBe('text');
+  });
+
   it('should not be top-level by default', async () => {
     nav = await createComponent<SniceNavElement>('snice-nav');
     expect(nav.isTopLevel).toBe(false);
@@ -352,16 +365,17 @@ describe('snice-nav', () => {
     nav.update(placards, {} as any);
     await new Promise(r => setTimeout(r, 50));
 
-    let links = nav.shadowRoot?.querySelectorAll('a.nav__link');
-    expect(links?.length).toBe(1);
-    expect(links?.[0].textContent).toContain('Always');
+    // Items with pending guards are rendered but hidden; count visible ones.
+    let visible = nav.shadowRoot?.querySelectorAll('.nav__item:not([hidden]) a.nav__link');
+    expect(visible?.length).toBe(1);
+    expect(visible?.[0].textContent).toContain('Always');
 
     resolveGuard!(true);
     await new Promise(r => setTimeout(r, 50));
 
-    links = nav.shadowRoot?.querySelectorAll('a.nav__link');
-    expect(links?.length).toBe(2);
-    const labels = Array.from(links!).map(l => l.textContent);
+    visible = nav.shadowRoot?.querySelectorAll('.nav__item:not([hidden]) a.nav__link');
+    expect(visible?.length).toBe(2);
+    const labels = Array.from(visible!).map(l => l.textContent);
     expect(labels.some(t => t?.includes('Gated'))).toBe(true);
   });
 

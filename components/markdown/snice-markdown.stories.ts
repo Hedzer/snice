@@ -8,7 +8,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Markdown',
+  title: 'Markdown',
   component: 'snice-markdown',
   tags: ['autodocs'],
   argTypes: {

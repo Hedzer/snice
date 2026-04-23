@@ -34,7 +34,7 @@ function grid(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/UserCard',
+  title: 'UserCard',
   component: 'snice-user-card',
   tags: ['autodocs'],
   argTypes: {

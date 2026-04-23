@@ -32,7 +32,7 @@ function makeWaterfall(attrs: Record<string, boolean | string>, data: object[], 
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Waterfall',
+  title: 'Waterfall',
   component: 'snice-waterfall',
   tags: ['autodocs'],
   argTypes: {

@@ -32,7 +32,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Tag',
+  title: 'Tag',
   component: 'snice-tag',
   tags: ['autodocs'],
   argTypes: {

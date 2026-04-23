@@ -31,7 +31,7 @@ function col(...els: HTMLElement[]): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/MessageStrip',
+  title: 'MessageStrip',
   component: 'snice-message-strip',
   tags: ['autodocs'],
   argTypes: {

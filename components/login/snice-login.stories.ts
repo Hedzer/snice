@@ -40,7 +40,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Login',
+  title: 'Login',
   component: 'snice-login',
   tags: ['autodocs'],
   argTypes: {

@@ -20,7 +20,7 @@ function makeSkeleton(attrs: Record<string, string | number>): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Skeleton',
+  title: 'Skeleton',
   component: 'snice-skeleton',
   tags: ['autodocs'],
   argTypes: {

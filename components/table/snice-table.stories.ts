@@ -46,7 +46,7 @@ function makeTable(attrs: Record<string, boolean | string | number> = {}, cols =
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Table',
+  title: 'Table',
   component: 'snice-table',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },

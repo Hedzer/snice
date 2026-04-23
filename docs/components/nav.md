@@ -20,6 +20,7 @@ A navigation menu that renders from placard configurations and integrates with S
 |----------|------|---------|-------------|
 | `variant` | `'flat' \| 'hierarchical' \| 'grouped'` | `'flat'` | Navigation display style |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `activeStyle` (attr: `active-style`) | `'fill' \| 'text'` | `'fill'` | Active item style. `'fill'` (default) paints a background on the active link; `'text'` applies only the color change (no fill) |
 | `isTopLevel` (attr: `is-top-level`) | `boolean` | `false` | Receive context updates automatically |
 
 ## Methods
@@ -126,6 +127,16 @@ Use the `group` property on placards to organize items into labeled groups.
   ]);
 </script>
 ```
+
+### Active Style (text highlight vs fill)
+
+By default the active nav item is drawn with a subtle background fill. Use `active-style="text"` when you want the active item to be indicated only by the accent color, with no background — useful on dense headers or sidebars where a filled pill looks heavy.
+
+```html
+<snice-nav active-style="text"></snice-nav>
+```
+
+`active-style="fill"` (the default) keeps the filled appearance. The attribute is orthogonal to `variant`, so any variant can use either style.
 
 ### Vertical Orientation
 

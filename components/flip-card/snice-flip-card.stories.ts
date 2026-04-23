@@ -45,7 +45,7 @@ const RED    = 'var(--snice-color-danger,#dc2626)';
 const PURPLE = '#9333ea';
 
 const meta: Meta<Args> = {
-  title: 'Layout/FlipCard',
+  title: 'FlipCard',
   component: 'snice-flip-card',
   tags: ['autodocs'],
   argTypes: {

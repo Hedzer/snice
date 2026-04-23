@@ -59,7 +59,7 @@ function storyContainer(...nodes: Node[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Modal',
+  title: 'Modal',
   component: 'snice-modal',
   tags: ['autodocs'],
   argTypes: {

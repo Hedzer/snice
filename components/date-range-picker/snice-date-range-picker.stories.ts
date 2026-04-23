@@ -46,7 +46,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/DateRangePicker',
+  title: 'DateRangePicker',
   component: 'snice-date-range-picker',
   tags: ['autodocs'],
   argTypes: {

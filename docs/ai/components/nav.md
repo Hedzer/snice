@@ -7,6 +7,7 @@ Navigation menu from placard configurations, integrates with Snice routing.
 ```typescript
 variant: 'flat'|'hierarchical'|'grouped' = 'flat';
 orientation: 'horizontal'|'vertical' = 'horizontal';
+activeStyle: 'fill'|'text' = 'fill';  // attr: active-style, 'text' = color-only highlight
 isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 ```
 
@@ -29,6 +30,9 @@ isTopLevel: boolean = false;  // attr: is-top-level, receive context updates
 
 ```html
 <snice-nav id="nav" variant="flat" orientation="horizontal"></snice-nav>
+
+<!-- Text-only active highlight (no background fill) -->
+<snice-nav active-style="text"></snice-nav>
 
 <!-- Auto context integration -->
 <snice-nav is-top-level></snice-nav>

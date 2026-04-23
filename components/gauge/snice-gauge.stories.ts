@@ -31,7 +31,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Gauge',
+  title: 'Gauge',
   component: 'snice-gauge',
   tags: ['autodocs'],
   argTypes: {

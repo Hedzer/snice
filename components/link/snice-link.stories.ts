@@ -34,7 +34,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Navigation/Link',
+  title: 'Link',
   component: 'snice-link',
   tags: ['autodocs'],
   argTypes: {

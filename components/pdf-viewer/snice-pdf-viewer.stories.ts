@@ -11,7 +11,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/PdfViewer',
+  title: 'PdfViewer',
   component: 'snice-pdf-viewer',
   tags: ['autodocs'],
   argTypes: {

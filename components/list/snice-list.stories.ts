@@ -33,7 +33,7 @@ const baseItems = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Data/List',
+  title: 'List',
   component: 'snice-list',
   tags: ['autodocs'],
   argTypes: {

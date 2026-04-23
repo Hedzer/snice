@@ -17,7 +17,7 @@ function addDays(d: Date, n: number): Date {
 const today = new Date();
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Calendar',
+  title: 'Calendar',
   component: 'snice-calendar',
   tags: ['autodocs'],
   argTypes: {

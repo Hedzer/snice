@@ -36,7 +36,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/PodcastPlayer',
+  title: 'PodcastPlayer',
   component: 'snice-podcast-player',
   tags: ['autodocs'],
   argTypes: {

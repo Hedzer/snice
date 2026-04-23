@@ -8,7 +8,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Charts/Chart',
+  title: 'Chart',
   component: 'snice-chart',
   tags: ['autodocs'],
   argTypes: {

@@ -34,7 +34,7 @@ function wrap(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Media/QrReader',
+  title: 'QrReader',
   component: 'snice-qr-reader',
   tags: ['autodocs'],
   argTypes: {

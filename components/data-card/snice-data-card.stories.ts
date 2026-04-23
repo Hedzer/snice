@@ -20,7 +20,7 @@ function makeCard(fields: DataCardField[], attrs: Record<string, string | boolea
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/DataCard',
+  title: 'DataCard',
   component: 'snice-data-card',
   tags: ['autodocs'],
   argTypes: {

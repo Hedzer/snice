@@ -8,7 +8,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/AppTiles',
+  title: 'AppTiles',
   component: 'snice-app-tiles',
   tags: ['autodocs'],
   argTypes: {

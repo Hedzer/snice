@@ -7,7 +7,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Weather',
+  title: 'Weather',
   component: 'snice-weather',
   tags: ['autodocs'],
   argTypes: {

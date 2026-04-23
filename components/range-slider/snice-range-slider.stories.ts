@@ -34,7 +34,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/RangeSlider',
+  title: 'RangeSlider',
   component: 'snice-range-slider',
   tags: ['autodocs'],
   argTypes: {

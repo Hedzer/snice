@@ -39,7 +39,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/SplitButton',
+  title: 'SplitButton',
   component: 'snice-split-button',
   tags: ['autodocs'],
   argTypes: {

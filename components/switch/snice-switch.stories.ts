@@ -40,7 +40,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Switch',
+  title: 'Switch',
   component: 'snice-switch',
   tags: ['autodocs'],
   argTypes: {

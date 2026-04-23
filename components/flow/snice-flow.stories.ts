@@ -21,7 +21,7 @@ const basicEdges = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Flow',
+  title: 'Flow',
   component: 'snice-flow',
   tags: ['autodocs'],
   argTypes: {

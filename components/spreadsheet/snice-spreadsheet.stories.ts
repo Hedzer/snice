@@ -6,7 +6,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Data/Spreadsheet',
+  title: 'Spreadsheet',
   component: 'snice-spreadsheet',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },

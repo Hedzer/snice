@@ -26,7 +26,7 @@ function box(inner: HTMLElement): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/EmptyState',
+  title: 'EmptyState',
   component: 'snice-empty-state',
   tags: ['autodocs'],
   argTypes: {

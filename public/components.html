@@ -4999,6 +4999,8 @@ md.addEventListener('link-click',
         <div class="comp-split-demo demo-col">
           <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Horizontal (flat)</div>
           <snice-nav id="demo-nav-flat" variant="flat" orientation="horizontal" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-bottom:1rem"></snice-nav>
+          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">active-style="text" (color-only highlight, no fill)</div>
+          <snice-nav id="demo-nav-text" variant="flat" orientation="horizontal" active-style="text" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-bottom:1rem"></snice-nav>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <div>
               <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Hierarchical</div>
@@ -5029,7 +5031,8 @@ nav.update([
 ], ctx, 'settings');
 
 // Variants: flat, hierarchical, grouped
-// Orientation: horizontal, vertical</snice-code-block>
+// Orientation: horizontal, vertical
+// active-style="text" = color-only highlight</snice-code-block>
         </div>
       </div>
     </div>
@@ -5038,6 +5041,14 @@ nav.update([
     customElements.whenDefined('snice-nav').then(() => {
       const flat = document.getElementById('demo-nav-flat');
       if (flat) flat.update([
+        { name: 'home', title: 'Home', icon: 'home', order: 1 },
+        { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', order: 2 },
+        { name: 'users', title: 'Users', icon: 'group', order: 3 },
+        { name: 'settings', title: 'Settings', icon: 'settings', order: 4 }
+      ], undefined, 'dashboard');
+
+      const textStyle = document.getElementById('demo-nav-text');
+      if (textStyle) textStyle.update([
         { name: 'home', title: 'Home', icon: 'home', order: 1 },
         { name: 'dashboard', title: 'Dashboard', icon: 'dashboard', order: 2 },
         { name: 'users', title: 'Users', icon: 'group', order: 3 },

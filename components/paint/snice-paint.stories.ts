@@ -13,7 +13,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Paint',
+  title: 'Paint',
   component: 'snice-paint',
   tags: ['autodocs'],
   argTypes: {

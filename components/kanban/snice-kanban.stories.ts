@@ -68,7 +68,7 @@ const manyCards = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Kanban',
+  title: 'Kanban',
   component: 'snice-kanban',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },

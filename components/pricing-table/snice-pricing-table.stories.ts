@@ -7,7 +7,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/PricingTable',
+  title: 'PricingTable',
   component: 'snice-pricing-table',
   tags: ['autodocs'],
   argTypes: {

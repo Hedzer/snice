@@ -49,7 +49,7 @@ function makePanel(content: string) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Tabs',
+  title: 'Tabs',
   component: 'snice-tabs',
   tags: ['autodocs'],
   argTypes: {

@@ -16,7 +16,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Commerce/OrderTracker',
+  title: 'OrderTracker',
   component: 'snice-order-tracker',
   tags: ['autodocs'],
   argTypes: {

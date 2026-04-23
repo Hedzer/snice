@@ -57,7 +57,7 @@ function makeChart(attrs: Record<string, string | boolean>, data: object[], styl
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Candlestick',
+  title: 'Candlestick',
   component: 'snice-candlestick',
   tags: ['autodocs'],
   argTypes: {

@@ -32,7 +32,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/StepInput',
+  title: 'StepInput',
   component: 'snice-step-input',
   tags: ['autodocs'],
   argTypes: {

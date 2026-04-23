@@ -56,7 +56,7 @@ function makeKvWithPairs(attrs: Record<string, string | boolean | number> = {}, 
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/KeyValue',
+  title: 'KeyValue',
   component: 'snice-key-value',
   tags: ['autodocs'],
   argTypes: {

@@ -41,7 +41,7 @@ function makeHeatmap(attrs: Record<string, string | number>, data?: { date: stri
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Heatmap',
+  title: 'Heatmap',
   component: 'snice-heatmap',
   tags: ['autodocs'],
   argTypes: {

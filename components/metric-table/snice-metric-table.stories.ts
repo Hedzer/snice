@@ -22,7 +22,7 @@ function makeTable(
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/MetricTable',
+  title: 'MetricTable',
   component: 'snice-metric-table',
   tags: ['autodocs'],
   argTypes: {

@@ -58,7 +58,7 @@ function makeFunnel(attrs: Record<string, string | boolean>, data: object[], sty
 }
 
 const meta: Meta<Args> = {
-  title: 'Charts/Funnel',
+  title: 'Funnel',
   component: 'snice-funnel',
   tags: ['autodocs'],
   argTypes: {

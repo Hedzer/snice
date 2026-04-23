@@ -25,7 +25,7 @@ function makeDivider(attrs: Record<string, string | boolean>): HTMLElement {
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Divider',
+  title: 'Divider',
   component: 'snice-divider',
   tags: ['autodocs'],
   argTypes: {

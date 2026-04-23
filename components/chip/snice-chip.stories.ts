@@ -44,7 +44,7 @@ function col(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/Chip',
+  title: 'Chip',
   component: 'snice-chip',
   tags: ['autodocs'],
   argTypes: {

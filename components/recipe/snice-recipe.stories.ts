@@ -30,7 +30,7 @@ const BASE_STEPS = [
 ];
 
 const meta: Meta<Args> = {
-  title: 'Specialty/Recipe',
+  title: 'Recipe',
   component: 'snice-recipe',
   tags: ['autodocs'],
   argTypes: {

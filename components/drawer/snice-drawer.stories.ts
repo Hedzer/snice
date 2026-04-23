@@ -55,7 +55,7 @@ function grid(...boxes: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Layout/Drawer',
+  title: 'Drawer',
   component: 'snice-drawer',
   tags: ['autodocs'],
   argTypes: {

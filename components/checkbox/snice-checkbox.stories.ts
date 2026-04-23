@@ -39,7 +39,7 @@ function row(...els: HTMLElement[]) {
 }
 
 const meta: Meta<Args> = {
-  title: 'Form/Checkbox',
+  title: 'Checkbox',
   component: 'snice-checkbox',
   tags: ['autodocs'],
   argTypes: {

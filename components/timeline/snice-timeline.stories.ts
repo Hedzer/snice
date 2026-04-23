@@ -26,7 +26,7 @@ function makeTimeline(attrs: Record<string, string | boolean>, items = baseItems
 }
 
 const meta: Meta<Args> = {
-  title: 'Data/Timeline',
+  title: 'Timeline',
   component: 'snice-timeline',
   tags: ['autodocs'],
   argTypes: {

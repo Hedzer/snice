@@ -49,7 +49,7 @@ function wrap(el: HTMLElement, align: 'start' | 'end' = 'end') {
 }
 
 const meta: Meta<Args> = {
-  title: 'Feedback/NotificationCenter',
+  title: 'NotificationCenter',
   component: 'snice-notification-center',
   tags: ['autodocs'],
   argTypes: {

@@ -13,7 +13,7 @@ type Args = {
 };
 
 const meta: Meta<Args> = {
-  title: 'Specialty/LinkPreview',
+  title: 'LinkPreview',
   component: 'snice-link-preview',
   tags: ['autodocs'],
   argTypes: {
