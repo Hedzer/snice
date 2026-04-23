@@ -7,22 +7,35 @@
   color: var(--snice-color-primary, rgb(59 130 246));
   text-decoration: none;
   cursor: pointer;
-  transition: color var(--snice-transition-fast, 150ms);
   display: inline-flex;
   align-items: center;
   gap: var(--snice-spacing-2xs, 0.25rem);
+  /* Underline-draw-from-left on hover: a linear-gradient background grows
+     from 0% to 100% width. Avoids the jarring all-at-once text-decoration
+     toggle and reads as a refined progressive indicator. */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition:
+    color var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease),
+    background-size 240ms var(--snice-ease-out, ease);
 }
 
 .link:hover {
   color: var(--snice-color-primary-dark, rgb(37 99 235));
+  background-size: 100% 1px;
+}
+
+/* `underline` variant keeps the indicator visible at rest and just animates
+   color on hover. */
+.link--underline {
+  text-decoration: none;
+  background-size: 100% 1px;
 }
 
 .link:active {
   color: var(--snice-color-primary-darker, rgb(29 78 216));
-}
-
-.link--underline {
-  text-decoration: underline;
 }
 
 .link--default {

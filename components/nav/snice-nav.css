@@ -36,9 +36,10 @@
   font-weight: var(--snice-font-weight-medium, 500);
   box-sizing: border-box;
   min-width: 0;
+  position: relative;
   transition:
-    background-color var(--snice-transition-fast, 150ms) ease,
-    color var(--snice-transition-fast, 150ms) ease;
+    background-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease),
+    color var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease);
 }
 
 .nav__link:hover {
@@ -80,6 +81,60 @@
 
 :host([active-style="text"]) .nav__link--active:hover {
   color: var(--snice-color-primary-hover, rgb(29 78 216));
+}
+
+/* Accent-bar indicator for text-mode — animates an underline from center on
+   hover, and anchors it full-width beneath the active item. Anchored to the
+   link bottom in horizontal nav, to the left in vertical. */
+:host([active-style="text"]) .nav__link::after {
+  content: '';
+  position: absolute;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  left: 50%;
+  right: 50%;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 1px;
+  transition:
+    left 220ms var(--snice-ease-out, ease),
+    right 220ms var(--snice-ease-out, ease),
+    background-color 220ms var(--snice-ease-out, ease);
+  pointer-events: none;
+}
+
+:host([active-style="text"]) .nav__link:hover::after {
+  left: 20%;
+  right: 20%;
+}
+
+:host([active-style="text"]) .nav__link--active::after {
+  left: 0;
+  right: 0;
+}
+
+/* Vertical nav — slide in a LEFT accent bar instead of a bottom underline */
+:host([active-style="text"][orientation="vertical"]) .nav__link::after {
+  left: 0;
+  right: auto;
+  bottom: 20%;
+  top: 20%;
+  width: 2px;
+  height: auto;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition:
+    transform 220ms var(--snice-ease-out, ease),
+    background-color 220ms var(--snice-ease-out, ease);
+}
+
+:host([active-style="text"][orientation="vertical"]) .nav__link:hover::after {
+  transform: scaleY(0.6);
+}
+
+:host([active-style="text"][orientation="vertical"]) .nav__link--active::after {
+  top: 15%;
+  bottom: 15%;
+  transform: scaleY(1);
 }
 
 .nav__icon {
