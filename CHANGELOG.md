@@ -1,3 +1,44 @@
+# [4.39.0](https://github.com/Hedzer/snice/compare/v4.38.1...v4.39.0) (2026-04-23)
+
+
+### Bug Fixes
+
+* [@respond](https://github.com/respond) throttle queues resolvers; [@dispatch](https://github.com/dispatch) throttle uses latest detail ([8a24621](https://github.com/Hedzer/snice/commit/8a24621344f13ce9038200ad15dec4e071871645))
+* [@watch](https://github.com/watch) matches declared attribute name ([bf5d795](https://github.com/Hedzer/snice/commit/bf5d79556ae3beccd4be5835d2321f145082f824))
+* 9 component bugs + parseDuration util ([e4d873f](https://github.com/Hedzer/snice/commit/e4d873f081daa7438556c05b828b41fba231914d))
+* **a11y:** add aria-label to icon-only media control buttons ([a60d0d2](https://github.com/Hedzer/snice/commit/a60d0d2e43533642f3d645e50ddaf20edef457f5))
+* **a11y:** chart/sparkline/candlestick role=img, spreadsheet grid roles, date-picker/calendar keyboard nav ([6f7c684](https://github.com/Hedzer/snice/commit/6f7c684a6592b6f64b0ca0498dab9f8ca6ee160d))
+* **a11y:** form-associated callbacks for radio/checkbox/range-slider/step-input/tag-input/mentions/color-picker/file-upload ([b7fc1d0](https://github.com/Hedzer/snice/commit/b7fc1d07b77cb47069e99828b7a82d6196fc24ec))
+* **a11y:** input/textarea label for= + aria-describedby + aria-invalid ([114bc04](https://github.com/Hedzer/snice/commit/114bc049c0d113f2eed983cd237a621dc2e8add3))
+* **a11y:** kanban role=list, card role=button, Space-pickup/Arrow-move keyboard DnD, aria-live status ([03c7eef](https://github.com/Hedzer/snice/commit/03c7eef86da3d34d8c176079eb47c10ef5f4c46e))
+* **a11y:** list-item role=listitem, tree-item aria-level/setsize/posinset ([f8055c7](https://github.com/Hedzer/snice/commit/f8055c730e098cb9446344601ce7f0d8156151b7))
+* **a11y:** menu trigger semantics + Arrow/Home/End/Escape navigation ([4971c55](https://github.com/Hedzer/snice/commit/4971c55c775bbf7aa363f596b19829b0ac8171e4))
+* **a11y:** modal/drawer/command-palette dialog role, aria-labelledby, combobox wiring ([967ed9b](https://github.com/Hedzer/snice/commit/967ed9b8aecf81a3c1fd3fb63196cc7bdc3cbc2b))
+* **a11y:** slider/switch/select label, aria-describedby, combobox state ([0edc63c](https://github.com/Hedzer/snice/commit/0edc63ccfe97bd3d691dadf91f24c57c07717881))
+* **a11y:** spotlight popover + notification-center panel dialog roles and aria-labelledby ([25a10fc](https://github.com/Hedzer/snice/commit/25a10fc884abcd36b2d897ec6073548f0c4564a1))
+* **a11y:** table headers get scope=col and aria-sort ([1ffe44c](https://github.com/Hedzer/snice/commit/1ffe44c4b6611aab63e67ebed9152d2d19d89490))
+* **a11y:** tabs Arrow/Home/End keyboard navigation ([3a852b3](https://github.com/Hedzer/snice/commit/3a852b381861c35acff93bed0bb276a1c7db5bbf))
+* abort stale transitions on rapid navigation ([07227fb](https://github.com/Hedzer/snice/commit/07227fbaf113cf4e1c7fd209cda6d720830429b1))
+* batch 3 of component bug audit — leaks, races, coordination ([5f985cd](https://github.com/Hedzer/snice/commit/5f985cd2c282ebbc1b7ca41b08af0cee2c00372c))
+* camera-annotate showcase sets auto-start so camera opens on modal show ([8370cd3](https://github.com/Hedzer/snice/commit/8370cd3cb42bb90fde21a3220a76d452467814f9))
+* component bug audit batch — reactivity, leaks, form-associated, shadow DOM ([4ee5c91](https://github.com/Hedzer/snice/commit/4ee5c91cfad17fbd89b80d79d399eda49c5d0385))
+* **context:** multiple [@context](https://github.com/context) handlers on one class all fire ([9dac16f](https://github.com/Hedzer/snice/commit/9dac16ff32b55b3e6bb9774c3226ecb4d09d178d))
+* countdown separator alignment, camera/qr-reader showcase event name, calendar/mentions type errors ([305f8c9](https://github.com/Hedzer/snice/commit/305f8c9653613a15e52cd6c587eb5c469c400f21))
+* make template-read state reactive in 7 components ([42cc85b](https://github.com/Hedzer/snice/commit/42cc85b879fc599e242f53ad7c95d232511c0206))
+* qr-reader switchCamera race serialization ([b6b7e50](https://github.com/Hedzer/snice/commit/b6b7e5014b50475b2c4c1807abd746e0153817f2))
+* receipt.print() includes slotted content ([9651b75](https://github.com/Hedzer/snice/commit/9651b75c1f270edb3434dd7275ce28faf4e3fbee))
+* reject javascript: URL schemes in link-preview, location, pdf-viewer, video-player ([797d898](https://github.com/Hedzer/snice/commit/797d898c21082fef7f73f4936c4449d476ad54dd))
+* remaining component bug audit items ([1d1a77a](https://github.com/Hedzer/snice/commit/1d1a77a86675a75ccd008eccdb9003940d540ade))
+* replace __methods expandos with Symbols, fix drawer test setup, action-bar/binpack css tag ([886e2e2](https://github.com/Hedzer/snice/commit/886e2e27df90fa4fdbf8dfd711e48de39be42c42))
+* resolve [@on](https://github.com/on) collision, listener leaks, terminal XSS, camera auto-request ([f58f00b](https://github.com/Hedzer/snice/commit/f58f00baae67511859a6cf9a0bfc4fb0f645bbc6))
+* six framework bugs from audit batch 2 ([31e073a](https://github.com/Hedzer/snice/commit/31e073a441b59d10170f2c84dddf791d387fad53))
+* XSS cluster + core escapeHtml/escapeAttr/isSafeUrl utilities ([d3d27b6](https://github.com/Hedzer/snice/commit/d3d27b606b1d05395dcc63deb38300e99b123de2))
+
+
+### Features
+
+* chips are read-only by default; add selectable property ([f3cd983](https://github.com/Hedzer/snice/commit/f3cd9838043dff28b153a360123eae6dbcf444a4))
+
 ## [4.38.1](https://github.com/Hedzer/snice/compare/v4.38.0...v4.38.1) (2026-04-21)
 
 
