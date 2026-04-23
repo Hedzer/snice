@@ -452,7 +452,7 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 
   // -- Private helpers ------------------------------------------------------

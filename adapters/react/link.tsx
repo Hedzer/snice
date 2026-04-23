@@ -15,7 +15,7 @@ export interface LinkProps extends SniceBaseProps {
   external?: any;
   underline?: any;
   hash?: any;
-  onClick?: (event: any) => void;
+
 }
 
 /**
@@ -37,6 +37,6 @@ export interface LinkProps extends SniceBaseProps {
 export const Link = createReactAdapter<LinkProps>({
   tagName: 'snice-link',
   properties: ["href","target","variant","disabled","external","underline","hash"],
-  events: {"click":"onClick"},
+  events: {},
   formAssociated: false
 });

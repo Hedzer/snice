@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Kanban = createReactAdapter({
     tagName: 'snice-kanban',
-    properties: ["columns", "allowDragDrop", "showCardCount", "labelFilters", "searchQuery"],
+    properties: ["columns", "allowDragDrop", "showCardCount", "labelFilters", "searchQuery", "kbGrabbedCardId", "kbLiveMessage"],
     events: { "kanban-card-move": "onKanbanCardMove", "kanban-card-click": "onKanbanCardClick" },
     formAssociated: false
 });

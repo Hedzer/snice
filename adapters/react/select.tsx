@@ -25,6 +25,8 @@ export interface SelectProps extends SniceBaseProps {
   name?: any;
   value?: any;
   label?: any;
+  helperText?: any;
+  errorText?: any;
   placeholder?: any;
   maxHeight?: any;
   options?: any;
@@ -51,7 +53,7 @@ export interface SelectProps extends SniceBaseProps {
  */
 export const Select = createReactAdapter<SelectProps>({
   tagName: 'snice-select',
-  properties: ["disabled","required","invalid","readonly","loading","multiple","searchable","clearable","allowFreeText","editable","remote","searchDebounce","open","size","name","value","label","placeholder","maxHeight","options"],
+  properties: ["disabled","required","invalid","readonly","loading","multiple","searchable","clearable","allowFreeText","editable","remote","searchDebounce","open","size","name","value","label","helperText","errorText","placeholder","maxHeight","options"],
   events: {"select-change":"onSelectChange","select-open":"onSelectOpen","select-close":"onSelectClose"},
   formAssociated: false
 });

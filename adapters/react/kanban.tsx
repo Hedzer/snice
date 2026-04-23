@@ -13,6 +13,8 @@ export interface KanbanProps extends SniceBaseProps {
   showCardCount?: any;
   labelFilters?: any;
   searchQuery?: any;
+  kbGrabbedCardId?: any;
+  kbLiveMessage?: any;
   onKanbanCardMove?: (event: any) => void;
   onKanbanCardClick?: (event: any) => void;
 }
@@ -35,7 +37,7 @@ export interface KanbanProps extends SniceBaseProps {
  */
 export const Kanban = createReactAdapter<KanbanProps>({
   tagName: 'snice-kanban',
-  properties: ["columns","allowDragDrop","showCardCount","labelFilters","searchQuery"],
+  properties: ["columns","allowDragDrop","showCardCount","labelFilters","searchQuery","kbGrabbedCardId","kbLiveMessage"],
   events: {"kanban-card-move":"onKanbanCardMove","kanban-card-click":"onKanbanCardClick"},
   formAssociated: false
 });

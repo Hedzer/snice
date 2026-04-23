@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const CommandPalette = createReactAdapter({
     tagName: 'snice-command-palette',
-    properties: ["open", "commands", "placeholder", "noResultsText", "maxResults", "showRecentCommands", "recentCommandsLimit", "caseSensitive"],
+    properties: ["open", "commands", "placeholder", "noResultsText", "maxResults", "showRecentCommands", "recentCommandsLimit", "caseSensitive", "searchQuery", "activeIndex", "filteredCommands", "recentCommands"],
     events: { "command-palette-open": "onCommandPaletteOpen", "command-palette-close": "onCommandPaletteClose", "command-select": "onCommandSelect", "command-execute": "onCommandExecute", "command-search": "onCommandSearch" },
     formAssociated: false
 });

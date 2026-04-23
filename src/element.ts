@@ -5,7 +5,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
@@ -661,11 +661,11 @@ export function watch(...propertyNames: string[]) {
       // decorators on the same method register for each key independently,
       // while still preventing duplicate registration when child classes
       // inherit/override a method with the same name.
-      if (!constructor.__watchMethods) constructor.__watchMethods = new Map();
-      let registered: Set<string> = constructor.__watchMethods.get(target);
+      if (!constructor[WATCH_METHODS]) constructor[WATCH_METHODS] = new Map();
+      let registered: Set<string> = constructor[WATCH_METHODS].get(target);
       if (!registered) {
         registered = new Set<string>();
-        constructor.__watchMethods.set(target, registered);
+        constructor[WATCH_METHODS].set(target, registered);
       }
 
       if (!constructor[PROPERTY_WATCHERS]) {

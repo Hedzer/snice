@@ -10,7 +10,6 @@ export interface LinkProps extends SniceBaseProps {
     external?: any;
     underline?: any;
     hash?: any;
-    onClick?: (event: any) => void;
 }
 /**
  * Link - React adapter for snice-link

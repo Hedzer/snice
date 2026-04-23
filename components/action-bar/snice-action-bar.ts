@@ -115,6 +115,6 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
 
   @styles()
   componentStyles() {
-    return css`${cssContent}`;
+    return css/*css*/`${cssContent}`;
   }
 }

@@ -92,3 +92,11 @@ export const CONTEXT_OPTIONS = getSymbol('context-options');
 export const CONTEXT_TIMER = getSymbol('context-timer');
 export const CONTEXT_CALLED = getSymbol('context-called');
 export const CONTEXT_UPDATE = getSymbol('context-update');
+
+// Registration de-dup sets on the constructor — replace previous `__*Methods`
+// expando strings that violated the no-double-underscore rule.
+export const CONTEXT_METHODS = getSymbol('context-methods');
+export const WATCH_METHODS = getSymbol('watch-methods');
+export const OBSERVE_METHODS = getSymbol('observe-methods');
+export const ON_METHODS = getSymbol('on-methods');
+export const RESPOND_METHODS = getSymbol('respond-methods');

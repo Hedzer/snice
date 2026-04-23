@@ -8,6 +8,7 @@ export interface CommentsProps extends SniceBaseProps {
     allowReplies?: any;
     allowLikes?: any;
     maxDepth?: any;
+    replyingTo?: any;
     onCommentAdd?: (event: any) => void;
     onCommentReply?: (event: any) => void;
     onCommentDelete?: (event: any) => void;

@@ -7,6 +7,11 @@ export interface CameraAnnotateProps extends SniceBaseProps {
     autoStart?: any;
     autoRotateColors?: any;
     showLabelsPanel?: any;
+    strokes?: any;
+    annotations?: any;
+    activeColor?: any;
+    strokeWidth?: any;
+    highlightedAnnotationId?: any;
     onCapture?: (event: any) => void;
     onAnnotate?: (event: any) => void;
     onAnnotationChange?: (event: any) => void;

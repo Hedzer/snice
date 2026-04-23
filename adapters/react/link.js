@@ -21,7 +21,7 @@ import { createReactAdapter } from './wrapper';
 export const Link = createReactAdapter({
     tagName: 'snice-link',
     properties: ["href", "target", "variant", "disabled", "external", "underline", "hash"],
-    events: { "click": "onClick" },
+    events: {},
     formAssociated: false
 });
 //# sourceMappingURL=link.js.map

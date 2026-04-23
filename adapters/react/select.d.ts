@@ -20,6 +20,8 @@ export interface SelectProps extends SniceBaseProps {
     name?: any;
     value?: any;
     label?: any;
+    helperText?: any;
+    errorText?: any;
     placeholder?: any;
     maxHeight?: any;
     options?: any;

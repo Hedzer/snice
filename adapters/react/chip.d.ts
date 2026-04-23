@@ -13,6 +13,7 @@ export interface ChipProps extends SniceBaseProps {
     disabled?: any;
     icon?: any;
     avatar?: any;
+    hasIconSlot?: any;
     onChipClick?: (event: any) => void;
     onChipRemove?: (event: any) => void;
 }

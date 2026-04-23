@@ -3,7 +3,7 @@
  * Use in elements or controllers to listen to DOM events or custom events
  */
 
-import { CLEANUP } from './symbols';
+import { CLEANUP, ON_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, type KeyboardFilter } from './parts';
@@ -80,9 +80,9 @@ export function on(
       const constructor = this.constructor as any;
 
       // Dedup by method reference — allows child to register same-named methods
-      if (!constructor.__onMethods) constructor.__onMethods = new Set();
-      if (constructor.__onMethods.has(originalMethod)) return;
-      constructor.__onMethods.add(originalMethod);
+      if (!constructor[ON_METHODS]) constructor[ON_METHODS] = new Set();
+      if (constructor[ON_METHODS].has(originalMethod)) return;
+      constructor[ON_METHODS].add(originalMethod);
 
       if (!constructor[ON_HANDLERS]) {
         constructor[ON_HANDLERS] = [];

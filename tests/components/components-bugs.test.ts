@@ -203,10 +203,13 @@ describe('image: changing src resets loaded state', () => {
 describe('drawer: body scroll lock is released on disconnect', () => {
   it('removing an open drawer restores document.body overflow', async () => {
     await import('../../components/drawer/snice-drawer');
+    // Render the drawer already-open by setting the attribute BEFORE attach.
+    // @ready's init() reads `this.open` and calls handleOpen() when true, which
+    // is the same real-world flow as an initially-open drawer in markup.
     const el = document.createElement('snice-drawer') as any;
+    el.setAttribute('open', '');
     document.body.appendChild(el);
     await el.ready;
-    el.open = true;
     await wait(30);
     expect(document.body.style.overflow).toBe('hidden');
 

@@ -8,6 +8,8 @@ export interface KanbanProps extends SniceBaseProps {
     showCardCount?: any;
     labelFilters?: any;
     searchQuery?: any;
+    kbGrabbedCardId?: any;
+    kbLiveMessage?: any;
     onKanbanCardMove?: (event: any) => void;
     onKanbanCardClick?: (event: any) => void;
 }

@@ -2,7 +2,7 @@
  * @context decorator for receiving router context updates
  */
 
-import { CONTEXT_HANDLER, NAVIGATION_CONTEXT_INSTANCE, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_TIMER, CONTEXT_CALLED } from './symbols';
+import { CONTEXT_HANDLER, NAVIGATION_CONTEXT_INSTANCE, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_TIMER, CONTEXT_CALLED, CONTEXT_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { Context } from './types/context';
 
@@ -45,9 +45,9 @@ export function context(options: ContextOptions = {}) {
     context.addInitializer(function (this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor.__contextMethods) constructor.__contextMethods = new Set();
-      if (constructor.__contextMethods.has(originalMethod)) return;
-      constructor.__contextMethods.add(originalMethod);
+      if (!constructor[CONTEXT_METHODS]) constructor[CONTEXT_METHODS] = new Set();
+      if (constructor[CONTEXT_METHODS].has(originalMethod)) return;
+      constructor[CONTEXT_METHODS].add(originalMethod);
 
       if (!constructor[CONTEXT_HANDLERS]) {
         constructor[CONTEXT_HANDLERS] = [];

@@ -1,4 +1,4 @@
-import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
+import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE, RESPOND_METHODS } from './symbols';
 import { RequestOptions } from './types/request-options';
 import { RespondOptions } from './types/respond-options';
 
@@ -173,9 +173,9 @@ export function respond(requestName: string, options?: RespondOptions) {
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor.__respondMethods) constructor.__respondMethods = new Set();
-      if (constructor.__respondMethods.has(target)) return;
-      constructor.__respondMethods.add(target);
+      if (!constructor[RESPOND_METHODS]) constructor[RESPOND_METHODS] = new Set();
+      if (constructor[RESPOND_METHODS].has(target)) return;
+      constructor[RESPOND_METHODS].add(target);
 
       if (!constructor[CHANNEL_HANDLERS]) {
         constructor[CHANNEL_HANDLERS] = [];

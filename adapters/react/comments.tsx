@@ -13,6 +13,7 @@ export interface CommentsProps extends SniceBaseProps {
   allowReplies?: any;
   allowLikes?: any;
   maxDepth?: any;
+  replyingTo?: any;
   onCommentAdd?: (event: any) => void;
   onCommentReply?: (event: any) => void;
   onCommentDelete?: (event: any) => void;
@@ -37,7 +38,7 @@ export interface CommentsProps extends SniceBaseProps {
  */
 export const Comments = createReactAdapter<CommentsProps>({
   tagName: 'snice-comments',
-  properties: ["comments","currentUser","allowReplies","allowLikes","maxDepth"],
+  properties: ["comments","currentUser","allowReplies","allowLikes","maxDepth","replyingTo"],
   events: {"comment-add":"onCommentAdd","comment-reply":"onCommentReply","comment-delete":"onCommentDelete","comment-like":"onCommentLike"},
   formAssociated: false
 });

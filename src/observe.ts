@@ -1,4 +1,4 @@
-import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE } from './symbols';
+import { OBSERVERS, CLEANUP, IS_CONTROLLER_INSTANCE, OBSERVE_METHODS } from './symbols';
 import { ObserveOptions } from './types/observe-options';
 import { createThrottled } from './utils';
 
@@ -41,9 +41,9 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor.__observeMethods) constructor.__observeMethods = new Set();
-      if (constructor.__observeMethods.has(target)) return;
-      constructor.__observeMethods.add(target);
+      if (!constructor[OBSERVE_METHODS]) constructor[OBSERVE_METHODS] = new Set();
+      if (constructor[OBSERVE_METHODS].has(target)) return;
+      constructor[OBSERVE_METHODS].add(target);
 
       if (!constructor[OBSERVERS]) {
         constructor[OBSERVERS] = [];
