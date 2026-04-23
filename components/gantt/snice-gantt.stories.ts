@@ -69,6 +69,7 @@ export const ZoomDay: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'day');
     (el as any).tasks = baseTasks;
@@ -83,6 +84,7 @@ export const ZoomWeekDefault: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'week');
     (el as any).tasks = baseTasks;
@@ -97,6 +99,7 @@ export const ZoomMonth: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'month');
     (el as any).tasks = baseTasks;
@@ -111,6 +114,7 @@ export const ShowDependenciesTrue: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.toggleAttribute('show-dependencies', true);
     (el as any).tasks = depTasks;
@@ -125,6 +129,7 @@ export const ShowDependenciesFalse: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('show-dependencies', 'false');
     (el as any).tasks = depTasks;
@@ -139,6 +144,7 @@ export const CustomTaskColors: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'week');
     (el as any).tasks = coloredTasks;
@@ -153,6 +159,7 @@ export const TaskProgress: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'week');
     (el as any).tasks = baseTasks;
@@ -167,6 +174,7 @@ export const GroupedTasks: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-gantt');
     el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('zoom', 'week');
     (el as any).tasks = groupedTasks;
@@ -181,8 +189,8 @@ export const SameDataAtAllZoomLevels: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     for (const zoom of ['day', 'week', 'month']) {
-      
-    el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
+      const el = document.createElement('snice-gantt');
+      el.style.cssText = 'display:block;min-height:300px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
       el.setAttribute('zoom', zoom);
       (el as any).tasks = baseTasks;
       wrap.appendChild(el);

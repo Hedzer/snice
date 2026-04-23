@@ -381,6 +381,25 @@ export const InfiniteScrollRequiresScrollableParent: Story = {
       if (i === 1) li.setAttribute('description', 'Scroll down for infinite loading');
       list.appendChild(li);
     }
+
+    // Respond to the list's `list/load-more` request with additional items.
+    // Without this, the component times out with "no handler found" — the
+    // story pattern is "consumer handles pagination".
+    let nextId = 6;
+    list.addEventListener('@request/list/load-more', (e: any) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.detail.discovery.resolve();
+      setTimeout(() => {
+        for (let i = 0; i < 5; i++) {
+          const li = document.createElement('snice-list-item');
+          li.setAttribute('heading', `Item ${nextId++}`);
+          list.appendChild(li);
+        }
+        e.detail.data.resolve({ hasMore: nextId < 30 });
+      }, 200);
+    });
+
     container.appendChild(list);
     return container;
   },

@@ -247,7 +247,7 @@ export const CSSPartsStyling: Story = {
       d.appendChild(l);
       const r = document.createElement('div');
       r.style.cssText = 'display:flex;gap:1rem;align-items:center;flex-wrap:wrap;';
-      els.forEach(el => { el.classList.add(cls); r.appendChild(el); });
+      els.forEach(el => { if (cls) el.classList.add(cls); r.appendChild(el); });
       d.appendChild(r);
       return d;
     }

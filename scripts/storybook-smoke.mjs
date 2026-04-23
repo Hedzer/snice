@@ -55,16 +55,32 @@ async function checkStory(browser, baseUrl, story) {
   const errors = [];
   const consoleErrors = [];
   page.on('pageerror', (err) => errors.push(err.message));
+  // Filter noise unrelated to render bugs — stories that demonstrate broken
+  // images or unreachable URLs intentionally log ERR_NAME_NOT_RESOLVED /
+  // ERR_CONNECTION_REFUSED / 404 resource failures.
+  const IGNORE = [
+    /Failed to load resource: net::ERR_NAME_NOT_RESOLVED/,
+    /Failed to load resource: net::ERR_CONNECTION_REFUSED/,
+    /Failed to load resource: the server responded with a status of (4|5)\d\d/,
+    /Failed to load resource: net::ERR_CERT/,
+  ];
   page.on('console', (msg) => {
-    if (msg.type() === 'error') consoleErrors.push(msg.text());
+    if (msg.type() !== 'error') return;
+    const text = msg.text();
+    if (IGNORE.some(re => re.test(text))) return;
+    consoleErrors.push(text);
   });
   try {
+    // `load` (not `networkidle`) — media stories (audio/video) buffer forever
+    // and would never reach idle. Render errors fire well before `load`.
     await page.goto(`${baseUrl}/iframe.html?id=${story.id}&viewMode=story`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'load',
       timeout: 15_000,
     });
-    // Give stories a moment to fully render (some use async update())
-    await page.waitForTimeout(150);
+    // Give stories a moment to fully render (some use async update()).
+    // Bump higher to catch lazy/runtime errors (e.g. pdfjs worker failure,
+    // async data fetches) that surface only once the component starts work.
+    await page.waitForTimeout(1000);
   } catch (e) {
     errors.push(`navigation: ${e.message}`);
   } finally {

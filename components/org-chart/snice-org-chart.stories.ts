@@ -78,6 +78,7 @@ export const DirectionTopDownDefault: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
@@ -91,6 +92,7 @@ export const DirectionLeftRight: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('direction', 'left-right');
     (el as any).data = fullData;
@@ -105,6 +107,7 @@ export const CompactFalseDefault: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
@@ -118,6 +121,7 @@ export const CompactTrue: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.toggleAttribute('compact', true);
     (el as any).data = fullData;
@@ -132,6 +136,7 @@ export const CompactLeftRight: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     el.setAttribute('direction', 'left-right');
     el.toggleAttribute('compact', true);
@@ -147,6 +152,7 @@ export const WithAvatars: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = fullData;
     wrap.appendChild(el);
@@ -160,6 +166,7 @@ export const WithoutAvatarsInitials: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = noAvatarData;
     wrap.appendChild(el);
@@ -173,6 +180,7 @@ export const NodesWithTitle: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: '1', name: 'Jane Doe', title: 'VP of Engineering',
@@ -192,6 +200,7 @@ export const NodesWithoutTitle: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: '1', name: 'Team Alpha',
@@ -212,6 +221,7 @@ export const SingleNodeNoChildren: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = { id: 'solo', name: 'Standalone Node', title: 'Only member' };
     wrap.appendChild(el);
@@ -225,6 +235,7 @@ export const DeepHierarchy4Levels: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: 'l0', name: 'Level 0', title: 'Root',
@@ -253,6 +264,7 @@ export const WideHierarchyManySiblings: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     (el as any).data = {
       id: 'boss', name: 'Manager', title: 'Team Lead',
@@ -271,6 +283,7 @@ export const NoData: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     
+    const el = document.createElement('snice-org-chart');
     el.style.cssText = 'display:block;min-height:400px;border:1px solid rgba(128,128,128,0.2);border-radius:8px;';
     wrap.appendChild(el);
     return wrap;

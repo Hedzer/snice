@@ -556,7 +556,7 @@ export const CSSPartsStyling: Story = {
       const r = document.createElement('div');
       r.className = 'row';
       const m = makeMenu('Open Menu', items, { open: true });
-      m.classList.add(cls);
+      if (cls) m.classList.add(cls);
       r.appendChild(m);
       d.appendChild(l);
       d.appendChild(r);

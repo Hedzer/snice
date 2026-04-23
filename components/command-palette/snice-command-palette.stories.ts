@@ -258,7 +258,7 @@ export const CSSPartsStyling: Story = {
 
       const el = document.createElement('snice-command-palette');
       el.toggleAttribute('open', true);
-      el.classList.add(cls);
+      if (cls) el.classList.add(cls);
       (el as any).commands = cmds;
 
       pw.appendChild(el);
@@ -345,7 +345,7 @@ export const CSSPartsAdvanced: Story = {
       pw.className = 'palette-wrap';
       const el = document.createElement('snice-command-palette');
       el.toggleAttribute('open', true);
-      el.classList.add(cls);
+      if (cls) el.classList.add(cls);
       (el as any).commands = cmds;
       pw.appendChild(el);
       d.appendChild(pw);

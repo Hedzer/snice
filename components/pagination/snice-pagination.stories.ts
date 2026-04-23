@@ -264,7 +264,7 @@ export const CSSPartsStyling: Story = {
       const l = document.createElement('div');
       l.className = 'label';
       l.textContent = label;
-      el.classList.add(cls);
+      if (cls) el.classList.add(cls);
       d.appendChild(l);
       d.appendChild(el);
       return d;

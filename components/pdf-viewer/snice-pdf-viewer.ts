@@ -5,15 +5,25 @@ import viewerStyles from './snice-pdf-viewer.css?inline';
 // @ts-ignore - Vendored pdf.js library (Mozilla Foundation, Apache 2.0)
 import { getDocument, GlobalWorkerOptions } from './pdf.min.mjs';
 
-// Resolve worker source relative to the script that loaded this component
+// Resolve worker source relative to whichever context loaded this module.
+// - ESM/bundled (Vite, storybook, app builds): use `import.meta.url`, which
+//   resolves to the emitted module's URL — the worker sits in the same dir.
+// - CDN/IIFE: `import.meta.url` is unavailable; fall back to scanning
+//   <script> tags for the pdf-viewer bundle.
+// Without this fallback pdfjs throws `No "GlobalWorkerOptions.workerSrc"
+// specified` the first time a PDF is loaded.
 {
-  const cs = document.currentScript as HTMLScriptElement | null;
-  const scriptSrc = cs?.src
-    || (document.querySelectorAll('script[src*="pdf-viewer"]') as NodeListOf<HTMLScriptElement>)[0]?.src
-    || '';
-  if (scriptSrc) {
-    GlobalWorkerOptions.workerSrc = scriptSrc.replace(/[^/]+$/, 'pdf.worker.min.mjs');
+  let base = '';
+  try {
+    base = new URL('./pdf.worker.min.mjs', import.meta.url).href;
+  } catch {
+    const cs = document.currentScript as HTMLScriptElement | null;
+    const scriptSrc = cs?.src
+      || (document.querySelectorAll('script[src*="pdf-viewer"]') as NodeListOf<HTMLScriptElement>)[0]?.src
+      || '';
+    if (scriptSrc) base = scriptSrc.replace(/[^/]+$/, 'pdf.worker.min.mjs');
   }
+  if (base) GlobalWorkerOptions.workerSrc = base;
 }
 
 @element('snice-pdf-viewer')
