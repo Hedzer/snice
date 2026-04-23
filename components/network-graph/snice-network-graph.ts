@@ -1,5 +1,6 @@
 import { element, property, dispatch, query, render, styles, ready, dispose, watch, html, css, escapeHtml, escapeAttr } from 'snice';
 import cssContent from './snice-network-graph.css?inline';
+import { getAccentPalette } from '../utils';
 import type { NetworkNode, NetworkEdge, NetworkGraphData, LayoutType, SniceNetworkGraphElement } from './snice-network-graph.types';
 
 interface SimNode extends NetworkNode {
@@ -18,18 +19,9 @@ interface SimEdge {
   edge: NetworkEdge;
 }
 
-const DEFAULT_COLORS = [
-  'rgb(37 99 235)',   // blue
-  'rgb(22 163 74)',   // green
-  'rgb(234 88 12)',   // orange
-  'rgb(220 38 38)',   // red
-  'rgb(147 51 234)',  // purple
-  'rgb(6 182 212)',   // cyan
-  'rgb(236 72 153)',  // pink
-  'rgb(245 158 11)',  // amber
-  'rgb(20 184 166)',  // teal
-  'rgb(99 102 241)',  // indigo
-];
+// Resolved from --snice-color-accent-1..8 at call time so theme changes
+// flow through. 8 slots match the accent palette.
+const getDefaultColors = () => getAccentPalette();
 
 @element('snice-network-graph')
 export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphElement {
@@ -215,10 +207,10 @@ export class SniceNetworkGraph extends HTMLElement implements SniceNetworkGraphE
   }
 
   private getGroupColor(group?: string): string {
-    if (!group) return DEFAULT_COLORS[0];
+    if (!group) return getDefaultColors()[0];
     const groups = [...new Set(this.data.nodes.map(n => n.group).filter(Boolean))];
     const idx = groups.indexOf(group);
-    return DEFAULT_COLORS[idx % DEFAULT_COLORS.length];
+    return getDefaultColors()[idx % getDefaultColors().length];
   }
 
   private getNodeRadius(node: SimNode): number {

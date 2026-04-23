@@ -1,9 +1,11 @@
 import { element, property, dispatch, ready, dispose, watch, query, render, styles, html, css, escapeHtml } from 'snice';
 import cssContent from './snice-treemap.css?inline';
 import type { TreemapNode, TreemapColorScheme, TreemapRect, SniceTreemapElement } from './snice-treemap.types';
+import { getAccentPalette } from '../utils';
 
-const COLOR_SCHEMES: Record<TreemapColorScheme, string[]> = {
-  default: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'],
+// `default` is resolved at render time from --snice-color-accent-1..8 so
+// it flows with the theme. Named schemes remain static palettes.
+const COLOR_SCHEMES: Record<Exclude<TreemapColorScheme, 'default'>, string[]> = {
   blue: ['#08519c', '#3182bd', '#6baed6', '#9ecae1', '#2171b5', '#4292c6', '#6baed6', '#c6dbef'],
   green: ['#006d2c', '#31a354', '#74c476', '#a1d99b', '#238b45', '#41ab5d', '#74c476', '#c7e9c0'],
   purple: ['#54278f', '#756bb1', '#9e9ac8', '#bcbddc', '#6a51a3', '#807dba', '#9e9ac8', '#dadaeb'],
@@ -262,7 +264,9 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   }
 
   private getColor(index: number): string {
-    const colors = COLOR_SCHEMES[this.colorScheme] || COLOR_SCHEMES.default;
+    const colors = this.colorScheme === 'default'
+      ? getAccentPalette()
+      : (COLOR_SCHEMES[this.colorScheme as Exclude<TreemapColorScheme, 'default'>] || getAccentPalette());
     return colors[index % colors.length];
   }
 

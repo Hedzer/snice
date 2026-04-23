@@ -24,6 +24,7 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-warning` | Warning state color |
 | `--snice-color-danger` | Danger/error state color |
 | `--snice-color-neutral` | Neutral color |
+| `--snice-color-accent-1` … `-accent-8` | Data-visualization palette (8 slots, muted/business tones). Charts, treemaps, sankey, funnel, network-graph cycle through these for series coloring when no per-point color is supplied |
 | `--snice-color-text` | Primary text color |
 | `--snice-color-text-secondary` | Secondary text color |
 | `--snice-color-text-tertiary` | Tertiary text color |

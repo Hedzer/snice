@@ -1,15 +1,11 @@
 import { element, property, dispatch, render, styles, watch, query, ready, html, css } from 'snice';
 import cssContent from './snice-funnel.css?inline';
+import { getAccentPalette } from '../utils';
 import type { FunnelStage, FunnelVariant, FunnelOrientation, SniceFunnelElement } from './snice-funnel.types';
 
-const DEFAULT_COLORS = [
-  'rgb(37 99 235)',
-  'rgb(59 130 246)',
-  'rgb(96 165 250)',
-  'rgb(147 197 253)',
-  'rgb(191 219 254)',
-  'rgb(219 234 254)',
-];
+// Resolved from --snice-color-accent-1..8 at call time so theme changes
+// flow through. 8 slots match the accent palette.
+const getDefaultColors = () => getAccentPalette();
 
 function escapeHTML(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -82,7 +78,7 @@ export class SniceFunnel extends HTMLElement implements SniceFunnelElement {
       const opacity = 1 - (index / this.cachedData.length) * 0.6;
       return `rgba(37, 99, 235, ${opacity})`;
     }
-    return DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+    return getDefaultColors()[index % getDefaultColors().length];
   }
 
   private getPercentage(index: number): string {

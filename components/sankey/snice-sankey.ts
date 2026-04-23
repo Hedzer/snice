@@ -1,14 +1,14 @@
 import { element, property, render, styles, dispatch, ready, dispose, watch, query, html, css } from 'snice';
 import cssContent from './snice-sankey.css?inline';
+import { getAccentPalette } from '../utils';
 import type {
   SankeyData, SankeyAlignment, SankeyLayoutNode, SankeyLayoutLink,
   SankeyNode, SankeyLink, SniceSankeyElement
 } from './snice-sankey.types';
 
-const DEFAULT_COLORS = [
-  '#2196f3', '#4caf50', '#ff9800', '#f44336', '#9c27b0',
-  '#00bcd4', '#8bc34a', '#ffc107', '#e91e63', '#673ab7'
-];
+// Resolved from --snice-color-accent-1..8 at call time so theme changes
+// flow through. 8 slots match the accent palette.
+const getDefaultColors = () => getAccentPalette();
 
 function escapeHTML(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -130,7 +130,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
       nodeMap.set(n.id, {
         id: n.id,
         label: n.label || n.id,
-        color: n.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length],
+        color: n.color || getDefaultColors()[i % getDefaultColors().length],
         x: 0, y: 0,
         width: this.nodeWidth,
         height: 0,
@@ -146,7 +146,7 @@ export class SniceSankey extends HTMLElement implements SniceSankeyElement {
       source: nodeMap.get(l.source)!,
       target: nodeMap.get(l.target)!,
       value: l.value,
-      color: l.color || nodeMap.get(l.source)?.color || DEFAULT_COLORS[0],
+      color: l.color || nodeMap.get(l.source)?.color || getDefaultColors()[0],
       width: 0,
       sy: 0,
       ty: 0

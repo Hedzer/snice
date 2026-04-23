@@ -1,6 +1,7 @@
 import { element, property, render, styles, dispatch, query, html, css } from 'snice';
 import type { ChartType, ChartDataset, ChartOptions, ChartDataPoint, SniceChartElement } from './snice-chart.types';
 import chartStyles from './snice-chart.css?inline';
+import { getAccentPalette } from '../utils';
 
 const DEFAULT_OPTIONS: ChartOptions = {
   responsive: true,
@@ -12,10 +13,9 @@ const DEFAULT_OPTIONS: ChartOptions = {
   yAxis: { grid: true }
 };
 
-const DEFAULT_COLORS = [
-  '#2196f3', '#4caf50', '#ff9800', '#f44336', '#9c27b0',
-  '#00bcd4', '#8bc34a', '#ffc107', '#e91e63', '#673ab7'
-];
+// Resolved from --snice-color-accent-1..8 at call time so theme changes flow
+// through. 8 slots match the accent palette exactly.
+const getDefaultColors = () => getAccentPalette();
 
 @element('snice-chart')
 export class SniceChart extends HTMLElement implements SniceChartElement {
@@ -414,7 +414,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
       const color = Array.isArray(dataset.backgroundColor)
         ? dataset.backgroundColor[index % dataset.backgroundColor.length]
-        : DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+        : getDefaultColors()[index % getDefaultColors().length];
 
       this.ctx!.fillStyle = color;
       this.ctx!.beginPath();
@@ -860,7 +860,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
 
           const color = Array.isArray(dataset.backgroundColor)
             ? dataset.backgroundColor[index % dataset.backgroundColor.length]
-            : DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+            : getDefaultColors()[index % getDefaultColors().length];
 
           const result = html`
             <path class="chart-slice"
@@ -979,7 +979,7 @@ export class SniceChart extends HTMLElement implements SniceChartElement {
     if (dataset.borderColor) {
       return dataset.borderColor;
     }
-    return DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+    return getDefaultColors()[index % getDefaultColors().length];
   }
 
   private handleLegendClick(index: number) {

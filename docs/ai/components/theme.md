@@ -36,6 +36,7 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-color-warning
 --snice-color-danger
 --snice-color-neutral
+--snice-color-accent-1..8   /* data-viz palette (business/muted tones). Charts, treemaps, etc. read these for non-semantic series colors. */
 --snice-color-text
 --snice-color-text-secondary
 --snice-color-text-tertiary
