@@ -80,6 +80,25 @@ Apply `data-density="compact"` or `data-density="spacious"` on an ancestor eleme
 <html data-density="compact">
 ```
 
+### Texture overlay
+
+| Property | Description |
+|----------|-------------|
+| `--snice-texture-noise` | Inline SVG noise URL at 4% alpha. Apply as `background-image` on any surface for paper-like grain. Not applied by default — opt in where you want atmosphere. |
+
+```css
+.hero-surface {
+  background-image: var(--snice-texture-noise);
+  background-blend-mode: overlay;
+}
+```
+
+### Print
+
+All Snice components inherit a print baseline that collapses shadows and neutralizes animations/transitions. `print-color-adjust: exact` is enabled so data-vis (charts, badges, chips) retain semantic colors on paper.
+
+Document components (receipt, invoice, estimate, work-order) ship additional `@media print` rules that hide interactive chrome (action buttons, toggles) and strip backgrounds/borders for ink saving.
+
 ### Spacing
 
 | Property | Value |

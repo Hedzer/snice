@@ -67,17 +67,26 @@
   color: var(--snice-color-text, rgb(23 23 23));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transition: all var(--snice-transition-fast, 150ms) ease;
+  transition:
+    border-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, ease);
   outline: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
 
+/* Focus — tighter ring with a pronounced border swap. The heavy inset shadow
+   the previous version had read as "2015 Bootstrap"; drop it for a crisper,
+   more modern focus surface. */
 .input:focus {
   border-color: var(--snice-color-primary, rgb(37 99 235));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)), var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.input:hover:not(:focus):not(:disabled) {
+  border-color: var(--snice-color-border-hover, rgb(204 204 204));
 }
 
 .input:disabled {
@@ -129,6 +138,9 @@
   border-bottom-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
+/* Underlined variant — no box, just a bottom line. The focused-state line
+   animates by growing from center via a ::after pseudo-element instead of a
+   color swap, which reads as more refined (Material-style). */
 .input--underlined {
   background: transparent;
   border: none;
@@ -136,10 +148,37 @@
   border-radius: 0;
   padding-left: 0;
   padding-right: 0;
+  box-shadow: none;
+}
+
+/* The growing underline is rendered on the input wrapper because the <input>
+   can't host ::after. Wrapper gets the indicator when .input--underlined is
+   the child. */
+.input-container:has(.input--underlined) {
+  position: relative;
+}
+
+.input-container:has(.input--underlined)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -1px;
+  height: 2px;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  transition:
+    left 200ms var(--snice-ease-out, ease),
+    right 200ms var(--snice-ease-out, ease);
+  pointer-events: none;
+}
+
+.input-container:has(.input--underlined:focus)::after {
+  left: 0;
+  right: 0;
 }
 
 .input--underlined:focus {
-  border-bottom-color: var(--snice-color-primary, rgb(37 99 235));
+  border-bottom-color: var(--snice-color-border, rgb(226 226 226));
   box-shadow: none;
 }
 

@@ -175,7 +175,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
           </div>
 
           <if ${this.showValue}>
-            <div class="slider-value">${this.value}</div>
+            <div class="slider-value">${this.formatDisplayValue(this.value)}</div>
           </if>
 
           <input
@@ -204,6 +204,19 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
         </case>
       </div>
     `;
+  }
+
+  /**
+   * Format the value label so step-math artifacts like 1.9000000000000001
+   * don't bleed through to the UI. Decimal precision follows the `step`:
+   * integer step = 0 decimals, step 0.1 = 1, step 0.01 = 2, etc., capped
+   * at 3 digits.
+   */
+  private formatDisplayValue(value: number): string {
+    const stepStr = String(this.step);
+    const dot = stepStr.indexOf('.');
+    const decimals = dot === -1 ? 0 : Math.min(3, stepStr.length - dot - 1);
+    return value.toFixed(decimals);
   }
 
   @styles()

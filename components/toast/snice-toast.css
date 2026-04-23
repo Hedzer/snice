@@ -171,12 +171,48 @@
 
 /* For top-positioned toasts - slide down */
 :host([position^="top"]) .toast {
-  animation: slideInTop var(--snice-transition-medium, 250ms) ease-out;
+  animation: slideInTop var(--snice-transition-medium, 250ms) var(--snice-ease-out, ease-out);
 }
 
 :host([position^="top"]) .toast.toast--hiding {
-  animation: slideOutTop var(--snice-transition-medium, 250ms) ease-out;
+  animation: slideOutTop var(--snice-transition-medium, 250ms) var(--snice-ease-out, ease-out);
   transform: translateY(-100%);
+}
+
+/* Side-anchored toasts slide in from their anchor edge — docks the motion
+   to the physical origin so a bottom-right toast slides from the right, not
+   from below. (The previous default used vertical slide for all positions.) */
+:host([position$="-right"]) .toast {
+  animation: snice-toast-slide-in-right var(--snice-transition-medium, 250ms) var(--snice-ease-spring, cubic-bezier(0.34,1.56,0.64,1));
+}
+:host([position$="-right"]) .toast.toast--hiding {
+  animation: snice-toast-slide-out-right var(--snice-transition-medium, 250ms) var(--snice-ease-out, ease-out);
+  transform: translateX(110%);
+}
+
+:host([position$="-left"]) .toast {
+  animation: snice-toast-slide-in-left var(--snice-transition-medium, 250ms) var(--snice-ease-spring, cubic-bezier(0.34,1.56,0.64,1));
+}
+:host([position$="-left"]) .toast.toast--hiding {
+  animation: snice-toast-slide-out-left var(--snice-transition-medium, 250ms) var(--snice-ease-out, ease-out);
+  transform: translateX(-110%);
+}
+
+@keyframes snice-toast-slide-in-right {
+  from { opacity: 0; transform: translateX(110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes snice-toast-slide-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(110%); }
+}
+@keyframes snice-toast-slide-in-left {
+  from { opacity: 0; transform: translateX(-110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes snice-toast-slide-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-110%); }
 }
 
 @keyframes slideInTop {

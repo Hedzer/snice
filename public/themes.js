@@ -90,6 +90,7 @@ const BUILDER_GROUPS = [
       { name: '--snice-color-background-input', label: 'Input BG', type: 'color', default: '#ffffff' },
       { name: '--snice-color-background-elevated', label: 'Elevated BG', type: 'color', default: '#ffffff' },
       { name: '--snice-color-background-hover', label: 'Hover BG', type: 'color', default: '#f5f5f5' },
+      { name: '--snice-texture-noise', label: 'Noise Texture', type: 'text', placeholder: 'url(data:image/svg+xml;...). Apply via background-image.' },
     ],
   },
   {
@@ -588,7 +589,11 @@ function renderBuilderControls() {
         const suffix = v.type === 'size' ? 'rem' : v.type === 'px' ? 'px' : v.type === 'ms' ? 'ms' : '';
         slider.addEventListener('slider-change', (e) => {
           if (_builderInitializing) return;
-          const val = parseFloat(e.detail?.value ?? slider.value);
+          // Round to 3 decimals — step math produces artifacts like
+          // 1.9000000000000001 which visually break the slider's value label
+          // and make the thumb feel jittery.
+          const raw = parseFloat(e.detail?.value ?? slider.value);
+          const val = Math.round(raw * 1000) / 1000;
           customOverrides[v.name] = val + suffix;
           applyCustom(customOverrides);
         });

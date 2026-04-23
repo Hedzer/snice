@@ -133,6 +133,21 @@ Reduced-motion: `@media (prefers-reduced-motion: reduce)` collapses transition t
 
 Apply `data-density="compact"` or `data-density="spacious"` on an ancestor to scale all spacing tokens globally. No attribute = default comfortable.
 
+### Texture
+
+`--snice-texture-noise` is an inline-SVG noise `url(...)` suitable for `background-image`. Layer on top of any surface for a paper-feel grain (4% alpha, no dependency). Not applied by default.
+
+```css
+.my-hero {
+  background-image: var(--snice-texture-noise);
+  background-blend-mode: overlay;
+}
+```
+
+### Print
+
+Global print stylesheet collapses all shadows / transitions / animations and enables `print-color-adjust: exact` for charts & badges. Document components (receipt, invoice, estimate, work-order) ship additional print rules that strip chrome (action buttons, toggles) and reset backgrounds for ink saving.
+
 ### Color Primitives (HSL)
 
 Gray, blue, green, red, yellow scales from 50-950:

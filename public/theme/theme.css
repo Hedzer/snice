@@ -213,6 +213,13 @@
   --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%);
   --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.06), transparent 50%);
 
+  /* Noise/grain texture — inline SVG filter that surfaces can overlay for a
+     paper-like feel. Default uses fractalNoise; consumers paint with:
+       background-image: var(--snice-texture-noise);
+       background-blend-mode: overlay;  (or luminosity / soft-light)
+     At 4% opacity it adds microtexture without reading as visual noise. */
+  --snice-texture-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+
   /* Transitions */
   --snice-transition-fast: 150ms;
   --snice-transition-medium: 250ms;
@@ -401,6 +408,30 @@
   --snice-spacing-xl: 3rem;
   --snice-spacing-2xl: 4.5rem;
   --snice-spacing-3xl: 6rem;
+}
+
+/* Print baseline — collapse shadows and animations, preserve colors for
+   chart/badge/etc. that intentionally need color. Per-component print rules
+   still layer on top (receipt/invoice/estimate/work-order each ship their
+   own more specific print CSS). */
+@media print {
+  :root {
+    --snice-shadow-xs: none;
+    --snice-shadow-sm: none;
+    --snice-shadow-md: none;
+    --snice-shadow-lg: none;
+    --snice-shadow-xl: none;
+    --snice-shadow-2xl: none;
+    --snice-shadow-inset-sm: none;
+    --snice-shadow-inset-md: none;
+  }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    /* Keep meaningful colors in printed charts/badges/flags. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
 /* Respect OS-level reduced-motion preference — collapse every transition
