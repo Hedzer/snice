@@ -1,3 +1,10 @@
+## [4.39.1](https://github.com/Hedzer/snice/compare/v4.39.0...v4.39.1) (2026-04-23)
+
+
+### Bug Fixes
+
+* guard decorator constructor state with hasOwnProperty to stop parent/child pollution ([773dc8a](https://github.com/Hedzer/snice/commit/773dc8af7e4a6ee7a430735f3a4ce4914cf2328a))
+
 # [4.39.0](https://github.com/Hedzer/snice/compare/v4.38.1...v4.39.0) (2026-04-23)
 
 
