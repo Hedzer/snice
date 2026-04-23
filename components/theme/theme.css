@@ -104,6 +104,9 @@
   --snice-color-background-tertiary: hsl(var(--snice-color-gray-100));
   --snice-color-background-element: hsl(40 9% 97%);
   --snice-color-background-input: hsl(0 0% 100%);
+  /* Elevated surface — modals, popovers, menus. Defaults to background in
+     light (drop shadow handles elevation); lighter than base in dark. */
+  --snice-color-background-elevated: hsl(0 0% 100%);
 
   --snice-color-border: hsl(var(--snice-color-gray-300));
   --snice-color-border-hover: hsl(var(--snice-color-gray-400));
@@ -195,15 +198,33 @@
   --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.05);
   --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
 
-  /* Gradients */
-  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent);
-  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.05), transparent);
-  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
+  /* Colored glow shadows — for selected / focused / elevated interactive
+     surfaces that want an accent halo instead of a neutral drop. Used via
+     box-shadow: var(--snice-shadow-glow-primary). */
+  --snice-shadow-glow-primary: 0 0 0 4px hsl(var(--snice-color-blue-500) / 0.18), 0 4px 16px -4px hsl(var(--snice-color-blue-500) / 0.35);
+  --snice-shadow-glow-success: 0 0 0 4px hsl(var(--snice-color-green-500) / 0.18), 0 4px 16px -4px hsl(var(--snice-color-green-500) / 0.35);
+  --snice-shadow-glow-danger:  0 0 0 4px hsl(var(--snice-color-red-500)   / 0.18), 0 4px 16px -4px hsl(var(--snice-color-red-500)   / 0.35);
+  --snice-shadow-glow-warning: 0 0 0 4px hsl(var(--snice-color-yellow-500) / 0.2), 0 4px 16px -4px hsl(var(--snice-color-yellow-500) / 0.4);
+
+  /* Gradients — top-to-bottom highlight that gives buttons/cards/surfaces a
+     subtle convex sheen (iOS/macOS-style). Tuned strong enough to read but
+     not draw attention. */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 60%);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.06), transparent 50%);
 
   /* Transitions */
   --snice-transition-fast: 150ms;
   --snice-transition-medium: 250ms;
   --snice-transition-slow: 350ms;
+
+  /* Easing curves — pair with transition durations to give motion character.
+     Default `ease` is sluggish; prefer these named curves. */
+  --snice-ease-out: cubic-bezier(0.22, 1, 0.36, 1);          /* expo-out — confident entrances */
+  --snice-ease-in: cubic-bezier(0.64, 0, 0.78, 0);            /* accelerate — exits */
+  --snice-ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);        /* balanced symmetric */
+  --snice-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);     /* slight overshoot on hover/press */
+  --snice-ease-bounce: cubic-bezier(0.17, 0.87, 0.4, 1.32);   /* pronounced overshoot */
 
   /* Z-index */
   --snice-z-index-dropdown: 1000;
@@ -217,6 +238,13 @@
   --snice-focus-ring-width: 2px;
   --snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
   --snice-focus-ring-offset: 2px;
+  /* State-aware rings — use these on variant buttons/inputs so a danger button
+     focuses red, success focuses green, etc. Defaults available so components
+     can reference them without checking support. */
+  --snice-focus-ring-color-primary: hsl(var(--snice-color-blue-500) / 0.5);
+  --snice-focus-ring-color-success: hsl(var(--snice-color-green-500) / 0.5);
+  --snice-focus-ring-color-warning: hsl(var(--snice-color-yellow-500) / 0.55);
+  --snice-focus-ring-color-danger: hsl(var(--snice-color-red-500) / 0.5);
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: none;
@@ -247,6 +275,9 @@
   --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
   --snice-color-background-element: hsl(30 5% 18%);
   --snice-color-background-input: hsl(0 0% 15%);
+  /* Lighter than base — dark-UI elevation convention (raise by lightening,
+     not by drop shadow which disappears on near-black bg). */
+  --snice-color-background-elevated: hsl(var(--snice-color-gray-800));
 
   --snice-color-border: hsl(0 0% 35%);
   --snice-color-border-hover: hsl(var(--snice-color-gray-600));
@@ -266,19 +297,21 @@
   --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
   --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
 
-  --snice-shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-  --snice-shadow-sm: 0 2px 6px 0 hsl(0 0% 0% / 0.2), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
-  --snice-shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.25), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
-  --snice-shadow-lg: 0 10px 24px -3px hsl(0 0% 0% / 0.25), 0 4px 12px -4px hsl(0 0% 0% / 0.3);
-  --snice-shadow-xl: 0 20px 32px -5px hsl(0 0% 0% / 0.3), 0 8px 16px -6px hsl(0 0% 0% / 0.4);
-  --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.5);
-  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.2);
-  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.3);
+  /* Dark shadows: hairline white-alpha ring does the primary separation
+     work (drop shadows vanish on dark bg), plus a soft drop for depth. */
+  --snice-shadow-xs: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 1px 2px 0 hsl(0 0% 0% / 0.4);
+  --snice-shadow-sm: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+  --snice-shadow-md: 0 0 0 1px hsl(0 0% 100% / 0.07), 0 4px 10px -2px hsl(0 0% 0% / 0.45);
+  --snice-shadow-lg: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 10px 24px -4px hsl(0 0% 0% / 0.5);
+  --snice-shadow-xl: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 20px 32px -6px hsl(0 0% 0% / 0.55);
+  --snice-shadow-2xl: 0 0 0 1px hsl(0 0% 100% / 0.1), 0 25px 50px -12px hsl(0 0% 0% / 0.65);
+  --snice-shadow-inset-sm: inset 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --snice-shadow-inset-md: inset 0 2px 4px 0 hsl(0 0% 0% / 0.4);
 
-  /* Gradients */
-  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.02), transparent);
-  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent);
-  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.015), transparent);
+  /* Gradients — slightly stronger on dark since the surface is darker */
+  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent 60%);
+  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
+  --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
 
   /* Color scheme for native controls */
   --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
@@ -310,6 +343,7 @@
     --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
     --snice-color-background-element: hsl(30 5% 18%);
     --snice-color-background-input: hsl(0 0% 15%);
+    --snice-color-background-elevated: hsl(var(--snice-color-gray-800));
 
     --snice-color-border: hsl(0 0% 35%);
     --snice-color-border-hover: hsl(var(--snice-color-gray-600));
@@ -329,15 +363,59 @@
     --snice-color-danger-subtle: hsl(var(--snice-color-red-950));
     --snice-color-danger-subtle-hover: hsl(var(--snice-color-red-900));
 
-    --snice-shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
-    --snice-shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.15);
-    --snice-shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.15), 0 2px 4px -2px hsl(0 0% 0% / 0.15);
-    --snice-shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.15), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
-    --snice-shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.15), 0 8px 10px -6px hsl(0 0% 0% / 0.15);
-    --snice-shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.35);
+    --snice-shadow-xs: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 1px 2px 0 hsl(0 0% 0% / 0.4);
+    --snice-shadow-sm: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+    --snice-shadow-md: 0 0 0 1px hsl(0 0% 100% / 0.07), 0 4px 10px -2px hsl(0 0% 0% / 0.45);
+    --snice-shadow-lg: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 10px 24px -4px hsl(0 0% 0% / 0.5);
+    --snice-shadow-xl: 0 0 0 1px hsl(0 0% 100% / 0.08), 0 20px 32px -6px hsl(0 0% 0% / 0.55);
+    --snice-shadow-2xl: 0 0 0 1px hsl(0 0% 100% / 0.1), 0 25px 50px -12px hsl(0 0% 0% / 0.65);
 
     /* Color scheme for native controls */
     --snice-color-scheme-filter: invert(1) hue-rotate(180deg);
     color-scheme: dark;
+  }
+}
+
+/* Density presets — scale spacing globally for compact data-dense views
+   (spreadsheet, table, key-value) or spacious editorial views (hero, empty
+   state). `comfortable` is the default (no attribute). */
+[data-density="compact"] {
+  --snice-spacing-3xs: 0.0625rem;
+  --snice-spacing-2xs: 0.125rem;
+  --snice-spacing-xs: 0.3125rem;
+  --snice-spacing-sm: 0.5rem;
+  --snice-spacing-md: 0.625rem;
+  --snice-spacing-lg: 0.875rem;
+  --snice-spacing-xl: 1.25rem;
+  --snice-spacing-2xl: 1.75rem;
+  --snice-spacing-3xl: 2.5rem;
+}
+
+[data-density="spacious"] {
+  --snice-spacing-3xs: 0.1875rem;
+  --snice-spacing-2xs: 0.375rem;
+  --snice-spacing-xs: 0.75rem;
+  --snice-spacing-sm: 1.125rem;
+  --snice-spacing-md: 1.5rem;
+  --snice-spacing-lg: 2.25rem;
+  --snice-spacing-xl: 3rem;
+  --snice-spacing-2xl: 4.5rem;
+  --snice-spacing-3xl: 6rem;
+}
+
+/* Respect OS-level reduced-motion preference — collapse every transition
+   token to 0ms so components that use `var(--snice-transition-*)` are
+   instant. Animations are suppressed globally. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snice-transition-fast: 0ms;
+    --snice-transition-medium: 0ms;
+    --snice-transition-slow: 0ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -225,7 +225,12 @@ const BUILDER_GROUPS = [
   {
     title: 'Shadows',
     id: 'shadows',
-    vars: [],
+    vars: [
+      { name: '--snice-shadow-glow-primary', label: 'Glow (Primary)', type: 'text', default: '0 0 0 4px hsl(217 91% 60% / 0.18), 0 4px 16px -4px hsl(217 91% 60% / 0.35)' },
+      { name: '--snice-shadow-glow-success', label: 'Glow (Success)', type: 'text', default: '0 0 0 4px hsl(142 71% 45% / 0.18), 0 4px 16px -4px hsl(142 71% 45% / 0.35)' },
+      { name: '--snice-shadow-glow-warning', label: 'Glow (Warning)', type: 'text', default: '0 0 0 4px hsl(45 93% 47% / 0.2), 0 4px 16px -4px hsl(45 93% 47% / 0.4)' },
+      { name: '--snice-shadow-glow-danger', label: 'Glow (Danger)', type: 'text', default: '0 0 0 4px hsl(0 84% 60% / 0.18), 0 4px 16px -4px hsl(0 84% 60% / 0.35)' },
+    ],
     presets: {
       label: 'Intensity',
       options: [
@@ -243,6 +248,11 @@ const BUILDER_GROUPS = [
       { name: '--snice-transition-fast', label: 'Fast', type: 'ms', default: '150ms', min: 0, max: 500, step: 10 },
       { name: '--snice-transition-medium', label: 'Medium', type: 'ms', default: '250ms', min: 0, max: 800, step: 10 },
       { name: '--snice-transition-slow', label: 'Slow', type: 'ms', default: '350ms', min: 0, max: 1000, step: 10 },
+      { name: '--snice-ease-out', label: 'Ease Out', type: 'text', default: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      { name: '--snice-ease-in', label: 'Ease In', type: 'text', default: 'cubic-bezier(0.64, 0, 0.78, 0)' },
+      { name: '--snice-ease-in-out', label: 'Ease In-Out', type: 'text', default: 'cubic-bezier(0.76, 0, 0.24, 1)' },
+      { name: '--snice-ease-spring', label: 'Spring', type: 'text', default: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+      { name: '--snice-ease-bounce', label: 'Bounce', type: 'text', default: 'cubic-bezier(0.17, 0.87, 0.4, 1.32)' },
     ],
   },
   {
@@ -252,6 +262,10 @@ const BUILDER_GROUPS = [
       { name: '--snice-focus-ring-width', label: 'Ring Width', type: 'px', default: '2px', min: 0, max: 6, step: 1 },
       { name: '--snice-focus-ring-offset', label: 'Ring Offset', type: 'px', default: '2px', min: 0, max: 6, step: 1 },
       { name: '--snice-focus-ring-color', label: 'Ring Color', type: 'color', default: '#3b82f680' },
+      { name: '--snice-focus-ring-color-primary', label: 'Ring (Primary)', type: 'color', default: '#3b82f680' },
+      { name: '--snice-focus-ring-color-success', label: 'Ring (Success)', type: 'color', default: '#22c55e80' },
+      { name: '--snice-focus-ring-color-warning', label: 'Ring (Warning)', type: 'color', default: '#eab30880' },
+      { name: '--snice-focus-ring-color-danger', label: 'Ring (Danger)', type: 'color', default: '#ef444480' },
     ],
   },
 ];

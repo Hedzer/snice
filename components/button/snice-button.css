@@ -247,14 +247,43 @@
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 
-.button--outline:hover:not(.button--disabled) {
-  background-color: var(--snice-color-border-alpha, rgb(82 82 82 / 0.1));
+/* Outline hover — tint toward the variant's color instead of neutral gray. */
+.button--outline.button--default:hover:not(.button--disabled) {
+  background-color: var(--snice-color-background-hover, rgb(245 245 245));
+  box-shadow: none;
+  transform: none;
+}
+
+.button--outline.button--primary:hover:not(.button--disabled) {
+  background-color: var(--snice-color-primary-subtle, rgb(239 246 255));
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
+  box-shadow: none;
+  transform: none;
+}
+
+.button--outline.button--success:hover:not(.button--disabled) {
+  background-color: var(--snice-color-success-subtle, rgb(220 252 231));
+  color: var(--snice-color-success-hover, rgb(21 128 61));
+  box-shadow: none;
+  transform: none;
+}
+
+.button--outline.button--warning:hover:not(.button--disabled) {
+  background-color: var(--snice-color-warning-subtle, rgb(254 249 195));
+  color: var(--snice-color-warning-hover, rgb(161 98 7));
+  box-shadow: none;
+  transform: none;
+}
+
+.button--outline.button--danger:hover:not(.button--disabled) {
+  background-color: var(--snice-color-danger-subtle, rgb(254 226 226));
+  color: var(--snice-color-danger-hover, rgb(185 28 28));
   box-shadow: none;
   transform: none;
 }
 
 .button--outline:active:not(.button--disabled) {
-  background-color: var(--snice-color-border-alpha-strong, rgb(82 82 82 / 0.15));
+  background-color: var(--snice-color-primary-subtle-hover, var(--snice-color-background-active, rgb(235 235 235)));
   box-shadow: none;
   transform: none;
 }

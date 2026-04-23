@@ -93,7 +93,10 @@ CSS-only design token system. No component -- just import the stylesheet.
 ```css
 --snice-shadow-xs..2xl
 --snice-shadow-inset-sm|md
+--snice-shadow-glow-primary|success|warning|danger   /* colored halo for selected/focused CTAs */
 ```
+
+Dark-mode shadows use a hairline white-alpha ring (0 0 0 1px hsl(0 0% 100% / 0.06)) as the primary separator because drop shadows vanish on dark backgrounds.
 
 ### Transitions
 
@@ -101,7 +104,10 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-transition-fast: 150ms
 --snice-transition-medium: 250ms
 --snice-transition-slow: 350ms
+--snice-ease-out|in|in-out|spring|bounce    /* named cubic-beziers; spring/bounce overshoot for hover/press */
 ```
+
+Reduced-motion: `@media (prefers-reduced-motion: reduce)` collapses transition tokens to 0ms and suppresses animations.
 
 ### Z-Index
 
@@ -120,7 +126,12 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-focus-ring-width: 2px
 --snice-focus-ring-color: blue-500/0.5
 --snice-focus-ring-offset: 2px
+--snice-focus-ring-color-primary|success|warning|danger   /* variant-aware rings */
 ```
+
+### Density
+
+Apply `data-density="compact"` or `data-density="spacious"` on an ancestor to scale all spacing tokens globally. No attribute = default comfortable.
 
 ### Color Primitives (HSL)
 

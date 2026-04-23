@@ -40,6 +40,46 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-border-focus` | Focused border color |
 | `--snice-color-border-subtle` | Hairline edge used on elevated surfaces. Nearly invisible in light; ~8% white in dark to compensate for shadow disappearing |
 
+### Motion
+
+| Property | Description |
+|----------|-------------|
+| `--snice-transition-fast / -medium / -slow` | 150ms / 250ms / 350ms durations |
+| `--snice-ease-out` | Expo-out for confident entrances (`cubic-bezier(0.22, 1, 0.36, 1)`) |
+| `--snice-ease-in` | Accelerate for exits |
+| `--snice-ease-in-out` | Symmetric balanced curve |
+| `--snice-ease-spring` | Slight overshoot — hover/press micro-interactions |
+| `--snice-ease-bounce` | Pronounced overshoot |
+
+Reduced-motion (`@media (prefers-reduced-motion: reduce)`) collapses all transition durations to 0ms and neutralizes animations on every element.
+
+### Shadow glows
+
+| Property | Description |
+|----------|-------------|
+| `--snice-shadow-glow-primary` | Colored halo for selected/focused primary CTAs |
+| `--snice-shadow-glow-success` | Success-tinted halo |
+| `--snice-shadow-glow-warning` | Warning-tinted halo |
+| `--snice-shadow-glow-danger` | Danger-tinted halo |
+
+### State-aware focus rings
+
+| Property | Description |
+|----------|-------------|
+| `--snice-focus-ring-color-primary` | Focus ring on primary variants |
+| `--snice-focus-ring-color-success` | Focus ring on success variants |
+| `--snice-focus-ring-color-warning` | Focus ring on warning variants |
+| `--snice-focus-ring-color-danger` | Focus ring on danger variants |
+
+### Density
+
+Apply `data-density="compact"` or `data-density="spacious"` on an ancestor element to scale every spacing token. No attribute = default comfortable.
+
+```html
+<!-- dense table page -->
+<html data-density="compact">
+```
+
 ### Spacing
 
 | Property | Value |
