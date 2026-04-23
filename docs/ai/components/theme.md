@@ -107,7 +107,10 @@ Dark-mode shadows use a hairline white-alpha ring (0 0 0 1px hsl(0 0% 100% / 0.0
 --snice-ease-out|in|in-out|spring|bounce    /* named cubic-beziers; spring/bounce overshoot for hover/press */
 ```
 
-Reduced-motion: `@media (prefers-reduced-motion: reduce)` collapses transition tokens to 0ms and suppresses animations.
+Motion control:
+- `@media (prefers-reduced-motion: reduce)` — honored automatically
+- `data-motion="reduce"` on any ancestor — manual opt-out (app toggle)
+- `data-motion="off"` — hardest kill (animations/transitions removed entirely; useful for snapshot tests)
 
 ### Z-Index
 

@@ -51,7 +51,15 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-ease-spring` | Slight overshoot — hover/press micro-interactions |
 | `--snice-ease-bounce` | Pronounced overshoot |
 
-Reduced-motion (`@media (prefers-reduced-motion: reduce)`) collapses all transition durations to 0ms and neutralizes animations on every element.
+**Motion control — three ways to opt out:**
+1. OS preference — `@media (prefers-reduced-motion: reduce)` is honored automatically
+2. App-level toggle — set `data-motion="reduce"` on any ancestor (typically `<html>`) to collapse transitions to 0ms and neutralize animations without touching OS settings. Useful for an in-app "reduce motion" setting.
+3. Hard off — `data-motion="off"` strips `animation` and `transition` declarations entirely. Useful for static renders and snapshot tests where even 0ms transitions can cause flake.
+
+```html
+<!-- user toggled "reduce motion" in app settings -->
+<html data-motion="reduce">
+```
 
 ### Shadow glows
 

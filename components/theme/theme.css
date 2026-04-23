@@ -434,9 +434,11 @@
   }
 }
 
-/* Respect OS-level reduced-motion preference — collapse every transition
-   token to 0ms so components that use `var(--snice-transition-*)` are
-   instant. Animations are suppressed globally. */
+/* Reduce or disable motion. Two triggers:
+     1. OS preference `prefers-reduced-motion: reduce`
+     2. Manual attribute `data-motion="reduce"` on any ancestor (typically
+        <html>). Same effect — collapse transitions, neutralize animations.
+   Consumers use (2) to wire an in-app toggle without touching OS settings. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --snice-transition-fast: 0ms;
@@ -449,4 +451,28 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+[data-motion="reduce"] {
+  --snice-transition-fast: 0ms;
+  --snice-transition-medium: 0ms;
+  --snice-transition-slow: 0ms;
+}
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* data-motion="off" is a stronger opt-out — kills animations entirely (not
+   just collapsed to 0ms). Useful for static renders, e2e snapshot tests. */
+[data-motion="off"],
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation: none !important;
+  transition: none !important;
 }
