@@ -71,7 +71,7 @@
   /* Full 360° rotation — starting at -90° so the arc's leading edge is at
      top when the dash animation begins. Using `from/to` keyframes that
      differ by exactly 360° means the loop is seamless (no snap-back). */
-  animation: spinner-rotate 2s linear infinite;
+  animation: spinner-rotate 900ms linear infinite;
 }
 
 .spinner__circle-bg,
