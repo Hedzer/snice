@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Nav = createReactAdapter({
     tagName: 'snice-nav',
-    properties: ["variant", "orientation", "isTopLevel"],
+    properties: ["variant", "orientation", "activeStyle", "isTopLevel"],
     events: {},
     formAssociated: false
 });

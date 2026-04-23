@@ -5,6 +5,7 @@ import type { SniceBaseProps } from './types';
 export interface NavProps extends SniceBaseProps {
     variant?: any;
     orientation?: any;
+    activeStyle?: any;
     isTopLevel?: any;
 }
 /**

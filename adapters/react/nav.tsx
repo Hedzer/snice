@@ -10,6 +10,7 @@ import type { SniceBaseProps } from './types';
 export interface NavProps extends SniceBaseProps {
   variant?: any;
   orientation?: any;
+  activeStyle?: any;
   isTopLevel?: any;
 
 }
@@ -32,7 +33,7 @@ export interface NavProps extends SniceBaseProps {
  */
 export const Nav = createReactAdapter<NavProps>({
   tagName: 'snice-nav',
-  properties: ["variant","orientation","isTopLevel"],
+  properties: ["variant","orientation","activeStyle","isTopLevel"],
   events: {},
   formAssociated: false
 });

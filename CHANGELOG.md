@@ -1,3 +1,10 @@
+# [4.40.0](https://github.com/Hedzer/snice/compare/v4.39.1...v4.40.0) (2026-04-23)
+
+
+### Features
+
+* **nav:** active-style prop, diff render; flatten storybook, add smoke test ([9eacfc1](https://github.com/Hedzer/snice/commit/9eacfc116d261e1e6fe61d9f08f06fa0f9deb957))
+
 ## [4.39.1](https://github.com/Hedzer/snice/compare/v4.39.0...v4.39.1) (2026-04-23)
 
 
