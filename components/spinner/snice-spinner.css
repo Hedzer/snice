@@ -56,6 +56,13 @@
   position: relative;
   width: 100%;
   height: 100%;
+  /* Make color cascade via currentColor — variant elements use `background`
+     or `stroke: currentColor`, so setting `color` on `.spinner` threads the
+     themed spinner-color through every variant without per-variant rules. */
+  color: var(--spinner-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .spinner__circle {
@@ -132,4 +139,98 @@
 
 :host([size="xl"]) .spinner__label {
   font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+/* ────────────────────────────────────────────────────────────────
+ * Variants — distinct loader shapes beyond the default arc.
+ * All variants inherit the spinner color via `currentColor`, so
+ * the existing `:host([color="..."])` rules keep theming free.
+ * ──────────────────────────────────────────────────────────────── */
+
+/* DOTS — three dots bouncing in a wave (staggered delay) */
+.spinner__dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--dot-size, 8px) * 0.6);
+}
+.spinner__dot {
+  width: var(--dot-size, 8px);
+  height: var(--dot-size, 8px);
+  border-radius: 50%;
+  background: currentColor;
+  animation: snice-spinner-bounce 1.2s var(--snice-ease-in-out, ease-in-out) infinite;
+}
+.spinner__dot:nth-child(2) { animation-delay: 0.15s; }
+.spinner__dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes snice-spinner-bounce {
+  0%, 80%, 100% { transform: translateY(0) scale(0.9); opacity: 0.4; }
+  40%           { transform: translateY(-40%) scale(1); opacity: 1; }
+}
+
+/* PULSE — single filled circle ring-pulses outward */
+.spinner__pulse {
+  display: inline-block;
+  border-radius: 50%;
+  background: currentColor;
+  animation: snice-spinner-pulse 1.4s var(--snice-ease-out, ease-out) infinite;
+}
+@keyframes snice-spinner-pulse {
+  0%   { transform: scale(0.4); opacity: 1; }
+  100% { transform: scale(1);   opacity: 0; }
+}
+
+/* BARS — 4 vertical bars, each pulsing on a different phase */
+.spinner__bars {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--bar-width, 3px) * 0.8);
+  height: var(--bar-height, 40px);
+}
+.spinner__bar {
+  display: inline-block;
+  width: var(--bar-width, 3px);
+  height: 100%;
+  background: currentColor;
+  border-radius: calc(var(--bar-width, 3px) / 2);
+  animation: snice-spinner-bars 1s var(--snice-ease-in-out, ease-in-out) infinite;
+  transform-origin: center;
+}
+.spinner__bar:nth-child(1) { animation-delay: 0;    }
+.spinner__bar:nth-child(2) { animation-delay: 0.1s; }
+.spinner__bar:nth-child(3) { animation-delay: 0.2s; }
+.spinner__bar:nth-child(4) { animation-delay: 0.3s; }
+@keyframes snice-spinner-bars {
+  0%, 100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1);   }
+}
+
+/* ORBIT — three dots rotating on an invisible ring at different radii */
+.spinner__orbit {
+  position: relative;
+  animation: snice-spinner-orbit-rotate 2.4s linear infinite;
+}
+.spinner__orbit-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateX(-50%);
+}
+.spinner__orbit-dot:nth-child(2) {
+  top: auto;
+  bottom: 0;
+  opacity: 0.6;
+}
+.spinner__orbit-dot:nth-child(3) {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  opacity: 0.35;
+}
+@keyframes snice-spinner-orbit-rotate {
+  to { transform: rotate(360deg); }
 }

@@ -209,7 +209,9 @@
   line-height: 1;
 }
 
-/* Remove button */
+/* Remove button — hidden at rest, slides in on chip hover or keyboard focus
+   so a row of removable tags reads as clean labels until the user engages.
+   Keeps visual density low without sacrificing affordance. */
 .chip-remove {
   display: flex;
   align-items: center;
@@ -223,12 +225,27 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
   color: inherit;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transform: translateX(-4px);
+  transition:
+    opacity 180ms var(--snice-ease-out, ease),
+    transform 180ms var(--snice-ease-out, ease),
+    max-width 180ms var(--snice-ease-out, ease);
 }
 
-.chip-remove:hover {
+.chip:hover .chip-remove,
+.chip:focus-within .chip-remove,
+.chip-remove:focus-visible {
+  opacity: 0.7;
+  max-width: 1.125rem;
+  transform: translateX(0);
+}
+
+.chip-remove:hover,
+.chip-remove:focus-visible {
   opacity: 1;
 }
 
