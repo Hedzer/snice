@@ -1,0 +1,116 @@
+<!-- GENERATED FILE — do not edit directly. Source: scripts/build-website.js -->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load runtime + code-block + grammars first to prevent layout shift -->
+  <script src="components/snice-runtime.min.js"></script>
+  <script src="components/snice-code-block.min.js"></script>
+  <script>fetch('grammars/snice.json');</script>
+  <title>License - Snice</title>
+  <meta name="description" content="TypeScript web components with separation of concerns">
+  <link rel="icon" type="image/png" href="images/snice-logo.png">
+  <meta property="og:title" content="License - Snice">
+  <meta property="og:description" content="TypeScript web components with separation of concerns">
+  <meta property="og:image" content="images/snice-logo.png">
+  <link rel="stylesheet" href="theme/theme.css">
+  <link rel="stylesheet" href="styles.css">
+  <script>(function(){var p=localStorage.getItem('snice-theme-preset');var c=localStorage.getItem('snice-theme-custom');if(p){var s=document.createElement('style');s.id='snice-theme-preset';s.textContent=p;document.head.appendChild(s)}if(c){var s=document.createElement('style');s.id='snice-theme-custom';s.textContent=c;document.head.appendChild(s)}var n=localStorage.getItem('snice-theme-preset-name');if(n&&n!=='default'){document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('theme-dot');if(d){d.hidden=false;d.title=n.charAt(0).toUpperCase()+n.slice(1)+' theme';d.style.background='var(--snice-color-primary)'}})}})()</script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <h1><a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem"><img src="images/snice-logo.png" alt="Snice" width="28" height="28" style="border-radius:50%">Snice</a></h1>
+      <nav>
+        <a href="guide.html">Guide</a>
+        <a href="docs.html">Docs</a>
+        <a href="decorators.html">Decorators</a>
+        <a href="components.html">Components</a>
+        <a href="themes.html">Themes</a>
+        <a href="about.html">About</a>
+
+        <a href="https://gitlab.com/Hedzer/snice">Source</a>
+        <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+        <a href="themes.html" id="theme-dot" class="theme-dot" hidden></a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="themes-section">
+      <h2 style="margin-top:0">License</h2>
+      <p style="max-width:60ch">
+        Snice itself is released under the <strong>MIT License</strong>. You can use it in
+        commercial or personal projects, modify it, redistribute it, or ship it in a closed-source
+        product. The only condition is that the copyright notice stays attached.
+      </p>
+
+      <h3>MIT License</h3>
+      <pre class="export-block" style="white-space:pre-wrap;max-width:72ch"><code>MIT License
+
+Copyright (c) 2026 Hedzer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+
+      <h3>Bundled third-party code</h3>
+      <p style="max-width:60ch">Snice ships the following vendored dependencies. Their licenses apply to their respective portions:</p>
+      <ul style="max-width:60ch;line-height:1.7">
+        <li><strong>Heroicons</strong> (MIT) — embedded SVG glyphs used as built-in default icons. © Tailwind Labs. <a href="https://github.com/tailwindlabs/heroicons">github.com/tailwindlabs/heroicons</a></li>
+        <li><strong>PDF.js</strong> (Apache 2.0) — vendored in <code>components/pdf-viewer/</code> for the PDF viewer component. © Mozilla. <a href="https://mozilla.github.io/pdf.js/">mozilla.github.io/pdf.js</a></li>
+        <li><strong>pica-route</strong> (MIT) — runtime route matcher.</li>
+        <li><strong>tslib</strong> (0BSD) — TypeScript runtime helpers (peer dependency).</li>
+      </ul>
+
+      <h3>Inspiration &amp; acknowledgments</h3>
+      <p style="max-width:60ch">
+        Snice didn't appear in a vacuum. These projects shaped its design, API, or aesthetic:
+      </p>
+      <ul style="max-width:60ch;line-height:1.7">
+        <li><strong><a href="https://lit.dev">Lit</a></strong> — the canonical web-component runtime. Snice's render pipeline is not Lit, but the lifecycle patterns share ancestry with Lit Element.</li>
+        <li><strong><a href="https://shoelace.style">Shoelace</a></strong> — proved a comprehensive web-component UI kit could actually work at scale.</li>
+        <li><strong><a href="https://tailwindcss.com">Tailwind CSS</a></strong> — the HSL color scale (50–950) we use for color primitives, and the overall token naming discipline.</li>
+        <li><strong><a href="https://www.radix-ui.com">Radix UI</a></strong> — accessibility patterns, especially around keyboard nav and focus management.</li>
+        <li><strong><a href="https://ui.shadcn.com">shadcn/ui</a></strong> — inspiration for the "copy the code into your app" philosophy, and for token conventions like <code>--primary</code>/<code>--muted</code>.</li>
+        <li><strong><a href="https://linear.app">Linear</a></strong> &amp; <strong><a href="https://vercel.com">Vercel</a></strong> — aesthetic references for the dark theme and minimal aesthetic direction.</li>
+        <li><strong><a href="https://m3.material.io">Material Design (M3)</a></strong> — reference for density, elevation, and the "on-color" text-over-fill pattern.</li>
+        <li><strong><a href="https://atlassian.design">Atlassian Design System</a></strong> &amp; <strong><a href="https://polaris.shopify.com">Shopify Polaris</a></strong> — prior art for the document components (invoice, estimate, work order, receipt).</li>
+        <li><strong><a href="https://d3js.org">D3</a></strong> &amp; <strong><a href="https://observablehq.com/@d3/color-schemes">Tableau</a></strong> — color palette choices for the data-vis accent scale.</li>
+        <li><strong><a href="https://github.com/tailwindlabs/heroicons">Heroicons</a></strong>, <strong><a href="https://lucide.dev">Lucide</a></strong>, <strong><a href="https://phosphoricons.com">Phosphor</a></strong> — icon design direction.</li>
+        <li><strong><a href="https://packery.metafizzy.co">Packery</a></strong> — algorithm reference for the grid-packing layout used in <code>snice-binpack</code>.</li>
+      </ul>
+
+      <p style="max-width:60ch">
+        If you see something that should be credited here and isn't, please
+        <a href="https://gitlab.com/Hedzer/snice/-/issues">open an issue</a>.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Snice v4.40.0 · <a href="license.html">MIT</a></span>
+      <span><a href="about.html">About</a> · <a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+    </div>
+  </footer>
+</body>
+</html>
