@@ -68,9 +68,15 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     if (this.variant === 'orbit') {
       return shell(html`
         <div part="orbit" class="spinner__orbit" style="width:${size}px;height:${size}px">
-          <span class="spinner__orbit-dot"></span>
-          <span class="spinner__orbit-dot"></span>
-          <span class="spinner__orbit-dot"></span>
+          <span class="spinner__orbit-ring spinner__orbit-ring--a">
+            <span class="spinner__orbit-dot"></span>
+          </span>
+          <span class="spinner__orbit-ring spinner__orbit-ring--b">
+            <span class="spinner__orbit-dot"></span>
+          </span>
+          <span class="spinner__orbit-ring spinner__orbit-ring--c">
+            <span class="spinner__orbit-dot"></span>
+          </span>
         </div>
       `);
     }

@@ -69,9 +69,10 @@
   width: 100%;
   height: 100%;
   /* Full 360° rotation — starting at -90° so the arc's leading edge is at
-     top when the dash animation begins. Using `from/to` keyframes that
-     differ by exactly 360° means the loop is seamless (no snap-back). */
-  animation: spinner-rotate 900ms linear infinite;
+     top when the dash breathes. Linear keeps rotation pace constant; dash
+     uses matching 1.1s duration so the grow-shrink cycle stays locked to
+     a single rotation (no drift). */
+  animation: spinner-rotate 1.1s linear infinite;
 }
 
 .spinner__circle-bg,
@@ -90,14 +91,23 @@
 .spinner__circle-bar {
   stroke: var(--spinner-color);
   stroke-linecap: round;
-  /* Fixed-length visible arc — pathLength=1 (set at render time) makes
-     `25% 75%` mean "1/4 visible, 3/4 gap" regardless of actual circle
-     circumference. Since the dasharray never changes, only the parent's
-     rotation moves the arc around the circle — animation loops cleanly
-     with no snap between cycles. */
+  /* Material-style breathing arc: the visible arc length grows then shrinks
+     while the parent rotates. The loop is seamless because 0% and 100%
+     share the same dasharray (0.08 0.92) and the dashoffset changes by
+     exactly one total-length (-1) — which means the dash is visually in
+     the same position at the end of the cycle as at the start. */
   pathLength: 1;
-  stroke-dasharray: 0.25 0.75;
-  stroke-dashoffset: 0;
+  /* Matches the rotation duration so the breathing cycle locks to one full
+     revolution. Gentle cubic-bezier (same ease both sides) avoids the
+     accelerated "fast at the end" feel that ease-in-out produces when its
+     curve snaps out past 80%. */
+  animation: spinner-dash 1.1s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+@keyframes spinner-dash {
+  0%   { stroke-dasharray: 0.1 0.9; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 0.68 0.32; stroke-dashoffset: -0.35; }
+  100% { stroke-dasharray: 0.1 0.9; stroke-dashoffset: -1; }
 }
 
 @keyframes spinner-rotate {
@@ -198,32 +208,53 @@
   50%      { transform: scaleY(1);   }
 }
 
-/* ORBIT — three dots rotating on an invisible ring at different radii */
+/* ORBIT — three particles, each on its own ring at a different radius and
+   speed, rotating independently. Creates a constellation-like atomic-orbital
+   feel rather than a rigid Y-shape spinning. */
 .spinner__orbit {
   position: relative;
-  animation: snice-spinner-orbit-rotate 2.4s linear infinite;
+  display: inline-block;
 }
+
+/* Each ring is a square container centered on the orbit area. Rotating the
+   ring carries its child dot around the center at a fixed radius. */
+.spinner__orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* subtle orbital trail — faint dashed circle on the largest ring only */
+  pointer-events: none;
+}
+
+.spinner__orbit-ring--a {
+  animation: snice-spinner-orbit-rotate 1.4s linear infinite;
+  border: 1px dashed color-mix(in srgb, currentColor 18%, transparent);
+}
+.spinner__orbit-ring--b {
+  /* Counter-rotate the middle ring at a different speed */
+  inset: 15%;
+  animation: snice-spinner-orbit-rotate 2.1s linear infinite reverse;
+}
+.spinner__orbit-ring--c {
+  inset: 30%;
+  animation: snice-spinner-orbit-rotate 1.05s linear infinite;
+}
+
 .spinner__orbit-dot {
   position: absolute;
-  top: 0;
+  top: -6%;                 /* pulls the dot slightly above its ring's top so it rides on the visible path */
   left: 50%;
-  width: 22%;
-  height: 22%;
+  transform: translateX(-50%);
+  width: 16%;
+  height: 16%;
   border-radius: 50%;
   background: currentColor;
-  transform: translateX(-50%);
+  box-shadow: 0 0 0.5em color-mix(in srgb, currentColor 45%, transparent);
 }
-.spinner__orbit-dot:nth-child(2) {
-  top: auto;
-  bottom: 0;
-  opacity: 0.6;
-}
-.spinner__orbit-dot:nth-child(3) {
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  opacity: 0.35;
-}
+
+.spinner__orbit-ring--b .spinner__orbit-dot { width: 20%; height: 20%; opacity: 0.8; }
+.spinner__orbit-ring--c .spinner__orbit-dot { width: 26%; height: 26%; opacity: 0.65; }
+
 @keyframes snice-spinner-orbit-rotate {
   to { transform: rotate(360deg); }
 }
