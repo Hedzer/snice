@@ -100,3 +100,11 @@ export const WATCH_METHODS = getSymbol('watch-methods');
 export const OBSERVE_METHODS = getSymbol('observe-methods');
 export const ON_METHODS = getSymbol('on-methods');
 export const RESPOND_METHODS = getSymbol('respond-methods');
+export const READY_METHODS = getSymbol('ready-methods');
+export const DISPOSE_METHODS = getSymbol('dispose-methods');
+export const MOVED_METHODS = getSymbol('moved-methods');
+export const ADOPTED_METHODS = getSymbol('adopted-methods');
+
+// Controller attach-abort — set to an AbortController while attachController
+// is awaiting element.ready, so detachController can short-circuit the wait.
+export const CONTROLLER_ABORT = getSymbol('controller-abort');

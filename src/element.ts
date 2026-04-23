@@ -5,7 +5,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
@@ -244,6 +244,17 @@ export function applyElementFunctionality(constructor: any) {
       // Await one microtask to defer initial render (allows parent property bindings)
       await new Promise<void>(r => queueMicrotask(r));
 
+      // If the element was removed during the microtask gap, don't render,
+      // don't run @ready on an orphan. Resolve ready so any awaiters don't
+      // hang — the element exists, it just isn't in the DOM.
+      if (!this.isConnected) {
+        if (this[READY_RESOLVE]) {
+          this[READY_RESOLVE]();
+          this[READY_RESOLVE] = null;
+        }
+        return;
+      }
+
       if (this[RENDER_METHOD]) {
         requestRender(this, true);
       }
@@ -260,6 +271,15 @@ export function applyElementFunctionality(constructor: any) {
       // microtask when they connected (earlier in the queue), so they
       // drain before this one.
       await new Promise<void>(r => queueMicrotask(r));
+
+      // Element may have been removed during the second microtask gap.
+      if (!this.isConnected) {
+        if (this[READY_RESOLVE]) {
+          this[READY_RESOLVE]();
+          this[READY_RESOLVE] = null;
+        }
+        return;
+      }
 
       // Run @ready handlers serially, awaiting each
       if (readyHandlers) {
@@ -660,16 +680,28 @@ export function watch(...propertyNames: string[]) {
       // Dedup by (method reference, propertyName) so that multiple @watch
       // decorators on the same method register for each key independently,
       // while still preventing duplicate registration when child classes
-      // inherit/override a method with the same name.
-      if (!constructor[WATCH_METHODS]) constructor[WATCH_METHODS] = new Map();
+      // inherit/override a method with the same name. Use hasOwnProperty so
+      // subclasses get their OWN Map — otherwise child pushes into the
+      // parent's PROPERTY_WATCHERS via the prototype chain.
+      if (!Object.prototype.hasOwnProperty.call(constructor, WATCH_METHODS)) {
+        constructor[WATCH_METHODS] = new Map();
+      }
       let registered: Set<string> = constructor[WATCH_METHODS].get(target);
       if (!registered) {
         registered = new Set<string>();
         constructor[WATCH_METHODS].set(target, registered);
       }
 
-      if (!constructor[PROPERTY_WATCHERS]) {
-        constructor[PROPERTY_WATCHERS] = new Map();
+      if (!Object.prototype.hasOwnProperty.call(constructor, PROPERTY_WATCHERS)) {
+        // Deep-copy the inherited Map so the child starts with the parent's
+        // watchers but pushing to a propertyName's array on the child doesn't
+        // mutate the parent's array.
+        const inherited: Map<string, any[]> | undefined = constructor[PROPERTY_WATCHERS];
+        const copy = new Map<string, any[]>();
+        if (inherited) {
+          for (const [key, arr] of inherited) copy.set(key, [...arr]);
+        }
+        constructor[PROPERTY_WATCHERS] = copy;
       }
 
       for (const propertyName of propertyNames) {
@@ -750,35 +782,41 @@ export function context() {
   };
 }
 
-function registerHandler(symbol: symbol, prefix: string, target: any, context: ClassMethodDecoratorContext, extra?: any) {
+function registerHandler(handlersSymbol: symbol, methodsSymbol: symbol, target: any, context: ClassMethodDecoratorContext, extra?: any) {
   const methodName = context.name as string;
   context.addInitializer(function(this: any) {
     const constructor = this.constructor as any;
-    const setKey = `__${prefix}Methods`;
-    if (!constructor[setKey]) constructor[setKey] = new Set();
-    if (constructor[setKey].has(target)) return;
-    constructor[setKey].add(target);
-    if (!constructor[symbol]) constructor[symbol] = [];
-    constructor[symbol].push({ methodName, method: target, ...extra });
+    // hasOwnProperty guards so subclasses get their OWN Set/array instead of
+    // mutating the parent's via the prototype chain.
+    if (!Object.prototype.hasOwnProperty.call(constructor, methodsSymbol)) {
+      constructor[methodsSymbol] = new Set();
+    }
+    if (constructor[methodsSymbol].has(target)) return;
+    constructor[methodsSymbol].add(target);
+    if (!Object.prototype.hasOwnProperty.call(constructor, handlersSymbol)) {
+      const inherited = constructor[handlersSymbol];
+      constructor[handlersSymbol] = inherited ? [...inherited] : [];
+    }
+    constructor[handlersSymbol].push({ methodName, method: target, ...extra });
   });
 }
 
 export function ready() {
   return function (target: any, context: ClassMethodDecoratorContext) {
-    registerHandler(READY_HANDLERS, 'ready', target, context);
+    registerHandler(READY_HANDLERS, READY_METHODS, target, context);
   };
 }
 
 export function dispose() {
   return function (target: any, context: ClassMethodDecoratorContext) {
-    registerHandler(DISPOSE_HANDLERS, 'dispose', target, context);
+    registerHandler(DISPOSE_HANDLERS, DISPOSE_METHODS, target, context);
   };
 }
 
-function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, prefix: string) {
+function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, methodsSymbol: symbol) {
   return function (options: any = {}) {
     return function (originalMethod: any, context: ClassMethodDecoratorContext) {
-      registerHandler(handlersSymbol, prefix, originalMethod, context, { options });
+      registerHandler(handlersSymbol, methodsSymbol, originalMethod, context, { options });
 
       const methodName = context.name as string;
 
@@ -820,5 +858,5 @@ function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, 
   };
 }
 
-export const moved = createLifecycleDecorator(MOVED_HANDLERS, MOVED_TIMERS, 'moved');
-export const adopted = createLifecycleDecorator(ADOPTED_HANDLERS, ADOPTED_TIMERS, 'adopted');
+export const moved = createLifecycleDecorator(MOVED_HANDLERS, MOVED_TIMERS, MOVED_METHODS);
+export const adopted = createLifecycleDecorator(ADOPTED_HANDLERS, ADOPTED_TIMERS, ADOPTED_METHODS);

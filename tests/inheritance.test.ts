@@ -1,6 +1,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './components/test-utils';
 
+const ON_METHODS = Symbol.for('snice:on-methods');
+const OBSERVE_METHODS = Symbol.for('snice:observe-methods');
+const WATCH_METHODS = Symbol.for('snice:watch-methods');
+
 let counter = 0;
 function tag(base: string) {
   return `test-${base}-${++counter}-${Date.now()}`;
@@ -524,11 +528,11 @@ describe('element inheritance', () => {
         @styles() s() { return css`:host{display:block}`; }
       }
 
-      // __onMethods is populated via addInitializer (on first instance creation)
+      // ON_METHODS is populated via addInitializer (on first instance creation)
       const c = track(await createComponent(ct));
       await c.ready;
-      expect((c.constructor as any).__onMethods).toBeDefined();
-      expect((c.constructor as any).__onMethods.size).toBe(2);
+      expect((c.constructor as any)[ON_METHODS]).toBeDefined();
+      expect((c.constructor as any)[ON_METHODS].size).toBe(2);
     });
   });
 
@@ -788,7 +792,7 @@ describe('element inheritance', () => {
 
       const c = track(await createComponent(ct));
       await c.ready;
-      expect((c.constructor as any).__observeMethods.size).toBe(2);
+      expect((c.constructor as any)[OBSERVE_METHODS].size).toBe(2);
     });
   });
 
@@ -818,7 +822,7 @@ describe('element inheritance', () => {
       for (let i = 0; i < 5; i++) children.push(track(await createComponent(ct)));
       await Promise.all(children.map((c: any) => c.ready));
 
-      expect((children[0].constructor as any).__watchMethods.size).toBe(2);
+      expect((children[0].constructor as any)[WATCH_METHODS].size).toBe(2);
     });
   });
 

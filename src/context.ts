@@ -45,12 +45,17 @@ export function context(options: ContextOptions = {}) {
     context.addInitializer(function (this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor[CONTEXT_METHODS]) constructor[CONTEXT_METHODS] = new Set();
+      // hasOwnProperty guards so subclasses don't mutate parent state via
+      // the prototype chain.
+      if (!Object.prototype.hasOwnProperty.call(constructor, CONTEXT_METHODS)) {
+        constructor[CONTEXT_METHODS] = new Set();
+      }
       if (constructor[CONTEXT_METHODS].has(originalMethod)) return;
       constructor[CONTEXT_METHODS].add(originalMethod);
 
-      if (!constructor[CONTEXT_HANDLERS]) {
-        constructor[CONTEXT_HANDLERS] = [];
+      if (!Object.prototype.hasOwnProperty.call(constructor, CONTEXT_HANDLERS)) {
+        const inherited = constructor[CONTEXT_HANDLERS];
+        constructor[CONTEXT_HANDLERS] = inherited ? [...inherited] : [];
       }
 
       constructor[CONTEXT_HANDLERS].push({

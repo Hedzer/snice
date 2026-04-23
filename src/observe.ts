@@ -41,12 +41,19 @@ export function observe(observeTarget: string | string[], selectorOrOptions?: st
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor[OBSERVE_METHODS]) constructor[OBSERVE_METHODS] = new Set();
+      // hasOwnProperty guards so subclasses don't mutate parent state via
+      // the prototype chain. Without this, instantiating a child pushes into
+      // the parent's OBSERVERS array and fires child observers on fresh
+      // parent instances.
+      if (!Object.prototype.hasOwnProperty.call(constructor, OBSERVE_METHODS)) {
+        constructor[OBSERVE_METHODS] = new Set();
+      }
       if (constructor[OBSERVE_METHODS].has(target)) return;
       constructor[OBSERVE_METHODS].add(target);
 
-      if (!constructor[OBSERVERS]) {
-        constructor[OBSERVERS] = [];
+      if (!Object.prototype.hasOwnProperty.call(constructor, OBSERVERS)) {
+        const inherited = constructor[OBSERVERS];
+        constructor[OBSERVERS] = inherited ? [...inherited] : [];
       }
 
       const observeTargets = Array.isArray(observeTarget) ? observeTarget : [observeTarget];

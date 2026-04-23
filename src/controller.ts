@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -130,9 +130,34 @@ export async function attachController(element: HTMLElement, controllerName: str
   (element as any)[CONTROLLER_KEY] = controllerInstance;
   (element as any)[CONTROLLER_NAME_KEY] = controllerName;
   (element as any)[CONTROLLER_OPERATIONS] = scope;
-  
-  // Wait for element to be ready (required)
-  await (element as any).ready;
+
+  // Wait for element to be ready. Race against abort (detachController) and
+  // a 30s deadline so a caller that forgets to append the element gets a
+  // clear error instead of an unresolvable promise.
+  const abort = new AbortController();
+  (element as any)[CONTROLLER_ABORT] = abort;
+  const ATTACH_DEADLINE_MS = 30_000;
+
+  try {
+    await Promise.race([
+      (element as any).ready,
+      new Promise<never>((_, reject) => {
+        const onAbort = () => reject(
+          new Error(`attachController("${controllerName}"): aborted before element was ready (likely detached or never connected)`)
+        );
+        if (abort.signal.aborted) return onAbort();
+        abort.signal.addEventListener('abort', onAbort, { once: true });
+        const timerId = setTimeout(() => reject(
+          new Error(`attachController("${controllerName}"): element did not become ready within ${ATTACH_DEADLINE_MS}ms (did you forget to appendChild it?)`)
+        ), ATTACH_DEADLINE_MS);
+        abort.signal.addEventListener('abort', () => clearTimeout(timerId), { once: true });
+      }),
+    ]);
+  } finally {
+    if ((element as any)[CONTROLLER_ABORT] === abort) {
+      delete (element as any)[CONTROLLER_ABORT];
+    }
+  }
   
   // Run attach in the controller's scope
   await scope.runOperation(async () => {
@@ -158,10 +183,15 @@ export async function attachController(element: HTMLElement, controllerName: str
  * @param element The element to detach the controller from
  */
 export async function detachController(element: HTMLElement): Promise<void> {
+  // If attachController is currently awaiting `.ready`, short-circuit that
+  // wait so the pending attach rejects immediately instead of hanging.
+  const pendingAbort = (element as any)[CONTROLLER_ABORT] as AbortController | undefined;
+  if (pendingAbort) pendingAbort.abort();
+
   const controllerInstance = (element as any)[CONTROLLER_KEY] as IController | undefined;
   const controllerName = (element as any)[CONTROLLER_NAME_KEY] as string | undefined;
   const scope = (element as any)[CONTROLLER_OPERATIONS] as ControllerScope | undefined;
-  
+
   if (!controllerInstance) {
     return;
   }

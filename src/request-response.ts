@@ -173,12 +173,17 @@ export function respond(requestName: string, options?: RespondOptions) {
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      if (!constructor[RESPOND_METHODS]) constructor[RESPOND_METHODS] = new Set();
+      // hasOwnProperty guards so subclasses don't mutate parent state via
+      // the prototype chain.
+      if (!Object.prototype.hasOwnProperty.call(constructor, RESPOND_METHODS)) {
+        constructor[RESPOND_METHODS] = new Set();
+      }
       if (constructor[RESPOND_METHODS].has(target)) return;
       constructor[RESPOND_METHODS].add(target);
 
-      if (!constructor[CHANNEL_HANDLERS]) {
-        constructor[CHANNEL_HANDLERS] = [];
+      if (!Object.prototype.hasOwnProperty.call(constructor, CHANNEL_HANDLERS)) {
+        const inherited = constructor[CHANNEL_HANDLERS];
+        constructor[CHANNEL_HANDLERS] = inherited ? [...inherited] : [];
       }
 
       constructor[CHANNEL_HANDLERS].push({

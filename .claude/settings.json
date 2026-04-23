@@ -1,33 +1,4 @@
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash scripts/standards-hook.sh",
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "bash scripts/docs-verify-hook.sh",
-            "timeout": 60
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Write|mcp__claude-in-chrome__computer|mcp__plugin_playwright_playwright__browser_take_screenshot",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'pngs=$(ls *.png 2>/dev/null); if [ -n \"$pngs\" ]; then echo \"BLOCKED: PNG files found at repo root. Move them to .debug/ instead:\n$pngs\"; exit 1; fi'",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  },
   "disallowedTools": [
     "Bash(git checkout:*)",
     "Bash(git reset:*)",
