@@ -138,6 +138,46 @@
               <span style="font-size:0.65rem;color:var(--snice-color-text-disabled)">Disabled</span>
               <span style="font-size:0.65rem;padding:0.1rem 0.3rem;border-radius:var(--snice-border-radius-sm);background:var(--snice-color-primary);color:var(--snice-color-text-inverse)">Inverse</span>
             </div>
+
+            <!-- Data-vis accent palette (8 slots) -->
+            <div class="theme-preview-row" style="gap:0.18rem">
+              <span style="font-size:0.55rem;color:var(--snice-color-text-tertiary);min-width:3ch">Chart</span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-1)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-2)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-3)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-4)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-5)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-6)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-7)"></span>
+              <span style="flex:1;height:0.85rem;border-radius:2px;background:var(--snice-color-accent-8)"></span>
+            </div>
+
+            <!-- Sparkline using accent-1 so changes to the palette flow through -->
+            <div class="theme-preview-row">
+              <snice-sparkline style="flex:1;height:30px" data="[3,5,2,8,6,9,4,7,11,8,12,10,13]" type="area" color="var(--snice-color-accent-1)"></snice-sparkline>
+            </div>
+
+            <!-- Typography ramp: display vs body faces + heading sizes -->
+            <div class="theme-preview-row" style="flex-direction:column;align-items:flex-start;gap:0.1rem">
+              <span style="font-family:var(--snice-font-family-display);font-size:var(--snice-heading-lg);line-height:1;font-weight:600">Display heading</span>
+              <span style="font-family:var(--snice-font-family);font-size:0.75rem;color:var(--snice-color-text-secondary)">Body font sample — aa bb cc 123</span>
+              <span style="font-family:var(--snice-font-family-mono);font-size:0.65rem;color:var(--snice-color-text-tertiary);letter-spacing:var(--snice-tracking-widest);text-transform:uppercase">mono label</span>
+            </div>
+
+            <!-- Shadow elevation ramp — renders as small tiles so shadow strength reads live -->
+            <div class="theme-preview-row" style="gap:0.4rem">
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xs);color:var(--snice-color-text-secondary)">xs</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-md);color:var(--snice-color-text-secondary)">md</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-lg);color:var(--snice-color-text-secondary)">lg</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xl);color:var(--snice-color-text-secondary)">xl</span>
+            </div>
+
+            <!-- Glow shadows — colored halos around pill triggers -->
+            <div class="theme-preview-row" style="gap:0.4rem">
+              <span style="flex:1;padding:0.25rem 0.5rem;text-align:center;font-size:0.6rem;background:var(--snice-color-primary);color:var(--snice-color-text-inverse);border-radius:9999px;box-shadow:var(--snice-shadow-glow-primary)">primary</span>
+              <span style="flex:1;padding:0.25rem 0.5rem;text-align:center;font-size:0.6rem;background:var(--snice-color-success);color:var(--snice-color-text-inverse);border-radius:9999px;box-shadow:var(--snice-shadow-glow-success)">success</span>
+              <span style="flex:1;padding:0.25rem 0.5rem;text-align:center;font-size:0.6rem;background:var(--snice-color-danger);color:var(--snice-color-text-inverse);border-radius:9999px;box-shadow:var(--snice-shadow-glow-danger)">danger</span>
+            </div>
           </div>
         </div>
       </div>
@@ -162,6 +202,9 @@
   <script async src="components/snice-card.min.js"></script>
   <script async src="components/snice-tabs.min.js"></script>
   <script async src="components/snice-color-picker.min.js"></script>
+  <script async src="components/snice-sparkline.min.js"></script>
+  <script async src="components/snice-progress.min.js"></script>
+  <script async src="components/snice-radio.min.js"></script>
   <script type="module" src="themes.js"></script>
 </body>
 </html>
