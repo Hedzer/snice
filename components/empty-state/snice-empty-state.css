@@ -11,6 +11,14 @@
   text-align: center;
   padding: var(--snice-spacing-2xl, 3rem) var(--snice-spacing-xl, 2rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
+  /* Mount animation — content stages in (icon → title → description → action)
+     so the empty state feels inhabited rather than a static billboard. */
+  animation: snice-empty-in 360ms var(--snice-ease-out, ease) backwards;
+}
+
+@keyframes snice-empty-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .empty-state--small {
@@ -30,6 +38,25 @@
   align-items: center;
   justify-content: center;
   margin-bottom: var(--snice-spacing-lg, 1.5rem);
+  position: relative;
+  /* Subtle halo ring behind the icon — turns the icon from "floating glyph"
+     into an intentional focal point. Dashed 1px border at 25% alpha, slowly
+     rotating for a quiet "waiting" feel without being distracting. */
+  width: calc(var(--snice-font-size-4xl, 4rem) * 1.8);
+  height: calc(var(--snice-font-size-4xl, 4rem) * 1.8);
+}
+
+.empty-state__icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--snice-color-border, #ddd) 70%, transparent);
+  animation: snice-empty-halo 18s linear infinite;
+}
+
+@keyframes snice-empty-halo {
+  to { transform: rotate(360deg); }
 }
 
 .empty-state__icon {
@@ -61,6 +88,8 @@
 
 .empty-state--small .empty-state__icon-wrapper {
   margin-bottom: var(--snice-spacing-md, 1rem);
+  width: calc(var(--snice-font-size-3xl, 3rem) * 1.8);
+  height: calc(var(--snice-font-size-3xl, 3rem) * 1.8);
 }
 
 .empty-state--small .empty-state__icon {
@@ -79,6 +108,8 @@
 
 .empty-state--large .empty-state__icon-wrapper {
   margin-bottom: var(--snice-spacing-xl, 2rem);
+  width: calc(var(--snice-font-size-5xl, 5rem) * 1.8);
+  height: calc(var(--snice-font-size-5xl, 5rem) * 1.8);
 }
 
 .empty-state--large .empty-state__icon {

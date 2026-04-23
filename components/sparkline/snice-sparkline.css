@@ -105,16 +105,53 @@
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+  /* Line draw animation — SVG path stroke unrolls from 0 to full length on
+     mount. pathLength=1 is set on the SVG so stroke-dasharray in normalized
+     units works regardless of the actual path length. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: snice-sparkline-draw 900ms var(--snice-ease-out, ease) forwards;
 }
 
 .sparkline__area {
   stroke: none;
+  /* Area fades in after the line finishes drawing so it reads as the line
+     settling onto the canvas rather than painting all at once. */
+  opacity: 0;
+  animation: snice-sparkline-area-in 360ms var(--snice-ease-out, ease) 500ms forwards;
 }
 
 .sparkline__dot {
   fill: var(--snice-color-background, hsl(0 0% 100%));
+  /* Dots pop in as the line arrives at them — delay scales with dot index
+     via --dot-delay set on the element (0..1 of total draw time). */
+  transform-origin: center;
+  transform: scale(0);
+  animation: snice-sparkline-dot-in 260ms var(--snice-ease-spring, ease) calc(200ms + var(--dot-delay, 0) * 700ms) forwards;
 }
 
 .sparkline__bar {
   stroke: none;
+  /* Bars grow from baseline — transform-origin bottom for vertical growth.
+     Stagger across bars via --bar-delay. */
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  animation: snice-sparkline-bar-in 420ms var(--snice-ease-out, ease) calc(var(--bar-delay, 0) * 400ms) forwards;
+}
+
+@keyframes snice-sparkline-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes snice-sparkline-area-in {
+  from { opacity: 0; }
+  to   { opacity: 0.2; }
+}
+@keyframes snice-sparkline-dot-in {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+@keyframes snice-sparkline-bar-in {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
 }

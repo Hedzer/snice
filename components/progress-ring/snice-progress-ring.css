@@ -25,7 +25,16 @@
   fill: none;
   stroke: var(--progress-ring-color, var(--snice-color-primary, rgb(37 99 235)));
   stroke-linecap: round;
-  transition: stroke-dashoffset var(--snice-transition-medium, 250ms) ease;
+  /* Initial sweep — the fill draws from 0 to its final offset over 900ms on
+     mount, then updates are smooth via the transition below. The CSS
+     variable --progress-start is the initial offset (= circumference, i.e.
+     empty) set from the component at render time. */
+  animation: snice-progress-ring-sweep 900ms var(--snice-ease-out, ease) 1 forwards;
+  transition: stroke-dashoffset 360ms var(--snice-ease-out, ease);
+}
+
+@keyframes snice-progress-ring-sweep {
+  from { stroke-dashoffset: var(--progress-ring-empty, 0); }
 }
 
 .progress-ring__center {

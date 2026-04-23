@@ -130,7 +130,9 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
         const barHeight = normalizedValue * drawHeight;
         const x = padding + (index * barWidth) + gap / 2;
         const y = padding + drawHeight - barHeight;
-        return `<rect class="sparkline__bar" x="${x}" y="${y}" width="${actualBarWidth}" height="${barHeight}" part="bar"/>`;
+        // Stagger each bar's grow-from-baseline via --bar-delay (0..1).
+        const delay = this.data.length > 1 ? index / (this.data.length - 1) : 0;
+        return `<rect class="sparkline__bar" style="--bar-delay:${delay.toFixed(3)}" x="${x}" y="${y}" width="${actualBarWidth}" height="${barHeight}" part="bar"/>`;
       }).join('');
 
       svgContent = bars;
@@ -154,7 +156,9 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
           elements += `<path class="sparkline__area" d="${areaPath}" part="area"/>`;
         }
 
-        elements += `<path class="sparkline__line" d="${pathData}" stroke-width="${this.strokeWidth}" part="line"/>`;
+        // pathLength="1" normalizes the path so stroke-dasharray:1 draws
+        // full width regardless of the actual geometric length.
+        elements += `<path class="sparkline__line" d="${pathData}" pathLength="1" stroke-width="${this.strokeWidth}" part="line"/>`;
       } else {
         const points = pointsArray.map(p => `${p.x},${p.y}`).join(' ');
 
@@ -163,12 +167,15 @@ export class SniceSparkline extends HTMLElement implements SniceSparklineElement
           elements += `<polygon class="sparkline__area" points="${areaPoints}" part="area"/>`;
         }
 
-        elements += `<polyline class="sparkline__line" points="${points}" stroke-width="${this.strokeWidth}" part="line"/>`;
+        elements += `<polyline class="sparkline__line" points="${points}" pathLength="1" stroke-width="${this.strokeWidth}" part="line"/>`;
       }
 
       if (this.showDots) {
-        const dots = pointsArray.map(p => {
-          return `<circle class="sparkline__dot" cx="${p.x}" cy="${p.y}" r="${this.strokeWidth}" stroke-width="${this.strokeWidth / 2}" part="dot"/>`;
+        const dots = pointsArray.map((p, i) => {
+          // Dot arrives at the line's current position — delay scales 0..1
+          // across the data so dots pop as the line reaches them.
+          const delay = pointsArray.length > 1 ? i / (pointsArray.length - 1) : 0;
+          return `<circle class="sparkline__dot" style="--dot-delay:${delay.toFixed(3)}" cx="${p.x}" cy="${p.y}" r="${this.strokeWidth}" stroke-width="${this.strokeWidth / 2}" part="dot"/>`;
         }).join('');
         elements += dots;
       }

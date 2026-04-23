@@ -63,6 +63,7 @@ export class SniceProgressRing extends HTMLElement implements SniceProgressRingE
             stroke-width="${this.thickness}"
             stroke-dasharray="${circumference}"
             stroke-dashoffset="${offset}"
+            style="--progress-ring-empty: ${circumference}"
           />
         </svg>
         <if ${showCenter}>
