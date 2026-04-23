@@ -80,6 +80,26 @@
   --alert-text-color: var(--snice-color-alert-error-text, rgb(127 29 29));
 }
 
+/* Accent appearance — neutral background + thick colored left bar. Reads as
+   a refined/editorial alert (Notion / Linear style) rather than a filled
+   tinted banner. Opt in via `appearance="accent"`. */
+:host([appearance="accent"]) .alert {
+  background: var(--snice-color-background-element, transparent);
+  border: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  border-left: 4px solid var(--alert-border-color);
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+:host([appearance="accent"][variant="info"]) .alert    { border-left-color: var(--snice-color-primary); }
+:host([appearance="accent"][variant="success"]) .alert { border-left-color: var(--snice-color-success); }
+:host([appearance="accent"][variant="warning"]) .alert { border-left-color: var(--snice-color-warning); }
+:host([appearance="accent"][variant="error"]) .alert   { border-left-color: var(--snice-color-danger); }
+
+/* Accent appearance keeps the icon tinted by variant */
+:host([appearance="accent"][variant="info"]) .alert-icon    { color: var(--snice-color-primary); }
+:host([appearance="accent"][variant="success"]) .alert-icon { color: var(--snice-color-success); }
+:host([appearance="accent"][variant="warning"]) .alert-icon { color: var(--snice-color-warning); }
+:host([appearance="accent"][variant="error"]) .alert-icon   { color: var(--snice-color-danger); }
+
 /* Icon */
 .alert-icon {
   flex-shrink: 0;
@@ -118,28 +138,13 @@
   object-fit: contain;
 }
 
-/* Default icons */
-:host([variant="info"]) .alert-icon--default::before {
-  content: "ℹ";
-  font-size: 1.125rem; /* 18px */
-  font-weight: bold;
-}
-
-:host([variant="success"]) .alert-icon--default::before {
-  content: "✓";
-  font-size: 1rem; /* 16px */
-  font-weight: bold;
-}
-
-:host([variant="warning"]) .alert-icon--default::before {
-  content: "⚠";
-  font-size: 1.125rem; /* 18px */
-}
-
-:host([variant="error"]) .alert-icon--default::before {
-  content: "✕";
-  font-size: 1rem; /* 16px */
-  font-weight: bold;
+/* Default icons are rendered as inline SVGs from the component. Color
+   inherits the alert's text color so the icon tints with the variant. */
+.alert-icon-content {
+  width: var(--alert-icon-size);
+  height: var(--alert-icon-size);
+  display: block;
+  color: inherit;
 }
 
 /* Content */

@@ -7,6 +7,7 @@ Notification messages for user feedback.
 ```typescript
 variant: 'info'|'success'|'warning'|'error' = 'info';
 size: 'small'|'medium'|'large' = 'medium';
+appearance: 'filled'|'accent' = 'filled';  // 'accent' = neutral bg + colored left bar (editorial)
 title: string = '';
 dismissible: boolean = false;
 icon: string = '';   // URL, emoji, or 'none'. Use icon slot for icon fonts.
@@ -68,6 +69,11 @@ icon: string = '';   // URL, emoji, or 'none'. Use icon slot for icon fonts.
 <!-- Sizes -->
 <snice-alert size="small">Small</snice-alert>
 <snice-alert size="large">Large</snice-alert>
+
+<!-- Accent appearance: neutral bg + colored left bar (Notion / Linear style) -->
+<snice-alert variant="warning" appearance="accent">
+  Review this before proceeding.
+</snice-alert>
 ```
 
 ## Accessibility

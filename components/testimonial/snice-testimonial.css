@@ -7,6 +7,35 @@
 .testimonial {
   padding: var(--snice-spacing-lg, 1.5rem);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Oversized decorative quote mark behind the content — an editorial accent
+   that signals "this is a pullquote" without adding more text. Uses the
+   typographic " character at 8rem+ with low opacity. */
+.testimonial::before {
+  content: '“';
+  position: absolute;
+  top: -0.5rem;
+  right: 0.5rem;
+  font-family: var(--snice-font-family-display);
+  font-size: 8rem;
+  line-height: 1;
+  color: var(--snice-color-primary, rgb(37 99 235));
+  opacity: 0.08;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 700;
+}
+
+:host([variant="featured"]) .testimonial::before {
+  color: rgb(255 255 255);
+  opacity: 0.12;
+}
+
+:host([variant="minimal"]) .testimonial::before {
+  display: none;   /* minimal stays minimal — left bar is its accent */
 }
 
 /* Card variant (default) */

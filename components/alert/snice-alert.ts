@@ -1,7 +1,7 @@
 import { element, property, query, dispatch, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-alert.css?inline';
-import type { AlertVariant, AlertSize, SniceAlertElement } from './snice-alert.types';
+import type { AlertVariant, AlertSize, AlertAppearance, SniceAlertElement } from './snice-alert.types';
 
 @element('snice-alert')
 export class SniceAlert extends HTMLElement implements SniceAlertElement {
@@ -10,6 +10,9 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
 
   @property({  })
   size: AlertSize = 'medium';
+
+  @property({  })
+  appearance: AlertAppearance = 'filled';
 
   @property({  })
   title = '';
@@ -43,7 +46,7 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
         <if value="${hasIcon}">
           <div class="${iconClasses}" part="icon">
             <slot name="icon">
-              ${this.icon ? renderIcon(this.icon, 'alert-icon-content') : ''}
+              ${this.icon ? renderIcon(this.icon, 'alert-icon-content') : this.defaultIconSvg()}
             </slot>
           </div>
         </if>
@@ -74,6 +77,26 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   private shouldShowDefaultIcon(): boolean {
     // Show default icons for variants unless explicitly disabled
     return this.icon !== 'none';
+  }
+
+  /**
+   * Snice-owned solid icon set for the default alert icons. Designed as
+   * filled circles/triangles at 24×24 with a bold glyph mark — readable at
+   * the 20px alert-icon size without relying on Unicode fallbacks (which
+   * looked like placeholder characters across OSes).
+   */
+  private defaultIconSvg() {
+    switch (this.variant) {
+      case 'success':
+        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm-1 14.59-4.3-4.3 1.42-1.42L11 13.76l5.88-5.88 1.42 1.42Z"/></svg>`;
+      case 'warning':
+        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 1 21h22Zm1 14h-2v-2h2Zm0-4h-2V9h2Z"/></svg>`;
+      case 'error':
+        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12Z"/></svg>`;
+      case 'info':
+      default:
+        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 15h-2v-6h2Zm0-8h-2V7h2Z"/></svg>`;
+    }
   }
 
 

@@ -21,6 +21,7 @@ Displays notification messages to provide user feedback for informational, succe
 |----------|------|---------|-------------|
 | `variant` | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'` | Visual style variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Alert size |
+| `appearance` | `'filled' \| 'accent'` | `'filled'` | `'accent'` uses a neutral background + colored left bar (editorial, Notion/Linear-style) |
 | `title` | `string` | `''` | Optional title text |
 | `dismissible` | `boolean` | `false` | Show dismiss button |
 | `icon` | `string` | `''` | Custom icon (URL, image file, emoji) or `'none'` to hide. Use slot for icon fonts. |

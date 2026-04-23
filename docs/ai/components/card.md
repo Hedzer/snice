@@ -10,6 +10,9 @@ size: 'small'|'medium'|'large' = 'medium';
 clickable: boolean = false;
 selected: boolean = false;
 disabled: boolean = false;
+// attribute-only: accent="primary|success|warning|danger|brand" adds a
+// colored top-border accent — useful for spotlight/highlighted tier cards.
+// Also: clickable cards tilt toward cursor on hover (±3° perspective).
 ```
 
 ## Events

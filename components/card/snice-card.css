@@ -105,6 +105,17 @@
   transform: translateY(0);
 }
 
+/* Accent top-bar — when consumer opts in via [accent] or [accent="primary"],
+   a thick colored top border signals the card's role (spotlight, highlighted
+   tier on pricing table, etc.). Accepts a semantic value to pick the color. */
+:host([accent]) .card {
+  border-top: 3px solid var(--snice-color-primary, rgb(37 99 235));
+}
+:host([accent="success"]) .card { border-top-color: var(--snice-color-success); }
+:host([accent="warning"]) .card { border-top-color: var(--snice-color-warning); }
+:host([accent="danger"])  .card { border-top-color: var(--snice-color-danger); }
+:host([accent="brand"])   .card { border-top-color: var(--snice-color-brand); }
+
 /* Selected state */
 :host([selected]) .card {
   border-color: var(--snice-color-primary, rgb(59 130 246));
