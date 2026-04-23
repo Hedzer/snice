@@ -74,6 +74,7 @@
 }
 
 .booking__month-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -81,7 +82,8 @@
 }
 
 .booking__month-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -188,7 +190,8 @@
 }
 
 .booking__slots-title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-md, 1rem);
@@ -273,7 +276,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }
 
@@ -405,7 +408,8 @@
 }
 
 .booking__confirmation-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-xs, 0.5rem);

@@ -82,6 +82,7 @@
 
 /* Gallery Header */
 .gallery-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -89,7 +90,8 @@
 }
 
 .gallery-title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--snice-color-text, rgb(23 23 23));
 }

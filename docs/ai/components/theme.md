@@ -19,12 +19,19 @@ CSS-only design token system. No component -- just import the stylesheet.
 <html data-theme="dark">...</html>
 ```
 
+### Preset palettes
+
+12 color presets ship in `public/theme/presets.js` (default, ocean, forest, sunset, violet, rose, slate, sand, midnight, coffee, cherry, coral, mono). Apply via `data-theme-variant="mono"` (or any preset name). Presets override HSL color primitives; semantic tokens cascade automatically.
+
 ## CSS Custom Properties
 
 ### Colors
 
 ```css
 --snice-color-primary
+--snice-color-brand        /* product identity color; defaults to primary. Override when brand ≠ interactive accent */
+--snice-color-brand-hover
+--snice-color-brand-subtle
 --snice-color-success
 --snice-color-warning
 --snice-color-danger
@@ -60,11 +67,14 @@ CSS-only design token system. No component -- just import the stylesheet.
 ### Typography
 
 ```css
---snice-font-family: system font stack
---snice-font-family-mono: monospace stack
+--snice-font-family: system font stack        /* body text */
+--snice-font-family-display: inherits body    /* headings/titles; override for a distinct display face */
+--snice-font-family-mono: monospace stack     /* code */
 --snice-font-size-2xs..4xl: 10px..36px
+--snice-heading-xs..2xl: 14px..36px       /* semantic heading scale */
 --snice-font-weight-light..bold: 300..700
 --snice-line-height-dense|normal|loose: 1.25|1.5|1.75
+--snice-tracking-tight|normal|wide|widest: -0.02em|0|0.03em|0.1em   /* letter-spacing */
 ```
 
 ### Border Radius

@@ -85,6 +85,7 @@
 }
 
 .message-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: baseline;
   gap: var(--snice-spacing-xs, 0.5rem);

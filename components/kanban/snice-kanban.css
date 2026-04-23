@@ -23,6 +23,7 @@
 }
 
 .column__header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-md, 1rem);
   border-bottom: 2px solid var(--snice-color-border, rgb(224 224 224));
   display: flex;
@@ -31,8 +32,9 @@
 }
 
 .column__title {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-semibold, 600);
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text, rgb(26 26 26));
   display: flex;
   align-items: center;
@@ -104,8 +106,9 @@
 }
 
 .card__title {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-medium, 500);
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text, rgb(26 26 26));
   margin-bottom: var(--snice-spacing-3xs, 0.25rem);
 }

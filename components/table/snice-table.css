@@ -168,6 +168,7 @@
 
 /* Sticky Header */
 :host([sticky-header]) snice-header {
+  font-family: var(--snice-font-family-display);
   position: sticky;
   top: 0;
   z-index: 5;

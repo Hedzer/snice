@@ -103,6 +103,7 @@
 }
 
 .product-card--compact .product-card__title {
+  font-family: var(--snice-font-family-display);
   font-size: 0.875rem;
 }
 
@@ -144,9 +145,10 @@
 }
 
 .product-card--featured .product-card__title {
-  font-size: var(--snice-font-size-2xl, 1.5rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xl, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--snice-tracking-tight);
 }
 
 .product-card--featured .product-card__price-current {
@@ -186,7 +188,8 @@
 }
 
 .product-card--minimal .product-card__title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   letter-spacing: 0.01em;
 }
@@ -230,6 +233,7 @@
 }
 
 .product-card--grid .product-card__title {
+  font-family: var(--snice-font-family-display);
   font-size: 0.875rem;
   font-weight: var(--snice-font-weight-medium, 500);
   display: -webkit-box;
@@ -374,7 +378,7 @@
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   z-index: 3;
   line-height: 1.5;
 }
@@ -502,6 +506,7 @@
 }
 
 .product-card__title {
+  font-family: var(--snice-font-family-display);
   font-size: var(--pc-title-size);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--pc-text);
@@ -639,7 +644,7 @@
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--pc-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .product-card__variant-options {
@@ -802,6 +807,7 @@
 }
 
 .product-card__skeleton-line--title {
+  font-family: var(--snice-font-family-display);
   height: 1.25rem;
   width: 75%;
 }

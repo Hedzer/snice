@@ -21,7 +21,8 @@
 
 /* Title */
 .leaderboard__title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--leaderboard-text);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);

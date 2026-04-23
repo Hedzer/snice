@@ -43,8 +43,9 @@ case, when, default, if {
 }
 
 .list-item__heading {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-medium, 500);
-  font-size: var(--snice-font-size-md, 1rem);
+  font-size: var(--snice-heading-sm, 1rem);
   line-height: var(--snice-line-height-normal, 1.5);
   color: var(--snice-color-text, rgb(23 23 23));
 }

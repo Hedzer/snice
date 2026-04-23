@@ -17,7 +17,7 @@
   background: var(--accordion-header-bg, var(--snice-color-background-element));
   color: var(--accordion-header-color, var(--snice-color-text));
   border: none;
-  font-family: inherit;
+  font-family: var(--snice-font-family-display);
   font-size: 1rem; /* 16px */
   font-weight: 500;
   text-align: left;
@@ -27,19 +27,23 @@
 }
 
 .accordion-item__header:hover {
+  font-family: var(--snice-font-family-display);
   background: var(--accordion-header-bg-hover, var(--snice-color-background-hover));
 }
 
 .accordion-item__header:active {
+  font-family: var(--snice-font-family-display);
   background: var(--accordion-header-bg-active, var(--snice-color-background-active));
 }
 
 .accordion-item__header:focus-visible {
+  font-family: var(--snice-font-family-display);
   outline: 2px solid var(--snice-color-primary);
   outline-offset: -2px;
 }
 
 .accordion-item__title {
+  font-family: var(--snice-font-family-display);
   flex: 1;
   display: flex;
   align-items: center;

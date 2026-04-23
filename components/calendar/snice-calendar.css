@@ -10,6 +10,7 @@
 }
 
 .calendar__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,7 +20,8 @@
 }
 
 .calendar__title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -66,6 +68,7 @@
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 

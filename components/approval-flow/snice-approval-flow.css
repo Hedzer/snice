@@ -61,6 +61,7 @@
               background-color var(--snice-transition-fast, 150ms) ease;
   overflow: hidden;
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
 }
 
 .step__avatar img {

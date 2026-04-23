@@ -92,7 +92,7 @@
 }
 
 .page__content-book-title {
-  font-family: var(--book-title);
+  font-family: var(--snice-font-family-display);
   font-size: calc(var(--base-size) * 3);
   font-weight: bold;
   text-transform: uppercase;
@@ -107,6 +107,7 @@
   font-size: calc(var(--base-size) * 1.2);
   font-weight: 100;
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
   color: var(--dark-text);
   border-top: 1px solid var(--dark-text);
   border-bottom: 1px solid var(--dark-text);
@@ -136,10 +137,11 @@
   font-family: var(--title);
   font-size: calc(var(--base-size) * 0.8);
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
 }
 
 .page__content-title {
-  font-family: var(--title);
+  font-family: var(--snice-font-family-display);
   font-size: calc(var(--base-size) * 1);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -157,6 +159,7 @@
   font-size: calc(var(--base-size) * 1);
   padding-bottom: calc(var(--baseline) * 1.5);
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
 }
 
 .page__content-blockquote {
@@ -176,6 +179,7 @@
   margin-top: calc(var(--baseline) * 0.3);
   float: right;
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
 }
 
 .page__content-text {

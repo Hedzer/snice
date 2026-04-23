@@ -50,6 +50,7 @@ case, when, default, if {
 
 /* Permission header with optional description tooltip */
 .matrix-perm-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -71,9 +72,10 @@ case, when, default, if {
 
 /* ===== Group header row ===== */
 .matrix-group-header td {
+  font-family: var(--snice-font-family-display);
   background: var(--snice-color-background-tertiary, rgb(245 245 245));
   font-weight: var(--snice-font-weight-semibold, 600);
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-heading-xs, 0.875rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));

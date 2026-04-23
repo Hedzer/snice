@@ -29,7 +29,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .separator {

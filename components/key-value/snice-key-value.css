@@ -23,6 +23,7 @@
 
 /* Header — title + copy button */
 .kv__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -32,7 +33,8 @@
 
 /* Title — matches leaderboard title pattern */
 .kv__title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--kv-text);
   margin: 0;

@@ -129,6 +129,7 @@
 
 /* Card sections */
 .card-header {
+  font-family: var(--snice-font-family-display);
   padding: var(--card-padding);
   border-bottom: 1px solid var(--card-border-color);
 }
@@ -153,6 +154,7 @@
 
 /* When header exists right after image */
 .card-image-slot + .card-header:not([hidden]) {
+  font-family: var(--snice-font-family-display);
   border-radius: 0;
 }
 

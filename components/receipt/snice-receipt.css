@@ -79,6 +79,7 @@
 
 /* ── Header ── */
 .receipt__header {
+  font-family: var(--snice-font-family-display);
   text-align: center;
   padding-bottom: var(--snice-spacing-sm, 0.75rem);
   background: var(--receipt-header-bg);
@@ -144,6 +145,7 @@
 
 /* ── Items ── */
 .receipt__items-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   justify-content: space-between;
   font-size: 0.6875rem;
@@ -343,6 +345,7 @@
 }
 
 :host([variant="thermal"]) .receipt__items-header {
+  font-family: var(--snice-font-family-display);
   font-size: 0.625rem;
   border-bottom-style: dotted;
   color: var(--receipt-text-tertiary);
@@ -401,7 +404,7 @@
 
 :host([variant="thermal"]) .receipt__thank-you {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--snice-tracking-widest);
   font-size: 0.75rem;
   color: var(--receipt-text-secondary);
 }
@@ -423,12 +426,13 @@
 }
 
 :host([variant="modern"]) .receipt__header {
+  font-family: var(--snice-font-family-display);
   padding-bottom: var(--snice-spacing-md, 1rem);
 }
 
 :host([variant="modern"]) .receipt__merchant-name {
   font-size: 1.375rem;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--snice-tracking-tight);
 }
 
 :host([variant="modern"]) .receipt__meta {
@@ -444,6 +448,7 @@
 }
 
 :host([variant="modern"]) .receipt__items-header {
+  font-family: var(--snice-font-family-display);
   border-bottom-color: var(--receipt-border);
 }
 
@@ -492,6 +497,7 @@
 }
 
 :host([variant="minimal"]) .receipt__header {
+  font-family: var(--snice-font-family-display);
   padding-bottom: var(--snice-spacing-md, 1rem);
 }
 
@@ -520,6 +526,7 @@
 }
 
 :host([variant="minimal"]) .receipt__items-header {
+  font-family: var(--snice-font-family-display);
   display: none;
 }
 
@@ -560,6 +567,7 @@
 }
 
 :host([variant="detailed"]) .receipt__header {
+  font-family: var(--snice-font-family-display);
   border-bottom: 2px solid var(--receipt-text);
   padding-bottom: var(--snice-spacing-md, 1rem);
 }
@@ -579,6 +587,7 @@
 }
 
 :host([variant="detailed"]) .receipt__items-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   font-weight: var(--snice-font-weight-semibold, 600);
   border-bottom: 2px solid var(--receipt-border);

@@ -175,6 +175,7 @@
   font-size: 0.5rem; /* 8px */
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
   opacity: 0;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
   pointer-events: none;

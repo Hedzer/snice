@@ -44,7 +44,7 @@
   font-size: 0.75rem;
   color: var(--ot-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   font-weight: var(--snice-font-weight-medium, 500);
 }
 

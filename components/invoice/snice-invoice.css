@@ -98,6 +98,7 @@
 
 /* ── Header ── */
 .invoice__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -111,12 +112,14 @@
 }
 
 .invoice__header-left {
+  font-family: var(--snice-font-family-display);
   display: flex;
   flex-direction: column;
   gap: var(--snice-spacing-xs, 0.5rem);
 }
 
 .invoice__title {
+  font-family: var(--snice-font-family-display);
   font-size: var(--invoice-title-font-size);
   font-weight: var(--invoice-title-font-weight);
   color: inherit;
@@ -158,7 +161,7 @@
   font-size: var(--invoice-label-font-size);
   font-weight: var(--snice-font-weight-semibold, 600);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .invoice__status--draft {
@@ -200,7 +203,7 @@
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--invoice-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   margin-bottom: var(--snice-spacing-xs, 0.5rem);
 }
 
@@ -237,7 +240,7 @@
   padding: var(--invoice-table-cell-padding);
   border-bottom: 2px solid var(--invoice-table-border);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .invoice__table th:last-child,
@@ -377,6 +380,7 @@
 }
 
 :host([variant="modern"]) .invoice__header {
+  font-family: var(--snice-font-family-display);
   border-radius: var(--snice-border-radius-md, 0.25rem);
   margin: calc(-1 * var(--invoice-padding));
   margin-bottom: var(--invoice-section-gap);
@@ -561,6 +565,7 @@
 }
 
 :host([variant="detailed"]) .invoice__header {
+  font-family: var(--snice-font-family-display);
   margin-bottom: var(--snice-spacing-md, 1rem);
 }
 
@@ -633,6 +638,7 @@
 
   /* Remove background colors for ink saving */
   .invoice__header {
+    font-family: var(--snice-font-family-display);
     background: transparent !important;
     color: black !important;
     border-bottom: 2px solid black;
@@ -640,6 +646,7 @@
   }
 
   :host([variant="modern"]) .invoice__header {
+    font-family: var(--snice-font-family-display);
     margin: 0;
     margin-bottom: 1rem;
   }
@@ -710,6 +717,7 @@
 
   /* Page break management */
   .invoice__header {
+    font-family: var(--snice-font-family-display);
     break-inside: avoid;
   }
 

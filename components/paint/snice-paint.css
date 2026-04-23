@@ -30,7 +30,7 @@
   font-size: 0.5rem;
   color: var(--snice-color-text-tertiary, rgb(140 140 140));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   margin: 0.125rem 0;
   user-select: none;
   font-family: system-ui, -apple-system, sans-serif;

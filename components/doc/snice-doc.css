@@ -103,10 +103,12 @@
 }
 
 .sidebar-header {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-doc-muted-color, var(--snice-color-text-secondary, rgb(102 102 102)));
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
   padding: 0 var(--snice-spacing-md, 1rem) var(--snice-spacing-xs, 0.5rem);
   margin-bottom: var(--snice-spacing-xs, 0.5rem);
   border-bottom: 1px solid var(--snice-doc-border, var(--snice-color-border, rgb(225 228 232)));
@@ -161,6 +163,7 @@
 }
 
 .doc-editor h1 {
+  font-family: var(--snice-font-family-display);
   font-size: 2em;
   font-weight: var(--snice-font-weight-bold, 700);
   line-height: var(--snice-line-height-dense, 1.2);
@@ -168,6 +171,7 @@
 }
 
 .doc-editor h2 {
+  font-family: var(--snice-font-family-display);
   font-size: 1.5em;
   font-weight: var(--snice-font-weight-bold, 700);
   line-height: 1.3;
@@ -175,6 +179,7 @@
 }
 
 .doc-editor h3 {
+  font-family: var(--snice-font-family-display);
   font-size: 1.25em;
   font-weight: var(--snice-font-weight-bold, 700);
   line-height: 1.4;

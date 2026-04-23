@@ -20,6 +20,7 @@
 
 
 .kpi__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;

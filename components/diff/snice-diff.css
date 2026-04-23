@@ -35,13 +35,14 @@
 
 /* Header / Stats */
 .diff-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   background: var(--snice-color-background-element, rgb(252 251 249));
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 

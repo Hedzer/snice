@@ -89,6 +89,7 @@
 }
 
 .modal__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -97,6 +98,7 @@
 }
 
 .modal__header:empty {
+  font-family: var(--snice-font-family-display);
   display: none;
 }
 
@@ -158,6 +160,7 @@
 
 /* Remove borders when header/footer are empty */
 .modal__header:empty + .modal__body {
+  font-family: var(--snice-font-family-display);
   padding-top: var(--modal-padding);
 }
 

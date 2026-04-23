@@ -227,6 +227,7 @@
 
 /* Calendar Header */
 .calendar-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -234,6 +235,7 @@
 }
 
 .calendar-title {
+  font-family: var(--snice-font-family-display);
   flex: 1;
   text-align: center;
 }

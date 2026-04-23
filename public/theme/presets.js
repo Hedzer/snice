@@ -397,5 +397,47 @@ export const PRESETS = [
   --snice-color-background: hsl(2 16% 7%);
   --snice-color-background-element: hsl(4 12% 14%);
 }`
+  },
+  {
+    name: 'mono',
+    label: 'Mono',
+    description: 'Monochrome — near-black accent on warm off-white paper',
+    swatches: ['#18171a', '#4a4842', '#f9f6f0', '#2563eb'],
+    // Mono collapses the "blue" scale onto the warm-gray scale so the
+    // interactive primary is near-black (not blue), while keeping the accent
+    // scale available for colored callouts (the native danger/success still
+    // read as red/green, just slightly warmer).
+    css: `:root {
+  --snice-color-gray-50: 40 25% 98%;
+  --snice-color-gray-100: 40 20% 95%;
+  --snice-color-gray-200: 40 16% 89%;
+  --snice-color-gray-300: 40 12% 82%;
+  --snice-color-gray-400: 40 8% 64%;
+  --snice-color-gray-500: 40 6% 45%;
+  --snice-color-gray-600: 40 6% 33%;
+  --snice-color-gray-700: 40 6% 25%;
+  --snice-color-gray-800: 40 6% 16%;
+  --snice-color-gray-900: 40 8% 10%;
+  --snice-color-gray-950: 40 10% 5%;
+  --snice-color-blue-50: 40 25% 98%;
+  --snice-color-blue-100: 40 20% 95%;
+  --snice-color-blue-200: 40 16% 89%;
+  --snice-color-blue-300: 40 10% 72%;
+  --snice-color-blue-400: 40 8% 50%;
+  --snice-color-blue-500: 40 8% 28%;
+  --snice-color-blue-600: 40 8% 15%;
+  --snice-color-blue-700: 40 8% 11%;
+  --snice-color-blue-800: 40 8% 8%;
+  --snice-color-blue-900: 40 8% 6%;
+  --snice-color-blue-950: 40 8% 4%;
+  --snice-color-background: hsl(40 25% 98%);
+  --snice-color-background-element: hsl(40 22% 96%);
+  --snice-color-background-input: hsl(40 25% 99%);
+}`,
+    cssDark: `[data-theme="dark"] {
+  --snice-color-background: hsl(40 5% 8%);
+  --snice-color-background-element: hsl(40 5% 10%);
+  --snice-color-background-input: hsl(40 5% 13%);
+}`
   }
 ];

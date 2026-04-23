@@ -149,11 +149,13 @@
 }
 
 .alert-title {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-semibold, 600);
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }
 
 .alert-title:empty {
+  font-family: var(--snice-font-family-display);
   display: none;
 }
 

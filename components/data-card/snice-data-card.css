@@ -12,6 +12,7 @@
 
 /* Header */
 .data-card__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,11 +21,13 @@
 }
 
 .data-card__header:empty {
+  font-family: var(--snice-font-family-display);
   display: none;
 }
 
 .data-card__title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin: 0;
@@ -67,11 +70,12 @@
 }
 
 .data-card__group-title {
+  font-family: var(--snice-font-family-display);
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
   padding-bottom: 0;
   margin: 0;
@@ -231,10 +235,12 @@
 }
 
 :host([variant="compact"]) .data-card__header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
 }
 
 :host([variant="compact"]) .data-card__group-title {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   padding-bottom: 0;
   font-size: 0.625rem;

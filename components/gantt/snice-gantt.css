@@ -13,6 +13,7 @@
 
 /* Header */
 .gantt-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
@@ -71,6 +72,7 @@
 }
 
 .gantt-task-list-header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-semibold, 600);
@@ -103,6 +105,7 @@
 
 /* Group header */
 .gantt-group-header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-semibold, 600);
@@ -110,7 +113,7 @@
   background: var(--snice-color-primary-subtle, rgb(239 246 255));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 /* Timeline (right area) */
@@ -122,6 +125,7 @@
 }
 
 .gantt-timeline-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   background: var(--snice-color-background-element, rgb(252 251 249));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));

@@ -58,11 +58,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .podcast-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-xs, 0.5rem);
@@ -317,7 +318,8 @@
 }
 
 .podcast-chapters-header {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-sm, 0.75rem);
@@ -350,7 +352,8 @@
 }
 
 .podcast-chapter-title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text, rgb(23 23 23));
   flex: 1;
   overflow: hidden;
@@ -359,6 +362,7 @@
 }
 
 .podcast-chapter-item.active .podcast-chapter-title {
+  font-family: var(--snice-font-family-display);
   color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: var(--snice-font-weight-medium, 500);
 }
@@ -371,7 +375,8 @@
 }
 
 .podcast-episodes-header {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-sm, 0.75rem);
@@ -417,7 +422,8 @@
 }
 
 .podcast-episode-title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-3xs, 0.125rem);
   overflow: hidden;
@@ -426,6 +432,7 @@
 }
 
 .podcast-episode-item.active .podcast-episode-title {
+  font-family: var(--snice-font-family-display);
   color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: var(--snice-font-weight-medium, 500);
 }

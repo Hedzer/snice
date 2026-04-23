@@ -58,6 +58,7 @@
 }
 
 .link-preview__title {
+  font-family: var(--snice-font-family-display);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   line-height: var(--snice-line-height-normal, 1.5);
@@ -146,7 +147,8 @@
 /* ── Size: small ── */
 
 :host([size="small"]) .link-preview__title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   -webkit-line-clamp: 1;
 }
 
@@ -188,7 +190,8 @@
 
 :host([size="medium"]) .link-preview__title,
 :host(:not([size])) .link-preview__title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
 }
 
 :host([size="medium"]) .link-preview__description,
@@ -199,7 +202,8 @@
 /* ── Size: large ── */
 
 :host([size="large"]) .link-preview__title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
 }
 
 :host([size="large"]) .link-preview__description {

@@ -357,6 +357,7 @@ th.spreadsheet-row-num {
 }
 
 .spreadsheet-add-col-header {
+  font-family: var(--snice-font-family-display);
   background: var(--spreadsheet-bg-element);
   border-right: 1px solid var(--spreadsheet-grid);
   border-bottom: 2px solid var(--spreadsheet-border);
@@ -373,6 +374,7 @@ th.spreadsheet-row-num {
 }
 
 .spreadsheet-add-col-header:hover {
+  font-family: var(--snice-font-family-display);
   background: var(--spreadsheet-hover);
   color: var(--spreadsheet-primary);
 }

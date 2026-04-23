@@ -16,7 +16,10 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 
 | Property | Description |
 |----------|-------------|
-| `--snice-color-primary` | Primary brand color |
+| `--snice-color-primary` | Interactive accent (buttons, links, focus, selected state) |
+| `--snice-color-brand` | Product identity color. Defaults to `--snice-color-primary`; override when the consumer's brand color should differ from the interactive accent |
+| `--snice-color-brand-hover` | Hovered brand |
+| `--snice-color-brand-subtle` | Tinted-background brand element |
 | `--snice-color-success` | Success state color |
 | `--snice-color-warning` | Warning state color |
 | `--snice-color-danger` | Danger/error state color |
@@ -52,7 +55,8 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 
 | Property | Description |
 |----------|-------------|
-| `--snice-font-family` | System font stack |
+| `--snice-font-family` | Body font (system stack by default) |
+| `--snice-font-family-display` | Font for headings / titles. Defaults to `--snice-font-family`; override for a distinct display face |
 | `--snice-font-family-mono` | Monospace font stack |
 | `--snice-font-size-2xs` | 10px |
 | `--snice-font-size-xs` | 12px |
@@ -63,11 +67,21 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-font-size-2xl` | 24px |
 | `--snice-font-size-3xl` | 30px |
 | `--snice-font-size-4xl` | 36px |
+| `--snice-heading-xs` | 14px — tightest heading (card/chip) |
+| `--snice-heading-sm` | 16px |
+| `--snice-heading-md` | 18px |
+| `--snice-heading-lg` | 20px — common section heading |
+| `--snice-heading-xl` | 24px |
+| `--snice-heading-2xl` | 36px — largest display heading |
 | `--snice-font-weight-light` | 300 |
 | `--snice-font-weight-normal` | 400 |
 | `--snice-font-weight-medium` | 500 |
 | `--snice-font-weight-semibold` | 600 |
 | `--snice-font-weight-bold` | 700 |
+| `--snice-tracking-tight` | `-0.02em` — for large display headings |
+| `--snice-tracking-normal` | `0` |
+| `--snice-tracking-wide` | `0.03em` — subtle tracking for uppercase labels |
+| `--snice-tracking-widest` | `0.1em` — strong tracking for eyebrows / small caps |
 
 ### Border Radius
 

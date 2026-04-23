@@ -48,7 +48,8 @@
 }
 
 .player-track-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-3xs, 0.125rem);
@@ -268,7 +269,8 @@
 }
 
 .player-playlist-header {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-sm, 0.75rem);
@@ -301,6 +303,7 @@
 }
 
 .player-playlist-item.active .player-playlist-item-title {
+  font-family: var(--snice-font-family-display);
   color: var(--snice-color-primary, rgb(37 99 235));
   font-weight: var(--snice-font-weight-medium, 500);
 }
@@ -328,7 +331,8 @@
 }
 
 .player-playlist-item-title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-3xs, 0.125rem);
   overflow: hidden;
@@ -390,7 +394,8 @@
 }
 
 .player-container--compact .player-track-title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
 }
 
 .player-container--compact .player-track-artist {

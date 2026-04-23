@@ -28,8 +28,9 @@
 }
 
 .header-start h1 {
+  font-family: var(--snice-font-family-display);
   margin: 0;
-  font-size: var(--snice-font-size-xl, 1.5rem);
+  font-size: var(--snice-heading-lg, 1.5rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text);
 }

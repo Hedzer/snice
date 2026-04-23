@@ -254,6 +254,7 @@
 
 /* Calendar Header */
 .calendar-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -261,7 +262,8 @@
 }
 
 .calendar-title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   text-align: center;
@@ -443,7 +445,8 @@
 }
 
 .time-header {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-xs, 0.5rem);

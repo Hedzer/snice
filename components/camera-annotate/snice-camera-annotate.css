@@ -174,6 +174,7 @@
 }
 
 .ca-sidebar-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -182,7 +183,8 @@
 }
 
 .ca-sidebar-title {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--ca-text);
 }

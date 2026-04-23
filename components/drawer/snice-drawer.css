@@ -272,6 +272,7 @@
 
 /* Drawer Header */
 .drawer-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -282,11 +283,13 @@
 }
 
 .drawer-header:has(.drawer-title:empty):not(:has(.drawer-close)) {
+  font-family: var(--snice-font-family-display);
   display: none;
 }
 
 .drawer-title {
-  font-size: var(--snice-font-size-lg, 1.125rem); /* 18px */
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem); /* 18px */
   font-weight: var(--snice-font-weight-semibold, 600);
   margin: 0;
   color: var(--snice-color-text, rgb(17 24 39));

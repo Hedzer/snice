@@ -13,6 +13,7 @@
 
 /* Header */
 .availability__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,7 +23,8 @@
 }
 
 .availability__title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -66,6 +68,7 @@
 
 /* Day headers */
 .availability__day-header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-xs, 0.5rem);
   text-align: center;
   font-size: var(--snice-font-size-xs, 0.75rem);
@@ -77,6 +80,7 @@
 }
 
 .availability__day-header:last-child {
+  font-family: var(--snice-font-family-display);
   border-right: none;
 }
 

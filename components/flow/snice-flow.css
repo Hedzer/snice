@@ -127,6 +127,7 @@
 }
 
 .flow__node-header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   font-size: 0.75rem;
@@ -143,7 +144,7 @@
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   font-weight: var(--snice-font-weight-medium, 500);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .flow__node-body {

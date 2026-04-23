@@ -57,7 +57,8 @@
 }
 
 .popover-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }

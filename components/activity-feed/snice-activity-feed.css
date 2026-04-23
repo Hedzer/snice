@@ -76,7 +76,8 @@
 
 /* Group header */
 .feed__group-header {
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--feed-text-secondary);
   padding: var(--snice-spacing-xs, 0.5rem) 0;
@@ -86,6 +87,7 @@
 }
 
 .feed__group-header:first-of-type {
+  font-family: var(--snice-font-family-display);
   margin-top: 0;
 }
 
@@ -224,7 +226,7 @@
   color: var(--feed-text-tertiary);
   margin-left: var(--snice-spacing-xs, 0.5rem);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: var(--snice-tracking-wide);
   vertical-align: middle;
 }
 

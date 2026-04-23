@@ -94,6 +94,7 @@
   font-size: 0.75rem;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest);
 }
 
 .forecast-icon {

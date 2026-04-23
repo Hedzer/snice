@@ -40,12 +40,14 @@
 
 /* Header */
 .recipe__header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-lg, 1.5rem);
 }
 
 .recipe__title {
+  font-family: var(--snice-font-family-display);
   margin: 0 0 var(--snice-spacing-xs, 0.5rem);
-  font-size: var(--snice-font-size-2xl, 1.5rem);
+  font-size: var(--snice-heading-xl, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
   line-height: var(--snice-line-height-normal, 1.5);
   color: var(--recipe-text);
@@ -105,7 +107,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--recipe-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
 }
 
 .recipe__meta-value {
@@ -186,14 +188,16 @@
 }
 
 .recipe__section-title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   margin: 0 0 var(--snice-spacing-sm, 0.75rem);
   color: var(--recipe-text);
 }
 
 .recipe__ingredient-group-title {
-  font-size: var(--snice-font-size-md, 1rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--recipe-text-secondary);
   margin: var(--snice-spacing-sm, 0.75rem) 0 var(--snice-spacing-2xs, 0.25rem);
@@ -508,6 +512,7 @@
 }
 
 :host([variant="card"]) .recipe__header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-md, 1rem);
 }
 

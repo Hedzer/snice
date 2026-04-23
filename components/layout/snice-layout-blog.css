@@ -29,8 +29,9 @@
 }
 
 .brand h1 {
+  font-family: var(--snice-font-family-display);
   margin: 0;
-  font-size: var(--snice-font-size-xl, 1.5rem);
+  font-size: var(--snice-heading-lg, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
   color: var(--snice-color-text);
 }
@@ -83,7 +84,8 @@
 
 /* Typography for article content */
 .article ::slotted(h1) {
-  font-size: var(--snice-font-size-3xl, 2.25rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-2xl, 2.25rem);
   font-weight: var(--snice-font-weight-bold, 700);
   color: var(--snice-color-text);
   line-height: var(--snice-line-height-tight, 1.25);
@@ -91,7 +93,8 @@
 }
 
 .article ::slotted(h2) {
-  font-size: var(--snice-font-size-2xl, 1.875rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-xl, 1.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text);
   margin-top: var(--snice-spacing-xl, 3rem);

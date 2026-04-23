@@ -120,6 +120,7 @@
 }
 
 .org-node-title {
+  font-family: var(--snice-font-family-display);
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   overflow: hidden;

@@ -27,6 +27,7 @@
 
 /* Header */
 .cart__header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -35,7 +36,8 @@
 }
 
 .cart__title {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  font-family: var(--snice-font-family-display);
+  font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--cart-text);
   margin: 0;
@@ -96,6 +98,7 @@
 }
 
 .cart__item-header {
+  font-family: var(--snice-font-family-display);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;

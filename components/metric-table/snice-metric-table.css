@@ -38,13 +38,14 @@
 
 /* Header */
 .mt__header {
+  font-family: var(--snice-font-family-display);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   text-align: left;
   font-size: 0.6875rem;
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--mt-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--snice-tracking-wide);
   background: var(--mt-bg-element);
   border-bottom: 1px solid var(--mt-border);
   cursor: pointer;
@@ -54,19 +55,23 @@
 }
 
 .mt__header:hover {
+  font-family: var(--snice-font-family-display);
   color: var(--mt-text);
 }
 
 .mt__header--numeric {
+  font-family: var(--snice-font-family-display);
   text-align: right;
 }
 
 .mt__header--sparkline {
+  font-family: var(--snice-font-family-display);
   text-align: center;
   min-width: 6rem;
 }
 
 .mt__header-content {
+  font-family: var(--snice-font-family-display);
   display: inline-flex;
   align-items: center;
   gap: var(--snice-spacing-3xs, 0.125rem);
@@ -166,6 +171,7 @@
 
   .mt__header,
   .mt__cell {
+    font-family: var(--snice-font-family-display);
     padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   }
 
