@@ -6,7 +6,7 @@
 
 .countdown {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--snice-spacing-sm, 0.75rem);
 }
 
@@ -36,8 +36,25 @@
   font-size: var(--snice-font-size-2xl, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  /* Match the vertical center of the value (not the full segment that
+     includes the label below). Segment's top is the value's top, so align
+     both to flex-start and give the separator the same height as the value
+     so its glyph centers on the value. */
   align-self: flex-start;
   line-height: 1;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Flip variant values have padding + border so they are taller; match. */
+:host([variant="flip"]) .separator {
+  height: calc(2.5rem + var(--snice-spacing-xs, 0.5rem) * 2 + 2px);
+}
+
+/* Circular variant value is 3.5rem tall. */
+:host([variant="circular"]) .separator {
+  height: 3.5rem;
 }
 
 /* Flip variant */

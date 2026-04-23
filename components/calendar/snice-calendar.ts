@@ -52,11 +52,12 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       const idx = days.findIndex(d => same(d, this.focusedDate!));
       if (idx >= 0) return idx;
     }
-    const selected = this.selected?.[0];
-    if (selected) {
-      const s = selected instanceof Date ? selected : new Date(selected);
-      const idx = days.findIndex(d => same(d, s));
-      if (idx >= 0) return idx;
+    if (this.value) {
+      const s = this.value instanceof Date ? this.value : new Date(this.value);
+      if (!isNaN(s.getTime())) {
+        const idx = days.findIndex(d => same(d, s));
+        if (idx >= 0) return idx;
+      }
     }
     const today = new Date();
     const tIdx = days.findIndex(d => same(d, today));

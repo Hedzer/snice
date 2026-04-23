@@ -46,6 +46,9 @@ export class SniceMentions extends HTMLElement implements SniceMentionsElement {
   @property({ type: Boolean })
   readonly = false;
 
+  @property({ type: Boolean })
+  disabled = false;
+
   @property()
   trigger = '@';
 
