@@ -1,16 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-spinner';
-import type { SpinnerSize, SpinnerColor } from './snice-spinner.types';
+import type { SpinnerSize, SpinnerColor, SpinnerVariant } from './snice-spinner.types';
 
 type Args = {
   size?: SpinnerSize;
   color?: SpinnerColor;
+  variant?: SpinnerVariant;
   label?: string;
   thickness?: number;
 };
 
 const SIZES: SpinnerSize[] = ['small', 'medium', 'large', 'xl'];
 const COLORS: SpinnerColor[] = ['primary', 'success', 'warning', 'error', 'info'];
+const VARIANTS: SpinnerVariant[] = ['arc', 'dots', 'pulse', 'bars', 'orbit'];
 
 function makeSpinner(attrs: Record<string, string | number> = {}) {
   const el = document.createElement('snice-spinner');
@@ -41,6 +43,7 @@ const meta: Meta<Args> = {
   argTypes: {
     size:      { control: 'select', options: SIZES },
     color:     { control: 'select', options: COLORS },
+    variant:   { control: 'select', options: VARIANTS },
     label:     { control: 'text' },
     thickness: { control: 'number' },
   },
@@ -48,6 +51,7 @@ const meta: Meta<Args> = {
     const el = document.createElement('snice-spinner');
     if (args.size      !== undefined) el.setAttribute('size',      String(args.size));
     if (args.color     !== undefined) el.setAttribute('color',     String(args.color));
+    if (args.variant   !== undefined) el.setAttribute('variant',   String(args.variant));
     if (args.label     !== undefined) el.setAttribute('label',     String(args.label));
     if (args.thickness !== undefined) el.setAttribute('thickness', String(args.thickness));
     const wrap = document.createElement('div');
@@ -61,7 +65,26 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Default: Story = {
-  args: { size: 'medium', color: 'primary' },
+  args: { size: 'medium', color: 'primary', variant: 'arc' },
+};
+
+// h2: Variants
+export const Variants: Story = {
+  render: () => row(...VARIANTS.map(v => makeSpinner({ variant: v, label: v }))),
+};
+
+// h2: Variant x Size Matrix
+export const VariantXSizeMatrix: Story = {
+  render: () => col(
+    ...VARIANTS.map(v => row(...SIZES.map(s => makeSpinner({ variant: v, size: s })))),
+  ),
+};
+
+// h2: Variant x Color Matrix
+export const VariantXColorMatrix: Story = {
+  render: () => col(
+    ...VARIANTS.map(v => row(...COLORS.map(c => makeSpinner({ variant: v, color: c })))),
+  ),
 };
 
 // h2: Sizes

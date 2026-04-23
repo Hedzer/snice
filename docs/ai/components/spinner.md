@@ -7,27 +7,28 @@ Animated loading spinner.
 ```typescript
 size: 'small'|'medium'|'large'|'xl' = 'medium';
 color: 'primary'|'success'|'warning'|'error'|'info' = 'primary';
+variant: 'arc'|'dots'|'pulse'|'orbit'|'bars' = 'arc';  // loader shape
 label: string = '';
-thickness: number = 4;
+thickness: number = 4;   // only applies to arc variant
 ```
 
 ## CSS Parts
 
 - `base` - Outer spinner container
-- `circle` - SVG spinner circle
+- `circle` - Arc variant's SVG circle
+- `dots` / `pulse` / `orbit` / `bars` - Variant wrapper parts
 - `label` - Label text element
 
 ## Basic Usage
 
 ```html
-<snice-spinner></snice-spinner>
-<snice-spinner size="small"></snice-spinner>
-<snice-spinner size="large"></snice-spinner>
-<snice-spinner size="xl"></snice-spinner>
-<snice-spinner color="success"></snice-spinner>
-<snice-spinner color="error"></snice-spinner>
+<snice-spinner></snice-spinner>                     <!-- arc (default) -->
+<snice-spinner variant="dots"></snice-spinner>      <!-- 3 bouncing dots -->
+<snice-spinner variant="pulse"></snice-spinner>     <!-- ring-pulse outward -->
+<snice-spinner variant="bars"></snice-spinner>      <!-- 4 vertical bars -->
+<snice-spinner variant="orbit"></snice-spinner>     <!-- 3 dots on a rotating ring -->
+<snice-spinner size="large" color="success" variant="dots"></snice-spinner>
 <snice-spinner label="Loading..."></snice-spinner>
-<snice-spinner thickness="6"></snice-spinner>
 ```
 
 ## Accessibility

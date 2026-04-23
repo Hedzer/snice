@@ -75,7 +75,10 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
       `);
     }
 
-    // Default: arc (original SVG ring)
+    // Default: arc — fixed 25% visible arc rotates smoothly, no dash-phase
+    // keyframe discontinuity. pathLength=1 normalizes the circle so CSS can
+    // express the arc as 0.25/0.75 regardless of actual circumference.
+    void circumference;
     return shell(html`
       <svg
         part="circle"
@@ -94,8 +97,7 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
           cx="${cx}"
           cy="${cy}"
           r="${radius}"
-          stroke-dasharray="${circumference}"
-          stroke-dashoffset="0"
+          pathLength="1"
         ></circle>
       </svg>
     `);

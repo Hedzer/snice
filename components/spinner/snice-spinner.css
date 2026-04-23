@@ -66,9 +66,11 @@
 }
 
 .spinner__circle {
-  transform: rotate(-90deg);
   width: 100%;
   height: 100%;
+  /* Full 360° rotation — starting at -90° so the arc's leading edge is at
+     top when the dash animation begins. Using `from/to` keyframes that
+     differ by exactly 360° means the loop is seamless (no snap-back). */
   animation: spinner-rotate 2s linear infinite;
 }
 
@@ -88,28 +90,19 @@
 .spinner__circle-bar {
   stroke: var(--spinner-color);
   stroke-linecap: round;
-  animation: spinner-dash 1.5s ease-in-out infinite;
+  /* Fixed-length visible arc — pathLength=1 (set at render time) makes
+     `25% 75%` mean "1/4 visible, 3/4 gap" regardless of actual circle
+     circumference. Since the dasharray never changes, only the parent's
+     rotation moves the arc around the circle — animation loops cleanly
+     with no snap between cycles. */
+  pathLength: 1;
+  stroke-dasharray: 0.25 0.75;
+  stroke-dashoffset: 0;
 }
 
 @keyframes spinner-rotate {
-  100% {
-    transform: rotate(270deg);
-  }
-}
-
-@keyframes spinner-dash {
-  0% {
-    stroke-dasharray: 1, 150;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35;
-  }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124;
-  }
+  from { transform: rotate(-90deg); }
+  to   { transform: rotate(270deg); }
 }
 
 .spinner__label {

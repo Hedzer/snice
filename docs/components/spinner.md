@@ -18,15 +18,20 @@ An animated loading indicator with configurable size, color, and optional label.
 |----------|------|---------|-------------|
 | `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
 | `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
+| `variant` | `'arc' \| 'dots' \| 'pulse' \| 'orbit' \| 'bars'` | `'arc'` | Loader shape |
 | `label` | `string` | `''` | Accessible label text displayed below the spinner |
-| `thickness` | `number` | `4` | Stroke thickness in pixels |
+| `thickness` | `number` | `4` | Stroke thickness in pixels (applies to `arc` variant only) |
 
 ## CSS Parts
 
 | Part | Description |
 |------|-------------|
 | `base` | The outer spinner container |
-| `circle` | The SVG spinner circle |
+| `circle` | SVG spinner circle (arc variant) |
+| `dots` | Dot container (dots variant) |
+| `pulse` | Pulse element (pulse variant) |
+| `orbit` | Orbit container (orbit variant) |
+| `bars` | Bar container (bars variant) |
 | `label` | The label text element |
 
 ## Basic Usage
@@ -62,6 +67,23 @@ Use the `color` attribute to change the spinner's color.
 <snice-spinner color="warning"></snice-spinner>
 <snice-spinner color="error"></snice-spinner>
 <snice-spinner color="info"></snice-spinner>
+```
+
+### Variants
+
+Five distinct loader shapes — useful for matching different contexts:
+
+```html
+<snice-spinner variant="arc"></snice-spinner>     <!-- Default: rotating arc -->
+<snice-spinner variant="dots"></snice-spinner>    <!-- Three bouncing dots -->
+<snice-spinner variant="pulse"></snice-spinner>   <!-- Expanding ring -->
+<snice-spinner variant="bars"></snice-spinner>    <!-- Four pulsing bars -->
+<snice-spinner variant="orbit"></snice-spinner>   <!-- Three orbiting dots -->
+```
+
+All variants inherit the spinner `color` — combine freely:
+```html
+<snice-spinner variant="dots" color="success" size="small"></snice-spinner>
 ```
 
 ### With Label
