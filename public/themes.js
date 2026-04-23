@@ -202,6 +202,8 @@ const BUILDER_GROUPS = [
       { name: '--snice-spacing-xl', label: 'XL', type: 'size', default: '2rem', min: 0, max: 6, step: 0.125 },
       { name: '--snice-spacing-2xl', label: '2XL', type: 'size', default: '3rem', min: 0, max: 8, step: 0.25 },
       { name: '--snice-spacing-3xl', label: '3XL', type: 'size', default: '4rem', min: 0, max: 10, step: 0.25 },
+      { name: '--snice-spacing-4xl', label: '4XL', type: 'size', default: '6rem', min: 0, max: 14, step: 0.25 },
+      { name: '--snice-spacing-5xl', label: '5XL', type: 'size', default: '8rem', min: 0, max: 18, step: 0.25 },
     ],
   },
   {

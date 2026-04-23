@@ -88,12 +88,17 @@
 .tabs__indicator {
   position: absolute;
   background-color: var(--snice-color-primary, rgb(37 99 235));
-  transition: transform var(--snice-transition-medium, 250ms) ease,
-              width var(--snice-transition-medium, 250ms) ease,
-              height var(--snice-transition-medium, 250ms) ease;
+  /* Spring easing for the slide-between-tabs motion gives a light "settle"
+     feel instead of a dead ease. Width/height also animate since they change
+     with the active tab's content. */
+  transition:
+    transform 320ms var(--snice-ease-spring, cubic-bezier(0.34,1.56,0.64,1)),
+    width 260ms var(--snice-ease-out, ease),
+    height 260ms var(--snice-ease-out, ease);
   bottom: 0;
   left: 0;
   pointer-events: none;
+  border-radius: 2px;
 }
 
 .tabs--bottom .tabs__indicator {

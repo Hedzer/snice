@@ -120,6 +120,8 @@ Document components (receipt, invoice, estimate, work-order) ship additional `@m
 | `--snice-spacing-xl` | `2rem` (32px) |
 | `--snice-spacing-2xl` | `3rem` (48px) |
 | `--snice-spacing-3xl` | `4rem` (64px) |
+| `--snice-spacing-4xl` | `6rem` (96px) — hero / section divider |
+| `--snice-spacing-5xl` | `8rem` (128px) — editorial breathing room |
 
 ### Typography
 

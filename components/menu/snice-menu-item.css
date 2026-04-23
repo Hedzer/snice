@@ -21,7 +21,28 @@
   cursor: pointer;
   user-select: none;
   border-radius: var(--menu-item-border-radius);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  position: relative;
+  transition:
+    background-color 150ms var(--snice-ease-out, ease),
+    color 150ms var(--snice-ease-out, ease);
+}
+
+/* Accent-bar indicator on the left edge — invisible by default, slides in
+   at 3px wide when the item is selected. Mirrors the pattern used by nav
+   (active-style=text vertical mode) so the whole library reads consistent. */
+.menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--snice-color-primary, rgb(37 99 235));
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 180ms var(--snice-ease-out, ease);
+  pointer-events: none;
 }
 
 .menu-item:hover {
@@ -31,6 +52,12 @@
 
 .menu-item--selected {
   background-color: var(--menu-item-bg-selected);
+  color: var(--snice-color-primary-hover, var(--snice-color-primary, rgb(29 78 216)));
+  font-weight: var(--snice-font-weight-medium, 500);
+}
+
+.menu-item--selected::before {
+  transform: scaleY(1);
 }
 
 .menu-item--disabled {
