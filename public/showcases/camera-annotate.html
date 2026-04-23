@@ -40,13 +40,13 @@
     document.getElementById('camera-annotate-modal')?.addEventListener('modal-open', () => {
       const container = document.getElementById('camera-annotate-container');
       if (container && !container.querySelector('snice-camera-annotate')) {
-        container.innerHTML = '<snice-camera-annotate style="height:480px"></snice-camera-annotate>';
+        container.innerHTML = '<snice-camera-annotate auto-start style="height:480px"></snice-camera-annotate>';
       }
     });
     document.getElementById('camera-annotate-nolabels-modal')?.addEventListener('modal-open', () => {
       const container = document.getElementById('camera-annotate-nolabels-container');
       if (container && !container.querySelector('snice-camera-annotate')) {
-        container.innerHTML = '<snice-camera-annotate show-labels-panel="false" style="height:480px"></snice-camera-annotate>';
+        container.innerHTML = '<snice-camera-annotate auto-start show-labels-panel="false" style="height:480px"></snice-camera-annotate>';
       }
     });
 </script>
