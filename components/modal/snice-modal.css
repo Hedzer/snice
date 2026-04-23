@@ -38,7 +38,8 @@
   bottom: 0;
   background: var(--modal-backdrop-bg);
   opacity: 0;
-  transition: opacity var(--modal-transition-duration) ease;
+  /* Backdrop fades in first — quick, as an atmosphere primer. */
+  transition: opacity 180ms var(--snice-ease-out, ease);
 }
 
 .modal--open .modal__backdrop {
@@ -54,16 +55,33 @@
   flex-direction: column;
   max-height: calc(100vh - 2 * var(--modal-padding));
   opacity: 0;
-  transform: scale(0.95) translateY(1.25rem); /* 20px */
-  transition: 
-    opacity var(--modal-transition-duration) ease,
-    transform var(--modal-transition-duration) ease;
+  transform: scale(0.96) translateY(1rem);
+  /* Panel enters 80ms after backdrop with a gentle spring settle — gives
+     the modal a physical "materialize" feel instead of a flat fade. */
+  transition:
+    opacity 260ms var(--snice-ease-out, ease) 80ms,
+    transform 320ms var(--snice-ease-spring, cubic-bezier(0.34,1.56,0.64,1)) 80ms;
   z-index: 1;
 }
 
 .modal--open .modal__panel {
   opacity: 1;
   transform: scale(1) translateY(0);
+}
+
+/* Content fades in a beat after the panel so header/body don't read as a
+   flat block on mount. Opt in via [data-stagger-content] on the modal. */
+.modal--open .modal__panel > * {
+  animation: snice-modal-content-in 240ms var(--snice-ease-out, ease) backwards;
+}
+
+.modal--open .modal__header { animation-delay: 140ms; }
+.modal--open .modal__body   { animation-delay: 180ms; }
+.modal--open .modal__footer { animation-delay: 220ms; }
+
+@keyframes snice-modal-content-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Sizes */

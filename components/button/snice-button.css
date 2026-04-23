@@ -24,11 +24,11 @@
   padding: 0;
   box-shadow: var(--snice-shadow-xs, 0 1px 2px 0 rgb(0 0 0 / 0.03));
   transition:
-    color var(--snice-transition-fast, 150ms) ease,
-    background-color var(--snice-transition-fast, 150ms) ease,
-    border-color var(--snice-transition-fast, 150ms) ease,
-    box-shadow var(--snice-transition-fast, 150ms) ease,
-    transform var(--snice-transition-fast, 150ms) cubic-bezier(0.3, 0, 0.2, 1);
+    color var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.22,1,0.36,1)),
+    background-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.22,1,0.36,1)),
+    border-color var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.22,1,0.36,1)),
+    box-shadow var(--snice-transition-fast, 150ms) var(--snice-ease-out, cubic-bezier(0.22,1,0.36,1)),
+    transform 180ms var(--snice-ease-spring, cubic-bezier(0.34,1.56,0.64,1));
   cursor: inherit;
   position: relative;
 }
@@ -42,12 +42,17 @@
   pointer-events: none;
 }
 
-.button:active {
+.button:active:not(.button--disabled) {
   transition:
-    color 50ms ease,
-    background-color 50ms ease,
-    border-color 50ms ease,
-    box-shadow 50ms ease;
+    color 50ms var(--snice-ease-out, ease),
+    background-color 50ms var(--snice-ease-out, ease),
+    border-color 50ms var(--snice-ease-out, ease),
+    box-shadow 50ms var(--snice-ease-out, ease),
+    transform 80ms var(--snice-ease-out, ease);
+  /* Tactile press — small scale-down gives the button physical feedback.
+     Per-variant :active rules reset translateY(0) which otherwise fights
+     this, so set both explicitly here. */
+  transform: translateY(0) scale(0.97);
 }
 
 .button:focus-visible {
@@ -101,7 +106,7 @@
   background-color: var(--snice-color-background-tertiary, rgb(248 248 248));
   border-color: var(--snice-color-border-hover, rgb(204 204 204));
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 /* Variants - Primary */
@@ -122,7 +127,7 @@
   background-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 /* Variants - Success */
@@ -143,7 +148,7 @@
   background-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 /* Variants - Warning */
@@ -164,7 +169,7 @@
   background-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-warning, rgb(202 138 4)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 /* Variants - Danger */
@@ -185,7 +190,7 @@
   background-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
   border-color: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 85%, white);
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 /* Variants - Text */

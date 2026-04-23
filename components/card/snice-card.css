@@ -16,8 +16,16 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 220ms var(--snice-ease-out, ease),
+    box-shadow 220ms var(--snice-ease-out, ease),
+    border-color 220ms var(--snice-ease-out, ease);
   color: var(--snice-color-text, rgb(23 23 23));
+  /* Cursor-tracked tilt vars. Updated by the card's mouse handlers when the
+     card is clickable; `--mx/--my` carry cursor position [0..1]. Defaults
+     center for non-clickable cards so the transform resolves to identity. */
+  --card-mx: 0.5;
+  --card-my: 0.5;
 }
 
 .card::before {
@@ -64,8 +72,15 @@
   user-select: none;
 }
 
+/* Clickable cards tilt subtly toward the cursor — values of --card-mx/--my
+   (0..1) come from a lightweight mouse handler on the host. max tilt ±3deg
+   keeps it refined, not amusement-park. */
 :host([clickable]:not([disabled])) .card:hover {
-  transform: translateY(-2px);
+  transform:
+    perspective(720px)
+    translateY(-2px)
+    rotateX(calc((0.5 - var(--card-my)) * 3deg))
+    rotateY(calc((var(--card-mx) - 0.5) * 3deg));
 }
 
 :host([clickable][variant="elevated"]:not([disabled])) .card:hover {

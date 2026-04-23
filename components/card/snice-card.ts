@@ -1,4 +1,4 @@
-import { element, property, ready, render, styles, html, css as cssTag } from 'snice';
+import { element, property, ready, on, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-card.css?inline';
 import type { CardVariant, CardSize, SniceCardElement } from './snice-card.types';
 
@@ -87,6 +87,30 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
         }
       }));
     }
+  }
+
+  /**
+   * Update --card-mx/--card-my based on cursor position over the card so
+   * CSS can tilt the card toward the cursor. Only runs for clickable cards
+   * and only while hovered — plain cards get no events attached.
+   */
+  @on('pointermove', '.card')
+  handlePointerMove(event: PointerEvent) {
+    if (!this.clickable || this.disabled) return;
+    const card = event.currentTarget as HTMLElement;
+    const rect = card.getBoundingClientRect();
+    const mx = (event.clientX - rect.left) / rect.width;
+    const my = (event.clientY - rect.top) / rect.height;
+    card.style.setProperty('--card-mx', mx.toFixed(3));
+    card.style.setProperty('--card-my', my.toFixed(3));
+  }
+
+  @on('pointerleave', '.card')
+  handlePointerLeave(event: PointerEvent) {
+    const card = event.currentTarget as HTMLElement;
+    // Ease back to center — the CSS transition on transform handles the lerp.
+    card.style.setProperty('--card-mx', '0.5');
+    card.style.setProperty('--card-my', '0.5');
   }
 
   private handleKeydown(event: KeyboardEvent) {
