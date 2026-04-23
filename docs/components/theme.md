@@ -34,9 +34,11 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-background-tertiary` | Tertiary background |
 | `--snice-color-background-element` | Element background |
 | `--snice-color-background-input` | Input field background |
+| `--snice-color-background-elevated` | Raised surface background (modals, popovers, menus). In light = white; in dark = lighter than base so elevation reads without heavy drop shadows |
 | `--snice-color-border` | Default border color |
 | `--snice-color-border-hover` | Hovered border color |
 | `--snice-color-border-focus` | Focused border color |
+| `--snice-color-border-subtle` | Hairline edge used on elevated surfaces. Nearly invisible in light; ~8% white in dark to compensate for shadow disappearing |
 
 ### Spacing
 

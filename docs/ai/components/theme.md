@@ -46,9 +46,11 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-color-background-tertiary
 --snice-color-background-element
 --snice-color-background-input
+--snice-color-background-elevated   /* raised surfaces (modals, popovers, menus). Lighter than base in dark mode. */
 --snice-color-border
 --snice-color-border-hover
 --snice-color-border-focus
+--snice-color-border-subtle         /* hairline edge for elevated surfaces — nearly invisible in light, more visible in dark */
 ```
 
 ### Spacing

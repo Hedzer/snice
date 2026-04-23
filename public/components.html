@@ -1062,13 +1062,15 @@ tiles.addEventListener('tile-click',
     <div class="comp-section" data-category="Data Display" data-cat-index="3" data-cat-order="3">
       <h3>Badge</h3>
       <p class="comp-desc">Notification indicators and count displays</p>
+
+      <!-- Real contexts — counts pinned to actions -->
       <div class="comp-split">
-        <div class="comp-split-demo" style="gap:2rem">
-          <snice-badge count="5" variant="error">
+        <div class="comp-split-demo" style="gap:2.25rem">
+          <snice-badge count="5">
             <snice-button variant="default">Messages</snice-button>
           </snice-badge>
-          <snice-badge dot variant="error" pulse>
-            <snice-button variant="default">Notifications</snice-button>
+          <snice-badge dot pulse variant="success">
+            <snice-button variant="default">Online</snice-button>
           </snice-badge>
           <snice-badge count="150" max="99" variant="primary">
             <snice-button variant="default">Updates</snice-button>
@@ -1076,24 +1078,37 @@ tiles.addEventListener('tile-click',
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-badge count="5" variant="error"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-badge count="5"&gt;
   &lt;snice-button&gt;Messages&lt;/snice-button&gt;
 &lt;/snice-badge&gt;
 
-&lt;snice-badge dot variant="error" pulse&gt;
-  &lt;snice-button&gt;Notifications&lt;/snice-button&gt;
+&lt;!-- Live status — pulsing dot --&gt;
+&lt;snice-badge dot pulse variant="success"&gt;
+  &lt;snice-button&gt;Online&lt;/snice-button&gt;
 &lt;/snice-badge&gt;
 
+&lt;!-- Overflow: shows 99+ when count &gt; max --&gt;
 &lt;snice-badge count="150" max="99" variant="primary"&gt;
   &lt;snice-button&gt;Updates&lt;/snice-button&gt;
 &lt;/snice-badge&gt;</snice-code-block>
         </div>
       </div>
+
+      <!-- Inline badges — used as status tags next to labels -->
       <div class="comp-split">
-        <div class="comp-split-demo">
-          <span>Status: <snice-badge inline content="Active" variant="success"></snice-badge></span>
-          <span>Priority: <snice-badge inline content="High" variant="error"></snice-badge></span>
-          <span>Type: <snice-badge inline content="New" variant="primary"></snice-badge></span>
+        <div class="comp-split-demo" style="gap:1.5rem;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Status</span>
+            <snice-badge inline content="Active" variant="success"></snice-badge>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Priority</span>
+            <snice-badge inline content="High" variant="error"></snice-badge>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Release</span>
+            <snice-badge inline content="New"></snice-badge>
+          </span>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -1103,18 +1118,11 @@ tiles.addEventListener('tile-click',
   variant="success"
 &gt;&lt;/snice-badge&gt;
 
-&lt;snice-badge
-  inline
-  content="High"
-  variant="error"
-&gt;&lt;/snice-badge&gt;</snice-code-block>
+&lt;!-- Default (neutral) for non-semantic labels --&gt;
+&lt;snice-badge inline content="New"&gt;&lt;/snice-badge&gt;</snice-code-block>
         </div>
       </div>
     </div>
-
-    <!-- ════════════════════════════════════════ -->
-    <!-- DELIGHTER SPRINKLE                       -->
-    <!-- ════════════════════════════════════════ -->
     <div class="comp-section" data-category="Feedback" data-cat-index="4" data-cat-order="3">
       <h3>Banner</h3>
       <p class="comp-desc">Full-width notification banners</p>
@@ -2332,44 +2340,81 @@ tiles.addEventListener('tile-click',
     <div class="comp-section" data-category="Feedback" data-cat-index="4" data-cat-order="4">
       <h3>Chip</h3>
       <p class="comp-desc">Tags, filters, and selections</p>
+
+      <!-- Status chips — semantic meaning -->
       <div class="comp-split">
-        <div class="comp-split-demo">
-          <snice-chip label="Default"></snice-chip>
-          <snice-chip label="Primary" variant="primary"></snice-chip>
-          <snice-chip label="Success" variant="success"></snice-chip>
-          <snice-chip label="Warning" variant="warning"></snice-chip>
-          <snice-chip label="Error" variant="error"></snice-chip>
-          <snice-chip label="Info" variant="info"></snice-chip>
-          <snice-chip label="Removable" removable></snice-chip>
-          <snice-chip label="Selectable" variant="primary" selectable></snice-chip>
-          <snice-chip label="Selected" variant="primary" selectable selected></snice-chip>
-          <snice-chip label="Small" size="small" variant="success"></snice-chip>
-          <snice-chip label="Large" size="large" variant="warning"></snice-chip>
-          <snice-chip label="Pill" shape="pill"></snice-chip>
-          <snice-chip label="Rounded" shape="rounded" variant="primary"></snice-chip>
-          <snice-chip label="Square" shape="square" variant="info"></snice-chip>
+        <div class="comp-split-demo" style="gap:.5rem;flex-wrap:wrap">
+          <snice-chip label="Active" variant="success"></snice-chip>
+          <snice-chip label="Pending" variant="warning"></snice-chip>
+          <snice-chip label="Failed" variant="error"></snice-chip>
+          <snice-chip label="Archived"></snice-chip>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-chip label="React" variant="primary"&gt;&lt;/snice-chip&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Status chips: pick a semantic variant --&gt;
+&lt;snice-chip label="Active"   variant="success"&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Pending"  variant="warning"&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Failed"   variant="error"&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Archived"&gt;&lt;/snice-chip&gt;</snice-code-block>
+        </div>
+      </div>
 
-&lt;!-- Click-to-toggle selection --&gt;
-&lt;snice-chip label="Filter" selectable&gt;&lt;/snice-chip&gt;
+      <!-- Filter chips — selectable, neutral tone -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:.5rem;flex-wrap:wrap">
+          <snice-chip label="All" selectable selected></snice-chip>
+          <snice-chip label="Open" selectable></snice-chip>
+          <snice-chip label="Closed" selectable></snice-chip>
+          <snice-chip label="Mine" selectable></snice-chip>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Filter chips: click-to-toggle, neutral by default --&gt;
+&lt;snice-chip label="All"    selectable selected&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Open"   selectable&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Closed" selectable&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Mine"   selectable&gt;&lt;/snice-chip&gt;</snice-code-block>
+        </div>
+      </div>
 
-&lt;!-- Pre-selected (still requires selectable to toggle) --&gt;
-&lt;snice-chip
-  label="Done"
-  variant="success"
-  selectable
-  selected
-&gt;&lt;/snice-chip&gt;
+      <!-- Removable tags — tag-input style -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:.5rem;flex-wrap:wrap">
+          <snice-chip label="typescript" removable></snice-chip>
+          <snice-chip label="web-components" removable></snice-chip>
+          <snice-chip label="design-systems" removable></snice-chip>
+          <snice-chip label="rollup" removable></snice-chip>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Tag-input style: X to remove --&gt;
+&lt;snice-chip label="typescript"     removable&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="web-components" removable&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="design-systems" removable&gt;&lt;/snice-chip&gt;</snice-code-block>
+        </div>
+      </div>
 
-&lt;snice-chip label="Remove me" removable&gt;&lt;/snice-chip&gt;
+      <!-- Sizes + shapes in one tight row -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:.5rem;flex-wrap:wrap;align-items:center">
+          <snice-chip label="Small" size="small"></snice-chip>
+          <snice-chip label="Medium"></snice-chip>
+          <snice-chip label="Large" size="large"></snice-chip>
+          <span style="width:1rem"></span>
+          <snice-chip label="Pill"></snice-chip>
+          <snice-chip label="Rounded" shape="rounded"></snice-chip>
+          <snice-chip label="Square" shape="square"></snice-chip>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Sizes --&gt;
+&lt;snice-chip label="Small"  size="small"&gt;&lt;/snice-chip&gt;
+&lt;snice-chip label="Large"  size="large"&gt;&lt;/snice-chip&gt;
 
-&lt;snice-chip label="Small" size="small"&gt;&lt;/snice-chip&gt;
-
+&lt;!-- Shapes --&gt;
+&lt;snice-chip label="Pill"&gt;&lt;/snice-chip&gt;            &lt;!-- default --&gt;
 &lt;snice-chip label="Rounded" shape="rounded"&gt;&lt;/snice-chip&gt;
-&lt;snice-chip label="Square" shape="square"&gt;&lt;/snice-chip&gt;</snice-code-block>
+&lt;snice-chip label="Square"  shape="square"&gt;&lt;/snice-chip&gt;</snice-code-block>
         </div>
       </div>
     </div>

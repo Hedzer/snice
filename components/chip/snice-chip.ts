@@ -1,5 +1,5 @@
-import { element, property, watch, query, dispatch, on, render, styles, html, css } from 'snice';
-import { renderIcon } from '../utils';
+import { element, property, watch, query, dispatch, on, ready, dispose, render, styles, html, css } from 'snice';
+import { renderIcon, pickContrastColor, onThemeChange } from '../utils';
 import cssContent from './snice-chip.css?inline';
 import type { ChipVariant, ChipSize, ChipShape, SniceChipElement } from './snice-chip.types';
 
@@ -132,12 +132,45 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     }
   }
 
-  @watch('selected')
+  private themeUnsubscribe?: () => void;
+
+  @ready()
+  init() {
+    this.applyAutoContrastColor();
+    this.themeUnsubscribe = onThemeChange(() => this.applyAutoContrastColor());
+  }
+
+  @dispose()
+  teardown() {
+    this.themeUnsubscribe?.();
+  }
+
+  @watch('selected', 'variant')
   updateSelected() {
     if (this.chipElement) {
       this.chipElement.classList.toggle('chip--selected', this.selected);
       this.chipElement.setAttribute('aria-selected', String(this.selected));
     }
+    this.applyAutoContrastColor();
+  }
+
+  /**
+   * Sets chip text color via runtime luminance check — but ONLY for selected
+   * chips (the solid-fill state). Unselected chips render as tint-pairs
+   * (subtle bg + accent-colored text) defined in the CSS; overriding them
+   * would flatten the tint down to generic dark text.
+   */
+  applyAutoContrastColor() {
+    const el = this.chipElement;
+    if (!el) return;
+    if (!this.selected) {
+      // Clear any previously-applied inline color so CSS variant tint wins.
+      el.style.removeProperty('color');
+      return;
+    }
+    if (this.style.color) return;
+    const bg = getComputedStyle(el).backgroundColor;
+    el.style.color = pickContrastColor(bg);
   }
 
   @watch('disabled')

@@ -2,13 +2,15 @@
     <div class="comp-section">
       <h3>Badge</h3>
       <p class="comp-desc">Notification indicators and count displays</p>
+
+      <!-- Real contexts — counts pinned to actions -->
       <div class="comp-split">
-        <div class="comp-split-demo" style="gap:2rem">
-          <snice-badge count="5" variant="error">
+        <div class="comp-split-demo" style="gap:2.25rem">
+          <snice-badge count="5">
             <snice-button variant="default">Messages</snice-button>
           </snice-badge>
-          <snice-badge dot variant="error" pulse>
-            <snice-button variant="default">Notifications</snice-button>
+          <snice-badge dot pulse variant="success">
+            <snice-button variant="default">Online</snice-button>
           </snice-badge>
           <snice-badge count="150" max="99" variant="primary">
             <snice-button variant="default">Updates</snice-button>
@@ -16,24 +18,37 @@
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-badge count="5" variant="error"&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-badge count="5"&gt;
   &lt;snice-button&gt;Messages&lt;/snice-button&gt;
 &lt;/snice-badge&gt;
 
-&lt;snice-badge dot variant="error" pulse&gt;
-  &lt;snice-button&gt;Notifications&lt;/snice-button&gt;
+&lt;!-- Live status — pulsing dot --&gt;
+&lt;snice-badge dot pulse variant="success"&gt;
+  &lt;snice-button&gt;Online&lt;/snice-button&gt;
 &lt;/snice-badge&gt;
 
+&lt;!-- Overflow: shows 99+ when count &gt; max --&gt;
 &lt;snice-badge count="150" max="99" variant="primary"&gt;
   &lt;snice-button&gt;Updates&lt;/snice-button&gt;
 &lt;/snice-badge&gt;</snice-code-block>
         </div>
       </div>
+
+      <!-- Inline badges — used as status tags next to labels -->
       <div class="comp-split">
-        <div class="comp-split-demo">
-          <span>Status: <snice-badge inline content="Active" variant="success"></snice-badge></span>
-          <span>Priority: <snice-badge inline content="High" variant="error"></snice-badge></span>
-          <span>Type: <snice-badge inline content="New" variant="primary"></snice-badge></span>
+        <div class="comp-split-demo" style="gap:1.5rem;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Status</span>
+            <snice-badge inline content="Active" variant="success"></snice-badge>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Priority</span>
+            <snice-badge inline content="High" variant="error"></snice-badge>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem">
+            <span style="color:var(--snice-color-text-secondary)">Release</span>
+            <snice-badge inline content="New"></snice-badge>
+          </span>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
@@ -43,15 +58,8 @@
   variant="success"
 &gt;&lt;/snice-badge&gt;
 
-&lt;snice-badge
-  inline
-  content="High"
-  variant="error"
-&gt;&lt;/snice-badge&gt;</snice-code-block>
+&lt;!-- Default (neutral) for non-semantic labels --&gt;
+&lt;snice-badge inline content="New"&gt;&lt;/snice-badge&gt;</snice-code-block>
         </div>
       </div>
     </div>
-
-    <!-- ════════════════════════════════════════ -->
-    <!-- DELIGHTER SPRINKLE                       -->
-    <!-- ════════════════════════════════════════ -->

@@ -140,35 +140,31 @@
   box-shadow: none;
 }
 
-/* Variants — solid fill + white label; the halo ring from box-shadow handles
-   separation so no text-shadow or border is needed for legibility. */
+/* Variants — the `color` is set at runtime by the component JS based on the
+   actual resolved background luminance, so the label stays readable on any
+   theme-applied fill. The halo ring (box-shadow above) handles separation
+   from the underlying element. */
 :host([variant="default"]) .badge,
 :host(:not([variant])) .badge {
   background: var(--snice-color-neutral, rgb(82 82 82));
-  color: #fff;
 }
 
 :host([variant="primary"]) .badge {
   background: var(--snice-color-primary, rgb(37 99 235));
-  color: #fff;
 }
 
 :host([variant="success"]) .badge {
   background: var(--snice-color-success, rgb(22 163 74));
-  color: #fff;
 }
 
 :host([variant="warning"]) .badge {
   background: var(--snice-color-warning, rgb(202 138 4));
-  color: #fff;
 }
 
 :host([variant="error"]) .badge {
   background: var(--snice-color-danger, rgb(220 38 38));
-  color: #fff;
 }
 
 :host([variant="info"]) .badge {
   background: var(--snice-color-primary, rgb(37 99 235));
-  color: #fff;
 }

@@ -74,7 +74,7 @@
 :host([variant="default"]) .chip--selected,
 :host(:not([variant])) .chip--selected {
   background: var(--snice-color-neutral, rgb(82 82 82));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 :host([variant="primary"]) .chip {
@@ -88,7 +88,7 @@
 
 :host([variant="primary"]) .chip--selected {
   background: var(--snice-color-primary, hsl(217 83% 53%));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 :host([variant="success"]) .chip {
@@ -102,7 +102,7 @@
 
 :host([variant="success"]) .chip--selected {
   background: var(--snice-color-success, hsl(142 76% 36%));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 :host([variant="warning"]) .chip {
@@ -116,7 +116,7 @@
 
 :host([variant="warning"]) .chip--selected {
   background: var(--snice-color-warning, hsl(41 96% 40%));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 :host([variant="error"]) .chip {
@@ -130,7 +130,7 @@
 
 :host([variant="error"]) .chip--selected {
   background: var(--snice-color-danger, hsl(0 72% 51%));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 :host([variant="info"]) .chip {
@@ -144,7 +144,7 @@
 
 :host([variant="info"]) .chip--selected {
   background: var(--snice-color-primary, hsl(217 83% 53%));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+
 }
 
 /* Avatar */

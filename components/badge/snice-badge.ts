@@ -1,6 +1,7 @@
-import { element, property, watch, query, ready, render, styles, html, css } from 'snice';
+import { element, property, watch, query, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-badge.css?inline';
 import type { BadgeVariant, BadgePosition, BadgeSize, SniceBadgeElement } from './snice-badge.types';
+import { pickContrastColor, onThemeChange } from '../utils';
 
 @element('snice-badge')
 export class SniceBadge extends HTMLElement implements SniceBadgeElement {
@@ -75,15 +76,36 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
     return this.dot || this.content !== '' || this.count > 0;
   }
 
+  private themeUnsubscribe?: () => void;
+
   @ready()
   init() {
     this.updateOffset();
+    this.applyAutoContrastColor();
+    this.themeUnsubscribe = onThemeChange(() => this.applyAutoContrastColor());
   }
 
+  @dispose()
+  teardown() {
+    this.themeUnsubscribe?.();
+  }
 
   @watch('offset')
   updateOffset() {
     this.style.setProperty('--badge-offset', `${this.offset}px`);
+  }
+
+  @watch('variant', 'dot', 'content', 'count')
+  applyAutoContrastColor() {
+    // If the consumer set an explicit text color on <snice-badge>, let it
+    // win. Otherwise compute from the actual resolved background — this
+    // covers theme swaps, custom CSS var overrides, and dot/not-dot cases.
+    const explicit = this.style.color;
+    if (explicit) return;
+    const badge = this.badgeElement;
+    if (!badge) return;
+    const bg = getComputedStyle(badge).backgroundColor;
+    badge.style.color = pickContrastColor(bg);
   }
 
   setBadgeContent(content: string) {

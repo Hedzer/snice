@@ -88,6 +88,7 @@ const BUILDER_GROUPS = [
       { name: '--snice-color-background-tertiary', label: 'BG Tertiary', type: 'color', default: '#f5f5f5' },
       { name: '--snice-color-background-element', label: 'Element BG', type: 'color', default: '#f8f7f5' },
       { name: '--snice-color-background-input', label: 'Input BG', type: 'color', default: '#ffffff' },
+      { name: '--snice-color-background-elevated', label: 'Elevated BG', type: 'color', default: '#ffffff' },
       { name: '--snice-color-background-hover', label: 'Hover BG', type: 'color', default: '#f5f5f5' },
     ],
   },
@@ -109,6 +110,7 @@ const BUILDER_GROUPS = [
       { name: '--snice-color-border', label: 'Border', type: 'color', default: '#d4d4d4' },
       { name: '--snice-color-border-hover', label: 'Border Hover', type: 'color', default: '#a3a3a3' },
       { name: '--snice-color-border-focus', label: 'Border Focus', type: 'color', default: '#3b82f6' },
+      { name: '--snice-color-border-subtle', label: 'Border Subtle', type: 'text', default: 'hsl(0 0% 0% / 0.04)', placeholder: 'Hairline edge on elevated surfaces' },
     ],
   },
   {

@@ -90,3 +90,101 @@ export function getAccentPalette(root?: HTMLElement): string[] {
     return v || fallback;
   });
 }
+
+/**
+ * Parses a CSS color string into sRGB components in [0,1]. Handles `rgb()`,
+ * `rgba()`, `hsl()`, `hsla()`, and `#hex`. Returns null if unparseable.
+ */
+function parseCssColor(value: string): [number, number, number] | null {
+  if (!value) return null;
+  const s = value.trim();
+  // Hex: #RGB #RRGGBB #RGBA #RRGGBBAA
+  if (s[0] === '#') {
+    const hex = s.slice(1);
+    const norm = hex.length === 3 || hex.length === 4
+      ? hex.slice(0, 3).split('').map(c => c + c).join('')
+      : hex.slice(0, 6);
+    if (norm.length !== 6) return null;
+    const n = parseInt(norm, 16);
+    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  }
+  // rgb() / rgba()
+  const rgbMatch = s.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+  if (rgbMatch) {
+    return [+rgbMatch[1] / 255, +rgbMatch[2] / 255, +rgbMatch[3] / 255];
+  }
+  // hsl() / hsla() — quick conversion via an offscreen element for accuracy
+  // (skip manual HSL→RGB to keep this helper small; browsers will resolve
+  // any hsl() via getComputedStyle on the element anyway).
+  if (/^hsla?\(/i.test(s) && typeof document !== 'undefined') {
+    const probe = document.createElement('span');
+    probe.style.color = s;
+    document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+    return parseCssColor(resolved);
+  }
+  return null;
+}
+
+/**
+ * Relative luminance per WCAG 2.x, input in sRGB [0,1].
+ */
+function luminance(rgb: [number, number, number]): number {
+  const lin = rgb.map(c =>
+    c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  ) as [number, number, number];
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+
+/**
+ * Picks a readable text color for the given `bg`, choosing between the
+ * theme's existing text tokens. Light bg → `--snice-color-text` (dark text);
+ * dark bg → `--snice-color-text-inverse` (light text). Falls back to inverse
+ * for unparseable bg (safe default for colored fills).
+ *
+ * Used by badge/chip (and anything else pairing a colored fill with a label)
+ * so the text stays legible regardless of theme — without hardcoding #fff.
+ */
+export function pickContrastColor(bg: string): string {
+  const rgb = parseCssColor(bg);
+  if (!rgb) return 'var(--snice-color-text-inverse)';
+  // Threshold 0.55 keeps saturated blues/greens (luminance ~0.2) using the
+  // inverse (light) text, and pastels/lightened fills (> 0.55) using the
+  // main text token (dark).
+  return luminance(rgb) > 0.55
+    ? 'var(--snice-color-text)'
+    : 'var(--snice-color-text-inverse)';
+}
+
+/**
+ * Subscribe to theme changes on the document root. Returns an unsubscribe
+ * fn. A single shared MutationObserver notifies all subscribers when the
+ * `data-theme` or `class` attribute changes on <html>.
+ */
+type ThemeListener = () => void;
+const themeListeners = new Set<ThemeListener>();
+let themeObserver: MutationObserver | null = null;
+
+export function onThemeChange(fn: ThemeListener): () => void {
+  if (typeof document === 'undefined') return () => {};
+  themeListeners.add(fn);
+  if (!themeObserver) {
+    themeObserver = new MutationObserver(() => {
+      for (const listener of themeListeners) {
+        try { listener(); } catch {}
+      }
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class', 'data-theme-variant'],
+    });
+  }
+  return () => {
+    themeListeners.delete(fn);
+    if (themeListeners.size === 0 && themeObserver) {
+      themeObserver.disconnect();
+      themeObserver = null;
+    }
+  };
+}
