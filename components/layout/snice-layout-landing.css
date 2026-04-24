@@ -18,7 +18,7 @@
 
 .header {
   background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   position: sticky;
   top: 0;
   z-index: 100;
@@ -71,7 +71,7 @@
 
 .footer {
   background: var(--snice-color-surface-container);
-  border-top: 1px solid var(--snice-color-border);
+  border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   padding: var(--snice-spacing-xl, 3rem) 0;
   margin-top: auto;
 }

@@ -7,7 +7,12 @@
 }
 
 :host([size="small"]) {
-  min-height: 2rem;
+  min-height: 2rem; /* 32px — matches button/input small */
+  align-self: center;
+}
+
+:host([size="large"]) {
+  min-height: 3rem; /* 48px — matches button/input large */
   align-self: center;
 }
 

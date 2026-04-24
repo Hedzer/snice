@@ -16,7 +16,7 @@
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
   background: var(--snice-color-surface, rgb(255 255 255));
-  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   box-shadow: var(--snice-shadow-xs, 0 1px 2px 0 rgb(0 0 0 / 0.05));
 }
 
@@ -64,7 +64,7 @@
 .footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
   background: var(--snice-color-surface, rgb(255 255 255));
-  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   text-align: center;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-size: var(--snice-font-size-sm, 0.875rem);

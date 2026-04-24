@@ -24,7 +24,7 @@
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
   background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .header-start h1 {
@@ -45,7 +45,7 @@
   grid-area: nav;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
   background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .sidebar {

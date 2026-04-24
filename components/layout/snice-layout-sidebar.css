@@ -17,7 +17,7 @@
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
   background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   position: relative;
   z-index: var(--snice-z-sticky, 1020);
 }
@@ -110,7 +110,7 @@
 .footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
   background: var(--snice-color-surface);
-  border-top: 1px solid var(--snice-color-border);
+  border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .footer:empty {
