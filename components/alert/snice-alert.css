@@ -56,30 +56,36 @@
   animation: slideOut var(--snice-transition-medium, 250ms) ease forwards;
 }
 
-/* Variants — two-tier pattern: override host-level vars */
+/* Variants — resolve through semantic -subtle tokens so they adapt per theme.
+ * Light: pale tinted bg + dark text. Dark: deep tinted bg + light text.
+ * Icon keeps the full-strength semantic color in both modes. */
 :host([variant="info"]) {
-  --alert-bg: var(--snice-color-alert-info-bg, rgb(219 234 254));
-  --alert-border-color: var(--snice-color-alert-info-border, rgb(147 180 233));
-  --alert-text-color: var(--snice-color-alert-info-text, rgb(30 64 135));
+  --alert-bg: var(--snice-color-primary-subtle);
+  --alert-border-color: var(--snice-color-primary-subtle-hover);
+  --alert-text-color: var(--snice-color-text);
 }
+:host([variant="info"]) .alert-icon { color: var(--snice-color-primary); }
 
 :host([variant="success"]) {
-  --alert-bg: var(--snice-color-alert-success-bg, rgb(220 252 231));
-  --alert-border-color: var(--snice-color-alert-success-border, rgb(74 179 120));
-  --alert-text-color: var(--snice-color-alert-success-text, rgb(22 101 52));
+  --alert-bg: var(--snice-color-success-subtle);
+  --alert-border-color: var(--snice-color-success-subtle-hover);
+  --alert-text-color: var(--snice-color-text);
 }
+:host([variant="success"]) .alert-icon { color: var(--snice-color-success); }
 
 :host([variant="warning"]) {
-  --alert-bg: var(--snice-color-alert-warning-bg, rgb(254 243 199));
-  --alert-border-color: var(--snice-color-alert-warning-border, rgb(202 138 4));
-  --alert-text-color: var(--snice-color-alert-warning-text, rgb(113 63 18));
+  --alert-bg: var(--snice-color-warning-subtle);
+  --alert-border-color: var(--snice-color-warning-subtle-hover);
+  --alert-text-color: var(--snice-color-text);
 }
+:host([variant="warning"]) .alert-icon { color: var(--snice-color-warning); }
 
 :host([variant="error"]) {
-  --alert-bg: var(--snice-color-alert-error-bg, rgb(254 226 226));
-  --alert-border-color: var(--snice-color-alert-error-border, rgb(185 94 94));
-  --alert-text-color: var(--snice-color-alert-error-text, rgb(127 29 29));
+  --alert-bg: var(--snice-color-danger-subtle);
+  --alert-border-color: var(--snice-color-danger-subtle-hover);
+  --alert-text-color: var(--snice-color-text);
 }
+:host([variant="error"]) .alert-icon { color: var(--snice-color-danger); }
 
 /* Accent appearance — neutral background + thick colored left bar. Reads as
    a refined/editorial alert (Notion / Linear style) rather than a filled
