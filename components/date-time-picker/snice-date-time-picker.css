@@ -140,7 +140,7 @@
   background: transparent;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   transition: color var(--snice-transition-fast, 150ms) ease, background-color var(--snice-transition-fast, 150ms) ease;
   display: flex;
   align-items: center;
@@ -166,7 +166,7 @@
   background: transparent;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   transition: color var(--snice-transition-fast, 150ms) ease, background-color var(--snice-transition-fast, 150ms) ease;
   display: flex;
   align-items: center;
@@ -336,7 +336,7 @@
   padding: 0.375rem;
   cursor: pointer;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   transition: color var(--snice-transition-fast, 150ms) ease, background-color var(--snice-transition-fast, 150ms) ease;
   display: flex;
   align-items: center;
@@ -497,7 +497,7 @@
 
 .time-list::-webkit-scrollbar-thumb {
   background: var(--snice-color-border, rgb(226 226 226));
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .time-item {

@@ -34,7 +34,7 @@ case, when, default, if {
 }
 
 :host([shape="rounded"]) .avatar {
-  border-radius: 8px;
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
 }
 
 /* Sizes */

@@ -98,7 +98,7 @@
 .heatmap__cell {
   width: var(--cell-size);
   height: var(--cell-size);
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
   cursor: pointer;
   outline: none;
   border: none;

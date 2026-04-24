@@ -3,7 +3,7 @@
   --tag-height: 1.5rem; /* 24px */
   --tag-padding: 0 0.5rem; /* 0 8px */
   --tag-font-size: 0.75rem; /* 12px */
-  --tag-border-radius: 4px;
+  --tag-border-radius: var(--snice-border-radius-md, 0.25rem);
   --tag-gap: 0.25rem; /* 4px */
 }
 

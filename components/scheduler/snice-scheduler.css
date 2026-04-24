@@ -369,7 +369,7 @@
 .scheduler__month-event {
   font-size: 0.625rem;
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
   background: var(--snice-color-primary, rgb(37 99 235));
   color: var(--snice-color-text-inverse, rgb(250 250 250));
   margin-bottom: 1px;

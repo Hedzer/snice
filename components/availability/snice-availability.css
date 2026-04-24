@@ -190,7 +190,7 @@
 .availability__legend-swatch {
   width: 0.75rem;
   height: 0.75rem;
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .availability__legend-swatch--available {

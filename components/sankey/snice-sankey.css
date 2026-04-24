@@ -73,7 +73,7 @@
   pointer-events: none;
   background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   font-size: var(--snice-font-size-sm, 0.75rem);
   color: var(--snice-color-text, rgb(23 23 23));

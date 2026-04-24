@@ -156,12 +156,12 @@
 /* Word-level highlights */
 .diff-word-add {
   background: var(--diff-add-word-bg);
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .diff-word-del {
   background: var(--diff-remove-word-bg);
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 /* Split view */

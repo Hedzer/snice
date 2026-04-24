@@ -177,7 +177,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-medium, 500);

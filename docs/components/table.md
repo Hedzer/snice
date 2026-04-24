@@ -197,7 +197,7 @@ Set `colorize: true` on `progressFormat` to auto-color based on value:
 table.setToolbar({
   showSearch: true,     // Search input (left-aligned)
   showSort: true,       // Opens sort modal (multi-sort)
-  showFilter: true,     // Opens filter modal (MUI X Pro format)
+  showFilter: true,     // Opens filter modal
   showExport: true      // CSV export button
 });
 ```
@@ -215,7 +215,7 @@ Enable with `column-menu` attribute. Right-click any column header for:
 
 Enable with `column-resize` attribute. Drag the right edge of any column header to resize. Double-click the resize handle to auto-size to content.
 
-### Filter Model (MUI X Pro Compatible)
+### Filter Model
 
 ```javascript
 table.setFilterModel({

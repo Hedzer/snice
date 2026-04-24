@@ -54,7 +54,7 @@
   left: 0;
   outline: 3px dashed rgba(128, 128, 128, 0.5);
   outline-offset: -6px;
-  border-radius: 4px;
+  border-radius: var(--snice-border-radius-md, 0.25rem);
   transition: transform 0.2s ease;
   pointer-events: none;
   display: none;

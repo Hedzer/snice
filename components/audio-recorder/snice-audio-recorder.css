@@ -94,7 +94,7 @@
   flex: 1;
   max-width: 4px; /* Keep px for crisp bars */
   background: var(--snice-color-primary, rgb(37 99 235));
-  border-radius: 2px; /* Keep px for consistent corners */
+  border-radius: var(--snice-border-radius-sm, 0.125rem); /* Keep px for consistent corners */
   transition: height var(--snice-transition-fast, 100ms) ease;
 }
 

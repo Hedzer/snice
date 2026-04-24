@@ -46,7 +46,7 @@
 .phone-link:focus {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(37 99 235 / 0.5));
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .phone-link:visited {
