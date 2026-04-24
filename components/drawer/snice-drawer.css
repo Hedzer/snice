@@ -14,9 +14,10 @@
   --drawer-height-xxxl: var(--snice-size-drawer-height-xxxl, 90vh);
 
   /* Theme-integrated colors and effects */
-  --drawer-bg: var(--snice-color-surface, white);
-  --drawer-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
-  --drawer-backdrop: var(--snice-color-backdrop, rgba(0, 0, 0, 0.5));
+  --drawer-bg: var(--snice-color-surface-container-highest, var(--snice-color-surface, white));
+  --drawer-shadow: var(--snice-shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
+  --drawer-backdrop: var(--snice-color-backdrop, rgb(0 0 0 / 0.6));
+  --drawer-backdrop-blur: 6px;
   --drawer-transition: transform 320ms var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
   --drawer-z-index: var(--snice-z-overlay, 1050);
 
@@ -49,6 +50,8 @@
   position: absolute;
   inset: 0;
   background: var(--drawer-backdrop);
+  backdrop-filter: blur(var(--drawer-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--drawer-backdrop-blur));
   opacity: 0;
   transition: opacity var(--snice-transition-medium, 250ms) var(--snice-ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));
   z-index: var(--drawer-z-index);
@@ -277,8 +280,8 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem); /* 16px 20px */
-  border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
-  background: var(--snice-color-surface, white);
+  padding-bottom: var(--snice-spacing-sm, 0.5rem);
+  background: transparent;
   flex-shrink: 0;
 }
 
@@ -336,8 +339,8 @@
 /* Drawer Footer */
 .drawer-footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem); /* 16px 20px */
-  border-top: 1px solid var(--snice-color-border, rgb(229 231 235));
-  background: var(--snice-color-surface, white);
+  padding-top: var(--snice-spacing-sm, 0.5rem);
+  background: transparent;
   flex-shrink: 0;
 }
 

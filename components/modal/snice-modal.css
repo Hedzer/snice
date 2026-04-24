@@ -1,7 +1,11 @@
 :host {
   --modal-z-index: 1000;
-  --modal-backdrop-bg: var(--snice-modal-backdrop, rgb(0 0 0 / 0.5));
-  --modal-panel-bg: var(--snice-color-surface, rgb(255 255 255));
+  /* Stronger scrim + blur so the page behind genuinely recedes. A flat 50%
+   * black over a dark page reads as "slightly darker" and lets showcase
+   * content bleed visually into the modal. */
+  --modal-backdrop-bg: var(--snice-modal-backdrop, rgb(0 0 0 / 0.6));
+  --modal-backdrop-blur: 6px;
+  --modal-panel-bg: var(--snice-color-surface-container-highest, var(--snice-color-surface, rgb(255 255 255)));
   --modal-panel-shadow: var(--snice-shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
   --modal-border-radius: var(--snice-border-radius-lg, 8px);
   --modal-padding: var(--snice-spacing-lg, 1.5rem);
@@ -37,6 +41,8 @@
   right: 0;
   bottom: 0;
   background: var(--modal-backdrop-bg);
+  backdrop-filter: blur(var(--modal-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--modal-backdrop-blur));
   opacity: 0;
   /* Backdrop fades in first — quick, as an atmosphere primer. */
   transition: opacity 180ms var(--snice-ease-out, ease);
@@ -112,7 +118,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--modal-padding);
-  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+  padding-bottom: var(--snice-spacing-sm, 0.5rem);
 }
 
 .modal__header:empty {
@@ -173,7 +179,7 @@
   justify-content: flex-end;
   gap: var(--snice-spacing-sm, 0.5rem);
   padding: var(--modal-padding);
-  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
+  padding-top: var(--snice-spacing-sm, 0.5rem);
 }
 
 .modal__footer:empty {

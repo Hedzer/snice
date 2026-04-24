@@ -9,6 +9,10 @@
   cursor: not-allowed;
 }
 
+:host([justify-text="start"]) .button { justify-content: flex-start; }
+:host([justify-text="end"]) .button   { justify-content: flex-end; }
+:host([justify-text="center"]) .button { justify-content: center; }
+
 .button {
   display: inline-flex;
   align-items: center;

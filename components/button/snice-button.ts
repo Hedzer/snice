@@ -1,7 +1,7 @@
 import { element, property, query, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-button.css?inline';
-import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, SniceButtonElement } from './snice-button.types';
+import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
 
 @element('snice-button', { formAssociated: true })
 export class SniceButton extends HTMLElement implements SniceButtonElement {
@@ -52,6 +52,9 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
 
   @property({ attribute: 'icon-placement',  })
   iconPlacement: IconPlacement = 'start';
+
+  @property({ attribute: 'justify-text' })
+  justifyText: ButtonJustify = 'center';
 
   @query('[slot="icon"]', { light: true })
   private iconSlotChild?: Element;

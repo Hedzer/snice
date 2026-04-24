@@ -2,6 +2,7 @@ export type ButtonVariant = 'default' | 'primary' | 'success' | 'warning' | 'dan
 export type ButtonSize = 'small' | 'medium' | 'large';
 export type ButtonType = 'button' | 'submit' | 'reset';
 export type IconPlacement = 'start' | 'end';
+export type ButtonJustify = 'start' | 'center' | 'end';
 
 export interface SniceButtonElement extends HTMLElement {
   variant: ButtonVariant;
@@ -17,6 +18,7 @@ export interface SniceButtonElement extends HTMLElement {
   download: string;
   icon: string;
   iconPlacement: IconPlacement;
+  justifyText: ButtonJustify;
   focus(options?: FocusOptions): void;
   blur(): void;
   click(): void;
