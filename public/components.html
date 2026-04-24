@@ -3133,10 +3133,10 @@ el.addEventListener('comment-add',
           </snice-drawer>
           <snice-drawer id="drawer-left" position="left" size="small" contained>
             <span slot="title">Navigation</span>
-            <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
-              <snice-button variant="text" style="justify-content:flex-start">Dashboard</snice-button>
-              <snice-button variant="text" style="justify-content:flex-start">Projects</snice-button>
-              <snice-button variant="text" style="justify-content:flex-start">Settings</snice-button>
+            <div style="display:flex;flex-direction:column;gap:0.25rem">
+              <snice-button variant="text" justify-text="start">Dashboard</snice-button>
+              <snice-button variant="text" justify-text="start">Projects</snice-button>
+              <snice-button variant="text" justify-text="start">Settings</snice-button>
             </div>
           </snice-drawer>
           <snice-drawer id="drawer-right" position="right" size="small" contained>
@@ -3150,12 +3150,10 @@ el.addEventListener('comment-add',
             </div>
           </snice-drawer>
           <snice-drawer id="drawer-bottom" position="bottom" size="small" contained>
-            <div style="text-align:center;padding:1rem">
-              <h3 style="margin:0 0 0.5rem">Quick Actions</h3>
-              <div style="display:flex;gap:0.5rem;justify-content:center">
-                <snice-button variant="primary">Save</snice-button>
-                <snice-button variant="default">Cancel</snice-button>
-              </div>
+            <span slot="title">Quick Actions</span>
+            <div style="display:flex;gap:0.5rem;justify-content:center">
+              <snice-button variant="primary">Save</snice-button>
+              <snice-button variant="default">Cancel</snice-button>
             </div>
           </snice-drawer>
           <snice-drawer-target for="drawer-push-demo" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;justify-content:center">
@@ -3198,9 +3196,9 @@ el.addEventListener('comment-add',
           <snice-drawer inline position="left" size="small">
             <span slot="title">Sidebar</span>
             <div style="display:flex;flex-direction:column;gap:0.25rem">
-              <snice-button variant="text" size="small" style="justify-content:flex-start">Home</snice-button>
-              <snice-button variant="text" size="small" style="justify-content:flex-start">Explore</snice-button>
-              <snice-button variant="text" size="small" style="justify-content:flex-start">Settings</snice-button>
+              <snice-button variant="text" size="small" justify-text="start">Home</snice-button>
+              <snice-button variant="text" size="small" justify-text="start">Explore</snice-button>
+              <snice-button variant="text" size="small" justify-text="start">Settings</snice-button>
             </div>
           </snice-drawer>
           <div style="flex:1;padding:1rem;overflow:auto">
