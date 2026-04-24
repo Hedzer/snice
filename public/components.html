@@ -5036,26 +5036,242 @@ md.addEventListener('link-click',
     });
 </script>
     <!-- ── Nav ── -->
-    <style>snice-nav::part(icon) { font-family: 'Material Symbols Outlined'; font-size: 1.25rem; }</style>
+    <style>
+      snice-nav::part(icon) { font-family: 'Material Symbols Outlined'; font-size: 1.25rem; }
+
+      /* Little "app window" mockups so each nav variant is shown in context. */
+      .nav-demo {
+        --nav-demo-bg:        var(--snice-color-surface-container-low, rgba(128, 128, 128, 0.04));
+        --nav-demo-chrome-bg: var(--snice-color-surface-container-high, rgba(128, 128, 128, 0.08));
+        --nav-demo-border:    var(--snice-color-border-subtle, rgba(128, 128, 128, 0.18));
+
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--nav-demo-border);
+        border-radius: 10px;
+        background: var(--nav-demo-bg);
+        box-shadow: var(--snice-shadow-sm);
+        overflow: hidden;
+      }
+      .nav-demo__chrome {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        background: var(--nav-demo-chrome-bg);
+        border-bottom: 1px solid var(--nav-demo-border);
+        font-family: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, monospace;
+        font-size: 0.68rem;
+        color: var(--snice-color-text-tertiary);
+      }
+      .nav-demo__dots { display: inline-flex; gap: 0.3rem; margin-right: 0.25rem; }
+      .nav-demo__dot {
+        width: 9px; height: 9px; border-radius: 50%;
+        background: rgba(128,128,128,0.28);
+      }
+      .nav-demo__dot--r { background: rgba(255,95,86,0.55); }
+      .nav-demo__dot--y { background: rgba(255,189,46,0.55); }
+      .nav-demo__dot--g { background: rgba(39,201,63,0.55); }
+
+      .nav-demo__layout-h {
+        display: flex; flex-direction: column;
+      }
+      .nav-demo__layout-v {
+        display: grid; grid-template-columns: minmax(12rem, 14rem) 1fr;
+      }
+
+      .nav-demo__nav {
+        padding: 0.75rem;
+      }
+      .nav-demo__layout-v .nav-demo__nav {
+        border-right: 1px solid var(--nav-demo-border);
+        padding: 0.875rem 0.75rem;
+      }
+      .nav-demo__layout-h .nav-demo__nav {
+        border-bottom: 1px solid var(--nav-demo-border);
+      }
+
+      .nav-demo__page {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        min-height: 7.5rem;
+      }
+      .nav-demo__crumbs {
+        font-size: 0.68rem;
+        color: var(--snice-color-text-tertiary);
+        letter-spacing: 0.02em;
+      }
+      .nav-demo__crumbs .crumb--active { color: var(--snice-color-text); font-weight: 600; }
+      .nav-demo__crumbs .crumb--sep { margin: 0 0.4rem; opacity: 0.5; }
+
+      .nav-demo__title {
+        font-family: var(--snice-font-family-display);
+        font-size: 1.0625rem;
+        font-weight: 600;
+        color: var(--snice-color-text);
+        margin: 0;
+      }
+      .nav-demo__skeleton {
+        display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem;
+      }
+      .nav-demo__skeleton-line {
+        height: 0.55rem;
+        border-radius: 999px;
+        background: var(--nav-demo-border);
+        opacity: 0.55;
+      }
+      .nav-demo__skeleton-line--short { width: 42%; }
+      .nav-demo__skeleton-line--med   { width: 72%; }
+      .nav-demo__skeleton-line--full  { width: 100%; }
+
+      .nav-demo__caption {
+        font-size: 0.66rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--snice-color-text-tertiary);
+        margin: 0 0 0.4rem;
+      }
+      .nav-demo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 900px) {
+        .nav-demo-grid { grid-template-columns: 1fr; }
+        .nav-demo__layout-v { grid-template-columns: 1fr; }
+        .nav-demo__layout-v .nav-demo__nav { border-right: none; border-bottom: 1px solid var(--nav-demo-border); }
+      }
+    </style>
+
     <div class="comp-section" data-category="Navigation" data-cat-index="2" data-cat-order="4">
       <h3>Nav</h3>
       <p class="comp-desc">Application navigation with flat, hierarchical, and grouped variants in horizontal or vertical orientations</p>
       <div class="comp-split comp-split-stacked">
-        <div class="comp-split-demo demo-col">
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Horizontal (flat)</div>
-          <snice-nav id="demo-nav-flat" variant="flat" orientation="horizontal" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-bottom:1rem"></snice-nav>
-          <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">active-style="text" (color-only highlight, no fill)</div>
-          <snice-nav id="demo-nav-text" variant="flat" orientation="horizontal" active-style="text" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px;margin-bottom:1rem"></snice-nav>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div>
-              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Hierarchical</div>
-              <snice-nav id="demo-nav-hier" variant="hierarchical" orientation="vertical" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px"></snice-nav>
-            </div>
-            <div>
-              <div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;opacity:0.7">Grouped</div>
-              <snice-nav id="demo-nav-group" variant="grouped" orientation="vertical" style="display:block;padding:0.75rem;background:var(--snice-color-surface,rgba(128,128,128,0.05));border:1px solid rgba(128,128,128,0.2);border-radius:8px"></snice-nav>
+        <div class="comp-split-demo demo-col" style="flex-direction:column;gap:1.25rem;align-items:stretch">
+
+          <!-- Horizontal · flat -->
+          <div>
+            <p class="nav-demo__caption">Horizontal · flat (pill active)</p>
+            <div class="nav-demo">
+              <div class="nav-demo__chrome">
+                <span class="nav-demo__dots">
+                  <span class="nav-demo__dot nav-demo__dot--r"></span>
+                  <span class="nav-demo__dot nav-demo__dot--y"></span>
+                  <span class="nav-demo__dot nav-demo__dot--g"></span>
+                </span>
+                <span>app.snice.dev / dashboard</span>
+              </div>
+              <div class="nav-demo__layout-h">
+                <div class="nav-demo__nav">
+                  <snice-nav id="demo-nav-flat" variant="flat" orientation="horizontal" style="display:block"></snice-nav>
+                </div>
+                <div class="nav-demo__page">
+                  <div class="nav-demo__crumbs"><span class="crumb--active">Dashboard</span></div>
+                  <h4 class="nav-demo__title">Welcome back, Team</h4>
+                  <div class="nav-demo__skeleton">
+                    <div class="nav-demo__skeleton-line nav-demo__skeleton-line--full"></div>
+                    <div class="nav-demo__skeleton-line nav-demo__skeleton-line--med"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- Horizontal · flat · active-style=text -->
+          <div>
+            <p class="nav-demo__caption">Horizontal · active-style="text" (underline, no fill)</p>
+            <div class="nav-demo">
+              <div class="nav-demo__chrome">
+                <span class="nav-demo__dots">
+                  <span class="nav-demo__dot nav-demo__dot--r"></span>
+                  <span class="nav-demo__dot nav-demo__dot--y"></span>
+                  <span class="nav-demo__dot nav-demo__dot--g"></span>
+                </span>
+                <span>docs.snice.dev / dashboard</span>
+              </div>
+              <div class="nav-demo__layout-h">
+                <div class="nav-demo__nav">
+                  <snice-nav id="demo-nav-text" variant="flat" orientation="horizontal" active-style="text" style="display:block"></snice-nav>
+                </div>
+                <div class="nav-demo__page">
+                  <div class="nav-demo__crumbs"><span class="crumb--active">Dashboard</span></div>
+                  <h4 class="nav-demo__title">Everything you need, at a glance</h4>
+                  <div class="nav-demo__skeleton">
+                    <div class="nav-demo__skeleton-line nav-demo__skeleton-line--full"></div>
+                    <div class="nav-demo__skeleton-line nav-demo__skeleton-line--short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-demo-grid">
+            <!-- Vertical · hierarchical -->
+            <div>
+              <p class="nav-demo__caption">Vertical · hierarchical</p>
+              <div class="nav-demo">
+                <div class="nav-demo__chrome">
+                  <span class="nav-demo__dots">
+                    <span class="nav-demo__dot nav-demo__dot--r"></span>
+                    <span class="nav-demo__dot nav-demo__dot--y"></span>
+                    <span class="nav-demo__dot nav-demo__dot--g"></span>
+                  </span>
+                  <span>admin / products / list</span>
+                </div>
+                <div class="nav-demo__layout-v">
+                  <div class="nav-demo__nav">
+                    <snice-nav id="demo-nav-hier" variant="hierarchical" orientation="vertical" style="display:block"></snice-nav>
+                  </div>
+                  <div class="nav-demo__page">
+                    <div class="nav-demo__crumbs">
+                      Products<span class="crumb--sep">/</span><span class="crumb--active">Product List</span>
+                    </div>
+                    <h4 class="nav-demo__title">Product List</h4>
+                    <div class="nav-demo__skeleton">
+                      <div class="nav-demo__skeleton-line nav-demo__skeleton-line--full"></div>
+                      <div class="nav-demo__skeleton-line nav-demo__skeleton-line--med"></div>
+                      <div class="nav-demo__skeleton-line nav-demo__skeleton-line--short"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vertical · grouped -->
+            <div>
+              <p class="nav-demo__caption">Vertical · grouped (by category)</p>
+              <div class="nav-demo">
+                <div class="nav-demo__chrome">
+                  <span class="nav-demo__dots">
+                    <span class="nav-demo__dot nav-demo__dot--r"></span>
+                    <span class="nav-demo__dot nav-demo__dot--y"></span>
+                    <span class="nav-demo__dot nav-demo__dot--g"></span>
+                  </span>
+                  <span>admin / system / settings</span>
+                </div>
+                <div class="nav-demo__layout-v">
+                  <div class="nav-demo__nav">
+                    <snice-nav id="demo-nav-group" variant="grouped" orientation="vertical" style="display:block"></snice-nav>
+                  </div>
+                  <div class="nav-demo__page">
+                    <div class="nav-demo__crumbs">
+                      System<span class="crumb--sep">/</span><span class="crumb--active">Settings</span>
+                    </div>
+                    <h4 class="nav-demo__title">Settings</h4>
+                    <div class="nav-demo__skeleton">
+                      <div class="nav-demo__skeleton-line nav-demo__skeleton-line--full"></div>
+                      <div class="nav-demo__skeleton-line nav-demo__skeleton-line--short"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
