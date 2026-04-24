@@ -10,6 +10,7 @@
 .tag {
   display: inline-flex;
   align-items: center;
+  box-sizing: border-box;
   height: var(--tag-height);
   padding: var(--tag-padding);
   border-radius: var(--tag-border-radius);
