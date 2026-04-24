@@ -95,7 +95,7 @@ case, when, default, if {
 
 .breadcrumb-item--active {
   color: var(--breadcrumb-active-color);
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
 }
 
 .breadcrumb-item--active .breadcrumb-link {

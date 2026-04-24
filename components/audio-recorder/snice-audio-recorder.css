@@ -224,5 +224,5 @@
   height: 100%;
   background: var(--snice-color-primary, rgb(37 99 235));
   opacity: 0.2;
-  transition: width 100ms linear;
+  transition: width var(--snice-transition-fast, 150ms) linear;
 }

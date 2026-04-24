@@ -1,4 +1,4 @@
 :host {
   display: block;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--snice-transition-medium, 250ms) var(--snice-ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));
 }

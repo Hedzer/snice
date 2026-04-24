@@ -200,7 +200,7 @@
 
 /* Text styles */
 .ansi-bold {
-  font-weight: 700;
+  font-weight: var(--snice-font-weight-bold, 700);
 }
 .ansi-dim {
   opacity: 0.7;

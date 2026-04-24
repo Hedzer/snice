@@ -107,14 +107,9 @@
   transform: translateX(1.5rem); /* 24px */
 }
 
-/* Focus state */
+/* Focus state — single box-shadow ring; outline would double up. */
 .switch-input:focus-visible ~ .switch-track {
-  box-shadow: 0 0 0 3px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
-}
-
-.switch-input:focus-visible ~ .switch-track {
-  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
-  outline-offset: 2px;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 /* Disabled state */
@@ -183,7 +178,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.5rem; /* 8px */
-  font-weight: 700;
+  font-weight: var(--snice-font-weight-bold, 700);
   text-transform: uppercase;
   letter-spacing: var(--snice-tracking-widest);
   opacity: 0;

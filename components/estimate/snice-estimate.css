@@ -714,7 +714,7 @@
 
 :host([variant="minimal"]) .est__title {
   font-family: var(--snice-font-family-display);
-  font-weight: 400;
+  font-weight: var(--snice-font-weight-normal, 400);
   font-size: 1.75rem;
   letter-spacing: var(--snice-tracking-tight);
 }

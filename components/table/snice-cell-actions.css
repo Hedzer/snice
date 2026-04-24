@@ -105,7 +105,7 @@
 }
 
 .action-label {
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
 }
 
 /* Text Alignment */

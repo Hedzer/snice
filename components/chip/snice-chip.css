@@ -13,7 +13,7 @@
   padding: var(--chip-padding);
   border-radius: var(--chip-border-radius);
   font-size: var(--chip-font-size);
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   cursor: pointer;
   user-select: none;
   transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.1s ease;

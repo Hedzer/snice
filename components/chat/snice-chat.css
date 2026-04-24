@@ -67,7 +67,7 @@
   align-items: center;
   justify-content: center;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
-  font-weight: 600;
+  font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-font-size-sm, 0.875rem);
   flex-shrink: 0;
 }
@@ -93,7 +93,7 @@
 }
 
 .message-author {
-  font-weight: 700;
+  font-weight: var(--snice-font-weight-bold, 700);
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
@@ -165,7 +165,7 @@
 }
 
 .attachment-name {
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -213,7 +213,7 @@
 
 .reaction-count {
   font-size: var(--snice-font-size-xs, 0.75rem);
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
 }
 
 /* Message actions */

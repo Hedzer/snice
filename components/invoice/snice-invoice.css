@@ -496,7 +496,7 @@
   --invoice-border-width: 0;
   --invoice-padding: var(--snice-spacing-xl, 2rem) var(--snice-spacing-xl, 2rem);
   --invoice-section-gap: var(--snice-spacing-xl, 2rem);
-  --invoice-title-font-weight: 300;
+  --invoice-title-font-weight: var(--snice-font-weight-light, 300);
   --invoice-title-font-size: 2rem;
   --invoice-table-border: transparent;
   --invoice-table-header-text: var(--invoice-text-secondary);
@@ -509,7 +509,7 @@
 :host([variant="minimal"]) .invoice__status {
   background: transparent;
   padding: 0;
-  font-weight: 400;
+  font-weight: var(--snice-font-weight-normal, 400);
   text-transform: none;
   letter-spacing: normal;
   font-size: var(--invoice-body-font-size);
@@ -524,13 +524,13 @@
 :host([variant="minimal"]) .invoice__party-label {
   text-transform: none;
   letter-spacing: normal;
-  font-weight: 400;
+  font-weight: var(--snice-font-weight-normal, 400);
 }
 
 :host([variant="minimal"]) .invoice__table th {
   text-transform: none;
   letter-spacing: normal;
-  font-weight: 400;
+  font-weight: var(--snice-font-weight-normal, 400);
   border-bottom: 1px solid var(--invoice-border);
 }
 

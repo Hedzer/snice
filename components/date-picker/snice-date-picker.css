@@ -282,7 +282,7 @@
 .weekday {
   text-align: center;
   font-size: var(--snice-font-size-xs, 0.75rem);
-  font-weight: 600;
+  font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   padding: 0.5rem 0.25rem;
 }

@@ -134,7 +134,7 @@ case, when, default, if {
 }
 
 :host([status="away"]) .user-card-status {
-  background: rgb(234 179 8);
+  background: var(--snice-color-warning, rgb(234 179 8));
 }
 
 :host([status="offline"]) .user-card-status {

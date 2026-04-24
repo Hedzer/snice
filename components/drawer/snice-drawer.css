@@ -50,7 +50,7 @@
   inset: 0;
   background: var(--drawer-backdrop);
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity var(--snice-transition-medium, 250ms) var(--snice-ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));
   z-index: var(--drawer-z-index);
   pointer-events: none;
   visibility: hidden;

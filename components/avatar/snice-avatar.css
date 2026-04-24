@@ -20,7 +20,7 @@ case, when, default, if {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: var(--snice-font-weight-semibold, 600);
   user-select: none;
 }
 

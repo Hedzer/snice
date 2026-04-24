@@ -26,7 +26,7 @@
   opacity: 0.08;
   pointer-events: none;
   user-select: none;
-  font-weight: 700;
+  font-weight: var(--snice-font-weight-bold, 700);
 }
 
 :host([variant="featured"]) .testimonial::before {

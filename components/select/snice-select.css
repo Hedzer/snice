@@ -25,7 +25,7 @@ img[src=""] {
   display: block;
   margin-bottom: 0.25rem; /* 4px */
   font-size: var(--snice-font-size-sm, 0.875rem);
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   line-height: var(--snice-line-height-normal, 1.5);
   color: var(--snice-color-text, rgb(23 23 23));
   text-align: left;
@@ -311,7 +311,7 @@ img[src=""] {
 .select-option--selected {
   background: var(--snice-color-primary-subtle, rgb(219 234 254));
   color: var(--snice-color-primary, rgb(37 99 235));
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
 }
 
 .select-option--focused {

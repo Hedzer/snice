@@ -82,7 +82,7 @@
 
 .json-key {
   color: var(--snice-color-primary, rgb(37 99 235));
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   margin-right: 0.25rem;
 }
 

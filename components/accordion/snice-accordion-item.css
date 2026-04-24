@@ -19,7 +19,7 @@
   border: none;
   font-family: var(--snice-font-family-display);
   font-size: 1rem; /* 16px */
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   text-align: left;
   cursor: pointer;
   transition: background-color 0.2s;

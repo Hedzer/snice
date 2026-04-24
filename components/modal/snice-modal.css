@@ -124,7 +124,7 @@
   flex: 1;
   margin: 0;
   font-size: var(--snice-font-size-lg, 1.125rem);
-  font-weight: 600;
+  font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
 }
 

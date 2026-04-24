@@ -71,7 +71,7 @@
 .command-palette__category {
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   font-size: var(--snice-font-size-sm, 0.875rem);
-  font-weight: 600;
+  font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text-secondary);
   background-color: var(--snice-color-surface-container-low);
   border-top: 1px solid var(--snice-color-border);

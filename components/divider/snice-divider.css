@@ -32,7 +32,7 @@
   background: var(--divider-text-bg);
   color: var(--snice-color-text-secondary);
   font-size: 0.875rem; /* 14px */
-  font-weight: 500;
+  font-weight: var(--snice-font-weight-medium, 500);
   white-space: nowrap;
   margin: 0 var(--divider-text-gap);
 }
