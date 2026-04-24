@@ -81,7 +81,7 @@
   color: var(--snice-color-text);
 }
 
-.login__input:focus {
+.login__input:focus-visible {
   outline: none;
   border-color: var(--snice-color-border-focus, rgb(59 130 246));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
@@ -97,7 +97,7 @@
   border-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
-.login__input--error:focus {
+.login__input--error:focus-visible {
   border-color: var(--snice-color-danger, rgb(220 38 38));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(239 68 68 / 0.2));
 }

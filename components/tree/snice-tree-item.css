@@ -24,7 +24,7 @@
   background-color: var(--snice-color-surface-hover, rgb(var(--snice-color-gray-100)));
 }
 
-.tree-item__content:focus {
+.tree-item__content:focus-visible {
   outline: 2px solid var(--snice-color-primary, rgb(var(--snice-color-blue-600)));
   outline-offset: -2px;
 }

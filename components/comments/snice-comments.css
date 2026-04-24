@@ -44,7 +44,7 @@
   line-height: var(--snice-line-height-normal, 1.5);
 }
 
-.comments__input:focus {
+.comments__input:focus-visible {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline-offset: var(--snice-focus-ring-offset, 2px);
   border-color: var(--comments-primary);

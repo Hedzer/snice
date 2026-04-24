@@ -130,7 +130,7 @@
   }
 }
 
-.terminal-input:focus {
+.terminal-input:focus-visible {
   animation: none;
 }
 

@@ -94,7 +94,7 @@
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
-.pdf-page-input:focus {
+.pdf-page-input:focus-visible {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline-offset: var(--snice-focus-ring-offset, 2px);
 }

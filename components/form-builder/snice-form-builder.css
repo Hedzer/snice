@@ -105,7 +105,7 @@
   font-family: var(--snice-font-family-display);
 }
 
-.canvas__title:focus {
+.canvas__title:focus-visible {
   font-family: var(--snice-font-family-display);
   border-bottom-color: var(--fb-primary);
 }
@@ -123,7 +123,7 @@
   resize: none;
 }
 
-.canvas__description:focus {
+.canvas__description:focus-visible {
   border-bottom-color: var(--fb-primary);
 }
 
@@ -329,9 +329,9 @@
   box-sizing: border-box;
 }
 
-.properties__input:focus,
-.properties__select:focus,
-.properties__textarea:focus {
+.properties__input:focus-visible,
+.properties__select:focus-visible,
+.properties__textarea:focus-visible {
   border-color: var(--fb-primary);
 }
 
@@ -383,7 +383,7 @@
   box-sizing: border-box;
 }
 
-.options-editor__input:focus {
+.options-editor__input:focus-visible {
   border-color: var(--fb-primary);
 }
 
@@ -512,9 +512,9 @@
   box-sizing: border-box;
 }
 
-.preview__input:focus,
-.preview__select:focus,
-.preview__textarea:focus {
+.preview__input:focus-visible,
+.preview__select:focus-visible,
+.preview__textarea:focus-visible {
   border-color: var(--fb-primary);
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }

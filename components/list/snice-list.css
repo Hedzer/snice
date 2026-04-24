@@ -36,7 +36,7 @@
   transition: border-color var(--snice-transition-fast, 150ms) ease;
 }
 
-.list__search-input:focus {
+.list__search-input:focus-visible {
   outline: none;
   border-color: var(--snice-color-primary, rgb(37 99 235));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);

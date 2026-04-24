@@ -198,7 +198,7 @@
   outline: none;
 }
 
-.field__input:focus {
+.field__input:focus-visible {
   border-color: var(--snice-color-primary, rgb(37 99 235));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }

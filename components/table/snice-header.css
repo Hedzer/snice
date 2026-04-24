@@ -143,7 +143,7 @@
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
-.filter-button:focus {
+.filter-button:focus-visible {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(37 99 235 / 0.5));
   outline-offset: -2px;
 }

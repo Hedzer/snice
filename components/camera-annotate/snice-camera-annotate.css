@@ -240,7 +240,7 @@
   outline: none;
 }
 
-.ca-annotation-label input:focus {
+.ca-annotation-label input:focus-visible {
   border-bottom: 1px solid var(--ca-primary);
 }
 

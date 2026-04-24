@@ -51,7 +51,7 @@
   border-color: var(--snice-color-border-hover, rgb(156 163 175));
 }
 
-.textarea:focus {
+.textarea:focus-visible {
   border-color: var(--snice-color-primary, rgb(59 130 246));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)), var(--snice-shadow-sm, none);
 }
@@ -87,7 +87,7 @@
   border-color: var(--snice-color-danger, rgb(239 68 68));
 }
 
-.textarea--invalid:focus {
+.textarea--invalid:focus-visible {
   border-color: var(--snice-color-danger, rgb(239 68 68));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(220 38 38 / 0.4)), var(--snice-shadow-sm, none);
 }

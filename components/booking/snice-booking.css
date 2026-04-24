@@ -323,7 +323,7 @@
   box-sizing: border-box;
 }
 
-.booking__input:focus {
+.booking__input:focus-visible {
   outline: none;
   border-color: var(--snice-color-primary, rgb(37 99 235));
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));

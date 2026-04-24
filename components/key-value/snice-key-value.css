@@ -134,7 +134,7 @@
   opacity: 0.6;
 }
 
-.kv__input:focus {
+.kv__input:focus-visible {
   border-color: var(--kv-primary);
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
@@ -170,7 +170,7 @@
   opacity: 0.5;
 }
 
-.kv__description:focus {
+.kv__description:focus-visible {
   border-color: var(--kv-primary);
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
