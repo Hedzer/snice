@@ -268,7 +268,6 @@ const header = (active) => `
         <a href="decorators.html"${active === 'decorators' ? ' class="active"' : ''}>Decorators</a>
         <a href="components.html"${active === 'components' ? ' class="active"' : ''}>Components</a>
         <a href="themes.html"${active === 'themes' ? ' class="active"' : ''}>Themes</a>
-        <a href="about.html"${active === 'about' ? ' class="active"' : ''}>About</a>
 
         <a href="https://gitlab.com/Hedzer/snice">Source</a>
         <button class="theme-btn" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('snice-theme',t)" title="Toggle theme">
@@ -283,7 +282,7 @@ const footer = `
   <footer>
     <div class="wrap">
       <span>Snice v${pkg.version} · <a href="license.html">MIT</a></span>
-      <span><a href="about.html">About</a> · <a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
+      <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>`;
 
@@ -2204,56 +2203,6 @@ ${themeScripts}
 </body>
 </html>`;
 
-// ABOUT PAGE — short statement of purpose
-const aboutHtml = `${head('About')}
-${header('about')}
-  <main class="wrap">
-    <section class="themes-section">
-      <h2 style="margin-top:0">About Snice</h2>
-      <p style="max-width:60ch">
-        Snice is a TypeScript web component library built around decorators
-        and a small set of well-documented patterns. It ships 130+ UI
-        components with zero dependencies beyond the runtime itself.
-      </p>
-
-      <h3>Goals</h3>
-      <ul style="max-width:60ch;line-height:1.7">
-        <li><strong>Separation of concerns.</strong> TS for behavior, CSS for presentation, HTML templates for structure. No JSX-in-JS.</li>
-        <li><strong>Real web components.</strong> Anything that works with the platform (custom elements, shadow DOM, form-associated) works with Snice.</li>
-        <li><strong>Composable runtime.</strong> Decorators for state, events, lifecycle, rendering, and styles. Pick what you need; each piece works in isolation.</li>
-        <li><strong>Theme-able by default.</strong> 200+ design tokens, 13 preset palettes, live theme editor, full light/dark coverage.</li>
-        <li><strong>Framework-optional.</strong> Use as plain custom elements, via the React adapter, or anywhere HTML lives.</li>
-      </ul>
-
-      <h3>What it's not</h3>
-      <ul style="max-width:60ch;line-height:1.7">
-        <li>Not Lit. Snice's template engine is a separate reactive system.</li>
-        <li>Not a heavyweight UI kit. There's no router required, no state manager, no build-tool lock-in.</li>
-        <li>Not opinionated about styling. You can use Snice's tokens, your own, or none at all.</li>
-      </ul>
-
-      <h3>Author</h3>
-      <p style="max-width:60ch">
-        Built by <a href="https://gitlab.com/Hedzer">Hedzer</a>. Released under the MIT license —
-        see <a href="license.html">the license page</a> for terms and credits to projects that
-        inspired Snice.
-      </p>
-
-      <h3>Links</h3>
-      <ul style="max-width:60ch;line-height:1.7">
-        <li><a href="guide.html">Guide</a> — start here</li>
-        <li><a href="components.html">Components</a> — 130+ examples</li>
-        <li><a href="decorators.html">Decorators</a> — the runtime primitives</li>
-        <li><a href="themes.html">Themes</a> — live token editor</li>
-        <li><a href="https://gitlab.com/Hedzer/snice">Source</a> — GitLab</li>
-        <li><a href="https://www.npmjs.com/package/snice">npm</a></li>
-      </ul>
-    </section>
-  </main>
-${footer}
-</body>
-</html>`;
-
 // LICENSE PAGE — MIT terms + acknowledgments
 const licenseHtml = `${head('License')}
 ${header()}
@@ -2333,6 +2282,5 @@ ${footer}
 writeFileSync(join(out, 'decorators.html'), decoratorsHtml);
 writeFileSync(join(out, 'docs.html'), docsPageHtml);
 writeFileSync(join(out, 'themes.html'), themesHtml);
-writeFileSync(join(out, 'about.html'), aboutHtml);
 writeFileSync(join(out, 'license.html'), licenseHtml);
 console.log('Built to public/ - preview at http://localhost:52891');
