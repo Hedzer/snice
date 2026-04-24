@@ -1,4 +1,3 @@
-/* Dashboard Layout - Complex grid with multiple areas */
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
@@ -6,15 +5,14 @@
 
 .layout {
   display: grid;
-  grid-template-areas: 
-    "header header header"
-    "nav nav nav"
-    "sidebar main right-sidebar";
+  grid-template-areas:
+    "header header  header"
+    "nav    nav     nav"
+    "sidebar main   right-sidebar";
   grid-template-rows: auto auto 1fr;
-  grid-template-columns: 250px 1fr 250px;
+  grid-template-columns: 15rem 1fr 15rem;
   min-height: 100vh;
-  gap: 1px;
-  background: var(--snice-color-border);
+  background: var(--snice-color-surface);
 }
 
 .header {
@@ -22,78 +20,100 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
+  background: var(--snice-color-surface-container-high);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
 }
 
 .header-start h1 {
   font-family: var(--snice-font-family-display);
   margin: 0;
-  font-size: var(--snice-heading-lg, 1.5rem);
+  font-size: var(--snice-heading-md, 1.25rem);
   font-weight: var(--snice-font-weight-semibold, 600);
+  letter-spacing: -0.01em;
   color: var(--snice-color-text);
 }
 
 .header-center {
   flex: 1;
-  max-width: 400px;
-  margin: 0 var(--snice-spacing-lg, 2rem);
+  max-width: 28rem;
+  margin: 0 var(--snice-spacing-lg, 1.5rem);
 }
 
 .nav {
   grid-area: nav;
-  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-surface);
-  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+  padding: 0 var(--snice-spacing-lg, 1.5rem);
+  background: var(--snice-color-surface-container);
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
 }
 
 .sidebar {
   grid-area: sidebar;
-  background: var(--snice-color-surface);
-  padding: var(--snice-spacing-lg, 2rem);
+  background: var(--snice-color-surface-container);
+  padding: var(--snice-spacing-lg, 1.5rem);
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
   overflow-y: auto;
 }
 
 .main {
   grid-area: main;
-  padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-surface-container-low);
+  padding: var(--snice-spacing-xl, 2rem);
+  background: var(--snice-color-surface);
   overflow-y: auto;
 }
 
 .right-sidebar {
   grid-area: right-sidebar;
-  background: var(--snice-color-surface);
-  padding: var(--snice-spacing-lg, 2rem);
+  background: var(--snice-color-surface-container);
+  padding: var(--snice-spacing-lg, 1.5rem);
+  border-left: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
   overflow-y: auto;
 }
 
-/* Responsive */
+.right-sidebar:empty {
+  display: none;
+}
+
+/* When the right sidebar is empty, let main absorb its track */
+.layout:has(.right-sidebar:empty) {
+  grid-template-columns: 15rem 1fr;
+  grid-template-areas:
+    "header  header"
+    "nav     nav"
+    "sidebar main";
+}
+
 @media (max-width: 1024px) {
-  .layout {
-    grid-template-areas: 
-      "header header"
-      "nav nav"
-      "main main";
+  .layout,
+  .layout:has(.right-sidebar:empty) {
+    grid-template-areas:
+      "header"
+      "nav"
+      "main";
     grid-template-columns: 1fr;
   }
-  
+
   .sidebar,
   .right-sidebar {
     display: none;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .header {
     flex-direction: column;
-    gap: var(--snice-spacing-md, 1rem);
+    align-items: stretch;
+    gap: var(--snice-spacing-sm, 0.75rem);
+    padding: var(--snice-spacing-md, 1rem);
   }
-  
+
   .header-center {
     margin: 0;
     max-width: none;
     width: 100%;
+  }
+
+  .main {
+    padding: var(--snice-spacing-md, 1rem);
   }
 }

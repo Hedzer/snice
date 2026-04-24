@@ -8,13 +8,13 @@
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface);
 }
 
 .header {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface-container-high);
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
-  padding: var(--snice-spacing-lg, 2rem);
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
 }
 
 .main {
@@ -66,9 +66,13 @@
 }
 
 .footer {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface-container);
   border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
-  padding: var(--snice-spacing-lg, 2rem);
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
+}
+
+.footer:empty {
+  display: none;
 }
 
 /* Auto-responsive grid */

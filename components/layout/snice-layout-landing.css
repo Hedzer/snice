@@ -17,11 +17,13 @@
 }
 
 .header {
-  background: var(--snice-color-surface);
+  background: color-mix(in srgb, var(--snice-color-surface) 72%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  -webkit-backdrop-filter: saturate(1.4) blur(8px);
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--snice-z-sticky, 10);
 }
 
 .header .container {

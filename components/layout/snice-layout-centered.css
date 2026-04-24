@@ -9,43 +9,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-surface-container-low);
+  padding: var(--snice-spacing-xl, 2rem);
+  background: var(--snice-color-surface);
 }
 
 .container {
   width: 100%;
-  max-width: 400px;
-  background: var(--snice-color-surface);
-  border-radius: var(--snice-border-radius-lg, 8px);
-  box-shadow: var(--snice-shadow-md);
-  padding: var(--snice-spacing-xl, 3rem);
+  max-width: 25rem;
+  background: var(--snice-color-surface-container-highest);
+  border: 1px solid var(--snice-color-border-subtle, transparent);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  box-shadow: var(--snice-shadow-lg);
+  padding: var(--snice-spacing-xl, 2rem);
 }
 
-/* Width variants */
-:host([width="sm"]) .container {
-  max-width: 320px;
-}
+:host([width="sm"]) .container { max-width: 20rem; }
+:host([width="md"]) .container { max-width: 25rem; }
+:host([width="lg"]) .container { max-width: 32rem; }
+:host([width="xl"]) .container { max-width: 38rem; }
 
-:host([width="md"]) .container {
-  max-width: 400px;
-}
-
-:host([width="lg"]) .container {
-  max-width: 500px;
-}
-
-:host([width="xl"]) .container {
-  max-width: 600px;
-}
-
-/* Mobile responsive */
 @media (max-width: 480px) {
   .layout {
     padding: var(--snice-spacing-md, 1rem);
   }
-  
+
   .container {
-    padding: var(--snice-spacing-lg, 2rem);
+    padding: var(--snice-spacing-lg, 1.5rem);
   }
 }

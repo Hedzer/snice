@@ -15,11 +15,11 @@
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
-  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
-  background: var(--snice-color-surface);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
+  background: var(--snice-color-surface-container-high);
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   position: relative;
-  z-index: var(--snice-z-sticky, 1020);
+  z-index: var(--snice-z-sticky, 10);
 }
 
 .header-brand {
@@ -54,8 +54,8 @@
 }
 
 .sidebar-toggle:hover {
-  background: var(--snice-color-primary, rgb(59 130 246));
-  color: var(--snice-color-text-inverse, white);
+  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover));
+  color: var(--snice-color-text);
 }
 
 .sidebar-toggle:focus-visible {
@@ -83,7 +83,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface);
 }
 
 .sidebar-drawer {
@@ -99,17 +99,17 @@
 
 .main {
   flex: 1;
-  padding: var(--snice-spacing-lg, 1.25rem);
+  padding: var(--snice-spacing-xl, 2rem);
   overflow-y: auto;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface);
   position: relative;
   z-index: 0;
 }
 
 /* Footer spans full width */
 .footer {
-  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem);
-  background: var(--snice-color-surface);
+  padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
+  background: var(--snice-color-surface-container);
   border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
