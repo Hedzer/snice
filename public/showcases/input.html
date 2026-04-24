@@ -34,30 +34,28 @@
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo demo-col">
           <snice-input label="Search" placeholder="Search..." prefix-icon="search">
-            <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+            <svg slot="prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
           </snice-input>
           <snice-input label="Email" placeholder="you@example.com" prefix-icon="mail" suffix-icon="check_circle">
-            <span slot="prefix-icon" class="material-symbols-outlined">mail</span>
-            <span slot="suffix-icon" class="material-symbols-outlined">check_circle</span>
+            <svg slot="prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+            <svg slot="suffix-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd"/></svg>
           </snice-input>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-input label="Search" placeholder="Search..."
-  prefix-icon="search"&gt;
-  &lt;span slot="prefix-icon"
-    class="material-symbols-outlined"&gt;
-    search&lt;/span&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-input label="Search" placeholder="Search..."&gt;
+  &lt;svg slot="prefix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- magnifying-glass --&gt;
+  &lt;/svg&gt;
 &lt;/snice-input&gt;
 
-&lt;snice-input label="Email"
-  prefix-icon="mail" suffix-icon="check_circle"&gt;
-  &lt;span slot="prefix-icon"
-    class="material-symbols-outlined"&gt;
-    mail&lt;/span&gt;
-  &lt;span slot="suffix-icon"
-    class="material-symbols-outlined"&gt;
-    check_circle&lt;/span&gt;
+&lt;snice-input label="Email"&gt;
+  &lt;svg slot="prefix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- envelope --&gt;
+  &lt;/svg&gt;
+  &lt;svg slot="suffix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- check-circle --&gt;
+  &lt;/svg&gt;
 &lt;/snice-input&gt;</snice-code-block>
         </div>
       </div>

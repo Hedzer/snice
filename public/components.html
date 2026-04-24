@@ -448,9 +448,9 @@
                onmouseleave="this.querySelector('snice-action-bar').hide()">
             Hover me
             <snice-action-bar position="bottom" variant="pill">
-              <snice-button variant="text" circle size="small"><span slot="icon" class="material-symbols-outlined">edit</span></snice-button>
-              <snice-button variant="text" circle size="small"><span slot="icon" class="material-symbols-outlined">content_copy</span></snice-button>
-              <snice-button variant="danger" circle size="small"><span slot="icon" class="material-symbols-outlined">delete</span></snice-button>
+              <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/></svg></snice-button>
+              <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"/></svg></snice-button>
+              <snice-button variant="danger" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg></snice-button>
             </snice-action-bar>
           </div>
         </div>
@@ -462,13 +462,13 @@
   Hover me
   &lt;snice-action-bar position="bottom" variant="pill"&gt;
     &lt;snice-button variant="text" circle size="small"&gt;
-      &lt;span slot="icon" class="material-symbols-outlined"&gt;edit&lt;/span&gt;
+      &lt;svg slot="icon" viewBox="0 0 24 24"&gt;&lt;!-- pencil --&gt;&lt;/svg&gt;
     &lt;/snice-button&gt;
     &lt;snice-button variant="text" circle size="small"&gt;
-      &lt;span slot="icon" class="material-symbols-outlined"&gt;content_copy&lt;/span&gt;
+      &lt;svg slot="icon" viewBox="0 0 24 24"&gt;&lt;!-- clipboard --&gt;&lt;/svg&gt;
     &lt;/snice-button&gt;
     &lt;snice-button variant="danger" circle size="small"&gt;
-      &lt;span slot="icon" class="material-symbols-outlined"&gt;delete&lt;/span&gt;
+      &lt;svg slot="icon" viewBox="0 0 24 24"&gt;&lt;!-- trash --&gt;&lt;/svg&gt;
     &lt;/snice-button&gt;
   &lt;/snice-action-bar&gt;
 &lt;/div&gt;</snice-code-block>
@@ -479,8 +479,8 @@
           <div style="position:relative;width:16rem;height:8rem;background:var(--snice-color-surface-container-high,rgb(252 251 249));border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:0.5rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,rgb(102 102 102));font-size:0.875rem">
             Always visible
             <snice-action-bar no-animation position="top-right" size="small">
-              <snice-button variant="text" circle size="small"><span slot="icon" class="material-symbols-outlined">edit</span></snice-button>
-              <snice-button variant="danger" circle size="small"><span slot="icon" class="material-symbols-outlined">delete</span></snice-button>
+              <snice-button variant="text" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/></svg></snice-button>
+              <snice-button variant="danger" circle size="small"><svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg></snice-button>
             </snice-action-bar>
           </div>
         </div>
@@ -492,10 +492,10 @@
   size="small"
 &gt;
   &lt;snice-button variant="text" circle size="small"&gt;
-    &lt;span slot="icon" class="material-symbols-outlined"&gt;edit&lt;/span&gt;
+    &lt;svg slot="icon" viewBox="0 0 24 24"&gt;&lt;!-- pencil --&gt;&lt;/svg&gt;
   &lt;/snice-button&gt;
   &lt;snice-button variant="danger" circle size="small"&gt;
-    &lt;span slot="icon" class="material-symbols-outlined"&gt;delete&lt;/span&gt;
+    &lt;svg slot="icon" viewBox="0 0 24 24"&gt;&lt;!-- trash --&gt;&lt;/svg&gt;
   &lt;/snice-button&gt;
 &lt;/snice-action-bar&gt;</snice-code-block>
         </div>
@@ -1975,7 +1975,7 @@ tiles.addEventListener('tile-click',
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%">
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
-                <span class="material-symbols-outlined" style="font-size:2rem">code</span>
+                <svg style="width:2rem;height:2rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"/></svg>
               </div>
               <span style="color:#6366f1;font-size:11px;font-weight:600;letter-spacing:0.05em">TECHNOLOGY</span>
               <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">The Future of Web Components</h4>
@@ -1987,7 +1987,7 @@ tiles.addEventListener('tile-click',
             </snice-card>
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
-                <span class="material-symbols-outlined" style="font-size:2rem">palette</span>
+                <svg style="width:2rem;height:2rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4.098 19.902 5.304 0-6.401 6.401M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 0 0 3.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008Z"/></svg>
               </div>
               <span style="color:#ec4899;font-size:11px;font-weight:600;letter-spacing:0.05em">DESIGN</span>
               <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">UI/UX Best Practices</h4>
@@ -1999,7 +1999,7 @@ tiles.addEventListener('tile-click',
             </snice-card>
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
-                <span class="material-symbols-outlined" style="font-size:2rem">rocket_launch</span>
+                <svg style="width:2rem;height:2rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/></svg>
               </div>
               <span style="color:#0ea5e9;font-size:11px;font-weight:600;letter-spacing:0.05em">DEVELOPMENT</span>
               <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">Building Scalable Apps</h4>
@@ -2011,7 +2011,7 @@ tiles.addEventListener('tile-click',
             </snice-card>
             <snice-card variant="elevated" clickable>
               <div slot="image" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);height:100px;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;letter-spacing:0.05em">
-                <span class="material-symbols-outlined" style="font-size:2rem">security</span>
+                <svg style="width:2rem;height:2rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12.75 2.25 2.25 4.5-4.5M12 1.75 2.25 5.25v7.5c0 4.97 3.03 9.25 7.5 10.5a11.25 11.25 0 0 0 4.5 0c4.47-1.25 7.5-5.53 7.5-10.5v-7.5L12 1.75Z"/></svg>
               </div>
               <span style="color:#10b981;font-size:11px;font-weight:600;letter-spacing:0.05em">SECURITY</span>
               <h4 style="margin:0.25rem 0 0.35rem;font-size:0.9rem;font-weight:600">Auth Patterns in 2025</h4>
@@ -2031,7 +2031,7 @@ tiles.addEventListener('tile-click',
                   <p style="margin:4px 0;font-size:1.5rem;font-weight:700">$48.2k</p>
                   <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 12.5% from last month</p>
                 </div>
-                <span class="material-symbols-outlined" style="font-size:2rem;color:#6366f1;background:rgba(99,102,241,0.1);padding:0.5rem;border-radius:8px">payments</span>
+                <svg style="width:2rem;height:2rem;color:#6366f1;background:rgba(99,102,241,0.1);padding:0.5rem;border-radius:8px;box-sizing:content-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12m-3-2.818.879.659c.97.73 2.547.73 3.516 0 .969-.73.969-1.912 0-2.642-.485-.365-1.12-.547-1.757-.547-1.03 0-1.879-.672-1.879-1.5s.879-1.5 1.879-1.5c.816 0 1.55.353 2.121.879M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
               </div>
             </snice-card>
             <snice-card variant="flat">
@@ -2041,7 +2041,7 @@ tiles.addEventListener('tile-click',
                   <p style="margin:4px 0;font-size:1.5rem;font-weight:700">2,847</p>
                   <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 8.1% from last week</p>
                 </div>
-                <span class="material-symbols-outlined" style="font-size:2rem;color:#10b981;background:rgba(16,185,129,0.1);padding:0.5rem;border-radius:8px">group</span>
+                <svg style="width:2rem;height:2rem;color:#10b981;background:rgba(16,185,129,0.1);padding:0.5rem;border-radius:8px;box-sizing:content-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
               </div>
             </snice-card>
             <snice-card variant="flat">
@@ -2051,7 +2051,7 @@ tiles.addEventListener('tile-click',
                   <p style="margin:4px 0;font-size:1.5rem;font-weight:700">3.24%</p>
                   <p style="margin:0;color:var(--snice-color-danger);font-size:0.75rem">↓ 2% from last month</p>
                 </div>
-                <span class="material-symbols-outlined" style="font-size:2rem;color:#f59e0b;background:rgba(245,158,11,0.1);padding:0.5rem;border-radius:8px">trending_up</span>
+                <svg style="width:2rem;height:2rem;color:#f59e0b;background:rgba(245,158,11,0.1);padding:0.5rem;border-radius:8px;box-sizing:content-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg>
               </div>
             </snice-card>
             <snice-card variant="flat">
@@ -2061,7 +2061,7 @@ tiles.addEventListener('tile-click',
                   <p style="margin:4px 0;font-size:1.5rem;font-weight:700">142ms</p>
                   <p style="margin:0;color:var(--snice-color-success);font-size:0.75rem">↑ 15% faster</p>
                 </div>
-                <span class="material-symbols-outlined" style="font-size:2rem;color:#ef4444;background:rgba(239,68,68,0.1);padding:0.5rem;border-radius:8px">speed</span>
+                <svg style="width:2rem;height:2rem;color:#ef4444;background:rgba(239,68,68,0.1);padding:0.5rem;border-radius:8px;box-sizing:content-box" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd"/></svg>
               </div>
             </snice-card>
           </div>
@@ -2071,7 +2071,7 @@ tiles.addEventListener('tile-click',
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Blog card with gradient image slot --&gt;
 &lt;snice-card variant="elevated" clickable&gt;
   &lt;div slot="image" style="background:linear-gradient(...)"&gt;
-    &lt;span class="material-symbols-outlined"&gt;code&lt;/span&gt;
+    &lt;svg&gt;&lt;!-- code icon --&gt;&lt;/svg&gt;
   &lt;/div&gt;
   &lt;h4&gt;Title&lt;/h4&gt;
   &lt;p&gt;Description...&lt;/p&gt;
@@ -4048,30 +4048,28 @@ el.addEventListener('comment-add',
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo demo-col">
           <snice-input label="Search" placeholder="Search..." prefix-icon="search">
-            <span slot="prefix-icon" class="material-symbols-outlined">search</span>
+            <svg slot="prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
           </snice-input>
           <snice-input label="Email" placeholder="you@example.com" prefix-icon="mail" suffix-icon="check_circle">
-            <span slot="prefix-icon" class="material-symbols-outlined">mail</span>
-            <span slot="suffix-icon" class="material-symbols-outlined">check_circle</span>
+            <svg slot="prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+            <svg slot="suffix-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd"/></svg>
           </snice-input>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-input label="Search" placeholder="Search..."
-  prefix-icon="search"&gt;
-  &lt;span slot="prefix-icon"
-    class="material-symbols-outlined"&gt;
-    search&lt;/span&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-input label="Search" placeholder="Search..."&gt;
+  &lt;svg slot="prefix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- magnifying-glass --&gt;
+  &lt;/svg&gt;
 &lt;/snice-input&gt;
 
-&lt;snice-input label="Email"
-  prefix-icon="mail" suffix-icon="check_circle"&gt;
-  &lt;span slot="prefix-icon"
-    class="material-symbols-outlined"&gt;
-    mail&lt;/span&gt;
-  &lt;span slot="suffix-icon"
-    class="material-symbols-outlined"&gt;
-    check_circle&lt;/span&gt;
+&lt;snice-input label="Email"&gt;
+  &lt;svg slot="prefix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- envelope --&gt;
+  &lt;/svg&gt;
+  &lt;svg slot="suffix-icon" viewBox="0 0 24 24"&gt;
+    &lt;!-- check-circle --&gt;
+  &lt;/svg&gt;
 &lt;/snice-input&gt;</snice-code-block>
         </div>
       </div>
@@ -4460,15 +4458,15 @@ el.addEventListener('comment-add',
               <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.4rem;display:block">With Icons &amp; Dividers</span>
               <snice-list dividers style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
                 <snice-list-item heading="Document.pdf" description="Updated 2 hours ago">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">description</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-primary,#3b82f6)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                   <span slot="after">2.4 MB</span>
                 </snice-list-item>
                 <snice-list-item heading="Presentation.pptx" description="Updated yesterday">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">slideshow</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-warning,#f59e0b)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 14.25v2.25l3-1.5-3-1.5ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                   <span slot="after">5.1 MB</span>
                 </snice-list-item>
                 <snice-list-item heading="Budget.xlsx" description="Updated 3 days ago">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">table_chart</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-success,#10b981)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125M17.25 4.5v15m-11.25 0c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125M17.25 4.5c.621 0 1.125.504 1.125 1.125m0 0h-3m3 0v1.5c0 .621-.504 1.125-1.125 1.125m-5.25-2.625h5.25m0 0V18.375m-11.25 0v-13.5m0 0c.621 0 1.125.504 1.125 1.125M21 3.375V5.625m-17.625 12.75V5.625"/></svg>
                   <span slot="after">876 KB</span>
                 </snice-list-item>
               </snice-list>
@@ -4477,16 +4475,16 @@ el.addEventListener('comment-add',
               <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--snice-color-text-tertiary,#888);margin-bottom:0.4rem;display:block">Searchable</span>
               <snice-list searchable dividers id="demo-search-list" style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;overflow:hidden">
                 <snice-list-item heading="Alice Johnson" description="alice@example.com">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-primary,#3b82f6)">person</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-primary,#3b82f6)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
                 </snice-list-item>
                 <snice-list-item heading="Bob Smith" description="bob@example.com">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-success,#10b981)">person</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-success,#10b981)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
                 </snice-list-item>
                 <snice-list-item heading="Carol Williams" description="carol@example.com">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-warning,#f59e0b)">person</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-warning,#f59e0b)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
                 </snice-list-item>
                 <snice-list-item heading="Dave Chen" description="dave@example.com">
-                  <span slot="before" class="material-symbols-outlined" style="font-size:20px;color:var(--snice-color-danger,#ef4444)">person</span>
+                  <svg slot="before" style="width:20px;height:20px;color:var(--snice-color-danger,#ef4444)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
                 </snice-list-item>
               </snice-list>
             </div>
@@ -4497,9 +4495,7 @@ el.addEventListener('comment-add',
           <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-list dividers&gt;
   &lt;snice-list-item heading="Document.pdf"
     description="Updated 2h ago"&gt;
-    &lt;span slot="before" class="material-symbols-outlined"&gt;
-      description
-    &lt;/span&gt;
+    &lt;svg slot="before"&gt;&lt;!-- document icon --&gt;&lt;/svg&gt;
     &lt;span slot="after"&gt;2.4 MB&lt;/span&gt;
   &lt;/snice-list-item&gt;
 &lt;/snice-list&gt;
@@ -4726,47 +4722,47 @@ md.addEventListener('link-click',
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-cabin.jpg?v=80938d7" alt="Mountain cabin" loading="lazy">
               <div class="pin-body"><div class="pin-title">Mountain Retreat</div><div class="pin-desc">Minimalist cabin design in the Alps</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#667eea">JW</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 2.4k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#667eea">JW</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 2.4k</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-sunset.jpg?v=80938d7" alt="Sunset colors" loading="lazy">
               <div class="pin-body"><div class="pin-title">Sunset Palette</div><div class="pin-desc">Color inspiration for your next interior project</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#f093fb">AK</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 891</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#f093fb">AK</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 891</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-garden.jpg?v=80938d7" alt="Garden" loading="lazy">
               <div class="pin-body"><div class="pin-title">Urban Garden Tips</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#43e97b">ML</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 342</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#43e97b">ML</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 342</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-dark-ui.jpg?v=80938d7" alt="Dark UI" loading="lazy">
               <div class="pin-body"><div class="pin-title">Dark Mode UI Kit</div><div class="pin-desc">50+ components designed for dark interfaces</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#2c5364">DS</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 5.1k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#2c5364">DS</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 5.1k</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-food.jpg?v=80938d7" alt="Food bowl" loading="lazy">
               <div class="pin-body"><div class="pin-title">Breakfast Bowl</div><div class="pin-desc">Healthy smoothie recipe with granola topping</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#fa709a">RH</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 1.7k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#fa709a">RH</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 1.7k</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-ceramic.jpg?v=80938d7" alt="Ceramics" loading="lazy">
               <div class="pin-body"><div class="pin-title">Ceramic Collection</div><div class="pin-desc">Handmade pottery from Japanese artisans</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#a18cd1">YT</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 3.2k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#a18cd1">YT</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 3.2k</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-type.jpg?v=80938d7" alt="Typography" loading="lazy">
               <div class="pin-body"><div class="pin-title">Typography Trends 2026</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#f5576c">CB</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 567</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#f5576c">CB</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 567</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-coastal.jpg?v=80938d7" alt="Coastal room" loading="lazy">
               <div class="pin-body"><div class="pin-title">Coastal Living Room</div><div class="pin-desc">Light and airy beach house inspiration</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#4facfe">NP</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 4.8k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#4facfe">NP</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 4.8k</div></div>
             </div>
             <div class="pin-card">
               <img class="pin-img" src="assets/photos/masonry-desk.jpg?v=80938d7" alt="Workspace" loading="lazy">
               <div class="pin-body"><div class="pin-title">Workspace Setup</div><div class="pin-desc">Developer desk organization ideas</div></div>
-              <div class="pin-footer"><div class="pin-avatar" style="background:#6a11cb">EP</div><div class="pin-meta"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 2.1k</div></div>
+              <div class="pin-footer"><div class="pin-avatar" style="background:#6a11cb">EP</div><div class="pin-meta"><svg style="width:14px;height:14px;vertical-align:-2px" viewBox="0 0 24 24" fill="currentColor"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 2.1k</div></div>
             </div>
           </snice-masonry>
         </div>
