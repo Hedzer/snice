@@ -206,7 +206,7 @@ class ProductDetailPage extends HTMLElement {
       }
       .tag {
         padding: 0.25rem 0.75rem;
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 9999px;
         font-size: 0.75rem;
@@ -229,7 +229,7 @@ class ProductDetailPage extends HTMLElement {
         width: 2.5rem;
         height: 2.5rem;
         border: none;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         font-size: 1.125rem;
         cursor: pointer;
         display: flex;
@@ -238,7 +238,7 @@ class ProductDetailPage extends HTMLElement {
         transition: background 0.15s;
       }
       .quantity-picker button:hover {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
       .quantity-picker span {
         min-width: 2.5rem;

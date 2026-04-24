@@ -175,7 +175,7 @@ class HomePage extends HTMLElement {
         align-items: center;
         justify-content: center;
         padding: 1.25rem;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 12px;
         text-decoration: none;

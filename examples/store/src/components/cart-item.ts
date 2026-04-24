@@ -110,14 +110,14 @@ class CartItemRow extends HTMLElement {
         justify-content: center;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 6px;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         cursor: pointer;
         font-size: 1rem;
         color: var(--snice-color-text, rgb(23 23 23));
         transition: background 0.15s;
       }
       .qty-btn:hover {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
       .qty {
         min-width: 2rem;

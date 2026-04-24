@@ -218,7 +218,7 @@ class TaskModal extends HTMLElement {
       }
 
       .modal {
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border-radius: 12px;
         box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
         width: 100%;
@@ -263,7 +263,7 @@ class TaskModal extends HTMLElement {
       }
 
       .modal__close:hover {
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         color: var(--snice-color-text, rgb(15 23 42));
       }
 
@@ -299,7 +299,7 @@ class TaskModal extends HTMLElement {
         font-size: 0.875rem;
         font-family: inherit;
         color: var(--snice-color-text, rgb(15 23 42));
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         outline: none;
         transition: border-color 150ms ease;
       }
@@ -348,7 +348,7 @@ class TaskModal extends HTMLElement {
       }
 
       .btn--secondary {
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         color: var(--snice-color-text-secondary, rgb(100 116 139));
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
       }

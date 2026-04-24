@@ -93,10 +93,10 @@ class StoreLayout extends HTMLElement implements Layout {
         min-height: 100vh;
         font-family: 'Inter', var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
         color: var(--snice-color-text, rgb(23 23 23));
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
       .header {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
         position: sticky;
         top: 0;
@@ -139,7 +139,7 @@ class StoreLayout extends HTMLElement implements Layout {
         transition: background 0.15s, color 0.15s;
       }
       .nav-link:hover {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
         color: var(--snice-color-text, rgb(23 23 23));
       }
       .header-actions {
@@ -159,7 +159,7 @@ class StoreLayout extends HTMLElement implements Layout {
         transition: background 0.15s;
       }
       .cart-link:hover {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
         color: var(--snice-color-text, rgb(23 23 23));
       }
       .cart-badge {
@@ -215,7 +215,7 @@ class StoreLayout extends HTMLElement implements Layout {
         padding: 2rem 1.5rem;
       }
       .footer {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
         margin-top: auto;
       }

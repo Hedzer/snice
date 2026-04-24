@@ -63,7 +63,7 @@ class StoreModal extends HTMLElement {
         to { opacity: 1; }
       }
       .modal {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border-radius: 12px;
         box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
         max-width: 32rem;
@@ -102,7 +102,7 @@ class StoreModal extends HTMLElement {
         transition: background 0.15s;
       }
       .close-btn:hover {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
       .body {
         padding: 1.5rem;

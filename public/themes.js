@@ -120,9 +120,35 @@ const BUILDER_GROUPS = [
     title: 'Interaction Overlays',
     id: 'overlay-colors',
     vars: [
-      { name: '--snice-color-overlay-hover', label: 'Hover Overlay', type: 'text', default: 'hsl(0 0% 0% / 0.04)', placeholder: 'Alpha tint layered over surface on hover (MUI pattern)' },
-      { name: '--snice-color-overlay-selected', label: 'Selected Overlay', type: 'text', default: 'hsl(220 90% 56% / 0.08)', placeholder: 'Alpha primary tint for selected rows/items' },
+      { name: '--snice-color-overlay-hover', label: 'Hover Overlay', type: 'text', default: 'hsl(0 0% 0% / 0.04)', placeholder: 'Alpha tint layered over surface on hover' },
+      { name: '--snice-color-overlay-selected', label: 'Selected Overlay', type: 'text', default: 'hsl(220 90% 56% / 0.08)', placeholder: 'Primary-tinted overlay for selected rows/items' },
       { name: '--snice-color-overlay-selected-hover', label: 'Selected+Hover', type: 'text', default: 'hsl(220 90% 56% / 0.12)', placeholder: 'Selected state when also hovered' },
+    ],
+  },
+  {
+    title: 'Gradients',
+    id: 'gradients',
+    collapsed: true,
+    vars: [
+      { name: '--snice-gradient-subtle', label: 'Subtle', type: 'text', default: 'linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 60%)', placeholder: 'Soft top-highlight for raised surfaces' },
+      { name: '--snice-gradient-convex', label: 'Convex', type: 'text', default: 'linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%)', placeholder: 'Stronger top-highlight sheen for interactive surfaces' },
+      { name: '--snice-gradient-surface', label: 'Surface', type: 'text', default: 'linear-gradient(to bottom, hsl(0 0% 100% / 0.06), transparent 50%)', placeholder: 'Gentlest sheen for large surfaces' },
+    ],
+  },
+  {
+    title: 'Layers (z-index)',
+    id: 'layers',
+    collapsed: true,
+    vars: [
+      { name: '--snice-z-base', label: 'Base', type: 'text', default: '0' },
+      { name: '--snice-z-raised', label: 'Raised', type: 'text', default: '1' },
+      { name: '--snice-z-sticky', label: 'Sticky', type: 'text', default: '10' },
+      { name: '--snice-z-fixed', label: 'Fixed', type: 'text', default: '30' },
+      { name: '--snice-z-floating', label: 'Floating', type: 'text', default: '100' },
+      { name: '--snice-z-scrim', label: 'Scrim', type: 'text', default: '1000' },
+      { name: '--snice-z-overlay', label: 'Overlay', type: 'text', default: '1100' },
+      { name: '--snice-z-popover-over', label: 'Popover Over', type: 'text', default: '1200' },
+      { name: '--snice-z-notification', label: 'Notification', type: 'text', default: '1300' },
     ],
   },
   {

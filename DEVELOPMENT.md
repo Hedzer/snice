@@ -136,7 +136,7 @@ class MyElement {
   /* Semantic - Use hsl() wrapper */
   --snice-color-primary: hsl(var(--snice-color-blue-600));
   --snice-color-text: hsl(var(--snice-color-gray-900));
-  --snice-color-background: hsl(0 0% 100%);
+  --snice-color-surface: hsl(0 0% 100%);
 }
 ```
 
@@ -199,12 +199,12 @@ class MyElement {
 
 **Z-index Layers:**
 ```css
---snice-z-index-dropdown: 1000;
---snice-z-index-sticky: 1020;
---snice-z-index-fixed: 1030;
---snice-z-index-modal-backdrop: 1040;
---snice-z-index-modal: 1050;
---snice-z-index-tooltip: 1070;
+--snice-z-floating: 1000;
+--snice-z-sticky: 1020;
+--snice-z-fixed: 1030;
+--snice-z-scrim: 1040;
+--snice-z-overlay: 1050;
+--snice-z-popover: 1070;
 ```
 
 ### Dark Theme
@@ -215,7 +215,7 @@ Automatic theme switching via `prefers-color-scheme`:
 @media (prefers-color-scheme: dark) {
   :root {
     --snice-color-text: hsl(var(--snice-color-gray-50));
-    --snice-color-background: hsl(var(--snice-color-gray-900));
+    --snice-color-surface: hsl(var(--snice-color-gray-900));
     /* ... all semantic colors updated */
   }
 }
@@ -237,7 +237,7 @@ color: var(--snice-color-text);
 
 ```css
 /* ✓ Correct - semantic */
-background: var(--snice-color-background, white);
+background: var(--snice-color-surface, white);
 
 /* ✗ Wrong - primitive */
 background: var(--snice-color-gray-50, white);
@@ -321,7 +321,7 @@ export class SniceMyComponent extends HTMLElement {
 
 .my-component {
   padding: var(--snice-spacing-md, 1rem);
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-surface, white);
   color: var(--snice-color-text, black);
 }
 

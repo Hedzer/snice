@@ -166,13 +166,13 @@ class CartPage extends HTMLElement {
         align-items: start;
       }
       .cart-items {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border-radius: 12px;
         padding: 0 1.5rem;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
       .order-summary {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 12px;
         padding: 1.5rem;

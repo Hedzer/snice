@@ -67,7 +67,7 @@ class TaskCard extends HTMLElement {
       }
 
       .card {
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
         border-radius: 8px;
         padding: 0.875rem;
@@ -147,7 +147,7 @@ class TaskCard extends HTMLElement {
         padding: 0.0625rem 0.375rem;
         border-radius: 4px;
         font-size: 0.6875rem;
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         color: var(--snice-color-text-secondary, rgb(100 116 139));
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
       }

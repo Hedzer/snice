@@ -221,7 +221,7 @@
 
 :host([position="top"]) .drawer {
   border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+  box-shadow: var(--snice-shadow-lg, 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06));
 }
 
 /* Position: Bottom */
@@ -267,7 +267,7 @@
 
 :host([position="bottom"]) .drawer {
   border-top: 1px solid var(--snice-color-border, rgb(229 231 235));
-  box-shadow: 0 -4px 16px rgb(0 0 0 / 0.25);
+  box-shadow: var(--snice-shadow-lg, 0 10px 24px -3px hsl(0 0% 0% / 0.05), 0 4px 12px -4px hsl(0 0% 0% / 0.06));
 }
 
 /* Drawer Header */

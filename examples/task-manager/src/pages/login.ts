@@ -130,7 +130,7 @@ class LoginPage extends HTMLElement {
       }
 
       .login-card {
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border-radius: 16px;
         box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         padding: 2.5rem;
@@ -192,7 +192,7 @@ class LoginPage extends HTMLElement {
         font-size: 0.9375rem;
         font-family: inherit;
         color: var(--snice-color-text, rgb(15 23 42));
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         outline: none;
         transition: all 150ms ease;
       }
@@ -262,7 +262,7 @@ class LoginPage extends HTMLElement {
         font-family: 'SF Mono', Monaco, monospace;
         font-size: 0.75rem;
         color: var(--snice-color-text-secondary, rgb(100 116 139));
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         padding: 0.125rem 0.375rem;
         border-radius: 4px;
       }

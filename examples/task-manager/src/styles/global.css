@@ -15,8 +15,8 @@
   --snice-color-text: rgb(15 23 42);
   --snice-color-text-secondary: rgb(100 116 139);
   --snice-color-text-tertiary: rgb(148 163 184);
-  --snice-color-background: rgb(248 250 252);
-  --snice-color-background-element: rgb(255 255 255);
+  --snice-color-surface: rgb(248 250 252);
+  --snice-color-surface-container-high: rgb(255 255 255);
   --snice-color-border: rgb(226 232 240);
   --snice-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --snice-border-radius-md: 6px;
@@ -30,8 +30,8 @@
   --snice-color-text: rgb(226 232 240);
   --snice-color-text-secondary: rgb(148 163 184);
   --snice-color-text-tertiary: rgb(100 116 139);
-  --snice-color-background: rgb(15 23 42);
-  --snice-color-background-element: rgb(30 41 59);
+  --snice-color-surface: rgb(15 23 42);
+  --snice-color-surface-container-high: rgb(30 41 59);
   --snice-color-border: rgb(51 65 85);
 }
 
@@ -39,7 +39,7 @@ html,
 body {
   height: 100%;
   font-family: var(--snice-font-family);
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   color: var(--snice-color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

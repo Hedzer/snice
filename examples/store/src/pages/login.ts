@@ -103,7 +103,7 @@ class LoginPage extends HTMLElement {
       .login-card {
         width: 100%;
         max-width: 24rem;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 16px;
         padding: 2rem;
@@ -148,7 +148,7 @@ class LoginPage extends HTMLElement {
         font-size: 0.9375rem;
         font-family: inherit;
         color: var(--snice-color-text, rgb(23 23 23));
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         transition: border-color 0.15s;
       }
       input:focus {

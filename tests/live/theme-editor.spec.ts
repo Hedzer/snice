@@ -518,7 +518,7 @@ test.describe('Theme Editor — CSS applies to components', () => {
       return {
         text: cs.getPropertyValue('--snice-color-text').trim(),
         border: cs.getPropertyValue('--snice-color-border').trim(),
-        bgSecondary: cs.getPropertyValue('--snice-color-background-secondary').trim(),
+        bgSecondary: cs.getPropertyValue('--snice-color-surface-container-low').trim(),
       };
     });
     const defaults = await getVars();
@@ -659,7 +659,7 @@ test.describe('Theme Editor — CSS applies to components', () => {
 
     // Record default dark background
     const defaultDarkBg = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).getPropertyValue('--snice-color-background').trim()
+      getComputedStyle(document.documentElement).getPropertyValue('--snice-color-surface').trim()
     );
 
     // Apply ocean (it has cssDark overrides for background)
@@ -667,7 +667,7 @@ test.describe('Theme Editor — CSS applies to components', () => {
     await page.waitForTimeout(200);
 
     const oceanDarkBg = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).getPropertyValue('--snice-color-background').trim()
+      getComputedStyle(document.documentElement).getPropertyValue('--snice-color-surface').trim()
     );
 
     // Ocean dark background should differ from default dark

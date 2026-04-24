@@ -97,7 +97,7 @@ Every `var()` MUST include a fallback value. Components must work without the th
 ```css
 /* ✅ Correct — fallback matches theme.css default */
 color: var(--snice-color-text, rgb(23 23 23));
-background: var(--snice-color-background, rgb(255 255 255));
+background: var(--snice-color-surface, rgb(255 255 255));
 padding: var(--snice-spacing-md, 1rem);
 
 /* ❌ NEVER — missing fallback */
@@ -117,7 +117,7 @@ Component-level variables reference theme tokens with correct fallbacks. Interna
 ```css
 :host {
   /* Component var → theme token → theme's default as fallback */
-  --component-bg: var(--snice-color-background, rgb(255 255 255));
+  --component-bg: var(--snice-color-surface, rgb(255 255 255));
   --component-text: var(--snice-color-text, rgb(23 23 23));
 }
 .component {
@@ -144,8 +144,8 @@ var(--snice-color-text, rgb(23 23 23))
 var(--snice-color-text-secondary, rgb(82 82 82))
 var(--snice-color-text-tertiary, rgb(115 115 115))
 var(--snice-color-text-inverse, rgb(250 250 250))
-var(--snice-color-background, rgb(255 255 255))
-var(--snice-color-background-element, rgb(252 251 249))
+var(--snice-color-surface, rgb(255 255 255))
+var(--snice-color-surface-container-high, rgb(252 251 249))
 var(--snice-color-border, rgb(226 226 226))
 var(--snice-color-primary, rgb(37 99 235))
 var(--snice-color-success, rgb(22 163 74))

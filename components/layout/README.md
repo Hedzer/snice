@@ -236,7 +236,7 @@ All layout components use the Snice design system CSS custom properties for cons
 ```css
 :root {
   --snice-color-primary: #your-primary-color;
-  --snice-color-background: #your-background-color;
+  --snice-color-surface: #your-background-color;
   --snice-spacing-md: your-spacing-value;
   /* ... other theme variables */
 }

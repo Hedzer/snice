@@ -71,7 +71,7 @@ class ProductCard extends HTMLElement {
         display: flex;
         flex-direction: column;
         height: 100%;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 12px;
         overflow: hidden;
@@ -87,7 +87,7 @@ class ProductCard extends HTMLElement {
         position: relative;
         aspect-ratio: 1;
         overflow: hidden;
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
       .card-image img {
         width: 100%;

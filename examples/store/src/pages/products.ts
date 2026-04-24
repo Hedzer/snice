@@ -160,7 +160,7 @@ class ProductsPage extends HTMLElement {
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 1rem;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 10px;
         min-width: 16rem;
@@ -196,7 +196,7 @@ class ProductsPage extends HTMLElement {
         padding: 0.5rem 1rem;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: 9999px;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         color: var(--snice-color-text-secondary, rgb(82 82 82));
         font-size: 0.8125rem;
         font-weight: var(--snice-font-weight-medium, 500);

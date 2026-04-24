@@ -202,7 +202,7 @@ class BoardPage extends HTMLElement {
       .toolbar__hint {
         font-size: 0.6875rem;
         color: var(--snice-color-text-tertiary, rgb(148 163 184));
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         padding: 0.125rem 0.5rem;
         border-radius: 4px;
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
@@ -226,7 +226,7 @@ class BoardPage extends HTMLElement {
         font-size: 0.875rem;
         width: 14rem;
         outline: none;
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         color: var(--snice-color-text, rgb(15 23 42));
         font-family: inherit;
         transition: border-color 150ms ease;

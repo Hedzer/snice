@@ -69,7 +69,7 @@ class StatsBar extends HTMLElement {
         align-items: center;
         gap: 1.5rem;
         padding: 0.75rem 1rem;
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
         border-radius: 10px;
       }

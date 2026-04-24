@@ -161,7 +161,7 @@ class SettingsPage extends HTMLElement {
       }
 
       .card {
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 232 240));
         border-radius: 10px;
         padding: 1.25rem;
@@ -189,7 +189,7 @@ class SettingsPage extends HTMLElement {
         font-size: 0.875rem;
         font-family: inherit;
         color: var(--snice-color-text, rgb(15 23 42));
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         outline: none;
         transition: border-color 150ms ease;
       }

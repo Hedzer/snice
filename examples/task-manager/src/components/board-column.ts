@@ -95,7 +95,7 @@ class BoardColumn extends HTMLElement {
       }
 
       .column {
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         border: 2px dashed transparent;
         border-radius: 10px;
         padding: 0.75rem;

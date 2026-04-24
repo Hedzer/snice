@@ -113,7 +113,7 @@ class AppShell extends HTMLElement implements Layout {
         justify-content: space-between;
         padding: 0 1.5rem;
         height: 3.5rem;
-        background: var(--snice-color-background-element, rgb(255 255 255));
+        background: var(--snice-color-surface-container-high, rgb(255 255 255));
         border-bottom: 1px solid var(--snice-color-border, rgb(226 232 240));
         flex-shrink: 0;
       }
@@ -163,7 +163,7 @@ class AppShell extends HTMLElement implements Layout {
       }
 
       .nav__link:hover {
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         color: var(--snice-color-text, rgb(15 23 42));
         text-decoration: none;
       }
@@ -198,7 +198,7 @@ class AppShell extends HTMLElement implements Layout {
       }
 
       .theme-toggle:hover {
-        background: var(--snice-color-background, rgb(248 250 252));
+        background: var(--snice-color-surface, rgb(248 250 252));
         color: var(--snice-color-text, rgb(15 23 42));
       }
 

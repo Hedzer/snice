@@ -233,7 +233,7 @@
 
 /* Focus States */
 :host(:focus-within) {
-  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(37 99 235 / 0.5));
   outline-offset: -2px;
 }
 
