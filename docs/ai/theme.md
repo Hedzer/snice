@@ -67,9 +67,17 @@ Modern syntax with alpha: `hsl(0 0% 0% / 0.15)` (not `hsla(0, 0%, 0%, 0.15)`)
 --snice-color-background-active: hsl(var(--snice-color-gray-200));
 --snice-color-background-disabled: hsl(var(--snice-color-gray-100));
 --snice-color-text-disabled: hsl(var(--snice-color-gray-400));
+
+/* Alpha overlays — layer over any surface rather than swap bg color */
+--snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
+--snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
+--snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
+--snice-color-border-subtle: hsl(0 0% 0% / 0.12);
 ```
 
-Dark theme uses gray-700/600/800/600 respectively.
+Dark theme inverts: gray-700/600/800/600 for bg states; overlays use white-alpha.
+
+Prefer overlays for row/cell hover and selection. They composite correctly over striped/tinted surfaces; solid bg swaps fight the palette.
 
 ## Key Design Decisions
 

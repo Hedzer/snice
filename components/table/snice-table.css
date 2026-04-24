@@ -163,7 +163,7 @@
 }
 
 :host([hoverable]) .table-body snice-row:hover {
-  background-color: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background-color: var(--snice-color-overlay-hover, rgb(0 0 0 / 0.04));
 }
 
 /* Sticky Header */

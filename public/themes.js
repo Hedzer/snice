@@ -111,7 +111,16 @@ const BUILDER_GROUPS = [
       { name: '--snice-color-border', label: 'Border', type: 'color', default: '#d4d4d4' },
       { name: '--snice-color-border-hover', label: 'Border Hover', type: 'color', default: '#a3a3a3' },
       { name: '--snice-color-border-focus', label: 'Border Focus', type: 'color', default: '#3b82f6' },
-      { name: '--snice-color-border-subtle', label: 'Border Subtle', type: 'text', default: 'hsl(0 0% 0% / 0.04)', placeholder: 'Hairline edge on elevated surfaces' },
+      { name: '--snice-color-border-subtle', label: 'Border Subtle', type: 'text', default: 'hsl(0 0% 0% / 0.12)', placeholder: 'Alpha-based border that composites over tinted surfaces' },
+    ],
+  },
+  {
+    title: 'Interaction Overlays',
+    id: 'overlay-colors',
+    vars: [
+      { name: '--snice-color-overlay-hover', label: 'Hover Overlay', type: 'text', default: 'hsl(0 0% 0% / 0.04)', placeholder: 'Alpha tint layered over surface on hover (MUI pattern)' },
+      { name: '--snice-color-overlay-selected', label: 'Selected Overlay', type: 'text', default: 'hsl(220 90% 56% / 0.08)', placeholder: 'Alpha primary tint for selected rows/items' },
+      { name: '--snice-color-overlay-selected-hover', label: 'Selected+Hover', type: 'text', default: 'hsl(220 90% 56% / 0.12)', placeholder: 'Selected state when also hovered' },
     ],
   },
   {

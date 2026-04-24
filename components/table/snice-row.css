@@ -9,21 +9,21 @@
   display: flex;
   align-items: stretch;
   width: 100%;
-  min-height: 2.5rem; /* 40px */
-  height: 2.5rem; /* 40px */
+  min-height: 2.5rem; /* 40px — rows grow with content */
   background: transparent;
   color: var(--snice-color-text, rgb(23 23 23));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   transition: background-color 0.15s ease;
 }
 
-/* Cell Base */
+/* Cell Base — stretches to row height via flex align-items: stretch on row.
+ * Explicit heights are BANNED here; they break vertical centering when any
+ * sibling cell has taller content (e.g. fat rows). */
 .cell {
   display: flex;
   align-items: center;
   border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
   min-height: 2.5rem; /* 40px */
-  height: 2.5rem; /* 40px */
   min-width: 6.25rem; /* 100px */
   flex: 1;
   word-wrap: break-word;
@@ -48,6 +48,9 @@
   width: 1rem; /* 16px */
   height: 1rem; /* 16px */
   cursor: pointer;
+  margin: 0;
+  display: block;
+  accent-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 /* Cells Container */
@@ -102,9 +105,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Row States */
+/* Row States — alpha overlays, not color swaps. Composites correctly over
+ * striped/tinted rows (MUI pattern). */
 :host(.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+  background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
 }
 
 :host(.row--clickable) .row-container {
@@ -112,15 +116,16 @@
 }
 
 :host(.row--clickable) .row-container:hover {
-  background-color: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
 }
 
 :host(.row--selected) .row-container {
-  background-color: var(--snice-color-primary-light, rgb(219 234 254));
+  background-color: var(--snice-color-overlay-selected, hsl(220 90% 56% / 0.08));
+  box-shadow: inset 2px 0 0 0 var(--snice-color-primary, rgb(37 99 235));
 }
 
 :host(.row--selected.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-primary-lighter, rgb(239 246 255));
+  background-color: var(--snice-color-overlay-selected-hover, hsl(220 90% 56% / 0.12));
 }
 
 /* Highlighted State */

@@ -1,13 +1,16 @@
-/* Header Container */
+/* Header Container — smaller, tracked, secondary-colored type establishes
+ * a clear meta hierarchy between column labels and cell content (MUI-style). */
 .header-container {
   display: flex;
   align-items: center;
   background: var(--snice-color-background-secondary, rgb(245 245 245));
-  border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   font-weight: var(--snice-font-weight-semibold, 600);
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
+  text-transform: uppercase;
   line-height: var(--snice-line-height-dense, 1.25);
-  color: var(--snice-color-text, rgb(23 23 23));
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Cells Container */
@@ -48,6 +51,9 @@
   width: 1rem; /* 16px */
   height: 1rem; /* 16px */
   cursor: pointer;
+  margin: 0;
+  display: block;
+  accent-color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .select-all-checkbox:indeterminate {
@@ -78,12 +84,14 @@
 }
 
 .header-cell[data-sortable="true"]:hover {
-  background-color: var(--snice-color-background-hover, rgb(245 245 245));
+  background-color: var(--snice-color-overlay-hover, rgb(0 0 0 / 0.04));
 }
 
-.header-cell[data-sortable="true"]:focus {
-  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
-  outline-offset: -2px;
+/* Inset ring keeps focus contained within the header cell box; outset
+ * outlines break the grid rhythm. */
+.header-cell[data-sortable="true"]:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--snice-color-primary, rgb(37 99 235));
 }
 
 /* Sort Indicator */

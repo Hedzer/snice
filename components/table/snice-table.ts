@@ -358,7 +358,9 @@ export class SniceTable extends HTMLElement {
         padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-sm, 0.75rem);
       }
 
-      /* Narrow utility columns: checkbox, expand toggle, drag handle */
+      /* Narrow utility columns: checkbox, expand toggle, drag handle.
+       * vertical-align: middle is REQUIRED — td defaults to baseline and the
+       * checkbox sits at the bottom when any other cell is taller (fat rows). */
       th.select-column,
       td.select-column,
       th.detail-toggle-cell,
@@ -369,22 +371,31 @@ export class SniceTable extends HTMLElement {
         max-width: 1.75rem;
         min-width: 1.75rem;
         text-align: center;
+        vertical-align: middle;
         padding: 0 0.125rem;
         overflow: visible;
         box-sizing: content-box;
       }
 
-      /* Force snice-checkbox compact inside table */
+      /* Force snice-checkbox compact + centered inside table */
       .select-column snice-checkbox {
         min-height: 0;
-        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
       }
 
+      /* Header — meta-typography hierarchy: smaller, tracked, secondary
+       * color so column labels read as metadata, not body content. */
       th {
         background-color: var(--snice-color-background-secondary, rgb(245 245 245));
-        color: var(--snice-color-text, rgb(23 23 23));
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
         font-weight: var(--snice-font-weight-semibold, 600);
-        border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
+        font-size: var(--snice-font-size-xs, 0.75rem);
+        letter-spacing: var(--snice-tracking-wide, 0.03em);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
       }
 
       th.sortable {
@@ -392,8 +403,10 @@ export class SniceTable extends HTMLElement {
         user-select: none;
       }
 
+      /* Alpha overlays — layer over the bg instead of swapping to another
+       * solid color. Composites correctly over striped/tinted rows. */
       th.sortable:hover {
-        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
+        background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
       }
 
       /* Row styling */
@@ -402,7 +415,7 @@ export class SniceTable extends HTMLElement {
       }
 
       :host([hoverable]) tbody tr:hover {
-        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
+        background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
       }
 
       :host([clickable]) tbody tr {
@@ -414,12 +427,12 @@ export class SniceTable extends HTMLElement {
       }
 
       tbody tr[data-selected="true"] {
-        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
-        border-left: 3px solid var(--snice-color-primary, rgb(37 99 235));
+        background-color: var(--snice-color-overlay-selected, hsl(220 90% 56% / 0.08));
+        box-shadow: inset 2px 0 0 0 var(--snice-color-primary, rgb(37 99 235));
       }
 
       tbody tr[data-selected="true"]:hover {
-        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
+        background-color: var(--snice-color-overlay-selected-hover, hsl(220 90% 56% / 0.12));
       }
 
       /* List mode - hide vertical borders */

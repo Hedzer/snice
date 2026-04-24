@@ -38,7 +38,17 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-border` | Default border color |
 | `--snice-color-border-hover` | Hovered border color |
 | `--snice-color-border-focus` | Focused border color |
-| `--snice-color-border-subtle` | Hairline edge used on elevated surfaces. Nearly invisible in light; ~8% white in dark to compensate for shadow disappearing |
+| `--snice-color-border-subtle` | Alpha-based border (~12% black in light, ~12% white in dark). Composites correctly over tinted surfaces where a solid gray would fight the palette |
+
+### Interaction overlays
+
+| Property | Description |
+|----------|-------------|
+| `--snice-color-overlay-hover` | 4% alpha tint layered over a surface on hover. Use instead of swapping `background-color` — composites over striped rows, tinted cells, and any bg without fighting the palette |
+| `--snice-color-overlay-selected` | 8% primary-tinted overlay for selected rows/items |
+| `--snice-color-overlay-selected-hover` | Selected state when also hovered |
+
+This is the MUI-style pattern. A row hover should *layer* a translucent tint, not swap to another solid color — solid swaps break down when the row is already striped or variant-tinted.
 
 ### Motion
 

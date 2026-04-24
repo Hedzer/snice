@@ -111,12 +111,22 @@
   --snice-color-border: hsl(var(--snice-color-gray-300));
   --snice-color-border-hover: hsl(var(--snice-color-gray-400));
   --snice-color-border-focus: hsl(var(--snice-color-blue-500));
+  /* Alpha-based subtle border — composites correctly over tinted surfaces
+     (MUI-style). Use for borders that sit on non-white backgrounds. */
+  --snice-color-border-subtle: hsl(0 0% 0% / 0.12);
 
   /* Interactive states */
   --snice-color-background-hover: hsl(var(--snice-color-gray-100));
   --snice-color-background-active: hsl(var(--snice-color-gray-200));
   --snice-color-background-disabled: hsl(var(--snice-color-gray-100));
   --snice-color-text-disabled: hsl(var(--snice-color-gray-400));
+
+  /* Alpha overlays for hover/selected states — layer these ON TOP of the
+     surface color rather than swapping background. Composites over any bg
+     (white, tinted, primary) without fighting the palette. */
+  --snice-color-overlay-hover: hsl(0 0% 0% / 0.04);
+  --snice-color-overlay-selected: hsl(var(--snice-color-blue-500) / 0.08);
+  --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-500) / 0.12);
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-50));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-100));
@@ -293,11 +303,17 @@
   --snice-color-border: hsl(0 0% 35%);
   --snice-color-border-hover: hsl(var(--snice-color-gray-600));
   --snice-color-border-focus: hsl(var(--snice-color-blue-400));
+  /* Alpha-based subtle border for dark mode — white with low alpha */
+  --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
 
   --snice-color-background-hover: hsl(var(--snice-color-gray-700));
   --snice-color-background-active: hsl(var(--snice-color-gray-600));
   --snice-color-background-disabled: hsl(var(--snice-color-gray-800));
   --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
+
+  --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
+  --snice-color-overlay-selected: hsl(var(--snice-color-blue-400) / 0.16);
+  --snice-color-overlay-selected-hover: hsl(var(--snice-color-blue-400) / 0.22);
 
   --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));
   --snice-color-primary-subtle-hover: hsl(var(--snice-color-blue-900));
