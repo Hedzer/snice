@@ -20,7 +20,7 @@
 }
 
 .bell-button:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .bell-icon {
@@ -51,7 +51,7 @@ span.bell-icon-img {
   width: 22rem;
   max-height: 25rem;
   overflow-y: auto;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -119,7 +119,7 @@ span.bell-icon-img {
 }
 
 .notification-item:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .notification-item.unread {

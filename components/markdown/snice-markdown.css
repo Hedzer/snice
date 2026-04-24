@@ -99,7 +99,7 @@
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   border-left: 4px solid var(--snice-color-border, rgb(226 226 226));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-radius: 0 var(--snice-border-radius-md, 0.25rem) var(--snice-border-radius-md, 0.25rem) 0;
 }
 
@@ -111,7 +111,7 @@
 .markdown-body code {
   padding: 0.125rem 0.375rem;
   font-size: 0.875em;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -123,7 +123,7 @@
   margin-top: 0;
   margin-bottom: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-md, 1rem);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow-x: auto;
@@ -156,12 +156,12 @@
 }
 
 .markdown-body th {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   font-weight: var(--snice-font-weight-semibold, 600);
 }
 
 .markdown-body tr:nth-child(even) {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 /* Horizontal rule */
@@ -192,11 +192,11 @@
 }
 
 :host([theme="github"]) .markdown-body pre {
-  background: var(--snice-color-background-tertiary, rgb(246 248 250));
+  background: var(--snice-color-surface-container, rgb(246 248 250));
   color: var(--snice-color-text, rgb(36 41 47));
 }
 
 :host([theme="github"]) .markdown-body code {
-  background: var(--snice-color-background-tertiary, rgb(246 248 250));
+  background: var(--snice-color-surface-container, rgb(246 248 250));
   color: var(--snice-color-text, rgb(36 41 47));
 }

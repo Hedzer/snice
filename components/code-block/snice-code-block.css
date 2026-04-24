@@ -2,13 +2,13 @@
   display: block;
 
   /* Dark theme defaults (One Dark) */
-  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-bg: var(--snice-color-surface-container, #282c34);
   --_cb-text: var(--snice-color-text-secondary, #abb2bf);
-  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
+  --_cb-header-bg: var(--snice-color-surface-container-low, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
   --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
-  --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
+  --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
   --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
   --_cb-highlight-bg: rgb(255 255 255 / 0.07);
@@ -31,13 +31,13 @@
 /* OS prefers light (fallback when no data-theme) */
 @media (prefers-color-scheme: light) {
   :host(:not([theme])) {
-    --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+    --_cb-bg: var(--snice-color-surface-container, #fafafa);
     --_cb-text: var(--snice-color-text, #383a42);
-    --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
+    --_cb-header-bg: var(--snice-color-surface-container-low, #eaeaeb);
     --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
     --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
     --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
-    --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
+    --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(216 216 217));
     --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
     --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
     --_cb-highlight-bg: rgb(0 0 0 / 0.05);
@@ -60,13 +60,13 @@
 
 /* Snice theme system: explicit dark (overrides media query) */
 :host-context([data-theme="dark"]) {
-  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-bg: var(--snice-color-surface-container, #282c34);
   --_cb-text: var(--snice-color-text-secondary, #abb2bf);
-  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
+  --_cb-header-bg: var(--snice-color-surface-container-low, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
   --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
-  --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
+  --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
   --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
   --_cb-highlight-bg: rgb(255 255 255 / 0.07);
@@ -88,13 +88,13 @@
 
 /* Snice theme system: explicit light */
 :host-context([data-theme="light"]) {
-  --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+  --_cb-bg: var(--snice-color-surface-container, #fafafa);
   --_cb-text: var(--snice-color-text, #383a42);
-  --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
+  --_cb-header-bg: var(--snice-color-surface-container-low, #eaeaeb);
   --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
   --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
   --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
-  --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
+  --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(216 216 217));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
   --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
   --_cb-highlight-bg: rgb(0 0 0 / 0.05);
@@ -116,13 +116,13 @@
 
 /* Forced dark via attribute */
 :host([theme="dark"]) {
-  --_cb-bg: var(--snice-color-background-tertiary, #282c34);
+  --_cb-bg: var(--snice-color-surface-container, #282c34);
   --_cb-text: var(--snice-color-text-secondary, #abb2bf);
-  --_cb-header-bg: var(--snice-color-background-secondary, #21252b);
+  --_cb-header-bg: var(--snice-color-surface-container-low, #21252b);
   --_cb-header-border: var(--snice-color-border, rgb(51 56 66));
   --_cb-header-text: var(--snice-color-text-tertiary, #9da5b4);
   --_cb-btn-border: var(--snice-color-border, rgb(75 82 99));
-  --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(51 56 66));
+  --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(51 56 66));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(92 99 112));
   --_cb-line-number: var(--snice-color-text-tertiary, #636d83);
   --_cb-highlight-bg: rgb(255 255 255 / 0.07);
@@ -144,13 +144,13 @@
 
 /* Forced light via attribute */
 :host([theme="light"]) {
-  --_cb-bg: var(--snice-color-background-tertiary, #fafafa);
+  --_cb-bg: var(--snice-color-surface-container, #fafafa);
   --_cb-text: var(--snice-color-text, #383a42);
-  --_cb-header-bg: var(--snice-color-background-secondary, #eaeaeb);
+  --_cb-header-bg: var(--snice-color-surface-container-low, #eaeaeb);
   --_cb-header-border: var(--snice-color-border, rgb(208 208 208));
   --_cb-header-text: var(--snice-color-text-tertiary, #696c77);
   --_cb-btn-border: var(--snice-color-border, rgb(192 192 192));
-  --_cb-btn-hover-bg: var(--snice-color-background-hover, rgb(216 216 217));
+  --_cb-btn-hover-bg: var(--snice-color-surface-hover, rgb(216 216 217));
   --_cb-btn-hover-border: var(--snice-color-border-hover, rgb(160 160 160));
   --_cb-line-number: var(--snice-color-text-tertiary, #9d9d9f);
   --_cb-highlight-bg: rgb(0 0 0 / 0.05);

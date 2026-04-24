@@ -13,7 +13,7 @@
   width: 100%;
   min-width: 400px;
   min-height: 200px;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 8px;
   box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem);
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
@@ -81,7 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--snice-color-background, rgb(255 255 255 / 0.8));
+  background: var(--snice-color-surface, rgb(255 255 255 / 0.8));
   z-index: 10;
 }
 
@@ -103,14 +103,14 @@
 
 /* Table Body */
 .table-body {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 /* Pagination */
 .table-pagination {
   padding: var(--snice-spacing-md, 1rem);
   border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
 }
 
 .table-pagination.hidden {
@@ -138,7 +138,7 @@
 
 /* Variant Styles */
 :host([variant="striped"]) .table-body snice-row:nth-child(even) {
-  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+  background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
 }
 
 :host([variant="bordered"]) .table {
@@ -151,7 +151,7 @@
 
 /* State Classes */
 :host([striped]) .table-body snice-row:nth-child(even) {
-  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+  background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
 }
 
 :host([bordered]) .table {
@@ -172,7 +172,7 @@
   position: sticky;
   top: 0;
   z-index: 5;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
 }
 

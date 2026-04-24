@@ -127,7 +127,7 @@ export class AppHeader extends HTMLElement {
         justify-content: space-between;
         padding: 0 1.5rem;
         height: 60px;
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         border-bottom: 1px solid var(--snice-color-border);
       }
 
@@ -175,7 +175,7 @@ export class AppHeader extends HTMLElement {
       }
 
       .user-btn:hover {
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
       }
 
       .user-name {
@@ -189,7 +189,7 @@ export class AppHeader extends HTMLElement {
         top: 100%;
         margin-top: 0.5rem;
         min-width: 180px;
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         border: 1px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-lg);
         box-shadow: var(--snice-shadow-lg);
@@ -213,7 +213,7 @@ export class AppHeader extends HTMLElement {
 
       .user-menu a:hover,
       .user-menu button:hover {
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         color: var(--snice-color-primary);
       }
 

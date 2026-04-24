@@ -59,7 +59,7 @@
 
 /* Flip variant */
 :host([variant="flip"]) .value {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);

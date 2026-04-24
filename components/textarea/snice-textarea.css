@@ -32,7 +32,7 @@
   font-family: inherit;
   font-size: var(--snice-font-size-sm, 0.875rem);
   color: var(--snice-color-text, rgb(31 41 55));
-  background: var(--snice-color-background-input, rgb(255 255 255));
+  background: var(--snice-color-surface-container-lowest, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.375rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
@@ -59,11 +59,11 @@
 .textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--snice-color-background-disabled, rgb(243 244 246));
+  background: var(--snice-color-surface-disabled, rgb(243 244 246));
 }
 
 .textarea:readonly {
-  background: var(--snice-color-background-disabled, rgb(243 244 246));
+  background: var(--snice-color-surface-disabled, rgb(243 244 246));
   cursor: default;
 }
 

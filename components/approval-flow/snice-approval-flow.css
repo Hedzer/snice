@@ -202,7 +202,7 @@
 
 /* Status: pending */
 .step--pending .step__avatar {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 2px solid var(--snice-color-border, rgb(226 226 226));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
@@ -242,7 +242,7 @@
 
 /* Status: skipped */
 .step--skipped .step__avatar {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 2px dashed var(--snice-color-border, rgb(226 226 226));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }

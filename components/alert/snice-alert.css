@@ -5,7 +5,7 @@
   --alert-font-size: var(--snice-font-size-sm, 0.875rem);
   --alert-icon-size: 1.25rem; /* 20px */
   --alert-border-width: 1px;
-  --alert-bg: var(--snice-color-background, rgb(255 255 255));
+  --alert-bg: var(--snice-color-surface, rgb(255 255 255));
   --alert-border-color: var(--snice-color-border, rgb(226 226 226));
   --alert-text-color: var(--snice-color-text, rgb(23 23 23));
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
@@ -85,7 +85,7 @@
    a refined/editorial alert (Notion / Linear style) rather than a filled
    tinted banner. Opt in via `appearance="accent"`. */
 :host([appearance="accent"]) .alert {
-  background: var(--snice-color-background-element, transparent);
+  background: var(--snice-color-surface-container-high, transparent);
   border: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
   border-left: 4px solid var(--alert-border-color);
   color: var(--snice-color-text, rgb(23 23 23));

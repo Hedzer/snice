@@ -1,7 +1,7 @@
 /* Toast Container */
 :host {
   position: fixed;
-  z-index: var(--snice-z-index-toast, 9999);
+  z-index: 1080;
   pointer-events: none;
   display: flex;
   flex-direction: column;

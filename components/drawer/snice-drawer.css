@@ -14,11 +14,11 @@
   --drawer-height-xxxl: var(--snice-size-drawer-height-xxxl, 90vh);
 
   /* Theme-integrated colors and effects */
-  --drawer-bg: var(--snice-color-background, white);
+  --drawer-bg: var(--snice-color-surface, white);
   --drawer-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
   --drawer-backdrop: var(--snice-color-backdrop, rgba(0, 0, 0, 0.5));
   --drawer-transition: transform 320ms var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
-  --drawer-z-index: var(--snice-z-index-modal, 1050);
+  --drawer-z-index: var(--snice-z-overlay, 1050);
 
   /* Default: fixed positioning (modal behavior) */
   display: block;
@@ -278,7 +278,7 @@
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem); /* 16px 20px */
   border-bottom: 1px solid var(--snice-color-border, rgb(229 231 235));
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-surface, white);
   flex-shrink: 0;
 }
 
@@ -311,7 +311,7 @@
 }
 
 .drawer-close:hover {
-  background: var(--snice-color-background-hover, rgb(243 244 246));
+  background: var(--snice-color-surface-hover, rgb(243 244 246));
   color: var(--snice-color-text, rgb(17 24 39));
 }
 
@@ -337,7 +337,7 @@
 .drawer-footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.25rem); /* 16px 20px */
   border-top: 1px solid var(--snice-color-border, rgb(229 231 235));
-  background: var(--snice-color-background, white);
+  background: var(--snice-color-surface, white);
   flex-shrink: 0;
 }
 

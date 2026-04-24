@@ -46,7 +46,7 @@
   font-size: inherit;
   font-family: inherit;
   line-height: var(--snice-line-height-normal, 1.5);
-  background: var(--snice-color-background-input, rgb(248 247 245));
+  background: var(--snice-color-surface-container-lowest, rgb(248 247 245));
   color: var(--snice-color-text, rgb(23 23 23));
   transition: border-color var(--snice-transition-fast, 0.15s) ease, box-shadow var(--snice-transition-fast, 0.15s) ease;
 }
@@ -68,7 +68,7 @@
 }
 
 .input--filled {
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
   border: 1px solid transparent;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .input:disabled {
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   cursor: not-allowed;
 }
@@ -128,7 +128,7 @@
 .calendar-toggle:hover,
 .clear-button:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .calendar-toggle:disabled,
@@ -175,8 +175,8 @@
   position: fixed;
   inset: auto;
   margin: 0;
-  z-index: var(--snice-z-index-dropdown, 1000);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  z-index: var(--snice-z-floating, 1000);
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -252,7 +252,7 @@
 }
 
 .preset-button:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .preset-button--active {
@@ -304,7 +304,7 @@
 
 .nav-button:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .nav-button--hidden {
@@ -348,7 +348,7 @@
 }
 
 .day:hover:not(.day--disabled):not(.day--empty):not(.day--range-start):not(.day--range-end):not(.day--in-range):not(.day--range-preview):not(.day--preset-preview):not(.day--preset-preview-endpoint) {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .day--today {
@@ -438,7 +438,7 @@
 }
 
 .year-button:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .year-grid {
@@ -461,7 +461,7 @@
 }
 
 .year-cell:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .year-cell--current {

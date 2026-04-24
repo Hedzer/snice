@@ -108,10 +108,10 @@ A dropdown menu with composable items, dividers, icons, and keyboard shortcut hi
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--menu-bg` | Panel background color | `var(--snice-color-background, white)` |
+| `--menu-bg` | Panel background color | `var(--snice-color-surface, white)` |
 | `--menu-border` | Panel border color | `var(--snice-color-border, #e5e7eb)` |
 | `--menu-shadow` | Panel box shadow | `var(--snice-shadow-lg)` |
-| `--menu-z-index` | Panel z-index | `var(--snice-z-index-dropdown, 1000)` |
+| `--menu-z-index` | Panel z-index | `var(--snice-z-floating, 1000)` |
 | `--menu-border-radius` | Panel border radius | `var(--snice-radius-md, 0.375rem)` |
 | `--menu-min-width` | Minimum panel width | `10rem` |
 

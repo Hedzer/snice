@@ -41,7 +41,7 @@
 .popover {
   position: fixed;
   z-index: 10000;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -93,13 +93,13 @@
   font-size: var(--snice-font-size-sm, 0.875rem);
   cursor: pointer;
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text, rgb(23 23 23));
   font-family: inherit;
 }
 
 .btn:hover {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .btn-primary {

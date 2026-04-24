@@ -5,7 +5,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: var(--snice-z-index-modal, 1000);
+  z-index: var(--snice-z-overlay, 1000);
   transform: translateY(-100%);
   transition: transform var(--snice-transition-medium, 250ms) ease;
   pointer-events: none;

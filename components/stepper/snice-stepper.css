@@ -119,7 +119,7 @@
 
 /* Pending state */
 .step--pending .step__indicator {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 2px solid var(--snice-color-border, rgb(229 231 235));
   color: var(--snice-color-text-secondary, rgb(107 114 128));
 }
@@ -181,7 +181,7 @@
 
 .step--clickable.step--pending:hover .step__indicator {
   border-color: var(--snice-color-primary, rgb(37 99 235));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 .step--clickable.step--active:hover .step__indicator,

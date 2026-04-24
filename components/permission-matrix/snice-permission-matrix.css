@@ -14,7 +14,7 @@ case, when, default, if {
   overflow-x: auto;
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .matrix-table {
@@ -29,7 +29,7 @@ case, when, default, if {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  background: var(--snice-color-surface-container-low, rgb(240 240 240));
   font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-font-size-sm, 0.875rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
@@ -45,7 +45,7 @@ case, when, default, if {
   left: 0;
   z-index: 3;
   min-width: 9.375rem;
-  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  background: var(--snice-color-surface-container-low, rgb(240 240 240));
 }
 
 /* Permission header with optional description tooltip */
@@ -73,7 +73,7 @@ case, when, default, if {
 /* ===== Group header row ===== */
 .matrix-group-header td {
   font-family: var(--snice-font-family-display);
-  background: var(--snice-color-background-tertiary, rgb(245 245 245));
+  background: var(--snice-color-surface-container, rgb(245 245 245));
   font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-heading-xs, 0.875rem);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
@@ -96,7 +96,7 @@ case, when, default, if {
 }
 
 .matrix-table tbody tr:hover td {
-  background: var(--snice-color-background-tertiary, rgb(245 245 245));
+  background: var(--snice-color-surface-container, rgb(245 245 245));
 }
 
 /* Role name cell (first column) */
@@ -105,12 +105,12 @@ case, when, default, if {
   position: sticky;
   left: 0;
   z-index: 1;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   min-width: 9.375rem;
 }
 
 .matrix-table tbody tr:hover .matrix-role-cell {
-  background: var(--snice-color-background-tertiary, rgb(245 245 245));
+  background: var(--snice-color-surface-container, rgb(245 245 245));
 }
 
 .matrix-role-name {
@@ -136,7 +136,7 @@ case, when, default, if {
   height: 1.25rem;
   border: 2px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-sm, 0.25rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   cursor: pointer;
   position: relative;
   transition: all var(--snice-transition-fast, 150ms) ease;

@@ -106,7 +106,7 @@
 }
 
 /* Row States — alpha overlays, not color swaps. Composites correctly over
- * striped/tinted rows (MUI pattern). */
+ * striped/tinted rows. */
 :host(.row--hoverable) .row-container:hover {
   background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
 }
@@ -155,7 +155,7 @@
 
 /* Striped Rows (applied by parent table) */
 :host(.row--striped) .row-container {
-  background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+  background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
 }
 
 /* Bordered Rows (applied by parent table) */
@@ -217,7 +217,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, var(--snice-color-background, rgb(255 255 255 / 0.6)), transparent);
+  background: linear-gradient(90deg, transparent, var(--snice-color-surface, rgb(255 255 255 / 0.6)), transparent);
   animation: loading-shimmer 1.5s infinite;
 }
 

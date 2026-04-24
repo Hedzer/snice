@@ -8,7 +8,7 @@
   align-items: center;
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   overflow: hidden;
 }
 
@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   color: var(--snice-color-text, rgb(23 23 23));
   cursor: pointer;
   flex-shrink: 0;
@@ -36,12 +36,12 @@
 }
 
 .step-input__button:hover:not(:disabled) {
-  background: var(--snice-color-background-hover, rgb(243 244 246));
+  background: var(--snice-color-surface-hover, rgb(243 244 246));
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .step-input__button:active:not(:disabled) {
-  background: var(--snice-color-background-tertiary, rgb(229 231 235));
+  background: var(--snice-color-surface-container, rgb(229 231 235));
 }
 
 .step-input__button:disabled {

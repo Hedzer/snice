@@ -55,7 +55,7 @@ interface SpotlightStep {
 | Property | Description | Default |
 |----------|-------------|---------|
 | `--snice-transition-medium` | Cutout transition speed | `250ms` |
-| `--snice-color-background` | Popover background color | `rgb(255 255 255)` |
+| `--snice-color-surface` | Popover background color | `rgb(255 255 255)` |
 | `--snice-color-border` | Popover border color | `rgb(226 226 226)` |
 | `--snice-color-text` | Popover text color | `rgb(23 23 23)` |
 | `--snice-color-primary` | Primary button color | `rgb(37 99 235)` |

@@ -16,7 +16,7 @@ variant: 'card'|'minimal'|'featured' = 'card';
 
 ## CSS Custom Properties
 
-- `--snice-color-background-element` - Card background (default: `rgb(252 251 249)`)
+- `--snice-color-surface-container-high` - Card background (default: `rgb(252 251 249)`)
 - `--snice-color-border` - Card border (default: `rgb(226 226 226)`)
 - `--snice-color-primary` - Quote icon, minimal border, featured bg (default: `rgb(37 99 235)`)
 - `--snice-color-text` - Text color (default: `rgb(23 23 23)`)

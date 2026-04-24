@@ -185,7 +185,7 @@ export class NotificationsPage extends HTMLElement {
         padding: 0.375rem 0.75rem;
         border: 1px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-md);
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         color: var(--snice-color-text-secondary);
         font-size: 0.8125rem;
         cursor: pointer;

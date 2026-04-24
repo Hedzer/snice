@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Flip Card</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
     .card-face { display: flex; align-items: center; justify-content: center; width: 200px; height: 140px; border-radius: 8px; font-weight: 600; }
@@ -25,7 +25,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .alt-front { background: var(--snice-color-danger, #dc2626); color: white; }
     .alt-back { background: #9333ea; color: white; }
     snice-flip-card { display: inline-block; width: 200px; height: 140px; }
-    button.demo-btn { padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: var(--snice-color-background-element); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
+    button.demo-btn { padding: 0.4rem 0.8rem; border: 1px solid var(--snice-color-border); border-radius: 4px; background: var(--snice-color-surface-container-high); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
   </style>
   <script type="module">import './snice-flip-card.ts';</script>
 </head>

@@ -28,8 +28,8 @@ Displays placeholder loading animations to indicate content is being loaded.
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--skeleton-bg` | Background color | `var(--snice-color-background-tertiary)` |
-| `--skeleton-highlight` | Wave highlight color | `var(--snice-color-background-secondary)` |
+| `--skeleton-bg` | Background color | `var(--snice-color-surface-container)` |
+| `--skeleton-highlight` | Wave highlight color | `var(--snice-color-surface-container-low)` |
 | `--skeleton-duration` | Animation duration | `1.5s` |
 
 ## CSS Parts

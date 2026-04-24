@@ -41,9 +41,9 @@ interface SpreadsheetColumn {
 ## CSS Custom Properties
 
 - `--snice-color-border` - Grid lines (`rgb(226 226 226)`)
-- `--snice-color-background` - Cell background (`rgb(255 255 255)`)
-- `--snice-color-background-element` - Header/row-number background
-- `--snice-color-background-hover` - Row/header hover
+- `--snice-color-surface` - Cell background (`rgb(255 255 255)`)
+- `--snice-color-surface-container-high` - Header/row-number background
+- `--snice-color-surface-hover` - Row/header hover
 - `--snice-color-primary` - Selected cell border (`rgb(37 99 235)`)
 - `--snice-color-primary-subtle` - Range selection fill
 - `--snice-color-text` - Cell text

@@ -1,7 +1,7 @@
 :host {
   --modal-z-index: 1000;
   --modal-backdrop-bg: var(--snice-modal-backdrop, rgb(0 0 0 / 0.5));
-  --modal-panel-bg: var(--snice-color-background, rgb(255 255 255));
+  --modal-panel-bg: var(--snice-color-surface, rgb(255 255 255));
   --modal-panel-shadow: var(--snice-shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
   --modal-border-radius: var(--snice-border-radius-lg, 8px);
   --modal-padding: var(--snice-spacing-lg, 1.5rem);
@@ -147,7 +147,7 @@
 }
 
 .modal__close:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 

@@ -21,7 +21,7 @@ const POSITIONS: BadgePosition[] = ['top-right', 'top-left', 'bottom-right', 'bo
 
 function makeBox(text = '📦'): HTMLElement {
   const box = document.createElement('div');
-  box.style.cssText = 'width:3rem;height:3rem;background:var(--snice-color-background-element,#f0f0f0);border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
+  box.style.cssText = 'width:3rem;height:3rem;background:var(--snice-color-surface-container-high,#f0f0f0);border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
   box.textContent = text;
   return box;
 }

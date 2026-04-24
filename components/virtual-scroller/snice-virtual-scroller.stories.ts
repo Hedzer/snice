@@ -142,7 +142,7 @@ export const ProgrammaticScroll: Story = {
 
     const makeBtn = (label: string, handler: () => void) => {
       const btn = document.createElement('button');
-      btn.style.cssText = 'padding:.375rem .75rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-background);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
+      btn.style.cssText = 'padding:.375rem .75rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-surface);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
       btn.textContent = label;
       btn.addEventListener('click', handler);
       return btn;

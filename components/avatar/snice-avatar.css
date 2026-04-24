@@ -124,7 +124,7 @@ case, when, default, if {
 /* Group avatar support */
 :host(.avatar-group-item) {
   margin-left: -0.5rem; /* -8px */
-  border: 2px solid var(--snice-color-background, rgb(255 255 255));
+  border: 2px solid var(--snice-color-surface, rgb(255 255 255));
   border-radius: 50%;
 }
 
@@ -133,5 +133,5 @@ case, when, default, if {
 }
 
 :host(.avatar-group-item) .avatar {
-  border: 2px solid var(--snice-color-background, rgb(255 255 255));
+  border: 2px solid var(--snice-color-surface, rgb(255 255 255));
 }

@@ -69,7 +69,7 @@
 }
 
 .panel {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   overflow: auto;
 }
 

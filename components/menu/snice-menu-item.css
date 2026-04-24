@@ -5,10 +5,10 @@
   --menu-item-font-size: 0.875rem;
   --menu-item-color: var(--snice-color-text, rgb(31 41 55));
   --menu-item-color-hover: var(--snice-color-text, rgb(17 24 39));
-  --menu-item-bg-hover: var(--snice-color-background-hover, rgb(243 244 246));
+  --menu-item-bg-hover: var(--snice-color-surface-hover, rgb(243 244 246));
   --menu-item-bg-selected: var(--snice-color-primary-subtle, rgb(239 246 255));
   --menu-item-color-disabled: var(--snice-color-text-disabled, rgb(156 163 175));
-  --menu-item-border-radius: var(--snice-radius-sm, 0.25rem);
+  --menu-item-border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .menu-item {

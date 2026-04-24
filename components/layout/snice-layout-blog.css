@@ -17,7 +17,7 @@
 }
 
 .header {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-bottom: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-md, 1rem) 0;
 }
@@ -53,7 +53,7 @@
 }
 
 .main {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   padding: var(--snice-spacing-xl, 3rem) 0;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .sidebar {
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   border-radius: var(--snice-border-radius-lg, 8px);
   padding: var(--snice-spacing-lg, 2rem);
   position: sticky;
@@ -77,7 +77,7 @@
 }
 
 .footer {
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
   border-top: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-xl, 3rem) 0;
 }

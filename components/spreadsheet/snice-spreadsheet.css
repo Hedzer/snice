@@ -4,14 +4,14 @@
   contain: layout style paint;
   width: 100%;
   --spreadsheet-border: var(--snice-color-border, rgb(226 226 226));
-  --spreadsheet-bg: var(--snice-color-background, rgb(255 255 255));
-  --spreadsheet-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --spreadsheet-bg: var(--snice-color-surface, rgb(255 255 255));
+  --spreadsheet-bg-element: var(--snice-color-surface-container-high, rgb(252 251 249));
   --spreadsheet-text: var(--snice-color-text, rgb(23 23 23));
   --spreadsheet-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
   --spreadsheet-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));
   --spreadsheet-primary: var(--snice-color-primary, rgb(37 99 235));
   --spreadsheet-primary-subtle: var(--snice-color-primary-subtle, rgb(239 246 255));
-  --spreadsheet-hover: var(--snice-color-background-hover, rgb(241 241 241));
+  --spreadsheet-hover: var(--snice-color-surface-hover, rgb(241 241 241));
   --spreadsheet-grid: rgba(200, 200, 200, 0.5);
 }
 

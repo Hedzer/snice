@@ -5,14 +5,14 @@
   max-width: 20rem; /* 320px */
   box-sizing: border-box;
 
-  --trp-bg: var(--snice-color-background, rgb(255 255 255));
+  --trp-bg: var(--snice-color-surface, rgb(255 255 255));
   --trp-text: var(--snice-color-text, rgb(23 23 23));
   --trp-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
   --trp-border: var(--snice-color-border, rgb(226 226 226));
   --trp-primary: var(--snice-color-primary, rgb(37 99 235));
   --trp-primary-hover: var(--snice-color-primary-hover, rgb(29 78 216));
-  --trp-slot-hover: var(--snice-color-background-element, rgb(252 251 249));
-  --trp-disabled-bg: var(--snice-color-background-element, rgb(252 251 249));
+  --trp-slot-hover: var(--snice-color-surface-container-high, rgb(252 251 249));
+  --trp-disabled-bg: var(--snice-color-surface-container-high, rgb(252 251 249));
   --trp-disabled-text: var(--snice-color-text-tertiary, rgb(115 115 115));
   --trp-selected-bg: var(--snice-color-primary, rgb(37 99 235));
   --trp-selected-text: var(--snice-color-text-inverse, rgb(250 250 250));

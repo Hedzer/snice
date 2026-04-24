@@ -25,7 +25,7 @@
   position: relative;
   flex: 1;
   height: 6px;
-  background: var(--snice-color-background-tertiary, rgb(229 231 235));
+  background: var(--snice-color-surface-container, rgb(229 231 235));
   border-radius: 3px;
   cursor: pointer;
 }
@@ -69,7 +69,7 @@
   transform: translate(-50%, -50%);
   width: 18px;
   height: 18px;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 2px solid var(--snice-color-primary, rgb(37 99 235));
   border-radius: 50%;
   cursor: grab;

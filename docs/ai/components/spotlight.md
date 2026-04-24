@@ -33,7 +33,7 @@ interface SpotlightStep {
 ## CSS Custom Properties
 
 - `--snice-transition-medium` - Cutout transition speed (`250ms`)
-- `--snice-color-background` - Popover background (`rgb(255 255 255)`)
+- `--snice-color-surface` - Popover background (`rgb(255 255 255)`)
 - `--snice-color-border` - Popover border (`rgb(226 226 226)`)
 - `--snice-color-text` - Popover text (`rgb(23 23 23)`)
 - `--snice-color-primary` - Primary button (`rgb(37 99 235)`)

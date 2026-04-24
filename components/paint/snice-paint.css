@@ -19,7 +19,7 @@
   flex-direction: column;
   gap: 0.1875rem;
   padding: 0.5rem 0.375rem;
-  background: var(--paint-toolbar-bg, var(--snice-color-background-secondary, rgb(245 245 245)));
+  background: var(--paint-toolbar-bg, var(--snice-color-surface-container-low, rgb(245 245 245)));
   width: 3rem;
   align-items: center;
   flex-shrink: 0;
@@ -59,7 +59,7 @@
 }
 
 .paint-btn:hover {
-  background: var(--snice-color-background-tertiary, rgb(230 230 230));
+  background: var(--snice-color-surface-container, rgb(230 230 230));
 }
 
 .paint-btn.active {

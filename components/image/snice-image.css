@@ -94,7 +94,7 @@
 
 /* Placeholder */
 .image--placeholder {
-  background: linear-gradient(135deg, var(--snice-color-background-secondary, rgb(243 244 246)) 0%, var(--snice-color-border, rgb(229 231 235)) 100%);
+  background: linear-gradient(135deg, var(--snice-color-surface-container-low, rgb(243 244 246)) 0%, var(--snice-color-border, rgb(229 231 235)) 100%);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   position: relative;
   display: flex;

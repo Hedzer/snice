@@ -218,7 +218,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, var(--snice-color-background, rgb(255 255 255 / 0.6)), transparent);
+  background: linear-gradient(90deg, transparent, var(--snice-color-surface, rgb(255 255 255 / 0.6)), transparent);
   animation: cell-shimmer 1.5s infinite;
 }
 

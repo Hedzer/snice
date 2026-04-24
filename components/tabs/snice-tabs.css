@@ -127,7 +127,7 @@
   width: 2rem; /* 32px */
   padding: 0;
   border: none;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
   transition: color var(--snice-transition-fast, 150ms) ease,
@@ -148,7 +148,7 @@
 
 .tabs__scroll-button:hover:not(.tabs__scroll-button--disabled) {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-secondary, rgb(250 250 250));
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
 }
 
 .tabs__scroll-button:focus-visible {

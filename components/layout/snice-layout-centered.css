@@ -10,13 +10,13 @@
   align-items: center;
   justify-content: center;
   padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
 }
 
 .container {
   width: 100%;
   max-width: 400px;
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-md);
   padding: var(--snice-spacing-xl, 3rem);

@@ -175,7 +175,7 @@ export class ProfilePage extends HTMLElement {
         display: flex;
         justify-content: space-between;
         padding: 0.75rem;
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         border-radius: var(--snice-border-radius-md);
       }
 

@@ -38,7 +38,7 @@ A countdown timer to a target date with live-updating segments for days, hours, 
 | `--snice-color-text` | Digit color |
 | `--snice-color-text-secondary` | Label color |
 | `--snice-color-text-tertiary` | Separator color |
-| `--snice-color-background-element` | Flip variant card background |
+| `--snice-color-surface-container-high` | Flip variant card background |
 | `--snice-color-border` | Flip variant border |
 | `--snice-color-primary` | Circular variant ring color |
 | `--snice-color-success` | Completed state color |

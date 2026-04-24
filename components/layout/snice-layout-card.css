@@ -8,11 +8,11 @@
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
 }
 
 .header {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-bottom: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-lg, 2rem);
 }
@@ -66,7 +66,7 @@
 }
 
 .footer {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-top: 1px solid var(--snice-color-border);
   padding: var(--snice-spacing-lg, 2rem);
 }

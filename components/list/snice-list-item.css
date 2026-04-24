@@ -24,7 +24,7 @@ case, when, default, if {
 }
 
 .list-item:hover {
-  background-color: var(--snice-color-background-hover, rgb(243 244 246));
+  background-color: var(--snice-color-surface-hover, rgb(243 244 246));
 }
 
 .list-item--selected {

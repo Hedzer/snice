@@ -14,14 +14,14 @@ const DIRECTIONS: SortableDirection[] = ['vertical', 'horizontal'];
 
 function makeItem(text: string, style = '') {
   const el = document.createElement('div');
-  el.style.cssText = `padding:.75rem 1rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;cursor:grab;user-select:none;${style}`;
+  el.style.cssText = `padding:.75rem 1rem;background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;cursor:grab;user-select:none;${style}`;
   el.textContent = text;
   return el;
 }
 
 function makeHItem(text: string) {
   const el = document.createElement('div');
-  el.style.cssText = 'padding:.75rem 1.25rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;cursor:grab;user-select:none;';
+  el.style.cssText = 'padding:.75rem 1.25rem;background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;cursor:grab;user-select:none;';
   el.textContent = text;
   return el;
 }
@@ -96,7 +96,7 @@ export const WithHandle: Story = {
   render: () => {
     const items = ['Drag by handle 1', 'Drag by handle 2', 'Drag by handle 3', 'Drag by handle 4'].map(text => {
       const el = document.createElement('div');
-      el.style.cssText = 'padding:.75rem 1rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;user-select:none;';
+      el.style.cssText = 'padding:.75rem 1rem;background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:6px;user-select:none;';
       const handle = document.createElement('span');
       handle.className = 'handle';
       handle.style.cssText = 'cursor:grab;display:inline-block;margin-right:.5rem;color:var(--snice-color-text-tertiary,#888);';

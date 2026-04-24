@@ -23,7 +23,7 @@
   padding: var(--snice-spacing-xs, 0.5rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   cursor: text;
   transition: border-color var(--snice-transition-fast, 150ms) ease,
               box-shadow var(--snice-transition-fast, 150ms) ease;
@@ -39,7 +39,7 @@
 .tag-input-container--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 /* Tags */
@@ -117,7 +117,7 @@
   left: -1px;
   right: -1px;
   margin-top: 2px;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -136,7 +136,7 @@
 
 .tag-suggestion-item:hover,
 .tag-suggestion-item--highlighted {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .tag-suggestion-item--highlighted {
@@ -149,7 +149,7 @@
 }
 
 .tag-suggestions::-webkit-scrollbar-track {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-radius: 9999px;
 }
 

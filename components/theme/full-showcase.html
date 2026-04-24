@@ -18,7 +18,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Theme</title>
   <link rel="stylesheet" href="theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem; }
@@ -32,13 +32,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .spacing-bar { background: var(--snice-color-primary); border-radius: 3px; height: 1rem; }
     .spacing-row code { font-size: 0.7rem; min-width: 12rem; }
     .shadow-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
-    .shadow-box { padding: 1.5rem; background: var(--snice-color-background); border-radius: 8px; text-align: center; font-size: 0.7rem; }
+    .shadow-box { padding: 1.5rem; background: var(--snice-color-surface); border-radius: 8px; text-align: center; font-size: 0.7rem; }
     .radius-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; }
     .radius-box { background: var(--snice-color-primary); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: white; font-weight: 600; }
     .type-sample { margin: 0.25rem 0; }
     .weight-row { display: flex; gap: 2rem; flex-wrap: wrap; }
     .weight-sample { font-size: 1rem; }
-    .line-height-sample { background: var(--snice-color-background-secondary); padding: 0.5rem; border-radius: 4px; max-width: 400px; font-size: 0.875rem; }
+    .line-height-sample { background: var(--snice-color-surface-container-low); padding: 0.5rem; border-radius: 4px; max-width: 400px; font-size: 0.875rem; }
     .toggle-btn { position: fixed; top: 1rem; right: 1rem; padding: 0.5rem 1rem; background: var(--snice-color-primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; z-index: 1000; }
     .z-row { display: flex; align-items: center; gap: 1rem; margin: 0.25rem 0; }
     .z-bar { background: var(--snice-color-primary); opacity: 0.15; height: 1.5rem; border-radius: 3px; }
@@ -46,7 +46,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .transition-row { display: flex; align-items: center; gap: 1rem; margin: 0.25rem 0; }
     .transition-box { width: 3rem; height: 1.5rem; background: var(--snice-color-primary); border-radius: 4px; cursor: pointer; }
     .transition-box:hover { background: var(--snice-color-primary-hover); transform: scale(1.1); }
-    .focus-demo { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-background-input); color: var(--snice-color-text); font-size: 0.875rem; }
+    .focus-demo { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-surface-container-lowest); color: var(--snice-color-text); font-size: 0.875rem; }
     .focus-demo:focus { outline: var(--snice-focus-ring-width) solid var(--snice-focus-ring-color); outline-offset: var(--snice-focus-ring-offset); }
     .gradient-box { height: 3rem; border-radius: 6px; border: 1px solid var(--snice-color-border); }
     .interactive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; }
@@ -82,18 +82,18 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Background Colors</h2>
 <div class="swatch-grid">
-  <div class="swatch" style="background: var(--snice-color-background);">Background<code>--snice-color-background</code></div>
-  <div class="swatch" style="background: var(--snice-color-background-secondary);">Secondary<code>--snice-color-background-secondary</code></div>
-  <div class="swatch" style="background: var(--snice-color-background-tertiary);">Tertiary<code>--snice-color-background-tertiary</code></div>
-  <div class="swatch" style="background: var(--snice-color-background-element);">Element<code>--snice-color-background-element</code></div>
-  <div class="swatch" style="background: var(--snice-color-background-input);">Input<code>--snice-color-background-input</code></div>
+  <div class="swatch" style="background: var(--snice-color-surface);">Background<code>--snice-color-surface</code></div>
+  <div class="swatch" style="background: var(--snice-color-surface-container-low);">Secondary<code>--snice-color-surface-container-low</code></div>
+  <div class="swatch" style="background: var(--snice-color-surface-container);">Tertiary<code>--snice-color-surface-container</code></div>
+  <div class="swatch" style="background: var(--snice-color-surface-container-high);">Element<code>--snice-color-surface-container-high</code></div>
+  <div class="swatch" style="background: var(--snice-color-surface-container-lowest);">Input<code>--snice-color-surface-container-lowest</code></div>
 </div>
 
 <h2>Interactive State Colors</h2>
 <div class="interactive-grid">
-  <div class="interactive-swatch" style="background: var(--snice-color-background-hover);">Hover<code>--snice-color-background-hover</code></div>
-  <div class="interactive-swatch" style="background: var(--snice-color-background-active);">Active<code>--snice-color-background-active</code></div>
-  <div class="interactive-swatch" style="background: var(--snice-color-background-disabled);">Disabled<code>--snice-color-background-disabled</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-surface-hover);">Hover<code>--snice-color-surface-hover</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-surface-active);">Active<code>--snice-color-surface-active</code></div>
+  <div class="interactive-swatch" style="background: var(--snice-color-surface-disabled);">Disabled<code>--snice-color-surface-disabled</code></div>
   <div class="interactive-swatch" style="background: var(--snice-color-primary-subtle);">Primary Subtle<code>--snice-color-primary-subtle</code></div>
   <div class="interactive-swatch" style="background: var(--snice-color-primary-subtle-hover);">Primary Subtle Hover<code>--snice-color-primary-subtle-hover</code></div>
   <div class="interactive-swatch" style="background: var(--snice-color-danger-subtle);">Danger Subtle<code>--snice-color-danger-subtle</code></div>
@@ -110,9 +110,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Interaction Overlays</h2>
 <p style="font-size:0.75rem; color: var(--snice-color-text-secondary); margin: 0 0 0.5rem;">Alpha tints — layer over surface, don't swap color. Backgrounds below are striped so you can see the overlay composites correctly.</p>
 <div class="interactive-grid">
-  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-hover);">Hover Overlay<code>--snice-color-overlay-hover</code></div>
-  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-selected);">Selected Overlay<code>--snice-color-overlay-selected</code></div>
-  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-selected-hover);">Selected+Hover<code>--snice-color-overlay-selected-hover</code></div>
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-surface) 0 8px, var(--snice-color-surface-container-low) 8px 16px); background-color: var(--snice-color-overlay-hover);">Hover Overlay<code>--snice-color-overlay-hover</code></div>
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-surface) 0 8px, var(--snice-color-surface-container-low) 8px 16px); background-color: var(--snice-color-overlay-selected);">Selected Overlay<code>--snice-color-overlay-selected</code></div>
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-surface) 0 8px, var(--snice-color-surface-container-low) 8px 16px); background-color: var(--snice-color-overlay-selected-hover);">Selected+Hover<code>--snice-color-overlay-selected-hover</code></div>
 </div>
 
 <h2>Gray Scale (50-950)</h2>
@@ -257,7 +257,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Gradients</h2>
 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
   <div><code style="font-size:0.7rem">--snice-gradient-subtle</code><div class="gradient-box" style="background: var(--snice-gradient-subtle), var(--snice-color-primary);"></div></div>
-  <div><code style="font-size:0.7rem">--snice-gradient-button</code><div class="gradient-box" style="background: var(--snice-gradient-button), var(--snice-color-primary);"></div></div>
+  <div><code style="font-size:0.7rem">--snice-gradient-convex</code><div class="gradient-box" style="background: var(--snice-gradient-convex), var(--snice-color-primary);"></div></div>
   <div><code style="font-size:0.7rem">--snice-gradient-surface</code><div class="gradient-box" style="background: var(--snice-gradient-surface), var(--snice-color-primary);"></div></div>
 </div>
 
@@ -278,12 +278,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <h2>Z-Index Scale</h2>
-<div class="z-row"><code>--snice-z-index-dropdown: 1000</code><div class="z-bar" style="width: calc(1000 / 10.7 * 1px);"></div></div>
-<div class="z-row"><code>--snice-z-index-sticky: 1020</code><div class="z-bar" style="width: calc(1020 / 10.7 * 1px);"></div></div>
-<div class="z-row"><code>--snice-z-index-fixed: 1030</code><div class="z-bar" style="width: calc(1030 / 10.7 * 1px);"></div></div>
-<div class="z-row"><code>--snice-z-index-modal-backdrop: 1040</code><div class="z-bar" style="width: calc(1040 / 10.7 * 1px);"></div></div>
-<div class="z-row"><code>--snice-z-index-modal: 1050</code><div class="z-bar" style="width: calc(1050 / 10.7 * 1px);"></div></div>
-<div class="z-row"><code>--snice-z-index-tooltip: 1070</code><div class="z-bar" style="width: calc(1070 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-floating: 1000</code><div class="z-bar" style="width: calc(1000 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-sticky: 1020</code><div class="z-bar" style="width: calc(1020 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-fixed: 1030</code><div class="z-bar" style="width: calc(1030 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-scrim: 1040</code><div class="z-bar" style="width: calc(1040 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-overlay: 1050</code><div class="z-bar" style="width: calc(1050 / 10.7 * 1px);"></div></div>
+<div class="z-row"><code>--snice-z-popover: 1070</code><div class="z-bar" style="width: calc(1070 / 10.7 * 1px);"></div></div>
 
 <h2>Focus Ring</h2>
 <div class="row">

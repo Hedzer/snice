@@ -44,7 +44,7 @@ An image cropping tool with a draggable and resizable crop area, rotation, zoom 
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--snice-color-background-element` | Container background color | `rgb(252 251 249)` |
+| `--snice-color-surface-container-high` | Container background color | `rgb(252 251 249)` |
 | `--snice-color-border` | Container border color | `rgb(226 226 226)` |
 | `--snice-border-radius-lg` | Container border radius | `0.5rem` |
 | `--cropper-overlay` | Overlay mask color outside crop area | `rgb(0 0 0 / 0.5)` |

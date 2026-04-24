@@ -5,7 +5,7 @@
 }
 
 .booking {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
@@ -15,7 +15,7 @@
 .booking__stepper {
   display: flex;
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .booking__step {
@@ -101,7 +101,7 @@
 }
 
 .booking__month-nav:hover {
-  background: var(--snice-color-background-secondary, rgb(250 250 250));
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
 }
 
 .booking__month-nav:focus-visible {
@@ -145,7 +145,7 @@
 }
 
 .booking__day:hover:not(.booking__day--disabled):not(.booking__day--other) {
-  background: var(--snice-color-background-secondary, rgb(250 250 250));
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
 }
 
 .booking__day:focus-visible {
@@ -211,7 +211,7 @@
   cursor: pointer;
   font-size: var(--snice-font-size-sm, 0.875rem);
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   font-family: inherit;
   transition: background-color var(--snice-transition-fast, 150ms) ease, border-color var(--snice-transition-fast, 150ms) ease;
 }
@@ -266,7 +266,7 @@
 
 .booking__summary {
   padding: var(--snice-spacing-md, 1rem);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   margin-bottom: var(--snice-spacing-lg, 1.5rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
@@ -317,7 +317,7 @@
   border-radius: var(--snice-border-radius-md, 0.25rem);
   font-size: var(--snice-font-size-sm, 0.875rem);
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   font-family: inherit;
   transition: border-color var(--snice-transition-fast, 150ms) ease;
   box-sizing: border-box;
@@ -350,12 +350,12 @@
   cursor: pointer;
   font-family: inherit;
   transition: background-color var(--snice-transition-fast, 150ms) ease;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .booking__btn:hover {
-  background: var(--snice-color-background-secondary, rgb(250 250 250));
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
 }
 
 .booking__btn:focus-visible {

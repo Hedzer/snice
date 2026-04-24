@@ -15,7 +15,7 @@
 .column {
   flex-shrink: 0;
   width: 18.75rem;
-  background: var(--snice-color-background-element, rgb(245 245 245));
+  background: var(--snice-color-surface-container-high, rgb(245 245 245));
   border-radius: var(--snice-border-radius-md, 0.5rem);
   display: flex;
   flex-direction: column;
@@ -42,7 +42,7 @@
 }
 
 .column__count {
-  background: var(--snice-color-background-secondary, rgb(224 224 224));
+  background: var(--snice-color-surface-container-low, rgb(224 224 224));
   color: var(--snice-color-text-secondary, rgb(102 102 102));
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-full, 9999px);
@@ -73,7 +73,7 @@
 }
 
 .card {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border-radius: var(--snice-border-radius-sm, 0.375rem);
   padding: var(--snice-spacing-sm, 0.75rem);
   box-shadow: var(--snice-shadow-sm);

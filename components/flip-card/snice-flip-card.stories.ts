@@ -104,7 +104,7 @@ export const ClickToFlipFalseProgrammatic: Story = {
 
     const makeBtn = (label: string, handler: () => void) => {
       const btn = document.createElement('button');
-      btn.style.cssText = 'padding:.4rem .8rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-background-element);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
+      btn.style.cssText = 'padding:.4rem .8rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-surface-container-high);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
       btn.textContent = label;
       btn.addEventListener('click', handler);
       return btn;
@@ -244,7 +244,7 @@ export const EdgeStartsFlippedNoClickFlip: Story = {
     wrap.style.cssText = 'display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;';
     const card = makeFlipCard({ flipped: true, 'click-to-flip': 'false' }, BLUE, 'Front', GREEN, 'Starts on back');
     const btn = document.createElement('button');
-    btn.style.cssText = 'padding:.4rem .8rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-background-element);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
+    btn.style.cssText = 'padding:.4rem .8rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-surface-container-high);color:var(--snice-color-text);cursor:pointer;font-size:.8rem;';
     btn.textContent = 'Toggle';
     btn.addEventListener('click', () => (card as any).flip?.());
     wrap.appendChild(card); wrap.appendChild(btn);

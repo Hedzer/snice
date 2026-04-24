@@ -24,7 +24,7 @@ variant: 'simple'|'flip'|'circular' = 'simple';     // Visual style
 --snice-color-text              /* Digit color */
 --snice-color-text-secondary    /* Label color */
 --snice-color-text-tertiary     /* Separator color */
---snice-color-background-element /* Flip variant card bg */
+--snice-color-surface-container-high /* Flip variant card bg */
 --snice-color-border            /* Flip variant border */
 --snice-color-primary           /* Circular variant ring color */
 --snice-color-success           /* Complete state color */

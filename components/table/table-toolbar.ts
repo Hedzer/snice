@@ -236,7 +236,7 @@ export class TableToolbar {
     this.showModal(modal);
   }
 
-  // ── Filter Modal — MUI X Pro style: multiple filter rows ──
+  // ── Filter Modal — multiple filter rows ──
 
   /** Open filter modal, optionally pre-selecting a column */
   openFilterModal(presetColumn?: string) {

@@ -42,7 +42,7 @@ contained: boolean = false;                    // Position relative to parent
 
 - `--drawer-width-small` through `--drawer-width-xxxl` - Width per size
 - `--drawer-height-small` through `--drawer-height-xxxl` - Height per size (top/bottom)
-- `--drawer-bg` - Background (default: `var(--snice-color-background, white)`)
+- `--drawer-bg` - Background (default: `var(--snice-color-surface, white)`)
 - `--drawer-shadow` - Shadow (default: `var(--snice-shadow-lg)`)
 - `--drawer-backdrop` - Backdrop color (default: `rgba(0, 0, 0, 0.5)`)
 - `--drawer-transition` - Transition timing

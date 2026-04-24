@@ -1,7 +1,7 @@
 :host {
   display: block;
-  --skeleton-bg: var(--snice-color-background-tertiary, rgb(241 241 241));
-  --skeleton-highlight: var(--snice-color-background-secondary, rgb(250 250 250));
+  --skeleton-bg: var(--snice-color-surface-container, rgb(241 241 241));
+  --skeleton-highlight: var(--snice-color-surface-container-low, rgb(250 250 250));
   --skeleton-duration: 1.5s;
 }
 

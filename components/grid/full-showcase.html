@@ -21,7 +21,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body {
       font-family: system-ui, -apple-system, sans-serif;
       padding: 1.5rem;
-      background: var(--snice-color-background);
+      background: var(--snice-color-surface);
       color: var(--snice-color-text);
     }
     section { margin-bottom: 2.5rem; }
@@ -44,7 +44,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       padding: 0.35rem 0.7rem;
       border: 1px solid var(--snice-color-border, rgb(60 60 60));
       border-radius: 6px;
-      background: var(--snice-color-background-element, rgb(30 30 30));
+      background: var(--snice-color-surface-container-high, rgb(30 30 30));
       color: var(--snice-color-text);
       cursor: pointer;
       font-size: 0.75rem;
@@ -93,7 +93,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .side-by-side > div { flex: 1; min-width: 280px; }
     /* Layout output panel */
     .layout-output {
-      background: var(--snice-color-background-element, rgb(20 20 20));
+      background: var(--snice-color-surface-container-high, rgb(20 20 20));
       border: 1px solid var(--snice-color-border, rgb(60 60 60));
       border-radius: 6px;
       padding: 0.75rem;
@@ -112,7 +112,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     }
     @keyframes flash-bg {
       0% { background: rgba(59, 130, 246, 0.15); }
-      100% { background: var(--snice-color-background-element, rgb(20 20 20)); }
+      100% { background: var(--snice-color-surface-container-high, rgb(20 20 20)); }
     }
     /* Dashboard widgets */
     .widget {

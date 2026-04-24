@@ -48,7 +48,7 @@
   font-size: inherit;
   font-family: inherit;
   line-height: var(--snice-line-height-normal, 1.5);
-  background: var(--snice-color-background-input, rgb(248 247 245));
+  background: var(--snice-color-surface-container-lowest, rgb(248 247 245));
   color: var(--snice-color-text, rgb(23 23 23));
   transition: border-color var(--snice-transition-fast, 150ms) ease, box-shadow var(--snice-transition-fast, 150ms) ease;
   outline: none;
@@ -70,7 +70,7 @@
 }
 
 .input:disabled {
-  background: var(--snice-color-background-secondary, rgb(243 244 246));
+  background: var(--snice-color-surface-container-low, rgb(243 244 246));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   cursor: not-allowed;
 }
@@ -149,7 +149,7 @@
 
 .toggle-button:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .toggle-button:disabled {
@@ -175,7 +175,7 @@
 
 .clear-button:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 /* Anchor for CSS Anchor Positioning */
@@ -188,8 +188,8 @@
   position: fixed;
   inset: auto;
   margin: 0;
-  z-index: var(--snice-z-index-dropdown, 1000);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  z-index: var(--snice-z-floating, 1000);
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -285,7 +285,7 @@
 }
 
 .year-button:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .month-label {
@@ -314,7 +314,7 @@
 }
 
 .year-cell:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .year-cell--current {
@@ -345,7 +345,7 @@
 
 .nav-button:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 /* Calendar Grid */
@@ -387,7 +387,7 @@
 }
 
 .day:hover:not(.day--disabled):not(.day--empty) {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .day--today {
@@ -433,7 +433,7 @@
 }
 
 .today-button:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 /* Time section */
@@ -515,7 +515,7 @@
 }
 
 .time-item:hover {
-  background: var(--snice-color-background-tertiary, rgb(240 240 240));
+  background: var(--snice-color-surface-container, rgb(240 240 240));
 }
 
 .time-item--selected {

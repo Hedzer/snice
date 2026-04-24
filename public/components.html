@@ -90,7 +90,7 @@
       padding: 0.35rem 1.4rem 0.35rem 1.6rem;
       font-size: 0.7rem;
       font-family: inherit;
-      background: var(--snice-color-background-secondary, rgba(128,128,128,0.08));
+      background: var(--snice-color-surface-container-low, rgba(128,128,128,0.08));
       border: 1px solid var(--snice-color-border, rgba(128,128,128,0.15));
       border-radius: 6px;
       color: var(--snice-color-text, #eee);
@@ -443,7 +443,7 @@
       <p class="comp-desc">Positioned, animated container for contextual actions</p>
       <div class="comp-split">
         <div class="comp-split-demo" style="gap:2rem">
-          <div style="position:relative;width:16rem;height:8rem;background:var(--snice-color-background-element,rgb(252 251 249));border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:0.5rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,rgb(102 102 102));font-size:0.875rem"
+          <div style="position:relative;width:16rem;height:8rem;background:var(--snice-color-surface-container-high,rgb(252 251 249));border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:0.5rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,rgb(102 102 102));font-size:0.875rem"
                onmouseenter="this.querySelector('snice-action-bar').show()"
                onmouseleave="this.querySelector('snice-action-bar').hide()">
             Hover me
@@ -476,7 +476,7 @@
       </div>
       <div class="comp-split">
         <div class="comp-split-demo" style="gap:2rem">
-          <div style="position:relative;width:16rem;height:8rem;background:var(--snice-color-background-element,rgb(252 251 249));border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:0.5rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,rgb(102 102 102));font-size:0.875rem">
+          <div style="position:relative;width:16rem;height:8rem;background:var(--snice-color-surface-container-high,rgb(252 251 249));border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:0.5rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,rgb(102 102 102));font-size:0.875rem">
             Always visible
             <snice-action-bar no-animation position="top-right" size="small">
               <snice-button variant="text" circle size="small"><span slot="icon" class="material-symbols-outlined">edit</span></snice-button>
@@ -585,8 +585,8 @@ feed.activities = [
       <!-- Grid: Material icons -->
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">material icons</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">material icons</span>
             <snice-app-tiles columns="3">
               <snice-app-tile name="Mail" icon="mail" color="rgb(220 38 38)"></snice-app-tile>
               <snice-app-tile name="Calendar" icon="calendar_today" color="rgb(37 99 235)"></snice-app-tile>
@@ -616,8 +616,8 @@ feed.activities = [
       <!-- Grid: Letter fallback -->
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">letter fallback</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">letter fallback</span>
             <snice-app-tiles columns="3">
               <snice-app-tile name="Slack" color="rgb(97 31 105)"></snice-app-tile>
               <snice-app-tile name="Figma" color="rgb(162 89 255)"></snice-app-tile>
@@ -649,8 +649,8 @@ feed.activities = [
       <!-- List variant -->
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">list variant</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">list variant</span>
             <snice-app-tiles columns="1" variant="list">
               <snice-app-tile name="Dashboard" icon="dashboard" color="rgb(37 99 235)"></snice-app-tile>
               <snice-app-tile name="Analytics" icon="bar_chart" color="rgb(22 163 74)"></snice-app-tile>
@@ -678,8 +678,8 @@ feed.activities = [
       <!-- Compact variant (icon left, name right, multi-column) -->
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:22rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">compact variant</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:22rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">compact variant</span>
             <snice-app-tiles columns="2" variant="compact">
               <snice-app-tile name="Dashboard" icon="dashboard" color="rgb(37 99 235)"></snice-app-tile>
               <snice-app-tile name="Analytics" icon="bar_chart" color="rgb(22 163 74)"></snice-app-tile>
@@ -708,8 +708,8 @@ feed.activities = [
       <!-- Sizes -->
       <div class="comp-split" style="margin-bottom:1.5rem">
         <div class="comp-split-demo" style="display:flex;gap:1rem;flex-wrap:wrap">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:10rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">small</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:10rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">small</span>
             <snice-app-tiles columns="2" size="sm">
               <snice-app-tile name="Home" icon="home"></snice-app-tile>
               <snice-app-tile name="Search" icon="search"></snice-app-tile>
@@ -717,8 +717,8 @@ feed.activities = [
               <snice-app-tile name="Settings" icon="settings"></snice-app-tile>
             </snice-app-tiles>
           </div>
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:13rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">large</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:13rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">large</span>
             <snice-app-tiles columns="2" size="lg">
               <snice-app-tile name="Music" icon="music_note" color="rgb(220 38 38)"></snice-app-tile>
               <snice-app-tile name="Games" icon="sports_esports" color="rgb(22 163 74)"></snice-app-tile>
@@ -726,15 +726,15 @@ feed.activities = [
               <snice-app-tile name="Books" icon="menu_book" color="rgb(234 88 12)"></snice-app-tile>
             </snice-app-tiles>
           </div>
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:16rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">xl</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:16rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">xl</span>
             <snice-app-tiles columns="2" size="xl">
               <snice-app-tile name="Photos" icon="photo_library" color="rgb(22 163 74)"></snice-app-tile>
               <snice-app-tile name="Maps" icon="map" color="rgb(14 165 233)"></snice-app-tile>
             </snice-app-tiles>
           </div>
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">2xl</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">2xl</span>
             <snice-app-tiles columns="2" size="2xl">
               <snice-app-tile name="Camera" icon="photo_camera" color="rgb(147 51 234)"></snice-app-tile>
               <snice-app-tile name="Weather" icon="wb_sunny" color="rgb(234 88 12)"></snice-app-tile>
@@ -764,8 +764,8 @@ feed.activities = [
       <!-- Image icons (imperative) -->
       <div class="comp-split">
         <div class="comp-split-demo">
-          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-background,#1a1a2e);width:18rem">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">image icons</span>
+          <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:0.5rem;position:relative;background:var(--snice-color-surface,#1a1a2e);width:18rem">
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">image icons</span>
             <snice-app-tiles id="demo-tiles-images" columns="3"></snice-app-tiles>
           </div>
         </div>
@@ -2089,7 +2089,7 @@ tiles.addEventListener('tile-click',
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="width:100%;flex-direction:column;gap:1.25rem;align-items:stretch">
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">with controls</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">with controls</span>
             <snice-carousel show-controls show-indicators loop style="width:100%">
               <img src="assets/photos/slide1.jpg?v=80938d7" alt="Slide 1" style="width:100%;height:220px;object-fit:cover;display:block">
               <img src="assets/photos/slide2.jpg?v=80938d7" alt="Slide 2" style="width:100%;height:220px;object-fit:cover;display:block">
@@ -2097,7 +2097,7 @@ tiles.addEventListener('tile-click',
             </snice-carousel>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">autoplay</span>
             <snice-carousel autoplay autoplay-interval="2000" show-indicators loop style="width:100%">
               <img src="assets/photos/auto1.jpg?v=80938d7" alt="Auto 1" style="width:100%;height:180px;object-fit:cover;display:block">
               <img src="assets/photos/auto2.jpg?v=80938d7" alt="Auto 2" style="width:100%;height:180px;object-fit:cover;display:block">
@@ -2105,7 +2105,7 @@ tiles.addEventListener('tile-click',
             </snice-carousel>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">multi-slide</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">multi-slide</span>
             <snice-carousel slides-per-view="3" space-between="12" show-controls style="width:100%">
               <img src="assets/photos/multi1.jpg?v=80938d7" alt="1" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
               <img src="assets/photos/multi2.jpg?v=80938d7" alt="2" style="flex:0 0 auto;width:calc(33.33% - 8px);height:160px;object-fit:cover;display:block;margin-right:12px">
@@ -4706,7 +4706,7 @@ md.addEventListener('link-click',
       <h3>Masonry</h3>
       <p class="comp-desc">Pinterest-style grid layout with variable height items</p>
       <style>
-        .pin-card { border-radius: 16px; overflow: hidden; background: var(--snice-color-background-secondary, #fff); box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+        .pin-card { border-radius: 16px; overflow: hidden; background: var(--snice-color-surface-container-low, #fff); box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
         .pin-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
         .pin-img { width: 100%; display: block; object-fit: cover; }
         .pin-body { padding: 0.75rem; }
@@ -5653,7 +5653,7 @@ nav.update([
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="flex-direction:column;gap:2rem">
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">declarative (cards)</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">declarative (cards)</span>
             <snice-pricing-table id="demo-pricing-decl" style="width:100%">
               <snice-plan name="Starter" price="0" description="For individuals" cta="Get Started" cta-variant="outline">
                 <snice-feature name="1 user" included></snice-feature>
@@ -5679,7 +5679,7 @@ nav.update([
             </snice-pricing-table>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table variant</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">table variant</span>
             <snice-pricing-table id="demo-pricing-table" variant="table" style="width:100%"></snice-pricing-table>
           </div>
         </div>
@@ -6888,7 +6888,7 @@ button.actions = [
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo" style="height:200px;padding:0">
           <snice-split-pane direction="horizontal" primary-size="40">
-            <div slot="primary" style="padding:1rem;background:var(--snice-color-background-tertiary);height:100%">
+            <div slot="primary" style="padding:1rem;background:var(--snice-color-surface-container);height:100%">
               <strong>Left Panel</strong>
               <p style="font-size:0.8rem;color:var(--snice-color-text-secondary)">Drag the divider to resize</p>
             </div>
@@ -7408,7 +7408,7 @@ stepper.currentStep = 1;</snice-code-block>
         <div class="comp-split-demo demo-col" style="gap:1.25rem">
           <!-- Top (default) -->
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: top</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: top</span>
             <snice-tabs transition="fade">
               <snice-tab slot="nav">Overview</snice-tab>
               <snice-tab slot="nav">Features</snice-tab>
@@ -7444,7 +7444,7 @@ stepper.currentStep = 1;</snice-code-block>
           </div>
           <!-- Bottom -->
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: bottom</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: bottom</span>
             <snice-tabs placement="bottom" transition="slide">
               <snice-tab slot="nav">Design</snice-tab>
               <snice-tab slot="nav">Develop</snice-tab>
@@ -7473,7 +7473,7 @@ stepper.currentStep = 1;</snice-code-block>
           <!-- Vertical: Start / End -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: start</span>
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: start</span>
               <snice-tabs placement="start">
                 <snice-tab slot="nav">Basics</snice-tab>
                 <snice-tab slot="nav">Props</snice-tab>
@@ -7496,7 +7496,7 @@ stepper.currentStep = 1;</snice-code-block>
               </snice-tabs>
             </div>
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1.25rem;position:relative">
-              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: end</span>
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">placement: end</span>
               <snice-tabs placement="end">
                 <snice-tab slot="nav">v4.5</snice-tab>
                 <snice-tab slot="nav">v4.4</snice-tab>
@@ -7982,20 +7982,20 @@ stepper.currentStep = 1;</snice-code-block>
         <div class="comp-split-demo demo-col" style="gap:1.5rem">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem">
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">left</span>
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">left</span>
               <snice-timeline id="demo-timeline-left" position="left"></snice-timeline>
             </div>
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">alternate</span>
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">alternate</span>
               <snice-timeline id="demo-timeline-alt" position="alternate"></snice-timeline>
             </div>
             <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">right</span>
+              <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">right</span>
               <snice-timeline id="demo-timeline-right" position="right"></snice-timeline>
             </div>
           </div>
           <div style="border:1px solid rgba(128,128,128,0.2);border-radius:8px;padding:1rem;position:relative">
-            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-background,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">horizontal</span>
+            <span style="position:absolute;top:-0.6em;left:1rem;background:var(--snice-color-surface,#1a1a2e);padding:0 0.5rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.5">horizontal</span>
             <snice-timeline id="demo-timeline-horiz" orientation="horizontal"></snice-timeline>
           </div>
         </div>
@@ -9363,7 +9363,7 @@ weather.data = {
       right: 0;
       bottom: 0;
       width: min(50%, 90vw);
-      background: var(--snice-color-background, #1a1a2e);
+      background: var(--snice-color-surface, #1a1a2e);
       border-left: 1px solid var(--snice-color-border, rgba(128,128,128,0.2));
       z-index: 9999;
       transform: translateX(100%);
@@ -9445,7 +9445,7 @@ weather.data = {
     .help-drawer-body h4 { font-size: 0.9rem; margin: 1rem 0 0.3rem; }
     .help-drawer-body p { margin: 0.4rem 0; }
     .help-drawer-body code { background: rgba(128,128,128,0.15); padding: 0.15em 0.35em; border-radius: 3px; font-size: 0.8rem; }
-    .help-drawer-body pre { background: var(--snice-color-background-tertiary, #2a2a3e); padding: 0.75rem 1rem; border-radius: 6px; overflow-x: auto; margin: 0.5rem 0; }
+    .help-drawer-body pre { background: var(--snice-color-surface-container, #2a2a3e); padding: 0.75rem 1rem; border-radius: 6px; overflow-x: auto; margin: 0.5rem 0; }
     .help-drawer-body pre code { background: none; padding: 0; font-size: 0.78rem; }
     .help-drawer-body table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.8rem; }
     .help-drawer-body th, .help-drawer-body td { text-align: left; padding: 0.35rem 0.5rem; border: 1px solid var(--snice-color-border, rgba(128,128,128,0.2)); }

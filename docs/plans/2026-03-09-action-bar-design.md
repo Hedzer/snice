@@ -56,7 +56,7 @@ noEscapeDismiss: boolean = false;               // attr: no-escape-dismiss
 ## CSS Custom Properties
 
 ```css
---action-bar-background: var(--snice-color-background-element, rgb(252 251 249))
+--action-bar-background: var(--snice-color-surface-container-high, rgb(252 251 249))
 --action-bar-border: 1px solid var(--snice-color-border, rgb(226 226 226))
 --action-bar-border-radius: var(--snice-border-radius-lg, 0.5rem)
 --action-bar-padding: var(--snice-spacing-xs, 0.5rem)

@@ -80,8 +80,8 @@ snice-notification-center::part(panel) {
 | `--snice-color-text-secondary` | Message text color |
 | `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
 | `--snice-color-border` | Panel and item border color |
-| `--snice-color-background` | Panel background color |
-| `--snice-color-background-element` | Item hover and bell hover background |
+| `--snice-color-surface` | Panel background color |
+| `--snice-color-surface-container-high` | Item hover and bell hover background |
 | `--snice-shadow-lg` | Panel drop shadow |
 
 ## Basic Usage

@@ -29,26 +29,28 @@ Provides all design tokens for Snice components via CSS custom properties. Inclu
 | `--snice-color-text-secondary` | Secondary text color |
 | `--snice-color-text-tertiary` | Tertiary text color |
 | `--snice-color-text-inverse` | Text on dark/colored backgrounds |
-| `--snice-color-background` | Page background |
-| `--snice-color-background-secondary` | Secondary background |
-| `--snice-color-background-tertiary` | Tertiary background |
-| `--snice-color-background-element` | Element background |
-| `--snice-color-background-input` | Input field background |
-| `--snice-color-background-elevated` | Raised surface background (modals, popovers, menus). In light = white; in dark = lighter than base so elevation reads without heavy drop shadows |
+| `--snice-color-surface` | Page/body — the lowest surface |
+| `--snice-color-surface-container-lowest` | Recessed fields (inputs, search boxes) — lowest container |
+| `--snice-color-surface-container-low` | Subtle raised (toolbars, row stripes, pagination bars) |
+| `--snice-color-surface-container` | Raised (tables, panels) |
+| `--snice-color-surface-container-high` | Cards, tiles, flow nodes |
+| `--snice-color-surface-container-highest` | Popovers, menus, modals (use shadow for light-mode elevation) |
+| `--snice-color-surface-hover` | Solid hover bg for components that need a concrete color swap (selects, list items) |
+| `--snice-color-surface-active` | Solid pressed bg |
+| `--snice-color-surface-disabled` | Disabled surface |
 | `--snice-color-border` | Default border color |
 | `--snice-color-border-hover` | Hovered border color |
 | `--snice-color-border-focus` | Focused border color |
 | `--snice-color-border-subtle` | Alpha-based border (~12% black in light, ~12% white in dark). Composites correctly over tinted surfaces where a solid gray would fight the palette |
 
+
 ### Interaction overlays
 
 | Property | Description |
 |----------|-------------|
-| `--snice-color-overlay-hover` | 4% alpha tint layered over a surface on hover. Use instead of swapping `background-color` — composites over striped rows, tinted cells, and any bg without fighting the palette |
-| `--snice-color-overlay-selected` | 8% primary-tinted overlay for selected rows/items |
+| `--snice-color-overlay-hover` | Alpha tint layered over a surface on hover |
+| `--snice-color-overlay-selected` | Primary-tinted overlay for selected rows/items |
 | `--snice-color-overlay-selected-hover` | Selected state when also hovered |
-
-This is the MUI-style pattern. A row hover should *layer* a translucent tint, not swap to another solid color — solid swaps break down when the row is already striped or variant-tinted.
 
 ### Motion
 
@@ -195,16 +197,19 @@ Document components (receipt, invoice, estimate, work-order) ship additional `@m
 | `--snice-transition-medium` | `250ms` |
 | `--snice-transition-slow` | `350ms` |
 
-### Z-Index
+### Layers (z-index)
 
 | Property | Value |
 |----------|-------|
-| `--snice-z-index-dropdown` | `1000` |
-| `--snice-z-index-sticky` | `1020` |
-| `--snice-z-index-fixed` | `1030` |
-| `--snice-z-index-modal-backdrop` | `1040` |
-| `--snice-z-index-modal` | `1050` |
-| `--snice-z-index-tooltip` | `1070` |
+| `--snice-z-base` | `0` |
+| `--snice-z-raised` | `1` |
+| `--snice-z-sticky` | `10` |
+| `--snice-z-fixed` | `30` |
+| `--snice-z-floating` | `100` |
+| `--snice-z-scrim` | `1000` |
+| `--snice-z-overlay` | `1100` |
+| `--snice-z-popover-over` | `1200` |
+| `--snice-z-notification` | `1300` |
 
 ### Focus
 
@@ -278,7 +283,7 @@ Apply dark theme to a section of the page.
 ```html
 <body>
   <div>Light content here</div>
-  <div data-theme="dark" style="padding: 2rem; background: var(--snice-color-background);">
+  <div data-theme="dark" style="padding: 2rem; background: var(--snice-color-surface);">
     <p style="color: var(--snice-color-text);">Dark section</p>
   </div>
 </body>

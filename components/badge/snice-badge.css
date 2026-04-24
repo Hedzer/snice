@@ -34,7 +34,7 @@
   /* Single 2px halo ring in the host's background color to separate the
      badge from whatever it's pinned to (avatar, icon, tile). box-shadow
      instead of border so it doesn't eat from min-width/height. */
-  box-shadow: 0 0 0 2px var(--snice-color-background, #fff);
+  box-shadow: 0 0 0 2px var(--snice-color-surface, #fff);
 
   transition:
     transform var(--snice-transition-fast, 150ms) ease,

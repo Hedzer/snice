@@ -67,9 +67,9 @@ interface SpreadsheetColumn {
 | Property | Description | Default |
 |----------|-------------|---------|
 | `--snice-color-border` | Grid lines and borders | `rgb(226 226 226)` |
-| `--snice-color-background` | Cell background color | `rgb(255 255 255)` |
-| `--snice-color-background-element` | Header and row-number background | _(theme default)_ |
-| `--snice-color-background-hover` | Row hover and header hover | _(theme default)_ |
+| `--snice-color-surface` | Cell background color | `rgb(255 255 255)` |
+| `--snice-color-surface-container-high` | Header and row-number background | _(theme default)_ |
+| `--snice-color-surface-hover` | Row hover and header hover | _(theme default)_ |
 | `--snice-color-primary` | Selected cell border color | `rgb(37 99 235)` |
 | `--snice-color-primary-subtle` | Range selection fill, header highlight | _(theme default)_ |
 | `--snice-color-text` | Cell text color | _(theme default)_ |

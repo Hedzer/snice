@@ -208,7 +208,7 @@ export class DashboardPage extends HTMLElement {
       }
 
       code {
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         padding: 0.125rem 0.375rem;
         border-radius: var(--snice-border-radius-md);
         font-size: 0.8125rem;

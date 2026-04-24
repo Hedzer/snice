@@ -11,7 +11,7 @@
   height: 100%;
   min-height: 25rem;
   overflow: hidden;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 4px;
 }
@@ -101,7 +101,7 @@
 .flow__node {
   position: absolute;
   pointer-events: auto;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 4px;
   min-width: 8.75rem;
@@ -183,7 +183,7 @@
   height: 0.625rem;
   border-radius: 50%;
   background: var(--snice-color-border, rgb(226 226 226));
-  border: 2px solid var(--snice-color-background, rgb(255 255 255));
+  border: 2px solid var(--snice-color-surface, rgb(255 255 255));
   box-shadow: 0 0 0 1px var(--snice-color-border, rgb(226 226 226));
   transition: background var(--snice-transition-fast, 150ms) ease,
               transform var(--snice-transition-fast, 150ms) ease;
@@ -212,7 +212,7 @@
   right: var(--snice-spacing-xs, 0.5rem);
   width: 9.375rem;
   height: 6.25rem;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 4px;
   overflow: hidden;

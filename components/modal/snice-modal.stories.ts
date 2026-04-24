@@ -31,7 +31,7 @@ function makeModal(id: string, attrs: Record<string, string | boolean>, headerTe
   if (footerText) {
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     const closeBtn = document.createElement('button');
-    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     closeBtn.textContent = footerText;
     closeBtn.addEventListener('click', () => (modal as any).close?.());
     ftrDiv.appendChild(closeBtn);
@@ -42,7 +42,7 @@ function makeModal(id: string, attrs: Record<string, string | boolean>, headerTe
 
 function triggerButton(label: string, modalId: string) {
   const btn = document.createElement('button');
-  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
   btn.textContent = label;
   btn.addEventListener('click', () => {
     const modal = document.getElementById(modalId);
@@ -178,7 +178,7 @@ export const NoHeader: Story = {
     modal.appendChild(p);
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     const closeBtn = document.createElement('button');
-    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     closeBtn.textContent = 'Close';
     closeBtn.addEventListener('click', () => (modal as any).close?.());
     ftrDiv.appendChild(closeBtn); modal.appendChild(ftrDiv);
@@ -234,7 +234,7 @@ export const ForcedInteraction: Story = {
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     ftrDiv.style.cssText = 'display:flex;gap:.5rem;';
     const cancelBtn = document.createElement('button');
-    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => (modal as any).close?.());
     const confirmBtn = document.createElement('button');
@@ -270,7 +270,7 @@ export const CustomLabel: Story = {
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     ftrDiv.style.cssText = 'display:flex;gap:.5rem;';
     const cancelBtn = document.createElement('button');
-    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => (modal as any).close?.());
     const deleteBtn = document.createElement('button');
@@ -299,7 +299,7 @@ export const SlotsHeaderBodyFooter: Story = {
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     ftrDiv.style.cssText = 'display:flex;gap:.5rem;justify-content:flex-end;';
     const cancelBtn = document.createElement('button');
-    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    cancelBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => (modal as any).close?.());
     const saveBtn = document.createElement('button');
@@ -330,7 +330,7 @@ export const LongScrollableContent: Story = {
     modal.appendChild(bodyDiv);
     const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
     const closeBtn = document.createElement('button');
-    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     closeBtn.textContent = 'Close';
     closeBtn.addEventListener('click', () => (modal as any).close?.());
     ftrDiv.appendChild(closeBtn); modal.appendChild(ftrDiv);
@@ -425,7 +425,7 @@ export const SizeXNoHeaderMatrix: Story = {
       modal.appendChild(p);
       const ftrDiv = document.createElement('div'); ftrDiv.slot = 'footer';
       const closeBtn = document.createElement('button');
-      closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+      closeBtn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
       closeBtn.textContent = 'Close';
       closeBtn.addEventListener('click', () => (modal as any).close?.());
       ftrDiv.appendChild(closeBtn); modal.appendChild(ftrDiv);

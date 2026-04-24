@@ -9,7 +9,7 @@ case, when, default, if {
 }
 
 .user-card {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
@@ -82,7 +82,7 @@ case, when, default, if {
   height: 5rem;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  background: var(--snice-color-surface-container-low, rgb(240 240 240));
   display: block;
 }
 
@@ -119,7 +119,7 @@ case, when, default, if {
   width: 0.875rem;
   height: 0.875rem;
   border-radius: 50%;
-  border: 2px solid var(--snice-color-background-element, rgb(252 251 249));
+  border: 2px solid var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 :host([variant="compact"]) .user-card-status {
@@ -237,7 +237,7 @@ case, when, default, if {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: var(--snice-color-background-secondary, rgb(240 240 240));
+  background: var(--snice-color-surface-container-low, rgb(240 240 240));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-decoration: none;
   transition: background var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;

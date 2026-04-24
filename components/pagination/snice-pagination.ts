@@ -152,7 +152,7 @@ export class SnicePagination extends HTMLElement {
         min-width: var(--pagination-button-size);
         height: var(--pagination-button-size);
         padding: 0 var(--pagination-button-padding);
-        background: var(--snice-color-background-secondary, white);
+        background: var(--snice-color-surface-container-low, white);
         border: 1px solid var(--snice-color-border, #e5e7eb);
         border-radius: var(--pagination-border-radius);
         color: var(--snice-color-text, #374151);
@@ -168,12 +168,12 @@ export class SnicePagination extends HTMLElement {
       }
 
       .pagination-button:hover:not(:disabled) {
-        background: var(--snice-color-background-tertiary, #f3f4f6);
+        background: var(--snice-color-surface-container, #f3f4f6);
         border-color: var(--snice-color-border-hover, #d1d5db);
       }
 
       :host([variant="text"]) .pagination-button:hover:not(:disabled) {
-        background: var(--snice-color-background-tertiary, #f3f4f6);
+        background: var(--snice-color-surface-container, #f3f4f6);
       }
 
       .pagination-button:disabled {

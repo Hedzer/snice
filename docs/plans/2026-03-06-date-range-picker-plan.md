@@ -197,7 +197,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
   align-items: center;
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-lg, 6px);
-  background: var(--snice-color-background-input);
+  background: var(--snice-color-surface-container-lowest);
   transition: border-color var(--snice-transition-fast, 0.15s) ease, box-shadow var(--snice-transition-fast, 0.15s) ease;
 }
 
@@ -216,7 +216,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 }
 
 .input-group--filled {
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   border: 1px solid transparent;
 }
 
@@ -228,7 +228,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 }
 
 .input-group--disabled {
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   cursor: not-allowed;
 }
 
@@ -311,7 +311,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 .calendar-toggle:hover,
 .clear-button:hover {
   color: var(--snice-color-text);
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
 }
 
 .calendar-toggle:disabled,
@@ -349,8 +349,8 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: var(--snice-z-index-dropdown, 1000);
-  background: var(--snice-color-background-element);
+  z-index: var(--snice-z-floating, 1000);
+  background: var(--snice-color-surface-container-high);
   border: 1px solid var(--snice-color-border);
   border-radius: var(--snice-border-radius-lg, 8px);
   box-shadow: var(--snice-shadow-lg);
@@ -394,7 +394,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 }
 
 .preset-button:hover {
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
 }
 
 .preset-button--active {
@@ -446,7 +446,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 
 .nav-button:hover {
   color: var(--snice-color-text);
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
 }
 
 /* Hide inner nav buttons in dual mode — outer buttons control both */
@@ -493,7 +493,7 @@ All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in 
 }
 
 .day:hover:not(.day--disabled):not(.day--empty) {
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
 }
 
 .day--today {
@@ -802,7 +802,7 @@ Use theme tokens in demo styles, not hard-coded colors. Test in both light and d
         body {
             font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
             padding: var(--snice-spacing-xl, 2rem);
-            background: var(--snice-color-background);
+            background: var(--snice-color-surface);
             color: var(--snice-color-text, #374151);
         }
         .container { max-width: 800px; margin: 0 auto; }
@@ -811,7 +811,7 @@ Use theme tokens in demo styles, not hard-coded colors. Test in both light and d
             padding: var(--snice-spacing-lg, 1.5rem);
             border: 1px solid var(--snice-color-border, #e5e7eb);
             border-radius: var(--snice-border-radius-lg, 6px);
-            background: var(--snice-color-background-secondary, #f9fafb);
+            background: var(--snice-color-surface-container-low, #f9fafb);
         }
         .test-section h3 {
             margin: 0 0 var(--snice-spacing-md, 1rem) 0;

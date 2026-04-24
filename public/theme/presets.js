@@ -43,8 +43,8 @@ export const PRESETS = [
   --snice-color-blue-950: 197 60% 12%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(200 25% 8%);
-  --snice-color-background-element: hsl(200 15% 16%);
+  --snice-color-surface: hsl(200 25% 8%);
+  --snice-color-surface-container-high: hsl(200 15% 16%);
 }`
   },
   {
@@ -88,8 +88,8 @@ export const PRESETS = [
   --snice-color-green-950: 96 48% 10%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(24 18% 8%);
-  --snice-color-background-element: hsl(26 12% 16%);
+  --snice-color-surface: hsl(24 18% 8%);
+  --snice-color-surface-container-high: hsl(26 12% 16%);
 }`
   },
   {
@@ -122,8 +122,8 @@ export const PRESETS = [
   --snice-color-blue-950: 10 65% 15%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(14 20% 7%);
-  --snice-color-background-element: hsl(16 14% 15%);
+  --snice-color-surface: hsl(14 20% 7%);
+  --snice-color-surface-container-high: hsl(16 14% 15%);
 }`
   },
   {
@@ -156,8 +156,8 @@ export const PRESETS = [
   --snice-color-blue-950: 275 60% 18%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(244 18% 8%);
-  --snice-color-background-element: hsl(246 12% 16%);
+  --snice-color-surface: hsl(244 18% 8%);
+  --snice-color-surface-container-high: hsl(246 12% 16%);
 }`
   },
   {
@@ -190,8 +190,8 @@ export const PRESETS = [
   --snice-color-blue-950: 332 55% 16%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(354 18% 8%);
-  --snice-color-background-element: hsl(356 12% 15%);
+  --snice-color-surface: hsl(354 18% 8%);
+  --snice-color-surface-container-high: hsl(356 12% 15%);
 }`
   },
   {
@@ -224,8 +224,8 @@ export const PRESETS = [
   --snice-color-blue-950: 229 50% 10%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(222 47% 7%);
-  --snice-color-background-element: hsl(217 33% 14%);
+  --snice-color-surface: hsl(222 47% 7%);
+  --snice-color-surface-container-high: hsl(217 33% 14%);
 }`
   },
   {
@@ -258,8 +258,8 @@ export const PRESETS = [
   --snice-color-blue-950: 22 60% 14%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(28 20% 7%);
-  --snice-color-background-element: hsl(30 14% 15%);
+  --snice-color-surface: hsl(28 20% 7%);
+  --snice-color-surface-container-high: hsl(30 14% 15%);
 }`
   },
   {
@@ -292,8 +292,8 @@ export const PRESETS = [
   --snice-color-blue-950: 255 58% 17%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(246 35% 7%);
-  --snice-color-background-element: hsl(244 22% 14%);
+  --snice-color-surface: hsl(246 35% 7%);
+  --snice-color-surface-container-high: hsl(244 22% 14%);
 }`
   },
   {
@@ -326,8 +326,8 @@ export const PRESETS = [
   --snice-color-blue-950: 10 50% 10%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(18 28% 6%);
-  --snice-color-background-element: hsl(20 18% 13%);
+  --snice-color-surface: hsl(18 28% 6%);
+  --snice-color-surface-container-high: hsl(20 18% 13%);
 }`
   },
   {
@@ -360,8 +360,8 @@ export const PRESETS = [
   --snice-color-blue-950: 340 55% 14%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(0 18% 7%);
-  --snice-color-background-element: hsl(0 12% 14%);
+  --snice-color-surface: hsl(0 18% 7%);
+  --snice-color-surface-container-high: hsl(0 12% 14%);
 }`
   },
   {
@@ -394,8 +394,8 @@ export const PRESETS = [
   --snice-color-blue-950: 6 48% 14%;
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(2 16% 7%);
-  --snice-color-background-element: hsl(4 12% 14%);
+  --snice-color-surface: hsl(2 16% 7%);
+  --snice-color-surface-container-high: hsl(4 12% 14%);
 }`
   },
   {
@@ -430,14 +430,14 @@ export const PRESETS = [
   --snice-color-blue-800: 40 8% 8%;
   --snice-color-blue-900: 40 8% 6%;
   --snice-color-blue-950: 40 8% 4%;
-  --snice-color-background: hsl(40 25% 98%);
-  --snice-color-background-element: hsl(40 22% 96%);
-  --snice-color-background-input: hsl(40 25% 99%);
+  --snice-color-surface: hsl(40 25% 98%);
+  --snice-color-surface-container-high: hsl(40 22% 96%);
+  --snice-color-surface-container-lowest: hsl(40 25% 99%);
 }`,
     cssDark: `[data-theme="dark"] {
-  --snice-color-background: hsl(40 5% 8%);
-  --snice-color-background-element: hsl(40 5% 10%);
-  --snice-color-background-input: hsl(40 5% 13%);
+  --snice-color-surface: hsl(40 5% 8%);
+  --snice-color-surface-container-high: hsl(40 5% 10%);
+  --snice-color-surface-container-lowest: hsl(40 5% 13%);
 }`
   }
 ];

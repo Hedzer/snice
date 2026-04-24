@@ -246,7 +246,7 @@ Key requirements:
   align-items: center;
   gap: var(--action-bar-gap, var(--snice-spacing-2xs, 0.25rem));
   padding: var(--action-bar-padding, var(--snice-spacing-xs, 0.5rem));
-  background: var(--action-bar-background, var(--snice-color-background-element, rgb(252 251 249)));
+  background: var(--action-bar-background, var(--snice-color-surface-container-high, rgb(252 251 249)));
   border: var(--action-bar-border, 1px solid var(--snice-color-border, rgb(226 226 226)));
   border-radius: var(--action-bar-border-radius, var(--snice-border-radius-lg, 0.5rem));
   box-shadow: var(--action-bar-shadow, var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)));

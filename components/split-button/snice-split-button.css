@@ -83,14 +83,14 @@
 /* Variant: default */
 .split-button--default .split-button__primary,
 .split-button--default .split-button__toggle {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border-color: var(--snice-color-border, rgb(226 226 226));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .split-button--default .split-button__primary:hover:not(:disabled),
 .split-button--default .split-button__toggle:hover:not(:disabled) {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .split-button--default .split-button__divider {
@@ -203,7 +203,7 @@
 
 .split-button--outline .split-button__primary:hover:not(:disabled),
 .split-button--outline .split-button__toggle:hover:not(:disabled) {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .split-button--outline .split-button__divider {
@@ -317,7 +317,7 @@
   inset: auto;
   margin: 0;
   min-width: var(--sb-menu-min-width, 10rem);
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
@@ -382,7 +382,7 @@
 }
 
 .split-button__action:hover:not(:disabled) {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .split-button__action:focus-visible {

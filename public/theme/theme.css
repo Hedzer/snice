@@ -99,26 +99,28 @@
   --snice-color-text-tertiary: hsl(var(--snice-color-gray-500));
   --snice-color-text-inverse: hsl(var(--snice-color-gray-50));
 
-  --snice-color-background: hsl(0 0% 100%);
-  --snice-color-background-secondary: hsl(var(--snice-color-gray-50));
-  --snice-color-background-tertiary: hsl(var(--snice-color-gray-100));
-  --snice-color-background-element: hsl(40 9% 97%);
-  --snice-color-background-input: hsl(0 0% 100%);
-  /* Elevated surface — modals, popovers, menus. Defaults to background in
-     light (drop shadow handles elevation); lighter than base in dark. */
-  --snice-color-background-elevated: hsl(0 0% 100%);
+  /* Surface density scale. Tokens express HOW RAISED
+     a surface is, not what it's for. Components pick the level that matches
+     their prominence; don't name tokens after elements. */
+  --snice-color-surface:                   hsl(0 0% 100%);                     /* page/body — lowest */
+  --snice-color-surface-container-lowest:  hsl(0 0% 100%);                     /* inputs, recessed fields */
+  --snice-color-surface-container-low:     hsl(var(--snice-color-gray-50));   /* subtle raised bg */
+  --snice-color-surface-container:         hsl(var(--snice-color-gray-100));  /* toolbars, row stripes */
+  --snice-color-surface-container-high:    hsl(40 9% 97%);                    /* cards, panels */
+  --snice-color-surface-container-highest: hsl(0 0% 100%);                     /* modals, popovers (use shadow for light-mode elevation) */
 
   --snice-color-border: hsl(var(--snice-color-gray-300));
   --snice-color-border-hover: hsl(var(--snice-color-gray-400));
   --snice-color-border-focus: hsl(var(--snice-color-blue-500));
-  /* Alpha-based subtle border — composites correctly over tinted surfaces
-     (MUI-style). Use for borders that sit on non-white backgrounds. */
+  /* Alpha-based subtle border — composites correctly over tinted surfaces. */
   --snice-color-border-subtle: hsl(0 0% 0% / 0.12);
 
-  /* Interactive states */
-  --snice-color-background-hover: hsl(var(--snice-color-gray-100));
-  --snice-color-background-active: hsl(var(--snice-color-gray-200));
-  --snice-color-background-disabled: hsl(var(--snice-color-gray-100));
+  /* Interactive surface states — solid-color variants for components that
+     need a concrete hover/active bg (selects, menus, list items) rather
+     than the alpha overlays. Prefer overlay-hover/-selected when possible. */
+  --snice-color-surface-hover: hsl(var(--snice-color-gray-100));
+  --snice-color-surface-active: hsl(var(--snice-color-gray-200));
+  --snice-color-surface-disabled: hsl(var(--snice-color-gray-100));
   --snice-color-text-disabled: hsl(var(--snice-color-gray-400));
 
   /* Alpha overlays for hover/selected states — layer these ON TOP of the
@@ -223,8 +225,8 @@
   /* Gradients — top-to-bottom highlight that gives buttons/cards/surfaces a
      subtle convex sheen (iOS/macOS-style). Tuned strong enough to read but
      not draw attention. */
-  --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 60%);
-  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%);
+  --snice-gradient-subtle:  linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 60%);
+  --snice-gradient-convex:  linear-gradient(to bottom, hsl(0 0% 100% / 0.14), transparent 70%);
   --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.06), transparent 50%);
 
   /* Noise/grain texture — inline SVG filter that surfaces can overlay for a
@@ -248,12 +250,19 @@
   --snice-ease-bounce: cubic-bezier(0.17, 0.87, 0.4, 1.32);   /* pronounced overshoot */
 
   /* Z-index */
-  --snice-z-index-dropdown: 1000;
-  --snice-z-index-sticky: 1020;
-  --snice-z-index-fixed: 1030;
-  --snice-z-index-modal-backdrop: 1040;
-  --snice-z-index-modal: 1050;
-  --snice-z-index-tooltip: 1070;
+  /* Layer scale — concept-named (base flow → top notifications). Components
+     pick the layer that matches their stacking intent. Never name a z token
+     after an element ("modal", "tooltip"); the element is a consumer of a
+     layer, not its own layer. */
+  --snice-z-base:         0;    /* default document flow */
+  --snice-z-raised:       1;    /* hover lift, elevated cards */
+  --snice-z-sticky:       10;   /* sticky headers, sticky nav */
+  --snice-z-fixed:        30;   /* fixed toolbars, FABs */
+  --snice-z-floating:     100;  /* dropdowns, menus, popovers, date pickers */
+  --snice-z-scrim:        1000; /* modal/drawer backdrops */
+  --snice-z-overlay:      1100; /* modal, drawer panel — above scrim */
+  --snice-z-popover-over: 1200; /* tooltips that must show above modals */
+  --snice-z-notification: 1300; /* toasts — always on top */
 
   /* Focus */
   --snice-focus-ring-width: 2px;
@@ -291,24 +300,21 @@
   --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
   --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
 
-  --snice-color-background: hsl(var(--snice-color-gray-900));
-  --snice-color-background-secondary: hsl(var(--snice-color-gray-800));
-  --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
-  --snice-color-background-element: hsl(30 5% 18%);
-  --snice-color-background-input: hsl(0 0% 15%);
-  /* Lighter than base — dark-UI elevation convention (raise by lightening,
-     not by drop shadow which disappears on near-black bg). */
-  --snice-color-background-elevated: hsl(var(--snice-color-gray-800));
+  /* Surface density scale — dark mode raises by LIGHTENING (convention in
+     dark UIs since drop shadows disappear on near-black bg). */
+  --snice-color-surface:                   hsl(var(--snice-color-gray-900));
+  --snice-color-surface-container-lowest:  hsl(0 0% 15%);
+  --snice-color-surface-container-low:     hsl(var(--snice-color-gray-800));
+  --snice-color-surface-container:         hsl(var(--snice-color-gray-700));
+  --snice-color-surface-container-high:    hsl(30 5% 18%);
+  --snice-color-surface-container-highest: hsl(var(--snice-color-gray-800));
 
   --snice-color-border: hsl(0 0% 35%);
   --snice-color-border-hover: hsl(var(--snice-color-gray-600));
   --snice-color-border-focus: hsl(var(--snice-color-blue-400));
-  /* Alpha-based subtle border for dark mode — white with low alpha */
   --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
 
-  --snice-color-background-hover: hsl(var(--snice-color-gray-700));
-  --snice-color-background-active: hsl(var(--snice-color-gray-600));
-  --snice-color-background-disabled: hsl(var(--snice-color-gray-800));
+  --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
   --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
 
   --snice-color-overlay-hover: hsl(0 0% 100% / 0.06);
@@ -337,7 +343,7 @@
 
   /* Gradients — slightly stronger on dark since the surface is darker */
   --snice-gradient-subtle: linear-gradient(to bottom, hsl(0 0% 100% / 0.04), transparent 60%);
-  --snice-gradient-button: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
+  --snice-gradient-convex: linear-gradient(to bottom, hsl(0 0% 100% / 0.08), transparent 70%);
   --snice-gradient-surface: linear-gradient(to bottom, hsl(0 0% 100% / 0.03), transparent 50%);
 
   /* Color scheme for native controls */
@@ -365,20 +371,20 @@
     --snice-color-text-tertiary: hsl(var(--snice-color-gray-400));
     --snice-color-text-inverse: hsl(var(--snice-color-gray-900));
 
-    --snice-color-background: hsl(var(--snice-color-gray-900));
-    --snice-color-background-secondary: hsl(var(--snice-color-gray-800));
-    --snice-color-background-tertiary: hsl(var(--snice-color-gray-700));
-    --snice-color-background-element: hsl(30 5% 18%);
-    --snice-color-background-input: hsl(0 0% 15%);
-    --snice-color-background-elevated: hsl(var(--snice-color-gray-800));
+    --snice-color-surface: hsl(var(--snice-color-gray-900));
+    --snice-color-surface-container-low: hsl(var(--snice-color-gray-800));
+    --snice-color-surface-container: hsl(var(--snice-color-gray-700));
+    --snice-color-surface-container-high: hsl(30 5% 18%);
+    --snice-color-surface-container-lowest: hsl(0 0% 15%);
+    --snice-color-surface-container-highest: hsl(var(--snice-color-gray-800));
 
     --snice-color-border: hsl(0 0% 35%);
     --snice-color-border-hover: hsl(var(--snice-color-gray-600));
     --snice-color-border-focus: hsl(var(--snice-color-blue-400));
 
-    --snice-color-background-hover: hsl(var(--snice-color-gray-700));
-    --snice-color-background-active: hsl(var(--snice-color-gray-600));
-    --snice-color-background-disabled: hsl(var(--snice-color-gray-800));
+    --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
+    --snice-color-surface-active: hsl(var(--snice-color-gray-600));
+    --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
     --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
 
     --snice-color-primary-subtle: hsl(var(--snice-color-blue-950));

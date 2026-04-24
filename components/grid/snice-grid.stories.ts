@@ -194,7 +194,7 @@ export const GetLayoutSetLayout: Story = {
     const btnRow = document.createElement('div');
     btnRow.style.cssText = 'display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap;';
     const output = document.createElement('div');
-    output.style.cssText = 'background:var(--snice-color-background-element,rgb(20 20 20));border:1px solid var(--snice-color-border,rgb(60 60 60));border-radius:6px;padding:.75rem;font-family:monospace;font-size:.65rem;line-height:1.5;color:var(--snice-color-text-secondary,rgb(180 180 180));max-height:10rem;overflow-y:auto;white-space:pre;margin-top:.5rem;';
+    output.style.cssText = 'background:var(--snice-color-surface-container-high,rgb(20 20 20));border:1px solid var(--snice-color-border,rgb(60 60 60));border-radius:6px;padding:.75rem;font-family:monospace;font-size:.65rem;line-height:1.5;color:var(--snice-color-text-secondary,rgb(180 180 180));max-height:10rem;overflow-y:auto;white-space:pre;margin-top:.5rem;';
     output.textContent = '// Click getLayout() to see the layout object';
 
     const grid = makeGrid({ gap: '8px', 'column-width': '80', 'row-height': '80', draggable: true }, [
@@ -209,7 +209,7 @@ export const GetLayoutSetLayout: Story = {
 
     const makeBtn = (label: string, handler: () => void) => {
       const btn = document.createElement('button');
-      btn.style.cssText = 'padding:.35rem .7rem;border:1px solid var(--snice-color-border,rgb(60 60 60));border-radius:6px;background:var(--snice-color-background-element);color:var(--snice-color-text);cursor:pointer;font-size:.75rem;';
+      btn.style.cssText = 'padding:.35rem .7rem;border:1px solid var(--snice-color-border,rgb(60 60 60));border-radius:6px;background:var(--snice-color-surface-container-high);color:var(--snice-color-text);cursor:pointer;font-size:.75rem;';
       btn.textContent = label;
       btn.addEventListener('click', handler);
       return btn;

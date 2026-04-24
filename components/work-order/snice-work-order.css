@@ -9,8 +9,8 @@
 
   /* ── Two-tier CSS custom properties ── */
   --wo-max-width: 50rem;
-  --wo-bg: var(--snice-color-background, rgb(255 255 255));
-  --wo-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --wo-bg: var(--snice-color-surface, rgb(255 255 255));
+  --wo-bg-element: var(--snice-color-surface-container-high, rgb(252 251 249));
   --wo-text: var(--snice-color-text, rgb(23 23 23));
   --wo-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
   --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));

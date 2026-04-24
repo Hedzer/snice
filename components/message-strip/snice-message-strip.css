@@ -3,7 +3,7 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 
   /* Two-tier: variant colors (self-contained, no theme dependency) */
-  --strip-bg: var(--snice-color-background, rgb(255 255 255));
+  --strip-bg: var(--snice-color-surface, rgb(255 255 255));
   --strip-border-color: var(--snice-color-border, rgb(226 226 226));
   --strip-text-color: var(--snice-color-text, rgb(23 23 23));
 }

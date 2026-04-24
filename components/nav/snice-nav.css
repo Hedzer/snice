@@ -43,7 +43,7 @@
 }
 
 .nav__link:hover {
-  background-color: var(--snice-color-background-secondary, rgb(243 244 246));
+  background-color: var(--snice-color-surface-container-low, rgb(243 244 246));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
@@ -53,12 +53,12 @@
 }
 
 .nav__link--active {
-  background-color: var(--snice-color-background-tertiary, rgb(243 244 246));
+  background-color: var(--snice-color-surface-container, rgb(243 244 246));
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .nav__link--active:hover {
-  background-color: var(--snice-color-background-secondary, rgb(249 250 251));
+  background-color: var(--snice-color-surface-container-low, rgb(249 250 251));
   color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 

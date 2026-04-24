@@ -41,12 +41,12 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-color-text-secondary
 --snice-color-text-tertiary
 --snice-color-text-inverse
---snice-color-background
---snice-color-background-secondary
---snice-color-background-tertiary
---snice-color-background-element
---snice-color-background-input
---snice-color-background-elevated   /* raised surfaces (modals, popovers, menus). Lighter than base in dark mode. */
+--snice-color-surface
+--snice-color-surface-container-low
+--snice-color-surface-container
+--snice-color-surface-container-high
+--snice-color-surface-container-lowest
+--snice-color-surface-container-highest   /* raised surfaces (modals, popovers, menus). Lighter than base in dark mode. */
 --snice-color-border
 --snice-color-border-hover
 --snice-color-border-focus
@@ -119,15 +119,18 @@ Motion control:
 - `data-motion="reduce"` on any ancestor — manual opt-out (app toggle)
 - `data-motion="off"` — hardest kill (animations/transitions removed entirely; useful for snapshot tests)
 
-### Z-Index
+### Layers (z-index)
 
 ```css
---snice-z-index-dropdown: 1000
---snice-z-index-sticky: 1020
---snice-z-index-fixed: 1030
---snice-z-index-modal-backdrop: 1040
---snice-z-index-modal: 1050
---snice-z-index-tooltip: 1070
+--snice-z-base: 0
+--snice-z-raised: 1
+--snice-z-sticky: 10
+--snice-z-fixed: 30
+--snice-z-floating: 100          /* dropdowns, menus, popovers, date pickers */
+--snice-z-scrim: 1000            /* modal/drawer backdrops */
+--snice-z-overlay: 1100          /* modal, drawer panel */
+--snice-z-popover-over: 1200     /* tooltips above modals */
+--snice-z-notification: 1300     /* toasts */
 ```
 
 ### Focus

@@ -21,7 +21,7 @@
 }
 
 .tree-item__content:hover {
-  background-color: var(--snice-color-background-hover, rgb(var(--snice-color-gray-100)));
+  background-color: var(--snice-color-surface-hover, rgb(var(--snice-color-gray-100)));
 }
 
 .tree-item__content:focus {

@@ -31,7 +31,7 @@ const css = `/* Snice website styles */
 /* scroll-behavior: smooth removed - caused unwanted page scroll */
 body {
   font-family: var(--snice-font-family);
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   color: var(--snice-color-text);
   line-height: 1.6;
   font-size: 15px;
@@ -45,7 +45,7 @@ header {
   border-bottom: 1px solid var(--snice-color-border);
   position: sticky;
   top: 0;
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   z-index: 100;
 }
 header .wrap { display: flex; justify-content: space-between; align-items: center; }
@@ -85,7 +85,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border);
   border-radius: 6px;
   padding: 0.6rem 1rem;
@@ -98,7 +98,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 }
 .hero-text .install button:hover { color: var(--snice-color-primary); }
 .hero-code pre {
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
   border: 1px solid var(--snice-color-border);
   border-radius: 8px;
   padding: 1.5rem;
@@ -128,7 +128,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 }
 @media (max-width: 700px) { .pitch { grid-template-columns: repeat(2, 1fr); } }
 .pitch-item {
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   padding: 1.25rem;
 }
 .pitch-item strong { display: block; font-size: 0.9rem; margin-bottom: 0.25rem; }
@@ -153,7 +153,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 @media (max-width: 600px) { .templates-grid { grid-template-columns: 1fr; } }
 .template-card {
   padding: 1.5rem;
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border: 1px solid var(--snice-color-border);
   border-radius: 6px;
 }
@@ -189,7 +189,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   font-size: 0.9rem;
 }
 .dec-section pre {
-  background: var(--snice-color-background-tertiary);
+  background: var(--snice-color-surface-container);
   border: 1px solid var(--snice-color-border);
   border-radius: 6px;
   padding: 1rem;
@@ -225,7 +225,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   margin-bottom: 1rem;
 }
 .comp-demo-large {
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border);
   border-radius: 6px;
   padding: 1rem;
@@ -238,7 +238,7 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   margin-top: 2rem;
 }
 .comp-tag {
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   border: 1px solid var(--snice-color-border);
   border-radius: 3px;
   padding: 0.25rem 0.5rem;
@@ -1369,7 +1369,7 @@ class MyComponent extends HTMLElement {
       <p class="comp-desc">Resizable split layouts</p>
       <div class="comp-demo-large" style="height:200px">
         <snice-split-pane direction="horizontal" primary-size="40">
-          <div slot="primary" style="padding:1rem;background:var(--snice-color-background-tertiary);height:100%">
+          <div slot="primary" style="padding:1rem;background:var(--snice-color-surface-container);height:100%">
             <strong>Left Panel</strong>
             <p style="font-size:0.8rem;color:var(--snice-color-text-secondary)">Drag the divider to resize</p>
           </div>
@@ -2139,13 +2139,13 @@ ${header('themes')}
               </snice-tabs>
             </div>
             <div class="theme-preview-row">
-              <div style="flex:1;padding:0.4rem 0.6rem;border-radius:var(--snice-border-radius-lg);background:var(--snice-color-background-element);border:1px solid var(--snice-color-border)">
+              <div style="flex:1;padding:0.4rem 0.6rem;border-radius:var(--snice-border-radius-lg);background:var(--snice-color-surface-container-high);border:1px solid var(--snice-color-border)">
                 <div style="font-size:0.75rem;font-weight:600;color:var(--snice-color-text)">Card</div>
                 <div style="font-size:0.65rem;color:var(--snice-color-text-secondary);margin-top:0.1rem">Content with theme.</div>
               </div>
               <div style="flex:1;display:flex;flex-direction:column;gap:0.15rem">
-                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-secondary);font-size:0.65rem;color:var(--snice-color-text)">BG secondary</div>
-                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-background-tertiary);font-size:0.65rem;color:var(--snice-color-text-secondary)">BG tertiary</div>
+                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-surface-container-low);font-size:0.65rem;color:var(--snice-color-text)">BG secondary</div>
+                <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);background:var(--snice-color-surface-container);font-size:0.65rem;color:var(--snice-color-text-secondary)">BG tertiary</div>
                 <div style="padding:0.25rem 0.5rem;border-radius:var(--snice-border-radius-md);border:1px solid var(--snice-color-border);font-size:0.65rem;color:var(--snice-color-text-tertiary)">Border</div>
               </div>
             </div>
@@ -2184,10 +2184,10 @@ ${header('themes')}
 
             <!-- Shadow elevation ramp — renders as small tiles so shadow strength reads live -->
             <div class="theme-preview-row" style="gap:0.4rem">
-              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xs);color:var(--snice-color-text-secondary)">xs</span>
-              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-md);color:var(--snice-color-text-secondary)">md</span>
-              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-lg);color:var(--snice-color-text-secondary)">lg</span>
-              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-background-elevated);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xl);color:var(--snice-color-text-secondary)">xl</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-surface-container-highest);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xs);color:var(--snice-color-text-secondary)">xs</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-surface-container-highest);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-md);color:var(--snice-color-text-secondary)">md</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-surface-container-highest);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-lg);color:var(--snice-color-text-secondary)">lg</span>
+              <span style="flex:1;padding:0.4rem;text-align:center;font-size:0.6rem;background:var(--snice-color-surface-container-highest);border-radius:var(--snice-border-radius-md);box-shadow:var(--snice-shadow-xl);color:var(--snice-color-text-secondary)">xl</span>
             </div>
 
             <!-- Glow shadows — colored halos around pill triggers -->

@@ -62,13 +62,13 @@
 /* Variants */
 :host([variant="default"]) .chip,
 :host(:not([variant])) .chip {
-  background: var(--snice-color-background-tertiary, rgb(242 242 242));
+  background: var(--snice-color-surface-container, rgb(242 242 242));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
 :host([variant="default"]) .chip:hover:not([aria-disabled="true"]):not(.chip--selected),
 :host(:not([variant])) .chip:hover:not([aria-disabled="true"]):not(.chip--selected) {
-  background: var(--snice-color-background-active, rgb(227 227 227));
+  background: var(--snice-color-surface-active, rgb(227 227 227));
 }
 
 :host([variant="default"]) .chip--selected,

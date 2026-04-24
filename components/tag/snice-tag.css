@@ -47,7 +47,7 @@
 /* Filled variants — use semantic theme tokens that auto-switch light/dark */
 :host([variant="default"]) .tag,
 :host(:not([variant])) .tag {
-  background: var(--snice-color-background-tertiary, rgb(242 242 242));
+  background: var(--snice-color-surface-container, rgb(242 242 242));
   color: var(--snice-color-text, rgb(23 23 23));
 }
 

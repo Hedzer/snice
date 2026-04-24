@@ -9,7 +9,7 @@ type Args = {
 
 function makeCard(label: string, minHeight: string) {
   const el = document.createElement('div');
-  el.style.cssText = `background:var(--snice-color-background-element,#f9f9f9);border:1px solid var(--snice-color-border,#ddd);border-radius:8px;padding:1rem;font-size:.875rem;min-height:${minHeight};`;
+  el.style.cssText = `background:var(--snice-color-surface-container-high,#f9f9f9);border:1px solid var(--snice-color-border,#ddd);border-radius:8px;padding:1rem;font-size:.875rem;min-height:${minHeight};`;
   el.textContent = label;
   return el;
 }

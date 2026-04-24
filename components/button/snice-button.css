@@ -38,7 +38,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--snice-gradient-button, none);
+  background: var(--snice-gradient-convex, none);
   pointer-events: none;
 }
 
@@ -91,20 +91,20 @@
 
 /* Variants - Default */
 .button--default {
-  background-color: var(--snice-color-background, rgb(255 255 255));
+  background-color: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text, rgb(23 23 23));
   border-color: var(--snice-color-border, rgb(226 226 226));
 }
 
 .button--default:hover:not(.button--disabled) {
-  background-color: var(--snice-color-background-secondary, rgb(250 250 250));
+  background-color: var(--snice-color-surface-container-low, rgb(250 250 250));
   border-color: var(--snice-color-border-hover, rgb(204 204 204));
   box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   transform: translateY(-1px);
 }
 
 .button--default:active:not(.button--disabled) {
-  background-color: var(--snice-color-background-tertiary, rgb(248 248 248));
+  background-color: var(--snice-color-surface-container, rgb(248 248 248));
   border-color: var(--snice-color-border-hover, rgb(204 204 204));
   box-shadow: var(--snice-shadow-inset-sm, inset 0 1px 2px rgb(0 0 0 / 0.05));
   transform: translateY(0) scale(0.97);
@@ -255,7 +255,7 @@
 
 /* Outline hover — tint toward the variant's color instead of neutral gray. */
 .button--outline.button--default:hover:not(.button--disabled) {
-  background-color: var(--snice-color-background-hover, rgb(245 245 245));
+  background-color: var(--snice-color-surface-hover, rgb(245 245 245));
   box-shadow: none;
   transform: none;
 }
@@ -289,7 +289,7 @@
 }
 
 .button--outline:active:not(.button--disabled) {
-  background-color: var(--snice-color-primary-subtle-hover, var(--snice-color-background-active, rgb(235 235 235)));
+  background-color: var(--snice-color-primary-subtle-hover, var(--snice-color-surface-active, rgb(235 235 235)));
   box-shadow: none;
   transform: none;
 }

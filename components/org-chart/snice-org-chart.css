@@ -5,7 +5,7 @@
 }
 
 .org-container {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: auto;
@@ -49,7 +49,7 @@
   align-items: center;
   gap: var(--snice-spacing-sm, 0.75rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
@@ -136,7 +136,7 @@
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   cursor: pointer;
   display: flex;
@@ -155,7 +155,7 @@
 }
 
 .org-toggle:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 .org-toggle svg {

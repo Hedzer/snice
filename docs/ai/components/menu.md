@@ -71,10 +71,10 @@ selected: boolean = false;
 ## CSS Custom Properties
 
 ```css
---menu-bg: var(--snice-color-background, white);
+--menu-bg: var(--snice-color-surface, white);
 --menu-border: var(--snice-color-border, #e5e7eb);
 --menu-shadow: var(--snice-shadow-lg);
---menu-z-index: var(--snice-z-index-dropdown, 1000);
+--menu-z-index: var(--snice-z-floating, 1000);
 --menu-border-radius: var(--snice-radius-md, 0.375rem);
 --menu-min-width: 10rem;
 ```

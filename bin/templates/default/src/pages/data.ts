@@ -222,7 +222,7 @@ export class DataPage extends HTMLElement {
         padding: 0.375rem 0.75rem;
         border: 1px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-md);
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         color: var(--snice-color-text-secondary);
         font-size: 0.8125rem;
         cursor: pointer;
@@ -256,7 +256,7 @@ export class DataPage extends HTMLElement {
         display: grid;
         grid-template-columns: 1fr 120px 100px;
         padding: 0.75rem 1rem;
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
@@ -274,7 +274,7 @@ export class DataPage extends HTMLElement {
       }
 
       .table-row:hover {
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
       }
 
       .col-title strong {

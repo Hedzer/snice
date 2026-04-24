@@ -18,7 +18,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Login</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     snice-login { max-width: 400px; display: block; }
@@ -113,7 +113,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Slot: before-form</h2>
 <snice-login title="Sign In">
-  <div slot="before-form" style="padding:0.5rem;background:var(--snice-color-background-element,#f5f5f5);border-radius:4px;text-align:center;font-size:0.875rem;">New here? Create an account first.</div>
+  <div slot="before-form" style="padding:0.5rem;background:var(--snice-color-surface-container-high,#f5f5f5);border-radius:4px;text-align:center;font-size:0.875rem;">New here? Create an account first.</div>
 </snice-login>
 
 <h2>Slot: after-form</h2>
@@ -123,7 +123,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Slot: form-top</h2>
 <snice-login title="Sign In">
-  <div slot="form-top" style="padding:0.5rem;background:var(--snice-color-background-element,#f5f5f5);border-radius:4px;margin-bottom:0.5rem;font-size:0.875rem;">Session expired. Please sign in again.</div>
+  <div slot="form-top" style="padding:0.5rem;background:var(--snice-color-surface-container-high,#f5f5f5);border-radius:4px;margin-bottom:0.5rem;font-size:0.875rem;">Session expired. Please sign in again.</div>
 </snice-login>
 
 <h2>Slot: between-fields</h2>

@@ -32,7 +32,7 @@
 }
 
 .tile:hover {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .tile:active {
@@ -112,7 +112,7 @@
 /* Emoji icon */
 .tile__icon--emoji {
   font-size: 1.5rem;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 :host([size="sm"]) .tile__icon--emoji {
@@ -133,7 +133,7 @@
 
 /* Ligature icon (Material Symbols etc.) */
 .tile__icon--ligature {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .tile__icon--ligature .icon {

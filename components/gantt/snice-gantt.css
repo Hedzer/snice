@@ -5,7 +5,7 @@
 }
 
 .gantt-container {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
@@ -19,7 +19,7 @@
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .gantt-zoom-toggle {
@@ -77,7 +77,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   height: 2rem;
   display: flex;
@@ -100,7 +100,7 @@
 }
 
 .gantt-task-name:hover {
-  background: var(--snice-color-background-hover, rgb(241 241 241));
+  background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
 /* Group header */
@@ -127,7 +127,7 @@
 .gantt-timeline-header {
   font-family: var(--snice-font-family-display);
   display: flex;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   height: 2rem;
   position: sticky;
@@ -269,7 +269,7 @@
 }
 
 .gantt-timeline::-webkit-scrollbar-track {
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
 .gantt-timeline::-webkit-scrollbar-thumb {

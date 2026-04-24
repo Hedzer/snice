@@ -27,7 +27,7 @@ outputType: 'png'|'jpeg'|'webp' = 'png';           // attribute: output-type
 ## CSS Custom Properties
 
 ```css
---snice-color-background-element  /* Container background */
+--snice-color-surface-container-high  /* Container background */
 --snice-color-border              /* Container border */
 --snice-border-radius-lg          /* Container radius */
 --cropper-overlay                 /* Overlay mask color (default: rgb(0 0 0 / 0.5)) */

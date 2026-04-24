@@ -2,7 +2,7 @@
 .header-container {
   display: flex;
   align-items: center;
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-font-size-sm, 0.875rem);
@@ -26,7 +26,7 @@
   border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
   min-height: var(--snice-spacing-2xl, 3rem);
   position: relative;
-  background: var(--snice-color-background-secondary, rgb(245 245 245));
+  background: var(--snice-color-surface-container-low, rgb(245 245 245));
   transition: background-color var(--snice-transition-fast, 150ms) ease;
   color: var(--snice-color-text, rgb(23 23 23));
 }
@@ -130,7 +130,7 @@
   height: 1.5rem; /* 24px */
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: 0.25rem; /* 4px */
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
   font-size: 0.75rem; /* 12px */
@@ -138,7 +138,7 @@
 }
 
 .filter-button:hover {
-  background: var(--snice-color-background-hover, rgb(245 245 245));
+  background: var(--snice-color-surface-hover, rgb(245 245 245));
   border-color: var(--snice-color-border, rgb(226 226 226));
   color: var(--snice-color-text, rgb(23 23 23));
 }

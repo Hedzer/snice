@@ -41,14 +41,14 @@ interface LeaderboardEntry {
 ## CSS Custom Properties
 
 ```css
---leaderboard-bg              /* var(--snice-color-background) */
+--leaderboard-bg              /* var(--snice-color-surface) */
 --leaderboard-text            /* var(--snice-color-text) */
 --leaderboard-text-secondary  /* var(--snice-color-text-secondary) */
 --leaderboard-border          /* var(--snice-color-border) */
 --leaderboard-primary         /* var(--snice-color-primary) */
 --leaderboard-success         /* var(--snice-color-success) */
 --leaderboard-danger          /* var(--snice-color-danger) */
---leaderboard-bg-element      /* var(--snice-color-background-element) */
+--leaderboard-bg-element      /* var(--snice-color-surface-container-high) */
 --leaderboard-radius          /* var(--snice-border-radius-lg) */
 ```
 

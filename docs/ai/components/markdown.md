@@ -33,7 +33,7 @@ theme: 'default'|'github' = 'default';
 --snice-color-border               /* Headings, tables, code, blockquote borders */
 --snice-color-text-secondary       /* Strikethrough, blockquote text */
 --snice-color-text-tertiary        /* h6 color */
---snice-color-background-element   /* Code, blockquote, table row backgrounds */
+--snice-color-surface-container-high   /* Code, blockquote, table row backgrounds */
 --snice-line-height-normal
 --snice-font-size-md
 --snice-spacing-*                  /* Various spacing tokens */

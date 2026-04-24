@@ -4,7 +4,7 @@
   contain: layout style paint;
   width: 100%;
 
-  --candlestick-bg: var(--snice-color-background, rgb(255 255 255));
+  --candlestick-bg: var(--snice-color-surface, rgb(255 255 255));
   --candlestick-text: var(--snice-color-text, rgb(23 23 23));
   --candlestick-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
   --candlestick-border: var(--snice-color-border, rgb(226 226 226));

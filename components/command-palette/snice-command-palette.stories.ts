@@ -36,7 +36,7 @@ function makePalette(commands: CommandItem[], attrs: Record<string, string | boo
 
   // Open button
   const btn = document.createElement('button');
-  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#e2e2e2);border-radius:4px;background:var(--snice-color-background);cursor:pointer;font-family:inherit;color:var(--snice-color-text);margin-bottom:.5rem;';
+  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#e2e2e2);border-radius:4px;background:var(--snice-color-surface);cursor:pointer;font-family:inherit;color:var(--snice-color-text);margin-bottom:.5rem;';
   btn.textContent = 'Open Palette';
   btn.addEventListener('click', () => (el as any).show());
 
@@ -69,7 +69,7 @@ const meta: Meta<Args> = {
     if (args.open)                             el.toggleAttribute('open',                true);
     (el as any).commands = DEFAULT_COMMANDS;
     const btn = document.createElement('button');
-    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#e2e2e2);border-radius:4px;background:var(--snice-color-background);cursor:pointer;font-family:inherit;color:var(--snice-color-text);margin-bottom:.5rem;';
+    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#e2e2e2);border-radius:4px;background:var(--snice-color-surface);cursor:pointer;font-family:inherit;color:var(--snice-color-text);margin-bottom:.5rem;';
     btn.textContent = 'Open Palette';
     btn.addEventListener('click', () => (el as any).show());
     wrap.appendChild(btn);
@@ -163,7 +163,7 @@ export const CSSPartsStyling: Story = {
         padding: .4rem .9rem;
         border: 1px solid var(--snice-color-border, #e2e2e2);
         border-radius: 4px;
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         cursor: pointer;
         font-family: inherit;
         color: var(--snice-color-text);

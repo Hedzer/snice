@@ -82,14 +82,14 @@ leaderboard.addEventListener('entry-click', (e) => {
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--leaderboard-bg` | Background color | `var(--snice-color-background)` |
+| `--leaderboard-bg` | Background color | `var(--snice-color-surface)` |
 | `--leaderboard-text` | Primary text color | `var(--snice-color-text)` |
 | `--leaderboard-text-secondary` | Secondary text color | `var(--snice-color-text-secondary)` |
 | `--leaderboard-border` | Border color | `var(--snice-color-border)` |
 | `--leaderboard-primary` | Highlight/accent color | `var(--snice-color-primary)` |
 | `--leaderboard-success` | Positive change color | `var(--snice-color-success)` |
 | `--leaderboard-danger` | Negative change color | `var(--snice-color-danger)` |
-| `--leaderboard-bg-element` | Element background | `var(--snice-color-background-element)` |
+| `--leaderboard-bg-element` | Element background | `var(--snice-color-surface-container-high)` |
 | `--leaderboard-radius` | Border radius | `var(--snice-border-radius-lg)` |
 
 ## CSS Parts

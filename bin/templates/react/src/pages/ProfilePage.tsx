@@ -46,7 +46,7 @@ export function ProfilePage() {
               display: 'flex',
               justifyContent: 'space-between',
               padding: '0.75rem',
-              background: 'var(--snice-color-background-secondary)',
+              background: 'var(--snice-color-surface-container-low)',
               borderRadius: 'var(--snice-border-radius-md)'
             }}>
               <span style={{ fontWeight: 600, color: 'var(--snice-color-text)' }}>User ID</span>
@@ -56,7 +56,7 @@ export function ProfilePage() {
               display: 'flex',
               justifyContent: 'space-between',
               padding: '0.75rem',
-              background: 'var(--snice-color-background-secondary)',
+              background: 'var(--snice-color-surface-container-low)',
               borderRadius: 'var(--snice-border-radius-md)'
             }}>
               <span style={{ fontWeight: 600, color: 'var(--snice-color-text)' }}>Email</span>
@@ -66,7 +66,7 @@ export function ProfilePage() {
               display: 'flex',
               justifyContent: 'space-between',
               padding: '0.75rem',
-              background: 'var(--snice-color-background-secondary)',
+              background: 'var(--snice-color-surface-container-low)',
               borderRadius: 'var(--snice-border-radius-md)'
             }}>
               <span style={{ fontWeight: 600, color: 'var(--snice-color-text)' }}>Name</span>

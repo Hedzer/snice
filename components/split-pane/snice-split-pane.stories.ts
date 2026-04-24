@@ -21,7 +21,7 @@ function makeSplitPane(attrs: Record<string, string | boolean>, primaryContent: 
   }
   const primary = document.createElement('div');
   primary.slot = 'primary';
-  primary.style.cssText = 'padding:1rem;display:flex;align-items:center;justify-content:center;height:100%;color:var(--snice-color-text-secondary,#525252);font-size:.875rem;background:var(--snice-color-background-element,#fcfbf9);';
+  primary.style.cssText = 'padding:1rem;display:flex;align-items:center;justify-content:center;height:100%;color:var(--snice-color-text-secondary,#525252);font-size:.875rem;background:var(--snice-color-surface-container-high,#fcfbf9);';
   primary.textContent = primaryContent;
   pane.appendChild(primary);
 
@@ -180,7 +180,7 @@ export const NestedSplitPanes: Story = {
 
     const topLeft = document.createElement('div');
     topLeft.slot = 'primary';
-    topLeft.style.cssText = 'padding:1rem;display:flex;align-items:center;justify-content:center;height:100%;color:var(--snice-color-text-secondary,#525252);font-size:.875rem;background:var(--snice-color-background-element,#fcfbf9);';
+    topLeft.style.cssText = 'padding:1rem;display:flex;align-items:center;justify-content:center;height:100%;color:var(--snice-color-text-secondary,#525252);font-size:.875rem;background:var(--snice-color-surface-container-high,#fcfbf9);';
     topLeft.textContent = 'Top-Left';
 
     const bottomLeft = document.createElement('div');

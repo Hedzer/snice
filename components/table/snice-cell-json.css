@@ -42,7 +42,7 @@
 }
 
 .json-toggle:hover {
-  background-color: var(--snice-color-background-hover, rgb(245 245 245));
+  background-color: var(--snice-color-surface-hover, rgb(245 245 245));
 }
 
 .json-toggle:focus {

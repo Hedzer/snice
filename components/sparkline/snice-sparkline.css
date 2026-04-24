@@ -122,7 +122,7 @@
 }
 
 .sparkline__dot {
-  fill: var(--snice-color-background, hsl(0 0% 100%));
+  fill: var(--snice-color-surface, hsl(0 0% 100%));
   /* Dots pop in as the line arrives at them — delay scales with dot index
      via --dot-delay set on the element (0..1 of total draw time). */
   transform-origin: center;

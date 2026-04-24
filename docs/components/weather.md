@@ -61,7 +61,7 @@ When the `icon` property is omitted, the component maps the `condition` string t
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--snice-color-background-element` | Card background color | `rgb(252 251 249)` |
+| `--snice-color-surface-container-high` | Card background color | `rgb(252 251 249)` |
 | `--snice-color-border` | Card and forecast divider border | _(theme default)_ |
 | `--snice-color-text` | Primary text color | `rgb(23 23 23)` |
 | `--snice-color-text-secondary` | Condition and detail text color | _(theme default)_ |

@@ -163,7 +163,7 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 2px solid var(--snice-color-border, rgb(226 226 226));
   z-index: 1;
 }
@@ -184,7 +184,7 @@
 /* Marker variants */
 .timeline-item--default .timeline-item__marker {
   border-color: var(--snice-color-border, rgb(226 226 226));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 .timeline-item--success .timeline-item__marker {

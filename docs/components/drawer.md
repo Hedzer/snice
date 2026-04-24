@@ -75,11 +75,11 @@ Slide-out panel from any viewport side with focus trap and dismissal options. Su
 | `--drawer-height-xl` | XL drawer height (top/bottom) | `70vh` |
 | `--drawer-height-xxl` | XXL drawer height (top/bottom) | `80vh` |
 | `--drawer-height-xxxl` | XXXL drawer height (top/bottom) | `90vh` |
-| `--drawer-bg` | Drawer background color | `var(--snice-color-background, white)` |
+| `--drawer-bg` | Drawer background color | `var(--snice-color-surface, white)` |
 | `--drawer-shadow` | Drawer shadow | `var(--snice-shadow-lg)` |
 | `--drawer-backdrop` | Backdrop color | `rgba(0, 0, 0, 0.5)` |
 | `--drawer-transition` | Transition timing | `transform 250ms cubic-bezier(0.4, 0, 0.2, 1)` |
-| `--drawer-z-index` | Z-index | `var(--snice-z-index-modal, 1050)` |
+| `--drawer-z-index` | Z-index | `var(--snice-z-overlay, 1050)` |
 
 ## CSS Parts
 

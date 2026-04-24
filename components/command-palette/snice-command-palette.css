@@ -33,7 +33,7 @@
   position: relative;
   width: 90%;
   max-width: 640px;
-  background-color: var(--snice-color-background);
+  background-color: var(--snice-color-surface);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   box-shadow: var(--snice-shadow-xl);
   animation: slideDown 0.2s ease;
@@ -73,7 +73,7 @@
   font-size: var(--snice-font-size-sm, 0.875rem);
   font-weight: 600;
   color: var(--snice-color-text-secondary);
-  background-color: var(--snice-color-background-secondary);
+  background-color: var(--snice-color-surface-container-low);
   border-top: 1px solid var(--snice-color-border);
 }
 
@@ -96,7 +96,7 @@
 }
 
 .command-palette__item:hover {
-  background-color: var(--snice-color-background-hover);
+  background-color: var(--snice-color-surface-hover);
 }
 
 .command-palette__item--active {
@@ -159,7 +159,7 @@
   font-family: var(--snice-font-family-mono, monospace);
   color: var(--snice-color-text-secondary);
   padding: 2px 6px;
-  background-color: var(--snice-color-background-secondary);
+  background-color: var(--snice-color-surface-container-low);
   border-radius: var(--snice-border-radius-sm, 0.25rem);
   border: 1px solid var(--snice-color-border);
 }

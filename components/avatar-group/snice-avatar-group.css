@@ -4,7 +4,7 @@
   --avatar-group-size: 2.5rem;
   --avatar-group-overlap: -0.5rem;
   --avatar-group-font-size: 0.875rem;
-  --avatar-group-border-color: var(--snice-color-background, rgb(255 255 255));
+  --avatar-group-border-color: var(--snice-color-surface, rgb(255 255 255));
   --avatar-group-border-width: 2px;
 }
 
@@ -82,7 +82,7 @@
 
 /* Overflow indicator */
 .avatar-overflow {
-  background: var(--snice-color-background-element, rgb(229 231 235));
+  background: var(--snice-color-surface-container-high, rgb(229 231 235));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-weight: var(--snice-font-weight-semibold, 600);
   text-shadow: none;

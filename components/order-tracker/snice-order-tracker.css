@@ -4,8 +4,8 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--snice-color-text, rgb(23 23 23));
 
-  --ot-bg: var(--snice-color-background, rgb(255 255 255));
-  --ot-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --ot-bg: var(--snice-color-surface, rgb(255 255 255));
+  --ot-bg-element: var(--snice-color-surface-container-high, rgb(252 251 249));
   --ot-border: var(--snice-color-border, rgb(226 226 226));
   --ot-text: var(--snice-color-text, rgb(23 23 23));
   --ot-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));

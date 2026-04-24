@@ -29,7 +29,7 @@ interface WeatherForecastDay {
 
 ## CSS Custom Properties
 
-- `--snice-color-background-element` - Card background (default: `rgb(252 251 249)`)
+- `--snice-color-surface-container-high` - Card background (default: `rgb(252 251 249)`)
 - `--snice-color-border` - Card and forecast divider border
 - `--snice-color-text` - Primary text color (default: `rgb(23 23 23)`)
 - `--snice-color-text-secondary` - Condition/detail text

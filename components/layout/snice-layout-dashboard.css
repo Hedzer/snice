@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-bottom: 1px solid var(--snice-color-border);
 }
 
@@ -44,13 +44,13 @@
 .nav {
   grid-area: nav;
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   border-bottom: 1px solid var(--snice-color-border);
 }
 
 .sidebar {
   grid-area: sidebar;
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   padding: var(--snice-spacing-lg, 2rem);
   overflow-y: auto;
 }
@@ -58,13 +58,13 @@
 .main {
   grid-area: main;
   padding: var(--snice-spacing-lg, 2rem);
-  background: var(--snice-color-background-secondary);
+  background: var(--snice-color-surface-container-low);
   overflow-y: auto;
 }
 
 .right-sidebar {
   grid-area: right-sidebar;
-  background: var(--snice-color-background);
+  background: var(--snice-color-surface);
   padding: var(--snice-spacing-lg, 2rem);
   overflow-y: auto;
 }

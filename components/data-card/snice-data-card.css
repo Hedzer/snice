@@ -4,7 +4,7 @@
 }
 
 .data-card {
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   overflow: hidden;
@@ -43,7 +43,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   cursor: pointer;
   transition: border-color var(--snice-transition-fast, 150ms) ease;
   font-family: inherit;
@@ -106,7 +106,7 @@
 }
 
 .field:hover {
-  background: var(--snice-color-background-hover, rgb(226 226 226 / 0.06));
+  background: var(--snice-color-surface-hover, rgb(226 226 226 / 0.06));
 }
 
 .field__icon {
@@ -193,7 +193,7 @@
   font-size: var(--snice-font-size-sm, 0.875rem);
   font-family: inherit;
   color: var(--snice-color-text, rgb(23 23 23));
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   transition: border-color var(--snice-transition-fast, 150ms) ease;
   outline: none;
 }

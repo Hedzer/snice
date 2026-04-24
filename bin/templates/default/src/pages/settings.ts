@@ -233,7 +233,7 @@ export class SettingsPage extends HTMLElement {
         align-items: center;
         gap: 0.5rem;
         padding: 1rem;
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         border: 2px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-lg);
         cursor: pointer;

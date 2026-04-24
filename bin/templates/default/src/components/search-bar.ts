@@ -52,7 +52,7 @@ export class SearchBar extends HTMLElement {
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 0.75rem;
-        background: var(--snice-color-background);
+        background: var(--snice-color-surface);
         border: 1px solid var(--snice-color-border);
         border-radius: var(--snice-border-radius-lg);
       }
@@ -91,7 +91,7 @@ export class SearchBar extends HTMLElement {
       }
 
       .clear:hover {
-        background: var(--snice-color-background-secondary);
+        background: var(--snice-color-surface-container-low);
         color: var(--snice-color-text);
       }
     `;

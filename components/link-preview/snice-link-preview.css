@@ -9,7 +9,7 @@
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 8px);
   overflow: hidden;
-  background: var(--snice-color-background-element, rgb(252 251 249));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
   cursor: pointer;
   transition: box-shadow var(--snice-transition-fast, 150ms) ease;
@@ -23,7 +23,7 @@
 .link-preview__image {
   position: relative;
   overflow: hidden;
-  background: var(--snice-color-background, rgb(240 240 240));
+  background: var(--snice-color-surface, rgb(240 240 240));
 }
 
 .link-preview__image img {

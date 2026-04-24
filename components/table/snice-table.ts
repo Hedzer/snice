@@ -283,7 +283,7 @@ export class SniceTable extends HTMLElement {
         right: 0;
         bottom: 0;
         z-index: 10000;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         padding: var(--snice-spacing-md, 1rem);
         overflow: auto;
       }
@@ -320,7 +320,7 @@ export class SniceTable extends HTMLElement {
 
       /* Super-header (slotted area above column headers) */
       .table-superheader {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
       }
 
       .table-superheader:empty {
@@ -388,7 +388,7 @@ export class SniceTable extends HTMLElement {
       }
 
       th {
-        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
         color: var(--snice-color-text, rgb(23 23 23));
         font-weight: var(--snice-font-weight-semibold, 600);
         border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
@@ -407,7 +407,7 @@ export class SniceTable extends HTMLElement {
 
       /* Row styling */
       :host([striped]) tbody tr:nth-child(even) {
-        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       :host([hoverable]) tbody tr:hover {
@@ -444,11 +444,11 @@ export class SniceTable extends HTMLElement {
       }
 
       [part="header"] {
-        background-color: var(--snice-color-background, rgb(255 255 255));
+        background-color: var(--snice-color-surface, rgb(255 255 255));
       }
 
       [part="body"] {
-        background-color: var(--snice-table-body-bg, var(--snice-color-background, rgb(255 255 255)));
+        background-color: var(--snice-table-body-bg, var(--snice-color-surface, rgb(255 255 255)));
         display: block;
       }
 
@@ -459,7 +459,7 @@ export class SniceTable extends HTMLElement {
         gap: var(--snice-spacing-xs, 0.5rem);
         padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
         padding-left: 0;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
       }
 
       .toolbar-search {
@@ -483,7 +483,7 @@ export class SniceTable extends HTMLElement {
         height: 2rem;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         color: var(--snice-color-text-secondary, rgb(82 82 82));
         cursor: pointer;
         transition: all var(--snice-transition-fast, 150ms) ease;
@@ -493,7 +493,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .toolbar-btn:hover {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
         color: var(--snice-color-text, rgb(23 23 23));
       }
 
@@ -507,7 +507,7 @@ export class SniceTable extends HTMLElement {
         position: absolute;
         z-index: 10001;
         min-width: 12rem;
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-md, 0.25rem);
         box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
@@ -540,7 +540,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .toolbar-menu-item:hover {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       .toolbar-menu-item--active {
@@ -589,7 +589,7 @@ export class SniceTable extends HTMLElement {
         font-size: var(--snice-font-size-sm, 0.875rem);
         font-family: inherit;
         color: var(--snice-color-text, rgb(23 23 23));
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         outline: none;
       }
 
@@ -686,7 +686,7 @@ export class SniceTable extends HTMLElement {
         gap: var(--snice-spacing-md, 1rem);
         padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
         border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         font-size: var(--snice-font-size-sm, 0.875rem);
         flex-wrap: wrap;
       }
@@ -711,7 +711,7 @@ export class SniceTable extends HTMLElement {
         padding: 0 var(--snice-spacing-2xs, 0.25rem);
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-md, 0.25rem);
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         color: var(--snice-color-text, rgb(23 23 23));
         font-size: var(--snice-font-size-sm, 0.875rem);
         cursor: pointer;
@@ -721,7 +721,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .pagination__btn:hover:not(:disabled) {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       .pagination__btn:disabled {
@@ -801,7 +801,7 @@ export class SniceTable extends HTMLElement {
 
       /* Pinned column separator */
       .pinned-cell {
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         box-shadow: 2px 0 4px -1px rgb(0 0 0 / 0.1);
       }
 
@@ -835,7 +835,7 @@ export class SniceTable extends HTMLElement {
         font-family: inherit;
         font-size: inherit;
         color: var(--snice-color-text, rgb(23 23 23));
-        background: var(--snice-color-background, rgb(255 255 255));
+        background: var(--snice-color-surface, rgb(255 255 255));
         outline: none;
       }
 
@@ -866,7 +866,7 @@ export class SniceTable extends HTMLElement {
       /* Header filter row */
       .header-filter-row td {
         padding: 0;
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
         border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
@@ -887,7 +887,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .header-filter-input:focus {
-        background: var(--snice-color-background-input, rgb(248 247 245));
+        background: var(--snice-color-surface-container-lowest, rgb(248 247 245));
       }
 
       /* Tree data indentation */
@@ -939,7 +939,7 @@ export class SniceTable extends HTMLElement {
       .pinned-row {
         font-weight: var(--snice-font-weight-medium, 500);
         border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       .pinned-row--top {
@@ -957,7 +957,7 @@ export class SniceTable extends HTMLElement {
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--snice-color-text-secondary, rgb(82 82 82));
-        background: var(--snice-color-background-tertiary, rgb(235 235 235));
+        background: var(--snice-color-surface-container, rgb(235 235 235));
         border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
       }
 
@@ -982,7 +982,7 @@ export class SniceTable extends HTMLElement {
 
       /* Master-detail — animated like accordion */
       .detail-row {
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
       }
 
       .detail-cell {
@@ -1051,7 +1051,7 @@ export class SniceTable extends HTMLElement {
         position: fixed;
         z-index: 10001;
         min-width: 10rem;
-        background: var(--snice-color-background-element, rgb(252 251 249));
+        background: var(--snice-color-surface-container-high, rgb(252 251 249));
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-md, 0.25rem);
         box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
@@ -1082,7 +1082,7 @@ export class SniceTable extends HTMLElement {
       }
 
       .column-menu-item:hover {
-        background: var(--snice-color-background-secondary, rgb(245 245 245));
+        background: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       .column-menu-item:disabled {
@@ -1112,7 +1112,7 @@ export class SniceTable extends HTMLElement {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: 1fr;
-        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
         border-bottom: 2px solid var(--snice-color-border, rgb(226 226 226));
         padding: var(--snice-spacing-sm, 0.75rem);
         font-weight: var(--snice-font-weight-semibold, 600);
@@ -1141,11 +1141,11 @@ export class SniceTable extends HTMLElement {
       }
 
       :host([striped]) .snice-table--slotted .table-body::slotted(snice-row:nth-child(even)) {
-        background-color: var(--snice-color-background-secondary, rgb(245 245 245));
+        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       :host([hoverable]) .snice-table--slotted .table-body::slotted(snice-row:hover) {
-        background-color: var(--snice-color-background-tertiary, rgb(235 235 235));
+        background-color: var(--snice-color-surface-container, rgb(235 235 235));
       }
     `;
   }
@@ -2777,7 +2777,7 @@ export class SniceTable extends HTMLElement {
       else this.sortLocalData();
     };
     this.columnMenuManager.onFilter = (col) => {
-      // Open filter modal pre-populated with this column (MUI X Pro behavior)
+      // Open filter modal pre-populated with this column
       this.toolbar.openFilterModal(col);
     };
     this.columnMenuManager.onHide = (col) => this.setColumnVisible(col, false);

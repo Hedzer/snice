@@ -17,7 +17,7 @@ const VARIANTS: ActionBarVariant[] = ['default', 'pill'];
 
 function makeCard(label: string, height = '9rem', width = '14rem') {
   const card = document.createElement('div');
-  card.style.cssText = `position:relative;width:${width};height:${height};background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;padding:1rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,#525252);font-size:0.75rem;`;
+  card.style.cssText = `position:relative;width:${width};height:${height};background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;padding:1rem;display:flex;align-items:center;justify-content:center;color:var(--snice-color-text-secondary,#525252);font-size:0.75rem;`;
   card.textContent = label;
   return card;
 }
@@ -210,7 +210,7 @@ export const CSSPartsStyling: Story = {
     // Default
     const col1 = document.createElement('div'); col1.className = 'parts-demo-col';
     const card1 = document.createElement('div');
-    card1.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
+    card1.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
     card1.textContent = 'Default ::part(base)';
     const bar1 = document.createElement('snice-action-bar');
     bar1.setAttribute('position', 'bottom'); bar1.toggleAttribute('no-animation', true);
@@ -223,7 +223,7 @@ export const CSSPartsStyling: Story = {
     // Styled
     const col2 = document.createElement('div'); col2.className = 'parts-demo-col';
     const card2 = document.createElement('div');
-    card2.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-background-element,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
+    card2.style.cssText = 'position:relative;width:12rem;height:8rem;background:var(--snice-color-surface-container-high,#fcfbf9);border:1px solid var(--snice-color-border,#e2e2e2);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#888;';
     card2.textContent = 'Styled ::part(base)';
     const bar2 = document.createElement('snice-action-bar');
     bar2.className = 'styled-action-bar';

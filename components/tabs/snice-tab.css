@@ -30,7 +30,7 @@
 
 .tab:hover:not(.tab--disabled) {
   color: var(--snice-color-text, rgb(23 23 23));
-  background-color: var(--snice-color-background-secondary, rgb(250 250 250));
+  background-color: var(--snice-color-surface-container-low, rgb(250 250 250));
 }
 
 .tab:focus-visible {
@@ -78,7 +78,7 @@
 
 .tab__close:hover {
   color: var(--snice-color-text, rgb(23 23 23));
-  background-color: var(--snice-color-background-tertiary, rgb(242 242 242));
+  background-color: var(--snice-color-surface-container, rgb(242 242 242));
 }
 
 .tab__close:focus-visible {

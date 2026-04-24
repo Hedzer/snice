@@ -43,8 +43,8 @@ icon: string = '';                       // Custom bell icon (URL, image, emoji)
 --snice-color-text-secondary       /* Message text */
 --snice-color-text-tertiary        /* Timestamp, empty state, dismiss icon */
 --snice-color-border               /* Panel, item borders */
---snice-color-background           /* Panel background */
---snice-color-background-element   /* Item hover, bell hover */
+--snice-color-surface           /* Panel background */
+--snice-color-surface-container-high   /* Item hover, bell hover */
 --snice-shadow-lg                  /* Panel shadow */
 ```
 

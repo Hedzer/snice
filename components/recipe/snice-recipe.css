@@ -4,7 +4,7 @@
   color: var(--snice-color-text, rgb(23 23 23));
   width: 100%;
 
-  --recipe-bg: var(--snice-color-background-element, rgb(252 251 249));
+  --recipe-bg: var(--snice-color-surface-container-high, rgb(252 251 249));
   --recipe-border: var(--snice-color-border, rgb(226 226 226));
   --recipe-text: var(--snice-color-text, rgb(23 23 23));
   --recipe-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
@@ -79,7 +79,7 @@
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
   border-radius: 9999px;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--recipe-border);
   color: var(--recipe-text-secondary);
 }
@@ -92,7 +92,7 @@
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
   border-top: 1px solid var(--recipe-border);
   border-bottom: 1px solid var(--recipe-border);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 .recipe__meta-item {
@@ -156,7 +156,7 @@
   height: 2rem;
   border: 1px solid var(--recipe-border);
   border-radius: 50%;
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--recipe-text);
   font-size: var(--snice-font-size-lg, 1.125rem);
   cursor: pointer;
@@ -447,7 +447,7 @@
 .recipe__nutrition-item {
   text-align: center;
   padding: var(--snice-spacing-sm, 0.75rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   border: 1px solid var(--recipe-border);
 }
@@ -476,7 +476,7 @@
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   border: 1px solid var(--recipe-border);
   border-radius: var(--snice-border-radius-md, 0.25rem);
-  background: var(--snice-color-background, rgb(255 255 255));
+  background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--recipe-text);
   font-size: var(--snice-font-size-sm, 0.875rem);
   cursor: pointer;

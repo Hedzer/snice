@@ -30,7 +30,7 @@ function makeMenu(
   }
   const btn = document.createElement('button');
   btn.slot = 'trigger';
-  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+  btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
   btn.textContent = triggerLabel;
   menu.appendChild(btn);
   for (const item of items) {
@@ -330,7 +330,7 @@ export const MenuDivider: Story = {
     const menu = document.createElement('snice-menu');
     const btn = document.createElement('button');
     btn.slot = 'trigger';
-    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     btn.textContent = 'With Dividers';
     menu.appendChild(btn);
     const items = [
@@ -370,7 +370,7 @@ export const ImageLeftAndRightSlots: Story = {
     menu.appendChild(imgLeft);
     const btn = document.createElement('button');
     btn.slot = 'trigger';
-    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     btn.textContent = 'With Images';
     menu.appendChild(btn);
     const imgRight = document.createElement('span');
@@ -410,7 +410,7 @@ export const FullExampleFileMenu: Story = {
     const menu = document.createElement('snice-menu');
     const btn = document.createElement('button');
     btn.slot = 'trigger';
-    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-background-element,#f9f9f9);cursor:pointer;font-size:.875rem;';
+    btn.style.cssText = 'padding:.5rem 1rem;border:1px solid var(--snice-color-border,#ddd);border-radius:6px;background:var(--snice-color-surface-container-high,#f9f9f9);cursor:pointer;font-size:.875rem;';
     btn.textContent = 'File';
     menu.appendChild(btn);
     const fileItems = [

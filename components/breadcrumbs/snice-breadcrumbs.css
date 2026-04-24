@@ -124,7 +124,7 @@ case, when, default, if {
 }
 
 .breadcrumb-ellipsis:hover {
-  background: var(--snice-color-background-hover, rgb(0 0 0 / 0.05));
+  background: var(--snice-color-surface-hover, rgb(0 0 0 / 0.05));
 }
 
 .breadcrumb-ellipsis:focus-visible {

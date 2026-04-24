@@ -59,7 +59,7 @@ A positioned, animated container for contextual actions that appears on hover, f
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--action-bar-background` | Background color | `var(--snice-color-background-element)` |
+| `--action-bar-background` | Background color | `var(--snice-color-surface-container-high)` |
 | `--action-bar-border` | Border style | `1px solid var(--snice-color-border)` |
 | `--action-bar-border-radius` | Border radius | `var(--snice-border-radius-lg)` |
 | `--action-bar-padding` | Inner padding | `var(--snice-spacing-xs)` |

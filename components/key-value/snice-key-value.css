@@ -2,12 +2,12 @@
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   width: 100%;
-  --kv-bg: var(--snice-color-background, rgb(255 255 255));
+  --kv-bg: var(--snice-color-surface, rgb(255 255 255));
   --kv-text: var(--snice-color-text, rgb(23 23 23));
   --kv-text-secondary: var(--snice-color-text-secondary, rgb(82 82 82));
   --kv-text-tertiary: var(--snice-color-text-tertiary, rgb(115 115 115));
   --kv-border: var(--snice-color-border, rgb(226 226 226));
-  --kv-bg-element: var(--snice-color-background-element, rgb(252 251 249));
+  --kv-bg-element: var(--snice-color-surface-container-high, rgb(252 251 249));
   --kv-primary: var(--snice-color-primary, rgb(37 99 235));
   --kv-danger: var(--snice-color-danger, rgb(220 38 38));
   --kv-radius: var(--snice-border-radius-md, 0.25rem);

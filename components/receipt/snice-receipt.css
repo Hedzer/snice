@@ -11,12 +11,12 @@
   --receipt-padding: var(--snice-receipt-padding, 1.5rem);
 
   /* ── Colors ── */
-  --receipt-bg: var(--snice-receipt-bg, var(--snice-color-background, rgb(255 255 255)));
+  --receipt-bg: var(--snice-receipt-bg, var(--snice-color-surface, rgb(255 255 255)));
   --receipt-text: var(--snice-receipt-text, var(--snice-color-text, rgb(23 23 23)));
   --receipt-text-secondary: var(--snice-receipt-text-secondary, var(--snice-color-text-secondary, rgb(82 82 82)));
   --receipt-text-tertiary: var(--snice-receipt-text-tertiary, var(--snice-color-text-tertiary, rgb(115 115 115)));
   --receipt-border: var(--snice-receipt-border, var(--snice-color-border, rgb(226 226 226)));
-  --receipt-bg-element: var(--snice-receipt-bg-element, var(--snice-color-background-element, rgb(252 251 249)));
+  --receipt-bg-element: var(--snice-receipt-bg-element, var(--snice-color-surface-container-high, rgb(252 251 249)));
   --receipt-header-bg: var(--snice-receipt-header-bg, transparent);
   --receipt-accent: var(--snice-receipt-accent, var(--snice-color-primary, rgb(37 99 235)));
 

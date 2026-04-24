@@ -55,7 +55,7 @@ A lightweight GFM-compatible markdown renderer that converts markdown text to st
 | `--snice-color-border` | Border color for headings, tables, code blocks, and blockquotes |
 | `--snice-color-text-secondary` | Color for strikethrough text and blockquote text |
 | `--snice-color-text-tertiary` | Color for h6 headings |
-| `--snice-color-background-element` | Background color for code blocks, blockquotes, and alternating table rows |
+| `--snice-color-surface-container-high` | Background color for code blocks, blockquotes, and alternating table rows |
 | `--snice-line-height-normal` | Line height for body text |
 | `--snice-font-size-md` | Base font size |
 | `--snice-spacing-*` | Various spacing tokens for margins and padding |

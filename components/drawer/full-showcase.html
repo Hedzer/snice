@@ -16,17 +16,17 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Drawer</title>
   <link rel="stylesheet" href="../theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-background); color: var(--snice-color-text); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 1.5rem 0 0.5rem; }
     h2:first-child { margin-top: 0; }
-    .box { position: relative; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; background: color-mix(in srgb, var(--snice-color-background, #fff) 90%, var(--snice-color-text, #000) 10%); }
+    .box { position: relative; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; background: color-mix(in srgb, var(--snice-color-surface, #fff) 90%, var(--snice-color-text, #000) 10%); }
     .box-h { height: 200px; }
     .box-tall { height: 280px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-    .label { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); z-index: 9999; background: color-mix(in srgb, var(--snice-color-background, #fff) 90%, var(--snice-color-text, #000) 10%); padding: 0.15rem 0.4rem; border-radius: 4px; pointer-events: none; }
+    .label { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); z-index: 9999; background: color-mix(in srgb, var(--snice-color-surface, #fff) 90%, var(--snice-color-text, #000) 10%); padding: 0.15rem 0.4rem; border-radius: 4px; pointer-events: none; }
     .menu { display: flex; flex-direction: column; padding: 0.5rem; }
     .menu a { display: block; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: var(--snice-color-text-secondary, #666); text-decoration: none; border-radius: 4px; }
-    .menu a:hover { background: var(--snice-color-background-hover, #f3f4f6); }
+    .menu a:hover { background: var(--snice-color-surface-hover, #f3f4f6); }
     .menu a.active { color: var(--snice-color-primary, #2563eb); background: color-mix(in srgb, var(--snice-color-primary, #2563eb) 10%, transparent); }
   </style>
   <script type="module">import './snice-drawer.ts'; import './snice-drawer-target.ts';</script>
@@ -154,7 +154,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
         <a href="#" class="active">Account</a>
       </nav>
       <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
-        <button style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-background);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Cancel</button>
+        <button style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-surface);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Cancel</button>
         <button style="padding:0.25rem 0.75rem;border:none;border-radius:4px;background:var(--snice-color-primary,#2563eb);color:white;cursor:pointer;font-size:0.8rem">Save</button>
       </div>
     </snice-drawer>
@@ -187,7 +187,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </snice-drawer>
   <snice-drawer-target for="d-push" style="padding:1rem">
     <p style="font-size:0.85rem;color:var(--snice-color-text-secondary);margin:0 0 0.75rem">This content shifts when the drawer opens.</p>
-    <button onclick="document.getElementById('d-push').toggle()" style="padding:0.4rem 0.85rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-background-element);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Toggle Push Drawer</button>
+    <button onclick="document.getElementById('d-push').toggle()" style="padding:0.4rem 0.85rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-surface-container-high);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Toggle Push Drawer</button>
   </snice-drawer-target>
 </div>
 
