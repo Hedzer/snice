@@ -10,6 +10,7 @@ import type { SniceBaseProps } from './types';
 export interface AlertProps extends SniceBaseProps {
   variant?: any;
   size?: any;
+  appearance?: any;
   title?: any;
   dismissible?: any;
   icon?: any;
@@ -36,7 +37,7 @@ export interface AlertProps extends SniceBaseProps {
  */
 export const Alert = createReactAdapter<AlertProps>({
   tagName: 'snice-alert',
-  properties: ["variant","size","title","dismissible","icon"],
+  properties: ["variant","size","appearance","title","dismissible","icon"],
   events: {"alert-dismiss":"onAlertDismiss","alert-hidden":"onAlertHidden","alert-shown":"onAlertShown"},
   formAssociated: false
 });

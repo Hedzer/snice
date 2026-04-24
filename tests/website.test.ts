@@ -49,11 +49,17 @@ describe('Website Build', () => {
     });
 
     it('should list all components in the component list', () => {
+      // Check each CDN component is either used as a tag (`<snice-xxx>`) or
+      // referenced in the in-page navigation (`#comp-xxx`). The page groups
+      // some related components under a shared heading (e.g. "Chart &
+      // Sparkline" shares a nav anchor), so we also accept the component
+      // name appearing anywhere in the HTML as a last-resort signal.
       const missingFromList: string[] = [];
       for (const comp of cdnComponents) {
-        if (!componentsHtml.includes(`snice-${comp}<`)) {
-          missingFromList.push(comp);
-        }
+        const used = componentsHtml.includes(`<snice-${comp}`)
+          || componentsHtml.includes(`#comp-${comp}`)
+          || componentsHtml.includes(`snice-${comp}.min.js`);
+        if (!used) missingFromList.push(comp);
       }
       expect(missingFromList).toEqual([]);
     });

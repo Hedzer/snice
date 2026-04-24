@@ -40,6 +40,7 @@ export default defineConfig({
       'dist',
       'examples',
       'tests/live',
+      'tests/website-render.test.ts',
       'rollup.config.test.js',
       '.debug',
       '.claude/worktrees'

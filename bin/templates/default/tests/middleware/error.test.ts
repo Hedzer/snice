@@ -20,12 +20,20 @@ describe('Error Middleware', () => {
     delete (window as any).location;
     window.location = { href: '' } as Location;
 
-    // Create mock context
+    // Seed storage so the derived principal starts authenticated.
+    storage.setUser({ id: '1', name: 'Test', email: 'test@example.com' });
+
+    // Create mock context — mirrors the real app's context shape
+    // (src/context.ts): `principal` is a getter-backed object that derives
+    // from storage, so when the middleware clears the token, the getters
+    // naturally flip user → null and isAuthenticated → false. The previous
+    // mock used static fields and asserted those would change after the
+    // middleware ran — that contract never matched the real app.
     mockContext = {
       application: {
         principal: {
-          user: { id: '1', name: 'Test', email: 'test@example.com' },
-          isAuthenticated: true,
+          get user() { return storage.getUser(); },
+          get isAuthenticated() { return storage.getToken() !== null; },
         } as Principal,
       },
       navigation: {

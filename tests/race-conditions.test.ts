@@ -128,10 +128,14 @@ describe('race conditions and async edge cases', () => {
       await new Promise(resolve => setTimeout(resolve, 5));
       el.setAttribute('controller', 'async-switch-2');
       
-      // Wait for all to complete
-      await new Promise(resolve => setTimeout(resolve, 30));
-      
-      // Only ctrl-2 should be attached
+      // Poll for ctrl-2 attach; under parallel vitest load setTimeout drifts
+      // so a fixed wait is flaky. ctrl-1 must finish (20ms) before detach can
+      // run and ctrl-2 can start its 5ms attach.
+      const deadline = Date.now() + 500;
+      while (!ctrl2Attached && Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 5));
+      }
+
       expect(ctrl2Attached).toBe(true);
       
       // Ctrl-1 might have attached but should have been detached

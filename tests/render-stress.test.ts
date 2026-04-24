@@ -296,8 +296,12 @@ describe('@render decorator - stress tests', () => {
     const el = document.createElement('controlled-parent') as ControlledParent;
     el.setAttribute('controller', 'stress-controller');
     el.childCount = 5;
+    const attached = new Promise<void>(r =>
+      el.addEventListener('controller-attached', () => r(), { once: true })
+    );
     container.appendChild(el);
     await el.ready;
+    await attached;
 
     expect(controllerMounted).toHaveBeenCalledTimes(1);
 

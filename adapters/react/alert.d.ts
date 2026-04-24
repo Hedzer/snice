@@ -5,6 +5,7 @@ import type { SniceBaseProps } from './types';
 export interface AlertProps extends SniceBaseProps {
     variant?: any;
     size?: any;
+    appearance?: any;
     title?: any;
     dismissible?: any;
     icon?: any;

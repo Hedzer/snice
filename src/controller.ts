@@ -163,7 +163,7 @@ export async function attachController(element: HTMLElement, controllerName: str
   await scope.runOperation(async () => {
     await controllerInstance.attach(element);
   });
-  
+
   // Setup @observe observers for controller
   setupObservers(controllerInstance, element);
 
@@ -172,7 +172,7 @@ export async function attachController(element: HTMLElement, controllerName: str
 
   // Setup @on event handlers for controller
   setupEventHandlers(controllerInstance, element);
-  
+
   element.dispatchEvent(new CustomEvent('controller-attached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));
@@ -266,7 +266,9 @@ export function useNativeElementControllers() {
   // Process elements that already have controller attribute
   function processElement(element: Element) {
     if (!(element instanceof HTMLElement)) return;
-    if (element.tagName.includes('-')) return;
+    // `tagName` can briefly be null when happy-dom/native mutation observers
+    // fire on a node that's been detached mid-callback. Skip cleanly.
+    if (!element.tagName || element.tagName.includes('-')) return;
     if ((element as any)[IS_ELEMENT_CLASS]) return;
 
     const controllerName = element.getAttribute('controller');

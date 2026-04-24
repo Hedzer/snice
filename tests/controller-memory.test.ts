@@ -213,22 +213,21 @@ describe('Controller Scope & Memory Management', () => {
       }
       
       @element('memory-element')
-      class MemoryElement extends HTMLElement {
-        @property()
-        controller = 'memory-test-0';
-      }
-      
-      const el = document.createElement('memory-element');
+      class MemoryElement extends HTMLElement {}
+
+      const el = document.createElement('memory-element') as HTMLElement;
+      el.setAttribute('controller', 'memory-test-0');
       document.body.appendChild(el);
+      await new Promise(resolve => setTimeout(resolve, 5));
       
       // Rapidly switch controllers
-      for (let i = 0; i < 5; i++) {
-        el.controller = `memory-test-${i}`;
+      for (let i = 1; i < 5; i++) {
+        el.setAttribute('controller', `memory-test-${i}`);
         await new Promise(resolve => setTimeout(resolve, 5));
       }
-      
+
       // Switch back to first
-      el.controller = 'memory-test-0';
+      el.setAttribute('controller', 'memory-test-0');
       await new Promise(resolve => setTimeout(resolve, 10));
       
       // Verify proper cleanup
@@ -555,21 +554,19 @@ describe('Controller Scope & Memory Management', () => {
       }
       
       @element('switch-element')
-      class SwitchElement extends HTMLElement {
-        @property()
-        controller = 'switch-test-1';
-      }
-      
-      const el = document.createElement('switch-element');
+      class SwitchElement extends HTMLElement {}
+
+      const el = document.createElement('switch-element') as HTMLElement;
+      el.setAttribute('controller', 'switch-test-1');
       document.body.appendChild(el);
-      
+
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       expect(instances.length).toBe(1);
       expect(instances[0].data).toBe('controller1');
-      
+
       // Switch controller
-      el.controller = 'switch-test-2';
+      el.setAttribute('controller', 'switch-test-2');
       await new Promise(resolve => setTimeout(resolve, 10));
       
       expect(instances.length).toBe(2);

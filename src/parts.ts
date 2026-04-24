@@ -287,9 +287,11 @@ function prepareTemplate(result: TemplateResult): Template {
             inAttrValue = true;
             attrQuoteChar = char;
           } else if (char === '=') {
-            // Extract attribute name (look backwards for it)
+            // Extract attribute name (look backwards for it).
+            // Includes `~` for the "any-modifier" keyboard prefix
+            // (e.g. `@keydown.~enter`) so it isn't truncated to `.enter`.
             let attrStart = j - 1;
-            while (attrStart >= 0 && /[\w\-\.@\?:\+]/.test(str[attrStart])) {
+            while (attrStart >= 0 && /[\w\-\.@\?:\+~]/.test(str[attrStart])) {
               attrStart--;
             }
             currentAttrName = str.substring(attrStart + 1, j).trim();
@@ -314,9 +316,10 @@ function prepareTemplate(result: TemplateResult): Template {
         // Check if this is start of attribute value (= at end of string)
         const trimmed = str.trimEnd();
         if (trimmed.endsWith('=')) {
-          // Extract attribute name
+          // Extract attribute name (same `~` inclusion as the in-tag branch
+          // above — supports `@keydown.~enter` keyboard modifier prefix).
           let attrStart = trimmed.length - 2;
-          while (attrStart >= 0 && /[\w\-\.@\?\/:\+]/.test(trimmed[attrStart])) {
+          while (attrStart >= 0 && /[\w\-\.@\?\/:\+~]/.test(trimmed[attrStart])) {
             attrStart--;
           }
           currentAttrName = trimmed.substring(attrStart + 1, trimmed.length - 1).trim();

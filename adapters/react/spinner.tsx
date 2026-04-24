@@ -12,6 +12,7 @@ export interface SpinnerProps extends SniceBaseProps {
   color?: any;
   label?: any;
   thickness?: any;
+  variant?: any;
 
 }
 
@@ -33,7 +34,7 @@ export interface SpinnerProps extends SniceBaseProps {
  */
 export const Spinner = createReactAdapter<SpinnerProps>({
   tagName: 'snice-spinner',
-  properties: ["size","color","label","thickness"],
+  properties: ["size","color","label","thickness","variant"],
   events: {},
   formAssociated: false
 });

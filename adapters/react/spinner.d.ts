@@ -7,6 +7,7 @@ export interface SpinnerProps extends SniceBaseProps {
     color?: any;
     label?: any;
     thickness?: any;
+    variant?: any;
 }
 /**
  * Spinner - React adapter for snice-spinner

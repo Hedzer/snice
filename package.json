@@ -118,7 +118,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:src": "vitest run",
+    "test:src": "npm run build:test && vitest run",
     "test:built": "npm run build:test && TEST_BUILT=true vitest run",
     "test:cdn": "vitest run tests/cdn-builds.test.ts",
     "test:cdn-runtime": "vitest run tests/cdn-runtime.test.ts",

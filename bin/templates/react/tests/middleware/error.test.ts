@@ -20,12 +20,15 @@ describe('Error Middleware', () => {
     delete (window as any).location;
     (window as any).location = { href: '' };
 
-    // Create mock context
+    storage.setUser({ id: '1', name: 'Test', email: 'test@example.com' });
+
+    // Context mock mirrors src/context.ts — getters derive from storage so
+    // the middleware clearing the token flips user/isAuthenticated naturally.
     mockContext = {
       application: {
         principal: {
-          user: { id: '1', name: 'Test', email: 'test@example.com' },
-          isAuthenticated: true,
+          get user() { return storage.getUser(); },
+          get isAuthenticated() { return storage.getToken() !== null; },
         } as Principal,
       },
       navigation: {

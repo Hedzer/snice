@@ -716,6 +716,10 @@ html\`&lt;input @keydown:ctrl+s=\${this.save}&gt;\`
 html\`&lt;div @keydown:escape=\${this.close}&gt;\`</snice-code-block>
     </div>
 
+    <aside style="margin-top:var(--snice-spacing-xl,2rem);padding-top:var(--snice-spacing-md,1rem);border-top:1px solid var(--snice-color-border,#ddd);font-size:0.875rem;color:var(--snice-color-text-secondary,#666)">
+      <p>Browse full API reference in <a href="docs.html">the docs</a>, or view individual decorator source files on <a href="https://gitlab.com/Hedzer/snice/-/blob/main/docs/decorators/">gitlab.com/Hedzer/snice/-/blob/main/docs/</a>.</p>
+    </aside>
+
   </main>
 ${footer}
 </body>

@@ -5,7 +5,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
@@ -221,6 +221,14 @@ export function applyElementFunctionality(constructor: any) {
           }
         }
         delete this[PRE_INIT_PROPERTY_VALUES];
+      }
+
+      // Pick up a `controller` attribute set before connection. Real browsers
+      // fire attributeChangedCallback on connect for all observed attrs that
+      // already existed; happy-dom doesn't always, so we read it proactively.
+      if (this.hasAttribute('controller') && !this[CONTROLLER]) {
+        const controllerName = this.getAttribute('controller');
+        if (controllerName) (this as any).controller = controllerName;
       }
 
       applyStyles(this);
@@ -515,11 +523,17 @@ export function property(options?: PropertyOptions) {
       constructor[PROPERTIES].set(propertyKey, finalOptions);
 
       // Set up the property descriptor — re-define if a subclass overrides
-      // the property with different options (different closure captures)
-      const definerKey = `__propDef_${propertyKey}`;
-      const existingDefiner = this.constructor.prototype[definerKey];
+      // the property with different options (different closure captures).
+      // Per-key options tracked on the prototype via a Symbol map.
+      const proto = this.constructor.prototype;
+      let definers: Map<string, any> | undefined = proto[PROPERTY_DEFINERS];
+      if (!definers || !Object.prototype.hasOwnProperty.call(proto, PROPERTY_DEFINERS)) {
+        definers = new Map(definers);
+        proto[PROPERTY_DEFINERS] = definers;
+      }
+      const existingDefiner = definers.get(propertyKey);
       if (!existingDefiner || existingDefiner !== options) {
-        this.constructor.prototype[definerKey] = options;
+        definers.set(propertyKey, options);
         const descriptor: PropertyDescriptor = {
           get(this: any) {
             // attribute: false — use internal storage only, no DOM sync

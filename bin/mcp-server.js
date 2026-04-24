@@ -383,8 +383,16 @@ ${withStyles ? `
         });
       }
 
-      // Check for async guards (not supported)
-      if (/guards\s*:.*async/.test(code) || /async\s+function\s+\w+Guard/.test(code)) {
+      // Check for async guards (not supported). Matches:
+      //  - `guards: [async ...]` or `guards: async ...`
+      //  - `async function FooGuard(...)`
+      //  - `async function foo(ctx)`    — functions taking `ctx` as first
+      //    arg look like guards by convention.
+      if (
+        /guards\s*:.*async/.test(code) ||
+        /async\s+function\s+\w+Guard/.test(code) ||
+        /async\s+function\s+\w+\s*\(\s*ctx\b/.test(code)
+      ) {
         issues.push({
           severity: 'error',
           message: 'Async guards are NOT supported. Guards must be synchronous.',

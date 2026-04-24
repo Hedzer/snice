@@ -33,7 +33,9 @@ describe('Symbol sharing across instances', () => {
     const global1 = (globalThis as any).snice;
     expect(global1).toBeDefined();
     expect(global1.controllerRegistry).toBeInstanceOf(Map);
-    expect(global1.symbols).toBeInstanceOf(Map);
+    // Note: `globalThis.snice.symbols` was a legacy cache Map used before
+    // `getSymbol()` switched to `Symbol.for('snice:<name>')`. Symbol.for
+    // already guarantees global uniqueness, so the cache was removed.
 
     // Accessing globalThis.snice directly should get the same reference
     const global2 = (globalThis as any).snice;

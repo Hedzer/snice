@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Spinner = createReactAdapter({
     tagName: 'snice-spinner',
-    properties: ["size", "color", "label", "thickness"],
+    properties: ["size", "color", "label", "thickness", "variant"],
     events: {},
     formAssociated: false
 });
