@@ -1,6 +1,22 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, render, styles, html, css, unsafeHTML } from 'snice';
+import { renderIcon } from '../utils';
+import {
+  CIRCLE_SOLID,
+  CHECK_CIRCLE_SOLID,
+  EXCLAMATION_TRIANGLE_SOLID,
+  X_CIRCLE_SOLID,
+  INFO_CIRCLE_SOLID,
+} from '../icons';
 import cssContent from './snice-timeline.css?inline';
 import type { TimelineOrientation, TimelinePosition, TimelineItem, SniceTimelineElement } from './snice-timeline.types';
+
+const DEFAULT_TIMELINE_ICONS: Record<string, string> = {
+  default: CIRCLE_SOLID,
+  success: CHECK_CIRCLE_SOLID,
+  warning: EXCLAMATION_TRIANGLE_SOLID,
+  error: X_CIRCLE_SOLID,
+  info: INFO_CIRCLE_SOLID,
+};
 
 @element('snice-timeline')
 export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
@@ -41,17 +57,24 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
 
   private renderItem(item: TimelineItem, index: number) {
     const variant = item.variant || 'default';
-    const icon = item.icon || this.getDefaultIcon(variant);
 
     const itemClasses = [
       'timeline-item',
       `timeline-item--${variant}`
     ].join(' ');
 
+    // Priority: consumer-supplied `item.icon` (URL / emoji / text → renderIcon)
+    // → default variant SVG from the central icons module.
+    const consumerIcon = item.icon ? renderIcon(item.icon, 'timeline-item__icon-content') : null;
+    const defaultSvg = DEFAULT_TIMELINE_ICONS[variant] || DEFAULT_TIMELINE_ICONS.default;
+
     return html/*html*/`
       <div class="${itemClasses}" part="item">
         <div class="timeline-item__marker" part="marker">
-          <span class="timeline-item__icon" part="icon">${icon}</span>
+          <span class="timeline-item__icon" part="icon">
+            <if ${consumerIcon}>${consumerIcon}</if>
+            <if ${!consumerIcon}>${unsafeHTML(defaultSvg)}</if>
+          </span>
         </div>
         <div class="timeline-item__content" part="content">
           <if ${item.timestamp}>
@@ -64,16 +87,5 @@ export class SniceTimeline extends HTMLElement implements SniceTimelineElement {
         </div>
       </div>
     `;
-  }
-
-  private getDefaultIcon(variant: string): string {
-    const icons: Record<string, string> = {
-      default: '●',
-      success: '✓',
-      warning: '⚠',
-      error: '✕',
-      info: 'ⓘ'
-    };
-    return icons[variant] || icons.default;
   }
 }

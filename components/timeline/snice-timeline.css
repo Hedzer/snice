@@ -172,6 +172,13 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   line-height: 1;
   color: var(--snice-color-text, rgb(23 23 23));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.timeline-item__icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 /* Marker variants */

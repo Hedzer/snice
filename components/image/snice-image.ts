@@ -1,4 +1,5 @@
-import { element, property, render, styles, watch, html, css } from 'snice';
+import { element, property, render, styles, watch, html, css, unsafeHTML } from 'snice';
+import { PHOTO } from '../icons';
 import cssContent from './snice-image.css?inline';
 import type { ImageVariant, ImageSize, ImageFit, SniceImageElement } from './snice-image.types';
 
@@ -83,7 +84,11 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
     if (!this.src) {
       return html/*html*/`
         <div class="${containerClasses}" part="container">
-          <div class="${imageClasses} image--placeholder" part="placeholder" style="${inlineStyles}"></div>
+          <div class="${imageClasses} image--placeholder" part="placeholder" style="${inlineStyles}">
+            <slot name="placeholder">
+              <span class="image__placeholder-icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
+            </slot>
+          </div>
         </div>
       `;
     }

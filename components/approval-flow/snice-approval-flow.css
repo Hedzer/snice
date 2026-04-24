@@ -109,9 +109,18 @@
   font-weight: var(--snice-font-weight-medium, 500);
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: 9999px;
-  margin-top: var(--snice-spacing-2xs, 0.25rem);
-  width: fit-content;
 }
+
+.step__status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.step__status-icon svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 
 .step__comment {
   font-size: var(--snice-font-size-xs, 0.75rem);

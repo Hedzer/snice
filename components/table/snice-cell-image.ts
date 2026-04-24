@@ -1,4 +1,5 @@
 import { element, property, watch, ready, render, styles, html, css, unsafeHTML } from 'snice';
+import { PHOTO } from '../icons';
 import cssContent from './snice-cell-image.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 
@@ -67,7 +68,9 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
 
     return html/*html*/`
       <div class="cell-content cell-content--image" part="content">
-        <div class="${classes} cell-image--placeholder"></div>
+        <div class="${classes} cell-image--placeholder">
+          <span class="cell-image__placeholder-icon" aria-hidden="true">${unsafeHTML(PHOTO)}</span>
+        </div>
       </div>
     `;
   }

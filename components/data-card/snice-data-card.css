@@ -54,6 +54,16 @@
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
+.data-card__edit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.data-card__edit-icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 .data-card__edit-toggle--active {
   border-color: var(--snice-color-primary, rgb(37 99 235));
   color: var(--snice-color-primary, rgb(37 99 235));

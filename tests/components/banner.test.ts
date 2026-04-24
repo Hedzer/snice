@@ -93,9 +93,11 @@ describe('snice-banner', () => {
       });
       await wait(50);
 
+      // Default icons are now inline SVGs (Heroicons), not emoji. Assert the
+      // wrapper is present and contains an <svg>.
       const iconEl = queryShadow(banner as HTMLElement, '.banner__icon');
       expect(iconEl).toBeTruthy();
-      expect(iconEl?.textContent).toBe('✅');
+      expect(iconEl?.querySelector('svg')).toBeTruthy();
     });
 
     it('should render custom icon', async () => {
@@ -104,8 +106,11 @@ describe('snice-banner', () => {
       });
       await wait(50);
 
-      const iconEl = queryShadow(banner as HTMLElement, '.banner__icon');
-      expect(iconEl?.textContent).toBe('🎉');
+      // Custom icon prop goes through renderIcon which produces a <span>
+      // for emoji-like text. Verify the emoji text is somewhere in the
+      // banner icon slot.
+      const iconSlot = queryShadow(banner as HTMLElement, '.banner__icon-slot');
+      expect(iconSlot?.textContent?.trim()).toContain('🎉');
     });
   });
 

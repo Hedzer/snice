@@ -213,8 +213,10 @@ describe('snice-timeline', () => {
       timeline.items = items;
       await tracker.next();
 
+      // Default icons are inline Heroicon SVGs — assert wrapper + svg child.
       const icon = queryShadow(timeline as HTMLElement, '.timeline-item__icon');
-      expect(icon?.textContent).toBe('✓');
+      expect(icon).toBeTruthy();
+      expect(icon?.querySelector('svg')).toBeTruthy();
     });
 
     it('should render custom icon when provided', async () => {
@@ -227,8 +229,10 @@ describe('snice-timeline', () => {
       timeline.items = items;
       await tracker.next();
 
+      // Custom icon runs through renderIcon — emoji-like text renders as a
+      // <span>. Verify it's somewhere in the icon container.
       const icon = queryShadow(timeline as HTMLElement, '.timeline-item__icon');
-      expect(icon?.textContent).toBe('🎉');
+      expect(icon?.textContent?.trim()).toContain('🎉');
     });
   });
 

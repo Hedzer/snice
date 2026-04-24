@@ -13,7 +13,12 @@ const aiDocsDir = path.join(process.cwd(), 'docs', 'ai', 'components');
 
 const componentNames = fs.readdirSync(componentsDir).filter(name => {
   const fullPath = path.join(componentsDir, name);
-  return fs.statSync(fullPath).isDirectory();
+  if (!fs.statSync(fullPath).isDirectory()) return false;
+  // Only scan directories that ship a user-facing custom element (contain a
+  // snice-*.ts component file). Utility-only folders like `icons/`, `theme/`
+  // don't need per-component docs.
+  const files = fs.readdirSync(fullPath);
+  return files.some(f => /^snice-.+\.ts$/.test(f));
 });
 
 describe('Component Documentation', () => {

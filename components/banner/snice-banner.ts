@@ -1,7 +1,16 @@
-import { element, property, watch, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
 import { renderIcon } from '../utils';
+import { INFO_CIRCLE_SOLID, CHECK_CIRCLE_SOLID, EXCLAMATION_TRIANGLE_SOLID, X_CIRCLE_SOLID } from '../icons';
 import cssContent from './snice-banner.css?inline';
 import type { BannerVariant, BannerPosition, SniceBannerElement } from './snice-banner.types';
+
+// Default icons by variant — consumer overrides via slot or `icon` prop.
+const DEFAULT_BANNER_ICONS: Record<BannerVariant, string> = {
+  info: INFO_CIRCLE_SOLID,
+  success: CHECK_CIRCLE_SOLID,
+  warning: EXCLAMATION_TRIANGLE_SOLID,
+  error: X_CIRCLE_SOLID,
+};
 
 @element('snice-banner')
 export class SniceBanner extends HTMLElement implements SniceBannerElement {
@@ -39,21 +48,17 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   render() {
     const bannerClasses = ['banner', `banner--${this.variant}`].filter(Boolean).join(' ');
 
-    const defaultIcons = {
-      info: 'ℹ️',
-      success: '✅',
-      warning: '⚠️',
-      error: '❌'
-    };
-
-    const displayIcon = this.icon || defaultIcons[this.variant];
+    const defaultSvg = DEFAULT_BANNER_ICONS[this.variant];
 
     return html/*html*/`
       <div class="${bannerClasses}" role="alert" part="banner">
         <span class="banner__icon-slot" part="icon">
           <slot name="icon">
-            <if ${displayIcon}>
-              ${renderIcon(displayIcon, 'banner__icon')}
+            <if ${this.icon}>
+              ${renderIcon(this.icon, 'banner__icon')}
+            </if>
+            <if ${!this.icon && defaultSvg}>
+              <span class="banner__icon" aria-hidden="true">${unsafeHTML(defaultSvg)}</span>
             </if>
           </slot>
         </span>

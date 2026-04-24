@@ -1,6 +1,14 @@
-import { element, property, render, styles, html, css, dispatch } from 'snice';
+import { element, property, render, styles, html, css, dispatch, unsafeHTML } from 'snice';
+import { CHECK, X_MARK, ELLIPSIS_HORIZONTAL, CHEVRON_RIGHT } from '../icons';
 import cssContent from './snice-approval-flow.css?inline';
 import type { ApprovalStep, ApprovalOrientation, SniceApprovalFlowElement } from './snice-approval-flow.types';
+
+const STATUS_ICONS: Record<string, string> = {
+  pending: ELLIPSIS_HORIZONTAL,
+  approved: CHECK,
+  rejected: X_MARK,
+  skipped: CHEVRON_RIGHT,
+};
 
 @element('snice-approval-flow')
 export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowElement {
@@ -48,13 +56,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
   }
 
   private getStatusIcon(status: string): string {
-    const icons: Record<string, string> = {
-      pending: '⏳',
-      approved: '✓',
-      rejected: '✕',
-      skipped: '⏭'
-    };
-    return icons[status] || '';
+    return STATUS_ICONS[status] || '';
   }
 
   private handleApprove(step: ApprovalStep) {
@@ -104,7 +106,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
             <div class="step__role" part="role">${step.role}</div>
           </if>
           <div class="step__status" part="status">
-            <span>${this.getStatusIcon(step.status)}</span>
+            <span class="step__status-icon" aria-hidden="true">${unsafeHTML(this.getStatusIcon(step.status))}</span>
             <span>${this.getStatusLabel(step.status)}</span>
           </div>
           <if ${step.comment}>

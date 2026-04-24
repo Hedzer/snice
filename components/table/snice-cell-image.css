@@ -61,14 +61,21 @@
   position: relative;
 }
 
-.cell-image--placeholder::after {
-  content: '📷';
+.cell-image__placeholder-icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.875rem;
-  opacity: 0.5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  opacity: 0.55;
+}
+.cell-image__placeholder-icon svg {
+  width: 50%;
+  max-width: 1.25rem;
+  height: auto;
 }
 
 /* Text Alignment */

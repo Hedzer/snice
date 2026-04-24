@@ -1,4 +1,5 @@
-import { element, property, render, styles, html, css, dispatch, watch } from 'snice';
+import { element, property, render, styles, html, css, dispatch, watch, unsafeHTML } from 'snice';
+import { CHECK, PENCIL } from '../icons';
 import cssContent from './snice-data-card.css?inline';
 import type { DataCardField, DataCardVariant, SniceDataCardElement } from './snice-data-card.types';
 
@@ -120,7 +121,8 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
             part="edit-toggle"
             @click=${() => this.toggleEditMode()}
             style="display: ${this.fields.some(f => f.editable !== false) ? '' : 'none'}">
-            ${this.editable ? '✓ Done' : '✎ Edit'}
+            <span class="data-card__edit-icon" aria-hidden="true">${unsafeHTML(this.editable ? CHECK : PENCIL)}</span>
+            ${this.editable ? 'Done' : 'Edit'}
           </button>
         </div>
 

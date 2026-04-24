@@ -103,10 +103,19 @@
   opacity: 1 !important;
 }
 
-.image--placeholder::after {
-  content: '📷';
-  font-size: var(--snice-font-size-lg, 1.5rem);
-  opacity: 0.5;
+/* Placeholder icon slot — holds the SVG rendered by the component's template.
+   Consumers can override by slotting `<img slot="placeholder">` or similar. */
+.image__placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
+  opacity: 0.55;
+}
+.image__placeholder-icon svg {
+  width: 32%;
+  max-width: 2.5rem;
+  height: auto;
 }
 
 /* Loading State */

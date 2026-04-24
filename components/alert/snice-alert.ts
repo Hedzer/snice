@@ -1,5 +1,6 @@
-import { element, property, query, dispatch, render, styles, html, css } from 'snice';
+import { element, property, query, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
 import { renderIcon } from '../utils';
+import { INFO_CIRCLE_SOLID, CHECK_CIRCLE_SOLID, EXCLAMATION_TRIANGLE_SOLID, X_CIRCLE_SOLID } from '../icons';
 import cssContent from './snice-alert.css?inline';
 import type { AlertVariant, AlertSize, AlertAppearance, SniceAlertElement } from './snice-alert.types';
 
@@ -80,23 +81,18 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   }
 
   /**
-   * Snice-owned solid icon set for the default alert icons. Designed as
-   * filled circles/triangles at 24×24 with a bold glyph mark — readable at
-   * the 20px alert-icon size without relying on Unicode fallbacks (which
-   * looked like placeholder characters across OSes).
+   * Default icons sourced from the central Heroicons module. Consumers can
+   * override via `<slot name="icon">...</slot>` or the `icon` prop; this
+   * fallback is only rendered when neither is supplied.
    */
   private defaultIconSvg() {
-    switch (this.variant) {
-      case 'success':
-        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm-1 14.59-4.3-4.3 1.42-1.42L11 13.76l5.88-5.88 1.42 1.42Z"/></svg>`;
-      case 'warning':
-        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 1 21h22Zm1 14h-2v-2h2Zm0-4h-2V9h2Z"/></svg>`;
-      case 'error':
-        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12Z"/></svg>`;
-      case 'info':
-      default:
-        return html/*html*/`<svg class="alert-icon-content" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 15h-2v-6h2Zm0-8h-2V7h2Z"/></svg>`;
-    }
+    const svg = {
+      success: CHECK_CIRCLE_SOLID,
+      warning: EXCLAMATION_TRIANGLE_SOLID,
+      error:   X_CIRCLE_SOLID,
+      info:    INFO_CIRCLE_SOLID,
+    }[this.variant] ?? INFO_CIRCLE_SOLID;
+    return html/*html*/`<span class="alert-icon-content" aria-hidden="true">${unsafeHTML(svg)}</span>`;
   }
 
 
