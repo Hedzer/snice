@@ -104,7 +104,7 @@
 }
 
 .upload-button:hover {
-  background: var(--snice-color-primary-dark, rgb(29 78 216));
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 .upload-button--small {

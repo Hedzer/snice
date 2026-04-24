@@ -196,7 +196,7 @@
 
 /* Highlighting */
 .header-cell--highlighted {
-  background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
+  background-color: var(--snice-color-warning-subtle, rgb(254 249 195)) !important;
   animation: highlight-fade 2s ease-out;
 }
 
@@ -206,7 +206,7 @@
     opacity: 0.3;
   }
   100% {
-    background-color: var(--snice-color-warning-light, rgb(254 249 195));
+    background-color: var(--snice-color-warning-subtle, rgb(254 249 195));
     opacity: 1;
   }
 }
@@ -244,7 +244,7 @@
 
   .header-cell--highlighted {
     animation: none;
-    background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
+    background-color: var(--snice-color-warning-subtle, rgb(254 249 195)) !important;
   }
 }
 

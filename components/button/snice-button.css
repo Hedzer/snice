@@ -429,11 +429,15 @@
 }
 
 .button--circle .icon-slot ::slotted(*) {
-  width: auto;
-  height: auto;
+  width: 1.25em;
+  height: 1.25em;
   font-size: 1.25em;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.button--circle .icon-slot ::slotted(svg) {
+  width: 1.25em;
+  height: 1.25em;
 }

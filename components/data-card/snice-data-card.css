@@ -151,27 +151,27 @@
 }
 
 .field__value--badge-default {
-  background: var(--snice-color-neutral-light, rgb(226 226 226 / 0.3));
+  background: var(--snice-color-surface-container, rgb(226 226 226 / 0.3));
   color: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 .field__value--badge-primary {
-  background: var(--snice-color-primary-light, rgb(37 99 235 / 0.1));
+  background: var(--snice-color-primary-subtle, rgb(37 99 235 / 0.1));
   color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .field__value--badge-success {
-  background: var(--snice-color-success-light, rgb(22 163 74 / 0.1));
+  background: var(--snice-color-success-subtle, rgb(22 163 74 / 0.1));
   color: var(--snice-color-success, rgb(22 163 74));
 }
 
 .field__value--badge-warning {
-  background: var(--snice-color-warning-light, rgb(245 158 11 / 0.1));
+  background: var(--snice-color-warning-subtle, rgb(245 158 11 / 0.1));
   color: var(--snice-color-warning, rgb(245 158 11));
 }
 
 .field__value--badge-danger {
-  background: var(--snice-color-danger-light, rgb(220 38 38 / 0.1));
+  background: var(--snice-color-danger-subtle, rgb(220 38 38 / 0.1));
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 

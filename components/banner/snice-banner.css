@@ -35,27 +35,27 @@
 }
 
 .banner--info {
-  background: var(--snice-color-info-light, rgb(239 246 255));
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
   border-bottom: 2px solid var(--snice-color-primary, rgb(37 99 235));
-  color: var(--snice-color-info-dark, rgb(30 64 175));
+  color: var(--snice-color-primary-hover, rgb(30 64 175));
 }
 
 .banner--success {
-  background: var(--snice-color-success-light, rgb(240 253 244));
+  background: var(--snice-color-success-subtle, rgb(240 253 244));
   border-bottom: 2px solid var(--snice-color-success, rgb(22 163 74));
-  color: var(--snice-color-success-dark, rgb(22 101 52));
+  color: var(--snice-color-success-hover, rgb(22 101 52));
 }
 
 .banner--warning {
-  background: var(--snice-color-warning-light, rgb(255 251 235));
+  background: var(--snice-color-warning-subtle, rgb(255 251 235));
   border-bottom: 2px solid var(--snice-color-warning, rgb(245 158 11));
-  color: var(--snice-color-warning-dark, rgb(146 64 14));
+  color: var(--snice-color-warning-hover, rgb(146 64 14));
 }
 
 .banner--error {
-  background: var(--snice-color-danger-light, rgb(254 242 242));
+  background: var(--snice-color-danger-subtle, rgb(254 242 242));
   border-bottom: 2px solid var(--snice-color-danger, rgb(220 38 38));
-  color: var(--snice-color-danger-dark, rgb(153 27 27));
+  color: var(--snice-color-danger-hover, rgb(153 27 27));
 }
 
 :host([position="bottom"]) .banner {

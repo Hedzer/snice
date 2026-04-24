@@ -44,13 +44,13 @@
   --invoice-total-font-weight: var(--snice-font-weight-bold, 700);
 
   /* ── Status Badge ── */
-  --invoice-status-draft-bg: var(--snice-color-neutral-light, rgb(229 231 235));
+  --invoice-status-draft-bg: var(--snice-color-surface-container, rgb(229 231 235));
   --invoice-status-draft-text: var(--snice-color-neutral-strong, rgb(55 65 81));
-  --invoice-status-sent-bg: var(--snice-color-primary-light, rgb(219 234 254));
+  --invoice-status-sent-bg: var(--snice-color-primary-subtle, rgb(219 234 254));
   --invoice-status-sent-text: var(--snice-color-primary-strong, rgb(29 78 216));
-  --invoice-status-paid-bg: var(--snice-color-success-light, rgb(220 252 231));
+  --invoice-status-paid-bg: var(--snice-color-success-subtle, rgb(220 252 231));
   --invoice-status-paid-text: var(--snice-color-success-strong, rgb(21 128 61));
-  --invoice-status-overdue-bg: var(--snice-color-danger-light, rgb(254 226 226));
+  --invoice-status-overdue-bg: var(--snice-color-danger-subtle, rgb(254 226 226));
   --invoice-status-overdue-text: var(--snice-color-danger-strong, rgb(185 28 28));
   --invoice-status-cancelled-bg: var(--snice-color-neutral-subtle, rgb(243 244 246));
   --invoice-status-cancelled-text: var(--snice-color-neutral, rgb(107 114 128));

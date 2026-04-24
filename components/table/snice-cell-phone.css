@@ -39,7 +39,7 @@
 }
 
 .phone-link:hover {
-  color: var(--snice-color-primary-dark, rgb(29 78 216));
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
   text-decoration: underline;
 }
 

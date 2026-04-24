@@ -49,7 +49,7 @@
 }
 
 :host([color="info"]) {
-  --spinner-color: var(--snice-color-info, rgb(99 102 241));
+  --spinner-color: var(--snice-color-primary, rgb(99 102 241));
 }
 
 .spinner {

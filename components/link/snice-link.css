@@ -23,7 +23,7 @@
 }
 
 .link:hover {
-  color: var(--snice-color-primary-dark, rgb(37 99 235));
+  color: var(--snice-color-primary-hover, rgb(37 99 235));
   background-size: 100% 1px;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .link--default:hover {
-  color: var(--snice-color-primary-dark, rgb(37 99 235));
+  color: var(--snice-color-primary-hover, rgb(37 99 235));
 }
 
 .link--primary {
@@ -52,7 +52,7 @@
 }
 
 .link--primary:hover {
-  color: var(--snice-color-primary-dark, rgb(37 99 235));
+  color: var(--snice-color-primary-hover, rgb(37 99 235));
 }
 
 .link--secondary {

@@ -181,7 +181,7 @@
 }
 
 .empty-state__action:hover {
-  background: var(--snice-color-primary-dark, rgb(29 78 216));
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 .empty-state--small .empty-state__action {

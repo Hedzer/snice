@@ -91,7 +91,7 @@
 }
 
 .json-number {
-  color: var(--snice-color-info, rgb(59 130 246));
+  color: var(--snice-color-primary, rgb(59 130 246));
 }
 
 .json-boolean {

@@ -127,7 +127,7 @@
 
 /* Invalid state */
 .switch-track--invalid {
-  background: var(--snice-color-danger-light, rgb(254 226 226));
+  background: var(--snice-color-danger-subtle, rgb(254 226 226));
 }
 
 .switch-input:checked ~ .switch-track--invalid {

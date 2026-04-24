@@ -130,16 +130,16 @@
 
 /* Highlighted State */
 :host(.row--highlighted) .row-container {
-  background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
+  background-color: var(--snice-color-warning-subtle, rgb(254 249 195)) !important;
   animation: row-highlight-fade 2s ease-out;
 }
 
 @keyframes row-highlight-fade {
   0% {
-    background-color: var(--snice-color-warning-lighter, rgb(254 252 232));
+    background-color: var(--snice-color-warning-subtle-hover, rgb(254 252 232));
   }
   100% {
-    background-color: var(--snice-color-warning-light, rgb(254 249 195));
+    background-color: var(--snice-color-warning-subtle, rgb(254 249 195));
   }
 }
 
@@ -238,7 +238,7 @@
 
   :host(.row--highlighted) .row-container {
     animation: none;
-    background-color: var(--snice-color-warning-light, rgb(254 249 195)) !important;
+    background-color: var(--snice-color-warning-subtle, rgb(254 249 195)) !important;
   }
 
   :host(.row--loading) .row-container::after {

@@ -3,8 +3,8 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
 
-  --diff-add-bg: var(--snice-color-success-light, rgb(220 252 231 / 0.5));
-  --diff-remove-bg: var(--snice-color-danger-light, rgb(254 226 226 / 0.5));
+  --diff-add-bg: var(--snice-color-success-subtle, rgb(220 252 231 / 0.5));
+  --diff-remove-bg: var(--snice-color-danger-subtle, rgb(254 226 226 / 0.5));
   --diff-add-word-bg: var(--snice-color-success-emphasis, rgb(187 247 208 / 0.7));
   --diff-remove-word-bg: var(--snice-color-danger-emphasis, rgb(254 202 202 / 0.7));
 }
@@ -12,16 +12,16 @@
 /* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
   :host(:not([data-theme="light"])) {
-    --diff-add-bg: var(--snice-color-success-light, rgb(22 101 52 / 0.3));
-    --diff-remove-bg: var(--snice-color-danger-light, rgb(153 27 27 / 0.3));
+    --diff-add-bg: var(--snice-color-success-subtle, rgb(22 101 52 / 0.3));
+    --diff-remove-bg: var(--snice-color-danger-subtle, rgb(153 27 27 / 0.3));
     --diff-add-word-bg: var(--snice-color-success-emphasis, rgb(22 163 74 / 0.4));
     --diff-remove-word-bg: var(--snice-color-danger-emphasis, rgb(220 38 38 / 0.4));
   }
 }
 
 :host([data-theme="dark"]) {
-  --diff-add-bg: var(--snice-color-success-light, rgb(22 101 52 / 0.3));
-  --diff-remove-bg: var(--snice-color-danger-light, rgb(153 27 27 / 0.3));
+  --diff-add-bg: var(--snice-color-success-subtle, rgb(22 101 52 / 0.3));
+  --diff-remove-bg: var(--snice-color-danger-subtle, rgb(153 27 27 / 0.3));
   --diff-add-word-bg: var(--snice-color-success-emphasis, rgb(22 163 74 / 0.4));
   --diff-remove-word-bg: var(--snice-color-danger-emphasis, rgb(220 38 38 / 0.4));
 }

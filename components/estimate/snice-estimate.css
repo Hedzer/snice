@@ -67,21 +67,21 @@
   --estimate-qr-size: 5rem;
 
   /* Professional variant */
-  --estimate-pro-header-bg-start: var(--snice-color-surface-dark, rgb(15 23 42));
-  --estimate-pro-header-bg-end: var(--snice-color-surface-dark-alt, rgb(30 41 59));
+  --estimate-pro-header-bg-start: var(--snice-color-surface, rgb(15 23 42));
+  --estimate-pro-header-bg-end: var(--snice-color-surface-alt, rgb(30 41 59));
   --estimate-pro-header-text: var(--snice-color-text-inverse, rgb(250 250 250));
   --estimate-pro-meta-text: var(--snice-color-text-muted, rgb(148 163 184));
   --estimate-pro-badge-border: var(--snice-color-border-inverse, rgb(255 255 255 / 0.2));
   --estimate-pro-status-draft-bg: var(--snice-color-surface-inverse-alpha, rgb(255 255 255 / 0.1));
   --estimate-pro-status-draft-text: var(--snice-color-text-muted-light, rgb(203 213 225));
   --estimate-pro-status-sent-bg: var(--snice-color-primary-alpha-dark, rgb(59 130 246 / 0.2));
-  --estimate-pro-status-sent-text: var(--snice-color-primary-light, rgb(147 197 253));
+  --estimate-pro-status-sent-text: var(--snice-color-primary-subtle, rgb(147 197 253));
   --estimate-pro-status-accepted-bg: var(--snice-color-success-alpha-dark, rgb(22 163 74 / 0.2));
-  --estimate-pro-status-accepted-text: var(--snice-color-success-light, rgb(134 239 172));
+  --estimate-pro-status-accepted-text: var(--snice-color-success-subtle, rgb(134 239 172));
   --estimate-pro-status-declined-bg: var(--snice-color-danger-alpha-dark, rgb(220 38 38 / 0.2));
-  --estimate-pro-status-declined-text: var(--snice-color-danger-light, rgb(252 165 165));
+  --estimate-pro-status-declined-text: var(--snice-color-danger-subtle, rgb(252 165 165));
   --estimate-pro-status-expired-bg: var(--snice-color-warning-alpha-dark, rgb(245 158 11 / 0.2));
-  --estimate-pro-status-expired-text: var(--snice-color-warning-light, rgb(253 224 71));
+  --estimate-pro-status-expired-text: var(--snice-color-warning-subtle, rgb(253 224 71));
   --estimate-pro-accept-bg-start: var(--snice-color-success, rgb(22 163 74));
   --estimate-pro-accept-bg-end: var(--snice-color-success-hover, rgb(21 128 61));
 

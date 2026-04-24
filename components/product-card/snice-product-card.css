@@ -576,7 +576,7 @@
   font-size: 0.75rem;
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--pc-success);
-  background: var(--snice-color-success-light, rgb(22 163 74 / 0.1));
+  background: var(--snice-color-success-subtle, rgb(22 163 74 / 0.1));
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-2xs, 0.25rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
 }

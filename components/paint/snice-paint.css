@@ -72,7 +72,7 @@
 }
 
 .paint-btn.danger:hover {
-  background: var(--snice-color-danger-light, rgb(220 38 38 / 0.1));
+  background: var(--snice-color-danger-subtle, rgb(220 38 38 / 0.1));
 }
 
 .paint-swatch {
