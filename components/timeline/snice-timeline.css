@@ -29,7 +29,8 @@
 .timeline--vertical .timeline-item::before {
   content: '';
   position: absolute;
-  left: 0.625rem;
+  /* Center the 2px line on the 24px (1.5rem) marker: (24-2)/2 = 11px = 0.6875rem */
+  left: 0.6875rem;
   top: var(--snice-spacing-xl, 2rem);
   bottom: var(--snice-spacing-xs, -0.5rem);
   width: 2px;
@@ -61,7 +62,7 @@
 
 .timeline--vertical.timeline--right .timeline-item::before {
   left: auto;
-  right: 0.625rem;
+  right: 0.6875rem;
 }
 
 .timeline--vertical.timeline--right .timeline-item__content {
@@ -94,12 +95,12 @@
 }
 
 .timeline--vertical.timeline--alternate .timeline-item::before {
-  left: calc(-1 * var(--snice-spacing-2xl, 2.5rem) + 0.625rem);
+  left: calc(-1 * var(--snice-spacing-2xl, 2.5rem) + 0.6875rem);
 }
 
 .timeline--vertical.timeline--alternate .timeline-item:nth-child(even)::before {
   left: auto;
-  right: calc(-1 * var(--snice-spacing-2xl, 2.5rem) + 0.625rem);
+  right: calc(-1 * var(--snice-spacing-2xl, 2.5rem) + 0.6875rem);
 }
 
 .timeline--vertical.timeline--alternate .timeline-item:nth-child(even) .timeline-item__content {
@@ -127,7 +128,8 @@
   position: absolute;
   left: var(--snice-spacing-xl, 2rem);
   right: calc(-1 * var(--snice-spacing-xl, 2rem));
-  top: 0.625rem;
+  /* Center 2px line on 24px marker: (24-2)/2 = 11px = 0.6875rem */
+  top: 0.6875rem;
   height: 2px;
   background: var(--snice-color-border, rgb(226 226 226));
 }
