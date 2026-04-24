@@ -104,6 +104,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <div class="swatch" style="border: 2px solid var(--snice-color-border);">Border<code>--snice-color-border</code></div>
   <div class="swatch" style="border: 2px solid var(--snice-color-border-hover);">Border Hover<code>--snice-color-border-hover</code></div>
   <div class="swatch" style="border: 2px solid var(--snice-color-border-focus);">Border Focus<code>--snice-color-border-focus</code></div>
+  <div class="swatch" style="border: 2px solid var(--snice-color-border-subtle);">Border Subtle<code>--snice-color-border-subtle</code></div>
+</div>
+
+<h2>Interaction Overlays</h2>
+<p style="font-size:0.75rem; color: var(--snice-color-text-secondary); margin: 0 0 0.5rem;">Alpha tints — layer over surface, don't swap color. Backgrounds below are striped so you can see the overlay composites correctly.</p>
+<div class="interactive-grid">
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-hover);">Hover Overlay<code>--snice-color-overlay-hover</code></div>
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-selected);">Selected Overlay<code>--snice-color-overlay-selected</code></div>
+  <div class="interactive-swatch" style="background-image: repeating-linear-gradient(45deg, var(--snice-color-background) 0 8px, var(--snice-color-background-secondary) 8px 16px); background-color: var(--snice-color-overlay-selected-hover);">Selected+Hover<code>--snice-color-overlay-selected-hover</code></div>
 </div>
 
 <h2>Gray Scale (50-950)</h2>

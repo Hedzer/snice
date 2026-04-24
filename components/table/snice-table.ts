@@ -338,6 +338,7 @@ export class SniceTable extends HTMLElement {
         border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
         text-align: left;
+        vertical-align: middle;
         color: var(--snice-color-text, rgb(23 23 23));
         overflow: hidden;
         text-overflow: ellipsis;
@@ -386,15 +387,10 @@ export class SniceTable extends HTMLElement {
         vertical-align: middle;
       }
 
-      /* Header — meta-typography hierarchy: smaller, tracked, secondary
-       * color so column labels read as metadata, not body content. */
       th {
         background-color: var(--snice-color-background-secondary, rgb(245 245 245));
-        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        color: var(--snice-color-text, rgb(23 23 23));
         font-weight: var(--snice-font-weight-semibold, 600);
-        font-size: var(--snice-font-size-xs, 0.75rem);
-        letter-spacing: var(--snice-tracking-wide, 0.03em);
-        text-transform: uppercase;
         border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
       }
 
@@ -1885,9 +1881,12 @@ export class SniceTable extends HTMLElement {
     const tagName = this.getCellTagName(column.type);
     const el = document.createElement(tagName) as any;
 
-    // Base attributes
+    // Base attributes. Only force `align` if the column definition specifies
+    // one; otherwise let the cell pick its type-appropriate default (numbers
+    // right, rating/boolean center, text left). Hard-coding 'left' here fought
+    // the cell's own type-based text-align and made number values drift.
     el.setAttribute('type', column.type || 'text');
-    el.setAttribute('align', column.align || 'left');
+    if (column.align) el.setAttribute('align', column.align);
     el.setAttribute('in-table', 'true');
 
     // Value: serialize objects to JSON, primitives as string

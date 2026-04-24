@@ -50,7 +50,12 @@ CSS-only design token system. No component -- just import the stylesheet.
 --snice-color-border
 --snice-color-border-hover
 --snice-color-border-focus
---snice-color-border-subtle         /* hairline edge for elevated surfaces — nearly invisible in light, more visible in dark */
+--snice-color-border-subtle         /* alpha-based border (hsl(0 0% 0%/.12) light, hsl(0 0% 100%/.12) dark) — composites over tinted surfaces */
+
+/* Interaction overlays — layer on top of bg, don't swap colors */
+--snice-color-overlay-hover          /* hsl(0 0% 0% / 0.04) — hover tint over any surface */
+--snice-color-overlay-selected       /* hsl(primary / 0.08) — selected row/item tint */
+--snice-color-overlay-selected-hover /* hsl(primary / 0.12) — selected + hovered */
 ```
 
 ### Spacing

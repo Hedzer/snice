@@ -1,16 +1,13 @@
-/* Header Container — smaller, tracked, secondary-colored type establishes
- * a clear meta hierarchy between column labels and cell content (MUI-style). */
+/* Header Container */
 .header-container {
   display: flex;
   align-items: center;
   background: var(--snice-color-background-secondary, rgb(245 245 245));
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   font-weight: var(--snice-font-weight-semibold, 600);
-  font-size: var(--snice-font-size-xs, 0.75rem);
-  letter-spacing: var(--snice-tracking-wide, 0.03em);
-  text-transform: uppercase;
+  font-size: var(--snice-font-size-sm, 0.875rem);
   line-height: var(--snice-line-height-dense, 1.25);
-  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 /* Cells Container */
