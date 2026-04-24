@@ -76,7 +76,7 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
               aria-label="${`${i + 1} of ${this.max}`}"
               @click=${(e: MouseEvent) => this.handleClick(i, e)}>
           <span class="star-empty">${this.icon}</span>
-          <span class="star-full" style="width: ${fill}%">${this.icon}</span>
+          <span class="star-full" style="clip-path: inset(0 ${100 - fill}% 0 0)">${this.icon}</span>
         </span>
       `;
     });

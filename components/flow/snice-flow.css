@@ -75,9 +75,10 @@
   dominant-baseline: central;
 }
 
-/* Edge arrow marker */
+/* Edge arrow marker — a brighter fill than the edge stroke so the triangle
+ * reads as a distinct arrowhead rather than a widening of the line. */
 .flow__arrow {
-  fill: var(--snice-color-border, rgb(226 226 226));
+  fill: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 /* Dragging edge preview */

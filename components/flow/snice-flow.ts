@@ -227,8 +227,8 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
     marker.setAttribute('viewBox', '0 0 10 10');
     marker.setAttribute('refX', '10');
     marker.setAttribute('refY', '5');
-    marker.setAttribute('markerWidth', '8');
-    marker.setAttribute('markerHeight', '8');
+    marker.setAttribute('markerWidth', '7');
+    marker.setAttribute('markerHeight', '7');
     marker.setAttribute('orient', 'auto-start-reverse');
     const path = document.createElementNS(ns, 'path');
     path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
@@ -303,6 +303,12 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
   // --- Port positions ---
 
   private getPortPosition(nodeId: string, portId: string, isOutput: boolean): PortPosition {
+    const measured = this.portCenters.get(this.portKey(nodeId, portId, isOutput));
+    if (measured) return measured;
+
+    // Fallback: node hasn't rendered yet (first paint before measurement).
+    // Use the canvas-space estimate so the edge has something reasonable to
+    // draw; the next rebuild will swap in the measured position.
     const node = this.nodes.find(n => n.id === nodeId);
     if (!node) return { x: 0, y: 0 };
 
@@ -543,10 +549,48 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
     this.ensureSvgSetup();
     this.attachListeners();
     this.rebuildTransform();
-    this.rebuildEdges();
+    // Nodes must render before edges so port dot centers can be measured from
+    // the DOM. The flex layout inside a node gives each port its real pixel
+    // position; computing from node.height assumptions drifts the endpoints.
     this.rebuildNodes();
+    this.measurePortCenters();
+    this.rebuildEdges();
     this.updateGrid();
     this.updateMinimap();
+  }
+
+  private portCenters: Map<string, PortPosition> = new Map();
+
+  private portKey(nodeId: string, portId: string, isOutput: boolean): string {
+    return `${nodeId}\u0001${portId}\u0001${isOutput ? 'o' : 'i'}`;
+  }
+
+  private measurePortCenters() {
+    this.portCenters.clear();
+    const container = this.nodesContainerEl;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const dots = container.querySelectorAll<HTMLElement>('.flow__port');
+    for (const port of dots) {
+      const nodeId = port.getAttribute('data-node-id');
+      const portId = port.getAttribute('data-port-id');
+      const portType = port.getAttribute('data-port-type');
+      if (!nodeId || !portId || !portType) continue;
+      const dot = port.querySelector<HTMLElement>('.flow__port-dot');
+      if (!dot) continue;
+      const rect = dot.getBoundingClientRect();
+      // Anchor a few screen-pixels outside the dot's outer edge so neither
+      // the dot's border nor its 1px box-shadow ring clips the arrow tip.
+      // Output anchors on the right, input on the left; vertical center used
+      // for both.
+      const isOutput = portType === 'output';
+      const gap = 4;
+      const sx = (isOutput ? rect.right + gap : rect.left - gap) - containerRect.left - this.panX;
+      const sy = rect.top + rect.height / 2 - containerRect.top - this.panY;
+      const x = sx / this.zoomScale;
+      const y = sy / this.zoomScale;
+      this.portCenters.set(this.portKey(nodeId, portId, isOutput), { x, y });
+    }
   }
 
   private rebuildTransform() {
@@ -594,8 +638,6 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
       const h = node.height || DEFAULT_NODE_HEIGHT;
       const x = node.x * this.zoomScale + this.panX;
       const y = node.y * this.zoomScale + this.panY;
-      const scaledW = w * this.zoomScale;
-      const scaledH = h * this.zoomScale;
 
       const cls = ['flow__node'];
       if (node.id === this.selectedNodeId) cls.push('flow__node--selected');
@@ -603,7 +645,10 @@ export class SniceFlow extends HTMLElement implements SniceFlowElement {
 
       const headerBg = node.color ? `background:${node.color};color:white;` : '';
 
-      nodesHtml += `<div class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${scaledW}px;transform-origin:top left;transform:scale(1);">`;
+      // Scale the whole node uniformly so port positions match the edges'
+      // canvas-space endpoints. Width+height stay in canvas units; CSS scale
+      // maps them to screen pixels.
+      nodesHtml += `<div class="${cls.join(' ')}" data-node-id="${escapeAttr(node.id)}" style="left:${x}px;top:${y}px;width:${w}px;transform-origin:top left;transform:scale(${this.zoomScale});">`;
       nodesHtml += `<div class="flow__node-header" style="${headerBg}">`;
       if (node.type) nodesHtml += `<span class="flow__node-type">${escapeHtml(node.type)}</span>`;
       nodesHtml += `<span>${escapeHtml(node.label || node.id)}</span>`;
