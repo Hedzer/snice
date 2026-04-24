@@ -155,6 +155,10 @@
   outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: 2px;
 }
+.modal__close svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
 
 .modal__body {
   flex: 1;

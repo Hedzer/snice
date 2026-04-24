@@ -88,13 +88,18 @@
 
 /* Sort Indicator */
 .sort-indicator {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.75rem; /* 12px */
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   transition: color 0.15s ease, transform 0.15s ease;
   line-height: 1;
   min-width: 0.75rem; /* 12px */
-  text-align: center;
+}
+.sort-indicator svg {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .sort-indicator--neutral {

@@ -1,5 +1,11 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
+import { element, property, watch, ready, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { CHEVRON_UP, CHEVRON_DOWN } from '../icons';
 import cssContent from './snice-header.css?inline';
+
+// Neutral sort indicator — stacked double-chevron (up+down) so unsorted
+// columns still show the affordance. Inline to avoid expanding the icons
+// module for this one use.
+const SORT_NEUTRAL = /*html*/`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>`;
 import type {
   SniceHeaderElement,
   ColumnDefinition,
@@ -162,18 +168,14 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
   }
 
   private renderSortIndicator(direction: SortDirection) {
-    const ascIcon = '▲';
-    const descIcon = '▼';
-    const neutralIcon = '⇅';
-
-    let icon = neutralIcon;
+    let icon = SORT_NEUTRAL;
     let state = 'neutral';
 
     if (direction === 'asc') {
-      icon = ascIcon;
+      icon = CHEVRON_UP;
       state = 'ascending';
     } else if (direction === 'desc') {
-      icon = descIcon;
+      icon = CHEVRON_DOWN;
       state = 'descending';
     }
 
@@ -182,7 +184,7 @@ export class SniceHeader extends HTMLElement implements SniceHeaderElement {
         class="sort-indicator sort-indicator--${state}"
         part="sort-indicator"
         aria-hidden="true"
-      >${icon}</span>
+      >${unsafeHTML(icon)}</span>
     `;
   }
 

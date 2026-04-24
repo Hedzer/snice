@@ -1,4 +1,5 @@
-import { element, property, query, watch, ready, dispose, dispatch, render, styles, html, css } from 'snice';
+import { element, property, query, watch, ready, dispose, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { X_MARK } from '../icons';
 import cssContent from './snice-modal.css?inline';
 import type { ModalSize, SniceModalElement } from './snice-modal.types';
 
@@ -73,11 +74,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
                 <button class="modal__close"
                         part="close"
                         aria-label="Close modal"
-                        @click=${this.handleCloseClick}>
-                  <svg viewBox="0 0 24 24" width="20" height="20">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-                  </svg>
-                </button>
+                        @click=${this.handleCloseClick}>${unsafeHTML(X_MARK)}</button>
               </if>
             </div>
           </if>

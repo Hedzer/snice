@@ -1,4 +1,5 @@
 import { element, property, watch, ready, query, render, styles, html, css, unsafeHTML } from 'snice';
+import { ARROW_TRENDING_UP, ARROW_TRENDING_DOWN, ARROW_RIGHT } from '../icons';
 import cssContent from './snice-cell-percentage.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 
@@ -118,12 +119,9 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
       return '';
     }
 
-    if (trend > 0) {
-      return '↑';
-    } else if (trend < 0) {
-      return '↓';
-    }
-    return '→';
+    if (trend > 0) return ARROW_TRENDING_UP;
+    if (trend < 0) return ARROW_TRENDING_DOWN;
+    return ARROW_RIGHT;
   }
 
   private getPercentageStyles(): string {

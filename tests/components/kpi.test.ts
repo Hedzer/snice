@@ -70,13 +70,15 @@ describe('snice-kpi', () => {
       expect(trend).toBeTruthy();
     });
 
+    // Trend icons are now inline SVGs (Heroicons arrow-trending-up/down +
+    // arrow-right). Assert svg presence rather than text glyphs.
     it('should show up sentiment icon', async () => {
       kpi = await createComponent<SniceKpiElement>('snice-kpi', {
         sentiment: 'up'
       });
       await wait(10);
       const icon = queryShadow(kpi, '.kpi__trend-icon');
-      expect(icon?.textContent).toBe('↑');
+      expect(icon?.querySelector('svg')).toBeTruthy();
     });
 
     it('should show down sentiment icon', async () => {
@@ -85,7 +87,7 @@ describe('snice-kpi', () => {
       });
       await wait(10);
       const icon = queryShadow(kpi, '.kpi__trend-icon');
-      expect(icon?.textContent).toBe('↓');
+      expect(icon?.querySelector('svg')).toBeTruthy();
     });
 
     it('should show neutral sentiment icon', async () => {
@@ -94,7 +96,7 @@ describe('snice-kpi', () => {
       });
       await wait(10);
       const icon = queryShadow(kpi, '.kpi__trend-icon');
-      expect(icon?.textContent).toBe('→');
+      expect(icon?.querySelector('svg')).toBeTruthy();
     });
 
     it('should apply up sentiment class', async () => {

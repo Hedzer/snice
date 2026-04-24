@@ -32,6 +32,13 @@
   border-radius: 0.25rem;
   transition: background-color 0.2s ease;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.json-toggle svg {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .json-toggle:hover {

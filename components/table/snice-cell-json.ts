@@ -1,4 +1,5 @@
 import { element, property, watch, ready, render, styles, html, css, unsafeHTML, on } from 'snice';
+import { CHEVRON_RIGHT, CHEVRON_DOWN } from '../icons';
 import cssContent from './snice-cell-json.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 
@@ -41,7 +42,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
     }
 
     const toggleHTML = this.showToggle
-      ? `<button class="json-toggle" part="toggle" aria-label="${this.collapsed ? 'Expand' : 'Collapse'}">${this.collapsed ? '▶' : '▼'}</button>`
+      ? `<button class="json-toggle" part="toggle" aria-label="${this.collapsed ? 'Expand' : 'Collapse'}">${this.collapsed ? CHEVRON_RIGHT : CHEVRON_DOWN}</button>`
       : '';
 
     const jsonHTML = this.collapsed

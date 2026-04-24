@@ -1,4 +1,5 @@
-import { element, property, query, on, watch, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import { element, property, query, on, watch, ready, dispose, render, styles, html, css as cssTag, unsafeHTML } from 'snice';
+import { X_MARK } from '../icons';
 import cssContent from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
 
@@ -86,11 +87,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
               <slot name="title"></slot>
             </h2>
             <if ${!this.persistent}>
-              <button class="drawer-close" type="button" aria-label="Close" part="close">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
+              <button class="drawer-close" type="button" aria-label="Close" part="close">${unsafeHTML(X_MARK)}</button>
             </if>
           </div>
         </if>

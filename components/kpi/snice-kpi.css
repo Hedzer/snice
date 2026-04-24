@@ -72,9 +72,14 @@
 }
 
 .kpi__trend-icon {
-  font-size: var(--snice-font-size-lg, 1.125rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  font-weight: var(--snice-font-weight-bold, 700);
+}
+.kpi__trend-icon svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .kpi__trend-value {

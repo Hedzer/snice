@@ -1,4 +1,5 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, render, styles, html, css, unsafeHTML } from 'snice';
+import { ARROW_TRENDING_UP, ARROW_TRENDING_DOWN, ARROW_RIGHT } from '../icons';
 import cssContent from './snice-kpi.css?inline';
 import type { KpiSentiment, KpiSize, SniceKpiElement } from './snice-kpi.types';
 import '../sparkline/snice-sparkline';
@@ -36,16 +37,11 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
 
   private getTrendIcon(): string {
     if (!this.sentiment) return '';
-
     switch (this.sentiment) {
-      case 'up':
-        return '↑';
-      case 'down':
-        return '↓';
-      case 'neutral':
-        return '→';
-      default:
-        return '';
+      case 'up':      return ARROW_TRENDING_UP;
+      case 'down':    return ARROW_TRENDING_DOWN;
+      case 'neutral': return ARROW_RIGHT;
+      default:        return '';
     }
   }
 
@@ -92,7 +88,7 @@ export class SniceKpi extends HTMLElement implements SniceKpiElement {
           <if ${hasTrend}>
             <div class="kpi__trend kpi__trend--${this.sentiment || 'neutral'}" part="trend">
               <if ${this.sentiment}>
-                <span class="kpi__trend-icon" part="trend-icon">${this.getTrendIcon()}</span>
+                <span class="kpi__trend-icon" part="trend-icon" aria-hidden="true">${unsafeHTML(this.getTrendIcon())}</span>
               </if>
               <if ${this.trendValue !== undefined}>
                 <span class="kpi__trend-value" part="trend-value">${this.trendValue}</span>
