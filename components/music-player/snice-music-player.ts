@@ -211,8 +211,16 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
             <if ${this.showTrackInfo}>
               <div class="player-track-info">
-                <div class="player-track-title">${currentTrack?.title || 'No track loaded'}</div>
-                <if ${currentTrack?.artist}>
+                <if ${currentTrack?.trackUrl}>
+                  <a class="player-track-title is-linked" href="${currentTrack?.trackUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.title || 'No track loaded'}</a>
+                </if>
+                <if ${!currentTrack?.trackUrl}>
+                  <div class="player-track-title">${currentTrack?.title || 'No track loaded'}</div>
+                </if>
+                <if ${currentTrack?.artist && currentTrack?.artistUrl}>
+                  <a class="player-track-artist is-linked" href="${currentTrack?.artistUrl}" target="_blank" rel="noopener noreferrer">${currentTrack?.artist}</a>
+                </if>
+                <if ${currentTrack?.artist && !currentTrack?.artistUrl}>
                   <div class="player-track-artist">${currentTrack?.artist}</div>
                 </if>
                 <if ${currentTrack?.album}>

@@ -4997,7 +4997,7 @@ md.addEventListener('link-click',
     <!-- ════════════════════════════════════════ -->
     <div class="comp-section" data-category="Media" data-cat-index="6" data-cat-order="6">
       <h3>Music Player</h3>
-      <p class="comp-desc">Audio playback with playlist</p>
+      <p class="comp-desc">Audio playback with playlist. Tracks: <a href="https://open.spotify.com/artist/1qWHsnGYWrbZow625eJ6AT?si=E9Q8g-E0RgyQYv_6k7_3BA" target="_blank" rel="noopener"><em>Piñaita</em></a> — used with permission.</p>
       <div class="comp-split">
         <div class="comp-split-demo" style="min-height:120px">
           <snice-music-player id="demo-music" show-playlist show-controls show-volume show-artwork show-track-info style="width:100%"></snice-music-player>
@@ -5014,7 +5014,7 @@ md.addEventListener('link-click',
 
 &lt;script&gt;
   player.tracks = [
-    { id: '1', title: 'Song',
+    { id: '1', title: 'Track',
       artist: 'Artist', src: 'url' }
   ];
 &lt;/script&gt;</snice-code-block>
@@ -5023,14 +5023,14 @@ md.addEventListener('link-click',
     </div>
 
 <script>
-// Initialize music player
     customElements.whenDefined('snice-music-player').then(() => {
       const player = document.getElementById('demo-music');
       if (player) {
+        const artistUrl = 'https://open.spotify.com/artist/1qWHsnGYWrbZow625eJ6AT?si=E9Q8g-E0RgyQYv_6k7_3BA';
         player.tracks = [
-          { id: '1', title: 'Morning Vibes', artist: 'Demo Artist', src: '' },
-          { id: '2', title: 'Sunset Dreams', artist: 'Demo Artist', src: '' },
-          { id: '3', title: 'Night Owl', artist: 'Demo Artist', src: '' }
+          { id: '1', title: 'The Colors of the Market', artist: 'Piñaita', album: 'Confetti',  src: 'audio/piniata/colors-of-the-market.mp3', artwork: 'audio/piniata/confetti.png',  artistUrl },
+          { id: '2', title: 'Why',                        artist: 'Piñaita', album: 'Fireworks', src: 'audio/piniata/why.mp3',                    artwork: 'audio/piniata/fireworks.png', artistUrl },
+          { id: '3', title: 'Estas Muy Loco',             artist: 'Piñaita', album: 'Fireworks', src: 'audio/piniata/estas-muy-loco.mp3',        artwork: 'audio/piniata/fireworks.png', artistUrl },
         ];
       }
     });

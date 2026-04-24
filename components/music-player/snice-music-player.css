@@ -56,6 +56,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
 }
 
 .player-track-artist {
@@ -65,6 +66,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
+}
+
+a.player-track-title.is-linked,
+a.player-track-artist.is-linked {
+  text-decoration: none;
+  transition: color var(--snice-transition-fast, 150ms) ease;
+}
+a.player-track-title.is-linked:hover,
+a.player-track-artist.is-linked:hover {
+  color: var(--snice-color-primary, rgb(37 99 235));
+  text-decoration: underline;
 }
 
 .player-track-album {

@@ -6,6 +6,10 @@ export interface Track {
   artwork?: string;
   src: string;
   duration?: number;
+  /** Optional URL — when set, the track title becomes a link to this resource. */
+  trackUrl?: string;
+  /** Optional URL — when set, the artist name becomes a link to this resource. */
+  artistUrl?: string;
 }
 
 export type RepeatMode = 'off' | 'all' | 'one';
