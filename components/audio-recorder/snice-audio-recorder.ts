@@ -113,7 +113,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
     return html/*html*/`
       <div class="recorder-container" part="base">
         <if ${showingPlayback}>
-          <div class="recorder-status">
+          <div class="recorder-status" role="status" aria-live="polite">
             <div class="recorder-state inactive">
               <div class="recorder-state-icon" style="background: var(--snice-color-primary, rgb(37 99 235));"></div>
               <span>Playback</span>
@@ -151,7 +151,7 @@ export class SniceAudioRecorder extends HTMLElement implements SniceAudioRecorde
         </if>
 
         <if ${!showingPlayback}>
-          <div class="recorder-status">
+          <div class="recorder-status" role="status" aria-live="polite">
             <div class="recorder-state ${this.state}">
               <div class="recorder-state-icon"></div>
               <span>${this.getStateLabel()}</span>

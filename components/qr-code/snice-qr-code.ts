@@ -94,7 +94,7 @@ export class SniceQRCode extends HTMLElement implements SniceQRCodeElement {
   @render()
   render() {
     return html/*html*/`
-      <div part="base" class="qr-container"></div>
+      <div part="base" class="qr-container" role="img" aria-label="QR code: ${this.value}"></div>
     `;
   }
 

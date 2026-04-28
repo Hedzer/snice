@@ -16,6 +16,7 @@ export interface ButtonProps extends SniceBaseProps {
     download?: any;
     icon?: any;
     iconPlacement?: any;
+    justifyText?: any;
     onButtonClick?: (event: any) => void;
 }
 /**

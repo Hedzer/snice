@@ -179,7 +179,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
           </div>
         ` : ''}
         <div class="paint-canvas-wrap" part="canvas-wrap">
-          <canvas class="paint-canvas tool-${this._tool}" part="canvas"></canvas>
+          <canvas class="paint-canvas tool-${this._tool}" part="canvas" role="img" aria-label="Paint canvas"></canvas>
         </div>
       </div>
     `;
@@ -189,6 +189,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     const wrap = this.shadowRoot?.querySelector('.paint-canvas-wrap');
     this.canvas = this.shadowRoot?.querySelector('.paint-canvas') as HTMLCanvasElement | null;
     if (!this.canvas || !wrap) return;
+    if (typeof this.canvas.getContext !== 'function') return;
 
     const rect = wrap.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;

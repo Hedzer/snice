@@ -262,7 +262,9 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
           width="${this.width}"
           height="${this.height}"
           class="draw-canvas tool-${this.tool} ${this.disabled ? 'disabled' : ''}"
-          part="canvas">
+          part="canvas"
+          role="img"
+          aria-label="Drawing canvas">
         </canvas>
       </div>
     `;
@@ -272,6 +274,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.canvas = this.canvasElement || null;
 
     if (!this.canvas) return;
+    if (typeof this.canvas.getContext !== 'function') return;
 
     // Get the actual display size from the container
     const rect = this.canvas.getBoundingClientRect();

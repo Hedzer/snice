@@ -108,7 +108,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   render() {
     return html/*html*/`
       <div class="terminal-container" part="container" @click="${() => this.handleContainerClick()}">
-        <div class="terminal-output" part="output">
+        <div class="terminal-output" part="output" role="log" aria-live="polite" aria-atomic="false">
           ${this.lines.map(line => this.renderLine(line))}
         </div>
 

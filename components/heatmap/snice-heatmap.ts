@@ -151,7 +151,7 @@ export class SniceHeatmap extends HTMLElement implements SniceHeatmapElement {
     const gridStyle = `grid-template-columns: repeat(${totalWeeks}, var(--cell-size))`;
 
     return html/*html*/`
-      <div class="heatmap" part="base">
+      <div class="heatmap" part="base" role="img" aria-label="Activity heatmap">
         <div class="heatmap__grid-area" part="grid-area">
           <if ${this.showLabels}>
             <div class="heatmap__day-labels">

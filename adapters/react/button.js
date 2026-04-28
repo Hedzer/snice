@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Button = createReactAdapter({
     tagName: 'snice-button',
-    properties: ["variant", "size", "type", "disabled", "loading", "outline", "pill", "circle", "href", "target", "download", "icon", "iconPlacement"],
+    properties: ["variant", "size", "type", "disabled", "loading", "outline", "pill", "circle", "href", "target", "download", "icon", "iconPlacement", "justifyText"],
     events: { "button-click": "onButtonClick" },
     formAssociated: false
 });
