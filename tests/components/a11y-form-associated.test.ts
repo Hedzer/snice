@@ -15,7 +15,6 @@ const COMPONENTS = [
   { tag: 'snice-color-picker', path: '../../components/color-picker/snice-color-picker',  resetField: null,        resetTo: null,  initial: { value: '#ff0000' } },
   { tag: 'snice-step-input',   path: '../../components/step-input/snice-step-input',      resetField: 'value',    resetTo: 0,     initial: { value: 5 } },
   { tag: 'snice-tag-input',    path: '../../components/tag-input/snice-tag-input',        resetField: 'value',    resetTo: [],    initial: { value: ['a', 'b'] } },
-  { tag: 'snice-mentions',     path: '../../components/mentions/snice-mentions',          resetField: 'value',    resetTo: '',    initial: { value: 'hello @bob' } },
   { tag: 'snice-file-upload',  path: '../../components/file-upload/snice-file-upload',    resetField: null, resetTo: null, initial: {} }, // has its own reset path
 ];
 

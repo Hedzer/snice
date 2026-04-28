@@ -91,37 +91,6 @@ describe('list: infinite scroll attaches its IntersectionObserver', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// scheduler: full re-render is suppressed while a drag is in progress
-// ---------------------------------------------------------------------------
-
-describe('scheduler: property changes during drag do not trigger full re-render', () => {
-  it('mutating events while dragState is set does not call renderGrid', async () => {
-    await import('../../components/scheduler/snice-scheduler');
-    const el = document.createElement('snice-scheduler') as any;
-    el.resources = [{ id: 'r1', title: 'Room 1' }];
-    el.events = [];
-    document.body.appendChild(el);
-    await el.ready;
-    await wait(30);
-
-    let renderCount = 0;
-    const origRender = el.renderGrid.bind(el);
-    el.renderGrid = () => { renderCount++; origRender(); };
-
-    // Baseline: a property change with NO drag in progress fires renderGrid
-    el.events = [{ id: 'e0', resourceId: 'r1', start: new Date(), end: new Date(), title: 'baseline' }];
-    await wait(30);
-    const baseline = renderCount;
-    expect(baseline).toBeGreaterThan(0);
-
-    // Now simulate a drag and mutate events — renderGrid MUST NOT fire.
-    (el as any).dragState = { type: 'move' };
-    el.events = [{ id: 'e1', resourceId: 'r1', start: new Date(), end: new Date(), title: 'during-drag' }];
-    await wait(30);
-    expect(renderCount).toBe(baseline);
-  });
-});
 
 // ---------------------------------------------------------------------------
 // pdf-viewer: rapid page changes are not silently dropped

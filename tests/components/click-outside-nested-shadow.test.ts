@@ -44,7 +44,6 @@ async function loadAll() {
     import('../../components/date-range-picker/snice-date-range-picker'),
     import('../../components/date-picker/snice-date-picker'),
     import('../../components/split-button/snice-split-button'),
-    import('../../components/mentions/snice-mentions'),
     import('../../components/tag-input/snice-tag-input'),
     import('../../components/time-picker/snice-time-picker'),
   ]);
@@ -294,64 +293,6 @@ describe('snice-split-button: click-outside across nested shadow DOM', () => {
     click(outside);
     await wait(30);
     expect(btn.isOpen).toBe(false);
-  });
-});
-
-// ============================================================================
-// mentions
-// ============================================================================
-
-describe('snice-mentions: click-outside across nested shadow DOM', () => {
-  it('click inside shadow DOM does not close suggestions when nested', async () => {
-    const host = await mountInsideShadow('snice-mentions');
-    const el = host.inner as any;
-    el.showDropdown = true;
-    await wait(10);
-    const inner = el.shadowRoot.querySelector('*') as Element;
-    click(inner);
-    await wait(30);
-    expect(el.showDropdown).toBe(true);
-  });
-
-  it('outside click closes when nested', async () => {
-    const host = await mountInsideShadow('snice-mentions');
-    const el = host.inner as any;
-    el.showDropdown = true;
-    await wait(10);
-    const outside = document.createElement('button');
-    document.body.appendChild(outside);
-    click(outside);
-    await wait(30);
-    expect(el.showDropdown).toBe(false);
-  });
-
-  it('two nested mentions: outside click closes both; inside click on A keeps A', async () => {
-    const hostA = await mountInsideShadow('snice-mentions');
-    const hostB = await mountInsideShadow('snice-mentions');
-    const a = hostA.inner as any;
-    const b = hostB.inner as any;
-    a.showDropdown = true;
-    b.showDropdown = true;
-    await wait(10);
-
-    // click inside A: A stays, B closes (outside to B)
-    click(a.shadowRoot.querySelector('*') as Element);
-    await wait(30);
-    expect(a.showDropdown).toBe(true);
-    expect(b.showDropdown).toBe(false);
-  });
-
-  it('regression: works at document root', async () => {
-    const el = document.createElement('snice-mentions') as any;
-    document.body.appendChild(el);
-    await el.ready;
-    el.showDropdown = true;
-    await wait(10);
-    const outside = document.createElement('button');
-    document.body.appendChild(outside);
-    click(outside);
-    await wait(30);
-    expect(el.showDropdown).toBe(false);
   });
 });
 

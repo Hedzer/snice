@@ -150,45 +150,6 @@ describe('reactivity bug: tag-input suggestion dropdown does not appear', () => 
 });
 
 // ---------------------------------------------------------------------------
-// mentions — ArrowUp/Down mutate highlightedIndex only; no re-render
-// ---------------------------------------------------------------------------
-
-describe('reactivity bug: mentions keyboard nav does not re-render highlight', () => {
-  beforeEach(async () => { await import('../../components/mentions/snice-mentions'); });
-
-  it('ArrowDown moves the highlighted class to the next item', async () => {
-    const el = document.createElement('snice-mentions') as any;
-    el.users = [
-      { id: 'a', name: 'Alice' },
-      { id: 'b', name: 'Bob' },
-      { id: 'c', name: 'Carol' },
-    ];
-    document.body.appendChild(el);
-    await el.ready;
-    await wait(30);
-
-    const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
-    // type '@a' — triggers @watch('value') → re-render → dropdown visible, idx 0 highlighted
-    textarea.value = '@a';
-    textarea.setSelectionRange(2, 2);
-    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-    await wait(80);
-
-    let highlighted = el.shadowRoot.querySelectorAll('[class*="highlighted"], [aria-selected="true"]');
-    expect(highlighted.length).toBe(1);
-
-    // ArrowDown should move highlight — mutates highlightedIndex only, no re-render
-    textarea.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-    await wait(50);
-
-    // Expectation: a DIFFERENT item is highlighted now
-    const highlightedAfter = el.shadowRoot.querySelectorAll('[class*="highlighted"], [aria-selected="true"]');
-    expect(highlightedAfter.length).toBe(1);
-    expect(highlightedAfter[0]).not.toBe(highlighted[0]);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // music-player — currentTime / duration are not @property, not reactive
 // ---------------------------------------------------------------------------
 

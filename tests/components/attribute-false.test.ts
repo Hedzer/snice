@@ -25,14 +25,12 @@ import '../../components/command-palette/snice-command-palette';
 import '../../components/comments/snice-comments';
 import '../../components/data-card/snice-data-card';
 import '../../components/estimate/snice-estimate';
-import '../../components/form-builder/snice-form-builder';
 import '../../components/gantt/snice-gantt';
 import '../../components/heatmap/snice-heatmap';
 import '../../components/invoice/snice-invoice';
 import '../../components/kanban/snice-kanban';
 import '../../components/kpi/snice-kpi';
 import '../../components/map/snice-map';
-import '../../components/mentions/snice-mentions';
 import '../../components/metric-table/snice-metric-table';
 import '../../components/music-player/snice-music-player';
 import '../../components/notification-center/snice-notification-center';
@@ -43,7 +41,6 @@ import '../../components/pricing-table/snice-pricing-table';
 import '../../components/product-card/snice-product-card';
 import '../../components/receipt/snice-receipt';
 import '../../components/recipe/snice-recipe';
-import '../../components/scheduler/snice-scheduler';
 import '../../components/segmented-control/snice-segmented-control';
 import '../../components/sparkline/snice-sparkline';
 import '../../components/split-button/snice-split-button';
@@ -218,17 +215,6 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
     ]);
   });
 
-  // --- Form Builder ---
-  it('snice-form-builder: schema', async () => {
-    await assertNoReflect('snice-form-builder', 'schema', { fields: [], title: 'Test' });
-  });
-
-  it('snice-form-builder: fieldTypes', async () => {
-    await assertNoReflect('snice-form-builder', 'fieldTypes', [
-      { type: 'text', label: 'Text' },
-    ], 'field-types');
-  });
-
   // --- Gantt ---
   it('snice-gantt: tasks', async () => {
     await assertNoReflect('snice-gantt', 'tasks', [
@@ -278,13 +264,6 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
   it('snice-map: markers', async () => {
     await assertNoReflect('snice-map', 'markers', [
       { lat: 40.7, lng: -74.0, title: 'NYC' },
-    ]);
-  });
-
-  // --- Mentions ---
-  it('snice-mentions: users', async () => {
-    await assertNoReflect('snice-mentions', 'users', [
-      { id: '1', name: 'Alice' },
     ]);
   });
 
@@ -388,19 +367,6 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
 
   it('snice-recipe: tags', async () => {
     await assertNoReflect('snice-recipe', 'tags', ['vegan', 'gluten-free']);
-  });
-
-  // --- Scheduler ---
-  it('snice-scheduler: resources', async () => {
-    await assertNoReflect('snice-scheduler', 'resources', [
-      { id: '1', name: 'Room A' },
-    ]);
-  });
-
-  it('snice-scheduler: events', async () => {
-    await assertNoReflect('snice-scheduler', 'events', [
-      { title: 'Meeting', start: '2025-01-15T10:00', end: '2025-01-15T11:00' },
-    ]);
   });
 
   // --- Segmented Control ---

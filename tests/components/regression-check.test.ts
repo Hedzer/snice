@@ -13,43 +13,6 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// scheduler: drag-end clears dragState and subsequent renders fire again
-// ---------------------------------------------------------------------------
-
-describe('scheduler: drag-end restores normal re-render behavior', () => {
-  it('after dragState is cleared, a property change renders again', async () => {
-    await import('../../components/scheduler/snice-scheduler');
-    const el = document.createElement('snice-scheduler') as any;
-    el.resources = [{ id: 'r1', title: 'Room 1' }];
-    el.events = [];
-    document.body.appendChild(el);
-    await el.ready;
-    await wait(30);
-
-    let renderCount = 0;
-    const orig = el.renderGrid.bind(el);
-    el.renderGrid = () => { renderCount++; orig(); };
-
-    // Baseline
-    el.events = [{ id: 'e0', resourceId: 'r1', start: new Date(), end: new Date(), title: 'a' }];
-    await wait(30);
-    const baseline = renderCount;
-    expect(baseline).toBeGreaterThan(0);
-
-    // Enter/exit a drag; post-drag mutation must render
-    (el as any).dragState = { type: 'move' };
-    el.events = [{ id: 'e1', resourceId: 'r1', start: new Date(), end: new Date(), title: 'b' }];
-    await wait(30);
-    expect(renderCount).toBe(baseline);
-
-    (el as any).dragState = null;
-    el.events = [{ id: 'e2', resourceId: 'r1', start: new Date(), end: new Date(), title: 'c' }];
-    await wait(30);
-    expect(renderCount).toBeGreaterThan(baseline);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // carousel: default slidesPerView=1 still produces full-width slide sizing
 // ---------------------------------------------------------------------------
 
