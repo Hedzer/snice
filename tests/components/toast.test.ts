@@ -140,18 +140,20 @@ describe('snice-toast', () => {
     expect(toastEl).toBeTruthy();
   });
 
-  it('should have role="alert"', async () => {
+  it('info/success use role="status" + aria-live="polite"', async () => {
     toast = await createComponent<SniceToastElement>('snice-toast');
+
+    const toastEl = queryShadow(toast as HTMLElement, '.toast');
+    expect(toastEl?.getAttribute('role')).toBe('status');
+    expect(toastEl?.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('error/warning use role="alert" + aria-live="assertive"', async () => {
+    toast = await createComponent<SniceToastElement>('snice-toast', { type: 'error' } as any);
 
     const toastEl = queryShadow(toast as HTMLElement, '.toast');
     expect(toastEl?.getAttribute('role')).toBe('alert');
-  });
-
-  it('should have aria-live="polite"', async () => {
-    toast = await createComponent<SniceToastElement>('snice-toast');
-
-    const toastEl = queryShadow(toast as HTMLElement, '.toast');
-    expect(toastEl?.getAttribute('aria-live')).toBe('polite');
+    expect(toastEl?.getAttribute('aria-live')).toBe('assertive');
   });
 
   it('should have hide() method', async () => {

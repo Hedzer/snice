@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, html, css, query } from 'snice';
+import { element, property, render, styles, dispatch, html, css, query, dispose } from 'snice';
 import type { TimerMode, SniceTimerElement } from './snice-timer.types';
 import timerStyles from './snice-timer.css?inline';
 
@@ -114,6 +114,15 @@ export class SniceTimer extends HTMLElement implements SniceTimerElement {
     }
 
     this.emitTimerStop();
+  }
+
+  @dispose()
+  cleanup(): void {
+    if (this.animationFrame !== null) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+    }
+    this.running = false;
   }
 
   reset(): void {

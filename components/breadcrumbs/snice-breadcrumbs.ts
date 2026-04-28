@@ -46,22 +46,29 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
             const isHidden = hasCollapsed && index > 0 && index < visibleItems.length - 2;
             const itemClass = `breadcrumb-item${isActive ? ' breadcrumb-item--active' : ''}${isHidden ? ' breadcrumb-item--hidden' : ''}`;
             const allIndex = allItems.indexOf(item);
+            const showLink = !!item.href && !isActive;
+            const showActiveText = !showLink && isActive;
+            const showInactiveText = !showLink && !isActive;
 
             return html/*html*/`
               <li class="${itemClass}">
-                <if ${item.href && !isActive}>
+                <if ${showLink}>
                   <a part="link" href="${item.href}"
                      class="breadcrumb-link"
                      data-index="${allIndex}"
-                     aria-current="${isActive ? 'page' : ''}"
                      tabindex="0">
                     ${this.renderItemIcon(item)}
                     ${item.label}
                   </a>
                 </if>
-                <if ${!item.href || isActive}>
-                  <span class="breadcrumb-text"
-                        aria-current="${isActive ? 'page' : ''}">
+                <if ${showActiveText}>
+                  <span class="breadcrumb-text" aria-current="page">
+                    ${this.renderItemIcon(item)}
+                    ${item.label}
+                  </span>
+                </if>
+                <if ${showInactiveText}>
+                  <span class="breadcrumb-text">
                     ${this.renderItemIcon(item)}
                     ${item.label}
                   </span>

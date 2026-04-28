@@ -318,6 +318,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
     const isOwn = this.currentUser && comment.author === this.currentUser;
     const isReplying = this.replyingTo === comment.id;
     const hasLikes = (comment.likes || 0) > 0;
+    const hasReplies = !!(comment.replies && comment.replies.length > 0);
 
     return html/*html*/`
       <div class="comment" data-id="${comment.id}">
@@ -380,7 +381,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
             </div>
           </if>
 
-          <if ${comment.replies && comment.replies.length > 0}>
+          <if ${hasReplies}>
             <div class="comment__replies">
               ${(comment.replies || []).map(reply => this.renderComment(reply, depth + 1))}
             </div>

@@ -71,7 +71,9 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
     const offset = index * this.itemHeight;
     this._scrollTop = offset;
-    this.scrollTop = offset;
+    if (this.scrollerElement) {
+      this.scrollerElement.scrollTop = offset;
+    }
     this._scrollTick++;
   }
 
@@ -95,31 +97,35 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   }
 
   private handleScroll = () => {
-    this._scrollTop = this.scrollTop;
-    this.updateVisibleRange();
-    this._scrollTick++;
+    if (this.scrollerElement) {
+      this._scrollTop = this.scrollerElement.scrollTop;
+      this.updateVisibleRange();
+      this._scrollTick++;
+    }
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    const containerHeight = this.offsetHeight || 400;
+    const scroller = this.scrollerElement;
+    if (!scroller) return;
+    const containerHeight = scroller.clientHeight || 400;
     const totalHeight = this._cachedItems.length * this.itemHeight;
     let next: number | null = null;
     if (e.key === 'PageDown') {
-      next = Math.min(totalHeight, this.scrollTop + containerHeight);
+      next = Math.min(totalHeight, scroller.scrollTop + containerHeight);
     } else if (e.key === 'PageUp') {
-      next = Math.max(0, this.scrollTop - containerHeight);
+      next = Math.max(0, scroller.scrollTop - containerHeight);
     } else if (e.key === 'Home') {
       next = 0;
     } else if (e.key === 'End') {
       next = totalHeight;
     } else if (e.key === 'ArrowDown') {
-      next = this.scrollTop + this.itemHeight;
+      next = scroller.scrollTop + this.itemHeight;
     } else if (e.key === 'ArrowUp') {
-      next = Math.max(0, this.scrollTop - this.itemHeight);
+      next = Math.max(0, scroller.scrollTop - this.itemHeight);
     }
     if (next !== null) {
       e.preventDefault();
-      this.scrollTop = next;
+      scroller.scrollTop = next;
     }
   };
 
@@ -177,13 +183,6 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     `;
   }
 
-  connectedCallback() {
-    this.addEventListener('scroll', this.handleScroll);
-  }
-
-  disconnectedCallback() {
-    this.removeEventListener('scroll', this.handleScroll);
-  }
 }
 
 declare global {

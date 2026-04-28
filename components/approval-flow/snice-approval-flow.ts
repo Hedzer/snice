@@ -83,6 +83,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
 
   private renderStep(step: ApprovalStep) {
     const isCurrent = step.id === this.currentStep;
+    const showActions = isCurrent && step.status === 'pending';
     const stepClasses = [
       'step',
       `step--${step.status}`,
@@ -115,7 +116,7 @@ export class SniceApprovalFlow extends HTMLElement implements SniceApprovalFlowE
           <if ${step.timestamp}>
             <div class="step__timestamp" part="timestamp">${step.timestamp}</div>
           </if>
-          <if ${isCurrent && step.status === 'pending'}>
+          <if ${showActions}>
             <div class="step__actions" part="actions">
               <button class="step__btn step__btn--approve" @click=${() => this.handleApprove(step)}>Approve</button>
               <button class="step__btn step__btn--reject" @click=${() => this.handleReject(step)}>Reject</button>

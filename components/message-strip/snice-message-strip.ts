@@ -30,7 +30,7 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <div class="${classes}" role="status" aria-live="polite" @animationend=${this.handleAnimationEnd}>
+      <div class="${classes}" role="${this.variant === 'error' || this.variant === 'danger' ? 'alert' : 'status'}" aria-live="${this.variant === 'error' || this.variant === 'danger' ? 'assertive' : 'polite'}" @animationend=${this.handleAnimationEnd}>
         <if ${hasIcon}>
           <div class="${iconClasses}" part="icon">
             <slot name="icon">

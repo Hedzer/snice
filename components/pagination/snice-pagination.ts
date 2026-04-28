@@ -62,16 +62,27 @@ export class SnicePagination extends HTMLElement {
         <div part="pages" class="pagination-pages">
           ${pages.map(page => {
             const pageClasses = ['pagination-button', 'pagination-page', page === this.current ? 'active' : ''].filter(Boolean).join(' ');
+            const isEllipsis = page === '...';
+            const isCurrentPage = !isEllipsis && page === this.current;
+            const isOtherPage = !isEllipsis && page !== this.current;
             return html/*html*/`
-            <if ${page === '...'}>
+            <if ${isEllipsis}>
               <span part="ellipsis" class="pagination-ellipsis">...</span>
             </if>
-            <if ${page !== '...'}>
+            <if ${isCurrentPage}>
               <button
                 class="${pageClasses}"
                 data-page="${page}"
                 aria-label="Page ${page}"
-                aria-current="${page === this.current ? 'page' : ''}">
+                aria-current="page">
+                ${page}
+              </button>
+            </if>
+            <if ${isOtherPage}>
+              <button
+                class="${pageClasses}"
+                data-page="${page}"
+                aria-label="Page ${page}">
                 ${page}
               </button>
             </if>

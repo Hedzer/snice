@@ -19,7 +19,7 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   @render()
   render() {
     return html/*html*/`
-      <div part="base" class="toast toast--${this.type}" role="alert" aria-live="polite">
+      <div part="base" class="toast toast--${this.type}" role="${this.type === 'error' || this.type === 'warning' ? 'alert' : 'status'}" aria-live="${this.type === 'error' || this.type === 'warning' ? 'assertive' : 'polite'}">
         <if ${this.icon}>
           <span part="icon" class="toast-icon">
             <case ${this.type}>

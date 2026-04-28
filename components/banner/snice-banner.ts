@@ -51,7 +51,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     const defaultSvg = DEFAULT_BANNER_ICONS[this.variant];
 
     return html/*html*/`
-      <div class="${bannerClasses}" role="alert" part="banner">
+      <div class="${bannerClasses}" role="region" aria-label="${this.variant} banner" part="banner">
         <span class="banner__icon-slot" part="icon">
           <slot name="icon">
             <if ${this.icon}>

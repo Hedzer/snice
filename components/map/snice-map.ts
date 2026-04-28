@@ -28,8 +28,14 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
   private isDragging: boolean = false;
   private dragStartX: number = 0;
   private dragStartY: number = 0;
+
+  @property({ type: Number, attribute: false })
   private offsetX: number = 0;
+
+  @property({ type: Number, attribute: false })
   private offsetY: number = 0;
+
+  @property({ attribute: false })
   private activePopupId: string | null = null;
 
   @query('.map-container')

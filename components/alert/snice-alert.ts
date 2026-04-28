@@ -43,20 +43,22 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
     const iconClasses = showDefaultIcon ? 'alert-icon alert-icon--default' : 'alert-icon';
 
     return html/*html*/`
-      <div class="${classes}" role="alert" aria-live="polite" part="base" @animationend=${this.handleAnimationEnd}>
-        <if value="${hasIcon}">
-          <div class="${iconClasses}" part="icon">
-            <slot name="icon">
-              ${this.icon ? renderIcon(this.icon, 'alert-icon-content') : this.defaultIconSvg()}
-            </slot>
-          </div>
-        </if>
-        <div class="alert-content">
-          <if value="${this.title}">
-            <div class="alert-title">${this.title}</div>
+      <div class="${classes}" part="base" @animationend=${this.handleAnimationEnd}>
+        <div class="alert-region" role="alert" aria-live="polite">
+          <if value="${hasIcon}">
+            <div class="${iconClasses}" part="icon">
+              <slot name="icon">
+                ${this.icon ? renderIcon(this.icon, 'alert-icon-content') : this.defaultIconSvg()}
+              </slot>
+            </div>
           </if>
-          <div class="alert-description">
-            <slot></slot>
+          <div class="alert-content">
+            <if value="${this.title}">
+              <div class="alert-title">${this.title}</div>
+            </if>
+            <div class="alert-description">
+              <slot></slot>
+            </div>
           </div>
         </div>
         <if value="${this.dismissible}">

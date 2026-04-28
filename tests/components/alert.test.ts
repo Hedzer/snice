@@ -36,7 +36,10 @@ describe('snice-alert', () => {
 
       const alertEl = queryShadow(alert as HTMLElement, '.alert');
       expect(alertEl).toBeTruthy();
-      expect(alertEl?.getAttribute('role')).toBe('alert');
+      // role="alert" lives on the inner live region (.alert-region) so the
+      // dismiss button is excluded from the announced content.
+      const region = queryShadow(alert as HTMLElement, '.alert-region');
+      expect(region?.getAttribute('role')).toBe('alert');
     });
   });
 
@@ -195,20 +198,30 @@ describe('snice-alert', () => {
   });
 
   describe('accessibility', () => {
-    it('should have role="alert"', async () => {
+    it('should have role="alert" on the live region', async () => {
       alert = await createComponent<SniceAlertElement>('snice-alert');
       await wait(200);
 
-      const alertEl = queryShadow(alert as HTMLElement, '.alert');
-      expect(alertEl?.getAttribute('role')).toBe('alert');
+      const region = queryShadow(alert as HTMLElement, '.alert-region');
+      expect(region?.getAttribute('role')).toBe('alert');
     });
 
-    it('should have aria-live="polite"', async () => {
+    it('should have aria-live="polite" on the live region', async () => {
       alert = await createComponent<SniceAlertElement>('snice-alert');
       await wait(200);
 
-      const alertEl = queryShadow(alert as HTMLElement, '.alert');
-      expect(alertEl?.getAttribute('aria-live')).toBe('polite');
+      const region = queryShadow(alert as HTMLElement, '.alert-region');
+      expect(region?.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('dismiss button is OUTSIDE the live region (not re-announced)', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert', { dismissible: true } as any);
+      await wait(200);
+
+      const region = queryShadow(alert as HTMLElement, '.alert-region');
+      const dismiss = queryShadow(alert as HTMLElement, '.alert-dismiss');
+      expect(dismiss).toBeTruthy();
+      expect(region?.contains(dismiss as Node)).toBe(false);
     });
   });
 

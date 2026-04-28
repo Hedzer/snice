@@ -387,7 +387,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
       el.classList.remove('card--drag-over');
     });
 
-    if (!this.draggedCard || !this.sourceColumnId) return;
+    if (!this.draggedCard || this.sourceColumnId == null) return;
 
     // Move card to new position
     if (this.sourceColumnId !== columnId || this.dropIndex !== null) {

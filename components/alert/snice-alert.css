@@ -26,6 +26,13 @@
   animation: slideIn var(--snice-transition-medium, 250ms) ease;
 }
 
+/* Inner role="alert" region — keeps the dismiss button out of the live
+   announcement so the dismiss icon isn't read every time the alert fires.
+   `display: contents` keeps the existing flex layout intact. */
+.alert-region {
+  display: contents;
+}
+
 .alert--hidden {
   display: none;
 }
