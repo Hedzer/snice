@@ -1,6 +1,14 @@
 /**
  * Generic transition system for animating between elements
  */
+
+export enum TransitionMode {
+  /** out transition completes before in transition starts */
+  SEQUENTIAL = 'sequential',
+  /** both transitions happen at the same time */
+  SIMULTANEOUS = 'simultaneous',
+}
+
 export interface Transition {
   /**
    * Name of the transition (for identification)
@@ -31,8 +39,8 @@ export interface Transition {
 
   /**
    * Transition mode:
-   * - 'sequential': out transition completes before in transition starts
-   * - 'simultaneous': both transitions happen at the same time
+   * - `TransitionMode.SEQUENTIAL` ('sequential'): out transition completes before in transition starts
+   * - `TransitionMode.SIMULTANEOUS` ('simultaneous'): both transitions happen at the same time
    */
-  mode?: 'sequential' | 'simultaneous';
+  mode?: TransitionMode | `${TransitionMode}`;
 }

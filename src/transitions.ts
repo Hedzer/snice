@@ -2,10 +2,11 @@
  * Generic transition system for animating between elements
  */
 
-import { Transition } from './types/transition';
+import { Transition, TransitionMode } from './types/transition';
 
-// Re-export Transition type for external consumers
+// Re-export Transition type + TransitionMode enum for external consumers
 export type { Transition };
+export { TransitionMode };
 
 
 /**
@@ -28,10 +29,6 @@ export function parseStyles(styleString: string): Record<string, string> {
 /**
  * Perform a transition between two elements
  */
-const enum TransitionMode {
-  SEQUENTIAL = 'sequential',
-  SIMULTANEOUS = 'simultaneous'
-}
 
 function applyBaseTransitionStyles(el: HTMLElement, isSlotted: boolean, duration: number, prop: string) {
   el.style.position = 'absolute';
