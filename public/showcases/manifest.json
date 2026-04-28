@@ -19,9 +19,7 @@
     "tag-input.html",
     "key-value.html",
     "date-time-picker.html",
-    "form-builder.html",
     "form-layout.html",
-    "mentions.html",
     "range-slider.html",
     "segmented-control.html",
     "split-button.html",
@@ -152,7 +150,6 @@
     "approval-flow.html",
     "booking.html",
     "availability.html",
-    "scheduler.html",
     "permission-matrix.html",
 
     "_footer.html"
