@@ -89,6 +89,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     window.removeEventListener('scroll', this.scrollHandler, { capture: true } as EventListenerOptions);
     window.removeEventListener('resize', this.scrollHandler);
     document.removeEventListener('click', this.handleClickOutside);
+    document.removeEventListener('keydown', this.handleEscapeKey);
     cancelAnimationFrame(this.rafId);
     if (this.portalElement) {
       this.portalElement.remove();
@@ -231,6 +232,9 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
         document.addEventListener('click', this.handleClickOutside);
       }, 0);
     }
+    if (this.trigger !== 'hover') {
+      document.addEventListener('keydown', this.handleEscapeKey);
+    }
   }
 
   hide() {
@@ -252,6 +256,7 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     if (this.trigger === 'click') {
       document.removeEventListener('click', this.handleClickOutside);
     }
+    document.removeEventListener('keydown', this.handleEscapeKey);
   }
 
   toggle() {
@@ -389,6 +394,10 @@ export class SniceTooltip extends HTMLElement implements SniceTooltipElement {
     if (path.includes(this)) return;
     if (this.portalElement && path.includes(this.portalElement)) return;
     this.hide();
+  };
+
+  private handleEscapeKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') this.hide();
   };
 
   private createPortalElement(): HTMLElement {

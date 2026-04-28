@@ -133,6 +133,27 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
     this.dragging = null;
   };
 
+  private onCropAreaKeyDown = (e: KeyboardEvent) => {
+    if (!this.container) return;
+    const bounds = this.container.getBoundingClientRect();
+    const step = e.shiftKey ? 10 : 1;
+    let { x, y, width, height } = this.cropRect;
+
+    switch (e.key) {
+      case 'ArrowLeft': x -= step; break;
+      case 'ArrowRight': x += step; break;
+      case 'ArrowUp': y -= step; break;
+      case 'ArrowDown': y += step; break;
+      default: return;
+    }
+    e.preventDefault();
+    x = Math.max(0, Math.min(bounds.width - width, x));
+    y = Math.max(0, Math.min(bounds.height - height, y));
+    this.cropRect = { x, y, width, height };
+    this.updateCropArea();
+    this.emitCropChange();
+  };
+
   private resizeCrop(handle: string, dx: number, dy: number, bounds: DOMRect) {
     let { x, y, width, height } = { x: this.dragStart.cropX, y: this.dragStart.cropY, width: this.dragStart.cropW, height: this.dragStart.cropH };
 
@@ -226,7 +247,11 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
           <img src="${this.src}" alt="Image to crop" @load=${() => this.initCropArea()} />
         </div>
         <div class="crop-area" part="crop-area"
-             @mousedown=${this.onCropAreaMouseDown}>
+             role="region"
+             aria-label="Crop region. Use arrow keys to move; hold shift for larger steps."
+             tabindex="0"
+             @mousedown=${this.onCropAreaMouseDown}
+             @keydown=${this.onCropAreaKeyDown}>
           <span class="handle handle-nw" data-handle="nw" @mousedown=${this.onCropAreaMouseDown}></span>
           <span class="handle handle-ne" data-handle="ne" @mousedown=${this.onCropAreaMouseDown}></span>
           <span class="handle handle-sw" data-handle="sw" @mousedown=${this.onCropAreaMouseDown}></span>

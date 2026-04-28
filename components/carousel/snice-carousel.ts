@@ -103,9 +103,9 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     const canGoNext = this.loop || this.activeIndex < this.slideCount - this.slidesPerView;
 
     return html/*html*/`
-      <div class="carousel" part="container">
+      <div class="carousel" part="container" role="region" aria-roledescription="carousel" aria-label="Carousel">
         <div class="carousel__viewport" part="viewport">
-          <div class="carousel__container" part="slides-container">
+          <div class="carousel__container" part="slides-container" aria-live="polite" aria-atomic="false">
             <slot></slot>
           </div>
         </div>

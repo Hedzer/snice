@@ -169,12 +169,12 @@ export class SniceGantt extends HTMLElement implements SniceGanttElement {
     }
 
     return html`
-      <div class="gantt-container" part="base">
+      <div class="gantt-container" part="base" role="region" aria-label="Gantt chart">
         <div class="gantt-header" part="header">
-          <div class="gantt-zoom-toggle" part="controls">
-            <button class="gantt-zoom-btn ${isDay ? 'active' : ''}" @click=${() => { this.zoom = 'day'; }}>Day</button>
-            <button class="gantt-zoom-btn ${isWeek ? 'active' : ''}" @click=${() => { this.zoom = 'week'; }}>Week</button>
-            <button class="gantt-zoom-btn ${isMonth ? 'active' : ''}" @click=${() => { this.zoom = 'month'; }}>Month</button>
+          <div class="gantt-zoom-toggle" part="controls" role="group" aria-label="Zoom level">
+            <button class="gantt-zoom-btn ${isDay ? 'active' : ''}" aria-pressed="${isDay ? 'true' : 'false'}" aria-label="Day zoom" @click=${() => { this.zoom = 'day'; }}>Day</button>
+            <button class="gantt-zoom-btn ${isWeek ? 'active' : ''}" aria-pressed="${isWeek ? 'true' : 'false'}" aria-label="Week zoom" @click=${() => { this.zoom = 'week'; }}>Week</button>
+            <button class="gantt-zoom-btn ${isMonth ? 'active' : ''}" aria-pressed="${isMonth ? 'true' : 'false'}" aria-label="Month zoom" @click=${() => { this.zoom = 'month'; }}>Month</button>
           </div>
         </div>
 

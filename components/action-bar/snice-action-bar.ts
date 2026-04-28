@@ -19,6 +19,15 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
     // Delay enabling transitions so the browser paints the hidden state first.
     // Without this, the element visibly animates to hidden on upgrade.
     setTimeout(() => this.setAttribute('ready', ''), 10);
+    this.applyRovingTabindex(0);
+    this.slotElement?.addEventListener('slotchange', () => this.applyRovingTabindex(0));
+  }
+
+  private applyRovingTabindex(activeIndex: number) {
+    const focusable = this.getFocusableChildren();
+    focusable.forEach((el, i) => {
+      el.setAttribute('tabindex', i === activeIndex ? '0' : '-1');
+    });
   }
 
   @watch('open')
@@ -79,6 +88,7 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
     }
 
     if (next >= 0) {
+      this.applyRovingTabindex(next);
       focusable[next].focus();
     }
   }

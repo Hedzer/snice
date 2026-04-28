@@ -66,6 +66,12 @@
   min-width: 30rem;
 }
 
+/* Row wrappers exist purely for ARIA grid semantics (role="row").
+   `display: contents` keeps their children flowing into the parent grid. */
+.availability__row {
+  display: contents;
+}
+
 /* Day headers */
 .availability__day-header {
   font-family: var(--snice-font-family-display);

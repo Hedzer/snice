@@ -100,6 +100,29 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     this._scrollTick++;
   };
 
+  private handleKeyDown = (e: KeyboardEvent) => {
+    const containerHeight = this.offsetHeight || 400;
+    const totalHeight = this._cachedItems.length * this.itemHeight;
+    let next: number | null = null;
+    if (e.key === 'PageDown') {
+      next = Math.min(totalHeight, this.scrollTop + containerHeight);
+    } else if (e.key === 'PageUp') {
+      next = Math.max(0, this.scrollTop - containerHeight);
+    } else if (e.key === 'Home') {
+      next = 0;
+    } else if (e.key === 'End') {
+      next = totalHeight;
+    } else if (e.key === 'ArrowDown') {
+      next = this.scrollTop + this.itemHeight;
+    } else if (e.key === 'ArrowUp') {
+      next = Math.max(0, this.scrollTop - this.itemHeight);
+    }
+    if (next !== null) {
+      e.preventDefault();
+      this.scrollTop = next;
+    }
+  };
+
   private updateVisibleRange() {
     const containerHeight = this.offsetHeight || 400;
     const scrollTop = this._scrollTop;
@@ -121,7 +144,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
     return html/*html*/`
-      <div part="base" class="scroller" @scroll=${this.handleScroll}>
+      <div part="base" class="scroller" tabindex="0" @scroll=${this.handleScroll} @keydown=${this.handleKeyDown}>
         <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
           ${visibleItems.map((item, idx) => {

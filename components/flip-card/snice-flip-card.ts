@@ -59,6 +59,7 @@ export class SniceFlipCard extends HTMLElement implements SniceFlipCardElement {
       <div part="base" class="flip-card"
            tabindex="${tabindex}"
            role="button"
+           aria-pressed="${this.flipped ? 'true' : 'false'}"
            aria-label="${this.flipped ? 'Flip card, showing back' : 'Flip card, showing front'}"
            @click=${this.handleClick}
            @keydown=${this.handleKeydown}>

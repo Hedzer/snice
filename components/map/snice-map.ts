@@ -72,11 +72,15 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
       <div
         class="map-container"
         part="base"
+        role="application"
+        aria-label="Interactive map"
+        tabindex="0"
         @mousedown=${(e: MouseEvent) => this.handleMouseDown(e)}
         @mousemove=${(e: MouseEvent) => this.handleMouseMove(e)}
         @mouseup=${() => this.handleMouseUp()}
         @mouseleave=${() => this.handleMouseUp()}
         @click=${(e: MouseEvent) => this.handleMapClick(e)}
+        @keydown=${(e: KeyboardEvent) => this.handleMapKeyDown(e)}
       >
         <div class="map-tiles" part="tiles">
           ${tiles.map(tile => html`
@@ -271,6 +275,31 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
       this.center = { lat: newLat, lng: this.center.lng + lngDelta };
       this.emitMapMove();
     }
+  }
+
+  private handleMapKeyDown(e: KeyboardEvent): void {
+    const panStep = 50;
+    let next = { lat: this.center.lat, lng: this.center.lng };
+    const delta = panStep / Math.pow(2, this.zoom) / TILE_SIZE * 360;
+    switch (e.key) {
+      case 'ArrowLeft': next.lng -= delta; break;
+      case 'ArrowRight': next.lng += delta; break;
+      case 'ArrowUp': next.lat += delta; break;
+      case 'ArrowDown': next.lat -= delta; break;
+      case '+':
+      case '=':
+        this.setZoom(Math.min(this.zoom + 1, this.maxZoom));
+        e.preventDefault();
+        return;
+      case '-':
+      case '_':
+        this.setZoom(Math.max(this.zoom - 1, this.minZoom));
+        e.preventDefault();
+        return;
+      default: return;
+    }
+    e.preventDefault();
+    this.setCenter(next.lat, next.lng);
   }
 
   private handleMapClick(e: MouseEvent): void {

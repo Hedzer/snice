@@ -153,6 +153,27 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     document.removeEventListener('touchcancel', this.handleTouchEnd);
   };
 
+  private handleDividerKeyDown = (e: KeyboardEvent) => {
+    if (this.disabled) return;
+    const step = e.shiftKey ? 10 : 1;
+    const isHorizontal = this.direction === 'horizontal';
+    const decreaseKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+    const increaseKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+    if (e.key === decreaseKey) {
+      e.preventDefault();
+      this.setPrimarySize(this.primarySize - step);
+    } else if (e.key === increaseKey) {
+      e.preventDefault();
+      this.setPrimarySize(this.primarySize + step);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      this.setPrimarySize(this.minPrimarySize);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      this.setPrimarySize(100 - this.minSecondarySize);
+    }
+  };
+
   @render()
   template() {
     const primaryStyle = this.direction === 'horizontal'
@@ -167,8 +188,16 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       <div
         part="divider"
         class="divider ${this.disabled ? 'divider--disabled' : ''}"
+        role="separator"
+        aria-orientation="${this.direction === 'horizontal' ? 'vertical' : 'horizontal'}"
+        aria-valuenow="${Math.round(this.primarySize)}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="Resize panes"
+        tabindex="${this.disabled ? '-1' : '0'}"
         @mousedown=${this.handleDividerMouseDown}
-        @touchstart=${this.handleDividerTouchStart}>
+        @touchstart=${this.handleDividerTouchStart}
+        @keydown=${this.handleDividerKeyDown}>
         <div part="handle" class="divider__handle"></div>
       </div>
 

@@ -174,36 +174,58 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
     const grid = document.createElement('div');
     grid.className = 'availability__grid';
     grid.setAttribute('part', 'grid');
+    grid.setAttribute('role', 'grid');
+    grid.setAttribute('aria-label', 'Weekly availability grid');
+    grid.setAttribute('aria-rowcount', String(this.totalSlots + 1));
+    grid.setAttribute('aria-colcount', '8');
+
+    const headerRow = document.createElement('div');
+    headerRow.className = 'availability__row';
+    headerRow.setAttribute('role', 'row');
+    headerRow.setAttribute('aria-rowindex', '1');
 
     // Corner cell
     const corner = document.createElement('div');
     corner.className = 'availability__corner';
-    grid.appendChild(corner);
+    corner.setAttribute('role', 'columnheader');
+    corner.setAttribute('aria-colindex', '1');
+    headerRow.appendChild(corner);
 
     // Day headers
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    dayNames.forEach(name => {
+    dayNames.forEach((name, i) => {
       const headerEl = document.createElement('div');
       headerEl.className = 'availability__day-header';
       headerEl.textContent = name;
-      grid.appendChild(headerEl);
+      headerEl.setAttribute('role', 'columnheader');
+      headerEl.setAttribute('aria-colindex', String(i + 2));
+      headerRow.appendChild(headerEl);
     });
+    grid.appendChild(headerRow);
 
     // Time rows
     for (let slot = 0; slot < this.totalSlots; slot++) {
       const minutes = this.startHour * 60 + slot * this.granularity;
       const isHourStart = minutes % 60 === 0;
+      const rowIndex = slot + 2;
+
+      const row = document.createElement('div');
+      row.className = 'availability__row';
+      row.setAttribute('role', 'row');
+      row.setAttribute('aria-rowindex', String(rowIndex));
 
       // Time label
       const timeLabel = document.createElement('div');
       timeLabel.className = 'availability__time-label';
+      timeLabel.setAttribute('role', 'rowheader');
+      timeLabel.setAttribute('aria-colindex', '1');
       if (isHourStart) {
         timeLabel.classList.add('availability__time-label--hour');
         timeLabel.textContent = this.formatTimeLabel(minutes);
       } else {
         timeLabel.classList.add('availability__time-label--sub-hour');
       }
-      grid.appendChild(timeLabel);
+      row.appendChild(timeLabel);
 
       // Day cells
       for (let day = 0; day < 7; day++) {
@@ -211,6 +233,8 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
         const key = `${day}-${slot}`;
         cell.className = 'availability__cell';
         cell.dataset.key = key;
+        cell.setAttribute('role', 'gridcell');
+        cell.setAttribute('aria-colindex', String(day + 2));
 
         if (isHourStart) {
           cell.classList.add('availability__cell--hour-start');
@@ -221,14 +245,17 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
         if (this.activeCells.has(key)) {
           cell.classList.add('availability__cell--active');
         }
+        cell.setAttribute('aria-selected', this.activeCells.has(key) ? 'true' : 'false');
+        cell.setAttribute('aria-label', `${dayNames[day]} ${this.formatTimeLabel(minutes)}`);
 
         if (!this.readonly) {
           cell.onmousedown = (e) => this.handleCellMouseDown(e, key, cell);
           cell.onmouseenter = (e) => this.handleCellMouseEnter(e, key, cell);
         }
 
-        grid.appendChild(cell);
+        row.appendChild(cell);
       }
+      grid.appendChild(row);
     }
 
     gridWrapper.appendChild(grid);
