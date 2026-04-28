@@ -309,4 +309,66 @@ describe('snice-stepper', () => {
       expect(connectors.length).toBe(3);
     });
   });
+
+  describe('keyboard activation on .step--clickable (@on decorator)', () => {
+    const steps: Step[] = [
+      { id: 's0', label: 'One' },
+      { id: 's1', label: 'Two' },
+      { id: 's2', label: 'Three' },
+    ];
+
+    it('clickable steps expose role=button + tabindex=0 + data-step-index', async () => {
+      stepper = await createComponent<SniceStepperElement>('snice-stepper', { clickable: true } as any);
+      stepper.steps = steps;
+      await wait(20);
+      const stepEls = queryShadowAll(stepper, '.step');
+      expect(stepEls[0].getAttribute('role')).toBe('button');
+      expect(stepEls[0].getAttribute('tabindex')).toBe('0');
+      expect(stepEls[0].getAttribute('data-step-index')).toBe('0');
+    });
+
+    it('Enter on a clickable step fires step-change with that index', async () => {
+      stepper = await createComponent<SniceStepperElement>('snice-stepper', { clickable: true } as any);
+      stepper.steps = steps;
+      await wait(20);
+      const handler = vi.fn();
+      stepper.addEventListener('step-change', handler);
+
+      const stepEls = queryShadowAll(stepper, '.step--clickable');
+      stepEls[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await wait(10);
+
+      expect(handler).toHaveBeenCalled();
+      const detail = (handler.mock.calls[0][0] as CustomEvent).detail;
+      expect(detail.currentStep).toBe(2);
+    });
+
+    it('Space on a clickable step fires step-change', async () => {
+      stepper = await createComponent<SniceStepperElement>('snice-stepper', { clickable: true } as any);
+      stepper.steps = steps;
+      await wait(20);
+      const handler = vi.fn();
+      stepper.addEventListener('step-change', handler);
+
+      const stepEls = queryShadowAll(stepper, '.step--clickable');
+      stepEls[1].dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, composed: true }));
+      await wait(10);
+
+      expect(handler).toHaveBeenCalled();
+    });
+
+    it('non-clickable stepper ignores Enter', async () => {
+      stepper = await createComponent<SniceStepperElement>('snice-stepper');
+      stepper.steps = steps;
+      await wait(20);
+      const handler = vi.fn();
+      stepper.addEventListener('step-change', handler);
+
+      const stepEls = queryShadowAll(stepper, '.step');
+      stepEls[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await wait(10);
+
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
 });

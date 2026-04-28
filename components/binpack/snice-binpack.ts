@@ -471,6 +471,11 @@ export class SniceBinpack extends HTMLElement implements SniceBinpackElement {
     if (!this.slotElement) return;
     this.items = (this.slotElement.assignedElements({ flatten: true }) as HTMLElement[])
       .filter(el => el instanceof HTMLElement);
+    for (const el of this.items) {
+      if (!el.hasAttribute('role') && el.tagName !== 'LI') {
+        el.setAttribute('role', 'listitem');
+      }
+    }
   }
 
   private setupResizeObserver(): void {

@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, query, dispose, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, dispose, on, html, css } from 'snice';
 import type { SniceResizeElement, SplitDirection, SniceResizeDetail } from './snice-split-pane.types';
 import cssContent from './snice-split-pane.css?inline';
 
@@ -153,7 +153,8 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
     document.removeEventListener('touchcancel', this.handleTouchEnd);
   };
 
-  private handleDividerKeyDown = (e: KeyboardEvent) => {
+  @on('keydown', '.divider')
+  handleDividerKeyDown(e: KeyboardEvent) {
     if (this.disabled) return;
     const step = e.shiftKey ? 10 : 1;
     const isHorizontal = this.direction === 'horizontal';
@@ -172,7 +173,7 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
       e.preventDefault();
       this.setPrimarySize(100 - this.minSecondarySize);
     }
-  };
+  }
 
   @render()
   template() {
@@ -196,8 +197,7 @@ export class SniceResize extends HTMLElement implements SniceResizeElement {
         aria-label="Resize panes"
         tabindex="${this.disabled ? '-1' : '0'}"
         @mousedown=${this.handleDividerMouseDown}
-        @touchstart=${this.handleDividerTouchStart}
-        @keydown=${this.handleDividerKeyDown}>
+        @touchstart=${this.handleDividerTouchStart}>
         <div part="handle" class="divider__handle"></div>
       </div>
 

@@ -36,7 +36,7 @@ export class SniceTabPanel extends HTMLElement implements SniceTabPanelElement {
   @render()
   render() {
     return html/*html*/`
-      <div class="tab-panel" part="base">
+      <div class="tab-panel" part="base" role="tabpanel">
         <slot></slot>
       </div>
     `;

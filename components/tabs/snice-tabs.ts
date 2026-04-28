@@ -17,7 +17,7 @@ export class SniceTabs extends HTMLElement {
   @property({  })
   transition = 'none';
 
-
+  private uniqueId = Math.random().toString(36).slice(2, 10);
 
   @query('.tabs__nav')
   nav?: HTMLElement;
@@ -228,12 +228,23 @@ export class SniceTabs extends HTMLElement {
 
   updateSelection() {
     if (!this.tabs || !this.panels) return;
-    
+
     this.tabs.forEach((tab, index) => {
       const isSelected = index === this.selected;
+      const tabId = tab.id || `snice-tab-${this.uniqueId}-${index}`;
+      const panelId = (this.panels![index] && this.panels![index].id) || `snice-tab-panel-${this.uniqueId}-${index}`;
+      if (!tab.id) tab.id = tabId;
+      if (this.panels![index] && !this.panels![index].id) this.panels![index].id = panelId;
+
       tab.setAttribute('aria-selected', String(isSelected));
+      tab.setAttribute('aria-controls', panelId);
       tab.setAttribute('tabindex', isSelected ? '0' : '-1');
       tab.classList.toggle('snice-tab--active', isSelected);
+
+      const panel = this.panels![index];
+      if (panel) {
+        panel.setAttribute('aria-labelledby', tabId);
+      }
     });
 
     // Handle panel transitions

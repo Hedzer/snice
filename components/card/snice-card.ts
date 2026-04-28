@@ -35,12 +35,15 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
   render() {
     const role = this.clickable ? 'button' : 'article';
     const tabindex = this.clickable && !this.disabled ? '0' : '-1';
+    // aria-selected is only valid on option/tab/row/gridcell/treeitem.
+    // Use aria-pressed for button-as-toggle state; omit for article.
+    const ariaPressed = this.clickable ? String(!!this.selected) : 'false';
 
     return html/*html*/`
       <div part="base" class="card"
            role="${role}"
            tabindex="${tabindex}"
-           aria-selected="${this.selected}"
+           aria-pressed="${ariaPressed}"
            aria-disabled="${this.disabled}"
            @click="${(e: MouseEvent) => this.handleClick(e)}"
            @keydown="${(e: KeyboardEvent) => this.handleKeydown(e)}">

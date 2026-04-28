@@ -32,6 +32,20 @@ export class SniceMasonry extends HTMLElement implements SniceMasonryElement {
     this.updateColumns();
     this.updateGap();
     this.updateColumnWidth();
+
+    queueMicrotask(() => this.applyListItemRoles());
+    const slot = this.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
+    slot?.addEventListener('slotchange', () => this.applyListItemRoles());
+  }
+
+  private applyListItemRoles() {
+    const slot = this.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
+    const items = slot?.assignedElements({ flatten: true }) ?? [];
+    for (const el of items) {
+      if (!(el as HTMLElement).hasAttribute('role') && (el as HTMLElement).tagName !== 'LI') {
+        (el as HTMLElement).setAttribute('role', 'listitem');
+      }
+    }
   }
 
   @watch('columns')

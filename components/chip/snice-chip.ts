@@ -55,12 +55,16 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
     const chipClasses = `chip${this.selected ? ' chip--selected' : ''}`;
     const showIcon = !this.avatar && (this.icon || this.hasIconSlot);
 
+    // aria-selected is only valid on option/tab/row/gridcell/treeitem.
+    // Use aria-pressed when chip is interactive (role=button); omit otherwise.
+    const ariaPressed = this.removable ? String(!!this.selected) : 'false';
+
     return html/*html*/`
       <div class="${chipClasses}"
            role="${this.removable ? 'button' : 'status'}"
            tabindex="${this.disabled ? '-1' : '0'}"
            aria-disabled="${this.disabled}"
-           aria-selected="${this.selected}"
+           aria-pressed="${ariaPressed}"
            part="base"
            @click=${(e: MouseEvent) => this.handleChipClick(e)}
            @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>

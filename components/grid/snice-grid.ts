@@ -347,6 +347,11 @@ export class SniceGrid extends HTMLElement implements SniceGridElement {
     if (!this.slotElement) return;
     this.items = (this.slotElement.assignedElements({ flatten: true }) as HTMLElement[])
       .filter(el => el instanceof HTMLElement);
+    for (const el of this.items) {
+      if (!el.hasAttribute('role') && el.tagName !== 'LI') {
+        el.setAttribute('role', 'listitem');
+      }
+    }
   }
 
   private lastObservedWidth = 0;

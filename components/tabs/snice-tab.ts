@@ -21,7 +21,7 @@ export class SniceTab extends HTMLElement implements SniceTabElement {
     const tabClasses = `tab${this.disabled ? ' tab--disabled' : ''}`;
 
     return html/*html*/`
-      <div class="${tabClasses}" part="base" tabindex="0" @click="${(e: MouseEvent) => this.handleClick(e)}">
+      <div class="${tabClasses}" part="base" role="tab" tabindex="0" @click="${(e: MouseEvent) => this.handleClick(e)}">
         <span class="tab__label" part="label">
           <slot></slot>
         </span>

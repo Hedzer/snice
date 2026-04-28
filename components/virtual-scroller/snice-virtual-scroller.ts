@@ -1,4 +1,4 @@
-import { element, property, render, styles, ready, query, watch, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, ready, query, watch, html, css, unsafeHTML, on } from 'snice';
 import type { SniceVirtualScrollerElement, VirtualScrollerItem } from './snice-virtual-scroller.types';
 import cssContent from './snice-virtual-scroller.css?inline';
 
@@ -104,7 +104,8 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     }
   };
 
-  private handleKeyDown = (e: KeyboardEvent) => {
+  @on('keydown', '.scroller')
+  handleKeyDown(e: KeyboardEvent) {
     const scroller = this.scrollerElement;
     if (!scroller) return;
     const containerHeight = scroller.clientHeight || 400;
@@ -127,7 +128,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
       e.preventDefault();
       scroller.scrollTop = next;
     }
-  };
+  }
 
   private updateVisibleRange() {
     const containerHeight = this.offsetHeight || 400;
@@ -150,7 +151,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
     return html/*html*/`
-      <div part="base" class="scroller" tabindex="0" @scroll=${this.handleScroll} @keydown=${this.handleKeyDown}>
+      <div part="base" class="scroller" tabindex="0" @scroll=${this.handleScroll}>
         <div class="scroller__spacer" style="height: ${totalHeight}px;"></div>
         <div class="scroller__viewport" style="transform: translateY(${this.visibleStart * this.itemHeight}px);">
           ${visibleItems.map((item, idx) => {

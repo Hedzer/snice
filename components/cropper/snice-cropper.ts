@@ -1,4 +1,4 @@
-import { element, property, query, dispatch, ready, dispose, render, styles, watch, html, css as cssTag } from 'snice';
+import { element, property, query, dispatch, ready, dispose, on, render, styles, watch, html, css as cssTag } from 'snice';
 import cssContent from './snice-cropper.css?inline';
 import type { CropperOutputType, CropRect, SniceCropperElement } from './snice-cropper.types';
 
@@ -133,7 +133,8 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
     this.dragging = null;
   };
 
-  private onCropAreaKeyDown = (e: KeyboardEvent) => {
+  @on('keydown', '.crop-area')
+  onCropAreaKeyDown(e: KeyboardEvent) {
     if (!this.container) return;
     const bounds = this.container.getBoundingClientRect();
     const step = e.shiftKey ? 10 : 1;
@@ -152,7 +153,7 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
     this.cropRect = { x, y, width, height };
     this.updateCropArea();
     this.emitCropChange();
-  };
+  }
 
   private resizeCrop(handle: string, dx: number, dy: number, bounds: DOMRect) {
     let { x, y, width, height } = { x: this.dragStart.cropX, y: this.dragStart.cropY, width: this.dragStart.cropW, height: this.dragStart.cropH };
@@ -250,8 +251,7 @@ export class SniceCropper extends HTMLElement implements SniceCropperElement {
              role="region"
              aria-label="Crop region. Use arrow keys to move; hold shift for larger steps."
              tabindex="0"
-             @mousedown=${this.onCropAreaMouseDown}
-             @keydown=${this.onCropAreaKeyDown}>
+             @mousedown=${this.onCropAreaMouseDown}>
           <span class="handle handle-nw" data-handle="nw" @mousedown=${this.onCropAreaMouseDown}></span>
           <span class="handle handle-ne" data-handle="ne" @mousedown=${this.onCropAreaMouseDown}></span>
           <span class="handle handle-sw" data-handle="sw" @mousedown=${this.onCropAreaMouseDown}></span>

@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, watch, query, html, css, unsafeHTML } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, on, watch, query, html, css, unsafeHTML } from 'snice';
 import type { MapMarker, MapCenter, SniceMapElement } from './snice-map.types';
 import mapStyles from './snice-map.css?inline';
 
@@ -86,7 +86,6 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
         @mouseup=${() => this.handleMouseUp()}
         @mouseleave=${() => this.handleMouseUp()}
         @click=${(e: MouseEvent) => this.handleMapClick(e)}
-        @keydown=${(e: KeyboardEvent) => this.handleMapKeyDown(e)}
       >
         <div class="map-tiles" part="tiles">
           ${tiles.map(tile => html`
@@ -283,6 +282,7 @@ export class SniceMap extends HTMLElement implements SniceMapElement {
     }
   }
 
+  @on('keydown', '.map-container')
   private handleMapKeyDown(e: KeyboardEvent): void {
     const panStep = 50;
     let next = { lat: this.center.lat, lng: this.center.lng };

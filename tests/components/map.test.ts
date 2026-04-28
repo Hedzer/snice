@@ -156,4 +156,56 @@ describe('snice-map', () => {
       expect(eventFired).toBe(true);
     });
   });
+
+  describe('keyboard pan/zoom on .map-container (@on decorator)', () => {
+    const dispatchKey = (el: HTMLElement, key: string) => {
+      const container = el.shadowRoot!.querySelector('.map-container') as HTMLElement;
+      container.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, composed: true }));
+    };
+
+    it('container is keyboard-focusable', async () => {
+      map = await createComponent<SniceMapElement>('snice-map');
+      const container = queryShadow(map as HTMLElement, '.map-container');
+      expect(container?.getAttribute('tabindex')).toBe('0');
+      expect(container?.getAttribute('role')).toBe('application');
+    });
+
+    it('+ key increases zoom', async () => {
+      map = await createComponent<SniceMapElement>('snice-map', { zoom: 5 } as any);
+      await wait(20);
+      dispatchKey(map as HTMLElement, '+');
+      await wait(10);
+      expect(map.zoom).toBe(6);
+    });
+
+    it('- key decreases zoom', async () => {
+      map = await createComponent<SniceMapElement>('snice-map', { zoom: 5 } as any);
+      await wait(20);
+      dispatchKey(map as HTMLElement, '-');
+      await wait(10);
+      expect(map.zoom).toBe(4);
+    });
+
+    it('ArrowLeft pans west (lng decreases)', async () => {
+      map = await createComponent<SniceMapElement>('snice-map');
+      map.setCenter(40, -74);
+      map.setZoom(5);
+      await wait(20);
+      const lngBefore = map.center.lng;
+      dispatchKey(map as HTMLElement, 'ArrowLeft');
+      await wait(10);
+      expect(map.center.lng).toBeLessThan(lngBefore);
+    });
+
+    it('ArrowRight pans east (lng increases)', async () => {
+      map = await createComponent<SniceMapElement>('snice-map');
+      map.setCenter(40, -74);
+      map.setZoom(5);
+      await wait(20);
+      const lngBefore = map.center.lng;
+      dispatchKey(map as HTMLElement, 'ArrowRight');
+      await wait(10);
+      expect(map.center.lng).toBeGreaterThan(lngBefore);
+    });
+  });
 });

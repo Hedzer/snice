@@ -1,4 +1,4 @@
-import { element, property, queryAll, render, styles, html, css, watch, ready } from 'snice';
+import { element, property, queryAll, render, styles, html, css, watch, ready, on } from 'snice';
 import cssContent from './snice-stepper.css?inline';
 import type { Step, StepStatus, StepperOrientation, SniceStepperElement } from './snice-stepper.types';
 import type { SniceStepperPanelElement } from './snice-stepper-panel.types';
@@ -39,6 +39,18 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
     if (index < this.currentStep) return 'completed';
     if (index === this.currentStep) return 'active';
     return 'pending';
+  }
+
+  @on('keydown', '.step--clickable')
+  private handleStepKeydown(e: KeyboardEvent) {
+    if (!this.clickable) return;
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const target = (e.target as HTMLElement).closest('[data-step-index]') as HTMLElement | null;
+    if (!target) return;
+    const index = Number(target.dataset.stepIndex);
+    if (Number.isNaN(index)) return;
+    e.preventDefault();
+    this.handleStepClick(index);
   }
 
   private handleStepClick(index: number) {
@@ -92,10 +104,18 @@ export class SniceStepper extends HTMLElement implements SniceStepperElement {
             this.clickable ? 'step--clickable' : ''
           ].filter(Boolean).join(' ');
 
+          const stepRole = this.clickable ? 'button' : undefined;
+          const stepTabindex = this.clickable ? '0' : undefined;
+          const ariaCurrent = status === 'active' ? 'step' : undefined;
+
           return html/*html*/`
             <div
               class="${stepClasses}"
               part="step"
+              data-step-index="${index}"
+              role="${stepRole ?? ''}"
+              tabindex="${stepTabindex ?? ''}"
+              aria-current="${ariaCurrent ?? ''}"
               @click="${() => this.handleStepClick(index)}">
 
               <div class="step__indicator" part="step-indicator">
