@@ -88,9 +88,11 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   }
 
   private updateLines() {
-    // Limit lines if needed
-    if (this.lines.length > this.maxLines) {
-      this.lines = this.lines.slice(-this.maxLines);
+    // Limit lines if needed — splice in place rather than slice()/reassign so
+    // we don't allocate a fresh array per write under high-frequency streaming.
+    const overflow = this.lines.length - this.maxLines;
+    if (overflow > 0) {
+      this.lines.splice(0, overflow);
     }
 
     // Trigger re-render by updating a tracked property
@@ -323,14 +325,14 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
     const parsedContent = this.parseAnsiColors(content);
 
     const lines = parsedContent.split('\n');
-    const newLines: TerminalLine[] = lines.map(line => ({
-      id: crypto.randomUUID(),
-      type,
-      content: line,
-      timestamp: new Date()
-    }));
-
-    this.lines = [...this.lines, ...newLines];
+    for (const line of lines) {
+      this.lines.push({
+        id: crypto.randomUUID(),
+        type,
+        content: line,
+        timestamp: new Date(),
+      });
+    }
     this.updateLines();
   }
 
@@ -343,7 +345,9 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   }
 
   clear() {
-    this.lines = [];
+    this.lines.length = 0;
+    this.liveLineBuffer = '';
+    this.liveLine = null;
     this.updateLines();
     this.dispatchClearEvent();
   }
@@ -353,17 +357,107 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   }
 
   writeLines(lines: Array<{ content: string; type?: TerminalLineType }>) {
-    const newLines: TerminalLine[] = lines.map(line => ({
-      id: crypto.randomUUID(),
-      type: line.type || 'output',
-      // Route through parseAnsiColors so content is HTML-escaped first
-      // (same safety path as write()); bypassing this was a stored XSS vector.
-      content: this.parseAnsiColors(line.content),
-      timestamp: new Date()
-    }));
-
-    this.lines = [...this.lines, ...newLines];
+    for (const line of lines) {
+      this.lines.push({
+        id: crypto.randomUUID(),
+        type: line.type || 'output',
+        // Route through parseAnsiColors so content is HTML-escaped first
+        // (same safety path as write()); bypassing this was a stored XSS vector.
+        content: this.parseAnsiColors(line.content),
+        timestamp: new Date(),
+      });
+    }
     this.updateLines();
+  }
+
+  // ─── Streaming API ─────────────────────────────────────────────────────────
+  // appendChunk + pipeFrom let callers feed raw chunks (e.g. from a child
+  // process stdout, a WebSocket, or an LLM token stream) without splitting on
+  // newlines themselves. A trailing partial line stays "live" — a single
+  // TerminalLine whose content grows as more chunks arrive — until a newline
+  // commits it.
+
+  private liveLineBuffer = '';
+  private liveLine: TerminalLine | null = null;
+  private liveLineType: TerminalLineType = 'output';
+
+  appendChunk(chunk: string, type: TerminalLineType = 'output') {
+    if (!chunk) return;
+
+    // If the type changed mid-stream, commit the existing live line first.
+    if (this.liveLine && type !== this.liveLineType) {
+      this.commitLiveLine();
+    }
+    this.liveLineType = type;
+
+    // Combine pending tail with new chunk, then split on \n.
+    const combined = this.liveLineBuffer + chunk;
+    const parts = combined.split('\n');
+    // Last element is whatever follows the final \n (or all of it, if no \n).
+    const tail = parts.pop() ?? '';
+
+    // Each complete part becomes its own committed line.
+    for (const raw of parts) {
+      const escaped = this.parseAnsiColors(raw);
+      // Reuse the live line for the first complete part if present, otherwise push.
+      if (this.liveLine) {
+        this.liveLine.content = escaped;
+        this.liveLine = null;
+      } else {
+        this.lines.push({
+          id: crypto.randomUUID(),
+          type,
+          content: escaped,
+          timestamp: new Date(),
+        });
+      }
+    }
+
+    // Tail (no trailing newline) keeps growing as a live line.
+    this.liveLineBuffer = tail;
+    if (tail) {
+      const escaped = this.parseAnsiColors(tail);
+      if (this.liveLine) {
+        this.liveLine.content = escaped;
+      } else {
+        this.liveLine = {
+          id: crypto.randomUUID(),
+          type,
+          content: escaped,
+          timestamp: new Date(),
+        };
+        this.lines.push(this.liveLine);
+      }
+    }
+
+    this.updateLines();
+  }
+
+  /** Force the current live (un-newlined) buffer to be treated as a finished line. */
+  commitLiveLine() {
+    this.liveLine = null;
+    this.liveLineBuffer = '';
+  }
+
+  /**
+   * Consume an AsyncIterable<string> or a ReadableStream<string|Uint8Array> until
+   * exhaustion, calling appendChunk on each chunk. Cancellation: throw / return
+   * from the source, or call `terminal.clear()` to stop displaying — the pipe
+   * itself just runs to completion.
+   */
+  async pipeFrom(source: AsyncIterable<string> | ReadableStream<string | Uint8Array>, type: TerminalLineType = 'output'): Promise<void> {
+    const iter = (source as ReadableStream).getReader
+      ? readableStreamToAsyncIterable(source as ReadableStream<string | Uint8Array>)
+      : (source as AsyncIterable<string>);
+
+    const decoder = new TextDecoder();
+    for await (const chunk of iter) {
+      const text = typeof chunk === 'string' ? chunk : decoder.decode(chunk, { stream: true });
+      if (text) this.appendChunk(text, type);
+    }
+    // Flush any pending decoder state (no-op for string sources).
+    const flush = decoder.decode();
+    if (flush) this.appendChunk(flush, type);
   }
 
   getHistory(): string[] {
@@ -373,5 +467,20 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
   clearHistory() {
     this.commandHistory = [];
     this.historyIndex = -1;
+  }
+}
+
+/** Adapt a ReadableStream to an async iterable (Safari < 14.1 lacks the
+ *  built-in `Symbol.asyncIterator` on streams). */
+async function* readableStreamToAsyncIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
+  const reader = stream.getReader();
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) return;
+      yield value as T;
+    }
+  } finally {
+    reader.releaseLock();
   }
 }

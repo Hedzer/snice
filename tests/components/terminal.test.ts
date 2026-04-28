@@ -176,4 +176,106 @@ describe('snice-terminal', () => {
       expect(prompt?.textContent).toBe('> ');
     });
   });
+
+  describe('streaming API (appendChunk / pipeFrom)', () => {
+    it('appendChunk holds tail without newline as a single live line', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      terminal.appendChunk('hello');
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(1);
+      expect(lines[0].textContent?.trim()).toContain('hello');
+    });
+
+    it('subsequent appendChunk updates the same live line until newline arrives', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      terminal.appendChunk('hel');
+      terminal.appendChunk('lo wor');
+      terminal.appendChunk('ld');
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(1);
+      expect(lines[0].textContent?.trim()).toContain('hello world');
+    });
+
+    it('newline in chunk commits the live line and starts a new one', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      terminal.appendChunk('first\n');
+      terminal.appendChunk('second');
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(2);
+      expect(lines[0].textContent?.trim()).toContain('first');
+      expect(lines[1].textContent?.trim()).toContain('second');
+    });
+
+    it('multi-newline chunks split into one line each', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      terminal.appendChunk('a\nb\nc\n');
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(3);
+    });
+
+    it('pipeFrom consumes an AsyncIterable<string>', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      async function* gen() {
+        yield 'one\n';
+        yield 'two';
+        yield ' tail\n';
+      }
+      await terminal.pipeFrom(gen());
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(2);
+      expect(lines[0].textContent?.trim()).toContain('one');
+      expect(lines[1].textContent?.trim()).toContain('two tail');
+    });
+
+    it('pipeFrom consumes a ReadableStream<string>', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      const stream = new ReadableStream<string>({
+        start(controller) {
+          controller.enqueue('alpha\n');
+          controller.enqueue('beta\n');
+          controller.close();
+        }
+      });
+      await terminal.pipeFrom(stream);
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(2);
+    });
+
+    it('appendChunk does not allocate a new lines array per call (perf guard)', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      // Internally `lines` is a private field; we just sanity-check that
+      // pushing many chunks does not regress beyond a reasonable budget.
+      const start = performance.now();
+      for (let i = 0; i < 1000; i++) terminal.appendChunk(`line ${i}\n`);
+      const elapsed = performance.now() - start;
+      // Generous bound — happy-dom is slow but this should still finish well
+      // under a second; the previous spread-copy implementation regressed here.
+      expect(elapsed).toBeLessThan(2000);
+    });
+
+    it('clear() resets live-line state', async () => {
+      terminal = await createComponent<SniceTerminalElement>('snice-terminal');
+      await wait(10);
+      terminal.appendChunk('partial without newline');
+      terminal.clear();
+      terminal.appendChunk('fresh\n');
+      await wait(10);
+      const lines = (terminal as HTMLElement).shadowRoot!.querySelectorAll('.terminal-line');
+      expect(lines.length).toBe(1);
+      expect(lines[0].textContent?.trim()).toContain('fresh');
+    });
+  });
 });

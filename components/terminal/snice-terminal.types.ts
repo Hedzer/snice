@@ -116,6 +116,21 @@ export interface SniceTerminalElement extends HTMLElement {
   writeLines(lines: Array<{ content: string; type?: TerminalLineType }>): void;
 
   /**
+   * Append a raw chunk of output. Splits on newlines internally; a trailing
+   * partial line stays "live" and grows as more chunks arrive.
+   */
+  appendChunk(chunk: string, type?: TerminalLineType): void;
+
+  /** Force the current live (no-newline-yet) buffer to be treated as committed. */
+  commitLiveLine(): void;
+
+  /**
+   * Pipe an AsyncIterable<string> or ReadableStream into the terminal,
+   * calling appendChunk on each chunk until exhaustion.
+   */
+  pipeFrom(source: AsyncIterable<string> | ReadableStream<string | Uint8Array>, type?: TerminalLineType): Promise<void>;
+
+  /**
    * Write error to terminal
    */
   writeError(content: string): void;
