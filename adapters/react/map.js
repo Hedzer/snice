@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Map = createReactAdapter({
     tagName: 'snice-map',
-    properties: ["center", "zoom", "minZoom", "maxZoom", "markers", "tileUrl"],
+    properties: ["center", "zoom", "minZoom", "maxZoom", "markers", "tileUrl", "offsetX", "offsetY", "activePopupId"],
     events: { "map-click": "onMapClick", "marker-click": "onMarkerClick", "map-move": "onMapMove", "map-zoom": "onMapZoom" },
     formAssociated: false
 });

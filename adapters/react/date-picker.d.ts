@@ -20,7 +20,7 @@ export interface DatePickerProps extends SniceBaseProps {
     min?: any;
     max?: any;
     name?: any;
-    showCalendar?: any;
+    open?: any;
     firstDayOfWeek?: any;
     onDatepickerInput?: (event: any) => void;
     onDatepickerChange?: (event: any) => void;

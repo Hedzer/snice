@@ -1,0 +1,76 @@
+:host {
+  display: inline-block;
+  position: relative;
+  --popover-distance: 6px;
+  --popover-bg: var(--snice-popover-bg, var(--snice-color-surface, rgb(255 255 255)));
+  --popover-text: var(--snice-popover-text, var(--snice-color-text, rgb(23 23 23)));
+  --popover-border: var(--snice-popover-border, var(--snice-color-border, rgb(226 226 226)));
+  --popover-shadow: var(--snice-popover-shadow, var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)));
+  --popover-radius: var(--snice-popover-radius, var(--snice-border-radius-lg, 0.5rem));
+  --popover-padding: var(--snice-popover-padding, var(--snice-spacing-sm, 0.75rem));
+  --popover-min-width: var(--snice-popover-min-width, 12rem);
+  --popover-max-width: var(--snice-popover-max-width, 28rem);
+}
+
+.popover {
+  position: relative;
+  display: inline-block;
+}
+
+.popover__trigger {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.popover__panel {
+  position: fixed;
+  z-index: 9999;
+  margin: 0;
+  padding: var(--popover-padding);
+  background: var(--popover-bg);
+  color: var(--popover-text);
+  border: 1px solid var(--popover-border);
+  border-radius: var(--popover-radius);
+  box-shadow: var(--popover-shadow);
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  min-width: var(--popover-min-width);
+  max-width: var(--popover-max-width);
+  inset: auto;
+  /* Allow nested popovers / selects to overflow visibly */
+  overflow: visible;
+  /* Animation: fade + slight slide */
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  pointer-events: none;
+}
+
+/* Top placements enter from below */
+.popover__panel--top,
+.popover__panel--top-start,
+.popover__panel--top-end {
+  transform: translateY(4px);
+}
+
+/* Left/right placements enter from the side */
+.popover__panel--left,
+.popover__panel--left-start,
+.popover__panel--left-end {
+  transform: translateX(4px);
+}
+.popover__panel--right,
+.popover__panel--right-start,
+.popover__panel--right-end {
+  transform: translateX(-4px);
+}
+
+.popover__panel--open {
+  opacity: 1;
+  transform: translate(0, 0);
+  pointer-events: auto;
+}
+
+.popover__content {
+  display: block;
+}
