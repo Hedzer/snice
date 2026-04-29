@@ -2,8 +2,13 @@ import { element, property, query, ready, render, styles, dispatch, watch, on, d
 import type { SpreadsheetColumn, SpreadsheetColumnFormat, CellType, CellPosition, CellRange, UndoEntry, SniceSpreadsheetElement } from './snice-spreadsheet.types';
 import sheetStyles from './snice-spreadsheet.css?inline';
 
+/**
+ * snice-spreadsheet — ALPHA. Excluded from the website showcase, the CDN
+ * build, and the npm package. See components/spreadsheet/ALPHA.md.
+ */
 @element('snice-spreadsheet')
 export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetElement {
+  static readonly STABILITY = 'alpha' as const;
   @property({ type: Array, attribute: false }) data: any[][] = [];
   @property({ type: Array, attribute: false }) columns: SpreadsheetColumn[] = [];
   @property({ type: Boolean }) readonly: boolean = false;
@@ -30,6 +35,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   private resizingCol: number = -1;
   private resizeStartX: number = 0;
   private resizeStartWidth: number = 0;
+  private suppressNextHeaderClick: boolean = false;
 
   private contextMenuCell: CellPosition | null = null;
 
@@ -518,15 +524,25 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   private handleResizeMove(e: MouseEvent) {
     if (this.resizingCol < 0 || !this.wrapperEl) return;
-    const newWidth = Math.max(40, this.resizeStartWidth + (e.clientX - this.resizeStartX));
+    // Allow shrinking to effectively zero — Excel lets the user drag a column
+    // down to "hide" it. Floor at 1px so the resize handle stays grabbable.
+    const newWidth = Math.max(1, this.resizeStartWidth + (e.clientX - this.resizeStartX));
     this.columnWidths.set(this.resizingCol, newWidth);
     this.wrapperEl.querySelectorAll(`th[data-col="${this.resizingCol}"], td[data-col="${this.resizingCol}"]`).forEach(el => {
-      (el as HTMLElement).style.width = `${newWidth}px`;
+      const cell = el as HTMLElement;
+      cell.style.width = `${newWidth}px`;
+      cell.style.minWidth = '0';
+      cell.style.maxWidth = `${newWidth}px`;
     });
   }
 
   private handleResizeEnd() {
     this.resizingCol = -1;
+    // The browser fires `click` on the th after mouseup even though the user
+    // was resizing — swallow that one synchronous click. Clear on the next
+    // task so a *later* deliberate click on the same column still sorts.
+    this.suppressNextHeaderClick = true;
+    setTimeout(() => { this.suppressNextHeaderClick = false; }, 0);
     if (this.boundResizeMove) { document.removeEventListener('mousemove', this.boundResizeMove); this.boundResizeMove = null; }
     if (this.boundResizeUp) { document.removeEventListener('mouseup', this.boundResizeUp); this.boundResizeUp = null; }
   }
@@ -852,6 +868,11 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   @on('keydown')
   handleKeydown(e: KeyboardEvent) {
+    // While editing, the input owns its own keymap (browser-native undo,
+    // typing, find within text). Spreadsheet-level shortcuts must NOT fire,
+    // otherwise Ctrl+Z would revert a *previous* committed edit and Ctrl+F
+    // would steal focus from the active editor.
+    if (this.editingCell) return;
     if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
       e.preventDefault(); this.undo(); return;
     }
@@ -864,7 +885,6 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     if ((e.ctrlKey || e.metaKey) && (e.key === 'h' || e.key === 'H')) {
       e.preventDefault(); this.openFind(true); return;
     }
-    if (this.editingCell) return;
     if (!this.selectedCell) return;
 
     const { row, col } = this.selectedCell;
@@ -1094,6 +1114,10 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
     wrapper.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
+      // Resize-handle clicks must not trigger a header sort.
+      if (target.closest('.spreadsheet-resize-handle')) return;
+      // After a resize drag, browsers fire `click` on the ancestor — suppress.
+      if (this.suppressNextHeaderClick) { this.suppressNextHeaderClick = false; return; }
       const th = target.closest('th.spreadsheet-th[data-col]') as HTMLElement;
       if (th) { this.handleHeaderClick(parseInt(th.dataset.col!)); return; }
       const rowNum = target.closest('.spreadsheet-row-num[data-row]') as HTMLElement;

@@ -178,15 +178,16 @@ test.describe('snice-spreadsheet — interactions', () => {
     const result = await sheet.evaluate((el: any) => {
       const sr = el.shadowRoot;
       const wrapper = sr.querySelector('.spreadsheet') as HTMLElement;
-      wrapper.scrollLeft = 400;
+      wrapper.scrollLeft = wrapper.scrollWidth;
       return new Promise(r => setTimeout(() => {
         const cell = sr.querySelector('.spreadsheet-td--fixed-col[data-row="0"]') as HTMLElement;
         const rect = cell.getBoundingClientRect();
         const wrap = wrapper.getBoundingClientRect();
-        r({ scrollLeft: wrapper.scrollLeft, fixedCellLeft: rect.left, wrapperLeft: wrap.left });
+        r({ scrollLeft: wrapper.scrollLeft, scrollMax: wrapper.scrollWidth - wrapper.clientWidth, fixedCellLeft: rect.left, wrapperLeft: wrap.left });
       }, 200));
     });
-    expect((result as any).scrollLeft).toBe(400);
+    expect((result as any).scrollLeft).toBeGreaterThan(0);
+    expect((result as any).scrollLeft).toBeGreaterThanOrEqual((result as any).scrollMax);
     // Frozen cell should be near the wrapper's left edge despite the scroll
     const offset = (result as any).fixedCellLeft - (result as any).wrapperLeft;
     expect(offset).toBeLessThan(100);

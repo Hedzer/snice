@@ -330,6 +330,60 @@ test.describe('snice-spreadsheet — basic interactions', () => {
     expect(after).toBeGreaterThan(before + 60);
   });
 
+  test('column can be shrunk to near-zero width like Excel', async ({ page }) => {
+    const sheet = await gotoStory(page, 'spreadsheet--with-formulas');
+    const before: number = await sheet.evaluate((el: any) => {
+      const th = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"]') as HTMLElement;
+      return th.getBoundingClientRect().width;
+    });
+    const handlePos = await sheet.evaluate((el: any) => {
+      const handle = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"] .spreadsheet-resize-handle') as HTMLElement;
+      const r = handle.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    await page.mouse.move(handlePos.x, handlePos.y);
+    await page.mouse.down();
+    // drag far left, well past the cell's left edge
+    await page.mouse.move(handlePos.x - before - 200, handlePos.y, { steps: 8 });
+    await page.mouse.up();
+    const after: number = await sheet.evaluate((el: any) => {
+      const th = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"]') as HTMLElement;
+      return th.getBoundingClientRect().width;
+    });
+    // Excel allows shrinking to ~0; we floor at 1px. With border-box + table-layout fixed
+    // we get within a few pixels of the inline width.
+    expect(after).toBeLessThan(30);
+    expect(after).toBeLessThan(before / 2);
+    // body cell in the same column also shrinks
+    const tdAfter: number = await sheet.evaluate((el: any) => {
+      const td = el.shadowRoot.querySelector('.spreadsheet-td[data-col="1"]') as HTMLElement;
+      return td.getBoundingClientRect().width;
+    });
+    expect(tdAfter).toBeLessThan(30);
+  });
+
+  test('resize drag does not trigger column sort', async ({ page }) => {
+    const sheet = await gotoStory(page, 'spreadsheet--with-formulas');
+    const sortBefore: string = await sheet.evaluate((el: any) => {
+      const th = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"]') as HTMLElement;
+      return th.getAttribute('aria-sort') || 'none';
+    });
+    const handlePos = await sheet.evaluate((el: any) => {
+      const handle = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"] .spreadsheet-resize-handle') as HTMLElement;
+      const r = handle.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    await page.mouse.move(handlePos.x, handlePos.y);
+    await page.mouse.down();
+    await page.mouse.move(handlePos.x + 50, handlePos.y, { steps: 4 });
+    await page.mouse.up();
+    const sortAfter: string = await sheet.evaluate((el: any) => {
+      const th = el.shadowRoot.querySelector('.spreadsheet-th[data-col="1"]') as HTMLElement;
+      return th.getAttribute('aria-sort') || 'none';
+    });
+    expect(sortAfter).toBe(sortBefore);
+  });
+
   // ─── Context menu ───────────────────────────────────────────────────────
 
   test('right-click on a cell shows the context menu', async ({ page }) => {
@@ -395,15 +449,17 @@ test.describe('snice-spreadsheet — basic interactions', () => {
     const result = await sheet.evaluate((el: any) => {
       const sr = el.shadowRoot;
       const wrapper = sr.querySelector('.spreadsheet') as HTMLElement;
-      wrapper.scrollLeft = 400;
+      // Scroll to the maximum so the test doesn't depend on absolute table width
+      wrapper.scrollLeft = wrapper.scrollWidth;
       return new Promise(r => setTimeout(() => {
         const cell = sr.querySelector('.spreadsheet-td--fixed-col[data-row="0"]') as HTMLElement;
         const rect = cell.getBoundingClientRect();
         const wrap = wrapper.getBoundingClientRect();
-        r({ scrollLeft: wrapper.scrollLeft, offsetFromWrapperLeft: rect.left - wrap.left });
+        r({ scrollLeft: wrapper.scrollLeft, scrollMax: wrapper.scrollWidth - wrapper.clientWidth, offsetFromWrapperLeft: rect.left - wrap.left });
       }, 200));
     }) as any;
-    expect(result.scrollLeft).toBe(400);
+    expect(result.scrollLeft).toBeGreaterThan(0);
+    expect(result.scrollLeft).toBeGreaterThanOrEqual(result.scrollMax);
     expect(result.offsetFromWrapperLeft).toBeLessThan(80);
   });
 

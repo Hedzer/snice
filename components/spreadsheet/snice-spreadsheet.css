@@ -86,7 +86,6 @@
   border-collapse: separate;
   border-spacing: 0;
   width: max-content;
-  min-width: 100%;
   font-size: var(--snice-font-size-sm, 0.875rem);
   table-layout: fixed;
   font-variant-numeric: tabular-nums;
@@ -109,7 +108,10 @@
   z-index: 2;
   font-size: var(--snice-font-size-xs, 0.75rem);
   height: 1.75rem;
-  min-width: 5rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* No min-width: column width comes from the inline `width` set by render.
+     border-box ensures padding is included so width:1px renders as 1px. */
 }
 
 .spreadsheet-th:hover {
@@ -197,8 +199,9 @@ th.spreadsheet-row-num {
   border-bottom: 1px solid var(--spreadsheet-grid);
   padding: 0;
   position: relative;
-  min-width: 5rem;
   height: 1.75rem;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Frozen panes — sticky offsets are emitted as inline `top` / `left`
