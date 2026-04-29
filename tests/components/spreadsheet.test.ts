@@ -296,6 +296,99 @@ describe('snice-spreadsheet', () => {
       expect(cell?.textContent?.trim()).toBe('not a number');
     });
 
+    it('fill handle is visible when a cell is selected and editable', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: SAMPLE_DATA,
+        columns: SAMPLE_COLUMNS,
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const cell = sr.querySelector('.spreadsheet-td[data-row="1"][data-col="1"]') as HTMLElement;
+      cell.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+      const handle = sr.querySelector('.spreadsheet-fill-handle') as HTMLElement;
+      expect(handle.hidden).toBe(false);
+    });
+
+    it('fill handle is hidden when readonly', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: SAMPLE_DATA,
+        columns: SAMPLE_COLUMNS,
+        readonly: true,
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const cell = sr.querySelector('.spreadsheet-td[data-row="0"][data-col="0"]') as HTMLElement;
+      cell.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+      const handle = sr.querySelector('.spreadsheet-fill-handle') as HTMLElement;
+      expect(handle.hidden).toBe(true);
+    });
+
+    it('fill drag copies a single source value down into target cells', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['x', '', '', ''], ['', '', '', ''], ['', '', '', ''], ['', '', '', '']],
+        columns: [{ header: 'A' }, { header: 'B' }, { header: 'C' }, { header: 'D' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const src = sr.querySelector('.spreadsheet-td[data-row="0"][data-col="0"]') as HTMLElement;
+      src.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      src.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, composed: true }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+
+      const target = sr.querySelector('.spreadsheet-td[data-row="3"][data-col="0"]') as HTMLElement;
+      (sr as any).elementFromPoint = () => target;
+
+      const handle = sr.querySelector('.spreadsheet-fill-handle') as HTMLElement;
+      handle.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 50, clientY: 200 }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+
+      expect(sheet.data[1][0]).toBe('x');
+      expect(sheet.data[2][0]).toBe('x');
+      expect(sheet.data[3][0]).toBe('x');
+      expect(sheet.data[1][1]).toBe('');
+    });
+
+    it('fill drag cycles a 2-cell source pattern across the target', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [
+          ['a', '', '', '', ''],
+          ['b', '', '', '', ''],
+          ['', '', '', '', ''],
+          ['', '', '', '', ''],
+          ['', '', '', '', ''],
+        ],
+        columns: Array.from({ length: 5 }, (_, i) => ({ header: `c${i}` })),
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const c00 = sr.querySelector('.spreadsheet-td[data-row="0"][data-col="0"]') as HTMLElement;
+      c00.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      const c10 = sr.querySelector('.spreadsheet-td[data-row="1"][data-col="0"]') as HTMLElement;
+      c10.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0, shiftKey: true }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+
+      const target = sr.querySelector('.spreadsheet-td[data-row="4"][data-col="0"]') as HTMLElement;
+      (sr as any).elementFromPoint = () => target;
+
+      const handle = sr.querySelector('.spreadsheet-fill-handle') as HTMLElement;
+      handle.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0 }));
+      document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 50, clientY: 300 }));
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await wait(20);
+
+      expect(sheet.data[2][0]).toBe('a');
+      expect(sheet.data[3][0]).toBe('b');
+      expect(sheet.data[4][0]).toBe('a');
+    });
+
     it('drag updates selectionEnd to the cell under the pointer', async () => {
       sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
         data: SAMPLE_DATA,

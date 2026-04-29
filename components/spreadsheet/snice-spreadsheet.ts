@@ -43,6 +43,15 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   @query('.spreadsheet') private wrapperEl?: HTMLElement;
   @query('.spreadsheet-status-bar') private statusBarEl?: HTMLElement;
   @query('.spreadsheet-context-menu') private contextMenuEl?: HTMLElement;
+  @query('.spreadsheet-fill-handle') private fillHandleEl?: HTMLElement;
+
+  // Fill-handle drag state. While `fillSourceRange` is set, mousemove on
+  // document drives `fillTargetEnd` which highlights the prospective fill
+  // range; mouseup commits the values from source into the target.
+  private fillSourceRange: CellRange | null = null;
+  private fillTargetEnd: CellPosition | null = null;
+  private boundFillMove: ((e: MouseEvent) => void) | null = null;
+  private boundFillUp: ((e: MouseEvent) => void) | null = null;
 
   @styles()
   componentStyles() {
@@ -328,6 +337,8 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     this.isDragging = false;
     if (this.boundDragMove) { document.removeEventListener('mousemove', this.boundDragMove); this.boundDragMove = null; }
     if (this.boundDragUp) { document.removeEventListener('mouseup', this.boundDragUp); this.boundDragUp = null; }
+    // Drag is over — re-show / reposition the fill handle on the final selection.
+    this.updateFillHandlePosition();
   }
 
   private handleCellDblClick(row: number, col: number) {
@@ -917,6 +928,170 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
     this.updateFormulaBar();
     this.updateStatusBar();
+    this.updateFillHandlePosition();
+  }
+
+  // ── Fill handle ─────────────────────────────────────────────────────────
+
+  private updateFillHandlePosition() {
+    const handle = this.fillHandleEl;
+    if (!handle) return;
+    // Hide while the user is mid-drag (either range select or fill drag).
+    // Avoids two getBoundingClientRect calls per mousemove and keeps drag
+    // hot-path costs to O(1) elementFromPoint only.
+    if (this.readonly || this.editingCell || this.isDragging || this.fillSourceRange ||
+        !this.selectionStart || !this.selectionEnd || !this.wrapperEl) {
+      handle.hidden = true;
+      return;
+    }
+    const range = this.getSelectionRange();
+    if (!range) { handle.hidden = true; return; }
+    const cell = this.wrapperEl.querySelector(
+      `td.spreadsheet-td[data-row="${range.end.row}"][data-col="${range.end.col}"]`
+    ) as HTMLElement | null;
+    if (!cell) { handle.hidden = true; return; }
+    const cellRect = cell.getBoundingClientRect();
+    const hostRect = this.getBoundingClientRect();
+    handle.style.left = `${cellRect.right - hostRect.left - 4}px`;
+    handle.style.top = `${cellRect.bottom - hostRect.top - 4}px`;
+    handle.hidden = false;
+  }
+
+  @on('mousedown', '.spreadsheet-fill-handle')
+  private handleFillStart(e: MouseEvent) {
+    if (this.readonly) return;
+    const range = this.getSelectionRange();
+    if (!range) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.fillSourceRange = range;
+    this.fillTargetEnd = { ...range.end };
+    this.boundFillMove = (ev) => this.handleFillMove(ev);
+    this.boundFillUp = () => this.handleFillEnd();
+    document.addEventListener('mousemove', this.boundFillMove);
+    document.addEventListener('mouseup', this.boundFillUp);
+  }
+
+  private handleFillMove(e: MouseEvent) {
+    if (!this.fillSourceRange || !this.wrapperEl) return;
+    const root = this.shadowRoot ?? document;
+    const hit = (root as Document | ShadowRoot)
+      .elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const cell = hit?.closest('.spreadsheet-td') as HTMLElement | null;
+    if (!cell) return;
+    const r = parseInt(cell.dataset.row || '-1', 10);
+    const c = parseInt(cell.dataset.col || '-1', 10);
+    if (r < 0 || c < 0) return;
+    if (r === this.fillTargetEnd?.row && c === this.fillTargetEnd?.col) return;
+    this.fillTargetEnd = { row: r, col: c };
+    this.refreshFillTargetHighlight();
+  }
+
+  private refreshFillTargetHighlight() {
+    if (!this.wrapperEl) return;
+    this.wrapperEl.querySelectorAll('.fill-target')
+      .forEach(el => el.classList.remove('fill-target'));
+    const target = this.computeFillTargetRange();
+    if (!target) return;
+    for (let r = target.start.row; r <= target.end.row; r++) {
+      for (let c = target.start.col; c <= target.end.col; c++) {
+        // Don't mark the source range — only cells that will receive values.
+        if (this.cellInRange(r, c, this.fillSourceRange!)) continue;
+        const td = this.wrapperEl.querySelector(`td[data-row="${r}"][data-col="${c}"]`);
+        if (td) td.classList.add('fill-target');
+      }
+    }
+  }
+
+  /**
+   * Snap the fill drag to either a vertical or horizontal extension of the
+   * source range — whichever direction the pointer has moved further. Excel
+   * does the same: you can only fill one axis at a time. The returned range
+   * INCLUDES the source range; only cells outside the source receive values.
+   */
+  private computeFillTargetRange(): CellRange | null {
+    const src = this.fillSourceRange;
+    const end = this.fillTargetEnd;
+    if (!src || !end) return null;
+    const dRow = Math.max(0, end.row - src.end.row, src.start.row - end.row);
+    const dCol = Math.max(0, end.col - src.end.col, src.start.col - end.col);
+    if (dRow === 0 && dCol === 0) return src;
+    if (dRow >= dCol) {
+      return {
+        start: { row: Math.min(src.start.row, end.row), col: src.start.col },
+        end:   { row: Math.max(src.end.row, end.row),   col: src.end.col   },
+      };
+    }
+    return {
+      start: { row: src.start.row, col: Math.min(src.start.col, end.col) },
+      end:   { row: src.end.row,   col: Math.max(src.end.col, end.col)   },
+    };
+  }
+
+  private cellInRange(row: number, col: number, range: CellRange): boolean {
+    return row >= range.start.row && row <= range.end.row
+        && col >= range.start.col && col <= range.end.col;
+  }
+
+  private handleFillEnd() {
+    if (this.boundFillMove) document.removeEventListener('mousemove', this.boundFillMove);
+    if (this.boundFillUp) document.removeEventListener('mouseup', this.boundFillUp);
+    this.boundFillMove = null;
+    this.boundFillUp = null;
+
+    const target = this.computeFillTargetRange();
+    const source = this.fillSourceRange;
+    this.fillSourceRange = null;
+    this.fillTargetEnd = null;
+    this.wrapperEl?.querySelectorAll('.fill-target').forEach(el => el.classList.remove('fill-target'));
+
+    if (!source || !target) return;
+    this.applyFill(source, target);
+
+    // Extend the active selection to match the new range so the user can keep
+    // working with the filled cells.
+    this.selectionStart = { ...target.start };
+    this.selectionEnd   = { ...target.end };
+    this.updateSelection();
+  }
+
+  /**
+   * Copy values from source range into target range. Source values cycle to
+   * fill any extra rows or columns (Excel: drag-fill of a single value
+   * repeats it; drag-fill of a 2-cell sequence repeats those two values —
+   * arithmetic series detection is a future enhancement).
+   *
+   * Implementation note: mutates this.data in place across the whole fill,
+   * then triggers a single re-render at the end. Calling the public setCell()
+   * per cell would cause N full re-renders for an N-cell fill — fine for one
+   * cell, awful for hundreds.
+   */
+  private applyFill(source: CellRange, target: CellRange) {
+    const sRows = source.end.row - source.start.row + 1;
+    const sCols = source.end.col - source.start.col + 1;
+    let touched = 0;
+    for (let r = target.start.row; r <= target.end.row; r++) {
+      for (let c = target.start.col; c <= target.end.col; c++) {
+        if (this.cellInRange(r, c, source)) continue;
+        const sr = source.start.row + ((r - source.start.row) % sRows + sRows) % sRows;
+        const sc = source.start.col + ((c - source.start.col) % sCols + sCols) % sCols;
+        const newVal = this.data[sr]?.[sc];
+        while (this.data.length <= r) this.data.push([]);
+        while (this.data[r].length <= c) this.data[r].push('');
+        const oldVal = this.data[r][c];
+        if (oldVal === newVal) continue;
+        this.data[r][c] = newVal;
+        this.pushUndo({ row: r, col: c, oldValue: oldVal, newValue: newVal });
+        this.emitCellChange(r, c, newVal, oldVal);
+        touched++;
+      }
+    }
+    if (touched > 0) {
+      this.redoStack.length = 0;
+      // One reassignment to trigger the @property re-render path.
+      this.data = [...this.data];
+    }
   }
 
   private updateFormulaBar() {
@@ -1085,6 +1260,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
         <input class="spreadsheet-formula-input" />
       </div>
       <div class="spreadsheet" part="base" tabindex="0"></div>
+      <div class="spreadsheet-fill-handle" part="fill-handle" hidden aria-hidden="true"></div>
       <div class="spreadsheet-status-bar" part="status-bar"></div>
       <div class="spreadsheet-context-menu" part="context-menu" hidden>
         <div class="spreadsheet-context-item" data-ctx="cut"><span>Cut</span><span class="spreadsheet-context-item-shortcut">Ctrl+X</span></div>
