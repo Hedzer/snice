@@ -42,7 +42,7 @@
   /* ── Thermal variant ── */
   --receipt-thermal-font: var(--snice-receipt-thermal-font, 'Courier New', Courier, monospace);
   --receipt-thermal-width: var(--snice-receipt-thermal-width, 18rem);
-  --receipt-thermal-bg: var(--snice-receipt-thermal-bg, rgb(255 255 248));
+  --receipt-thermal-bg: var(--snice-receipt-thermal-bg, var(--snice-color-surface-container-high, rgb(252 251 249)));
 
   /* ── Modern variant ── */
   --receipt-modern-radius: var(--snice-receipt-modern-radius, 12px);

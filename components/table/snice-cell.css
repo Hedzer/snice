@@ -107,7 +107,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.125rem; /* 2px */
+  gap: 0.125rem;
+  container-type: inline-size;
+}
+
+/* Auto-fit: scale the rating's star size to ~16% of container width
+   (5 stars + gaps ≈ 80% of cell), capping at 1rem (the 'small' default). */
+:host([type="rating"]) snice-rating {
+  --rating-size: clamp(0.55rem, 16cqi, 1rem);
 }
 
 /* Progress Content Styling */

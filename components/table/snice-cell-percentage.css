@@ -4,7 +4,6 @@
   display: flex;
   align-items: center;
   min-height: 2.5rem; /* 40px */
-  min-width: 6.25rem; /* 100px */
   flex: 1;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
@@ -13,7 +12,6 @@
 
 .cell-content {
   width: 100%;
-  min-width: 6.25rem; /* 100px */
   min-height: 1.25rem; /* 20px */
   word-wrap: break-word;
   display: flex;

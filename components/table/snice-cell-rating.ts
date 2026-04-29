@@ -1,7 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { RatingFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
-import './snice-rating';
+import '../rating/snice-rating';
 
 @element('snice-cell-rating')
 export class SniceCellRating extends HTMLElement implements SniceCellElement {
@@ -64,20 +64,21 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
 
   private createRatingElement() {
     if (!this.contentElement) return;
-    
+
     // Clear existing content
     this.contentElement.innerHTML = '';
-    
-    // Create rating element
+
+    // Create rating element using the real <snice-rating> component
     const rating = document.createElement('snice-rating') as any;
     rating.value = Number(this.value) || 0;
-    
-    // Apply format from column
+
     const format: RatingFormat = this.column.ratingFormat || {};
     rating.max = format.max ?? 5;
-    rating.symbol = format.symbol ?? '★';
-    rating.emptySymbol = format.emptySymbol ?? '☆';
-    rating.color = format.color ?? getComputedStyle(this).getPropertyValue('--snice-color-warning').trim();
+    if (format.symbol) rating.icon = format.symbol;
+    rating.size = 'small';
+    rating.readonly = true;
+    rating.precision = 'half';
+    if (format.color) rating.style.setProperty('--rating-color', format.color);
 
     this.contentElement.appendChild(rating);
   }
