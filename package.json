@@ -124,6 +124,7 @@
     "test:cdn-runtime": "vitest run tests/cdn-runtime.test.ts",
     "test:react-adapters": "vitest run tests/react-adapters",
     "test:live": "node scripts/run-live-tests.js",
+    "test:live:spreadsheet": "npx playwright test tests/live/components/spreadsheet --config=tests/playwright.config.ts",
     "test:live:components": "npx playwright test tests/live/components --config=tests/playwright.config.ts",
     "test:live:templates": "npx playwright test tests/live/templates --config=tests/playwright.config.ts",
     "test:all": "npm run test:src && npm run test:built && npm run test:cdn && npm run test:cdn-runtime && npm run test:react-adapters",
