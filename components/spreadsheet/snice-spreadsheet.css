@@ -263,6 +263,12 @@ th.spreadsheet-row-num {
   text-align: center;
 }
 
+/* Date / datetime cells: tabular figures so columns align even with mixed
+   widths (e.g. AM/PM). Left-aligned by default. */
+.spreadsheet-cell-date {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Status bar */
 .spreadsheet-status-bar {
   display: flex;

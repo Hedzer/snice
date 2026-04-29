@@ -234,6 +234,68 @@ describe('snice-spreadsheet', () => {
       }
     });
 
+    it('formats numbers with default 6-digit max (kills floating-point noise)', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [[126.66666666666667]],
+        columns: [{ header: 'X', type: 'number' }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent || '').not.toContain('666666666666');
+      expect(cell?.textContent || '').toMatch(/126[.,]666667/);
+    });
+
+    it('honors column.format.decimals for number type', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [[42.5]],
+        columns: [{ header: 'X', type: 'number', format: { decimals: 3 } }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent?.trim()).toMatch(/42[.,]500/);
+    });
+
+    it('formats currency with locale + currency code', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [[1234.5]],
+        columns: [{ header: 'Price', type: 'currency', format: { currency: 'USD', locale: 'en-US' } }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent || '').toContain('$');
+      expect(cell?.textContent || '').toContain('1,234.50');
+    });
+
+    it('formats percent values (0.42 → 42%)', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [[0.42]],
+        columns: [{ header: 'Rate', type: 'percent', format: { locale: 'en-US' } }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent?.trim()).toBe('42%');
+    });
+
+    it('formats dates via Intl.DateTimeFormat (en-US medium → "Mar 15, 2022")', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['2022-03-15']],
+        columns: [{ header: 'D', type: 'date', format: { locale: 'en-US', dateStyle: 'medium' } }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent?.trim()).toMatch(/Mar 15, 2022/);
+    });
+
+    it('falls back gracefully when number cell holds non-numeric value', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['not a number']],
+        columns: [{ header: 'X', type: 'number' }],
+      });
+      await wait(40);
+      const cell = (sheet as HTMLElement).shadowRoot!.querySelector('.spreadsheet-td[data-row="0"][data-col="0"] .spreadsheet-cell');
+      expect(cell?.textContent?.trim()).toBe('not a number');
+    });
+
     it('drag updates selectionEnd to the cell under the pointer', async () => {
       sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
         data: SAMPLE_DATA,

@@ -1,5 +1,5 @@
 import { element, property, query, ready, render, styles, dispatch, watch, on, dispose, html, css } from 'snice';
-import type { SpreadsheetColumn, CellPosition, CellRange, UndoEntry, SniceSpreadsheetElement } from './snice-spreadsheet.types';
+import type { SpreadsheetColumn, SpreadsheetColumnFormat, CellType, CellPosition, CellRange, UndoEntry, SniceSpreadsheetElement } from './snice-spreadsheet.types';
 import sheetStyles from './snice-spreadsheet.css?inline';
 
 @element('snice-spreadsheet')
@@ -436,13 +436,9 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     const rawValue = this.data[row]?.[col];
     const displayValue = this.resolveValue(rawValue);
     const colDef = this.columns[col];
-    const cellType = colDef?.type || 'text';
-    const display = cellType === 'boolean'
-      ? (displayValue ? '\u2713' : '\u2717')
-      : (displayValue != null ? this.esc(String(displayValue)) : '');
-    const contentClass = cellType === 'number' ? 'spreadsheet-cell spreadsheet-cell-number'
-      : cellType === 'boolean' ? 'spreadsheet-cell spreadsheet-cell-boolean'
-      : 'spreadsheet-cell';
+    const cellType: CellType = colDef?.type || 'text';
+    const display = this.formatCellDisplay(displayValue, colDef);
+    const contentClass = this.cellContentClass(cellType);
     td.innerHTML = `<span class="${contentClass}">${display}</span>`;
   }
 
@@ -808,14 +804,10 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
         const rawValue = this.data[r]?.[c];
         const displayValue = this.resolveValue(rawValue);
         const colDef = this.columns[c];
-        const cellType = colDef?.type || 'text';
+        const cellType: CellType = colDef?.type || 'text';
         const width = this.getColWidth(c);
-        const display = cellType === 'boolean'
-          ? (displayValue ? '\u2713' : '\u2717')
-          : (displayValue != null ? this.esc(String(displayValue)) : '');
-        const contentClass = cellType === 'number' ? 'spreadsheet-cell spreadsheet-cell-number'
-          : cellType === 'boolean' ? 'spreadsheet-cell spreadsheet-cell-boolean'
-          : 'spreadsheet-cell';
+        const display = this.formatCellDisplay(displayValue, colDef);
+        const contentClass = this.cellContentClass(cellType);
         h += `<td class="spreadsheet-td" role="gridcell" data-row="${r}" data-col="${c}" aria-colindex="${c + 2}" style="width:${width}px">`;
         h += `<span class="${contentClass}">${display}</span>`;
         h += '</td>';
@@ -961,6 +953,104 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   private escAttr(str: string): string {
     return this.esc(str).replace(/"/g, '&quot;');
+  }
+
+  // ── Display Formatting ──
+
+  /**
+   * Render a raw cell value as the display string for its column type. Returns
+   * an HTML-safe string (already escaped). Falls back gracefully when values
+   * don't match the declared type — invalid number stays raw, invalid date
+   * stays raw — so the user can fix bad data without the cell going blank.
+   */
+  private formatCellDisplay(value: any, colDef?: SpreadsheetColumn): string {
+    if (value == null || value === '') return '';
+    const type = colDef?.type || 'text';
+    const fmt = colDef?.format;
+
+    if (type === 'boolean') {
+      return value ? '✓' : '✗';
+    }
+
+    if (type === 'number' || type === 'currency' || type === 'percent') {
+      const n = typeof value === 'number' ? value : parseFloat(String(value));
+      if (!Number.isFinite(n)) return this.esc(String(value));
+      const opts = this.numberFormatOptions(type, fmt);
+      try {
+        return this.esc(new Intl.NumberFormat(fmt?.locale, opts).format(n));
+      } catch {
+        return this.esc(String(n));
+      }
+    }
+
+    if (type === 'date' || type === 'datetime') {
+      const d = value instanceof Date ? value : new Date(String(value));
+      if (Number.isNaN(d.getTime())) return this.esc(String(value));
+      const opts = this.dateFormatOptions(type, fmt);
+      try {
+        return this.esc(new Intl.DateTimeFormat(fmt?.locale, opts).format(d));
+      } catch {
+        return this.esc(String(value));
+      }
+    }
+
+    return this.esc(String(value));
+  }
+
+  private numberFormatOptions(
+    type: 'number' | 'currency' | 'percent',
+    fmt?: SpreadsheetColumnFormat
+  ): Intl.NumberFormatOptions {
+    const intl = (fmt?.intlOptions as Intl.NumberFormatOptions | undefined);
+    if (intl) return intl;
+    if (type === 'currency') {
+      return {
+        style: 'currency',
+        currency: fmt?.currency || 'USD',
+        minimumFractionDigits: fmt?.decimals ?? 2,
+        maximumFractionDigits: fmt?.decimals ?? 2,
+      };
+    }
+    if (type === 'percent') {
+      return {
+        style: 'percent',
+        minimumFractionDigits: fmt?.decimals ?? 0,
+        maximumFractionDigits: fmt?.decimals ?? 0,
+      };
+    }
+    // 'number' — auto-trim trailing zeros up to 6 decimals by default; user
+    // can pin a precise count via format.decimals.
+    if (fmt?.decimals != null) {
+      return {
+        minimumFractionDigits: fmt.decimals,
+        maximumFractionDigits: fmt.decimals,
+      };
+    }
+    return { maximumFractionDigits: 6 };
+  }
+
+  private dateFormatOptions(
+    type: 'date' | 'datetime',
+    fmt?: SpreadsheetColumnFormat
+  ): Intl.DateTimeFormatOptions {
+    const intl = (fmt?.intlOptions as Intl.DateTimeFormatOptions | undefined);
+    if (intl) return intl;
+    if (type === 'datetime') {
+      return { dateStyle: fmt?.dateStyle || 'medium', timeStyle: fmt?.timeStyle || 'short' };
+    }
+    // Date-only strings ('2022-03-15') parse as UTC midnight. Without pinning
+    // the format to UTC, a viewer west of GMT would see the previous day.
+    // Date-only columns must display the literal date regardless of TZ.
+    return { dateStyle: fmt?.dateStyle || 'medium', timeZone: 'UTC' };
+  }
+
+  private cellContentClass(type: CellType): string {
+    if (type === 'number' || type === 'currency' || type === 'percent') {
+      return 'spreadsheet-cell spreadsheet-cell-number';
+    }
+    if (type === 'boolean') return 'spreadsheet-cell spreadsheet-cell-boolean';
+    if (type === 'date' || type === 'datetime') return 'spreadsheet-cell spreadsheet-cell-date';
+    return 'spreadsheet-cell';
   }
 
   // ── Events ──
