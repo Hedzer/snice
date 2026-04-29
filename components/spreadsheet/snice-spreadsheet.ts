@@ -412,8 +412,13 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     const col = this.editingCell?.col;
     if (row === undefined || col === undefined) return;
 
+    // Enter/Tab/Escape on the edit input MUST stop propagation — otherwise
+    // the bubbling keydown reaches the host-level handler which interprets
+    // Enter (and friends) as "start editing the selected cell", immediately
+    // re-entering edit on the next cell after we just committed.
     if (e.key === 'Enter') {
       e.preventDefault();
+      e.stopPropagation();
       this.commitEdit();
       const nextRow = row + 1;
       if (nextRow >= this.data.length) this.addRow();
@@ -423,11 +428,13 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       this.updateSelection();
     } else if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       this.editingCell = null;
       this.restoreCell(row, col);
       this.updateSelection();
     } else if (e.key === 'Tab') {
       e.preventDefault();
+      e.stopPropagation();
       this.commitEdit();
       const nextCol = e.shiftKey ? col - 1 : col + 1;
       if (nextCol >= 0) {
@@ -1089,7 +1096,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       const target = e.target as HTMLElement;
       const th = target.closest('th.spreadsheet-th[data-col]') as HTMLElement;
       if (th) { this.handleHeaderClick(parseInt(th.dataset.col!)); return; }
-      const rowNum = target.closest('td.spreadsheet-row-num[data-row]') as HTMLElement;
+      const rowNum = target.closest('.spreadsheet-row-num[data-row]') as HTMLElement;
       if (rowNum) { this.handleRowClick(parseInt(rowNum.dataset.row!)); return; }
       if (target.closest('[data-action="add-row"]')) { this.addRow(); return; }
       if (target.closest('[data-action="add-col"]')) { this.addColumn(); return; }
@@ -1144,7 +1151,7 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       if (cell) cell.classList.add('selected');
       const colHeader = wrapper.querySelector(`th[data-col="${col}"]`);
       if (colHeader) colHeader.classList.add('col-selected');
-      const rowNum = wrapper.querySelector(`td.spreadsheet-row-num[data-row="${row}"]`);
+      const rowNum = wrapper.querySelector(`.spreadsheet-row-num[data-row="${row}"]`);
       if (rowNum) rowNum.classList.add('row-selected');
     }
 
