@@ -53,7 +53,7 @@ const meta: Meta<Args> = {
     el.setAttribute('value', args.value ?? DEFAULT_VALUE);
     if (args.renderMode !== undefined) el.setAttribute('render-mode', args.renderMode);
     if (args.dotStyle !== undefined) el.setAttribute('dot-style', args.dotStyle);
-    if (args.errorCorrection !== undefined) el.setAttribute('error-correction', args.errorCorrection);
+    if (args.errorCorrection !== undefined) el.setAttribute('error-correction-level', args.errorCorrection);
     if (args.size !== undefined) el.setAttribute('size', String(args.size));
     if (args.fgColor !== undefined) el.setAttribute('fg-color', args.fgColor);
     if (args.bgColor !== undefined) el.setAttribute('bg-color', args.bgColor);

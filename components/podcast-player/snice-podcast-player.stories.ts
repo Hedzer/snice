@@ -57,7 +57,7 @@ const meta: Meta<Args> = {
     const el = document.createElement('snice-podcast-player');
     el.style.cssText = 'display:block;max-width:480px;';
     if (args.src !== undefined) el.setAttribute('src', args.src);
-    if (args.title !== undefined) el.setAttribute('title', args.title);
+    if (args.title !== undefined) (el as any).title = args.title;
     if (args.show !== undefined) el.setAttribute('show', args.show);
     if (args.description !== undefined) el.setAttribute('description', args.description);
     if (args.artwork !== undefined) el.setAttribute('artwork', args.artwork);
@@ -243,13 +243,13 @@ export const CSSPartsStyling: Story = {
 
     const defaultEl = document.createElement('snice-podcast-player');
     defaultEl.setAttribute('src', SRC1);
-    defaultEl.setAttribute('title', 'Getting Started with Web Components');
+    (defaultEl as any).title = 'Getting Started with Web Components';
     defaultEl.setAttribute('show', 'Dev Talks');
     wrap.appendChild(section('Default (no ::part() styles)', 'parts-demo-pp-default', defaultEl));
 
     const styledEl = document.createElement('snice-podcast-player');
     styledEl.setAttribute('src', SRC1);
-    styledEl.setAttribute('title', 'Getting Started with Web Components');
+    (styledEl as any).title = 'Getting Started with Web Components';
     styledEl.setAttribute('show', 'Dev Talks');
     wrap.appendChild(section(
       'Styled: ::part(base) — dark amber border  |  ::part(info) — stone gradient header  |  ::part(controls) — dark controls bar',

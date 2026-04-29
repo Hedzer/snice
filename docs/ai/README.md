@@ -179,8 +179,28 @@ class MyCounter extends HTMLElement {
 
 **IMPORTANT:** Do NOT read all component docs. Only read a component's doc when you need to use or reference it.
 
-**Implemented Components:**
-- accordion, accordion-item, alert, avatar, badge, banner, breadcrumbs, button, card, checkbox, chip, color-display, color-picker, date-picker, divider, drawer, empty-state, file-gallery, file-upload, image, input, login, modal, nav, progress, qr-code, qr-reader, radio, select, skeleton, slider, spinner, switch, table, tabs, tab, textarea, timeline, tooltip
+**Implemented Components** (top-level directories under `components/`, alphabetical):
+
+accordion, action-bar, activity-feed, alert, approval-flow, app-tiles, audio-recorder, availability, avatar, avatar-group, badge, banner, binpack, book, booking, breadcrumbs, button, calendar, camera, camera-annotate, candlestick, card, carousel, cart, chart, chat, checkbox, chip, code-block, color-display, color-picker, command-palette, comments, countdown, cropper, data-card, date-picker, date-range-picker, date-time-picker, diff, divider, doc, draw, drawer, empty-state, estimate, file-gallery, file-upload, flip-card, flow, form-layout, funnel, gantt, gauge, grid, heatmap, image, input, invoice, kanban, key-value, kpi, layout, leaderboard, link, link-preview, list, location, login, map, markdown, masonry, menu, message-strip, metric-table, modal, music-player, nav, network-graph, notification-center, order-tracker, org-chart, pagination, paint, pdf-viewer, permission-matrix, podcast-player, pricing-table, product-card, progress, progress-ring, qr-code, qr-reader, radio, range-slider, rating, receipt, recipe, sankey, segmented-control, select, skeleton, slider, sortable, sparkline, spinner, split-button, split-pane, spotlight, stat-group, step-input, stepper, switch, table, tabs, tag, tag-input, terminal, testimonial, textarea, timeline, time-picker, timer, time-range-picker, toast, tooltip, tree, treemap, user-card, video-player, virtual-scroller, waterfall, weather, work-order
+
+**Nested sub-components** are documented under their parent — don't import them directly:
+- `accordion-item` lives inside `accordion/`
+- `tab` and `tab-panel` live inside `tabs/`
+- `option` lives inside `select/`
+- `menu-item` and `menu-divider` live inside `menu/`
+- `tree-item` lives inside `tree/`
+- `column` and `row` live inside `table/`
+- `cell-*` (text, number, date, etc.) live inside `table/`
+- `layout-*` (sidebar, dashboard, blog, etc.) live inside `layout/`
+- `leaderboard-entry` lives inside `leaderboard/`
+- `stepper-panel` lives inside `stepper/`
+- `crumb` lives inside `breadcrumbs/`
+- `kv-pair` lives inside `key-value/`
+- `list-item` lives inside `list/`
+- `drawer-target` lives inside `drawer/`
+- `toast-container` lives inside `toast/`
+
+**Excluded from builds:** components listed in `components/.wip` (currently: `spreadsheet`).
 
 **To use a component:** Read `docs/ai/components/{component-name}.md` only when needed.
 

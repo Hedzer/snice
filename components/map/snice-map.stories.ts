@@ -5,8 +5,6 @@ type Args = {
   zoom?: number;
   minZoom?: number;
   maxZoom?: number;
-  zoomEnabled?: boolean;
-  dragEnabled?: boolean;
 };
 
 const europeanCities = [
@@ -34,8 +32,6 @@ function makeMap(opts: {
   minZoom?: number;
   maxZoom?: number;
   markers?: object[];
-  zoomEnabled?: boolean;
-  dragEnabled?: boolean;
 } = {}): HTMLElement {
   const el = document.createElement('snice-map');
   el.style.cssText = 'display:block;height:300px;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;';
@@ -44,8 +40,6 @@ function makeMap(opts: {
   if (opts.minZoom !== undefined) el.setAttribute('min-zoom', String(opts.minZoom));
   if (opts.maxZoom !== undefined) el.setAttribute('max-zoom', String(opts.maxZoom));
   if (opts.markers !== undefined) (el as any).markers = opts.markers;
-  if (opts.zoomEnabled === false) el.setAttribute('zoom-enabled', 'false');
-  if (opts.dragEnabled === false) el.setAttribute('drag-enabled', 'false');
   return el;
 }
 
@@ -57,8 +51,6 @@ const meta: Meta<Args> = {
     zoom:        { control: 'number' },
     minZoom:     { control: 'number' },
     maxZoom:     { control: 'number' },
-    zoomEnabled: { control: 'boolean' },
-    dragEnabled: { control: 'boolean' },
   },
   render: (args) => {
     const wrap = document.createElement('div');
@@ -67,8 +59,6 @@ const meta: Meta<Args> = {
       zoom: args.zoom,
       minZoom: args.minZoom,
       maxZoom: args.maxZoom,
-      zoomEnabled: args.zoomEnabled,
-      dragEnabled: args.dragEnabled,
     }));
     return wrap;
   },
@@ -200,36 +190,6 @@ export const ManyMarkersfitBounds: Story = {
     wrap.appendChild(el);
     // fitBounds after element is connected
     requestAnimationFrame(() => { (el as any).fitBounds?.(); });
-    return wrap;
-  },
-};
-
-// h2: Zoom disabled
-export const ZoomDisabled: Story = {
-  render: () => {
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    wrap.appendChild(makeMap({ center: { lat: 51.5074, lng: -0.1278 }, zoom: 10, zoomEnabled: false }));
-    return wrap;
-  },
-};
-
-// h2: Drag disabled
-export const DragDisabled: Story = {
-  render: () => {
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    wrap.appendChild(makeMap({ center: { lat: 51.5074, lng: -0.1278 }, zoom: 10, dragEnabled: false }));
-    return wrap;
-  },
-};
-
-// h2: Both zoom and drag disabled
-export const BothZoomAndDragDisabled: Story = {
-  render: () => {
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
-    wrap.appendChild(makeMap({ center: { lat: 51.5074, lng: -0.1278 }, zoom: 10, zoomEnabled: false, dragEnabled: false }));
     return wrap;
   },
 };

@@ -34,7 +34,7 @@ const meta: Meta<Args> = {
     if (args.variant     !== undefined) el.setAttribute('variant',   args.variant);
     if (args.size        !== undefined) el.setAttribute('size',      args.size);
     if (args.url         !== undefined) el.setAttribute('url',       args.url);
-    if (args.title       !== undefined) el.setAttribute('title',     args.title);
+    if (args.title       !== undefined) (el as any).title = args.title;
     if (args.description !== undefined) el.setAttribute('description', args.description);
     if (args.image       !== undefined) el.setAttribute('image',     args.image);
     if (args.siteName    !== undefined) el.setAttribute('site-name', args.siteName);

@@ -22,8 +22,10 @@ const SAMPLE_ENTRIES: LeaderboardEntry[] = [
 function makeLeaderboard(entries: LeaderboardEntry[], attrs: Record<string, string> = {}): HTMLElement {
   const el = document.createElement('snice-leaderboard');
   el.style.cssText = 'max-width:400px;display:block;';
+  // `title` is `@property({ attribute: false })` — set as JS property, not attribute.
   for (const [k, v] of Object.entries(attrs)) {
-    el.setAttribute(k, v);
+    if (k === 'title') (el as any).title = v;
+    else el.setAttribute(k, v);
   }
   (el as any).setEntries(entries);
   return el;
@@ -43,7 +45,7 @@ const meta: Meta<Args> = {
     el.style.cssText = 'max-width:400px;display:block;';
     if (args.variant !== undefined) el.setAttribute('variant', args.variant);
     if (args.size    !== undefined) el.setAttribute('size',    args.size);
-    if (args.title   !== undefined) el.setAttribute('title',   args.title);
+    if (args.title   !== undefined) (el as any).title = args.title;
     (el as any).setEntries(SAMPLE_ENTRIES);
     return el;
   },
@@ -142,7 +144,7 @@ export const EmptyStateNoEntries: Story = {
   render: () => {
     const el = document.createElement('snice-leaderboard');
     el.style.cssText = 'max-width:400px;display:block;';
-    el.setAttribute('title', 'No Data');
+    (el as any).title = 'No Data';
     return el;
   },
 };
@@ -158,7 +160,7 @@ export const DeclarativeApiChildElements: Story = {
     const el = document.createElement('snice-leaderboard');
     el.style.cssText = 'max-width:400px;display:block;';
     el.setAttribute('variant', 'default');
-    el.setAttribute('title', 'Declarative Children');
+    (el as any).title = 'Declarative Children';
     const entries: Array<[string, string, string, string?, boolean?]> = [
       ['1', 'Alice',   '2500', '3',  true],
       ['2', 'Bob',     '2100', '-1', false],
@@ -184,7 +186,7 @@ export const DeclarativePodiumVariant: Story = {
     const el = document.createElement('snice-leaderboard');
     el.style.cssText = 'max-width:400px;display:block;';
     el.setAttribute('variant', 'podium');
-    el.setAttribute('title', 'Declarative Podium');
+    (el as any).title = 'Declarative Podium';
     const entries: Array<[string, string, string, string]> = [
       ['1', 'Gold',   '3000', '5'],
       ['2', 'Silver', '2500', '2'],
