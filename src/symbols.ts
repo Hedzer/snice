@@ -49,6 +49,7 @@ export const CREATED_AT = getSymbol('created-at');
 // Lifecycle symbols
 export const READY_HANDLERS = getSymbol('ready-handlers');
 export const DISPOSE_HANDLERS = getSymbol('dispose-handlers');
+export const RECONNECT_HANDLERS = getSymbol('reconnect-handlers');
 export const MOVED_HANDLERS = getSymbol('moved-handlers');
 export const ADOPTED_HANDLERS = getSymbol('adopted-handlers');
 
@@ -102,6 +103,7 @@ export const ON_METHODS = getSymbol('on-methods');
 export const RESPOND_METHODS = getSymbol('respond-methods');
 export const READY_METHODS = getSymbol('ready-methods');
 export const DISPOSE_METHODS = getSymbol('dispose-methods');
+export const RECONNECT_METHODS = getSymbol('reconnect-methods');
 export const MOVED_METHODS = getSymbol('moved-methods');
 export const ADOPTED_METHODS = getSymbol('adopted-methods');
 

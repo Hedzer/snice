@@ -1,5 +1,5 @@
 // v3.0.0 exports
-export { element, layout, property, query, queryAll, watch, applyElementFunctionality, ready, dispose, moved, adopted } from './element';
+export { element, layout, property, query, queryAll, watch, applyElementFunctionality, ready, dispose, reconnect, moved, adopted } from './element';
 export type { Layout } from './element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
@@ -36,6 +36,7 @@ export { trackRenders } from './render-debug';
 // Shared utilities
 export { parseDuration, escapeHtml, escapeAttr, isSafeUrl } from './utils';
 export type { Duration } from './utils';
+export { lockBodyScroll, unlockBodyScroll, getBodyScrollLockCount } from './scroll-lock';
 
 // v3.0.0 method decorators
 export { debounce, throttle, once, memoize, clearDebounceTimers, clearThrottleTimers, clearMemoizeCache, resetOnce } from './method-decorators';

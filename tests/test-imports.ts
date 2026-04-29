@@ -32,6 +32,7 @@ export const {
   applyElementFunctionality,
   ready,
   dispose,
+  reconnect,
   moved,
   adopted,
   part,

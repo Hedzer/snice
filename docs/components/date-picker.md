@@ -36,7 +36,7 @@ Calendar-based date input with format options and validation. Form-associated cu
 | `min` | `min` | `string` | `''` | Minimum selectable date (ISO format) |
 | `max` | `max` | `string` | `''` | Maximum selectable date (ISO format) |
 | `name` | `name` | `string` | `''` | Form field name |
-| `showCalendar` | `show-calendar` | `boolean` | `false` | Calendar visibility |
+| `open` | `open` | `boolean` | `false` | Calendar visibility |
 | `firstDayOfWeek` | `first-day-of-week` | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 
 ## Methods
@@ -46,8 +46,8 @@ Calendar-based date input with format options and validation. Form-associated cu
 | `focus()` | -- | Focuses the input |
 | `blur()` | -- | Removes focus |
 | `clear()` | -- | Clears the selected date |
-| `open()` | -- | Opens the calendar popup |
-| `close()` | -- | Closes the calendar popup |
+| `show()` | -- | Opens the calendar popup |
+| `hide()` | -- | Closes the calendar popup |
 | `selectDate()` | `date: Date` | Programmatically selects a date |
 | `goToMonth()` | `year: number, month: number` | Navigates calendar to a month |
 | `goToToday()` | -- | Selects today's date |

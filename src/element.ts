@@ -5,7 +5,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
 import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
@@ -182,6 +182,26 @@ export function applyElementFunctionality(constructor: any) {
         // Call user's connectedCallback
         if (originalConnectedCallback) {
           originalConnectedCallback.call(this);
+        }
+
+        // Fire @reconnect handlers — for components that wire long-lived
+        // global listeners or subscriptions in @ready and need to re-establish
+        // them on re-connection. @ready does NOT re-fire (deliberately, to
+        // preserve once-only initialization semantics).
+        const reconnectHandlers = constructor[RECONNECT_HANDLERS];
+        if (reconnectHandlers) {
+          for (const handler of reconnectHandlers) {
+            try {
+              const result = handler.method.call(this);
+              if (result && typeof (result as any).then === 'function') {
+                (result as Promise<any>).catch(error => {
+                  console.error(`Error in @reconnect handler ${handler.methodName}:`, error);
+                });
+              }
+            } catch (error) {
+              console.error(`Error in @reconnect handler ${handler.methodName}:`, error);
+            }
+          }
         }
         return;
       }
@@ -824,6 +844,28 @@ export function ready() {
 export function dispose() {
   return function (target: any, context: ClassMethodDecoratorContext) {
     registerHandler(DISPOSE_HANDLERS, DISPOSE_METHODS, target, context);
+  };
+}
+
+/**
+ * Fires every time the element is connected AFTER the first connect.
+ *
+ * `@ready` only fires once (after the initial render). `@dispose` fires on
+ * every disconnect. The gap between them is "what should run on a
+ * reconnect?" For most components, framework-managed pieces (`@on`,
+ * `@observe`, `@respond`, `@context`) are re-established automatically
+ * and nothing else is needed.
+ *
+ * Use `@reconnect` only when the component wires its OWN long-lived global
+ * subscription in `@ready` (e.g. a `document.addEventListener` for
+ * outside-click detection) and tears it down in `@dispose`. The framework
+ * doesn't track those, so they need a hook to re-attach on reconnect.
+ *
+ * Counterpart to `@dispose`. Symmetric.
+ */
+export function reconnect() {
+  return function (target: any, context: ClassMethodDecoratorContext) {
+    registerHandler(RECONNECT_HANDLERS, RECONNECT_METHODS, target, context);
   };
 }
 

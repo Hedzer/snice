@@ -1,4 +1,4 @@
-import { element, property, query, on, watch, ready, dispose, render, styles, html, css as cssTag, unsafeHTML } from 'snice';
+import { element, property, query, on, watch, ready, dispose, render, styles, html, css as cssTag, unsafeHTML, lockBodyScroll, unlockBodyScroll } from 'snice';
 import { X_MARK } from '../icons';
 import cssContent from './snice-drawer.css?inline';
 import type { DrawerPosition, DrawerSize, SniceDrawerElement } from './snice-drawer.types';
@@ -65,6 +65,10 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private previousFocus?: HTMLElement;
   private boundHandleEscape?: (e: KeyboardEvent) => void;
   private breakpointQuery?: MediaQueryList;
+  /** Track whether THIS drawer holds a body-scroll lock — keeps the
+   *  per-instance state in sync with the shared refcount so we never
+   *  unlock more times than we locked. */
+  private scrollLocked = false;
   private boundBreakpointHandler?: (e: MediaQueryListEvent) => void;
 
   @render()
@@ -282,9 +286,11 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
       document.addEventListener('keydown', this.boundHandleEscape);
     }
 
-    // Lock body scroll for full-page (non-contained) drawers
-    if (!this.contained) {
-      document.body.style.overflow = 'hidden';
+    // Lock body scroll for full-page (non-contained) drawers.
+    // Refcounted: stays locked while any other overlay is also locked.
+    if (!this.contained && !this.scrollLocked) {
+      lockBodyScroll();
+      this.scrollLocked = true;
     }
 
     // Focus management (skip for contained drawers — they're in-page, not modal)
@@ -303,8 +309,9 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
 
     // Unlock body scroll for full-page (non-contained) drawers
-    if (!this.contained) {
-      document.body.style.overflow = '';
+    if (this.scrollLocked) {
+      unlockBodyScroll();
+      this.scrollLocked = false;
     }
 
     // Restore focus
@@ -372,8 +379,9 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
     this.teardownBreakpointListener();
     // Release body scroll lock if the drawer was open when disconnected
-    if (this.open && !this.contained) {
-      document.body.style.overflow = '';
+    if (this.scrollLocked) {
+      unlockBodyScroll();
+      this.scrollLocked = false;
     }
   }
 

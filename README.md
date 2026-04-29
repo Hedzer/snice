@@ -42,6 +42,7 @@ class RealTimeUserLoader { ... }
 @render() fn() { return html`...`; }
 @styles() fn() { return css`...`; }
 @ready() async fn() { ... }
+@reconnect() fn() { ... }
 @dispose() fn() { ... }
 @watch('name') fn(oldVal, newVal) { ... }
 @query('input') input!: HTMLInputElement;
@@ -293,7 +294,7 @@ onNameChange(oldVal, newVal) {
 
 ### Lifecycle
 
-**`@ready()`** - Runs after initial render completes
+**`@ready()`** - Runs once, after initial render completes
 ```typescript
 @ready()
 async initialize() {
@@ -301,7 +302,17 @@ async initialize() {
 }
 ```
 
-**`@dispose()`** - Runs when element is removed from DOM
+**`@reconnect()`** - Runs on every connect AFTER the first
+```typescript
+@reconnect()
+onReconnect() {
+  // Re-attach long-lived global subscriptions (document listeners, etc.)
+  // that @dispose tears down. Framework-managed @on/@observe handlers
+  // are re-established automatically and don't need this hook.
+}
+```
+
+**`@dispose()`** - Runs every time element is removed from DOM
 ```typescript
 @dispose()
 cleanup() {

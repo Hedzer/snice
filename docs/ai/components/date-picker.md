@@ -22,7 +22,7 @@ clearable: boolean = false;
 min: string = '';              // Min date (ISO format)
 max: string = '';              // Max date (ISO format)
 name: string = '';
-showCalendar: boolean = false; // attribute: show-calendar
+open: boolean = false;         // attribute: open
 firstDayOfWeek: number = 0;   // attribute: first-day-of-week, 0=Sun, 1=Mon
 ```
 
@@ -31,8 +31,8 @@ firstDayOfWeek: number = 0;   // attribute: first-day-of-week, 0=Sun, 1=Mon
 - `focus()` - Focus input
 - `blur()` - Blur input
 - `clear()` - Clear value
-- `open()` - Open calendar
-- `close()` - Close calendar
+- `show()` - Open calendar
+- `hide()` - Close calendar
 - `selectDate(date: Date)` - Programmatically select a date
 - `goToMonth(year, month)` - Navigate to specific month
 - `goToToday()` - Navigate to and select today

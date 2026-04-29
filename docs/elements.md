@@ -236,6 +236,30 @@ class AutoResizeTextarea extends HTMLElement {
 }
 ```
 
+**@reconnect()** - Called every time the element is connected AFTER the first connect. `@ready` only fires once; `@dispose` fires on every disconnect. The gap between is "what should run on a reconnect?" — for most components nothing extra is needed because framework-managed handlers (`@on`, `@observe`, `@respond`, `@context`) are re-established automatically. Use `@reconnect` only when the component wires its own long-lived global subscription in `@ready` (e.g. `document.addEventListener` for outside-click) and tears it down in `@dispose`:
+
+```typescript
+@element('outside-click-listener')
+class OutsideClick extends HTMLElement {
+  private handler = () => { /* ... */ };
+
+  @ready()
+  init() {
+    document.addEventListener('click', this.handler);
+  }
+
+  @reconnect()
+  onReconnect() {
+    document.addEventListener('click', this.handler);
+  }
+
+  @dispose()
+  cleanup() {
+    document.removeEventListener('click', this.handler);
+  }
+}
+```
+
 **@dispose()** - Called when element is removed from DOM:
 
 ```typescript
@@ -845,7 +869,7 @@ The `currency-input` inherits everything from `snice-input` — label rendering,
 | `@property` | Child gets all parent properties. Child can override defaults or type. |
 | `@watch` | Both parent and child watchers fire. |
 | `@on` | Both parent and child handlers fire. |
-| `@ready`, `@dispose` | Both fire. |
+| `@ready`, `@reconnect`, `@dispose` | All three fire on parent and child. |
 | `@dispatch` | Inherited via prototype. |
 | `@render` | Child **replaces** parent's render. If child doesn't declare `@render`, parent's is used. |
 | `@styles` | **Concatenated** — parent styles first, child second (child wins via cascade). |

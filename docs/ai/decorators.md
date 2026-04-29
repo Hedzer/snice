@@ -16,10 +16,11 @@
 - `@watch('propName')` - React to changes: `(oldVal, newVal, propertyName) => void`
 
 ## Lifecycle
-- `@ready()` - After first render
-- `@dispose()` - Cleanup on disconnect
-- `@moved(options?: { throttle?, debounce? })` - On adoptedCallback (element moved between documents)
-- `@adopted(options?: { throttle?, debounce? })` - On adoptedCallback (alias for moved)
+- `@ready()` - After first render. Fires once.
+- `@reconnect()` - On every connect AFTER the first. Use only when the component wires its own long-lived global subscription in `@ready` (e.g. `document.addEventListener` for outside-click) and tears it down in `@dispose`. Framework-managed handlers (`@on`, `@observe`, `@respond`, `@context`) are re-established automatically — `@reconnect` is for things the framework doesn't track.
+- `@dispose()` - Cleanup on every disconnect.
+- `@moved()` - When `Element.prototype.moveBefore()` is used. No connect/disconnect cycle fires; framework handlers stay attached.
+- `@adopted()` - When the element is adopted into a different document.
 
 ## DOM
 - `@query('selector', { light? })` - Single element. `{ light: true }` for controllers on native elements

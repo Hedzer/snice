@@ -2,10 +2,12 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'child_process';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { getWipComponents } from '../scripts/wip-components.js';
 
 const root = process.cwd();
 const publicDir = join(root, 'public');
 const cdnDir = join(root, 'dist/cdn');
+const wip = getWipComponents();
 
 describe('Website Build', () => {
   beforeAll(() => {
@@ -36,7 +38,7 @@ describe('Website Build', () => {
     let componentsHtml: string;
 
     beforeAll(() => {
-      cdnComponents = readdirSync(cdnDir).filter(c => c !== 'runtime').sort();
+      cdnComponents = readdirSync(cdnDir).filter(c => c !== 'runtime' && !wip.has(c)).sort();
       copiedComponents = readdirSync(join(publicDir, 'components'))
         .map(f => f.replace('snice-', '').replace('.min.js', ''))
         .sort();

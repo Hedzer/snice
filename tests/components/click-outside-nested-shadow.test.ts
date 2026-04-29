@@ -161,41 +161,41 @@ describe('snice-date-picker: click-outside across nested shadow DOM', () => {
     const picker = host.inner as any;
     click(picker.shadowRoot.querySelector('input'));
     await wait(30);
-    expect(picker.showCalendar).toBe(true);
+    expect(picker.open).toBe(true);
   });
 
   it('Escape closes when nested', async () => {
     const host = await mountInsideShadow('snice-date-picker');
     const picker = host.inner as any;
-    picker.open?.() ?? (picker.showCalendar = true);
+    picker.show?.() ?? (picker.open = true);
     await wait(10);
     keydown(picker.shadowRoot.querySelector('input'), 'Escape');
     await wait(10);
-    expect(picker.showCalendar).toBe(false);
+    expect(picker.open).toBe(false);
   });
 
   it('closes when click lands outside nested host', async () => {
     const host = await mountInsideShadow('snice-date-picker');
     const picker = host.inner as any;
-    picker.open?.() ?? (picker.showCalendar = true);
+    picker.show?.() ?? (picker.open = true);
     await wait(10);
     const outside = document.createElement('button');
     document.body.appendChild(outside);
     click(outside);
     await wait(30);
-    expect(picker.showCalendar).toBe(false);
+    expect(picker.open).toBe(false);
   });
 
   it('click inside the calendar does not close', async () => {
     const host = await mountInsideShadow('snice-date-picker');
     const picker = host.inner as any;
-    picker.open?.() ?? (picker.showCalendar = true);
+    picker.show?.() ?? (picker.open = true);
     await wait(20);
     const inner = picker.shadowRoot.querySelector('.calendar button');
     expect(inner).toBeTruthy();
     click(inner);
     await wait(30);
-    expect(picker.showCalendar).toBe(true);
+    expect(picker.open).toBe(true);
   });
 
   it('disabled picker ignores input click', async () => {
@@ -203,7 +203,7 @@ describe('snice-date-picker: click-outside across nested shadow DOM', () => {
     const picker = host.inner as any;
     click(picker.shadowRoot.querySelector('input'));
     await wait(30);
-    expect(picker.showCalendar).toBe(false);
+    expect(picker.open).toBe(false);
   });
 
   it('two nested pickers: opening A does not close B', async () => {
@@ -211,24 +211,23 @@ describe('snice-date-picker: click-outside across nested shadow DOM', () => {
     const hostB = await mountInsideShadow('snice-date-picker');
     const a = hostA.inner as any;
     const b = hostB.inner as any;
-    a.open?.(); b.open?.();
-    a.showCalendar = true; b.showCalendar = true;
+    a.show?.(); b.show?.();
     await wait(10);
-    expect(a.showCalendar).toBe(true);
-    expect(b.showCalendar).toBe(true);
+    expect(a.open).toBe(true);
+    expect(b.open).toBe(true);
   });
 
   it('regression: works at document root', async () => {
     const picker = document.createElement('snice-date-picker') as any;
     document.body.appendChild(picker);
     await picker.ready;
-    picker.open?.() ?? (picker.showCalendar = true);
+    picker.show?.() ?? (picker.open = true);
     await wait(10);
     const outside = document.createElement('button');
     document.body.appendChild(outside);
     click(outside);
     await wait(30);
-    expect(picker.showCalendar).toBe(false);
+    expect(picker.open).toBe(false);
   });
 });
 

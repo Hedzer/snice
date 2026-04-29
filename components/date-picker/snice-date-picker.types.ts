@@ -25,15 +25,15 @@ export interface SniceDatePickerElement extends HTMLElement {
   min: string;
   max: string;
   name: string;
-  showCalendar: boolean;
+  open: boolean;
   firstDayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
   
   // Methods
   focus(): void;
   blur(): void;
   clear(): void;
-  open(): void;
-  close(): void;
+  show(): void;
+  hide(): void;
   selectDate(date: Date): void;
   goToMonth(year: number, month: number): void;
   goToToday(): void;

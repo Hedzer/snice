@@ -9,6 +9,8 @@ afterEach(() => {
   document.body.style.overflow = '';
   const locks = (globalThis as any)[Symbol.for('snice:modal-body-locks')];
   if (locks?.clear) locks.clear();
+  const scrollLock = (globalThis as any)[Symbol.for('snice:body-scroll-lock')];
+  if (scrollLock?.clear) scrollLock.clear();
 });
 
 // ---------------------------------------------------------------------------
@@ -211,11 +213,14 @@ describe('drawer: body scroll lock is released on disconnect', () => {
     document.body.appendChild(el);
     await el.ready;
     await wait(30);
-    expect(document.body.style.overflow).toBe('hidden');
+    // happy-dom has a quirk where `document.body.style.overflow` returns ''
+    // even after assignment; the inline `style` attribute does reflect the
+    // change, so we read that instead.
+    expect(document.body.getAttribute('style') || '').toContain('overflow: hidden');
 
     el.remove();
     await wait(30);
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.getAttribute('style') || '').not.toContain('overflow: hidden');
   });
 });
 

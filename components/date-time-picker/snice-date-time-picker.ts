@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-time-picker.css?inline';
 import type { DateTimePickerVariant, DateTimePickerTimeFormat, DateTimePickerSize, DateTimePickerDateFormat, SniceDateTimePickerElement } from './snice-date-time-picker.types';
 
@@ -682,6 +682,11 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   private setupClickOutside() {
     document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.setupClickOutside();
   }
 
   @dispose()

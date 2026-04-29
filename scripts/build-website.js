@@ -518,18 +518,25 @@ componentStyles() {
     </div>
 
     <div class="dec-section">
-      <h3><code>@ready</code> & <code>@dispose</code></h3>
-      <p class="desc">Lifecycle hooks for initialization and cleanup.</p>
+      <h3><code>@ready</code>, <code>@reconnect</code> & <code>@dispose</code></h3>
+      <p class="desc">Lifecycle hooks. <code>@ready</code> fires once after the first render. <code>@dispose</code> fires on every disconnect. <code>@reconnect</code> fires on every connect AFTER the first — use it for components that wire long-lived global subscriptions in <code>@ready</code> and need to re-attach them on reconnect.</p>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@ready()
 onMount() {
   this.interval = setInterval(() =&gt; this.tick(), 1000);
-  console.log('Component connected');
+  document.addEventListener('click', this.handler);
+}
+
+@reconnect()
+onReconnect() {
+  // Framework-managed @on/@observe handlers re-attach automatically;
+  // re-add only the things YOU wired (document listeners, etc.)
+  document.addEventListener('click', this.handler);
 }
 
 @dispose()
 cleanup() {
   clearInterval(this.interval);
-  this.subscription?.unsubscribe();
+  document.removeEventListener('click', this.handler);
 }</snice-code-block>
     </div>
 

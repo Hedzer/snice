@@ -348,4 +348,49 @@ describe('snice-time-picker', () => {
       expect(dropdown?.hasAttribute('hidden')).toBe(true);
     });
   });
+
+  describe('@reconnect: outside-click closes dropdown after reconnect', () => {
+    it('outside-click closes dropdown on first connect', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker');
+      (picker as any).showDropdown = true;
+      await wait(20);
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showDropdown).toBe(false);
+    });
+
+    it('outside-click still closes dropdown after reconnect', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker');
+      const parent = picker.parentNode!;
+
+      parent.removeChild(picker);
+      await wait(20);
+      parent.appendChild(picker);
+      await wait(20);
+
+      (picker as any).showDropdown = true;
+      await wait(20);
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showDropdown).toBe(false);
+    });
+
+    it('does not respond to clicks after final dispose', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker');
+      (picker as any).showDropdown = true;
+      await wait(20);
+
+      const parent = picker.parentNode!;
+      parent.removeChild(picker);
+      await wait(20);
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showDropdown).toBe(true);
+    });
+  });
 });

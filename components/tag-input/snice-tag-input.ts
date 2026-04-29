@@ -1,4 +1,4 @@
-import { element, property, render, styles, dispatch, ready, dispose, watch, query, html, css } from 'snice';
+import { element, property, render, styles, dispatch, ready, dispose, reconnect, watch, query, html, css } from 'snice';
 import type { SniceTagInputElement } from './snice-tag-input.types';
 import tagInputStyles from './snice-tag-input.css?inline';
 
@@ -66,13 +66,21 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
   @ready()
   init() {
-    // Close suggestions on outside click
-    document.addEventListener('click', this.handleDocumentClick);
+    this.attachOutsideClickListener();
+  }
+
+  @reconnect()
+  onReconnect() {
+    this.attachOutsideClickListener();
   }
 
   @dispose()
   cleanup() {
     document.removeEventListener('click', this.handleDocumentClick);
+  }
+
+  private attachOutsideClickListener() {
+    document.addEventListener('click', this.handleDocumentClick);
   }
 
   private handleDocumentClick = (e: Event) => {

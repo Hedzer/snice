@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-split-button.css?inline';
 import type { SplitButtonVariant, SplitButtonSize, SplitButtonAction, SniceSplitButtonElement } from './snice-split-button.types';
@@ -137,6 +137,11 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
   @ready()
   init() {
     this.updateMenuContent();
+    this.setupGlobalListeners();
+  }
+
+  @reconnect()
+  onReconnect() {
     this.setupGlobalListeners();
   }
 

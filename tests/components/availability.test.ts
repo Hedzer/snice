@@ -126,4 +126,50 @@ describe('snice-availability', () => {
     await wait();
     expect(changed).toBe(true);
   });
+
+  describe('@reconnect: mouseup listener survives reconnect', () => {
+    function trackDocListeners(types: string[]) {
+      const counts = new Map<string, number>(types.map(t => [t, 0]));
+      const origAdd = document.addEventListener;
+      const origRemove = document.removeEventListener;
+      document.addEventListener = ((type: string, h: any, opts?: any) => {
+        if (counts.has(type)) counts.set(type, counts.get(type)! + 1);
+        return (origAdd as any).call(document, type, h, opts);
+      }) as any;
+      document.removeEventListener = ((type: string, h: any, opts?: any) => {
+        if (counts.has(type)) counts.set(type, counts.get(type)! - 1);
+        return (origRemove as any).call(document, type, h, opts);
+      }) as any;
+      return {
+        net: (t: string) => counts.get(t) ?? 0,
+        restore: () => { document.addEventListener = origAdd; document.removeEventListener = origRemove; },
+      };
+    }
+
+    it('@ready attaches mouseup, @dispose removes, @reconnect re-adds', async () => {
+      const tracker = trackDocListeners(['mouseup']);
+      availability = await createComponent<SniceAvailabilityElement>('snice-availability');
+      const netReady = tracker.net('mouseup');
+      expect(netReady).toBeGreaterThanOrEqual(1);
+
+      const parent = availability.parentNode!;
+      parent.removeChild(availability);
+      await wait(20);
+      expect(tracker.net('mouseup')).toBe(0);
+
+      parent.appendChild(availability);
+      await wait(20);
+      expect(tracker.net('mouseup')).toBe(netReady);
+
+      tracker.restore();
+    });
+
+    it('readonly availability does NOT attach a mouseup listener', async () => {
+      const tracker = trackDocListeners(['mouseup']);
+      availability = await createComponent<SniceAvailabilityElement>('snice-availability', { readonly: true });
+      // No drag-painting in readonly mode → no mouseup
+      expect(tracker.net('mouseup')).toBe(0);
+      tracker.restore();
+    });
+  });
 });

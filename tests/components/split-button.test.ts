@@ -252,4 +252,66 @@ describe('snice-split-button', () => {
     const menu = queryShadow(el as HTMLElement, '.split-button__menu');
     expect(menu?.classList.contains('split-button__menu--open')).toBe(false);
   });
+
+  describe('@reconnect: outside-click + Escape close menu after reconnect', () => {
+    it('outside-click closes menu on first connect', async () => {
+      await createSplitButton();
+      (el as any).isOpen = true;
+      await new Promise(r => setTimeout(r, 20));
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await new Promise(r => setTimeout(r, 20));
+
+      expect((el as any).isOpen).toBe(false);
+    });
+
+    it('outside-click still closes menu after reconnect', async () => {
+      await createSplitButton();
+      const parent = el.parentNode!;
+
+      parent.removeChild(el);
+      await new Promise(r => setTimeout(r, 20));
+      parent.appendChild(el);
+      await new Promise(r => setTimeout(r, 20));
+
+      (el as any).isOpen = true;
+      await new Promise(r => setTimeout(r, 20));
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await new Promise(r => setTimeout(r, 20));
+
+      expect((el as any).isOpen).toBe(false);
+    });
+
+    it('Escape still closes menu after reconnect', async () => {
+      await createSplitButton();
+      const parent = el.parentNode!;
+
+      parent.removeChild(el);
+      await new Promise(r => setTimeout(r, 20));
+      parent.appendChild(el);
+      await new Promise(r => setTimeout(r, 20));
+
+      (el as any).isOpen = true;
+      await new Promise(r => setTimeout(r, 20));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+      await new Promise(r => setTimeout(r, 20));
+
+      expect((el as any).isOpen).toBe(false);
+    });
+
+    it('does not respond to clicks after final dispose', async () => {
+      await createSplitButton();
+      (el as any).isOpen = true;
+      await new Promise(r => setTimeout(r, 20));
+
+      const parent = el.parentNode!;
+      parent.removeChild(el);
+      await new Promise(r => setTimeout(r, 20));
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await new Promise(r => setTimeout(r, 20));
+
+      expect((el as any).isOpen).toBe(true);
+    });
+  });
 });

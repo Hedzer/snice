@@ -501,4 +501,47 @@ describe('snice-cropper', () => {
       expect(evt.defaultPrevented).toBe(false);
     });
   });
+
+  describe('@reconnect: mousemove + mouseup listeners survive reconnect', () => {
+    function trackDocListeners(types: string[]) {
+      const counts = new Map<string, number>(types.map(t => [t, 0]));
+      const origAdd = document.addEventListener;
+      const origRemove = document.removeEventListener;
+      document.addEventListener = ((type: string, h: any, opts?: any) => {
+        if (counts.has(type)) counts.set(type, counts.get(type)! + 1);
+        return (origAdd as any).call(document, type, h, opts);
+      }) as any;
+      document.removeEventListener = ((type: string, h: any, opts?: any) => {
+        if (counts.has(type)) counts.set(type, counts.get(type)! - 1);
+        return (origRemove as any).call(document, type, h, opts);
+      }) as any;
+      return {
+        net: (t: string) => counts.get(t) ?? 0,
+        restore: () => { document.addEventListener = origAdd; document.removeEventListener = origRemove; },
+      };
+    }
+
+    it('@ready attaches both, @dispose removes both, @reconnect re-adds both', async () => {
+      const tracker = trackDocListeners(['mousemove', 'mouseup']);
+      const cropper = await createComponent<SniceCropperElement>('snice-cropper');
+      const netMoveReady = tracker.net('mousemove');
+      const netUpReady = tracker.net('mouseup');
+      expect(netMoveReady).toBeGreaterThanOrEqual(1);
+      expect(netUpReady).toBeGreaterThanOrEqual(1);
+
+      const parent = cropper.parentNode!;
+      parent.removeChild(cropper);
+      await wait(20);
+      expect(tracker.net('mousemove')).toBe(0);
+      expect(tracker.net('mouseup')).toBe(0);
+
+      parent.appendChild(cropper);
+      await wait(20);
+      expect(tracker.net('mousemove')).toBe(netMoveReady);
+      expect(tracker.net('mouseup')).toBe(netUpReady);
+
+      tracker.restore();
+      removeComponent(cropper as HTMLElement);
+    });
+  });
 });

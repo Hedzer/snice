@@ -1,4 +1,4 @@
-import { element, property, styles, ready, dispose, css } from 'snice';
+import { element, property, styles, ready, dispose, reconnect, css } from 'snice';
 import cssContent from './snice-doc.css?inline';
 import type { DocIconSet, DocDownloadFormat } from './snice-doc.types.js';
 
@@ -63,6 +63,13 @@ export class SniceDoc extends HTMLElement {
     this.initializeDOM();
     document.addEventListener('selectionchange', this.handleSelectionChange);
     this.editor.addEventListener('blur', this.saveCurrentSelection);
+  }
+
+  @reconnect()
+  onReconnect() {
+    // editor is the same DOM node across reconnect, so its blur listener
+    // stays attached. Only the document-level selectionchange needs re-wiring.
+    document.addEventListener('selectionchange', this.handleSelectionChange);
   }
 
   @dispose()

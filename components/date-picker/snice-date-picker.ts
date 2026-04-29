@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 
@@ -66,8 +66,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @property({  })
   name = '';
 
-  @property({ type: Boolean, attribute: 'show-calendar',  })
-  showCalendar = false;
+  @property({ type: Boolean, attribute: 'open',  })
+  open = false;
 
   @property({ type: Number, attribute: 'first-day-of-week',  })
   firstDayOfWeek = 0; // 0 = Sunday
@@ -179,7 +179,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.showCalendar} @click=${(e: Event) => this.handleCalendarClick(e)}>
+          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.open} @click=${(e: Event) => this.handleCalendarClick(e)}>
             <case ${this.calendarView}>
               <when value="years">
                 <div class="calendar-header">
@@ -534,13 +534,18 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private clickOutsideHandler = (e: MouseEvent) => {
-    if (!this.showCalendar) return;
+    if (!this.open) return;
     if (e.composedPath().includes(this)) return;
-    this.close();
+    this.hide();
   };
 
   private setupCalendarClickOutside() {
     document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.setupCalendarClickOutside();
   }
 
   @dispose()
@@ -556,7 +561,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     if (date && this.isCompleteDate(input.value)) {
       this.selectedDate = date;
       this.viewDate = new Date(date);
-      if (this.showCalendar) {
+      if (this.open) {
         this.updateCalendarGrid();
       }
     }
@@ -594,8 +599,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private handleInputClick(e: Event) {
-    if (!this.showCalendar && !this.disabled && !this.readonly) {
-      this.open();
+    if (!this.open && !this.disabled && !this.readonly) {
+      this.show();
     }
   }
 
@@ -604,10 +609,10 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private handleCalendarToggle(e: Event) {
-    if (this.showCalendar) {
-      this.close();
+    if (this.open) {
+      this.hide();
     } else {
-      this.open();
+      this.show();
     }
   }
 
@@ -644,13 +649,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   private handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (!this.showCalendar) {
-        this.open();
+      if (!this.open) {
+        this.show();
       }
-    } else if (e.key === 'Escape' && this.showCalendar) {
-      this.close();
+    } else if (e.key === 'Escape' && this.open) {
+      this.hide();
       this.focus();
-    } else if (this.showCalendar && this.calendarView === 'days') {
+    } else if (this.open && this.calendarView === 'days') {
       // Arrow / Home / End / PageUp / PageDown navigation over the day grid.
       const delta = this.dayGridDelta(e.key);
       if (delta === null) return;
@@ -756,16 +761,16 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     if (this.internals) {
       this.internals.setFormValue(this.value);
     }
-    if (this.showCalendar) {
+    if (this.open) {
       this.updateCalendarGrid();
     }
   }
 
   // Manual DOM manipulation required since Snice is imperative
-  @watch('show-calendar')
-  handleShowCalendarChange() {
+  @watch('open')
+  handleOpenChange() {
     if (this.calendar) {
-      if (this.showCalendar) {
+      if (this.open) {
         this.calendar.removeAttribute('hidden');
         this.positionCalendar();
         if (typeof this.calendar.showPopover === 'function') {
@@ -886,9 +891,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.focus();
   }
 
-  open() {
+  show() {
     if (!this.disabled && !this.readonly) {
-      this.showCalendar = true;
+      this.open = true;
       this.calendarView = 'days';
       if (this.selectedDate) {
         this.viewDate = new Date(this.selectedDate);
@@ -906,8 +911,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  close() {
-    this.showCalendar = false;
+  hide() {
+    this.open = false;
 
     if (this.calendar) {
       this.calendar.setAttribute('hidden', '');
@@ -936,7 +941,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.updateCalendarGrid();
     this.dispatchSelectEvent(date);
     this.dispatchChangeEvent();
-    this.close();
+    this.hide();
     this.focus();
   }
 

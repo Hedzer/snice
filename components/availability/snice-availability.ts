@@ -1,4 +1,4 @@
-import { element, property, styles, dispatch, ready, dispose, watch, css } from 'snice';
+import { element, property, styles, dispatch, ready, dispose, reconnect, watch, css } from 'snice';
 import type { SniceAvailabilityElement, AvailabilityFormat, AvailabilityRange } from './snice-availability.types';
 import cssContent from './snice-availability.css?inline';
 
@@ -37,6 +37,14 @@ export class SniceAvailability extends HTMLElement implements SniceAvailabilityE
       this.emitChange();
     }
   };
+
+  @reconnect()
+  private onReconnect() {
+    if (!this.readonly && !this.mouseUpAttached) {
+      document.addEventListener('mouseup', this.handleMouseUp);
+      this.mouseUpAttached = true;
+    }
+  }
 
   @dispose()
   private cleanupMouseUp() {

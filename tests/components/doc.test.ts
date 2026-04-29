@@ -177,4 +177,75 @@ describe('snice-doc', () => {
       expect(dividers!.length).toBeGreaterThan(0);
     });
   });
+
+  describe('@reconnect: selectionchange listener survives reconnect', () => {
+    /**
+     * `handleSelectionChange` is a private bound method, so spies after-the-fact
+     * don't intercept already-attached listeners. We instead stub
+     * `document.addEventListener`/`removeEventListener` for the 'selectionchange'
+     * event and assert net add/remove balance across the lifecycle.
+     */
+    function trackSelectionchange() {
+      const adds: any[] = [];
+      const removes: any[] = [];
+      const origAdd = document.addEventListener;
+      const origRemove = document.removeEventListener;
+      document.addEventListener = ((type: string, h: any, opts?: any) => {
+        if (type === 'selectionchange') adds.push(h);
+        return (origAdd as any).call(document, type, h, opts);
+      }) as any;
+      document.removeEventListener = ((type: string, h: any, opts?: any) => {
+        if (type === 'selectionchange') removes.push(h);
+        return (origRemove as any).call(document, type, h, opts);
+      }) as any;
+      return {
+        net: () => adds.length - removes.length,
+        restore: () => {
+          document.addEventListener = origAdd;
+          document.removeEventListener = origRemove;
+        },
+      };
+    }
+
+    it('attaches a selectionchange listener on first connect', async () => {
+      const tracker = trackSelectionchange();
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      expect(tracker.net()).toBeGreaterThanOrEqual(1);
+      tracker.restore();
+    });
+
+    it('removes the listener on dispose, re-attaches on reconnect', async () => {
+      const tracker = trackSelectionchange();
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      const netAfterReady = tracker.net();
+      expect(netAfterReady).toBeGreaterThanOrEqual(1);
+
+      const parent = doc.parentNode!;
+      parent.removeChild(doc);
+      await wait(20);
+      // After dispose, net should drop by exactly the number @ready added.
+      const netAfterDispose = tracker.net();
+      expect(netAfterDispose).toBeLessThan(netAfterReady);
+
+      parent.appendChild(doc);
+      await wait(20);
+      // Reconnect must restore net to where it was after @ready.
+      expect(tracker.net()).toBe(netAfterReady);
+      tracker.restore();
+    });
+
+    it('final dispose leaves zero net selectionchange listeners attributable to this component', async () => {
+      const tracker = trackSelectionchange();
+      doc = await createComponent<SniceDocElement>('snice-doc');
+      const netAfterReady = tracker.net();
+
+      const parent = doc.parentNode!;
+      parent.removeChild(doc);
+      await wait(20);
+
+      // Net should drop back to zero contribution from this component
+      expect(tracker.net()).toBe(netAfterReady - netAfterReady);
+      tracker.restore();
+    });
+  });
 });

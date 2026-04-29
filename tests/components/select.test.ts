@@ -709,3 +709,89 @@ describe('snice-option', () => {
     expect(data.selected).toBe(true);
   });
 });
+
+describe('snice-select @reconnect: outside-click + child observer survive reconnect', () => {
+  let container: HTMLElement;
+
+  async function build() {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    for (let i = 0; i < 3; i++) {
+      const opt = document.createElement('snice-option');
+      opt.setAttribute('value', `v${i}`);
+      opt.setAttribute('label', `O${i}`);
+      select.appendChild(opt);
+    }
+    container.appendChild(select);
+    await (select as any).ready;
+    await new Promise(r => setTimeout(r, 30));
+    return select;
+  }
+
+  afterEach(() => {
+    if (container && container.parentNode) container.parentNode.removeChild(container);
+  });
+
+  it('outside-click closes dropdown on first connect', async () => {
+    const select = await build();
+    select.open = true;
+    await new Promise(r => setTimeout(r, 20));
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 20));
+
+    expect(select.open).toBe(false);
+  });
+
+  it('outside-click still closes dropdown after reconnect', async () => {
+    const select = await build();
+
+    container.removeChild(select);
+    await new Promise(r => setTimeout(r, 20));
+    container.appendChild(select);
+    await new Promise(r => setTimeout(r, 20));
+
+    select.open = true;
+    await new Promise(r => setTimeout(r, 20));
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 20));
+
+    expect(select.open).toBe(false);
+  });
+
+  it('child option observer still picks up additions after reconnect', async () => {
+    const select = await build();
+
+    container.removeChild(select);
+    await new Promise(r => setTimeout(r, 20));
+    container.appendChild(select);
+    await new Promise(r => setTimeout(r, 20));
+
+    const before = (select as any).mergedOptions.length;
+    expect(before).toBeGreaterThan(0);
+
+    const newOpt = document.createElement('snice-option');
+    newOpt.setAttribute('value', 'new');
+    newOpt.setAttribute('label', 'New After Reconnect');
+    select.appendChild(newOpt);
+
+    await new Promise(r => setTimeout(r, 50));
+
+    expect((select as any).mergedOptions.length).toBe(before + 1);
+  });
+
+  it('after final dispose (no reconnect), outside-click does NOT mutate orphan state', async () => {
+    const select = await build();
+    select.open = true;
+    await new Promise(r => setTimeout(r, 20));
+
+    container.removeChild(select);
+    await new Promise(r => setTimeout(r, 20));
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 20));
+
+    expect(select.open).toBe(true);
+  });
+});

@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-range-picker.css?inline';
 import type {
   DateRangePickerSize,
@@ -795,6 +795,11 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   private setupClickOutside() {
     document.addEventListener('click', this.clickOutsideHandler);
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.setupClickOutside();
   }
 
   @dispose()

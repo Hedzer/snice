@@ -319,6 +319,26 @@ class AutoResizeTextarea extends HTMLElement {
     return html`&lt;textarea @input=${this.adjustHeight}&gt;&lt;/textarea&gt;`;
   }
 }</snice-code-block>
+<p><strong>@reconnect()</strong> - Called every time the element is connected AFTER the first connect. <code>@ready</code> only fires once; <code>@dispose</code> fires on every disconnect. The gap between is "what should run on a reconnect?" — for most components nothing extra is needed because framework-managed handlers (<code>@on</code>, <code>@observe</code>, <code>@respond</code>, <code>@context</code>) are re-established automatically. Use <code>@reconnect</code> only when the component wires its own long-lived global subscription in <code>@ready</code> (e.g. <code>document.addEventListener</code> for outside-click) and tears it down in <code>@dispose</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('outside-click-listener')
+class OutsideClick extends HTMLElement {
+  private handler = () =&gt; { /* ... */ };
+
+  @ready()
+  init() {
+    document.addEventListener('click', this.handler);
+  }
+
+  @reconnect()
+  onReconnect() {
+    document.addEventListener('click', this.handler);
+  }
+
+  @dispose()
+  cleanup() {
+    document.removeEventListener('click', this.handler);
+  }
+}</snice-code-block>
 <p><strong>@dispose()</strong> - Called when element is removed from DOM:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('animated-element')
 class AnimatedElement extends HTMLElement {
@@ -797,7 +817,7 @@ class CurrencyInput extends SniceInput {
 <snice-code-block language="html" grammar="grammars/html.json">&lt;currency-input label=&quot;Price&quot; currency=&quot;EUR&quot; placeholder=&quot;0.00&quot;&gt;&lt;/currency-input&gt;</snice-code-block>
 <p>The <code>currency-input</code> inherits everything from <code>snice-input</code> — label rendering, variants, sizes, validation, focus/blur events, clearable, keyboard handling — without re-implementing any of it. It adds a currency symbol prefix, numeric restriction, and formatting.</p>
 <h3 id="elements-what-inherits">What inherits</h3>
-<div class="doc-table-wrap"><table><thead><tr><th>Feature</th><th>Behavior</th></tr></thead><tbody><tr><td><code>@property</code></td><td>Child gets all parent properties. Child can override defaults or type.</td></tr><tr><td><code>@watch</code></td><td>Both parent and child watchers fire.</td></tr><tr><td><code>@on</code></td><td>Both parent and child handlers fire.</td></tr><tr><td><code>@ready</code>, <code>@dispose</code></td><td>Both fire.</td></tr><tr><td><code>@dispatch</code></td><td>Inherited via prototype.</td></tr><tr><td><code>@render</code></td><td>Child <strong>replaces</strong> parent's render. If child doesn't declare <code>@render</code>, parent's is used.</td></tr><tr><td><code>@styles</code></td><td><strong>Concatenated</strong> — parent styles first, child second (child wins via cascade).</td></tr><tr><td><code>formAssociated</code></td><td>Inherited.</td></tr></tbody></table></div>
+<div class="doc-table-wrap"><table><thead><tr><th>Feature</th><th>Behavior</th></tr></thead><tbody><tr><td><code>@property</code></td><td>Child gets all parent properties. Child can override defaults or type.</td></tr><tr><td><code>@watch</code></td><td>Both parent and child watchers fire.</td></tr><tr><td><code>@on</code></td><td>Both parent and child handlers fire.</td></tr><tr><td><code>@ready</code>, <code>@reconnect</code>, <code>@dispose</code></td><td>All three fire on parent and child.</td></tr><tr><td><code>@dispatch</code></td><td>Inherited via prototype.</td></tr><tr><td><code>@render</code></td><td>Child <strong>replaces</strong> parent's render. If child doesn't declare <code>@render</code>, parent's is used.</td></tr><tr><td><code>@styles</code></td><td><strong>Concatenated</strong> — parent styles first, child second (child wins via cascade).</td></tr><tr><td><code>formAssociated</code></td><td>Inherited.</td></tr></tbody></table></div>
 <p>Each child class needs its own <code>@element('tag-name')</code> with a unique tag name.</p>
 <h2 id="elements-advanced-examples">Advanced Examples</h2>
 <h3 id="elements-form-component">Form Component</h3>

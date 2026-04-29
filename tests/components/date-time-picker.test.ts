@@ -330,4 +330,49 @@ describe('snice-date-time-picker', () => {
       expect(panel?.hasAttribute('hidden')).toBe(true);
     });
   });
+
+  describe('@reconnect: outside-click survives reconnect', () => {
+    it('outside-click closes panel on first connect', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      (picker as any).showPanel = true;
+      await wait(20);
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showPanel).toBe(false);
+    });
+
+    it('outside-click still closes panel after disconnect+reconnect', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      const parent = picker.parentNode!;
+
+      parent.removeChild(picker);
+      await wait(20);
+      parent.appendChild(picker);
+      await wait(20);
+
+      (picker as any).showPanel = true;
+      await wait(20);
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showPanel).toBe(false);
+    });
+
+    it('does not respond to clicks after final dispose', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      (picker as any).showPanel = true;
+      await wait(20);
+
+      const parent = picker.parentNode!;
+      parent.removeChild(picker);
+      await wait(20);
+
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(20);
+
+      expect((picker as any).showPanel).toBe(true);
+    });
+  });
 });

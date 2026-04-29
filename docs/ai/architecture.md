@@ -57,9 +57,10 @@ Mock controller for tests, real API controller in production — same element.
 1. Constructor
 2. connectedCallback → setupEventHandlers, initial render
 3. attributeChangedCallback → property sync
-4. @ready() → after first render
+4. @ready() → after first render (fires once)
 5. Property changes → auto re-render
-6. disconnectedCallback → cleanup
+6. disconnectedCallback → @dispose, cleanup
+7. Reconnect: setupEventHandlers, then @reconnect (NOT @ready)
 
 **Controller lifecycle:**
 1. Element sets controller="name"

@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, watch, dispatch, request, ready, dispose, render, styles, html, css as cssTag } from 'snice';
+import { element, property, query, queryAll, watch, dispatch, request, ready, dispose, reconnect, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -383,6 +383,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.setupGlobalListeners();
   }
 
+  @reconnect()
+  onReconnect() {
+    this.setupGlobalListeners();
+    this.observeChildren();
+  }
+
   @dispose()
   cleanup() {
     this.removeGlobalListeners();
@@ -407,6 +413,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.globalKeyHandler = (e: KeyboardEvent) => {
       if (!this.isOpen || this.editable) return;
 
+      // When focus is in the search input, Space must type a space, not
+      // commit the focused option. Other keys (Arrow/Enter/Escape) still
+      // navigate options as expected.
+      const targetIsSearchInput = e.composedPath()[0] === this.searchInput;
+
       switch (e.key) {
         case 'Escape':
           this.closeDropdown();
@@ -422,6 +433,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           break;
         case 'Enter':
         case ' ':
+          if (e.key === ' ' && targetIsSearchInput) return;
           e.preventDefault();
           if (this.focusedIndex >= 0) {
             const options = this.searchable ? this.filteredOptions : this.mergedOptions;
