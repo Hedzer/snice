@@ -389,6 +389,49 @@ describe('snice-spreadsheet', () => {
       expect(sheet.data[4][0]).toBe('a');
     });
 
+    it('frozen rows: cells in first N rows get spreadsheet-td--fixed-row class', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['a','b'],['c','d'],['e','f']],
+        columns: [{ header: 'X' }, { header: 'Y' }],
+        'fixed-rows-top': 1,
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const fixedRow0Cells = sr.querySelectorAll('tr[aria-rowindex="2"] .spreadsheet-td--fixed-row');
+      const fixedRow1Cells = sr.querySelectorAll('tr[aria-rowindex="3"] .spreadsheet-td--fixed-row');
+      expect(fixedRow0Cells.length).toBe(2);
+      expect(fixedRow1Cells.length).toBe(0);
+    });
+
+    it('frozen cols: cells in first N cols get spreadsheet-td--fixed-col class', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['a','b','c']],
+        columns: [{ header: 'X' }, { header: 'Y' }, { header: 'Z' }],
+        'fixed-columns-left': 2,
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const fixedColCells = sr.querySelectorAll('.spreadsheet-td--fixed-col');
+      expect(fixedColCells.length).toBe(2);
+      expect(sr.querySelector('.spreadsheet-td[data-col="0"]')?.classList.contains('spreadsheet-td--fixed-col')).toBe(true);
+      expect(sr.querySelector('.spreadsheet-td[data-col="2"]')?.classList.contains('spreadsheet-td--fixed-col')).toBe(false);
+    });
+
+    it('frozen row-num cells get sticky top inline + raised z-index class', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['a'],['b']],
+        columns: [{ header: 'X' }],
+        'fixed-rows-top': 1,
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const rn0 = sr.querySelector('.spreadsheet-row-num[data-row="0"]') as HTMLElement;
+      const rn1 = sr.querySelector('.spreadsheet-row-num[data-row="1"]') as HTMLElement;
+      expect(rn0.classList.contains('spreadsheet-row-num--fixed-row')).toBe(true);
+      expect(rn0.style.top).toBeTruthy();
+      expect(rn1.classList.contains('spreadsheet-row-num--fixed-row')).toBe(false);
+    });
+
     it('Ctrl+F opens find bar (replace row hidden)', async () => {
       sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
         data: [['hello'], ['world'], ['hello again']],

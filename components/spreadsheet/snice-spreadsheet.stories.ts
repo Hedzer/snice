@@ -194,6 +194,42 @@ export const LargeDataset: Story = {
   },
 };
 
+// h2: Frozen Panes
+export const FrozenPanes: Story = {
+  render: () => {
+    const el = document.createElement('snice-spreadsheet') as any;
+    // Constrained viewport so horizontal + vertical scroll BOTH activate.
+    el.style.cssText = 'height:280px;width:600px;border:1px solid rgba(128,128,128,0.2);border-radius:6px;overflow:hidden;';
+    el.fixedRowsTop = 1;
+    el.fixedColumnsLeft = 1;
+    el.columns = [
+      { header: 'Region', width: 160 },
+      { header: 'Q1', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+      { header: 'Q2', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+      { header: 'Q3', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+      { header: 'Q4', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+      { header: '2024 Total', type: 'currency', format: { currency: 'USD', decimals: 0 } },
+      { header: 'YoY %', type: 'percent', format: { decimals: 1 } },
+      { header: 'Owner' },
+    ];
+    const regions = ['NA East', 'NA West', 'EMEA', 'LATAM', 'APAC', 'Japan', 'Australia', 'India', 'China', 'SE Asia', 'Africa', 'Middle East'];
+    el.data = Array.from({ length: 60 }, (_: unknown, i: number) => {
+      const region = regions[i % regions.length];
+      return [
+        `${region} ${i + 1}`,
+        120000 + i * 7300,
+        135000 + i * 6100,
+        150000 + i * 8900,
+        165000 + i * 9100,
+        570000 + i * 31400,
+        0.05 + (i % 12) * 0.012,
+        ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'][i % 5],
+      ];
+    });
+    return el;
+  },
+};
+
 // h2: Single Row
 export const SingleRow: Story = {
   render: () => {

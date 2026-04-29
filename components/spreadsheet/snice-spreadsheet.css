@@ -1,9 +1,12 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   contain: layout style paint;
   width: 100%;
+  height: 100%;
   position: relative;
+  min-height: 0;
   --spreadsheet-border: var(--snice-color-border, rgb(226 226 226));
   --spreadsheet-bg: var(--snice-color-surface, rgb(255 255 255));
   --spreadsheet-bg-element: var(--snice-color-surface-container-high, rgb(252 251 249));
@@ -66,8 +69,11 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--spreadsheet-primary) 25%, transparent);
 }
 
-/* Spreadsheet container */
+/* Spreadsheet container — flex:1 so it claims whatever vertical space is
+   left after the formula bar + find bar, and scrolls only its own contents. */
 .spreadsheet {
+  flex: 1 1 auto;
+  min-height: 0;
   border: 1px solid var(--spreadsheet-border);
   border-radius: 0 0 var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem);
   overflow: auto;
@@ -193,6 +199,49 @@ th.spreadsheet-row-num {
   position: relative;
   min-width: 5rem;
   height: 1.75rem;
+}
+
+/* Frozen panes — sticky offsets are emitted as inline `top` / `left`
+   values from the render path; this CSS sets `position: sticky` and the
+   z-index stack so frozen cells layer above scrolling content.
+   z-index map: header row + row-num = 2/3; fixed body row = 4;
+   fixed body col = 4; intersection (fixed row + fixed col) = 5;
+   fixed col header = 6; fixed col + header (top-left frozen) = 7.
+
+   Row-num cells for frozen rows: also need vertical sticky so the row
+   number stays glued next to the frozen data. The base .spreadsheet-row-num
+   already has `position: sticky; left: 0` for horizontal freeze; adding the
+   inline `top` from the renderer makes it a 2D sticky anchor. */
+th.spreadsheet-row-num--fixed-row {
+  z-index: 5;
+}
+.spreadsheet-th--fixed-col {
+  position: sticky;
+  z-index: 6;
+  background: var(--spreadsheet-bg-element);
+}
+
+.spreadsheet-td--fixed-row {
+  position: sticky;
+  z-index: 4;
+  background: var(--spreadsheet-bg);
+}
+
+.spreadsheet-td--fixed-col {
+  position: sticky;
+  z-index: 4;
+  background: var(--spreadsheet-bg);
+}
+
+.spreadsheet-td--fixed-row.spreadsheet-td--fixed-col {
+  z-index: 5;
+}
+
+/* Frozen rows + cols also need a clear visual edge so scrolled content
+   doesn't bleed through. A subtle inset shadow on the freeze boundary. */
+.spreadsheet-tr--fixed-row:last-of-type .spreadsheet-td--fixed-row,
+.spreadsheet-tr--fixed-row:last-of-type .spreadsheet-row-num {
+  box-shadow: inset 0 -2px 0 var(--spreadsheet-border);
 }
 
 /* Active cell — Excel-style 2px primary ring drawn INSIDE the cell border.

@@ -7,6 +7,10 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   @property({ type: Array, attribute: false }) data: any[][] = [];
   @property({ type: Array, attribute: false }) columns: SpreadsheetColumn[] = [];
   @property({ type: Boolean }) readonly: boolean = false;
+  /** Freeze the first N data rows so they stay visible while scrolling. */
+  @property({ type: Number, attribute: 'fixed-rows-top' }) fixedRowsTop: number = 0;
+  /** Freeze the first N data columns so they stay visible while scrolling. */
+  @property({ type: Number, attribute: 'fixed-columns-left' }) fixedColumnsLeft: number = 0;
 
   private selectedCell: CellPosition | null = null;
   private editingCell: CellPosition | null = null;
@@ -989,6 +993,25 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
     const colCount = this.getColumnCount();
     const rowCount = this.data.length;
+
+    // Frozen pane offsets \u2014 sticky positions need to accumulate across all
+    // earlier sticky elements. Header row is 28px; row-num column is 44px;
+    // body rows are 28px each; column widths come from getColWidth(c).
+    const HEADER_PX = 28;
+    const ROWNUM_PX = 44;
+    const ROW_PX = 28;
+    const fixedRows = Math.max(0, this.fixedRowsTop | 0);
+    const fixedCols = Math.max(0, this.fixedColumnsLeft | 0);
+    const rowTopOffset = (r: number) => HEADER_PX + r * ROW_PX;
+    const colLeftOffsets: number[] = [];
+    {
+      let acc = ROWNUM_PX;
+      for (let c = 0; c < colCount; c++) {
+        colLeftOffsets[c] = acc;
+        acc += this.getColWidth(c);
+      }
+    }
+
     let h = `<table class="spreadsheet-table" role="grid" aria-rowcount="${rowCount + 1}" aria-colcount="${colCount + 1}"><thead><tr role="row" aria-rowindex="1">`;
     h += '<th class="spreadsheet-row-num" scope="col" aria-colindex="1">&nbsp;</th>';
     for (let c = 0; c < colCount; c++) {
@@ -997,7 +1020,9 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       const sortAttr = this.sortCol === c
         ? (this.sortDir === 'asc' ? 'ascending' : 'descending')
         : 'none';
-      h += `<th class="spreadsheet-th" scope="col" data-col="${c}" aria-colindex="${c + 2}" aria-sort="${sortAttr}" style="width:${width}px;position:relative">`;
+      const fixed = c < fixedCols ? `;left:${colLeftOffsets[c]}px` : '';
+      const fixedClass = c < fixedCols ? ' spreadsheet-th--fixed-col' : '';
+      h += `<th class="spreadsheet-th${fixedClass}" scope="col" data-col="${c}" aria-colindex="${c + 2}" aria-sort="${sortAttr}" style="width:${width}px;position:relative${fixed}">`;
       h += `<span class="spreadsheet-th-sort">${this.esc(header)}`;
       if (this.sortCol === c) {
         h += `<span class="spreadsheet-th-sort-icon active">${this.sortDir === 'asc' ? '\u25B2' : '\u25BC'}</span>`;
@@ -1009,8 +1034,15 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     h += '</tr></thead><tbody>';
 
     for (let r = 0; r < this.data.length; r++) {
-      h += `<tr role="row" aria-rowindex="${r + 2}">`;
-      h += `<th class="spreadsheet-row-num" scope="row" data-row="${r}" aria-colindex="1">${r + 1}</th>`;
+      const fixedRow = r < fixedRows;
+      const rowFixedClass = fixedRow ? ' spreadsheet-tr--fixed-row' : '';
+      h += `<tr role="row" aria-rowindex="${r + 2}" class="${rowFixedClass.trim()}">`;
+      // Row-num for a frozen body row needs to track the row's sticky offset
+      // too — otherwise the natural-position row-num peeks through behind the
+      // frozen overlay.
+      const rowNumStyle = fixedRow ? ` style="top:${rowTopOffset(r)}px"` : '';
+      const rowNumClass = fixedRow ? ' spreadsheet-row-num--fixed-row' : '';
+      h += `<th class="spreadsheet-row-num${rowNumClass}" scope="row" data-row="${r}" aria-colindex="1"${rowNumStyle}>${r + 1}</th>`;
       for (let c = 0; c < colCount; c++) {
         const rawValue = this.data[r]?.[c];
         const displayValue = this.resolveValue(rawValue);
@@ -1019,7 +1051,12 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
         const width = this.getColWidth(c);
         const display = this.formatCellDisplay(displayValue, colDef);
         const contentClass = this.cellContentClass(cellType);
-        h += `<td class="spreadsheet-td" role="gridcell" data-row="${r}" data-col="${c}" aria-colindex="${c + 2}" style="width:${width}px">`;
+        const fixedCol = c < fixedCols;
+        const stickyClasses = (fixedRow ? ' spreadsheet-td--fixed-row' : '') + (fixedCol ? ' spreadsheet-td--fixed-col' : '');
+        let stickyStyle = '';
+        if (fixedRow) stickyStyle += `;top:${rowTopOffset(r)}px`;
+        if (fixedCol) stickyStyle += `;left:${colLeftOffsets[c]}px`;
+        h += `<td class="spreadsheet-td${stickyClasses}" role="gridcell" data-row="${r}" data-col="${c}" aria-colindex="${c + 2}" style="width:${width}px${stickyStyle}">`;
         h += `<span class="${contentClass}">${display}</span>`;
         h += '</td>';
       }
