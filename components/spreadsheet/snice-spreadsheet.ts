@@ -307,18 +307,19 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
 
   private handleDragMove(e: MouseEvent) {
     if (!this.isDragging || !this.wrapperEl) return;
-    const cells = this.wrapperEl.querySelectorAll('.spreadsheet-td');
-    let closestRow = -1, closestCol = -1, minDist = Infinity;
-    cells.forEach(cell => {
-      const r = parseInt(cell.getAttribute('data-row') || '-1');
-      const c = parseInt(cell.getAttribute('data-col') || '-1');
-      if (r < 0 || c < 0) return;
-      const rect = cell.getBoundingClientRect();
-      const dist = Math.hypot(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
-      if (dist < minDist) { minDist = dist; closestRow = r; closestCol = c; }
-    });
-    if (closestRow >= 0 && (closestRow !== this.selectionEnd?.row || closestCol !== this.selectionEnd?.col)) {
-      this.selectionEnd = { row: closestRow, col: closestCol };
+    // Use the browser's hit-test tree (O(1)) instead of iterating every cell
+    // and forcing a layout reflow per cell. Previous implementation called
+    // getBoundingClientRect() on every .spreadsheet-td on every mousemove —
+    // catastrophic at scale (50×50 = 2500 reflows × ~60Hz).
+    const root = this.shadowRoot ?? document;
+    const hit = (root as Document | ShadowRoot).elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const cell = hit?.closest('.spreadsheet-td') as HTMLElement | null;
+    if (!cell) return;
+    const r = parseInt(cell.dataset.row || '-1', 10);
+    const c = parseInt(cell.dataset.col || '-1', 10);
+    if (r < 0 || c < 0) return;
+    if (r !== this.selectionEnd?.row || c !== this.selectionEnd?.col) {
+      this.selectionEnd = { row: r, col: c };
       this.updateSelection();
     }
   }

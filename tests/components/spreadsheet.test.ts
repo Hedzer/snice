@@ -188,4 +188,71 @@ describe('snice-spreadsheet', () => {
       expect(sheet.readonly).toBe(true);
     });
   });
+
+  describe('handleDragMove perf — uses elementFromPoint, not per-cell getBoundingClientRect', () => {
+    it('no getBoundingClientRect calls during a drag mousemove', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: SAMPLE_DATA,
+        columns: SAMPLE_COLUMNS,
+      });
+      await wait(40);
+
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      // Stub elementFromPoint on the shadowRoot to return a known cell.
+      const targetCell = sr.querySelector('.spreadsheet-td[data-row="2"][data-col="0"]') as HTMLElement | null;
+      expect(targetCell).toBeTruthy();
+      (sr as any).elementFromPoint = () => targetCell;
+
+      // Spy on Element.prototype.getBoundingClientRect — the old impl called
+      // it on every cell per mousemove; the new impl must not call it at all.
+      const origGetRect = Element.prototype.getBoundingClientRect;
+      let rectCallCount = 0;
+      Element.prototype.getBoundingClientRect = function () {
+        rectCallCount++;
+        return origGetRect.call(this);
+      };
+
+      try {
+        // Simulate a drag: mousedown on a starting cell (sets isDragging=true)
+        const startCell = sr.querySelector('.spreadsheet-td[data-row="0"][data-col="0"]') as HTMLElement;
+        startCell.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0, clientX: 50, clientY: 50 }));
+
+        const before = rectCallCount;
+        // Now fire 10 mousemoves on document — handler is bound there
+        for (let i = 0; i < 10; i++) {
+          document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 100 + i, clientY: 100 + i }));
+        }
+        const dragRectCalls = rectCallCount - before;
+
+        // Old impl: 10 moves × ~12 cells = ~120 calls. New impl: 0.
+        expect(dragRectCalls).toBe(0);
+
+        // And the selection must still update via elementFromPoint hit-test:
+        document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      } finally {
+        Element.prototype.getBoundingClientRect = origGetRect;
+      }
+    });
+
+    it('drag updates selectionEnd to the cell under the pointer', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: SAMPLE_DATA,
+        columns: SAMPLE_COLUMNS,
+      });
+      await wait(40);
+
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const startCell = sr.querySelector('.spreadsheet-td[data-row="0"][data-col="0"]') as HTMLElement;
+      const targetCell = sr.querySelector('.spreadsheet-td[data-row="2"][data-col="2"]') as HTMLElement;
+      (sr as any).elementFromPoint = () => targetCell;
+
+      startCell.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, composed: true, button: 0, clientX: 10, clientY: 10 }));
+      document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 200, clientY: 200 }));
+      await wait(10);
+
+      expect((sheet as any).selectionEnd).toEqual({ row: 2, col: 2 });
+
+      document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    });
+  });
 });
