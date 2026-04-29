@@ -379,6 +379,95 @@ th.spreadsheet-row-num {
   margin: var(--snice-spacing-2xs, 0.25rem) 0;
 }
 
+/* Find / Replace bar — sits between the formula bar and the grid */
+.spreadsheet-find-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border-left: 1px solid var(--spreadsheet-border);
+  border-right: 1px solid var(--spreadsheet-border);
+  background: var(--spreadsheet-bg-element);
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.spreadsheet-find-bar[hidden] { display: none; }
+
+.spreadsheet-find-row {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-2xs, 0.25rem);
+}
+
+/* `display: flex` above wins over the user-agent `hidden` attribute, so
+   make the override explicit. Same trick as snice-fill-handle below. */
+.spreadsheet-find-row[hidden] { display: none; }
+
+.spreadsheet-find-input,
+.spreadsheet-replace-input {
+  flex: 1;
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--spreadsheet-bg);
+  color: var(--spreadsheet-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: inherit;
+  min-width: 0;
+}
+
+.spreadsheet-find-input:focus,
+.spreadsheet-replace-input:focus {
+  outline: none;
+  border-color: var(--spreadsheet-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--spreadsheet-primary) 25%, transparent);
+}
+
+.spreadsheet-find-count {
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--spreadsheet-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  min-width: 4rem;
+  text-align: right;
+}
+
+.spreadsheet-find-btn {
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--spreadsheet-bg);
+  color: var(--spreadsheet-text);
+  cursor: pointer;
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  white-space: nowrap;
+}
+
+.spreadsheet-find-btn:hover {
+  background: var(--spreadsheet-hover);
+  border-color: var(--spreadsheet-primary);
+}
+
+.spreadsheet-find-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  color: var(--spreadsheet-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Find match highlight — soft yellow tint on every match cell, stronger
+   ring on the current active match (matches Excel/Sheets behaviour). */
+.spreadsheet-td.find-match {
+  background: color-mix(in srgb, #facc15 30%, var(--spreadsheet-bg));
+}
+.spreadsheet-td.find-match-active {
+  box-shadow: inset 0 0 0 2px #f59e0b;
+  background: color-mix(in srgb, #facc15 50%, var(--spreadsheet-bg));
+}
+
 /* Empty state */
 .spreadsheet-empty {
   display: flex;

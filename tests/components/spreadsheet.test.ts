@@ -389,6 +389,121 @@ describe('snice-spreadsheet', () => {
       expect(sheet.data[4][0]).toBe('a');
     });
 
+    it('Ctrl+F opens find bar (replace row hidden)', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['hello'], ['world'], ['hello again']],
+        columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const grid = sr.querySelector('.spreadsheet') as HTMLElement;
+      grid.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const bar = sr.querySelector('.spreadsheet-find-bar') as HTMLElement;
+      const replaceRow = sr.querySelector('.spreadsheet-find-replace-row') as HTMLElement;
+      expect(bar.hidden).toBe(false);
+      expect(replaceRow.hidden).toBe(true);
+    });
+
+    it('Ctrl+H opens find bar with replace row visible', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['x']],
+        columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      const grid = sr.querySelector('.spreadsheet') as HTMLElement;
+      grid.dispatchEvent(new KeyboardEvent('keydown', { key: 'h', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const replaceRow = sr.querySelector('.spreadsheet-find-replace-row') as HTMLElement;
+      expect(replaceRow.hidden).toBe(false);
+    });
+
+    it('typing in find input highlights matching cells', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['hello'], ['world'], ['hello again']],
+        columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      (sr.querySelector('.spreadsheet') as HTMLElement)
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const input = sr.querySelector('.spreadsheet-find-input') as HTMLInputElement;
+      input.value = 'hello';
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      await wait(20);
+      expect(sr.querySelectorAll('.spreadsheet-td.find-match').length).toBe(2);
+      expect(sr.querySelector('.spreadsheet-find-count')?.textContent).toBe('1 / 2');
+    });
+
+    it('case-insensitive match by default; case toggle restricts', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['Hello'], ['hello'], ['HELLO']],
+        columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      (sr.querySelector('.spreadsheet') as HTMLElement)
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const input = sr.querySelector('.spreadsheet-find-input') as HTMLInputElement;
+      input.value = 'hello';
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      await wait(20);
+      expect(sr.querySelectorAll('.spreadsheet-td.find-match').length).toBe(3);
+
+      // Flip case-sensitive
+      const caseToggle = sr.querySelector('.spreadsheet-find-toggle input') as HTMLInputElement;
+      caseToggle.checked = true;
+      caseToggle.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+      await wait(20);
+      expect(sr.querySelectorAll('.spreadsheet-td.find-match').length).toBe(1);
+    });
+
+    it('Replace All replaces every match', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['cat one'], ['cat two'], ['dog']],
+        columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      (sr.querySelector('.spreadsheet') as HTMLElement)
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'h', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const findInput = sr.querySelector('.spreadsheet-find-input') as HTMLInputElement;
+      findInput.value = 'cat';
+      findInput.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      await wait(20);
+      const replaceInput = sr.querySelector('.spreadsheet-replace-input') as HTMLInputElement;
+      replaceInput.value = 'CAT';
+      const replaceAllBtn = sr.querySelector('[data-find-action="replace-all"]') as HTMLElement;
+      replaceAllBtn.click();
+      await wait(20);
+      expect(sheet.data[0][0]).toBe('CAT one');
+      expect(sheet.data[1][0]).toBe('CAT two');
+      expect(sheet.data[2][0]).toBe('dog');
+    });
+
+    it('Escape closes find bar and clears highlights', async () => {
+      sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
+        data: [['x']], columns: [{ header: 'A' }],
+      });
+      await wait(40);
+      const sr = (sheet as HTMLElement).shadowRoot!;
+      (sr.querySelector('.spreadsheet') as HTMLElement)
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, composed: true }));
+      await wait(20);
+      const input = sr.querySelector('.spreadsheet-find-input') as HTMLInputElement;
+      input.value = 'x';
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      await wait(20);
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+      await wait(20);
+      expect((sr.querySelector('.spreadsheet-find-bar') as HTMLElement).hidden).toBe(true);
+      expect(sr.querySelectorAll('.spreadsheet-td.find-match').length).toBe(0);
+    });
+
     it('drag updates selectionEnd to the cell under the pointer', async () => {
       sheet = await createComponent<SniceSpreadsheetElement>('snice-spreadsheet', {
         data: SAMPLE_DATA,

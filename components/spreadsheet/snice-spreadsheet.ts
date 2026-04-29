@@ -44,6 +44,17 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
   @query('.spreadsheet-status-bar') private statusBarEl?: HTMLElement;
   @query('.spreadsheet-context-menu') private contextMenuEl?: HTMLElement;
   @query('.spreadsheet-fill-handle') private fillHandleEl?: HTMLElement;
+  @query('.spreadsheet-find-bar') private findBarEl?: HTMLElement;
+  @query('.spreadsheet-find-input') private findInputEl?: HTMLInputElement;
+  @query('.spreadsheet-replace-input') private replaceInputEl?: HTMLInputElement;
+
+  // ── Find & Replace state ──
+  private findOpen = false;
+  private findShowReplace = false;
+  private findText = '';
+  private findCaseSensitive = false;
+  private findMatches: CellPosition[] = [];
+  private findIndex = -1;
 
   // Fill-handle drag state. While `fillSourceRange` is set, mousemove on
   // document drives `fillTargetEnd` which highlights the prospective fill
@@ -642,6 +653,190 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     this.data = [...this.data];
   }
 
+  // ── Find & Replace ──
+
+  private openFind(showReplace: boolean) {
+    this.findOpen = true;
+    this.findShowReplace = showReplace;
+    if (this.findBarEl) {
+      this.findBarEl.hidden = false;
+      const replaceRow = this.findBarEl.querySelector('.spreadsheet-find-replace-row') as HTMLElement | null;
+      if (replaceRow) replaceRow.hidden = !showReplace;
+    }
+    requestAnimationFrame(() => this.findInputEl?.focus());
+    if (this.findText) this.runFindScan();
+  }
+
+  private closeFind() {
+    this.findOpen = false;
+    this.findMatches = [];
+    this.findIndex = -1;
+    if (this.findBarEl) this.findBarEl.hidden = true;
+    this.clearFindHighlights();
+    (this.shadowRoot?.querySelector('.spreadsheet') as HTMLElement | null)?.focus();
+  }
+
+  @on('input', '.spreadsheet-find-input')
+  private handleFindInput(e: Event) {
+    this.findText = (e.target as HTMLInputElement).value;
+    this.runFindScan();
+  }
+
+  @on('keydown', '.spreadsheet-find-input')
+  private handleFindKey(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.cycleFind(e.shiftKey ? -1 : 1);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.closeFind();
+    }
+  }
+
+  @on('keydown', '.spreadsheet-replace-input')
+  private handleReplaceKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.closeFind();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      this.replaceCurrent();
+    }
+  }
+
+  @on('change', '.spreadsheet-find-toggle input')
+  private handleFindCaseToggle(e: Event) {
+    this.findCaseSensitive = (e.target as HTMLInputElement).checked;
+    this.runFindScan();
+  }
+
+  @on('click', '.spreadsheet-find-btn')
+  private handleFindBtn(e: MouseEvent) {
+    const btn = (e.target as HTMLElement).closest('[data-find-action]') as HTMLElement | null;
+    if (!btn) return;
+    const action = btn.getAttribute('data-find-action');
+    if (action === 'next')        this.cycleFind(1);
+    else if (action === 'prev')   this.cycleFind(-1);
+    else if (action === 'close')  this.closeFind();
+    else if (action === 'replace') this.replaceCurrent();
+    else if (action === 'replace-all') this.replaceAll();
+  }
+
+  private runFindScan() {
+    this.clearFindHighlights();
+    const q = this.findText;
+    if (!q) {
+      this.findMatches = [];
+      this.findIndex = -1;
+      this.updateFindCount();
+      return;
+    }
+    const cmp = this.findCaseSensitive ? q : q.toLowerCase();
+    const matches: CellPosition[] = [];
+    for (let r = 0; r < this.data.length; r++) {
+      const row = this.data[r] || [];
+      for (let c = 0; c < row.length; c++) {
+        const v = row[c];
+        if (v == null || v === '') continue;
+        const s = String(v);
+        const hay = this.findCaseSensitive ? s : s.toLowerCase();
+        if (hay.includes(cmp)) matches.push({ row: r, col: c });
+      }
+    }
+    this.findMatches = matches;
+    this.findIndex = matches.length > 0 ? 0 : -1;
+    this.applyFindHighlights();
+    this.updateFindCount();
+    this.scrollMatchIntoView();
+  }
+
+  private cycleFind(direction: 1 | -1) {
+    if (this.findMatches.length === 0) return;
+    this.findIndex = (this.findIndex + direction + this.findMatches.length) % this.findMatches.length;
+    this.applyFindHighlights();
+    this.updateFindCount();
+    this.scrollMatchIntoView();
+  }
+
+  private clearFindHighlights() {
+    if (!this.wrapperEl) return;
+    this.wrapperEl.querySelectorAll('.find-match, .find-match-active')
+      .forEach(el => el.classList.remove('find-match', 'find-match-active'));
+  }
+
+  private applyFindHighlights() {
+    if (!this.wrapperEl) return;
+    this.clearFindHighlights();
+    this.findMatches.forEach((m, i) => {
+      const td = this.wrapperEl!.querySelector(`td[data-row="${m.row}"][data-col="${m.col}"]`);
+      if (!td) return;
+      td.classList.add('find-match');
+      if (i === this.findIndex) td.classList.add('find-match-active');
+    });
+  }
+
+  private scrollMatchIntoView() {
+    if (this.findIndex < 0) return;
+    const m = this.findMatches[this.findIndex];
+    const td = this.wrapperEl?.querySelector(`td[data-row="${m.row}"][data-col="${m.col}"]`) as HTMLElement | null;
+    // happy-dom doesn't always implement scrollIntoView; guard so the scan
+    // path doesn't fail in tests.
+    try { td?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch { /* noop */ }
+  }
+
+  private updateFindCount() {
+    const count = this.findBarEl?.querySelector('.spreadsheet-find-count') as HTMLElement | null;
+    if (!count) return;
+    if (!this.findText) count.textContent = '';
+    else if (this.findMatches.length === 0) count.textContent = 'No matches';
+    else count.textContent = `${this.findIndex + 1} / ${this.findMatches.length}`;
+  }
+
+  private replaceCurrent() {
+    if (this.readonly || this.findIndex < 0) return;
+    const m = this.findMatches[this.findIndex];
+    const replaceWith = this.replaceInputEl?.value ?? '';
+    const oldVal = this.data[m.row]?.[m.col];
+    if (oldVal == null) return;
+    const replaced = this.replaceInValue(String(oldVal), this.findText, replaceWith);
+    this.setCell(m.row, m.col, replaced);
+    this.runFindScan();
+  }
+
+  private replaceAll() {
+    if (this.readonly || this.findMatches.length === 0) return;
+    const replaceWith = this.replaceInputEl?.value ?? '';
+    const matchesSnapshot = [...this.findMatches];
+    for (const m of matchesSnapshot) {
+      const oldVal = this.data[m.row]?.[m.col];
+      if (oldVal == null) continue;
+      const replaced = this.replaceInValue(String(oldVal), this.findText, replaceWith);
+      if (!this.data[m.row]) this.data[m.row] = [];
+      this.data[m.row][m.col] = replaced;
+      this.pushUndo({ row: m.row, col: m.col, oldValue: oldVal, newValue: replaced });
+      this.emitCellChange(m.row, m.col, replaced, oldVal);
+    }
+    this.redoStack.length = 0;
+    this.data = [...this.data];
+    this.runFindScan();
+  }
+
+  private replaceInValue(haystack: string, needle: string, repl: string): string {
+    if (this.findCaseSensitive) return haystack.split(needle).join(repl);
+    // Case-insensitive replacement preserving non-matching segments verbatim.
+    const lowHay = haystack.toLowerCase();
+    const lowNeedle = needle.toLowerCase();
+    let out = '';
+    let i = 0;
+    while (i < haystack.length) {
+      const idx = lowHay.indexOf(lowNeedle, i);
+      if (idx === -1) { out += haystack.slice(i); break; }
+      out += haystack.slice(i, idx) + repl;
+      i = idx + needle.length;
+    }
+    return out;
+  }
+
   // ── Keyboard ──
 
   @on('keydown')
@@ -651,6 +846,12 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
     }
     if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
       e.preventDefault(); this.redo(); return;
+    }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')) {
+      e.preventDefault(); this.openFind(false); return;
+    }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'h' || e.key === 'H')) {
+      e.preventDefault(); this.openFind(true); return;
     }
     if (this.editingCell) return;
     if (!this.selectedCell) return;
@@ -1253,6 +1454,23 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       <div class="spreadsheet-formula-bar" part="formula-bar">
         <span class="spreadsheet-cell-ref"></span>
         <input class="spreadsheet-formula-input" />
+      </div>
+      <div class="spreadsheet-find-bar" part="find-bar" hidden>
+        <div class="spreadsheet-find-row">
+          <input class="spreadsheet-find-input" type="text" placeholder="Find" aria-label="Find" />
+          <span class="spreadsheet-find-count" aria-live="polite"></span>
+          <button class="spreadsheet-find-btn" data-find-action="prev" title="Previous (Shift+Enter)" aria-label="Previous match">↑</button>
+          <button class="spreadsheet-find-btn" data-find-action="next" title="Next (Enter)" aria-label="Next match">↓</button>
+          <label class="spreadsheet-find-toggle" title="Match case">
+            <input type="checkbox" data-find-action="case" /> Aa
+          </label>
+          <button class="spreadsheet-find-btn" data-find-action="close" title="Close (Esc)" aria-label="Close find">×</button>
+        </div>
+        <div class="spreadsheet-find-row spreadsheet-find-replace-row" hidden>
+          <input class="spreadsheet-replace-input" type="text" placeholder="Replace" aria-label="Replace" />
+          <button class="spreadsheet-find-btn" data-find-action="replace">Replace</button>
+          <button class="spreadsheet-find-btn" data-find-action="replace-all">Replace all</button>
+        </div>
       </div>
       <div class="spreadsheet" part="base" tabindex="0"></div>
       <div class="spreadsheet-fill-handle" part="fill-handle" hidden aria-hidden="true"></div>
