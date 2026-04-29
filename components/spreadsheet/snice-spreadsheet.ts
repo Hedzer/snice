@@ -805,7 +805,6 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
       h += `<div class="spreadsheet-resize-handle" data-resize-col="${c}"></div>`;
       h += '</th>';
     }
-    h += '<th class="spreadsheet-add-col-header" data-action="add-col" aria-label="Add column">+</th>';
     h += '</tr></thead><tbody>';
 
     for (let r = 0; r < this.data.length; r++) {
@@ -823,14 +822,10 @@ export class SniceSpreadsheet extends HTMLElement implements SniceSpreadsheetEle
         h += `<span class="${contentClass}">${display}</span>`;
         h += '</td>';
       }
-      h += '<td class="spreadsheet-add-col-cell"></td>';
       h += '</tr>';
     }
 
-    h += '<tr class="spreadsheet-add-row" data-action="add-row">';
-    h += '<td class="spreadsheet-row-num" style="position:sticky;left:0">+</td>';
-    for (let c = 0; c <= colCount; c++) h += '<td></td>';
-    h += '</tr></tbody></table>';
+    h += '</tbody></table>';
 
     wrapper.innerHTML = h;
     this.updateSelection();

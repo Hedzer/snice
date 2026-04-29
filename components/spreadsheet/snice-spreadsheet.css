@@ -16,10 +16,11 @@
   --spreadsheet-grid: rgba(200, 200, 200, 0.5);
 }
 
-/* Formula bar */
+/* Formula bar — Excel-style, full width, with a clear cell-ref pill on the
+   left and a visible monospace input that stretches the rest of the row. */
 .spreadsheet-formula-bar {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: var(--snice-spacing-xs, 0.5rem);
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border: 1px solid var(--spreadsheet-border);
@@ -27,6 +28,7 @@
   border-radius: var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem) 0 0;
   background: var(--spreadsheet-bg-element);
   font-size: var(--snice-font-size-sm, 0.875rem);
+  min-height: 2rem;
 }
 
 .spreadsheet-cell-ref {
@@ -34,27 +36,34 @@
   align-items: center;
   justify-content: center;
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--spreadsheet-text-secondary);
-  min-width: 3.5rem;
+  color: var(--spreadsheet-text);
+  min-width: 4rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
-  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--snice-font-size-sm, 0.875rem);
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   border: 1px solid var(--spreadsheet-border);
   border-radius: var(--snice-border-radius-md, 0.25rem);
   background: var(--spreadsheet-bg);
-  height: 1.5rem;
 }
 
 .spreadsheet-formula-input {
   flex: 1;
-  border: none;
   outline: none;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: inherit;
-  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
-  background: transparent;
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
+  background: var(--spreadsheet-bg);
   color: var(--spreadsheet-text);
+  border: 1px solid var(--spreadsheet-border);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  min-width: 0;
+}
+
+.spreadsheet-formula-input:focus {
+  border-color: var(--spreadsheet-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--spreadsheet-primary) 25%, transparent);
 }
 
 /* Spreadsheet container */
@@ -68,11 +77,13 @@
 }
 
 .spreadsheet-table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: max-content;
   min-width: 100%;
   font-size: var(--snice-font-size-sm, 0.875rem);
   table-layout: fixed;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Header */
@@ -184,14 +195,21 @@ th.spreadsheet-row-num {
   height: 1.75rem;
 }
 
+/* Active cell — Excel-style 2px primary ring drawn INSIDE the cell border.
+   `position: relative` + `z-index: 2` so the ring layers over neighbour
+   borders (otherwise the right/bottom 2px of the ring get cropped). */
 .spreadsheet-td.selected {
-  outline: 2px solid var(--spreadsheet-primary);
-  outline-offset: -2px;
-  z-index: 1;
+  position: relative;
+  z-index: 2;
+  box-shadow: inset 0 0 0 2px var(--spreadsheet-primary);
+  background: var(--spreadsheet-bg);
 }
 
+/* Range fill — soft primary tint, matches Handsontable / Excel's "blue
+   selection" feel. Active cell stays clean (no fill) so the user sees
+   exactly which cell is the anchor. */
 .spreadsheet-td.in-range {
-  background: var(--spreadsheet-primary-subtle);
+  background: color-mix(in srgb, var(--spreadsheet-primary) 12%, var(--spreadsheet-bg));
 }
 
 .spreadsheet-cell {
@@ -359,60 +377,6 @@ th.spreadsheet-row-num {
   height: 1px;
   background: var(--spreadsheet-border);
   margin: var(--snice-spacing-2xs, 0.25rem) 0;
-}
-
-/* Add row/column buttons */
-.spreadsheet-add-row {
-  display: flex;
-  align-items: center;
-  height: 1.5rem;
-  cursor: pointer;
-  color: var(--spreadsheet-text-tertiary);
-  font-size: var(--snice-font-size-xs, 0.75rem);
-  user-select: none;
-}
-
-.spreadsheet-add-row:hover {
-  background: var(--spreadsheet-hover);
-  color: var(--spreadsheet-primary);
-}
-
-.spreadsheet-add-row td {
-  padding: 0 var(--snice-spacing-xs, 0.5rem);
-  border-right: 1px solid var(--spreadsheet-grid);
-  border-bottom: 1px solid var(--spreadsheet-grid);
-  height: 1.5rem;
-  line-height: 1.5rem;
-}
-
-.spreadsheet-add-col-header {
-  font-family: var(--snice-font-family-display);
-  background: var(--spreadsheet-bg-element);
-  border-right: 1px solid var(--spreadsheet-grid);
-  border-bottom: 2px solid var(--spreadsheet-border);
-  width: 2rem;
-  min-width: 2rem;
-  text-align: center;
-  cursor: pointer;
-  color: var(--spreadsheet-text-tertiary);
-  font-size: var(--snice-font-size-xs, 0.75rem);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  user-select: none;
-}
-
-.spreadsheet-add-col-header:hover {
-  font-family: var(--snice-font-family-display);
-  background: var(--spreadsheet-hover);
-  color: var(--spreadsheet-primary);
-}
-
-.spreadsheet-add-col-cell {
-  border-right: 1px solid var(--spreadsheet-grid);
-  border-bottom: 1px solid var(--spreadsheet-grid);
-  width: 2rem;
-  min-width: 2rem;
 }
 
 /* Empty state */
