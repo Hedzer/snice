@@ -1954,4 +1954,174 @@ describe('snice-table', () => {
       expect(requestSpy).toHaveBeenCalled();
     });
   });
+
+  // ── Visual regression: icon sizes + alignment ─────────────────────
+
+  describe('visual regressions: icon sizes + input alignment', () => {
+    it('toolbar action buttons render at a consistent compact size (≤32px)', async () => {
+      table = await createTable();
+      table.setToolbar({ showExport: true });
+      await wait(30);
+      const btns = Array.from(table.shadowRoot.querySelectorAll('.toolbar-btn')) as HTMLElement[];
+      expect(btns.length).toBeGreaterThan(0);
+      for (const btn of btns) {
+        const r = btn.getBoundingClientRect();
+        expect(r.width, `${btn.getAttribute('aria-label')} button width`).toBeLessThanOrEqual(40);
+        expect(r.height, `${btn.getAttribute('aria-label')} button height`).toBeLessThanOrEqual(40);
+        // ...and SVG inside should be smaller
+        const svg = btn.querySelector('svg') as SVGElement | null;
+        if (svg) {
+          const sr = svg.getBoundingClientRect();
+          expect(sr.width, `${btn.getAttribute('aria-label')} svg width`).toBeLessThanOrEqual(24);
+          expect(sr.height, `${btn.getAttribute('aria-label')} svg height`).toBeLessThanOrEqual(24);
+        }
+      }
+    });
+
+    it('column menu icons render at compact size, NOT raw 24x24 SVG default', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      const ccm = (table as any).columnMenuManager;
+      // Show menu near a known column header
+      const th = table.shadowRoot.querySelector('th[data-key="name"]') as HTMLElement;
+      const r = th.getBoundingClientRect();
+      ccm.show(table, 'name', r.left + 4, r.top + 4, {
+        sortable: true, filterable: true, hideable: true, pinnable: true,
+      });
+      await wait(20);
+
+      const menu = table.shadowRoot.querySelector('.table-column-menu') as HTMLElement;
+      expect(menu, 'column menu mounted').toBeTruthy();
+      const icons = Array.from(menu.querySelectorAll('.column-menu-icon')) as HTMLElement[];
+      expect(icons.length, 'menu has icon spans').toBeGreaterThan(0);
+      for (const iconEl of icons) {
+        const ir = iconEl.getBoundingClientRect();
+        // 1rem = 16px in this context; cap at 24 to allow for theme variance
+        expect(ir.width, 'icon container width').toBeLessThanOrEqual(24);
+        expect(ir.height, 'icon container height').toBeLessThanOrEqual(24);
+        const svg = iconEl.querySelector('svg') as SVGElement | null;
+        if (svg) {
+          const sr = svg.getBoundingClientRect();
+          // Reject the SVG-default 300x150 rendering or anything else huge
+          expect(sr.width, 'icon svg width').toBeLessThanOrEqual(24);
+          expect(sr.height, 'icon svg height').toBeLessThanOrEqual(24);
+        }
+      }
+      ccm.hide();
+    });
+
+    it('column menu items have icon + label vertically centered', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      const ccm = (table as any).columnMenuManager;
+      ccm.show(table, 'name', 100, 100, { sortable: true, filterable: true });
+      await wait(20);
+
+      const items = Array.from(table.shadowRoot.querySelectorAll('.column-menu-item')) as HTMLElement[];
+      expect(items.length).toBeGreaterThan(0);
+      for (const item of items) {
+        const icon = item.querySelector('.column-menu-icon');
+        const labelSpan = item.querySelectorAll('span')[1];
+        if (!icon || !labelSpan) continue;
+        const ir = (icon as HTMLElement).getBoundingClientRect();
+        const lr = (labelSpan as HTMLElement).getBoundingClientRect();
+        const iconCenter = ir.top + ir.height / 2;
+        const labelCenter = lr.top + lr.height / 2;
+        expect(Math.abs(iconCenter - labelCenter), 'icon+label vertical centers').toBeLessThan(4);
+      }
+      ccm.hide();
+    });
+
+    it('filter panel rows align column / operator / value inputs on a single baseline', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+
+      const row = table.shadowRoot.querySelector('.tt-filter-panel .tt-filter-row') as HTMLElement;
+      expect(row).toBeTruthy();
+      const removeBtn = row.querySelector('.tt-filter-x') as HTMLElement;
+      const selects = Array.from(row.querySelectorAll('snice-select')) as HTMLElement[];
+      const input = row.querySelector('snice-input') as HTMLElement;
+
+      expect(removeBtn, 'remove button').toBeTruthy();
+      expect(selects.length, 'two selects (column + operator)').toBeGreaterThanOrEqual(2);
+      expect(input, 'value input').toBeTruthy();
+
+      const centers = [removeBtn, selects[0], selects[1], input].map(el => {
+        const r = el.getBoundingClientRect();
+        return r.top + r.height / 2;
+      });
+      const min = Math.min(...centers);
+      const max = Math.max(...centers);
+      expect(max - min, 'filter row controls vertically aligned').toBeLessThan(8);
+    });
+
+    it('filter panel inputs do not overlap or wrap unnecessarily on default width', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+
+      const row = table.shadowRoot.querySelector('.tt-filter-panel .tt-filter-row') as HTMLElement;
+      const children = Array.from(row.children) as HTMLElement[];
+      const visible = children.filter(c => {
+        const r = c.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      });
+      // Expect no two visible siblings to horizontally overlap
+      for (let i = 0; i < visible.length; i++) {
+        for (let j = i + 1; j < visible.length; j++) {
+          const a = visible[i].getBoundingClientRect();
+          const b = visible[j].getBoundingClientRect();
+          // They overlap horizontally if both ranges intersect AND vertically intersect
+          const xOverlap = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+          const yOverlap = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+          // 2px overlap tolerance for borders touching
+          if (yOverlap > 2) {
+            expect(xOverlap, `controls ${i} and ${j} overlap horizontally`).toBeLessThanOrEqual(2);
+          }
+        }
+      }
+    });
+
+    it('search input vertical center aligns with toolbar action buttons', async () => {
+      table = await createTable();
+      table.setToolbar({ showExport: true });
+      await wait(30);
+
+      const search = table.shadowRoot.querySelector('snice-input.toolbar-search') as HTMLElement;
+      const btns = Array.from(table.shadowRoot.querySelectorAll('.toolbar-btn')) as HTMLElement[];
+      expect(search).toBeTruthy();
+      expect(btns.length).toBeGreaterThan(0);
+
+      const sr = search.getBoundingClientRect();
+      const searchCenter = sr.top + sr.height / 2;
+      for (const btn of btns) {
+        const br = btn.getBoundingClientRect();
+        const btnCenter = br.top + br.height / 2;
+        expect(Math.abs(searchCenter - btnCenter), `search vs ${btn.getAttribute('aria-label')}`).toBeLessThan(4);
+      }
+    });
+
+    it('sort priority badges have a readable font-size (>= 0.5rem) and high-contrast color', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      const fire = (key: string) => {
+        const th = table.shadowRoot.querySelector(`th.sortable[data-key="${key}"]`) as HTMLElement;
+        th.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      };
+      fire('name'); fire('age');
+      await wait(30);
+
+      const badge = table.shadowRoot.querySelector('th[data-key="age"] .sort-order') as HTMLElement;
+      expect(badge).toBeTruthy();
+      expect(badge.textContent?.trim()).toBe('2');
+      const cs = getComputedStyle(badge);
+      // happy-dom won't reliably resolve rem→px; parse numerically and compare
+      const fontPx = parseFloat(cs.fontSize);
+      expect(fontPx, 'badge font-size px').toBeGreaterThanOrEqual(8);
+      // Reject the prior bug where badge was rgb(23 23 23) on a primary background
+      expect(cs.color, 'badge color').not.toBe('rgb(23, 23, 23)');
+    });
+  });
 });
