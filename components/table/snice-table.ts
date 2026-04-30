@@ -641,9 +641,9 @@ export class SniceTable extends HTMLElement {
 
 
       .sort-indicator {
-        display: flex;
-        flex-direction: column;
-        font-size: 0.7em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
         line-height: 1;
         opacity: 0.3;
         transition: opacity var(--snice-transition-fast, 150ms);
@@ -651,16 +651,24 @@ export class SniceTable extends HTMLElement {
 
       .sort-indicator.active {
         opacity: 1;
+        color: var(--snice-color-primary, rgb(37 99 235));
       }
 
       .sort-order {
-        font-size: 0.6em;
+        font-size: 0.625rem;
+        font-weight: 700;
         background: var(--snice-color-primary, rgb(37 99 235));
-        color: var(--snice-color-text-inverse, rgb(250 250 250));
-        border-radius: var(--snice-border-radius-sm, 0.125rem);
-        padding: 1px 3px;
-        min-width: 12px;
+        color: rgb(255 255 255);
+        border-radius: 999px;
+        padding: 0.0625rem 0.3125rem;
+        min-width: 1rem;
+        height: 1rem;
+        line-height: 1rem;
         text-align: center;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* Loading fade */
@@ -2088,12 +2096,13 @@ export class SniceTable extends HTMLElement {
   private handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
 
-    // Handle sortable header click
+    // Handle sortable header click — MUI-style: click cycles asc→desc→none on
+    // a single column; shift+click adds to multi-sort.
     const th = target.closest('th.sortable') as HTMLElement;
     if (th) {
       const columnKey = th.getAttribute('data-key');
       if (columnKey) {
-        this.toggleSort(columnKey, true); // Always multi-sort
+        this.toggleSort(columnKey, e.shiftKey);
       }
       return;
     }
