@@ -98,8 +98,20 @@ export class SniceTable extends HTMLElement {
   columns: any[] = [];
   data: any[] = [];
 
+  /**
+   * Data mode: 'local' = client-side, table owns the dataset (set via setData
+   *                       or the `data` property; filter/sort run locally);
+   *            'remote' = server-side, every filter/sort/search/page change
+   *                       fires @request('table/data'); a @respond handler in
+   *                       the parent controller returns the new page.
+   *
+   * Default is 'local'. Set `mode="remote"` on the element OR assign the
+   * property to opt into remote mode.
+   */
+  @property() mode: 'local' | 'remote' = 'local';
+
   setData(data: any[]) {
-    this._unsortedData = [...data];
+    this.unsortedData = [...data];
     this.data = data;
     this.render();
   }
@@ -239,16 +251,11 @@ export class SniceTable extends HTMLElement {
       return response;
     } catch (error) {
       console.error('Error loading table data:', error);
-      this.data = [];
       this.loading = false;
-      // Wait for next frame to ensure DOM is updated
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      this.renderBody();
     }
   }
 
-  private _hasController = false;
-  private _unsortedData: any[] = [];
+  private unsortedData: any[] = [];
   private dataRequestTimeout: any = null;
   
   private debouncedDataRequest() {
@@ -410,10 +417,10 @@ export class SniceTable extends HTMLElement {
         user-select: none;
       }
 
-      /* Alpha overlays — layer over the bg instead of swapping to another
-       * solid color. Composites correctly over striped/tinted rows. */
+      /* Hover and selected states share the same tokens as menu/list/command-palette
+       * for cross-component visual consistency. */
       th.sortable:hover {
-        background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
+        background-color: var(--snice-color-surface-hover, rgb(243 244 246));
       }
 
       /* Row styling */
@@ -422,7 +429,7 @@ export class SniceTable extends HTMLElement {
       }
 
       :host([hoverable]) tbody tr:hover {
-        background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
+        background-color: var(--snice-color-surface-hover, rgb(243 244 246));
       }
 
       :host([clickable]) tbody tr {
@@ -434,12 +441,12 @@ export class SniceTable extends HTMLElement {
       }
 
       tbody tr[data-selected="true"] {
-        background-color: var(--snice-color-overlay-selected, hsl(220 90% 56% / 0.08));
+        background-color: var(--snice-color-primary-subtle, rgb(239 246 255));
         box-shadow: inset 2px 0 0 0 var(--snice-color-primary, rgb(37 99 235));
       }
 
       tbody tr[data-selected="true"]:hover {
-        background-color: var(--snice-color-overlay-selected-hover, hsl(220 90% 56% / 0.12));
+        background-color: var(--snice-color-primary-subtle-hover, var(--snice-color-primary-subtle, rgb(219 234 254)));
       }
 
       /* List mode - hide vertical borders */
@@ -1769,7 +1776,7 @@ export class SniceTable extends HTMLElement {
     if (clamped === this.currentPage) return;
     this.currentPage = clamped;
 
-    if (this.paginationMode === 'server' && this._hasController) {
+    if (this.paginationMode === 'server' && this.mode === 'remote') {
       this.debouncedDataRequest();
     } else {
       this.renderBody();
@@ -1782,7 +1789,7 @@ export class SniceTable extends HTMLElement {
     this.pageSize = size;
     this.currentPage = 1;
 
-    if (this.paginationMode === 'server' && this._hasController) {
+    if (this.paginationMode === 'server' && this.mode === 'remote') {
       this.debouncedDataRequest();
     } else {
       this.renderBody();
@@ -2093,7 +2100,7 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  private _fsExitHandler: (() => void) | null = null;
+  private fsExitHandler: (() => void) | null = null;
 
   toggleFullscreen = async () => {
     const isFullscreen = this.classList.contains('table-fullscreen');
@@ -2102,9 +2109,9 @@ export class SniceTable extends HTMLElement {
       if (document.fullscreenElement === this) {
         try { await document.exitFullscreen(); } catch { /* already exited */ }
       }
-      if (this._fsExitHandler) {
-        document.removeEventListener('fullscreenchange', this._fsExitHandler);
-        this._fsExitHandler = null;
+      if (this.fsExitHandler) {
+        document.removeEventListener('fullscreenchange', this.fsExitHandler);
+        this.fsExitHandler = null;
       }
     } else {
       this.classList.add('table-fullscreen');
@@ -2119,16 +2126,16 @@ export class SniceTable extends HTMLElement {
         // Browser blocked it (e.g. not from a user gesture) — fall back to CSS.
       }
       // Sync class with the browser's fullscreen state
-      this._fsExitHandler = () => {
+      this.fsExitHandler = () => {
         if (document.fullscreenElement !== this) {
           this.classList.remove('table-fullscreen');
-          if (this._fsExitHandler) {
-            document.removeEventListener('fullscreenchange', this._fsExitHandler);
-            this._fsExitHandler = null;
+          if (this.fsExitHandler) {
+            document.removeEventListener('fullscreenchange', this.fsExitHandler);
+            this.fsExitHandler = null;
           }
         }
       };
-      document.addEventListener('fullscreenchange', this._fsExitHandler);
+      document.addEventListener('fullscreenchange', this.fsExitHandler);
     }
   }
 
@@ -2219,7 +2226,10 @@ export class SniceTable extends HTMLElement {
   }
 
   private onAttached = () => {
-    this._hasController = true;
+    // A controller attached. Only fetch if the user explicitly declared
+    // remote mode (mode="remote" on the element, or set programmatically).
+    // Local mode is the default and means the table owns its dataset.
+    if (this.mode !== 'remote') return;
     this.getTableConfig();
     this.getTableData();
   }
@@ -2319,7 +2329,7 @@ export class SniceTable extends HTMLElement {
 
     this.renderHeader();
     this.dispatchSortChange();
-    if (this._hasController) {
+    if (this.mode === 'remote') {
       this.debouncedDataRequest();
     } else {
       this.sortLocalData();
@@ -2327,13 +2337,13 @@ export class SniceTable extends HTMLElement {
   }
 
   private sortLocalData() {
-    if (!this._unsortedData.length) {
-      this._unsortedData = [...this.data];
+    if (!this.unsortedData.length) {
+      this.unsortedData = [...this.data];
     }
     if (this.currentSort.length === 0) {
-      this.data = [...this._unsortedData];
+      this.data = [...this.unsortedData];
     } else {
-      this.data = [...this._unsortedData].sort((a, b) => {
+      this.data = [...this.unsortedData].sort((a, b) => {
         for (const { column, direction } of this.currentSort) {
           const colDef = this.columns.find(c => c.key === column);
           const customComparator = (colDef as any)?.sortComparator;
@@ -2535,7 +2545,7 @@ export class SniceTable extends HTMLElement {
 
   private applyClientFilters() {
     this.dispatchFilterChange();
-    if (this._hasController) {
+    if (this.mode === 'remote') {
       // Server-side: send filter params to controller
       this.debouncedDataRequest();
     } else {
@@ -2733,17 +2743,20 @@ export class SniceTable extends HTMLElement {
     if (!container) return;
 
     this.toolbar.attach(this, container, options);
+    // Share the table's filter engine with the toolbar so reads (panel rendering)
+    // and writes (apply/clear) operate on the same model.
+    this.toolbar.setFilterEngine(this.filterEngine);
     this.toolbar.onSearch = (query) => this.setQuickFilter(query);
     this.toolbar.onSortColumn = (key, dir) => {
       this.currentSort = [{ column: key, direction: dir }];
       this.renderHeader();
-      if (this._hasController) this.debouncedDataRequest();
+      if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.toolbar.onSetSortModel = (sortModel) => {
       this.currentSort = sortModel;
       this.renderHeader();
-      if (this._hasController) this.debouncedDataRequest();
+      if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.toolbar.onFilterColumn = (key, operator, value) => {
@@ -2814,13 +2827,13 @@ export class SniceTable extends HTMLElement {
     this.columnMenuManager.onSortAsc = (col) => {
       this.currentSort = [{ column: col, direction: 'asc' }];
       this.renderHeader();
-      if (this._hasController) this.debouncedDataRequest();
+      if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.columnMenuManager.onSortDesc = (col) => {
       this.currentSort = [{ column: col, direction: 'desc' }];
       this.renderHeader();
-      if (this._hasController) this.debouncedDataRequest();
+      if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.columnMenuManager.onFilter = (col) => {

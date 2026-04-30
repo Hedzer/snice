@@ -87,6 +87,8 @@ export class TableFilterEngine {
       case 'progress':
       case 'filesize':
       case 'duration':
+      case 'percent':
+      case 'percentage':
         return NUMBER_OPERATORS;
       case 'date':
         return DATE_OPERATORS;
@@ -126,6 +128,7 @@ export class TableFilterEngine {
   clearAllFilters() {
     this.model.filters = [];
     this.model.quickFilter = undefined;
+    this.model.logic = 'and';
     this.headerFilters.clear();
   }
 

@@ -105,10 +105,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Row States — alpha overlays, not color swaps. Composites correctly over
- * striped/tinted rows. */
+/* Row hover/selected — match menu/list/command-palette tokens for consistency. */
 :host(.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
+  background-color: var(--snice-color-surface-hover, rgb(243 244 246));
 }
 
 :host(.row--clickable) .row-container {
@@ -116,16 +115,16 @@
 }
 
 :host(.row--clickable) .row-container:hover {
-  background-color: var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04));
+  background-color: var(--snice-color-surface-hover, rgb(243 244 246));
 }
 
 :host(.row--selected) .row-container {
-  background-color: var(--snice-color-overlay-selected, hsl(220 90% 56% / 0.08));
+  background-color: var(--snice-color-primary-subtle, rgb(239 246 255));
   box-shadow: inset 2px 0 0 0 var(--snice-color-primary, rgb(37 99 235));
 }
 
 :host(.row--selected.row--hoverable) .row-container:hover {
-  background-color: var(--snice-color-overlay-selected-hover, hsl(220 90% 56% / 0.12));
+  background-color: var(--snice-color-primary-subtle-hover, var(--snice-color-primary-subtle, rgb(219 234 254)));
 }
 
 /* Highlighted State */

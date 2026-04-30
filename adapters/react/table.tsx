@@ -23,6 +23,7 @@ export interface TableProps extends SniceBaseProps {
   totalItems?: any;
   pageSizes?: any;
   searchDebounce?: any;
+  mode?: any;
   currentSort?: any;
   selector?: any;
   selectorOptions?: any;
@@ -73,7 +74,7 @@ export interface TableProps extends SniceBaseProps {
  */
 export const Table = createReactAdapter<TableProps>({
   tagName: 'snice-table',
-  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows"],
+  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","mode","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows"],
   events: {"page-change":"onPageChange","table-row-selection-changed":"onTableRowSelectionChanged","table-select-all-changed":"onTableSelectAllChanged","sort-change":"onSortChange","filter-change":"onFilterChange","column-visibility-change":"onColumnVisibilityChange","column-pin-change":"onColumnPinChange","column-order-change":"onColumnOrderChange","density-change":"onDensityChange","row-clicked":"onRowClicked","lazy-load":"onLazyLoad"},
   formAssociated: false
 });

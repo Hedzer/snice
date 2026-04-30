@@ -12,7 +12,7 @@
  */
 import type { FilterOperator, FilterLogic } from './table-filter-engine';
 import { TableFilterEngine } from './table-filter-engine';
-import { X_MARK, PLUS, FUNNEL, ARROW_DOWN_TRAY, ARROWS_POINTING_OUT } from '../icons';
+import { X_MARK, PLUS, ARROW_DOWN_TRAY, ARROWS_POINTING_OUT } from '../icons';
 
 export interface ToolbarOptions {
   showSearch?: boolean;
@@ -38,6 +38,7 @@ export class TableToolbar {
   private filterPanelOpen = false;
   private filters: FilterRow[] = [];
   private logic: FilterLogic = 'and';
+  private pendingDebounces: number[] = [];
 
   onSearch: ((query: string) => void) | null = null;
   onSortColumn: ((columnKey: string, direction: 'asc' | 'desc') => void) | null = null;
@@ -114,8 +115,16 @@ export class TableToolbar {
 
   /** Public name kept for backwards-compat with snice-table.ts column-menu Filter action. */
   openFilterModal(presetColumn?: string) {
+    const engine = this.ensureEngine();
+    // When the panel is opening (was closed), resync local filter state from
+    // the engine so the panel always reflects the actually-applied filters,
+    // not stale local edits from a previous open session.
+    if (!this.filterPanelOpen) {
+      const model = engine.getFilterModel();
+      this.filters = model.filters.map(f => ({ ...f }));
+      this.logic = model.logic || 'and';
+    }
     if (presetColumn) {
-      const engine = this.ensureEngine();
       const columns = this.tableElement?.columns || [];
       const col = columns.find((c: any) => c.key === presetColumn);
       const ops = engine.getOperatorsForType(col?.type || 'text');
@@ -131,6 +140,7 @@ export class TableToolbar {
   }
 
   closeFilterPanel() {
+    this.cancelPendingDebounces();
     this.filterPanelOpen = false;
     if (this.filterPanel) this.filterPanel.hidden = true;
   }
@@ -145,8 +155,15 @@ export class TableToolbar {
   // (filter panel toggling is driven by openFilterModal / closeFilterPanel —
   // the toolbar no longer has a Filter button.)
 
+  private cancelPendingDebounces() {
+    for (const t of this.pendingDebounces) clearTimeout(t);
+    this.pendingDebounces = [];
+  }
+
   private renderFilterPanel() {
     if (!this.filterPanel) return;
+    // Stale debounces from a previous render hold refs to old DOM nodes — kill them.
+    this.cancelPendingDebounces();
     const engine = this.ensureEngine();
     const columns = this.tableElement?.columns || [];
 
@@ -155,14 +172,6 @@ export class TableToolbar {
       const model = engine.getFilterModel();
       this.filters = [...model.filters];
       this.logic = model.logic || 'and';
-      if (this.filters.length === 0) {
-        // start with one empty row so the user has something to fill in
-        const first = columns[0];
-        const ops = engine.getOperatorsForType(first?.type || 'text');
-        if (first && ops[0]) {
-          this.filters.push({ column: first.key, operator: ops[0].value as FilterOperator, value: '' });
-        }
-      }
     }
 
     this.filterPanel.innerHTML = '';
@@ -171,24 +180,15 @@ export class TableToolbar {
     const inner = document.createElement('div');
     inner.className = 'tt-filter-inner';
 
-    const head = document.createElement('div');
-    head.className = 'tt-filter-head';
-    const headIcon = document.createElement('span');
-    headIcon.className = 'tt-filter-head-icon';
-    headIcon.innerHTML = FUNNEL;
-    const headLabel = document.createElement('span');
-    headLabel.className = 'tt-filter-head-label';
-    headLabel.textContent = 'Filters';
-    const headClose = document.createElement('button');
-    headClose.type = 'button';
-    headClose.className = 'tt-filter-head-close';
-    headClose.setAttribute('aria-label', 'Close filter panel');
-    headClose.innerHTML = X_MARK;
-    headClose.addEventListener('click', () => this.closeFilterPanel());
-    head.appendChild(headIcon);
-    head.appendChild(headLabel);
-    head.appendChild(headClose);
-    inner.appendChild(head);
+    // Top-right corner close — universal "exit panel" affordance
+    const cornerClose = document.createElement('button');
+    cornerClose.type = 'button';
+    cornerClose.className = 'tt-filter-corner-close';
+    cornerClose.setAttribute('aria-label', 'Close filter panel');
+    cornerClose.setAttribute('title', 'Close');
+    cornerClose.innerHTML = X_MARK;
+    cornerClose.addEventListener('click', () => this.closeFilterPanel());
+    inner.appendChild(cornerClose);
 
     const rows = document.createElement('div');
     rows.className = 'tt-filter-rows';
@@ -199,7 +199,11 @@ export class TableToolbar {
         const colDef = columns.find((c: any) => c.key === f.column);
         const colType = colDef?.type || 'text';
         const opDef = engine.getOperatorsForType(colType).find(o => o.value === f.operator);
-        return opDef?.requiresValue === false || (f.value !== null && f.value !== '');
+        // Operator must be valid for the column type. If user changed columns
+        // and the previous operator no longer applies, skip the filter rather
+        // than ship a malformed filter to the engine (which would 0-out all rows).
+        if (!opDef) return false;
+        return opDef.requiresValue === false || (f.value !== null && f.value !== '');
       });
       this.onSetFilterModel?.(valid, this.logic);
     };
@@ -220,26 +224,6 @@ export class TableToolbar {
         this.renderFilterPanel();
       });
       row.appendChild(removeBtn);
-
-      // Logic operator pill (only on rows after the first)
-      if (idx > 0) {
-        const logicBtn = document.createElement('button');
-        logicBtn.type = 'button';
-        logicBtn.className = 'tt-filter-logic';
-        logicBtn.textContent = this.logic.toUpperCase();
-        logicBtn.title = 'Toggle AND / OR';
-        logicBtn.addEventListener('click', () => {
-          this.logic = this.logic === 'and' ? 'or' : 'and';
-          this.renderFilterPanel();
-          apply();
-        });
-        row.appendChild(logicBtn);
-      } else {
-        const where = document.createElement('span');
-        where.className = 'tt-filter-leadin';
-        where.textContent = 'Where';
-        row.appendChild(where);
-      }
 
       const colSel = document.createElement('snice-select') as any;
       colSel.size = 'small';
@@ -266,13 +250,40 @@ export class TableToolbar {
       valWrap.appendChild(valInp);
       row.appendChild(valWrap);
 
+      // Map column type → snice-input HTML5 type so number/date columns get
+      // the right keyboard, validation and (for date) native picker.
+      const inputTypeForColType = (t: string): string => {
+        switch (t) {
+          case 'number':
+          case 'currency':
+          case 'rating':
+          case 'progress':
+          case 'filesize':
+          case 'duration':
+          case 'percent':
+          case 'percentage':
+            return 'number';
+          case 'date':
+            return 'date';
+          default:
+            return 'text';
+        }
+      };
+
       const refreshOps = () => {
         const colDef = columns.find((c: any) => c.key === colSel.value);
         const colType = colDef?.type || 'text';
         const ops = engine.getOperatorsForType(colType);
         opSel.options = ops.map(o => ({ value: o.value, label: o.label }));
-        if (ops.some(o => o.value === f.operator)) opSel.value = f.operator;
-        else if (ops[0]) { opSel.value = ops[0].value; f.operator = opSel.value; }
+        // Preserve the user's chosen operator. If it isn't valid for the new
+        // column type, leave the select unselected (placeholder); the user
+        // picks a new op. Never rewrite f.operator behind their back.
+        if (ops.some(o => o.value === f.operator)) {
+          opSel.value = f.operator;
+        } else {
+          opSel.value = '';
+        }
+        valInp.type = inputTypeForColType(colType);
         updateValueVis();
       };
       const updateValueVis = () => {
@@ -296,9 +307,11 @@ export class TableToolbar {
       valInp.addEventListener('input', () => {
         clearTimeout(valDebounce);
         valDebounce = window.setTimeout(() => {
+          this.pendingDebounces = this.pendingDebounces.filter(t => t !== valDebounce);
           f.value = valInp.value;
           apply();
         }, 250);
+        this.pendingDebounces.push(valDebounce);
       });
       valInp.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -311,7 +324,38 @@ export class TableToolbar {
       return row;
     };
 
-    this.filters.forEach((f, idx) => rows.appendChild(renderRow(f, idx)));
+    // Panel-level logic toggle (AND / OR) — appears when 2+ filters
+    if (this.filters.length > 1) {
+      const logicBar = document.createElement('div');
+      logicBar.className = 'tt-filter-logicbar';
+      const logicLabel = document.createElement('span');
+      logicLabel.className = 'tt-filter-logicbar-label';
+      logicLabel.textContent = 'Match';
+      const logicSel = document.createElement('snice-select') as any;
+      logicSel.size = 'small';
+      logicSel.options = [
+        { value: 'and', label: 'All filters (AND)' },
+        { value: 'or', label: 'Any filter (OR)' },
+      ];
+      logicSel.value = this.logic;
+      logicSel.style.width = '11rem';
+      logicSel.addEventListener('change', () => {
+        this.logic = logicSel.value;
+        apply();
+      });
+      logicBar.appendChild(logicLabel);
+      logicBar.appendChild(logicSel);
+      inner.insertBefore(logicBar, rows);
+    }
+
+    if (this.filters.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'tt-filter-empty';
+      empty.textContent = 'No filters applied';
+      rows.appendChild(empty);
+    } else {
+      this.filters.forEach((f, idx) => rows.appendChild(renderRow(f, idx)));
+    }
 
     const footer = document.createElement('div');
     footer.className = 'tt-filter-footer';
@@ -336,7 +380,9 @@ export class TableToolbar {
       clearBtn.className = 'tt-filter-clear';
       clearBtn.textContent = 'Clear all';
       clearBtn.addEventListener('click', () => {
+        this.cancelPendingDebounces();
         this.filters = [];
+        this.logic = 'and';
         this.onClearFilters?.();
         this.renderFilterPanel();
       });
@@ -374,71 +420,97 @@ const TT_STYLES = `
     background: var(--snice-color-surface-container-low, rgb(250 250 250));
   }
   .tt-filter-inner {
-    padding: 0.625rem 0.75rem;
+    padding: 0.75rem 0.875rem;
+    padding-right: 2.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    position: relative;
+  }
+  .tt-filter-corner-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--snice-color-text-tertiary, rgb(115 115 115));
+    border-radius: var(--snice-border-radius-md, 0.25rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 0;
+    z-index: 1;
+  }
+  .tt-filter-corner-close:hover {
+    background: var(--snice-color-surface-hover, rgb(245 245 245));
+    color: var(--snice-color-text, rgb(23 23 23));
+  }
+  .tt-filter-corner-close svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .tt-filter-logicbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .tt-filter-logicbar-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--snice-color-text-secondary, rgb(82 82 82));
+    flex: 0 0 auto;
   }
   .tt-filter-rows {
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
   }
+  .tt-filter-empty {
+    padding: 0.625rem 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--snice-color-text-tertiary, rgb(115 115 115));
+    font-style: italic;
+  }
   .tt-filter-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
   .tt-filter-x {
     border: none;
     background: none;
     color: var(--snice-color-text-tertiary, rgb(115 115 115));
     cursor: pointer;
-    padding: 0.25rem;
     border-radius: var(--snice-border-radius-md, 0.25rem);
-    line-height: 0;
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    line-height: 0;
+  }
+  .tt-filter-x svg {
+    width: 1rem;
+    height: 1rem;
   }
   .tt-filter-x:hover {
     color: var(--snice-color-danger, rgb(220 38 38));
     background: var(--snice-color-surface-hover, rgb(245 245 245));
   }
-  .tt-filter-leadin {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--snice-color-text-tertiary, rgb(115 115 115));
-    flex: 0 0 auto;
-    width: 3.5rem;
-    text-align: right;
-  }
-  .tt-filter-logic {
-    font-family: inherit;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: var(--snice-color-text-secondary, rgb(82 82 82));
-    background: var(--snice-color-surface, rgb(255 255 255));
-    border: 1px solid var(--snice-color-border, rgb(226 226 226));
-    border-radius: var(--snice-border-radius-md, 0.25rem);
-    padding: 0.125rem 0.5rem;
-    cursor: pointer;
-    flex: 0 0 auto;
-    width: 3.5rem;
-    transition: border-color 100ms ease, color 100ms ease;
-  }
-  .tt-filter-logic:hover {
-    border-color: var(--snice-color-primary, rgb(37 99 235));
-    color: var(--snice-color-primary, rgb(37 99 235));
-  }
-  .tt-filter-val-wrap { display: inline-flex; }
+  .tt-filter-val-wrap { display: inline-flex; flex: 1 1 auto; min-width: 0; }
+  .tt-filter-val-wrap snice-input { width: 100%; }
   .tt-filter-footer {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding-left: 4rem;
+    gap: 0.25rem;
+    margin-top: 0.125rem;
   }
   .tt-filter-add,
   .tt-filter-clear {
@@ -447,11 +519,17 @@ const TT_STYLES = `
     font-family: inherit;
     font-size: 0.8125rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    padding: 0.375rem 0.625rem;
     border-radius: var(--snice-border-radius-md, 0.25rem);
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.375rem;
+    line-height: 1;
+  }
+  .tt-filter-add svg,
+  .tt-filter-clear svg {
+    width: 0.875rem;
+    height: 0.875rem;
   }
   .tt-filter-add { color: var(--snice-color-primary, rgb(37 99 235)); font-weight: 500; }
   .tt-filter-add:hover { background: var(--snice-color-primary-subtle, rgb(219 234 254 / 0.4)); }

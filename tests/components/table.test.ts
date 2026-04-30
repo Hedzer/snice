@@ -40,7 +40,7 @@ async function createTable(opts: {
 
   table.columns = columns;
   table.data = data;
-  table._unsortedData = [...data];
+  table.unsortedData = [...data];
 
   // Initialize column manager before rendering
   (table as any).columnManager.initialize(columns, table);
@@ -1734,7 +1734,7 @@ describe('snice-table', () => {
       table = await createComponent<any>('snice-table');
       table.columns = [{ key: 'x', label: 'X', type: 'text' }];
       table.data = [{ x: 'a' }, { x: 'b' }];
-      table._unsortedData = [...table.data];
+      table.unsortedData = [...table.data];
       (table as any).columnManager.initialize(table.columns, table);
       await wait(10);
       table.renderHeader();
@@ -1935,7 +1935,7 @@ describe('snice-table', () => {
       table = await createTable();
       table.setToolbar({});
       await wait(20);
-      table._hasController = true;
+      table.mode = 'remote';
       const requestSpy = vi.spyOn(table, 'debouncedDataRequest' as any);
       (table as any).toolbar.onSetSortModel([{ column: 'name', direction: 'asc' }]);
       expect(requestSpy).toHaveBeenCalled();
@@ -1945,7 +1945,7 @@ describe('snice-table', () => {
       table = await createTable();
       table.setToolbar({});
       await wait(20);
-      table._hasController = true;
+      table.mode = 'remote';
       const requestSpy = vi.spyOn(table, 'debouncedDataRequest' as any);
       (table as any).toolbar.onSetFilterModel(
         [{ column: 'name', operator: 'contains' as any, value: 'ali' }],
@@ -2102,6 +2102,356 @@ describe('snice-table', () => {
         const btnCenter = br.top + br.height / 2;
         expect(Math.abs(searchCenter - btnCenter), `search vs ${btn.getAttribute('aria-label')}`).toBeLessThan(4);
       }
+    });
+
+    it('filter panel does not render a giant un-sized icon (regression: 300x150 SVG)', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+
+      const panel = table.shadowRoot.querySelector('.tt-filter-panel') as HTMLElement;
+      expect(panel).toBeTruthy();
+
+      // Every SVG inside the filter panel must have an explicit CSS-resolved size
+      // smaller than 32px. Catches the bug where Heroicon SVGs (no width/height
+      // attrs) inherited the parent default and rendered 300x150.
+      const svgs = Array.from(panel.querySelectorAll('svg')) as SVGElement[];
+      expect(svgs.length, 'panel has at least one icon').toBeGreaterThan(0);
+      for (const svg of svgs) {
+        const cs = getComputedStyle(svg);
+        const w = parseFloat(cs.width) || 0;
+        const h = parseFloat(cs.height) || 0;
+        // Zero is acceptable in happy-dom layout, but ANY value above 32px is
+        // the regression: a Heroicon defaulting to its un-sized container.
+        expect(w, `svg width (${cs.width})`).toBeLessThanOrEqual(32);
+        expect(h, `svg height (${cs.height})`).toBeLessThanOrEqual(32);
+      }
+    });
+
+    it('filter panel row stays on a single line (no flex-wrap)', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+
+      const row = table.shadowRoot.querySelector('.tt-filter-panel .tt-filter-row') as HTMLElement;
+      expect(row).toBeTruthy();
+      const cs = getComputedStyle(row);
+      expect(cs.flexWrap, 'filter row must not wrap').toBe('nowrap');
+    });
+
+    it('filter panel exposes a discoverable corner-close button (no header bar)', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+
+      const panel = table.shadowRoot.querySelector('.tt-filter-panel') as HTMLElement;
+      const head = panel.querySelector('.tt-filter-head');
+      const cornerClose = panel.querySelector('.tt-filter-corner-close') as HTMLButtonElement;
+      expect(head, 'no in-flow header bar').toBeFalsy();
+      expect(cornerClose, 'top-right close button').toBeTruthy();
+      expect(cornerClose.getAttribute('aria-label')).toBe('Close filter panel');
+
+      // It actually closes the panel
+      cornerClose.click();
+      await wait(20);
+      expect((table as any).toolbar.filterPanelOpen).toBe(false);
+    });
+
+    it('filter input type follows the column type (text / number / date)', async () => {
+      // Use empty data to dodge happy-dom typed-cell rendering issues —
+      // we only care about the toolbar input type behavior here.
+      const cols = [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'age', label: 'Age', type: 'number' },
+        { key: 'price', label: 'Price', type: 'currency' },
+        { key: 'rate', label: 'Rate', type: 'percent' },
+        { key: 'pct', label: 'Pct', type: 'percentage' },
+        { key: 'stars', label: 'Stars', type: 'rating' },
+        { key: 'pace', label: 'Pace', type: 'progress' },
+        { key: 'size', label: 'Size', type: 'filesize' },
+        { key: 'span', label: 'Span', type: 'duration' },
+        { key: 'when', label: 'When', type: 'date' },
+      ];
+      table = await createTable({ columns: cols, data: [] });
+      table.setToolbar({});
+      await wait(20);
+
+      const tb = (table as any).toolbar;
+      const inputType = (col: string) => {
+        tb.filters = [];
+        tb.openFilterModal(col);
+        const inp = table.shadowRoot.querySelector('.tt-filter-row snice-input') as any;
+        return inp?.type;
+      };
+
+      expect(inputType('name'), 'text col → text').toBe('text');
+      expect(inputType('age'), 'number col → number').toBe('number');
+      expect(inputType('price'), 'currency col → number').toBe('number');
+      expect(inputType('rate'), 'percent col → number').toBe('number');
+      expect(inputType('pct'), 'percentage col → number').toBe('number');
+      expect(inputType('stars'), 'rating col → number').toBe('number');
+      expect(inputType('pace'), 'progress col → number').toBe('number');
+      expect(inputType('size'), 'filesize col → number').toBe('number');
+      expect(inputType('span'), 'duration col → number').toBe('number');
+      expect(inputType('when'), 'date col → date').toBe('date');
+    });
+
+    it('every operator returns the correct subset for every supported column type', async () => {
+      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const engine = new TableFilterEngine();
+
+      // Synthetic dataset with one row per "kind" so each filter has a
+      // clear matches/excludes split.
+      // Each text column has UNIQUE values per row (so equals returns 1 row).
+      const data = [
+        { id: 'A', txt: 'apple',     email: 'alice@x.com', phone: '555-1111', link: 'https://a.com',
+          tag: 'Alpha',   status: 'green',  loc: 'New York', color: '#ff0000',
+          num: 10, money: 100, rate: 5.0,  stars: 1, pct: 10, prog: 25, sz: 1024, dur: 30,
+          when: '2026-01-01', active: true },
+        { id: 'B', txt: 'banana',    email: 'bob@y.com',   phone: '555-2222', link: 'https://b.com',
+          tag: 'Beta',    status: 'amber',  loc: 'Boston',   color: '#00ff00',
+          num: 20, money: 200, rate: 10.0, stars: 2, pct: 20, prog: 50, sz: 2048, dur: 60,
+          when: '2026-02-01', active: false },
+        { id: 'C', txt: 'cherry',    email: 'carl@z.com',  phone: '555-3333', link: 'https://c.org',
+          tag: 'Gamma',   status: 'red',    loc: 'Chicago',  color: '#0000ff',
+          num: 30, money: 300, rate: 15.0, stars: 3, pct: 30, prog: 75, sz: 4096, dur: 90,
+          when: '2026-03-01', active: true },
+        { id: 'D', txt: '',          email: '',            phone: '',         link: '',
+          tag: '',        status: '',       loc: '',         color: '',
+          num: 0,  money: 0,   rate: 0,    stars: 0, pct: 0,  prog: 0,  sz: 0,    dur: 0,
+          when: '',           active: false },
+      ];
+
+      const filterAndCollect = (col: string, type: string, op: string, value: any) => {
+        engine.clearAllFilters();
+        engine.setColumnFilter(col, op as any, value);
+        const cols = [{ key: col, type }];
+        return engine.applyFilters(data, cols).map(r => r.id).sort();
+      };
+
+      // ── TEXT family (text, email, phone, link, tag, status, location, color) ──
+      const textTypes = ['text', 'email', 'phone', 'link', 'tag', 'status', 'location', 'color'];
+      const textCol = (t: string) => ({
+        text: 'txt', email: 'email', phone: 'phone', link: 'link',
+        tag: 'tag', status: 'status', location: 'loc', color: 'color',
+      } as any)[t];
+
+      for (const t of textTypes) {
+        const c = textCol(t);
+        // contains
+        expect(filterAndCollect(c, t, 'contains', data[0][c]), `${t} contains`).toContain('A');
+        // notContains — should NOT include the one that contains the value
+        const nc = filterAndCollect(c, t, 'notContains', data[0][c]);
+        expect(nc, `${t} notContains`).not.toContain('A');
+        // equals (case-insensitive)
+        expect(filterAndCollect(c, t, 'equals', data[0][c]), `${t} equals`).toEqual(['A']);
+        // notEquals
+        expect(filterAndCollect(c, t, 'notEquals', data[0][c]), `${t} notEquals`).not.toContain('A');
+        // startsWith — pick first character
+        const firstChar = String(data[0][c]).charAt(0);
+        if (firstChar) {
+          expect(filterAndCollect(c, t, 'startsWith', firstChar), `${t} startsWith`).toContain('A');
+        }
+        // endsWith — pick last character
+        const lastChar = String(data[0][c]).slice(-1);
+        if (lastChar) {
+          expect(filterAndCollect(c, t, 'endsWith', lastChar), `${t} endsWith`).toContain('A');
+        }
+        // isEmpty — D has all empty strings
+        expect(filterAndCollect(c, t, 'isEmpty', null), `${t} isEmpty`).toContain('D');
+        // isNotEmpty
+        expect(filterAndCollect(c, t, 'isNotEmpty', null), `${t} isNotEmpty`).not.toContain('D');
+      }
+
+      // ── NUMBER family (number, currency, rating, progress, percent, percentage, filesize, duration) ──
+      const numericTypes = ['number', 'currency', 'rating', 'progress', 'percent', 'percentage', 'filesize', 'duration'];
+      const numCol = (t: string) => ({
+        number: 'num', currency: 'money', rating: 'stars', progress: 'prog',
+        percent: 'rate', percentage: 'pct', filesize: 'sz', duration: 'dur',
+      } as any)[t];
+      // For each numeric type, A < B < C < D? No, D=0 which is the lowest.
+      // Numeric layout per col:
+      //   num:   A=10  B=20  C=30  D=0
+      //   money: A=100 B=200 C=300 D=0
+      //   etc — A is always 2nd lowest, B 3rd, C highest, D lowest (0)
+      for (const t of numericTypes) {
+        const c = numCol(t);
+        const aVal = data[0][c]; // smallest non-zero
+        const cVal = data[2][c]; // largest
+
+        expect(filterAndCollect(c, t, 'eq', aVal), `${t} eq ${aVal}`).toEqual(['A']);
+        expect(filterAndCollect(c, t, 'neq', aVal), `${t} neq ${aVal}`).not.toContain('A');
+        expect(filterAndCollect(c, t, 'gt', aVal), `${t} gt ${aVal}`).toEqual(['B', 'C']);
+        expect(filterAndCollect(c, t, 'gte', aVal), `${t} gte ${aVal}`).toEqual(['A', 'B', 'C']);
+        expect(filterAndCollect(c, t, 'lt', cVal), `${t} lt ${cVal}`).toEqual(['A', 'B', 'D']);
+        expect(filterAndCollect(c, t, 'lte', cVal), `${t} lte ${cVal}`).toEqual(['A', 'B', 'C', 'D']);
+      }
+
+      // ── DATE ──
+      const dateCol = 'when';
+      const dateType = 'date';
+      expect(filterAndCollect(dateCol, dateType, 'is', '2026-02-01'), 'date is').toEqual(['B']);
+      expect(filterAndCollect(dateCol, dateType, 'isNot', '2026-02-01'), 'date isNot').not.toContain('B');
+      expect(filterAndCollect(dateCol, dateType, 'before', '2026-02-15'), 'date before').toEqual(['A', 'B']);
+      expect(filterAndCollect(dateCol, dateType, 'onOrBefore', '2026-02-01'), 'date onOrBefore').toEqual(['A', 'B']);
+      expect(filterAndCollect(dateCol, dateType, 'after', '2026-02-15'), 'date after').toEqual(['C']);
+      expect(filterAndCollect(dateCol, dateType, 'onOrAfter', '2026-02-01'), 'date onOrAfter').toEqual(['B', 'C']);
+      expect(filterAndCollect(dateCol, dateType, 'isEmpty', null), 'date isEmpty').toContain('D');
+      expect(filterAndCollect(dateCol, dateType, 'isNotEmpty', null), 'date isNotEmpty').not.toContain('D');
+
+      // ── BOOLEAN ──
+      expect(filterAndCollect('active', 'boolean', 'isTrue', null), 'bool isTrue').toEqual(['A', 'C']);
+      expect(filterAndCollect('active', 'boolean', 'isFalse', null), 'bool isFalse').toEqual(['B', 'D']);
+    });
+
+    it('filter operators match the column type (engine-level, all numeric types)', async () => {
+      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const engine = new TableFilterEngine();
+      const numericTypes = ['number', 'currency', 'rating', 'progress', 'filesize', 'duration', 'percent', 'percentage'];
+      for (const t of numericTypes) {
+        const ops = engine.getOperatorsForType(t).map(o => o.value);
+        expect(ops, `numeric type "${t}" must have number operators`).toContain('gt');
+        expect(ops, `numeric type "${t}" must have number operators`).toContain('lte');
+        expect(ops, `numeric type "${t}" must NOT have text operators`).not.toContain('contains');
+      }
+      const dateOps = engine.getOperatorsForType('date').map(o => o.value);
+      expect(dateOps).toContain('before');
+      expect(dateOps).toContain('onOrAfter');
+      const boolOps = engine.getOperatorsForType('boolean').map(o => o.value);
+      expect(boolOps).toEqual(['isTrue', 'isFalse']);
+    });
+
+    it('filter engine evaluates number, date, and text operators correctly', async () => {
+      // Drive the engine directly so this exercises the cross-type filter logic
+      // without depending on typed-cell rendering (which happy-dom can't handle).
+      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const engine = new TableFilterEngine();
+      const data = [
+        { name: 'Alice', age: 30, when: '2026-01-15' },
+        { name: 'Bob', age: 25, when: '2026-02-20' },
+        { name: 'Charlie', age: 35, when: '2026-03-10' },
+      ];
+      const cols = [
+        { key: 'name', type: 'text' },
+        { key: 'age', type: 'number' },
+        { key: 'when', type: 'date' },
+      ];
+
+      // Number: age > 26 → Alice (30), Charlie (35)
+      engine.clearAllFilters();
+      engine.setColumnFilter('age', 'gt', '26');
+      expect(engine.applyFilters(data, cols).map(r => r.name).sort()).toEqual(['Alice', 'Charlie']);
+
+      // Date: before 2026-02-01 → Alice
+      engine.clearAllFilters();
+      engine.setColumnFilter('when', 'before', '2026-02-01');
+      expect(engine.applyFilters(data, cols).map(r => r.name)).toEqual(['Alice']);
+
+      // Text: starts with "A" → Alice
+      engine.clearAllFilters();
+      engine.setColumnFilter('name', 'startsWith', 'A');
+      expect(engine.applyFilters(data, cols).map(r => r.name)).toEqual(['Alice']);
+
+      // Number ≤ 30 → Alice, Bob
+      engine.clearAllFilters();
+      engine.setColumnFilter('age', 'lte', '30');
+      expect(engine.applyFilters(data, cols).map(r => r.name).sort()).toEqual(['Alice', 'Bob']);
+
+      // Date on or after 2026-02-20 → Bob, Charlie
+      engine.clearAllFilters();
+      engine.setColumnFilter('when', 'onOrAfter', '2026-02-20');
+      expect(engine.applyFilters(data, cols).map(r => r.name).sort()).toEqual(['Bob', 'Charlie']);
+    });
+
+    it('Clear all hides the filter rows and shows an empty state', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+
+      const tb = (table as any).toolbar;
+      tb.openFilterModal('name');
+      await wait(30);
+      tb.onSetFilterModel?.([{ column: 'name', operator: 'equals', value: 'Alice' }], 'and');
+      await wait(50);
+
+      // Sanity: a row is rendered
+      expect(table.shadowRoot.querySelector('.tt-filter-row'), 'row before clear').toBeTruthy();
+
+      const clearBtn = table.shadowRoot.querySelector('.tt-filter-clear') as HTMLButtonElement;
+      clearBtn.click();
+      await wait(30);
+
+      // After clear: NO filter row, AND a visible empty-state message
+      expect(table.shadowRoot.querySelector('.tt-filter-row'), 'no row after clear').toBeFalsy();
+      const emptyMsg = table.shadowRoot.querySelector('.tt-filter-empty');
+      expect(emptyMsg, 'empty-state message').toBeTruthy();
+    });
+
+    it('Clear all wins a race with a pending debounced input apply()', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+
+      const tb = (table as any).toolbar;
+      tb.openFilterModal('name');
+      await wait(30);
+
+      // Type into the value input — schedules a 250ms debounced apply()
+      const valInp = table.shadowRoot.querySelector('.tt-filter-row snice-input') as any;
+      expect(valInp).toBeTruthy();
+      valInp.value = 'Alice';
+      valInp.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+      // Immediately click Clear all — race the debounce
+      const clearBtn = table.shadowRoot.querySelector('.tt-filter-clear') as HTMLButtonElement;
+      expect(clearBtn).toBeTruthy();
+      clearBtn.click();
+
+      // Wait long enough for the debounce to have fired
+      await wait(400);
+
+      // Engine MUST be unfiltered — pending debounce must not resurrect the filter
+      expect(table.filterEngine.hasActiveFilters(), 'engine cleared after race').toBe(false);
+      expect(table.shadowRoot.querySelector('tbody').querySelectorAll('tr').length, 'all rows visible').toBe(5);
+    });
+
+    it('Clear all returns the table to fully unfiltered state', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+
+      // Apply a filter that should match only Alice
+      const tbody = () => table.shadowRoot.querySelector('tbody');
+      const visibleRowCount = () => tbody().querySelectorAll('tr').length;
+
+      // Sanity: starts unfiltered
+      expect(visibleRowCount(), 'unfiltered row count').toBe(5);
+
+      // Programmatically set a filter via the same path the panel uses
+      const tb = (table as any).toolbar;
+      tb.openFilterModal('name');
+      await wait(30);
+      tb.onSetFilterModel?.([{ column: 'name', operator: 'equals', value: 'Alice' }], 'and');
+      await wait(50);
+      expect(visibleRowCount(), 'filtered row count').toBe(1);
+      expect(table.filterEngine.hasActiveFilters()).toBe(true);
+
+      // Click "Clear all"
+      const clearBtn = table.shadowRoot.querySelector('.tt-filter-clear') as HTMLButtonElement;
+      expect(clearBtn, '"Clear all" button visible').toBeTruthy();
+      clearBtn.click();
+      await wait(50);
+
+      // Engine must have NO active filters
+      expect(table.filterEngine.hasActiveFilters(), 'engine cleared').toBe(false);
+      // Table must show ALL rows again
+      expect(visibleRowCount(), 'unfiltered after clear').toBe(5);
     });
 
     it('sort priority badges have a readable font-size (>= 0.5rem) and high-contrast color', async () => {

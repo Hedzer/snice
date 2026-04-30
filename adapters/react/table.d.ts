@@ -18,6 +18,7 @@ export interface TableProps extends SniceBaseProps {
     totalItems?: any;
     pageSizes?: any;
     searchDebounce?: any;
+    mode?: any;
     currentSort?: any;
     selector?: any;
     selectorOptions?: any;
