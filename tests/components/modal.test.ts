@@ -296,35 +296,40 @@ describe('snice-modal', () => {
     expect(modalDiv?.getAttribute('aria-modal')).toBe('true');
   });
 
-  // Note: Body scroll lock tests are skipped as they rely on browser-specific
-  // behavior that may not work properly in headless test environment
-  it.skip('should lock body scroll when opened', async () => {
+  it('should lock body scroll when opened', async () => {
     modal = await createComponent<SniceModalElement>('snice-modal');
     const tracker = trackRenders(modal as HTMLElement);
 
-    expect(document.body.style.overflow).toBe('');
+    // happy-dom desyncs `document.body.style.overflow` from the underlying
+    // `style` attribute after a custom element with shadow DOM is mounted
+    // and torn down across tests — the attribute reflects writes correctly
+    // but the CSSStyleDeclaration getter returns ''. Assert via the attribute,
+    // which is the actual DOM state the modal is mutating.
+    document.body.removeAttribute('style');
+    expect(document.body.getAttribute('style') || '').not.toContain('overflow: hidden');
 
     modal.show();
     await tracker.next();
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.getAttribute('style') || '').toContain('overflow: hidden');
   });
 
-  it.skip('should restore body scroll when closed', async () => {
+  it('should restore body scroll when closed', async () => {
     modal = await createComponent<SniceModalElement>('snice-modal');
     const tracker = trackRenders(modal as HTMLElement);
 
+    document.body.removeAttribute('style');
     modal.open = true;
     await tracker.next();
     await new Promise(resolve => setTimeout(resolve, 100));
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.getAttribute('style') || '').toContain('overflow: hidden');
 
     modal.close();
     await tracker.next();
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.getAttribute('style') || '').not.toContain('overflow: hidden');
   });
 
   it('should update label dynamically', async () => {
@@ -338,33 +343,33 @@ describe('snice-modal', () => {
     expect(modalDiv?.getAttribute('aria-label')).toBe('Updated');
   });
 
-  // Body scroll lock tests skipped — headless test environment
-  // does not properly reflect document.body.style.overflow changes
-  it.skip('should lock body scroll when opened', async () => {
+  it('should lock body scroll when opened (variant)', async () => {
     modal = await createComponent<SniceModalElement>('snice-modal');
 
-    expect(document.body.style.overflow).toBe('');
+    document.body.removeAttribute('style');
+    expect(document.body.getAttribute('style') || '').not.toContain('overflow: hidden');
 
     modal.show();
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.getAttribute('style') || '').toContain('overflow: hidden');
   });
 
-  it.skip('should restore body scroll when closed', async () => {
+  it('should restore body scroll when closed (variant)', async () => {
     modal = await createComponent<SniceModalElement>('snice-modal');
     const tracker = trackRenders(modal as HTMLElement);
 
+    document.body.removeAttribute('style');
     modal.open = true;
     await tracker.next();
     await new Promise(resolve => setTimeout(resolve, 50));
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.getAttribute('style') || '').toContain('overflow: hidden');
 
     modal.close();
     await tracker.next();
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.getAttribute('style') || '').not.toContain('overflow: hidden');
   });
 
   it('should hide header when noHeader is true', async () => {

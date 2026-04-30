@@ -119,14 +119,14 @@ describe('snice-command-palette', () => {
       expect(palette.placeholder).toBe('Search commands...');
     });
 
-    it.skip('should support noResultsText property', async () => {
+    it('should support noResultsText property', async () => {
       palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette', {
         noResultsText: 'Nothing found'
       });
       expect(palette.noResultsText).toBe('Nothing found');
     });
 
-    it.skip('should support maxResults property', async () => {
+    it('should support maxResults property', async () => {
       palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette', {
         maxResults: 10
       });
@@ -185,7 +185,7 @@ describe('snice-command-palette', () => {
       expect(true).toBe(true);
     });
 
-    it.skip('should execute command by ID', async () => {
+    it('should execute command by ID', async () => {
       let executed = false;
       palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette');
       palette.commands = [

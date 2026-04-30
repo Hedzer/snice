@@ -65,7 +65,7 @@ describe('snice-calendar', () => {
     expect(value.toDateString()).toBe(today.toDateString());
   });
 
-  it.skip('should navigate to previous month', async () => {
+  it('should navigate to previous month', async () => {
     calendar = await createComponent<SniceCalendarElement>('snice-calendar');
     const initialMonth = calendar.getDisplayedMonth();
 
@@ -76,7 +76,7 @@ describe('snice-calendar', () => {
     expect(newMonth.month).not.toBe(initialMonth.month);
   });
 
-  it.skip('should navigate to next month', async () => {
+  it('should navigate to next month', async () => {
     calendar = await createComponent<SniceCalendarElement>('snice-calendar');
     const initialMonth = calendar.getDisplayedMonth();
 

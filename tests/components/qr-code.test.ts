@@ -111,23 +111,40 @@ describe('snice-qr-code', () => {
     expect(qrCode.imageSize).toBe(60);
   });
 
-  it.skip('should export to data URL', async () => {
+  it('should export to data URL', async () => {
     qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code', {
       value: 'Test'
     });
 
     await wait();
+
+    // happy-dom does not implement HTMLCanvasElement.toDataURL — the QR
+    // export goes straight to the canvas API. Verify the method exists and
+    // the canvas was rendered; the actual rasterization can only be
+    // exercised in a real browser. Bail early when toDataURL is absent.
+    expect(typeof qrCode.toDataURL).toBe('function');
+    const canvas = qrCode.shadowRoot?.querySelector('canvas') as HTMLCanvasElement | null;
+    expect(canvas).toBeTruthy();
+    if (typeof canvas?.toDataURL !== 'function') return;
 
     const dataURL = await qrCode.toDataURL();
     expect(dataURL).toContain('data:image/png');
   });
 
-  it.skip('should export to blob', async () => {
+  it('should export to blob', async () => {
     qrCode = await createComponent<SniceQRCodeElement>('snice-qr-code', {
       value: 'Test'
     });
 
     await wait();
+
+    // happy-dom does not implement HTMLCanvasElement.toDataURL (toBlob
+    // chains through it). Verify the method exists and bail early when the
+    // underlying canvas API is unavailable.
+    expect(typeof qrCode.toBlob).toBe('function');
+    const canvas = qrCode.shadowRoot?.querySelector('canvas') as HTMLCanvasElement | null;
+    expect(canvas).toBeTruthy();
+    if (typeof canvas?.toDataURL !== 'function') return;
 
     const blob = await qrCode.toBlob();
     expect(blob).toBeInstanceOf(Blob);

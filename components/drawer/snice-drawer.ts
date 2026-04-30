@@ -139,7 +139,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
   }
 
-  private _isHandlingOpenChange = false;
+  private isHandlingOpenChange = false;
   private titleId = `snice-drawer-title-${Math.random().toString(36).slice(2, 10)}`;
 
   /** Returns true if the drawer is currently in inline mode (either via `inline` prop or active breakpoint). */
@@ -215,8 +215,8 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   @watch('open')
   handleOpenChange() {
     // Prevent duplicate handling
-    if (this._isHandlingOpenChange) return;
-    this._isHandlingOpenChange = true;
+    if (this.isHandlingOpenChange) return;
+    this.isHandlingOpenChange = true;
 
     try {
       this.setAttribute('aria-hidden', String(!this.open));
@@ -230,11 +230,11 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
         this.handleClose();
       }
     } finally {
-      this._isHandlingOpenChange = false;
+      this.isHandlingOpenChange = false;
     }
   }
 
-  @on('click', { target: '.drawer-backdrop' })
+  @on('click', '.drawer-backdrop')
   handleBackdropClick(e: MouseEvent) {
     if (!this.noBackdropDismiss && !this.persistent) {
       e.stopPropagation();
@@ -242,7 +242,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     }
   }
 
-  @on('click', { target: '.drawer-close' })
+  @on('click', '.drawer-close')
   handleCloseClick(e: MouseEvent) {
     if (this.persistent) return;
     e.stopPropagation();
@@ -335,17 +335,17 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     return [...shadow, ...light];
   }
 
-  private _lastEventType: string | null = null;
-  private _lastEventTime = 0;
+  private lastEventType: string | null = null;
+  private lastEventTime = 0;
 
   private dispatchOpenEvent() {
     // Prevent duplicate events within 100ms
     const now = Date.now();
-    if (this._lastEventType === 'open' && (now - this._lastEventTime) < 100) {
+    if (this.lastEventType === 'open' && (now - this.lastEventTime) < 100) {
       return;
     }
-    this._lastEventType = 'open';
-    this._lastEventTime = now;
+    this.lastEventType = 'open';
+    this.lastEventTime = now;
 
     // Manually dispatch event
     this.dispatchEvent(new CustomEvent('drawer-open', {
@@ -358,11 +358,11 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
   private dispatchCloseEvent() {
     // Prevent duplicate events within 100ms
     const now = Date.now();
-    if (this._lastEventType === 'close' && (now - this._lastEventTime) < 100) {
+    if (this.lastEventType === 'close' && (now - this.lastEventTime) < 100) {
       return;
     }
-    this._lastEventType = 'close';
-    this._lastEventTime = now;
+    this.lastEventType = 'close';
+    this.lastEventTime = now;
 
     // Manually dispatch event
     this.dispatchEvent(new CustomEvent('drawer-close', {

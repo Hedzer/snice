@@ -352,8 +352,7 @@ describe('snice-toast-container', () => {
     expect(toasts?.length).toBe(3);
   });
 
-  // Note: Skipping hide tests as they rely on CSS animations which may not work in test environment
-  it.skip('should hide toast by id', async () => {
+  it('should hide toast by id', async () => {
     container = await createComponent<SniceToastContainerElement>('snice-toast-container');
 
     const id = container.show('Test message', { duration: 0 });
@@ -364,14 +363,18 @@ describe('snice-toast-container', () => {
     expect(toasts?.length).toBe(1);
 
     container.hide(id);
-    await new Promise(resolve => setTimeout(resolve, 600)); // Wait for animation
+
+    // happy-dom does not fire animationend, so dispatch it manually to trigger removal
+    const toast = wrapper?.querySelector('snice-toast') as HTMLElement;
+    expect(toast.classList.contains('hiding')).toBe(true);
+    toast.dispatchEvent(new Event('animationend'));
 
     wrapper = queryShadow(container as HTMLElement, '.toast-wrapper');
     toasts = wrapper?.querySelectorAll('snice-toast');
     expect(toasts?.length).toBe(0);
   });
 
-  it.skip('should clear all toasts', async () => {
+  it('should clear all toasts', async () => {
     container = await createComponent<SniceToastContainerElement>('snice-toast-container');
 
     container.show('First', { duration: 0 });
@@ -384,14 +387,17 @@ describe('snice-toast-container', () => {
     expect(toasts?.length).toBe(3);
 
     container.clear();
-    await new Promise(resolve => setTimeout(resolve, 600)); // Wait for animations
+
+    // happy-dom does not fire animationend, so dispatch it manually for each toast
+    const hidingToasts = Array.from(wrapper?.querySelectorAll('snice-toast') || []) as HTMLElement[];
+    hidingToasts.forEach(t => t.dispatchEvent(new Event('animationend')));
 
     wrapper = queryShadow(container as HTMLElement, '.toast-wrapper');
     toasts = wrapper?.querySelectorAll('snice-toast');
     expect(toasts?.length).toBe(0);
   });
 
-  it.skip('should auto-dismiss toast after duration', async () => {
+  it('should auto-dismiss toast after duration', async () => {
     container = await createComponent<SniceToastContainerElement>('snice-toast-container');
 
     container.show('Test', { duration: 100 });
@@ -401,7 +407,13 @@ describe('snice-toast-container', () => {
     let toasts = wrapper?.querySelectorAll('snice-toast');
     expect(toasts?.length).toBe(1);
 
-    await new Promise(resolve => setTimeout(resolve, 500)); // Wait for duration + animation
+    // Wait for the auto-dismiss timer (100ms) to fire, then trigger animationend manually
+    // since happy-dom does not fire CSS animationend events.
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    const toast = wrapper?.querySelector('snice-toast') as HTMLElement;
+    expect(toast?.classList.contains('hiding')).toBe(true);
+    toast.dispatchEvent(new Event('animationend'));
 
     wrapper = queryShadow(container as HTMLElement, '.toast-wrapper');
     toasts = wrapper?.querySelectorAll('snice-toast');
@@ -571,7 +583,7 @@ describe('Toast static API', () => {
     expect(toast?.type).toBe('info');
   });
 
-  it.skip('should hide toast by id', async () => {
+  it('should hide toast by id', async () => {
     const id = await Toast.show('Test', { duration: 0 });
     await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -581,14 +593,18 @@ describe('Toast static API', () => {
     expect(toasts?.length).toBe(1);
 
     Toast.hide(id);
-    await new Promise(resolve => setTimeout(resolve, 600));
+
+    // happy-dom does not fire animationend, so dispatch it manually to trigger removal
+    const toast = wrapper?.querySelector('snice-toast') as HTMLElement;
+    expect(toast.classList.contains('hiding')).toBe(true);
+    toast.dispatchEvent(new Event('animationend'));
 
     wrapper = queryShadow(container as HTMLElement, '.toast-wrapper');
     toasts = wrapper?.querySelectorAll('snice-toast');
     expect(toasts?.length).toBe(0);
   });
 
-  it.skip('should clear all toasts', async () => {
+  it('should clear all toasts', async () => {
     await Toast.show('First', { duration: 0 });
     await Toast.show('Second', { duration: 0 });
     await Toast.show('Third', { duration: 0 });
@@ -600,7 +616,10 @@ describe('Toast static API', () => {
     expect(toasts?.length).toBe(3);
 
     Toast.clear();
-    await new Promise(resolve => setTimeout(resolve, 600));
+
+    // happy-dom does not fire animationend, so dispatch it manually for each toast
+    const hidingToasts = Array.from(wrapper?.querySelectorAll('snice-toast') || []) as HTMLElement[];
+    hidingToasts.forEach(t => t.dispatchEvent(new Event('animationend')));
 
     wrapper = queryShadow(container as HTMLElement, '.toast-wrapper');
     toasts = wrapper?.querySelectorAll('snice-toast');

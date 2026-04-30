@@ -130,7 +130,7 @@ describe('snice-chart', () => {
     expect(chart.datasets[0].label).toBe('Series 2');
   });
 
-  it.skip('should toggle dataset visibility', async () => {
+  it('should toggle dataset visibility', async () => {
     const datasets: ChartDataset[] = [
       { label: 'Series 1', data: [1, 2, 3] }
     ];

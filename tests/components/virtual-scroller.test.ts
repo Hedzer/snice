@@ -81,7 +81,7 @@ describe('snice-virtual-scroller', () => {
     expect(scroller.renderItem).toBeDefined();
   });
 
-  it.skip('should support refresh', async () => {
+  it('should support refresh', async () => {
     scroller = await createComponent<SniceVirtualScrollerElement>('snice-virtual-scroller');
     scroller.refresh();
     await wait();

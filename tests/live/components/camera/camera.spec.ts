@@ -39,9 +39,13 @@ test.describe('Snice Camera', () => {
     expect(hasCaptureBtn).toBe(true);
   });
 
-  test.skip('should auto-start camera', async ({ page }) => {
-    // Skipped: Camera permissions unreliable in headless mode
-    // Component is verified to have autoStart=true by default in other tests
+  test('autoStart is true by default (camera permissions are flaky in headless,'
+    + ' so we verify the property contract instead of the actual stream start)', async ({ page }) => {
+    const autoStart = await page.evaluate(() => {
+      const camera = document.querySelector('snice-camera') as any;
+      return camera?.autoStart;
+    });
+    expect(autoStart).toBe(true);
   });
 
   test('should support different control positions', async ({ page }) => {

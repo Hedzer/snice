@@ -265,8 +265,7 @@ describe('snice-chat', () => {
   });
 
   describe('scrollToMessage()', () => {
-    it.skip('should handle scrolling to message', async () => {
-      // Skipped: scrollIntoView not available in test environment
+    it('should handle scrolling to message', async () => {
       chat.addMessage({
         type: 'text',
         content: 'Message',
@@ -277,10 +276,24 @@ describe('snice-chat', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const messageId = chat.messages[0].id;
-      chat.scrollToMessage(messageId);
-      // Just verify it doesn't throw
-      expect(chat).toBeDefined();
+      // happy-dom doesn't implement Element.scrollIntoView; stub it on the
+      // prototype so the call inside scrollToMessage resolves to a no-op.
+      const proto = Element.prototype as any;
+      const hadScrollIntoView = typeof proto.scrollIntoView === 'function';
+      let calls = 0;
+      if (!hadScrollIntoView) {
+        proto.scrollIntoView = function () { calls++; };
+      }
+
+      try {
+        const messageId = chat.messages[0].id;
+        chat.scrollToMessage(messageId);
+        expect(calls).toBe(1);
+      } finally {
+        if (!hadScrollIntoView) {
+          delete proto.scrollIntoView;
+        }
+      }
     });
 
     it('should handle scrolling to non-existent message', () => {

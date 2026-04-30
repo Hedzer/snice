@@ -26,15 +26,34 @@ describe('snice-carousel', () => {
     expect(carousel.showIndicators).toBe(true);
   });
 
-  it.skip('should go to next slide', async () => {
+  it('should go to next slide', async () => {
     carousel = await createComponent<SniceCarouselElement>('snice-carousel');
+    // next() advances activeIndex based on slideCount, which is normally
+    // updated via the slotchange event on the internal slot. happy-dom's
+    // slot listener wiring under snice's @on decorator does not always
+    // surface dispatched slotchange events, so we drive the public-facing
+    // handler directly to mirror what a real browser would do.
+    for (let i = 0; i < 3; i++) {
+      const slide = document.createElement('div');
+      slide.textContent = `Slide ${i}`;
+      carousel.appendChild(slide);
+    }
+    (carousel as unknown as { handleSlotChange: () => void }).handleSlotChange();
+    await wait(50);
     carousel.next();
     await wait(50);
     expect(carousel.activeIndex).toBe(1);
   });
 
-  it.skip('should go to previous slide', async () => {
+  it('should go to previous slide', async () => {
     carousel = await createComponent<SniceCarouselElement>('snice-carousel');
+    for (let i = 0; i < 3; i++) {
+      const slide = document.createElement('div');
+      slide.textContent = `Slide ${i}`;
+      carousel.appendChild(slide);
+    }
+    (carousel as unknown as { handleSlotChange: () => void }).handleSlotChange();
+    await wait(50);
     carousel.activeIndex = 2;
     await wait(50);
     carousel.prev();

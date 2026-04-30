@@ -293,8 +293,7 @@ describe('snice-drawer', () => {
     expect(drawer.open).toBe(false);
   });
 
-  // Note: Skipping backdrop dismiss tests as they may have timing/env issues in tests
-  it.skip('should not close when backdrop clicked if noBackdropDismiss is true', async () => {
+  it('should not close when backdrop clicked if noBackdropDismiss is true', async () => {
     drawer = await createComponent<SniceDrawerElement>('snice-drawer');
     const tracker = trackRenders(drawer as HTMLElement);
 
@@ -313,7 +312,7 @@ describe('snice-drawer', () => {
     expect(drawer.open).toBe(true); // Should still be open
   });
 
-  it.skip('should not close when backdrop clicked if persistent is true', async () => {
+  it('should not close when backdrop clicked if persistent is true', async () => {
     drawer = await createComponent<SniceDrawerElement>('snice-drawer');
     const tracker = trackRenders(drawer as HTMLElement);
 
