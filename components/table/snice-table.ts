@@ -275,8 +275,16 @@ export class SniceTable extends HTMLElement {
         position: relative;
       }
 
-      /* Fullscreen / zoom mode — cover the entire viewport so the page
-         doesn't peek through. */
+      /* Native Fullscreen API: paint the host's background as the backdrop
+         so the area outside our box (during transition) matches dark/light. */
+      :host(:fullscreen) {
+        background: var(--snice-color-surface, rgb(255 255 255));
+      }
+      :host(:fullscreen)::backdrop {
+        background: var(--snice-color-surface, rgb(255 255 255));
+      }
+
+      /* CSS fallback fullscreen — used when requestFullscreen is blocked. */
       :host(.table-fullscreen) {
         position: fixed;
         inset: 0;
@@ -298,30 +306,6 @@ export class SniceTable extends HTMLElement {
         max-height: none;
       }
 
-      .table-fullscreen-hint {
-        display: none;
-      }
-      :host(.table-fullscreen) .table-fullscreen-hint {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.625rem;
-        margin-bottom: 0.5rem;
-        background: var(--snice-color-surface-container-low, rgb(250 250 250));
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-md, 0.25rem);
-        font-size: 0.75rem;
-        color: var(--snice-color-text-secondary, rgb(82 82 82));
-      }
-      .table-fullscreen-hint kbd {
-        font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 0.6875rem;
-        background: var(--snice-color-surface, rgb(255 255 255));
-        border: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-radius: var(--snice-border-radius-sm, 0.125rem);
-        padding: 0.0625rem 0.375rem;
-        margin-left: 0.125rem;
-      }
 
 
       .snice-table {
@@ -1203,10 +1187,7 @@ export class SniceTable extends HTMLElement {
       return html/*html*/`
         <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
-          <div class="table-fullscreen-hint">
-            Press <kbd>Esc</kbd> to exit fullscreen
-          </div>
-          <div class="table-header" id="slotted-header"></div>
+<div class="table-header" id="slotted-header"></div>
           <div class="table-body">
             <slot name="rows"></slot>
           </div>
@@ -1218,10 +1199,7 @@ export class SniceTable extends HTMLElement {
       return html/*html*/`
         <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
-          <div class="table-fullscreen-hint">
-            Press <kbd>Esc</kbd> to exit fullscreen
-          </div>
-          <div class="table-frame">
+<div class="table-frame">
             <div class="table-superheader" part="superheader">
               <slot name="header"></slot>
             </div>
@@ -2115,22 +2093,42 @@ export class SniceTable extends HTMLElement {
     }
   }
 
-  private _escHandler: ((e: KeyboardEvent) => void) | null = null;
+  private _fsExitHandler: (() => void) | null = null;
 
-  toggleFullscreen = () => {
+  toggleFullscreen = async () => {
     const isFullscreen = this.classList.contains('table-fullscreen');
     if (isFullscreen) {
       this.classList.remove('table-fullscreen');
-      if (this._escHandler) {
-        document.removeEventListener('keydown', this._escHandler);
-        this._escHandler = null;
+      if (document.fullscreenElement === this) {
+        try { await document.exitFullscreen(); } catch { /* already exited */ }
+      }
+      if (this._fsExitHandler) {
+        document.removeEventListener('fullscreenchange', this._fsExitHandler);
+        this._fsExitHandler = null;
       }
     } else {
       this.classList.add('table-fullscreen');
-      this._escHandler = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') this.toggleFullscreen();
+      // Use the platform Fullscreen API — escapes the page's stacking context
+      // (the showcase header has backdrop-filter which fights CSS-only overlays)
+      // and gives the user the browser's native Esc-to-exit affordance.
+      try {
+        if (typeof this.requestFullscreen === 'function') {
+          await this.requestFullscreen();
+        }
+      } catch {
+        // Browser blocked it (e.g. not from a user gesture) — fall back to CSS.
+      }
+      // Sync class with the browser's fullscreen state
+      this._fsExitHandler = () => {
+        if (document.fullscreenElement !== this) {
+          this.classList.remove('table-fullscreen');
+          if (this._fsExitHandler) {
+            document.removeEventListener('fullscreenchange', this._fsExitHandler);
+            this._fsExitHandler = null;
+          }
+        }
       };
-      document.addEventListener('keydown', this._escHandler);
+      document.addEventListener('fullscreenchange', this._fsExitHandler);
     }
   }
 
