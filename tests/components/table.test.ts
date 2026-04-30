@@ -1744,4 +1744,214 @@ describe('snice-table', () => {
       expect(rows.length).toBe(2);
     });
   });
+
+  // ── Header-click sort (snice convention: every click is multi-aware) ──
+
+  describe('header-click sort', () => {
+    function clickHeader(t: any, key: string) {
+      const th = t.shadowRoot!.querySelector(`th.sortable[data-key="${key}"]`) as HTMLElement;
+      th.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    }
+
+    it('clicking a header adds the column to the sort, cycling asc → desc → none', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      await wait(20);
+      expect(table.currentSort).toEqual([{ column: 'name', direction: 'asc' }]);
+
+      clickHeader(table, 'name');
+      await wait(20);
+      expect(table.currentSort).toEqual([{ column: 'name', direction: 'desc' }]);
+
+      clickHeader(table, 'name');
+      await wait(20);
+      expect(table.currentSort).toEqual([]);
+    });
+
+    it('clicking a different column ADDS to the multi-sort', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      await wait(20);
+      clickHeader(table, 'age');
+      await wait(20);
+      expect(table.currentSort).toEqual([
+        { column: 'name', direction: 'asc' },
+        { column: 'age', direction: 'asc' },
+      ]);
+    });
+
+    it('clicking an already-sorted column flips its direction within the multi-sort', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      clickHeader(table, 'age');
+      clickHeader(table, 'age');
+      await wait(20);
+      expect(table.currentSort).toEqual([
+        { column: 'name', direction: 'asc' },
+        { column: 'age', direction: 'desc' },
+      ]);
+    });
+
+    it('clicking the same column three times removes it from the sort', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      clickHeader(table, 'age');
+      clickHeader(table, 'age');
+      clickHeader(table, 'age');
+      await wait(20);
+      expect(table.currentSort).toEqual([{ column: 'name', direction: 'asc' }]);
+    });
+
+    it('renders a priority badge (1, 2, 3, ...) on each sorted header when multi-sorting', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      clickHeader(table, 'age');
+      clickHeader(table, 'id');
+      await wait(30);
+
+      const nameOrder = table.shadowRoot.querySelector('th[data-key="name"] .sort-order')?.textContent;
+      const ageOrder = table.shadowRoot.querySelector('th[data-key="age"] .sort-order')?.textContent;
+      const idOrder = table.shadowRoot.querySelector('th[data-key="id"] .sort-order')?.textContent;
+      expect([nameOrder, ageOrder, idOrder]).toEqual(['1', '2', '3']);
+    });
+
+    it('does not render a priority badge for a single-column sort', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      clickHeader(table, 'name');
+      await wait(20);
+      const badge = table.shadowRoot.querySelector('th[data-key="name"] .sort-order');
+      expect(badge).toBeNull();
+    });
+  });
+
+  // ── Column menu actions: pin left/right, unpin, autosize, hide ──
+
+  describe('column menu actions (MUI parity)', () => {
+    it('pinColumn / unpinColumn flips DOM sticky positioning', async () => {
+      table = await createTable();
+      table.pinColumn('name', 'left');
+      await wait(20);
+      const th = table.shadowRoot.querySelector('th[data-key="name"]');
+      expect(th?.classList.contains('pinned-cell')).toBe(true);
+      expect((th as HTMLElement).style.position).toBe('sticky');
+
+      table.unpinColumn('name');
+      await wait(20);
+      const th2 = table.shadowRoot.querySelector('th[data-key="name"]');
+      expect(th2?.classList.contains('pinned-cell')).toBe(false);
+    });
+
+    it('pin right applies sticky right positioning', async () => {
+      table = await createTable();
+      table.pinColumn('age', 'right');
+      await wait(20);
+      const th = table.shadowRoot.querySelector('th[data-key="age"]') as HTMLElement;
+      expect(th?.classList.contains('pinned-cell')).toBe(true);
+      expect(th?.style.position).toBe('sticky');
+    });
+
+    it('column menu pin-left action pins the column to the left', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      (table as any).columnMenuManager.onPinLeft?.('name');
+      expect(table.columnManager.getState('name').pinned).toBe('left');
+    });
+
+    it('column menu pin-right action pins the column to the right', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      (table as any).columnMenuManager.onPinRight?.('age');
+      expect(table.columnManager.getState('age').pinned).toBe('right');
+    });
+
+    it('column menu unpin action removes the pin', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      table.pinColumn('name', 'left');
+      expect(table.columnManager.getState('name').pinned).toBe('left');
+      (table as any).columnMenuManager.onUnpin?.('name');
+      expect(table.columnManager.getState('name').pinned).toBe(false);
+    });
+
+    it('column menu autosize action runs without throwing', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      expect(() => (table as any).columnMenuManager.onAutoSize?.('name')).not.toThrow();
+    });
+
+    it('column menu hide action removes the column from visible set', async () => {
+      table = await createTable({ attrs: { 'column-menu': true } });
+      (table as any).columnMenuManager.onHide?.('age');
+      expect(table.columnManager.getState('age').visible).toBe(false);
+    });
+  });
+
+  // ── Filter panel (toolbar in-flow panel) ──
+
+  describe('filter panel (in-flow MUI-style)', () => {
+    it('openFilterModal (called from column menu) reveals the filter panel', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+      const panel = table.shadowRoot.querySelector('.tt-filter-panel') as HTMLElement;
+      expect(panel).toBeTruthy();
+      expect(panel.hidden).toBe(false);
+    });
+
+    it('preset column populates the first filter row', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+      const rows = table.shadowRoot.querySelectorAll('.tt-filter-panel .tt-filter-row');
+      expect(rows.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('closeFilterPanel hides the panel', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      (table as any).toolbar.openFilterModal('name');
+      await wait(30);
+      (table as any).toolbar.closeFilterPanel();
+      const panel = table.shadowRoot.querySelector('.tt-filter-panel') as HTMLElement;
+      expect(panel.hidden).toBe(true);
+    });
+
+    it('toolbar has no Sort or Filter button (MUI parity — sort is via headers, filter via column menu)', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      const sortBtn = table.shadowRoot.querySelector('.toolbar-btn[aria-label="Sort"]');
+      const filterBtn = table.shadowRoot.querySelector('.toolbar-btn[aria-label="Filter"]');
+      expect(sortBtn).toBeNull();
+      expect(filterBtn).toBeNull();
+    });
+  });
+
+  // ── @request payload includes sort + filter (server-side data flow) ──
+
+  describe('@request payload contract', () => {
+    it('sort changes ride along the table/data request', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      table._hasController = true;
+      const requestSpy = vi.spyOn(table, 'debouncedDataRequest' as any);
+      (table as any).toolbar.onSetSortModel([{ column: 'name', direction: 'asc' }]);
+      expect(requestSpy).toHaveBeenCalled();
+    });
+
+    it('filter changes ride along the table/data request', async () => {
+      table = await createTable();
+      table.setToolbar({});
+      await wait(20);
+      table._hasController = true;
+      const requestSpy = vi.spyOn(table, 'debouncedDataRequest' as any);
+      (table as any).toolbar.onSetFilterModel(
+        [{ column: 'name', operator: 'contains' as any, value: 'ali' }],
+        'and',
+      );
+      expect(requestSpy).toHaveBeenCalled();
+    });
+  });
 });

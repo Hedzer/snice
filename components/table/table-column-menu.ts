@@ -3,6 +3,8 @@
  * Right-click or menu icon on header — sort, filter, hide, pin, autosize.
  */
 
+import { ARROW_UP, ARROW_DOWN, FUNNEL, EYE_SLASH, MAP_PIN, ARROWS_RIGHT_LEFT, X_MARK } from '../icons';
+
 export interface ColumnMenuAction {
   label: string;
   icon?: string;
@@ -50,30 +52,30 @@ export class TableColumnMenu {
     const actions: ColumnMenuAction[] = [];
 
     if (options?.sortable !== false) {
-      actions.push({ label: 'Sort Ascending', icon: '\u2191', action: 'sort-asc' });
-      actions.push({ label: 'Sort Descending', icon: '\u2193', action: 'sort-desc' });
+      actions.push({ label: 'Sort Ascending', icon: ARROW_UP, action: 'sort-asc' });
+      actions.push({ label: 'Sort Descending', icon: ARROW_DOWN, action: 'sort-desc' });
       actions.push({ label: '', action: '', separator: true });
     }
 
     if (options?.filterable !== false) {
-      actions.push({ label: 'Filter...', icon: '\u2AE7', action: 'filter' });
+      actions.push({ label: 'Filter...', icon: FUNNEL, action: 'filter' });
     }
 
     if (options?.hideable !== false) {
-      actions.push({ label: 'Hide Column', icon: '\uD83D\uDC41', action: 'hide' });
+      actions.push({ label: 'Hide Column', icon: EYE_SLASH, action: 'hide' });
     }
 
     if (options?.pinnable !== false) {
       if (options?.pinned) {
-        actions.push({ label: 'Unpin', icon: '\uD83D\uDCCC', action: 'unpin' });
+        actions.push({ label: 'Unpin', icon: X_MARK, action: 'unpin' });
       } else {
-        actions.push({ label: 'Pin Left', icon: '\u21E4', action: 'pin-left' });
-        actions.push({ label: 'Pin Right', icon: '\u21E5', action: 'pin-right' });
+        actions.push({ label: 'Pin Left', icon: MAP_PIN, action: 'pin-left' });
+        actions.push({ label: 'Pin Right', icon: MAP_PIN, action: 'pin-right' });
       }
     }
 
     actions.push({ label: '', action: '', separator: true });
-    actions.push({ label: 'Auto-size', icon: '\u2194', action: 'autosize' });
+    actions.push({ label: 'Auto-size', icon: ARROWS_RIGHT_LEFT, action: 'autosize' });
 
     for (const action of actions) {
       if (action.separator) {

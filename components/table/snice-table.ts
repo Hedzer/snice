@@ -275,25 +275,52 @@ export class SniceTable extends HTMLElement {
         position: relative;
       }
 
-      /* Fullscreen / zoom mode */
+      /* Fullscreen / zoom mode — cover the entire viewport so the page
+         doesn't peek through. */
       :host(.table-fullscreen) {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         z-index: 10000;
         background: var(--snice-color-surface, rgb(255 255 255));
         padding: var(--snice-spacing-md, 1rem);
         overflow: auto;
+        display: flex;
+        flex-direction: column;
       }
 
       :host(.table-fullscreen) .snice-table {
-        height: 100%;
+        flex: 1;
+        height: auto;
       }
 
       :host(.table-fullscreen) .table-frame {
-        max-height: calc(100vh - 4rem);
+        flex: 1;
+        max-height: none;
+      }
+
+      .table-fullscreen-hint {
+        display: none;
+      }
+      :host(.table-fullscreen) .table-fullscreen-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.625rem;
+        margin-bottom: 0.5rem;
+        background: var(--snice-color-surface-container-low, rgb(250 250 250));
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-md, 0.25rem);
+        font-size: 0.75rem;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+      .table-fullscreen-hint kbd {
+        font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.6875rem;
+        background: var(--snice-color-surface, rgb(255 255 255));
+        border: 1px solid var(--snice-color-border, rgb(226 226 226));
+        border-radius: var(--snice-border-radius-sm, 0.125rem);
+        padding: 0.0625rem 0.375rem;
+        margin-left: 0.125rem;
       }
 
 
@@ -1104,9 +1131,17 @@ export class SniceTable extends HTMLElement {
       }
 
       .column-menu-icon {
-        width: 1.25rem;
-        text-align: center;
-        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+      .column-menu-icon svg {
+        width: 1rem;
+        height: 1rem;
       }
 
       /* Slotted table layout */
@@ -1168,6 +1203,9 @@ export class SniceTable extends HTMLElement {
       return html/*html*/`
         <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
+          <div class="table-fullscreen-hint">
+            Press <kbd>Esc</kbd> to exit fullscreen
+          </div>
           <div class="table-header" id="slotted-header"></div>
           <div class="table-body">
             <slot name="rows"></slot>
@@ -1180,6 +1218,9 @@ export class SniceTable extends HTMLElement {
       return html/*html*/`
         <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
+          <div class="table-fullscreen-hint">
+            Press <kbd>Esc</kbd> to exit fullscreen
+          </div>
           <div class="table-frame">
             <div class="table-superheader" part="superheader">
               <slot name="header"></slot>
@@ -2096,13 +2137,12 @@ export class SniceTable extends HTMLElement {
   private handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
 
-    // Handle sortable header click — MUI-style: click cycles asc→desc→none on
-    // a single column; shift+click adds to multi-sort.
+    // Handle sortable header click — every click adds/cycles in multi-sort.
     const th = target.closest('th.sortable') as HTMLElement;
     if (th) {
       const columnKey = th.getAttribute('data-key');
       if (columnKey) {
-        this.toggleSort(columnKey, e.shiftKey);
+        this.toggleSort(columnKey, true);
       }
       return;
     }

@@ -77,6 +77,8 @@ export class TableToolbar {
       searchInput.type = 'search';
       searchInput.placeholder = this.options.searchPlaceholder || 'Search...';
       searchInput.size = 'small';
+      searchInput.prefixIcon = 'search';
+      searchInput.clearable = true;
       searchInput.className = 'toolbar-search';
       let debounce: number;
       searchInput.addEventListener('input', () => {
