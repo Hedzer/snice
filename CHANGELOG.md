@@ -1,3 +1,93 @@
+# [5.0.0](https://github.com/Hedzer/snice/compare/v4.40.0...v5.0.0) (2026-04-30)
+
+
+### Bug Fixes
+
+* **a11y:** tabs/list/grid/binpack/masonry roles; card/chip aria-pressed; stepper kbd ([15442b4](https://github.com/Hedzer/snice/commit/15442b4305107b012c3846e4a6e13dcffe1f7869))
+* **alert,banner:** variants resolve theme-aware semantic subtle tokens instead of hardcoded light pastels ([0c58c1b](https://github.com/Hedzer/snice/commit/0c58c1b697738c848ed29402c4f706482bb8f6b8))
+* **alert:** vertical-center dismiss X, flex gap replaces margin-right, optical icon nudge ([b8f0634](https://github.com/Hedzer/snice/commit/b8f06347799465536d046856d9dd0b947b646448))
+* **audits:** remaining token migration + consistency fixes from 3-agent audit ([4119a9d](https://github.com/Hedzer/snice/commit/4119a9d390f5f5021094b6f4cf18f025e76d30e1))
+* **button:** heights match input/select at every size, drop icon-slot 1px nudge ([c6af656](https://github.com/Hedzer/snice/commit/c6af6563bb4526dd7b5e69ed1d90de21734324c9))
+* **checkbox,switch,layout:** add lg size host min-height; layout dividers use subtle border ([c2af69a](https://github.com/Hedzer/snice/commit/c2af69ae64cfb78f33aceaa4351a850b66e65fde))
+* circle button slotted SVGs render 0x0; add dark-mode color regression test ([f3c0a79](https://github.com/Hedzer/snice/commit/f3c0a794260262a5d7dee2aefae12d09fccc50f3))
+* **flow,rating:** measure port centers for edges, clip-path for half-stars ([387b7e9](https://github.com/Hedzer/snice/commit/387b7e971e0ddd425d42244771b62e24b6c953e1))
+* green full npm test suite; replace __propDef_ expando with Symbol ([71604fb](https://github.com/Hedzer/snice/commit/71604fbd071b129a42d1084aa52910a1be89656b))
+* migrate :focus → :focus-visible across components for keyboard-only focus rings ([d848c9f](https://github.com/Hedzer/snice/commit/d848c9fa93f01e935aaae4ea4b16385b07011f9a))
+* resolve high-priority a11y + behavior items from audit ([19676a8](https://github.com/Hedzer/snice/commit/19676a844abda4b2d47baddba9d0bdd929f35268))
+* **showcase/drawer:** bottom drawer content cut off; sidebar buttons now left-align via justify-text ([28971ac](https://github.com/Hedzer/snice/commit/28971ac5a3b80610f9b06ff3104736ce89577f5d))
+* **spinner:** arc variant now rotates continuously (removed 270° snap-back and dash-phase discontinuity); docs + storybook updated for variants ([72e021f](https://github.com/Hedzer/snice/commit/72e021fed2333ef133873402bcfe0f69c4feaf21))
+* **spinner:** bump rotation from 2s to 900ms (2s felt sluggish) ([6ce86fe](https://github.com/Hedzer/snice/commit/6ce86fe65f416a07169b6e5127b12f581be7798e))
+* **spinner:** smoother arc breathing + constellation orbit variant ([dcf6400](https://github.com/Hedzer/snice/commit/dcf6400d21da9d2e2fd3489725c991288ee57e5c))
+* **spreadsheet:** row-num click never selected row + edit-Enter re-entered edit on next cell ([5743891](https://github.com/Hedzer/snice/commit/57438914df63fcc596def7927c9f4f5051e0ecfd))
+* **storybook:** fix 42 broken stories (classList.add(''), missing el defs, list loader, pdfjs worker) ([1afd941](https://github.com/Hedzer/snice/commit/1afd9410b97889857cde56d30ffa876c0bdc88b1))
+* **table:** resolve snice-rating dup registration; cell-rating auto-fits cell width; percentage cell drops 100px min-width ([b035afd](https://github.com/Hedzer/snice/commit/b035afd26044c3599239e884e4fef2fb3074a54f))
+* **table:** snice-cell host now fills its td; ratings/booleans/sparklines center correctly; vertical-align middle ([bc86bac](https://github.com/Hedzer/snice/commit/bc86bac0ccc26b35887684419cfd0808ce8ea3a3))
+* **table:** use native Fullscreen API; drop in-table Esc hint (Chrome shows its own) ([7f52c10](https://github.com/Hedzer/snice/commit/7f52c10390cf265c5e8b4df5f3285fe65c7f8631))
+* **tag:** box-sizing border-box so outline variant matches solid variant height ([12c10b3](https://github.com/Hedzer/snice/commit/12c10b3beb2c9e84b70b08730cb1fd2b28df848c))
+* **timeline:** center connecting lines through marker nodes ([cb54676](https://github.com/Hedzer/snice/commit/cb54676c0ec1aa87414a77acaf9c206ca5f4b357))
+* tokenize font-weight, transition durations, and hardcoded variant colors ([9c0e2d5](https://github.com/Hedzer/snice/commit/9c0e2d5ad518b584efc5e5a8ceec9a38314da3ee))
+* tokenize remaining hard-coded radii; remove MUI X Pro references from table docs ([e835966](https://github.com/Hedzer/snice/commit/e83596670d8373abbbd64a35b2b04f3ba4d9eb72))
+
+
+### chore
+
+* **theme:** mark breaking change for token migration ([0b17c13](https://github.com/Hedzer/snice/commit/0b17c13351185d9cc10dd08b2cdd5677d0667bdb))
+
+
+### Features
+
+* **a11y:** role/aria for canvas/svg/log/status regions; live-test cleanup ([4fa7b4f](https://github.com/Hedzer/snice/commit/4fa7b4f4741ae6102f3609a759dcf927656fa7c3))
+* **a11y:** wave 2 — interactive grids, dialogs, applications ([58a7a9f](https://github.com/Hedzer/snice/commit/58a7a9f460eba98edb2dcad8863f7b17f0c5a325))
+* add About + License pages with credits; bootstrap Heroicons module for snice icon defaults ([d4c0ed8](https://github.com/Hedzer/snice/commit/d4c0ed8fa5af783b664050ba88586a022be7ba4d))
+* **alert,card,testimonial:** decorative accents — alert accent appearance + solid SVG icons, card top-bar accent, testimonial pullquote mark ([ae4045e](https://github.com/Hedzer/snice/commit/ae4045e871de5b078147c9b8452f3b6dc584bee6))
+* **badge,chip:** runtime-computed text color via WCAG luminance; refine showcases ([0d287f6](https://github.com/Hedzer/snice/commit/0d287f67ea2a9ff993efc9330ef9c81828545a8d))
+* **button,card,modal:** spring easing, scale-press feedback, modal orchestrated reveal, card cursor-tilt ([c7bb195](https://github.com/Hedzer/snice/commit/c7bb195b35c7fd33cd1d9f5864910475021dae19))
+* **command-palette:** stronger scrim + blur, elevated panel surface, subtle border ([69366cb](https://github.com/Hedzer/snice/commit/69366cb3f4a549ad0b1e845c9b0be33c18d63874))
+* **framework:** add [@reconnect](https://github.com/reconnect) lifecycle hook + scroll-lock + select fix ([31b02e5](https://github.com/Hedzer/snice/commit/31b02e587cb42c415dce76af440bbb6b13240ce4))
+* **icons:** centralize Heroicons defaults in alert, banner, timeline, image, approval-flow, data-card, table-cell-image (slot/prop override preserved) ([3e06b9e](https://github.com/Hedzer/snice/commit/3e06b9efe3351f8e696fe79f240882a2d3f9388a))
+* **icons:** Heroicons sweep across kpi/table/modal/drawer/toast; add icons component docs ([e528ab9](https://github.com/Hedzer/snice/commit/e528ab976890beb5abb7ce53e96ae60a57694426))
+* **layouts:** surface tiering polish across 7 layout primitives ([452decf](https://github.com/Hedzer/snice/commit/452decff7937ced842f91e6b9eb7fe258d415c7d))
+* **link,nav:** underline draw from left (link), accent bar slide-in (nav text-mode) ([85c2d97](https://github.com/Hedzer/snice/commit/85c2d97c16b5377b0c8b5f1c58cd97f6abe94e8a))
+* **modal,drawer,button:** ux polish — scrim + blur, drop header/footer dividers, button justify-text attr ([929ad79](https://github.com/Hedzer/snice/commit/929ad79d5596e76e4a059303811a4c33ccc941af))
+* **music-player:** optional trackUrl / artistUrl on tracks become clickable links; ship Piñaita demo tracks ([e68c137](https://github.com/Hedzer/snice/commit/e68c1374cc3b8f6da98e81dd2662d2e672886379))
+* **showcase/layouts:** mini app-frame previews for all 9 layout primitives ([52438d8](https://github.com/Hedzer/snice/commit/52438d80a264275bf24b8e490daaba95bd1725f8))
+* **showcase:** nav lives inside a mini app-frame so variants read as context ([c409293](https://github.com/Hedzer/snice/commit/c409293108f7a56a950d1f83fa86ac7b4b6fd067))
+* **showcase:** swap Material Symbols for Heroicons in action-bar, input, card, list, masonry ([d1010ed](https://github.com/Hedzer/snice/commit/d1010ed89bdcc693b6eaa119ebbaf730406b3565))
+* **showcase:** swap Material Symbols for Heroicons in button demo ([b27e079](https://github.com/Hedzer/snice/commit/b27e0799fa32b11dd7945cf20f06ab2871137131))
+* **sparkline,progress-ring,empty-state:** enter animations (line draw, ring sweep, halo mount) ([205db59](https://github.com/Hedzer/snice/commit/205db597c9d5534073e2844e2b928b00f0edd88c))
+* **spinner,chip:** 5 spinner variants (arc/dots/pulse/bars/orbit); chip remove button slides in on hover ([ee43bae](https://github.com/Hedzer/snice/commit/ee43baeeae26ba3ea95db99fbc9ecfc15a80e9c6))
+* **spreadsheet:** excel/handsontable-grade visuals — drop +col/+row UI, formula bar, active ring, range fill ([6659866](https://github.com/Hedzer/snice/commit/66598663ceba600cb7691e2099a9dfe76f736b74))
+* **spreadsheet:** fill handle — drag bottom-right corner to extend selection ([c3961a1](https://github.com/Hedzer/snice/commit/c3961a13087223d2ad277db740422c82629686e9))
+* **spreadsheet:** find/replace bar — Ctrl+F/Ctrl+H, case toggle, cycle, replace all ([dbcaa42](https://github.com/Hedzer/snice/commit/dbcaa42ce28880c70ff369412f4408fbfaeb773a))
+* **spreadsheet:** frozen panes — fixedRowsTop / fixedColumnsLeft sticky offsets ([9546900](https://github.com/Hedzer/snice/commit/9546900862fcb7e6600a63bf53665e7810b91aaa))
+* **spreadsheet:** number/currency/percent/date formatting via Intl ([27dd870](https://github.com/Hedzer/snice/commit/27dd870bd956348d43fb686a919a398500869950))
+* **table:** explicit mode='local'|'remote'; rigorous filter UX rebuild + exhaustive operator/type tests ([dbef015](https://github.com/Hedzer/snice/commit/dbef0159c90aa16e390f877f37a898e3a41a0bc2))
+* **table:** MUI-style sort/filter — header click + shift, in-flow filter panel, snice icons ([d908943](https://github.com/Hedzer/snice/commit/d9089434abc2de6a1476347b9f554e7f6916954d))
+* **table:** multi-sort restored on every click; column-menu uses snice icons; search input gets prefix-icon + clearable; fullscreen Esc hint + full-viewport cover; tests for sort/pin/hide/autosize/filter-panel ([8b738b1](https://github.com/Hedzer/snice/commit/8b738b12590b58d7832ad22e8df5f90240715e4a))
+* **table:** popover-based sort/filter as inline editable query expressions; new <snice-popover> ([9360496](https://github.com/Hedzer/snice/commit/93604963cadf34e917e679c9579ff717cae702fd))
+* **tabs,menu,theme:** spring tab indicator, menu left accent bar on selected, spacing 4xl/5xl, G5 follow-up doc ([2ed15b8](https://github.com/Hedzer/snice/commit/2ed15b87f53b02510b6aa4d7528cd1daf430ef8d))
+* **terminal:** stream API (appendChunk, pipeFrom); push instead of spread ([46925db](https://github.com/Hedzer/snice/commit/46925db57b9ead4a6d67af145830a1756e289ebb))
+* **theme-editor:** expanded live preview (accent palette, sparkline, typography ramp, shadow + glow tiles) ([89e45dd](https://github.com/Hedzer/snice/commit/89e45dd19d15d88f0df2b7983fa2a6b78b18617b))
+* **theme,input,toast,drawer,slider:** refine input focus, side-anchored toast entrances, drawer spring, noise texture, print baseline, slider decimal format ([7fd0951](https://github.com/Hedzer/snice/commit/7fd0951b0577b9eb6468b410ffe071ef2822f52e))
+* **theme,table:** MUI-style polish pass — alpha overlays, meta header typography, vertical alignment fixes ([b4c506b](https://github.com/Hedzer/snice/commit/b4c506b12b9e40240e3697c1dcdfa0748a138047))
+* **theme:** 8-color accent palette for data-vis (muted business tones) ([acaf45d](https://github.com/Hedzer/snice/commit/acaf45de7a38d686aee7c24d15eed3e614f9324f))
+* **theme:** dark shadows with hairline ring, glow shadows, easing tokens, density, reduced-motion, state-aware focus rings; button outline hover tints by variant ([51ca8dc](https://github.com/Hedzer/snice/commit/51ca8dcf9422d63d827fee09a8f30c8a81516017))
+* **theme:** display font, heading scale, tracking tokens, brand split, mono preset, redesign badge ([a766eb2](https://github.com/Hedzer/snice/commit/a766eb24edd4ad308bb1c39205ff738a966aeac0))
+* **theme:** manual motion opt-out via data-motion=reduce|off (beyond prefers-reduced-motion) ([479c606](https://github.com/Hedzer/snice/commit/479c606b889177dfb25604de429ded6c16907ddf))
+
+
+### Performance Improvements
+
+* **spreadsheet:** replace per-cell rect scan in drag with elementFromPoint ([25283f4](https://github.com/Hedzer/snice/commit/25283f4da78d8ceba142a2c537b2c7eed84e8928))
+
+
+### BREAKING CHANGES
+
+* **theme:** theme tokens renamed in f7f4b67c — element-named tokens
+(--snice-color-background, --snice-z-index-modal, --snice-gradient-button) replaced
+by concept tokens (--snice-color-surface, --snice-z-overlay, --snice-gradient-convex).
+No aliases provided; consumers must update CSS variable references.
+
 # [4.40.0](https://github.com/Hedzer/snice/compare/v4.39.1...v4.40.0) (2026-04-23)
 
 
