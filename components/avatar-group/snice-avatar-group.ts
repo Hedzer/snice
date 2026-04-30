@@ -38,7 +38,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
   @property({ type: Number })
   overlap = 8;
 
-  private _useSlot = false;
+  private useSlot = false;
 
   @ready()
   init() {
@@ -53,31 +53,31 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
 
   @watch('size')
   updateChildSizes() {
-    if (this._useSlot) {
+    if (this.useSlot) {
       this.applySlottedStyles();
     }
   }
 
   private detectMode() {
     const slotted = this.querySelectorAll('snice-avatar');
-    this._useSlot = slotted.length > 0;
-    if (this._useSlot) {
+    this.useSlot = slotted.length > 0;
+    if (this.useSlot) {
       this.applySlottedStyles();
     }
   }
 
-  private _childObserver: MutationObserver | null = null;
+  private childObserver: MutationObserver | null = null;
 
   @ready()
   setupChildObserver() {
-    this._childObserver = new MutationObserver(() => this.detectMode());
-    this._childObserver.observe(this, { childList: true });
+    this.childObserver = new MutationObserver(() => this.detectMode());
+    this.childObserver.observe(this, { childList: true });
   }
 
   @dispose()
   cleanupChildObserver() {
-    this._childObserver?.disconnect();
-    this._childObserver = null;
+    this.childObserver?.disconnect();
+    this.childObserver = null;
   }
 
   private applySlottedStyles() {
@@ -175,10 +175,10 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
 
   @dispatch('overflow-click', { bubbles: true, composed: true })
   private dispatchOverflowClick() {
-    const remaining = this._useSlot
+    const remaining = this.useSlot
       ? this.querySelectorAll('snice-avatar').length - this.max
       : this.avatars.length - this.max;
-    const avatars = this._useSlot
+    const avatars = this.useSlot
       ? []
       : this.avatars.slice(this.max);
     return { remaining, avatars };
@@ -187,7 +187,7 @@ export class SniceAvatarGroup extends HTMLElement implements SniceAvatarGroupEle
   @render()
   renderContent() {
     // Slotted mode: use child <snice-avatar> elements
-    if (this._useSlot) {
+    if (this.useSlot) {
       const totalChildren = this.querySelectorAll('snice-avatar').length;
       const remaining = totalChildren - this.max;
       return html/*html*/`

@@ -163,19 +163,19 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   private breadcrumbsEl?: HTMLElement;
 
   // Plain private fields — no @property, no re-renders
-  private _drillPathState: TreemapNode[] = [];
-  private _tooltipText = '';
-  private _tooltipX = 0;
-  private _tooltipY = 0;
-  private _tooltipVisible = false;
-  private _width = 600;
-  private _height = 400;
-  private _resizeObserver: ResizeObserver | null = null;
-  private _rects: TreemapRect[] = [];
-  private _cachedData: TreemapNode = { label: '', value: 0 };
+  private drillPathState: TreemapNode[] = [];
+  private tooltipText = '';
+  private tooltipX = 0;
+  private tooltipY = 0;
+  private tooltipVisible = false;
+  private width = 600;
+  private height = 400;
+  private resizeObserver: ResizeObserver | null = null;
+  private rects: TreemapRect[] = [];
+  private cachedData: TreemapNode = { label: '', value: 0 };
 
   get drillPath(): TreemapNode[] {
-    return this._drillPathState;
+    return this.drillPathState;
   }
 
   @dispatch('treemap-click', { bubbles: true, composed: true })
@@ -195,28 +195,28 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
   @ready()
   init() {
-    this._cachedData = this.data;
-    this._resizeObserver = new ResizeObserver((entries) => {
+    this.cachedData = this.data;
+    this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const cr = entry.contentRect;
         if (cr.width > 0 && cr.height > 0) {
-          this._width = cr.width;
-          this._height = cr.height;
+          this.width = cr.width;
+          this.height = cr.height;
         } else if (cr.width > 0) {
-          this._width = cr.width;
-          this._height = cr.width * 0.667;
+          this.width = cr.width;
+          this.height = cr.width * 0.667;
         }
       }
       this.rebuildChart();
     });
-    this._resizeObserver.observe(this);
+    this.resizeObserver.observe(this);
     this.rebuildChart();
   }
 
   @watch('data')
   onDataChange() {
-    this._cachedData = this.data;
-    this._drillPathState = [];
+    this.cachedData = this.data;
+    this.drillPathState = [];
     this.rebuildChart();
   }
 
@@ -227,40 +227,40 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
   @dispose()
   cleanup() {
-    this._resizeObserver?.disconnect();
-    this._resizeObserver = null;
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
   }
 
   drillDown(node: TreemapNode): void {
     if (node.children && node.children.length > 0) {
-      this._drillPathState = [...this._drillPathState, node];
-      this.emitDrill(node, this._drillPathState);
+      this.drillPathState = [...this.drillPathState, node];
+      this.emitDrill(node, this.drillPathState);
       this.rebuildChart();
     }
   }
 
   drillUp(): void {
-    if (this._drillPathState.length > 0) {
-      this._drillPathState = this._drillPathState.slice(0, -1);
-      const current = this._drillPathState.length > 0
-        ? this._drillPathState[this._drillPathState.length - 1]
-        : this._cachedData;
-      this.emitDrill(current, this._drillPathState);
+    if (this.drillPathState.length > 0) {
+      this.drillPathState = this.drillPathState.slice(0, -1);
+      const current = this.drillPathState.length > 0
+        ? this.drillPathState[this.drillPathState.length - 1]
+        : this.cachedData;
+      this.emitDrill(current, this.drillPathState);
       this.rebuildChart();
     }
   }
 
   drillToRoot(): void {
-    this._drillPathState = [];
-    this.emitDrill(this._cachedData, []);
+    this.drillPathState = [];
+    this.emitDrill(this.cachedData, []);
     this.rebuildChart();
   }
 
   private getCurrentNode(): TreemapNode {
-    if (this._drillPathState.length > 0) {
-      return this._drillPathState[this._drillPathState.length - 1];
+    if (this.drillPathState.length > 0) {
+      return this.drillPathState[this.drillPathState.length - 1];
     }
-    return this._cachedData;
+    return this.cachedData;
   }
 
   private getColor(index: number): string {
@@ -274,7 +274,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const current = this.getCurrentNode();
     const children = current.children;
     if (!children || children.length === 0) return [];
-    return squarify(children, 0, 0, this._width, this._height, 0, 0, this.padding);
+    return squarify(children, 0, 0, this.width, this.height, 0, 0, this.padding);
   }
 
   private canFitLabel(rect: TreemapRect): boolean {
@@ -295,13 +295,13 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
   private rebuildChart() {
     if (!this.chartEl) return;
 
-    this._rects = this.computeRects();
+    this.rects = this.computeRects();
 
     let svg = '';
-    svg += `<svg class="treemap__svg" viewBox="0 0 ${this._width} ${this._height}" preserveAspectRatio="none">`;
+    svg += `<svg class="treemap__svg" viewBox="0 0 ${this.width} ${this.height}" preserveAspectRatio="none">`;
 
-    for (let i = 0; i < this._rects.length; i++) {
-      svg += this.buildRectGroup(this._rects[i], i);
+    for (let i = 0; i < this.rects.length; i++) {
+      svg += this.buildRectGroup(this.rects[i], i);
     }
 
     svg += '</svg>';
@@ -311,7 +311,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const rectEls = this.chartEl.querySelectorAll('.treemap__rect');
     rectEls.forEach((el) => {
       const index = Number((el as HTMLElement).dataset.index);
-      const rect = this._rects[index];
+      const rect = this.rects[index];
       if (!rect) return;
 
       el.addEventListener('click', (e: Event) => {
@@ -323,16 +323,16 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
       });
 
       el.addEventListener('mouseenter', () => {
-        this._tooltipText = `${rect.node.label}: ${sumValues(rect.node).toLocaleString()}`;
-        this._tooltipX = rect.x + rect.width / 2;
-        this._tooltipY = rect.y;
-        this._tooltipVisible = true;
+        this.tooltipText = `${rect.node.label}: ${sumValues(rect.node).toLocaleString()}`;
+        this.tooltipX = rect.x + rect.width / 2;
+        this.tooltipY = rect.y;
+        this.tooltipVisible = true;
         this.updateTooltipDOM();
         this.emitHover({ node: rect.node, depth: rect.depth });
       });
 
       el.addEventListener('mouseleave', () => {
-        this._tooltipVisible = false;
+        this.tooltipVisible = false;
         this.updateTooltipDOM();
         this.emitHover(null);
       });
@@ -371,16 +371,16 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const tooltip = this.tooltipEl;
     if (!tooltip) return;
 
-    if (!this._tooltipVisible) {
+    if (!this.tooltipVisible) {
       tooltip.classList.remove('treemap__tooltip--visible');
       return;
     }
 
-    const tooltipLeft = `${(this._tooltipX / this._width) * 100}%`;
-    const tooltipTop = `${(this._tooltipY / this._height) * 100}%`;
+    const tooltipLeft = `${(this.tooltipX / this.width) * 100}%`;
+    const tooltipTop = `${(this.tooltipY / this.height) * 100}%`;
     tooltip.style.left = tooltipLeft;
     tooltip.style.top = tooltipTop;
-    tooltip.textContent = this._tooltipText;
+    tooltip.textContent = this.tooltipText;
     tooltip.classList.add('treemap__tooltip--visible');
   }
 
@@ -389,7 +389,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     const el = this.breadcrumbsEl;
     if (!el) return;
 
-    if (this._drillPathState.length === 0) {
+    if (this.drillPathState.length === 0) {
       el.innerHTML = '';
       el.style.display = 'none';
       return;
@@ -398,11 +398,11 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     el.style.display = '';
     let html = '';
 
-    html += `<button class="treemap__breadcrumb" data-drill-root>${escapeHtml(this._cachedData.label || 'Root')}</button>`;
+    html += `<button class="treemap__breadcrumb" data-drill-root>${escapeHtml(this.cachedData.label || 'Root')}</button>`;
 
-    for (let i = 0; i < this._drillPathState.length; i++) {
-      const node = this._drillPathState[i];
-      const isLast = i === this._drillPathState.length - 1;
+    for (let i = 0; i < this.drillPathState.length; i++) {
+      const node = this.drillPathState[i];
+      const isLast = i === this.drillPathState.length - 1;
 
       html += '<span class="treemap__separator">/</span>';
 
@@ -424,9 +424,9 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
     el.querySelectorAll('[data-drill-index]').forEach((btn) => {
       const idx = Number((btn as HTMLElement).dataset.drillIndex);
       btn.addEventListener('click', () => {
-        const node = this._drillPathState[idx];
-        this._drillPathState = this._drillPathState.slice(0, idx + 1);
-        this.emitDrill(node, this._drillPathState);
+        const node = this.drillPathState[idx];
+        this.drillPathState = this.drillPathState.slice(0, idx + 1);
+        this.emitDrill(node, this.drillPathState);
         this.rebuildChart();
       });
     });
@@ -434,7 +434,7 @@ export class SniceTreemap extends HTMLElement implements SniceTreemapElement {
 
   @render({ once: true })
   renderContent() {
-    const dataLabel = this._cachedData?.label || 'Treemap';
+    const dataLabel = this.cachedData?.label || 'Treemap';
 
     return html/*html*/`
       <div class="treemap__breadcrumbs" part="breadcrumbs" style="display: none"></div>

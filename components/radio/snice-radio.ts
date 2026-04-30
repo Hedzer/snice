@@ -5,7 +5,7 @@ import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.t
 @element('snice-radio', { formAssociated: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
   internals!: ElementInternals;
-  private _isUpdatingGroup = false;
+  private isUpdatingGroup = false;
 
   constructor() {
     super();
@@ -189,7 +189,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     }
 
     // Skip if we're in the middle of updating the group (prevent infinite loops)
-    if (this._isUpdatingGroup) {
+    if (this.isUpdatingGroup) {
       return;
     }
 
@@ -260,9 +260,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     this.findGroupRadios().forEach(radio => {
       if (radio !== exceptElement && radio.checked) {
         // Set flag to prevent recursive watch handler calls
-        radio._isUpdatingGroup = true;
+        radio.isUpdatingGroup = true;
         radio.checked = false;
-        radio._isUpdatingGroup = false;
+        radio.isUpdatingGroup = false;
       }
     });
   }

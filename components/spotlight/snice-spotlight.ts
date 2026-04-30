@@ -17,11 +17,11 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
    * Portal div appended to document.body. All overlay UI lives here
    * to escape ancestor transforms/filters/contain that break position:fixed.
    */
-  private _portal: HTMLDivElement | null = null;
-  private _cutoutEl: HTMLElement | null = null;
-  private _popoverEl: HTMLElement | null = null;
-  private _scrollHandler: (() => void) | null = null;
-  private _resizeHandler: (() => void) | null = null;
+  private portal: HTMLDivElement | null = null;
+  private cutoutEl: HTMLElement | null = null;
+  private popoverEl: HTMLElement | null = null;
+  private scrollHandler: (() => void) | null = null;
+  private resizeHandler: (() => void) | null = null;
 
   @dispatch('spotlight-start', { bubbles: true, composed: true })
   private emitStart() { return undefined; }
@@ -41,15 +41,15 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
 
   @dispose()
   cleanup() {
-    this._removePortal();
+    this.removePortal();
   }
 
   /**
    * Create the portal div on document.body with all overlay UI.
    * This avoids moving the component itself (which triggers @dispose).
    */
-  private _createPortal() {
-    if (this._portal) return;
+  private createPortal() {
+    if (this.portal) return;
 
     const portal = document.createElement('div');
     portal.setAttribute('data-snice-spotlight-portal', '');
@@ -91,51 +91,51 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     const backdrop = portal.querySelector('.backdrop') as HTMLElement;
     backdrop?.addEventListener('click', () => this.skip());
 
-    this._portal = portal;
-    this._cutoutEl = portal.querySelector('.cutout');
-    this._popoverEl = portal.querySelector('.popover');
+    this.portal = portal;
+    this.cutoutEl = portal.querySelector('.cutout');
+    this.popoverEl = portal.querySelector('.popover');
 
     document.body.appendChild(portal);
 
     // Listen for scroll and resize to reposition
-    this._scrollHandler = () => this._updatePosition();
-    this._resizeHandler = () => this._updatePosition();
-    window.addEventListener('scroll', this._scrollHandler, true);
-    window.addEventListener('resize', this._resizeHandler);
+    this.scrollHandler = () => this.updatePosition();
+    this.resizeHandler = () => this.updatePosition();
+    window.addEventListener('scroll', this.scrollHandler, true);
+    window.addEventListener('resize', this.resizeHandler);
   }
 
   /** Remove portal from document.body and clean up listeners. */
-  private _removePortal() {
-    if (this._scrollHandler) {
-      window.removeEventListener('scroll', this._scrollHandler, true);
-      this._scrollHandler = null;
+  private removePortal() {
+    if (this.scrollHandler) {
+      window.removeEventListener('scroll', this.scrollHandler, true);
+      this.scrollHandler = null;
     }
-    if (this._resizeHandler) {
-      window.removeEventListener('resize', this._resizeHandler);
-      this._resizeHandler = null;
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
     }
-    if (this._portal) {
-      this._portal.remove();
-      this._portal = null;
-      this._cutoutEl = null;
-      this._popoverEl = null;
+    if (this.portal) {
+      this.portal.remove();
+      this.portal = null;
+      this.cutoutEl = null;
+      this.popoverEl = null;
     }
   }
 
   /** Update the portal HTML to reflect current step state. */
-  private _updatePortalContent() {
-    if (!this._portal) return;
+  private updatePortalContent() {
+    if (!this.portal) return;
 
     const step = this.currentIndex >= 0 ? this.steps[this.currentIndex] : null;
     const isLast = this.currentIndex === this.steps.length - 1;
     const isFirst = this.currentIndex === 0;
 
     // Update popover content
-    const titleEl = this._portal.querySelector('.popover-title') as HTMLElement;
-    const descEl = this._portal.querySelector('.popover-description') as HTMLElement;
-    const indicatorEl = this._portal.querySelector('.step-indicator') as HTMLElement;
-    const actionsEl = this._portal.querySelector('.popover-actions') as HTMLElement;
-    const popoverEl = this._popoverEl;
+    const titleEl = this.portal.querySelector('.popover-title') as HTMLElement;
+    const descEl = this.portal.querySelector('.popover-description') as HTMLElement;
+    const indicatorEl = this.portal.querySelector('.step-indicator') as HTMLElement;
+    const actionsEl = this.portal.querySelector('.popover-actions') as HTMLElement;
+    const popoverEl = this.popoverEl;
 
     if (!step || !popoverEl) return;
 
@@ -173,9 +173,9 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   }
 
   /** Position the cutout and popover over the current target. */
-  private _updatePosition() {
+  private updatePosition() {
     if (this.currentIndex < 0 || !this.steps[this.currentIndex]) return;
-    if (!this._cutoutEl || !this._popoverEl) return;
+    if (!this.cutoutEl || !this.popoverEl) return;
 
     const step = this.steps[this.currentIndex];
     const target = document.querySelector(step.target);
@@ -194,18 +194,18 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     const padding = 8;
 
     // Position cutout
-    this._cutoutEl.style.top = `${rect.top - padding}px`;
-    this._cutoutEl.style.left = `${rect.left - padding}px`;
-    this._cutoutEl.style.width = `${rect.width + padding * 2}px`;
-    this._cutoutEl.style.height = `${rect.height + padding * 2}px`;
+    this.cutoutEl.style.top = `${rect.top - padding}px`;
+    this.cutoutEl.style.left = `${rect.left - padding}px`;
+    this.cutoutEl.style.width = `${rect.width + padding * 2}px`;
+    this.cutoutEl.style.height = `${rect.height + padding * 2}px`;
 
     // Position popover
     const position = step.position || 'auto';
-    this._positionPopover(rect, position, padding);
+    this.positionPopover(rect, position, padding);
   }
 
-  private _positionPopover(targetRect: DOMRect, position: string, padding: number) {
-    const popover = this._popoverEl;
+  private positionPopover(targetRect: DOMRect, position: string, padding: number) {
+    const popover = this.popoverEl;
     if (!popover) return;
 
     const gap = 12;
@@ -242,7 +242,7 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   }
 
   /** Scroll target into view, then position once scroll settles. */
-  private _scrollAndPosition() {
+  private scrollAndPosition() {
     if (this.currentIndex < 0 || !this.steps[this.currentIndex]) return;
 
     const step = this.steps[this.currentIndex];
@@ -251,26 +251,26 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
       // Use instant scroll so getBoundingClientRect is accurate immediately
       target.scrollIntoView?.({ behavior: 'instant', block: 'center' });
     }
-    // _updatePosition emits spotlight-target-missing if the target is gone
-    this._updatePosition();
+    // updatePosition emits spotlight-target-missing if the target is gone
+    this.updatePosition();
   }
 
   start() {
     if (this.steps.length === 0) return;
-    this._createPortal();
+    this.createPortal();
     this.active = true;
     this.currentIndex = 0;
-    this._updatePortalContent();
+    this.updatePortalContent();
     this.emitStart();
-    this._scrollAndPosition();
+    this.scrollAndPosition();
   }
 
   next() {
     if (this.currentIndex < this.steps.length - 1) {
       this.currentIndex++;
-      this._updatePortalContent();
+      this.updatePortalContent();
       this.emitStep();
-      this._scrollAndPosition();
+      this.scrollAndPosition();
     } else {
       this.end();
     }
@@ -279,9 +279,9 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
   prev() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
-      this._updatePortalContent();
+      this.updatePortalContent();
       this.emitStep();
-      this._scrollAndPosition();
+      this.scrollAndPosition();
     }
   }
 
@@ -289,19 +289,19 @@ export class SniceSpotlight extends HTMLElement implements SniceSpotlightElement
     if (index >= 0 && index < this.steps.length) {
       this.currentIndex = index;
       if (!this.active) {
-        this._createPortal();
+        this.createPortal();
         this.active = true;
       }
-      this._updatePortalContent();
+      this.updatePortalContent();
       this.emitStep();
-      this._scrollAndPosition();
+      this.scrollAndPosition();
     }
   }
 
   end() {
     this.active = false;
     this.currentIndex = -1;
-    this._removePortal();
+    this.removePortal();
     this.emitEnd();
   }
 

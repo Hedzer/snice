@@ -57,8 +57,8 @@ class DrawPoint implements Point {
 }
 
 class DrawBrush {
-  private _isEnabled: boolean;
-  private _hasMoved: boolean;
+  private enabled: boolean;
+  private hasMoved: boolean;
   radius: number;
   pointer: DrawPoint;
   brush: DrawPoint;
@@ -68,24 +68,24 @@ class DrawBrush {
   constructor(options: { radius?: number; enabled?: boolean; initialPoint?: Point } = {}) {
     const initialPoint = options.initialPoint || { x: 0, y: 0 };
     this.radius = options.radius || 30;
-    this._isEnabled = options.enabled === false ? false : true;
+    this.enabled = options.enabled === false ? false : true;
     this.pointer = new DrawPoint(initialPoint.x, initialPoint.y);
     this.brush = new DrawPoint(initialPoint.x, initialPoint.y);
     this.angle = 0;
     this.distance = 0;
-    this._hasMoved = false;
+    this.hasMoved = false;
   }
 
   enable(): void {
-    this._isEnabled = true;
+    this.enabled = true;
   }
 
   disable(): void {
-    this._isEnabled = false;
+    this.enabled = false;
   }
 
   isEnabled(): boolean {
-    return this._isEnabled;
+    return this.enabled;
   }
 
   setRadius(radius: number): void {
@@ -121,11 +121,11 @@ class DrawBrush {
   }
 
   brushHasMoved(): boolean {
-    return this._hasMoved;
+    return this.hasMoved;
   }
 
   update(newPointerPoint: Point, options: { both?: boolean; friction?: number } = {}): boolean {
-    this._hasMoved = false;
+    this.hasMoved = false;
     if (this.pointer.equalsTo(newPointerPoint) && !options.both && !options.friction) {
       return false;
     }
@@ -133,12 +133,12 @@ class DrawBrush {
     this.pointer.update(newPointerPoint);
 
     if (options.both) {
-      this._hasMoved = true;
+      this.hasMoved = true;
       this.brush.update(newPointerPoint);
       return true;
     }
 
-    if (this._isEnabled) {
+    if (this.enabled) {
       this.distance = this.pointer.getDistanceTo(this.brush);
       this.angle = this.pointer.getAngleTo(this.brush);
 
@@ -150,13 +150,13 @@ class DrawBrush {
 
       if (isOutside) {
         this.brush.moveByAngle(this.angle, this.distance - this.radius, friction);
-        this._hasMoved = true;
+        this.hasMoved = true;
       }
     } else {
       this.distance = 0;
       this.angle = 0;
       this.brush.update(newPointerPoint);
-      this._hasMoved = true;
+      this.hasMoved = true;
     }
 
     return true;
@@ -220,7 +220,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   private currentStroke: Point[] = [];
   private strokes: DrawStroke[] = [];
   private undoneStrokes: DrawStroke[] = [];
-  private _commandQueue: Array<[string, any[]]> = [];
+  private commandQueue: Array<[string, any[]]> = [];
   private drawBrush: DrawBrush;
   private lastPoint: Point | null = null;
   private rafId: number | null = null;
@@ -307,7 +307,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     this.ctx.fillRect(0, 0, this.width, this.height);
 
     // Flush any commands queued before canvas was ready
-    this._flushQueue();
+    this.flushQueue();
   }
 
   @on('pointerdown', { target: 'canvas' })
@@ -487,9 +487,9 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
     });
   }
 
-  private _flushQueue() {
-    const queue = this._commandQueue;
-    this._commandQueue = [];
+  private flushQueue() {
+    const queue = this.commandQueue;
+    this.commandQueue = [];
     for (const [method, args] of queue) {
       (this as any)[method](...args);
     }
@@ -529,7 +529,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   clear(): void {
-    if (!this.ctx) { this._commandQueue.push(['clear', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['clear', []]); return; }
 
     this.strokes = [];
     this.undoneStrokes = [];
@@ -540,7 +540,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   undo(): void {
-    if (!this.ctx) { this._commandQueue.push(['undo', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['undo', []]); return; }
     if (this.strokes.length === 0) return;
 
     const stroke = this.strokes.pop();
@@ -553,7 +553,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   redo(): void {
-    if (!this.ctx) { this._commandQueue.push(['redo', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['redo', []]); return; }
     if (this.undoneStrokes.length === 0) return;
 
     const stroke = this.undoneStrokes.pop();
@@ -615,7 +615,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   setStrokes(strokes: DrawStroke[]): void {
-    if (!this.ctx) { this._commandQueue.push(['setStrokes', [strokes]]); return; }
+    if (!this.ctx) { this.commandQueue.push(['setStrokes', [strokes]]); return; }
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();

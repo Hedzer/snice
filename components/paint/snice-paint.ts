@@ -30,35 +30,35 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   @property({ type: Boolean })
   disabled: boolean = false;
 
-  private _colors: string[] = DEFAULT_COLORS;
-  private _customSelectColors: string[] = [];
-  private _customSelectUsed: Set<number> = new Set();
+  private colorsList: string[] = DEFAULT_COLORS;
+  private customSelectColors: string[] = [];
+  private customSelectUsed: Set<number> = new Set();
   @property({ attribute: false })
-  private _tool: 'pen' | 'eraser' = 'pen';
+  private tool: 'pen' | 'eraser' = 'pen';
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private isDrawing: boolean = false;
   private currentStroke: Point[] = [];
   private strokes: PaintStroke[] = [];
   private undoneStrokes: PaintStroke[] = [];
-  private _commandQueue: Array<[string, any[]]> = [];
+  private commandQueue: Array<[string, any[]]> = [];
   private lastPoint: Point | null = null;
   private canvasWidth: number = 0;
   private canvasHeight: number = 0;
 
   get colors(): string[] {
-    return this._colors;
+    return this.colorsList;
   }
 
   set colors(val: string[] | string) {
     if (typeof val === 'string') {
       try {
-        this._colors = JSON.parse(val);
+        this.colorsList = JSON.parse(val);
       } catch {
-        this._colors = DEFAULT_COLORS;
+        this.colorsList = DEFAULT_COLORS;
       }
     } else {
-      this._colors = val;
+      this.colorsList = val;
     }
   }
 
@@ -73,7 +73,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     const colorsAttr = this.getAttribute('colors');
     if (colorsAttr) {
       try {
-        this._colors = JSON.parse(colorsAttr);
+        this.colors = JSON.parse(colorsAttr);
       } catch { /* keep defaults */ }
     }
 
@@ -106,17 +106,17 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
               ${ctrls.has('colors') ? html`
                 <span class="paint-toolbar-label">Color</span>
                 <div class="paint-swatches">
-                  ${this._colors.map(c => html`
+                  ${this.colors.map(c => html`
                     <span
-                      class="paint-swatch ${c === this.color && this._tool === 'pen' ? 'active' : ''}"
+                      class="paint-swatch ${c === this.color && this.tool === 'pen' ? 'active' : ''}"
                       style="--c:${c}"
                       @click=${() => this.selectColor(c)}
                     ></span>
                   `)}
                   ${Array.from({ length: this.colorSelects }, (_, i) => {
-                    const c = this._customSelectColors[i] || '#cccccc';
-                    const used = this._customSelectUsed.has(i);
-                    const active = used && c === this.color && this._tool === 'pen';
+                    const c = this.customSelectColors[i] || '#cccccc';
+                    const used = this.customSelectUsed.has(i);
+                    const active = used && c === this.color && this.tool === 'pen';
                     return html`
                       <input
                         type="color"
@@ -149,7 +149,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
             </slot>
             ${ctrls.has('eraser') ? html`
               <button
-                class="paint-btn ${this._tool === 'eraser' ? 'active' : ''}"
+                class="paint-btn ${this.tool === 'eraser' ? 'active' : ''}"
                 @click=${() => this.toggleEraser()}
                 title="Eraser"
               >
@@ -179,7 +179,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
           </div>
         ` : ''}
         <div class="paint-canvas-wrap" part="canvas-wrap">
-          <canvas class="paint-canvas tool-${this._tool}" part="canvas" role="img" aria-label="Paint canvas"></canvas>
+          <canvas class="paint-canvas tool-${this.tool}" part="canvas" role="img" aria-label="Paint canvas"></canvas>
         </div>
       </div>
     `;
@@ -211,7 +211,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     // Flush any commands queued before canvas was ready
-    this._flushQueue();
+    this.flushQueue();
   }
 
   @on('pointerdown', { target: '.paint-canvas' })
@@ -251,7 +251,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     if (this.currentStroke.length > 0) {
       const stroke: PaintStroke = {
         id: `stroke-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        tool: this._tool,
+        tool: this.tool,
         color: this.color,
         width: this.strokeWidth,
         points: [...this.currentStroke],
@@ -297,7 +297,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     if (this.currentStroke.length > 1) {
       this.ctx.lineJoin = 'round';
       this.ctx.lineCap = 'round';
-      this.ctx.strokeStyle = this._tool === 'eraser' ? this.backgroundColor : this.color;
+      this.ctx.strokeStyle = this.tool === 'eraser' ? this.backgroundColor : this.color;
       this.ctx.lineWidth = this.strokeWidth * 2;
 
       let p1 = this.currentStroke[0];
@@ -327,9 +327,9 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
     this.strokes.forEach(s => this.drawStroke(s));
   }
 
-  private _flushQueue() {
-    const queue = this._commandQueue;
-    this._commandQueue = [];
+  private flushQueue() {
+    const queue = this.commandQueue;
+    this.commandQueue = [];
     for (const [method, args] of queue) {
       (this as any)[method](...args);
     }
@@ -368,32 +368,32 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   private handleCustomColorInput(index: number, color: string) {
-    this._customSelectColors[index] = color;
-    this._customSelectUsed.add(index);
+    this.customSelectColors[index] = color;
+    this.customSelectUsed.add(index);
     this.color = color;
-    this._tool = 'pen';
+    this.tool = 'pen';
   }
 
   @dispatch('color-select', { bubbles: true, composed: true })
   private handleCustomColorChange(index: number, color: string) {
-    this._customSelectColors[index] = color;
-    this._customSelectUsed.add(index);
+    this.customSelectColors[index] = color;
+    this.customSelectUsed.add(index);
     this.color = color;
-    this._tool = 'pen';
+    this.tool = 'pen';
     return { color, index };
   }
 
   private selectColor(c: string) {
     this.color = c;
-    this._tool = 'pen';
+    this.tool = 'pen';
   }
 
   private toggleEraser() {
-    this._tool = this._tool === 'eraser' ? 'pen' : 'eraser';
+    this.tool = this.tool === 'eraser' ? 'pen' : 'eraser';
   }
 
   undo(): void {
-    if (!this.ctx) { this._commandQueue.push(['undo', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['undo', []]); return; }
     if (this.strokes.length === 0) return;
     const stroke = this.strokes.pop();
     if (stroke) {
@@ -404,7 +404,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   redo(): void {
-    if (!this.ctx) { this._commandQueue.push(['redo', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['redo', []]); return; }
     if (this.undoneStrokes.length === 0) return;
     const stroke = this.undoneStrokes.pop();
     if (stroke) {
@@ -415,7 +415,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   clear(): void {
-    if (!this.ctx) { this._commandQueue.push(['clear', []]); return; }
+    if (!this.ctx) { this.commandQueue.push(['clear', []]); return; }
     this.strokes = [];
     this.undoneStrokes = [];
     this.ctx.fillStyle = this.backgroundColor;
@@ -455,7 +455,7 @@ export class SnicePaint extends HTMLElement implements SnicePaintElement {
   }
 
   setStrokes(strokes: PaintStroke[]): void {
-    if (!this.ctx) { this._commandQueue.push(['setStrokes', [strokes]]); return; }
+    if (!this.ctx) { this.commandQueue.push(['setStrokes', [strokes]]); return; }
     this.strokes = [...strokes];
     this.undoneStrokes = [];
     this.redraw();

@@ -7,11 +7,11 @@ import '../spinner/snice-spinner';
 
 @element('snice-tree-item')
 export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
-  private _node: TreeNode = { id: '', label: '' };
-  private _level = 0;
+  private nodeData: TreeNode = { id: '', label: '' };
+  private levelDepth = 0;
 
   @property({ type: Number })
-  private _version = 0;
+  private version = 0;
 
   @property({ type: Boolean })
   expanded = false;
@@ -35,25 +35,25 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   indeterminate = false;
 
   get node(): TreeNode {
-    return this._node;
+    return this.nodeData;
   }
 
   get level(): number {
-    return this._level;
+    return this.levelDepth;
   }
 
   get hasChildren(): boolean {
-    return !!(this._node.children && this._node.children.length > 0) || !!this._node.lazy;
+    return !!(this.nodeData.children && this.nodeData.children.length > 0) || !!this.nodeData.lazy;
   }
 
-  private _posInSet = 1;
-  private _setSize = 1;
+  private posInSet = 1;
+  private setSize = 1;
 
   setNode(node: TreeNode, level: number, posInSet: number = 1, setSize: number = 1) {
-    this._node = node;
-    this._level = level;
-    this._posInSet = posInSet;
-    this._setSize = setSize;
+    this.nodeData = node;
+    this.levelDepth = level;
+    this.posInSet = posInSet;
+    this.setSize = setSize;
 
     // Sync internal state
     if (node.expanded !== undefined) {
@@ -233,10 +233,10 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
       content.setAttribute('aria-selected', this.selected.toString());
       content.setAttribute('aria-disabled', (this.node.disabled || false).toString());
       content.setAttribute('aria-busy', this.loading.toString());
-      // Level is 1-indexed for ARIA; internal _level starts at 0.
-      content.setAttribute('aria-level', String(this._level + 1));
-      content.setAttribute('aria-setsize', String(this._setSize));
-      content.setAttribute('aria-posinset', String(this._posInSet));
+      // Level is 1-indexed for ARIA; internal level starts at 0.
+      content.setAttribute('aria-level', String(this.level + 1));
+      content.setAttribute('aria-setsize', String(this.setSize));
+      content.setAttribute('aria-posinset', String(this.posInSet));
 
       if (this.hasChildren) {
         content.setAttribute('aria-expanded', this.expanded.toString());

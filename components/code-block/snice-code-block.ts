@@ -77,7 +77,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   theme: '' | 'dark' | 'light' = '';
 
   public highlighter?: HighlighterFunction;
-  private _formatter?: FormatterFunction;
+  private formatter?: FormatterFunction;
 
   private copied = false;
   private highlightedCode = '';
@@ -286,7 +286,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
   }
 
   setFormatter(formatter: FormatterFunction) {
-    this._formatter = formatter;
+    this.formatter = formatter;
   }
 
   setGrammar(grammar: GrammarDefinition) {
@@ -341,7 +341,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
     const version = ++this.highlightVersion;
 
     // Resolve formatter: imperative setFormatter() wins, then grammar-based
-    let formatFn = this._formatter;
+    let formatFn = this.formatter;
     if (!formatFn && this.format) {
       const grammar = await this.resolveGrammar();
       if (version !== this.highlightVersion) return;

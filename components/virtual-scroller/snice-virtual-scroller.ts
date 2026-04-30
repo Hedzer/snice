@@ -17,7 +17,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   estimatedItemHeight = 50;
 
   @property({ attribute: false })
-  renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement = (item, _index) => {
+  renderItem: (item: VirtualScrollerItem, index: number) => string | HTMLElement = (item, index) => {
     // Default renderer escapes data so it cannot inject markup. Callers that
     // need HTML should provide their own renderItem and escape appropriately.
     const el = document.createElement('div');
@@ -29,16 +29,16 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   private scrollerElement!: HTMLElement;
 
   // Cached values to avoid repeated JSON.parse from attribute getter
-  private _cachedItems: VirtualScrollerItem[] = [];
-  private _cachedRenderItem: ((item: VirtualScrollerItem, index: number) => string | HTMLElement) | null = null;
+  private cachedItems: VirtualScrollerItem[] = [];
+  private cachedRenderItem: ((item: VirtualScrollerItem, index: number) => string | HTMLElement) | null = null;
 
   private visibleStart = 0;
   private visibleEnd = 0;
-  private _scrollTop = 0;
+  private cachedScrollTop = 0;
 
   // Triggers re-render on scroll
   @property({ type: Number, attribute: false })
-  private _scrollTick = 0;
+  private scrollTick = 0;
 
   @styles()
   private styles() {
@@ -48,37 +48,37 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
   @ready()
   initialize() {
     // Cache initial values if already set
-    if (!this._cachedRenderItem) {
-      this._cachedRenderItem = this.renderItem;
+    if (!this.cachedRenderItem) {
+      this.cachedRenderItem = this.renderItem;
     }
     this.updateVisibleRange();
   }
 
   @watch('items')
-  onItemsChange(_old: any, newItems: VirtualScrollerItem[]) {
-    this._cachedItems = newItems || [];
+  onItemsChange(old: any, newItems: VirtualScrollerItem[]) {
+    this.cachedItems = newItems || [];
   }
 
   @watch('renderItem')
-  onRenderItemChange(_old: any, newFn: any) {
+  onRenderItemChange(old: any, newFn: any) {
     if (typeof newFn === 'function') {
-      this._cachedRenderItem = newFn;
+      this.cachedRenderItem = newFn;
     }
   }
 
   scrollToIndex(index: number): void {
-    if (index < 0 || index >= this._cachedItems.length) return;
+    if (index < 0 || index >= this.cachedItems.length) return;
 
     const offset = index * this.itemHeight;
-    this._scrollTop = offset;
+    this.cachedScrollTop = offset;
     if (this.scrollerElement) {
       this.scrollerElement.scrollTop = offset;
     }
-    this._scrollTick++;
+    this.scrollTick++;
   }
 
   scrollToItem(id: string | number): void {
-    const index = this._cachedItems.findIndex(item => item.id === id);
+    const index = this.cachedItems.findIndex(item => item.id === id);
     if (index !== -1) {
       this.scrollToIndex(index);
     }
@@ -86,7 +86,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   refresh(): void {
     this.updateVisibleRange();
-    this._scrollTick++;
+    this.scrollTick++;
   }
 
   getVisibleRange(): { start: number; end: number } {
@@ -98,9 +98,9 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   private handleScroll = () => {
     if (this.scrollerElement) {
-      this._scrollTop = this.scrollerElement.scrollTop;
+      this.cachedScrollTop = this.scrollerElement.scrollTop;
       this.updateVisibleRange();
-      this._scrollTick++;
+      this.scrollTick++;
     }
   };
 
@@ -109,7 +109,7 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
     const scroller = this.scrollerElement;
     if (!scroller) return;
     const containerHeight = scroller.clientHeight || 400;
-    const totalHeight = this._cachedItems.length * this.itemHeight;
+    const totalHeight = this.cachedItems.length * this.itemHeight;
     let next: number | null = null;
     if (e.key === 'PageDown') {
       next = Math.min(totalHeight, scroller.scrollTop + containerHeight);
@@ -132,21 +132,21 @@ export class SniceVirtualScroller extends HTMLElement implements SniceVirtualScr
 
   private updateVisibleRange() {
     const containerHeight = this.offsetHeight || 400;
-    const scrollTop = this._scrollTop;
+    const scrollTop = this.cachedScrollTop;
 
     const start = Math.floor(scrollTop / this.itemHeight);
     const visibleCount = Math.ceil(containerHeight / this.itemHeight);
 
     this.visibleStart = Math.max(0, start - this.bufferSize);
-    this.visibleEnd = Math.min(this._cachedItems.length, start + visibleCount + this.bufferSize);
+    this.visibleEnd = Math.min(this.cachedItems.length, start + visibleCount + this.bufferSize);
   }
 
   @render()
   template() {
     this.updateVisibleRange();
 
-    const items = this._cachedItems;
-    const renderFn = this._cachedRenderItem;
+    const items = this.cachedItems;
+    const renderFn = this.cachedRenderItem;
     const totalHeight = items.length * this.itemHeight;
     const visibleItems = items.slice(this.visibleStart, this.visibleEnd);
 
