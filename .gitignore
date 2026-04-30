@@ -1,3 +1,6 @@
+# Local Claude Code runtime state (loop scheduler lock)
+.claude/scheduled_tasks.lock
+
 # Dependencies
 node_modules/
 npm-debug.log*
