@@ -106,7 +106,9 @@ export function context(options: ContextOptions = {}) {
  * Setup context handler for an element instance
  * Called automatically during element connection
  */
-export function setupContextHandler(element: HTMLElement) {
+// Accepts an HTMLElement OR a controller instance — both are plain objects
+// that may carry CONTEXT_HANDLER and a constructor with CONTEXT_HANDLERS.
+export function setupContextHandler(element: any) {
   const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
@@ -209,7 +211,7 @@ export function setupContextHandler(element: HTMLElement) {
  * Cleanup context handler for an element instance
  * Called automatically during element disconnection
  */
-export function cleanupContextHandler(element: HTMLElement) {
+export function cleanupContextHandler(element: any) {
   const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;

@@ -33,7 +33,7 @@
 ## Communication
 - `@request(channel, options?)` - Async generator request pattern
 - `@respond(channel, options?)` - Handle requests from `@request`
-- `@context(options?)` - Receive router navigation context updates. Works on **methods** (called with `(ctx: Context)` on every push) AND **fields** (overwritten with the live `Context` on every push). Both forms also fire **synchronously at register time** so the field/method sees current context BEFORE the first render microtask flushes — no cold-start `undefined`.
+- `@context(options?)` - Receive router navigation context updates. Works on **methods** (called with `(ctx: Context)` on every push) AND **fields** (overwritten with the live `Context` on every push). Works on **elements AND controllers** — the controller mirrors the element's CONTEXT_HANDLER on attach. Both forms also fire **synchronously at register time** so the field/method sees current context BEFORE the first render microtask flushes — no cold-start `undefined`.
 
 ```ts
 @context() ctx!: Context;            // field: read this.ctx in render()
