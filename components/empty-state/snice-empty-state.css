@@ -194,6 +194,6 @@
   font-size: var(--snice-font-size-md, 1rem);
 }
 
-::slotted(*) {
+.empty-state__extra ::slotted(*) {
   margin-top: var(--snice-spacing-md, 1rem);
 }

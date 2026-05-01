@@ -58,7 +58,7 @@ export class SniceEmptyState extends HTMLElement implements SniceEmptyStateEleme
             </when>
           </case>
         </if>
-        <slot></slot>
+        <div class="empty-state__extra"><slot></slot></div>
       </div>
     `;
   }
