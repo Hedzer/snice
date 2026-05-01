@@ -93,6 +93,7 @@ export const CONTEXT_OPTIONS = getSymbol('context-options');
 export const CONTEXT_TIMER = getSymbol('context-timer');
 export const CONTEXT_CALLED = getSymbol('context-called');
 export const CONTEXT_UPDATE = getSymbol('context-update');
+export const WRAPPED_CONTEXT_HANDLERS = getSymbol('wrapped-context-handlers');
 
 // Registration de-dup sets on the constructor — replace previous `__*Methods`
 // expando strings that violated the no-double-underscore rule.

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Router, context, Context } from '../src';
-import { getSymbol, CONTEXT_UPDATE } from '../src/symbols';
+import { getSymbol, CONTEXT_UPDATE, WRAPPED_CONTEXT_HANDLERS } from '../src/symbols';
 
 const NAVIGATION_CONTEXT_INSTANCE = getSymbol('navigation-context-instance');
 const CONTEXT_TIMER = getSymbol('context-timer');
@@ -161,16 +161,17 @@ describe('@context memory leak tests', () => {
 
     const pageElement = document.querySelector('wrapped-cleanup-page') as any;
 
-    // Wrapped method should exist
-    expect(pageElement.__wrapped_handleContext).toBeDefined();
-    expect(typeof pageElement.__wrapped_handleContext).toBe('function');
+    // Wrapped handlers live in a Symbol-keyed Map on the element.
+    const wrappedMap = pageElement[WRAPPED_CONTEXT_HANDLERS] as Map<string, Function>;
+    expect(wrappedMap).toBeDefined();
+    expect(wrappedMap.get('handleContext')).toBeTypeOf('function');
 
     // Remove element
     pageElement.remove();
     await waitFor(50);
 
-    // Wrapped method should be cleaned up
-    expect(pageElement.__wrapped_handleContext).toBeUndefined();
+    // Wrapped Map should be cleaned up
+    expect(pageElement[WRAPPED_CONTEXT_HANDLERS]).toBeUndefined();
   });
 
   it('should handle multiple context handlers on same element without leaks', async () => {
@@ -213,10 +214,11 @@ describe('@context memory leak tests', () => {
       return;
     }
 
-    // All wrapped methods should exist
-    expect(pageElement.__wrapped_handleContext1).toBeDefined();
-    expect(pageElement.__wrapped_handleContext2).toBeDefined();
-    expect(pageElement.__wrapped_handleContext3).toBeDefined();
+    // All wrapped handlers should be registered in the per-element Map.
+    const wrappedMap = pageElement[WRAPPED_CONTEXT_HANDLERS] as Map<string, Function>;
+    expect(wrappedMap?.get('handleContext1')).toBeTypeOf('function');
+    expect(wrappedMap?.get('handleContext2')).toBeTypeOf('function');
+    expect(wrappedMap?.get('handleContext3')).toBeTypeOf('function');
 
     // Note: Not testing if handlers were called - that's tested elsewhere
     // We're focused on cleanup behavior
