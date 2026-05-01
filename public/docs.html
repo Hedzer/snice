@@ -927,37 +927,39 @@ class ReactiveComponent extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-context-decorator">@context() Decorator</h3>
-<p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, property, render, html } from 'snice';
-import type { Context, Placard } from 'snice';
+<p>Receive router context updates. Works on <strong>methods</strong> (called with the live <code>Context</code> on every change) AND <strong>fields</strong> (overwritten with the live <code>Context</code> on every change). Both forms also fire <strong>synchronously at register time</strong>, so the field/method sees the current context BEFORE the first render microtask flushes — no cold-start <code>undefined</code> flicker.</p>
+<p><strong>Field form</strong> (preferred when you just want to read context inside <code>render()</code>):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, render, html } from 'snice';
+import type { Context } from 'snice';
 
 @element('nav-bar')
 class NavBar extends HTMLElement {
-  @property({ type: Array })
-  placards: Placard[] = [];
+  @context() ctx!: Context;
 
-  @property()
-  currentRoute = '';
+  @render()
+  renderContent() {
+    const { placards, route } = this.ctx.navigation;
+    return html`
+      &lt;nav&gt;
+        ${placards.filter(p =&gt; p.show !== false).map(p =&gt; html`
+          &lt;a href=&quot;${p.href || ''}&quot; class=&quot;${route === p.name ? 'active' : ''}&quot;&gt;
+            ${p.icon} ${p.title}
+          &lt;/a&gt;
+        `)}
+      &lt;/nav&gt;
+    `;
+  }
+}</snice-code-block>
+<p><strong>Method form</strong> (use when you want to react to each push with side-effects, debounce/throttle, or sync into other reactive properties):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('nav-bar')
+class NavBar extends HTMLElement {
+  @property({ type: Array }) placards: Placard[] = [];
+  @property() currentRoute = '';
 
   @context()
   onContextUpdate(ctx: Context) {
     this.placards = ctx.navigation.placards;
     this.currentRoute = ctx.navigation.route;
-  }
-
-  @render()
-  renderContent() {
-    return html`
-      &lt;nav&gt;
-        ${this.placards
-          .filter(p =&gt; p.show !== false)
-          .map(p =&gt; html`
-            &lt;a href=&quot;${p.href || ''}&quot; class=&quot;${this.currentRoute === p.name ? 'active' : ''}&quot;&gt;
-              ${p.icon} ${p.title}
-            &lt;/a&gt;
-          `)}
-      &lt;/nav&gt;
-    `;
   }
 }</snice-code-block>
 <p><strong>Context Options:</strong></p>
@@ -1086,23 +1088,18 @@ class HomePage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-page-with-context">Page with Context</h3>
-<p>The <code>@context()</code> decorator is a <strong>method decorator</strong> that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.</p>
+<p>The <code>@context()</code> decorator works on <strong>methods</strong> (called with the live Context on each push) AND <strong>fields</strong> (overwritten with the live Context on each push). Both forms also fire <strong>synchronously at register time</strong>, so the field/method sees the current context BEFORE the first render microtask flushes — your initial render reads populated values, never <code>undefined</code>.</p>
+<p><strong>Field form</strong> (preferred when you just want to read context inside <code>render()</code>):</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { context, render, html, Context } from 'snice';
 import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
-  private appContext?: AppContext;
-
-  @context()
-  handleContextUpdate(ctx: Context) {
-    this.appContext = ctx.application;
-    this.requestRender();
-  }
+  @context() ctx!: Context;
 
   @render()
   renderContent() {
-    const user = this.appContext?.getUser();
+    const user = this.ctx.application.getUser();
 
     if (!user) {
       return html`
@@ -1123,7 +1120,16 @@ class ProfilePage extends HTMLElement {
   }
 
   logout() {
-    this.appContext?.setUser(null);
+    this.ctx.application.setUser(null);
+  }
+}</snice-code-block>
+<p><strong>Method form</strong> (use when you need side-effects on every push, like syncing state into other properties or kicking off a fetch):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@page({ tag: 'profile-page', routes: ['/profile'] })
+class ProfilePage extends HTMLElement {
+  @context()
+  onContext(ctx: Context) {
+    // Run on every push (and once at register time)
+    if (ctx.application.user) this.loadProfile(ctx.application.user.id);
   }
 }</snice-code-block>
 <h3 id="routing-context-options">Context Options</h3>
