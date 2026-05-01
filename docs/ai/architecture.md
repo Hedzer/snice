@@ -144,12 +144,10 @@ async handleFetch(payload: { id: string }) {
 // Wiring: <my-element controller="my-controller"></my-element>
 ```
 
-**Global State:** Context
+**Global State:** Context (field form populated before first render)
 ```typescript
-@context() handleContext(ctx: Context) {
-  this.app = ctx.application;
-  this.route = ctx.navigation.route;
-}
+@context() ctx!: Context;          // read this.ctx anywhere, including render()
+@context() onCtx(ctx: Context) {}  // method form: side-effects on every push
 ```
 
 ## Shadow DOM

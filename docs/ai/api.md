@@ -163,12 +163,18 @@ html`
 // ctx.update() - signal all @context() subscribers (no args, uses current state)
 
 @context(options?: { debounce?, throttle?, once? })
-// Method decorator: receives Context on navigation and ctx.update() calls
-// Called on: initial load, route change, ctx.update()
-// Example:
+// Works on methods AND fields. Both forms also fire SYNCHRONOUSLY at register
+// time, so the field/method sees current context BEFORE the first render
+// microtask flushes (no cold-start undefined).
+// Fires on: register (sync), route change, ctx.update()
+//
+// Field form (read in render()):
+//   @context() ctx!: Context;
+//   @render() template() { return html`<h1>${this.ctx.application.user}</h1>`; }
+//
+// Method form (side-effects on push, debounce/throttle/once):
 //   @context() handleContext(ctx: Context) {
-//     const app = ctx.application as MyApp;
-//     this.user = app.user;
+//     this.user = (ctx.application as MyApp).user;
 //   }
 // To update and signal:
 //   ctx.application.theme = 'dark';

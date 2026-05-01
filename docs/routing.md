@@ -119,7 +119,9 @@ class HomePage extends HTMLElement {
 
 ### Page with Context
 
-The `@context()` decorator is a **method decorator** that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.
+The `@context()` decorator works on **methods** (called with the live Context on each push) AND **fields** (overwritten with the live Context on each push). Both forms also fire **synchronously at register time**, so the field/method sees the current context BEFORE the first render microtask flushes — your initial render reads populated values, never `undefined`.
+
+**Field form** (preferred when you just want to read context inside `render()`):
 
 ```typescript
 import { context, render, html, Context } from 'snice';
@@ -127,17 +129,11 @@ import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
-  private appContext?: AppContext;
-
-  @context()
-  handleContextUpdate(ctx: Context) {
-    this.appContext = ctx.application;
-    this.requestRender();
-  }
+  @context() ctx!: Context;
 
   @render()
   renderContent() {
-    const user = this.appContext?.getUser();
+    const user = this.ctx.application.getUser();
 
     if (!user) {
       return html`
@@ -158,7 +154,20 @@ class ProfilePage extends HTMLElement {
   }
 
   logout() {
-    this.appContext?.setUser(null);
+    this.ctx.application.setUser(null);
+  }
+}
+```
+
+**Method form** (use when you need side-effects on every push, like syncing state into other properties or kicking off a fetch):
+
+```typescript
+@page({ tag: 'profile-page', routes: ['/profile'] })
+class ProfilePage extends HTMLElement {
+  @context()
+  onContext(ctx: Context) {
+    // Run on every push (and once at register time)
+    if (ctx.application.user) this.loadProfile(ctx.application.user.id);
   }
 }
 ```
