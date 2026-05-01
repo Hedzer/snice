@@ -119,7 +119,7 @@ class HomePage extends HTMLElement {
 
 ### Page with Context
 
-The `@context()` decorator works on **methods** (called with the live Context on each push) AND **fields** (overwritten with the live Context on each push). Both forms also fire **synchronously at register time**, so the field/method sees the current context BEFORE the first render microtask flushes — your initial render reads populated values, never `undefined`.
+The `@context()` decorator works on **methods** (called with the live Context on each change) AND **fields** (overwritten with the live Context on each change). Both forms are populated before the first render — your initial render reads context-derived values, never `undefined`.
 
 **Field form** (preferred when you just want to read context inside `render()`):
 

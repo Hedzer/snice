@@ -133,7 +133,7 @@ el.addEventListener('my-event', (e: Event) => {
 
 Snice components are plain standard custom elements. Do NOT:
 - Import from `lit`, `lit-html`, or `lit-element`
-- Import `html` from `'snice'` in stories (that is Snice's internal template engine)
+- Import `html` from `'snice'` in stories — Storybook stories are plain DOM
 - Extend `LitElement`
 
 Instead, use `document.createElement('snice-...')` and standard DOM APIs.

@@ -997,7 +997,7 @@ class ReactiveComponent extends HTMLElement {
 
 ### @context() Decorator
 
-Receive router context updates. Works on **methods** (called with the live `Context` on every change) AND **fields** (overwritten with the live `Context` on every change). Both forms also fire **synchronously at register time**, so the field/method sees the current context BEFORE the first render microtask flushes — no cold-start `undefined` flicker.
+Receive router context updates. Works on **methods** (called with the live `Context` on every change) AND **fields** (overwritten with the live `Context` on every change). Both forms are populated before the first render — your template can read context-derived values on the very first paint, never `undefined`.
 
 **Field form** (preferred when you just want to read context inside `render()`):
 

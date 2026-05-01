@@ -258,7 +258,7 @@ Use `breakpoint` to switch between inline (above breakpoint) and overlay (below 
 </snice-drawer>
 ```
 
-Uses `window.matchMedia` internally. Above the breakpoint, the `inline` attribute is set automatically. Below, it reverts to overlay mode.
+Above the breakpoint, the `inline` attribute is set automatically. Below, it reverts to overlay mode.
 
 ### Filters Panel
 
