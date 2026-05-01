@@ -77,7 +77,6 @@
 <a href="#controllers-resource-cleanup" class="sub">Resource Cleanup</a>
 <a href="#controllers-event-handling-in-controllers" class="sub">Event Handling in Controllers</a>
 <a href="#controllers-query-selectors-in-controllers" class="sub">Query Selectors in Controllers</a>
-<a href="#controllers-receiving-router-context" class="sub">Receiving Router Context</a>
 <a href="#controllers-advanced-patterns" class="sub">Advanced Patterns</a>
 <a href="#controllers-accessing-controllers" class="sub">Accessing Controllers</a>
 <div class="nav-group">Patterns</div>
@@ -928,39 +927,37 @@ class ReactiveComponent extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="elements-context-decorator">@context() Decorator</h3>
-<p>Receive router context updates. Works on <strong>methods</strong> (called with the live <code>Context</code> on every change) AND <strong>fields</strong> (overwritten with the live <code>Context</code> on every change). Both forms are populated before the first render — your template can read context-derived values on the very first paint, never <code>undefined</code>.</p>
-<p><strong>Field form</strong> (preferred when you just want to read context inside <code>render()</code>):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, render, html } from 'snice';
-import type { Context } from 'snice';
+<p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, property, render, html } from 'snice';
+import type { Context, Placard } from 'snice';
 
 @element('nav-bar')
 class NavBar extends HTMLElement {
-  @context() ctx!: Context;
+  @property({ type: Array })
+  placards: Placard[] = [];
 
-  @render()
-  renderContent() {
-    const { placards, route } = this.ctx.navigation;
-    return html`
-      &lt;nav&gt;
-        ${placards.filter(p =&gt; p.show !== false).map(p =&gt; html`
-          &lt;a href=&quot;${p.href || ''}&quot; class=&quot;${route === p.name ? 'active' : ''}&quot;&gt;
-            ${p.icon} ${p.title}
-          &lt;/a&gt;
-        `)}
-      &lt;/nav&gt;
-    `;
-  }
-}</snice-code-block>
-<p><strong>Method form</strong> (use when you want to react to each push with side-effects, debounce/throttle, or sync into other reactive properties):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('nav-bar')
-class NavBar extends HTMLElement {
-  @property({ type: Array }) placards: Placard[] = [];
-  @property() currentRoute = '';
+  @property()
+  currentRoute = '';
 
   @context()
   onContextUpdate(ctx: Context) {
     this.placards = ctx.navigation.placards;
     this.currentRoute = ctx.navigation.route;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      &lt;nav&gt;
+        ${this.placards
+          .filter(p =&gt; p.show !== false)
+          .map(p =&gt; html`
+            &lt;a href=&quot;${p.href || ''}&quot; class=&quot;${this.currentRoute === p.name ? 'active' : ''}&quot;&gt;
+              ${p.icon} ${p.title}
+            &lt;/a&gt;
+          `)}
+      &lt;/nav&gt;
+    `;
   }
 }</snice-code-block>
 <p><strong>Context Options:</strong></p>
@@ -1089,18 +1086,23 @@ class HomePage extends HTMLElement {
   }
 }</snice-code-block>
 <h3 id="routing-page-with-context">Page with Context</h3>
-<p>The <code>@context()</code> decorator works on <strong>methods</strong> (called with the live Context on each change) AND <strong>fields</strong> (overwritten with the live Context on each change). Both forms are populated before the first render — your initial render reads context-derived values, never <code>undefined</code>.</p>
-<p><strong>Field form</strong> (preferred when you just want to read context inside <code>render()</code>):</p>
+<p>The <code>@context()</code> decorator is a <strong>method decorator</strong> that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { context, render, html, Context } from 'snice';
 import { page } from './router';
 
 @page({ tag: 'profile-page', routes: ['/profile'] })
 class ProfilePage extends HTMLElement {
-  @context() ctx!: Context;
+  private appContext?: AppContext;
+
+  @context()
+  handleContextUpdate(ctx: Context) {
+    this.appContext = ctx.application;
+    this.requestRender();
+  }
 
   @render()
   renderContent() {
-    const user = this.ctx.application.getUser();
+    const user = this.appContext?.getUser();
 
     if (!user) {
       return html`
@@ -1121,16 +1123,7 @@ class ProfilePage extends HTMLElement {
   }
 
   logout() {
-    this.ctx.application.setUser(null);
-  }
-}</snice-code-block>
-<p><strong>Method form</strong> (use when you need side-effects on every push, like syncing state into other properties or kicking off a fetch):</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@page({ tag: 'profile-page', routes: ['/profile'] })
-class ProfilePage extends HTMLElement {
-  @context()
-  onContext(ctx: Context) {
-    // Run on every push (and once at register time)
-    if (ctx.application.user) this.loadProfile(ctx.application.user.id);
+    this.appContext?.setUser(null);
   }
 }</snice-code-block>
 <h3 id="routing-context-options">Context Options</h3>
@@ -2841,37 +2834,6 @@ class FormValidationController implements IController&lt;HTMLFormElement&gt; {
     }
   }
 }</snice-code-block>
-<h2 id="controllers-receiving-router-context">Receiving Router Context</h2>
-<p>Use <code>@context()</code> — field or method. See <a href="routing.md">Routing</a> for the <code>Context</code> shape.</p>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">import { controller, context, IController } from 'snice';
-import type { Context } from 'snice';
-
-@controller('user-data-controller')
-class UserDataController implements IController {
-  element: HTMLElement | null = null;
-  @context() ctx!: Context;
-
-  async attach(element: HTMLElement) {
-    this.element = element;
-    const user = await this.ctx.fetch('/api/users/me').then(r =&gt; r.json());
-    (this.element as any).user = user;
-  }
-
-  async detach() { this.element = null; }
-}</snice-code-block>
-<snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('theme-controller')
-class ThemeController implements IController {
-  element: HTMLElement | null = null;
-
-  @context()
-  onContextChange(ctx: Context) {
-    this.element?.setAttribute('data-theme', (ctx.application as any).theme);
-  }
-
-  async attach(element: HTMLElement) { this.element = element; }
-  async detach() { this.element = null; }
-}</snice-code-block>
-<p>Options: <code>{ debounce, throttle, once }</code>.</p>
 <h2 id="controllers-advanced-patterns">Advanced Patterns</h2>
 <h3 id="controllers-data-fetching-controller">Data Fetching Controller</h3>
 <p>Controllers own data fetching. Pass results to the element via its API or dispatch events — don't manipulate DOM directly:</p>
@@ -4732,7 +4694,7 @@ getGrammar('myLang');</snice-code-block>
 
   <footer>
     <div class="wrap">
-      <span>Snice v5.2.1 · <a href="license.html">MIT</a></span>
+      <span>Snice v5.2.2 · <a href="license.html">MIT</a></span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>

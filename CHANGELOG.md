@@ -1,3 +1,10 @@
+## [5.2.2](https://github.com/Hedzer/snice/compare/v5.2.1...v5.2.2) (2026-05-01)
+
+
+### Reverts
+
+* **context:** drop field-form, sync-emit, and controller wiring; restore v5.0 method-only behavior ([10ca8c4](https://github.com/Hedzer/snice/commit/10ca8c4baf25dc6d04fa4307ea728e29cbc42c3b))
+
 ## [5.2.1](https://github.com/Hedzer/snice/compare/v5.2.0...v5.2.1) (2026-05-01)
 
 
