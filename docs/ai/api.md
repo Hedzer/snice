@@ -163,17 +163,12 @@ html`
 // ctx.update() - signal all @context() subscribers (no args, uses current state)
 
 @context(options?: { debounce?, throttle?, once? })
-// Works on methods AND fields, on elements AND controllers.
-// Populated before the first render (no cold-start undefined).
-// Fires on: first attach, route change, ctx.update()
-//
-// Field form (read in render()):
-//   @context() ctx!: Context;
-//   @render() template() { return html`<h1>${this.ctx.application.user}</h1>`; }
-//
-// Method form (side-effects on each change, debounce/throttle/once):
+// Method decorator: receives Context on navigation and ctx.update() calls
+// Called on: initial load, route change, ctx.update()
+// Example:
 //   @context() handleContext(ctx: Context) {
-//     this.user = (ctx.application as MyApp).user;
+//     const app = ctx.application as MyApp;
+//     this.user = app.user;
 //   }
 // To update and signal:
 //   ctx.application.theme = 'dark';

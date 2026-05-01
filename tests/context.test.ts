@@ -169,11 +169,7 @@ describe('@context decorator', () => {
     await router.navigate('/update');
     await waitFor(100);
 
-    // Two calls expected: one synchronous emit at register time (so the page
-    // sees ctx before its first render) plus one from the post-navigation
-    // notify. Both deliver the same Context instance.
-    const callsAfterNav = spy.mock.calls.length;
-    expect(callsAfterNav).toBeGreaterThanOrEqual(1);
+    expect(spy).toHaveBeenCalledTimes(1);
     const ctx = spy.mock.calls[0][0];
 
     // Mutate application context and call no-arg update()
@@ -181,8 +177,8 @@ describe('@context decorator', () => {
     ctx.update();
     await waitFor(50);
 
-    expect(spy).toHaveBeenCalledTimes(callsAfterNav + 1);
-    const updatedCtx = spy.mock.calls[callsAfterNav][0];
+    expect(spy).toHaveBeenCalledTimes(2);
+    const updatedCtx = spy.mock.calls[1][0];
     expect(updatedCtx.application.theme).toBe('dark');
   });
 

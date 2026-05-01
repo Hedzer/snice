@@ -997,46 +997,39 @@ class ReactiveComponent extends HTMLElement {
 
 ### @context() Decorator
 
-Receive router context updates. Works on **methods** (called with the live `Context` on every change) AND **fields** (overwritten with the live `Context` on every change). Both forms are populated before the first render — your template can read context-derived values on the very first paint, never `undefined`.
-
-**Field form** (preferred when you just want to read context inside `render()`):
+Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):
 
 ```typescript
-import { element, context, render, html } from 'snice';
-import type { Context } from 'snice';
+import { element, context, property, render, html } from 'snice';
+import type { Context, Placard } from 'snice';
 
 @element('nav-bar')
 class NavBar extends HTMLElement {
-  @context() ctx!: Context;
+  @property({ type: Array })
+  placards: Placard[] = [];
 
-  @render()
-  renderContent() {
-    const { placards, route } = this.ctx.navigation;
-    return html`
-      <nav>
-        ${placards.filter(p => p.show !== false).map(p => html`
-          <a href="${p.href || ''}" class="${route === p.name ? 'active' : ''}">
-            ${p.icon} ${p.title}
-          </a>
-        `)}
-      </nav>
-    `;
-  }
-}
-```
-
-**Method form** (use when you want to react to each push with side-effects, debounce/throttle, or sync into other reactive properties):
-
-```typescript
-@element('nav-bar')
-class NavBar extends HTMLElement {
-  @property({ type: Array }) placards: Placard[] = [];
-  @property() currentRoute = '';
+  @property()
+  currentRoute = '';
 
   @context()
   onContextUpdate(ctx: Context) {
     this.placards = ctx.navigation.placards;
     this.currentRoute = ctx.navigation.route;
+  }
+
+  @render()
+  renderContent() {
+    return html`
+      <nav>
+        ${this.placards
+          .filter(p => p.show !== false)
+          .map(p => html`
+            <a href="${p.href || ''}" class="${this.currentRoute === p.name ? 'active' : ''}">
+              ${p.icon} ${p.title}
+            </a>
+          `)}
+      </nav>
+    `;
   }
 }
 ```

@@ -113,21 +113,22 @@ initialize();
 import { page } from '../router';  // NOT from 'snice'!
 ```
 
-**Page with Context (field form — populated before first render):**
+**Page with Context:**
 ```typescript
 @page({ tag: 'user-page', routes: ['/users/:id'], guards: [isAuthenticated] })
 class UserPage extends HTMLElement {
   @property() id = '';
-  @context() ctx!: Context;
+  private appContext?: AppContext;
 
-  @render()
-  template() {
-    return html`<h1>Welcome ${(this.ctx.application as MyApp).user.name}</h1>`;
+  @context()
+  handleContext(ctx: Context) {
+    this.appContext = ctx.application;
+    this.requestRender();
   }
 
   @ready()
   async load() {
-    const user = await this.ctx.fetch(`/api/users/${this.id}`).then(r => r.json());
+    const user = await fetch(`/api/users/${this.id}`).then(r => r.json());
     // ...
   }
 }
@@ -286,7 +287,12 @@ const router = Router({
 // In pages
 @page({ tag: 'user-page', routes: ['/users/:id'] })
 class UserPage extends HTMLElement {
-  @context() ctx!: Context;
+  private ctx: Context;
+
+  @context()
+  handleContext(ctx: Context) {
+    this.ctx = ctx;
+  }
 
   @ready()
   async load() {

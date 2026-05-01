@@ -1,8 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { setupContextHandler, cleanupContextHandler } from './context';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTEXT_HANDLER, CONTROLLER_ABORT } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -126,15 +125,6 @@ export async function attachController(element: HTMLElement, controllerName: str
   if (routerContext !== undefined) {
     (controllerInstance as any)[ROUTER_CONTEXT] = routerContext;
   }
-
-  // Mirror the element's CONTEXT_HANDLER onto the controller so
-  // setupContextHandler can wire @context() handlers declared on the
-  // controller class. This makes @context() work identically on elements
-  // and controllers.
-  const ctxHandler = (element as any)[CONTEXT_HANDLER];
-  if (ctxHandler !== undefined) {
-    (controllerInstance as any)[CONTEXT_HANDLER] = ctxHandler;
-  }
   
   // Store references
   (element as any)[CONTROLLER_KEY] = controllerInstance;
@@ -183,9 +173,6 @@ export async function attachController(element: HTMLElement, controllerName: str
   // Setup @on event handlers for controller
   setupEventHandlers(controllerInstance, element);
 
-  // Setup @context() handlers for controller (fires sync emit at register)
-  setupContextHandler(controllerInstance);
-
   element.dispatchEvent(new CustomEvent('controller-attached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));
@@ -228,18 +215,14 @@ export async function detachController(element: HTMLElement): Promise<void> {
 
   // Cleanup @on event handlers for controller
   cleanupEventHandlers(controllerInstance);
-
-  // Cleanup @context() handlers for controller
-  cleanupContextHandler(controllerInstance);
-
+  
   // Cleanup the controller scope
   if (scope) {
     await scope.cleanup();
   }
-
-  // Clean up router/context references
+  
+  // Clean up router context reference
   delete (controllerInstance as any)[ROUTER_CONTEXT];
-  delete (controllerInstance as any)[CONTEXT_HANDLER];
   
   delete (element as any)[CONTROLLER_KEY];
   delete (element as any)[CONTROLLER_NAME_KEY];

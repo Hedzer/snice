@@ -601,13 +601,12 @@ handleItemClick(e) {
 
     <div class="dec-section">
       <h3><code>@context</code></h3>
-      <p class="desc">Router context — field or method, on elements or controllers.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Field form
-@context() ctx!: Context;</snice-code-block>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method form
+      <p class="desc">Receive router navigation context updates.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method receives Context on route changes
 @context()
-onContextChange(ctx: Context) {
+handleContext(ctx: Context) {
   this.user = ctx.application.user;
+  this.route = ctx.navigation.route;
 }</snice-code-block>
       <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>

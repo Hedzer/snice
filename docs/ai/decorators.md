@@ -33,12 +33,7 @@
 ## Communication
 - `@request(channel, options?)` - Async generator request pattern
 - `@respond(channel, options?)` - Handle requests from `@request`
-- `@context(options?)` - Receive router context. Works on **methods** (called with `(ctx: Context)` on each change) AND **fields** (overwritten with the live `Context` on each change), on **elements and controllers**. Populated before the first render — never `undefined` in the initial template.
-
-```ts
-@context() ctx!: Context;            // field: read this.ctx in render()
-@context() onCtx(ctx: Context) {}    // method: react to each change
-```
+- `@context(options?)` - Receive router navigation context updates
 
 ## Observers
 - `@observe(target, selector?, options?)` - Watch intersection, resize, media query, mutation

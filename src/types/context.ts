@@ -2,7 +2,7 @@ import { AppContext } from './app-context';
 import { NavContext } from './nav-context';
 import { Placard } from './placard';
 import { RouteParams } from './route-params';
-import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT, CONTEXT_UPDATE, WRAPPED_CONTEXT_HANDLERS } from '../symbols';
+import { REGISTERED_ELEMENTS, IS_UPDATING, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT, CONTEXT_UPDATE } from '../symbols';
 import type { Fetcher } from '../fetcher';
 
 // Symbol for storing the Set of elements
@@ -123,15 +123,12 @@ export class Context {
     for (const element of elementsSet) {
       const names = elementsMap.get(element);
       if (!names) continue;
-      const wrapped = (element as any)[WRAPPED_CONTEXT_HANDLERS] as Map<string, (ctx: Context) => void> | undefined;
-      if (!wrapped) continue;
-      for (const handlerName of names) {
-        const fn = wrapped.get(handlerName);
-        if (typeof fn === 'function') {
+      for (const methodName of names) {
+        if (typeof (element as any)[methodName] === 'function') {
           try {
-            fn(this);
+            (element as any)[methodName](this);
           } catch (error) {
-            console.error(`Error calling @context handler ${handlerName}:`, error);
+            console.error(`Error calling @context method ${methodName}:`, error);
           }
         }
       }
@@ -147,11 +144,10 @@ export class Context {
   [CONTEXT_NOTIFY_ELEMENT](element: HTMLElement): void {
     const names = (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>).get(element);
     if (!names) return;
-    const wrapped = (element as any)[WRAPPED_CONTEXT_HANDLERS] as Map<string, (ctx: Context) => void> | undefined;
-    if (!wrapped) return;
-    for (const handlerName of names) {
-      const fn = wrapped.get(handlerName);
-      if (typeof fn === 'function') fn(this);
+    for (const methodName of names) {
+      if (typeof (element as any)[methodName] === 'function') {
+        (element as any)[methodName](this);
+      }
     }
   }
 }
