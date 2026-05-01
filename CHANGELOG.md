@@ -1,3 +1,10 @@
+# [5.2.0](https://github.com/Hedzer/snice/compare/v5.1.0...v5.2.0) (2026-05-01)
+
+
+### Features
+
+* **context:** [@context](https://github.com/context) works on controllers — same field/method API, sync emit at attach ([32e07fc](https://github.com/Hedzer/snice/commit/32e07fc0fa1076cb22208096d7b460c041aff010))
+
 # [5.1.0](https://github.com/Hedzer/snice/compare/v5.0.0...v5.1.0) (2026-05-01)
 
 
