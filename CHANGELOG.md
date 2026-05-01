@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/Hedzer/snice/compare/v5.0.0...v5.1.0) (2026-05-01)
+
+
+### Features
+
+* **context:** [@context](https://github.com/context) accepts field or method; sync-emit on register so first render sees populated context ([e4c0ff0](https://github.com/Hedzer/snice/commit/e4c0ff0b9e1f0a1a8dd059c246139c8c332ba439))
+
 # [5.0.0](https://github.com/Hedzer/snice/compare/v4.40.0...v5.0.0) (2026-04-30)
 
 
