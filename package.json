@@ -113,7 +113,7 @@
     "generate:react-adapters": "node scripts/generate-react-adapters.js",
     "generate:react-tests": "node scripts/generate-react-tests.js",
     "preview": "vite preview",
-    "pretest": "npm run sync-versions",
+    "pretest": "npm run sync-versions && npm run website:build",
     "test": "npm run test:all",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
