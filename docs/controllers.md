@@ -10,6 +10,7 @@ Controllers handle data fetching, business logic, and server communication separ
 - [Resource Cleanup](#resource-cleanup)
 - [Event Handling in Controllers](#event-handling-in-controllers)
 - [Query Selectors in Controllers](#query-selectors-in-controllers)
+- [Receiving Router Context](#receiving-router-context)
 - [Advanced Patterns](#advanced-patterns)
 
 ## Basic Usage
@@ -295,6 +296,46 @@ class FormValidationController implements IController<HTMLFormElement> {
   }
 }
 ```
+
+## Receiving Router Context
+
+Use `@context()` — field or method. See [Routing](routing.md) for the `Context` shape.
+
+```typescript
+import { controller, context, IController } from 'snice';
+import type { Context } from 'snice';
+
+@controller('user-data-controller')
+class UserDataController implements IController {
+  element: HTMLElement | null = null;
+  @context() ctx!: Context;
+
+  async attach(element: HTMLElement) {
+    this.element = element;
+    const user = await this.ctx.fetch('/api/users/me').then(r => r.json());
+    (this.element as any).user = user;
+  }
+
+  async detach() { this.element = null; }
+}
+```
+
+```typescript
+@controller('theme-controller')
+class ThemeController implements IController {
+  element: HTMLElement | null = null;
+
+  @context()
+  onContextChange(ctx: Context) {
+    this.element?.setAttribute('data-theme', (ctx.application as any).theme);
+  }
+
+  async attach(element: HTMLElement) { this.element = element; }
+  async detach() { this.element = null; }
+}
+```
+
+Options: `{ debounce, throttle, once }`.
 
 ## Advanced Patterns
 
