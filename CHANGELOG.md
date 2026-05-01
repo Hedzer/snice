@@ -1,3 +1,10 @@
+## [5.2.1](https://github.com/Hedzer/snice/compare/v5.2.0...v5.2.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* **empty-state:** scope default-slot margin so named slots don't get phantom gap ([636616f](https://github.com/Hedzer/snice/commit/636616f3f531c19b0a5454151ebc5c2fe84182fb))
+
 # [5.2.0](https://github.com/Hedzer/snice/compare/v5.1.0...v5.2.0) (2026-05-01)
 
 
