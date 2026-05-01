@@ -483,10 +483,11 @@ class HomePage extends HTMLElement { }</snice-code-block>
     <div class="dec-section">
       <h3><code>@property</code> & <code>@watch</code></h3>
       <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@property() name = '';
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @property: reactive props, re-render on change
+@property() name = '';
 @property({ type: Number }) count = 0;
-@property({ type: Boolean, reflect: true }) active = false;
-
+@property({ type: Boolean, reflect: true }) active = false;</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @watch: react when a property changes
 @watch('count')
 onCountChange(newVal, oldVal) {
   console.log(\`Count: \${oldVal} → \${newVal}\`);
@@ -496,7 +497,8 @@ onCountChange(newVal, oldVal) {
     <div class="dec-section">
       <h3><code>@render</code> & <code>@styles</code></h3>
       <p class="desc">Template method with differential rendering. Scoped CSS styles.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@render()
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @render: template method, returns html\`...\`
+@render()
 template() {
   return html\`
     &lt;div class="card"&gt;
@@ -506,8 +508,8 @@ template() {
       &lt;/if&gt;
     &lt;/div&gt;
   \`;
-}
-
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @styles: scoped CSS
 @styles()
 componentStyles() {
   return css\`
@@ -520,19 +522,18 @@ componentStyles() {
     <div class="dec-section">
       <h3><code>@ready</code>, <code>@reconnect</code> & <code>@dispose</code></h3>
       <p class="desc">Lifecycle hooks. <code>@ready</code> fires once after the first render. <code>@dispose</code> fires on every disconnect. <code>@reconnect</code> fires on every connect AFTER the first — use it for components that wire long-lived global subscriptions in <code>@ready</code> and need to re-attach them on reconnect.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@ready()
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @ready: fires once after first render
+@ready()
 onMount() {
   this.interval = setInterval(() =&gt; this.tick(), 1000);
   document.addEventListener('click', this.handler);
-}
-
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @reconnect: every connect AFTER the first
 @reconnect()
 onReconnect() {
-  // Framework-managed @on/@observe handlers re-attach automatically;
-  // re-add only the things YOU wired (document listeners, etc.)
   document.addEventListener('click', this.handler);
-}
-
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @dispose: every disconnect
 @dispose()
 cleanup() {
   clearInterval(this.interval);
@@ -542,16 +543,15 @@ cleanup() {
 
     <div class="dec-section">
       <h3><code>@moved</code> & <code>@adopted</code></h3>
-      <p class="desc">Execute when an element is moved between documents (e.g. into an iframe).</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@moved()
+      <p class="desc">Element moved in DOM, or adopted into a different document.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @moved: reparented in the DOM
+@moved()
 onMoved() {
-  // Element was moved in the DOM (e.g. reparented)
   this.recalculateLayout();
-}
-
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @adopted: moved into a new document (e.g. iframe)
 @adopted()
 onAdopted() {
-  // Element was adopted into a new document (e.g. iframe)
   this.reattachStyles();
 }</snice-code-block>
     </div>
@@ -559,12 +559,18 @@ onAdopted() {
     <div class="dec-section">
       <h3><code>@query</code> & <code>@queryAll</code></h3>
       <p class="desc">DOM element references within shadow DOM.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@query('input') inputEl;
-@queryAll('.item') items;
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @query: single element
+@query('input') inputEl;
 
 @ready()
 setup() {
   this.inputEl.focus();
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @queryAll: NodeList
+@queryAll('.item') items;
+
+@ready()
+count() {
   console.log(\`Found \${this.items.length} items\`);
 }</snice-code-block>
     </div>
@@ -577,19 +583,14 @@ setup() {
 editEntry(e) {
   this.selected = e.target.dataset.id;
   this.editing = true;
-}
-
-@on('click', 'button.save')
-handleSave(e) { this.save(); }
-
-// @dispatch: return value becomes event.detail
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @dispatch: return value becomes event.detail
 @dispatch('status-changed')
 updateStatus(status) {
   this.status = status;
   return { status };
-}
-
-// Stacked: DOM event triggers custom event
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Stacked: DOM event triggers a custom event
 @on('click', '.item')
 @dispatch('item-selected')
 handleItemClick(e) {
@@ -600,12 +601,13 @@ handleItemClick(e) {
 
     <div class="dec-section">
       <h3><code>@context</code></h3>
-      <p class="desc">Receive router navigation context updates.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method receives Context on route changes
+      <p class="desc">Router context — field or method, on elements or controllers.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Field form
+@context() ctx!: Context;</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Method form
 @context()
-handleContext(ctx: Context) {
+onContextChange(ctx: Context) {
   this.user = ctx.application.user;
-  this.route = ctx.navigation.route;
 }</snice-code-block>
       <p class="doc-link"><a href="docs.html#routing">Full documentation →</a></p>
     </div>
@@ -642,39 +644,35 @@ onMutation(records: MutationRecord[]) {
     <div class="dec-section">
       <h3><code>@request</code> & <code>@respond</code></h3>
       <p class="desc">Async generator pattern for parent-child communication.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Requester: async generator yields payload, awaits response
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @request: async generator yields payload, awaits response
 @request('fetch-user')
 async *fetchUser(id: string) {
   const user = await (yield { id });
   return user;
 }
-
-// Responder: receives payload, returns response
+// Usage: const user = await this.fetchUser('123');</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @respond: receives payload, returns response (in parent / controller)
 @respond('fetch-user')
 async handleFetchUser({ id }) {
   return await fetch(\`/api/users/\${id}\`).then(r =&gt; r.json());
-}
-
-// Usage: const user = await this.fetchUser('123');</snice-code-block>
+}</snice-code-block>
       <p class="doc-link"><a href="docs.html#request-response">Full documentation →</a></p>
     </div>
 
     <div class="dec-section">
       <h3><code>@debounce</code> & <code>@throttle</code></h3>
       <p class="desc">Rate-limit method execution. Debounce waits for quiet; throttle limits frequency.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Wait 300ms after last call before executing
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @debounce: wait 300ms after last call
 @debounce(300)
 onSearchInput(query: string) {
   this.results = await this.search(query);
-}
-
-// Execute at most once per 100ms
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @throttle: at most once per 100ms
 @throttle(100)
 onScroll(e: Event) {
   this.scrollY = window.scrollY;
-}
-
-// Works with @on for event-driven debounce
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Stacked with @on for event-driven debounce
 @on('input', '.search')
 @debounce(250)
 handleSearch(e: Event) {
@@ -685,23 +683,22 @@ handleSearch(e: Event) {
     <div class="dec-section">
       <h3><code>@once</code> & <code>@memoize</code></h3>
       <p class="desc">Execute a method only once, or cache return values for repeated calls.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Only runs once, subsequent calls are no-ops
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @once: runs once across all instances, subsequent calls are no-ops
 @once()
 initialize() {
   this.setupWebSocket();
   this.loadConfig();
 }
 
-// Cache results — same arguments return cached value
-@memoize()
-computeExpensiveValue(input: string) {
-  return heavyComputation(input);
-}
-
-// Per-instance: each element instance runs once
+// @once(true): each instance runs once
 @once(true)
 onFirstRender() {
   analytics.track('component-viewed');
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @memoize: cache results — same arguments return cached value
+@memoize()
+computeExpensiveValue(input: string) {
+  return heavyComputation(input);
 }</snice-code-block>
     </div>
 
