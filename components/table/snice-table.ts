@@ -280,6 +280,9 @@ export class SniceTable extends HTMLElement {
       :host {
         display: block;
         position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 200px;
       }
 
       /* Native Fullscreen API: paint the host's background as the backdrop
@@ -316,16 +319,23 @@ export class SniceTable extends HTMLElement {
 
 
       .snice-table {
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        overflow: auto;
+        height: 100%;
+        min-height: 0;
       }
 
-      /* Frame wraps super-header + table; provides the rounded border */
+      /* Frame wraps super-header + table; provides the rounded border.
+         flex:1 + min-height:0 lets it absorb the remaining host height
+         instead of letting content size dictate height. */
       .table-frame {
         position: relative;
+        flex: 1;
+        min-height: 0;
         border: 1px solid var(--snice-color-border, rgb(226 226 226));
         border-radius: var(--snice-border-radius-lg, 0.5rem);
-        overflow: auto; /* allows scroll when table exceeds container */
+        overflow: auto;
       }
 
       table {
