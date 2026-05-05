@@ -1,3 +1,10 @@
+## [5.2.3](https://github.com/Hedzer/snice/compare/v5.2.2...v5.2.3) (2026-05-05)
+
+
+### Bug Fixes
+
+* **table:** host and container fill 100% height ([9be0fac](https://github.com/Hedzer/snice/commit/9be0fac73a914e30123daf170f595a289d439f48))
+
 ## [5.2.2](https://github.com/Hedzer/snice/compare/v5.2.1...v5.2.2) (2026-05-01)
 
 
