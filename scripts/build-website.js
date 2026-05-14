@@ -596,6 +596,18 @@ updateStatus(status) {
 handleItemClick(e) {
   return { id: e.target.dataset.id };
 }</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// scope option: redirect listener / dispatch target
+// 'global' = document, selector = closest ancestor,
+// EventTarget = direct, function = resolver
+
+@on('bus:save', { scope: 'global' })
+onSave(e) { /* document-wide bus */ }
+
+@on('bus:cart-added', { scope: 'cart-shell' })
+onAdded(e) { /* nearest cart-shell ancestor */ }
+
+@dispatch('bus:cart-added', { scope: 'global' })
+add(id) { return { id }; }</snice-code-block>
       <p class="doc-link"><a href="docs.html#events">Full documentation →</a></p>
     </div>
 

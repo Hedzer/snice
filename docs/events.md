@@ -385,8 +385,55 @@ interface OnOptions {
 
   // Shadow DOM delegation
   target?: string;             // CSS selector to target specific elements within shadow root
+
+  // Where to attach the listener (see scope section below)
+  scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
 }
 ```
+
+#### scope — controlling the listener target
+
+By default, `@on` attaches the listener to the host element. The `scope` option redirects
+that attachment to another target, which is how Snice expresses cross-cutting events.
+
+| `scope` value | Listener attaches to |
+|---|---|
+| omitted | host element (default) |
+| `'global'` | `document` |
+| selector string | `host.closest(selector)` — nearest matching ancestor |
+| `Element` / `EventTarget` | that node directly |
+| `(this) => EventTarget \| null` | called at connect; `null` skips |
+
+The resolver function is called with the host element as `this` and re-resolves each time
+the component reconnects to the DOM, so listeners follow the host when it moves.
+
+```typescript
+// Cross-cutting global event (document)
+@on('bus:save', { scope: 'global' })
+onSave(e: CustomEvent) { /* ... */ }
+
+// Scoped to nearest ancestor matching the selector
+@on('bus:cart-added', { scope: 'cart-shell' })
+onCartAdded(e: CustomEvent) { /* ... */ }
+
+// Explicit EventTarget
+@on('go', { scope: someElement })
+onGo() { /* ... */ }
+
+// Resolver — full control, re-runs on reconnect
+@on('beep', { scope() { return this.closest('app-shell'); } })
+onBeep() { /* ... */ }
+```
+
+If `scope` cannot resolve (selector matches no ancestor, resolver returns `null` or throws),
+the listener is **not attached** and a `console.warn` is emitted. The component still
+mounts; only the listener is skipped.
+
+Disconnect removes the listener from whichever target it was attached to. Reconnect
+re-resolves and re-attaches, so resolver-based scopes track DOM moves correctly.
+
+`scope` is compatible with the delegation selector — the listener attaches on the
+scoped target and still matches the selector when an event fires within it.
 
 #### Throttling
 
@@ -534,8 +581,49 @@ interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
   debounce?: number;             // Debounce dispatch by ms
   throttle?: number;             // Throttle dispatch by ms
+  // Where to dispatch the event (see scope section below)
+  scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
 }
 ```
+
+#### scope — controlling the dispatch target
+
+By default, `@dispatch` calls `this.dispatchEvent(event)` — the event originates from
+the host element. The `scope` option redirects the dispatch to another target so the
+event behaves as if it originated there. Use this with `@on({ scope })` to express
+cross-cutting events without going through bubbling.
+
+| `scope` value | Event dispatched on |
+|---|---|
+| omitted | host element (default) |
+| `'global'` | `document` |
+| selector string | `host.closest(selector)` — nearest matching ancestor |
+| `Element` / `EventTarget` | that node directly |
+| `(this) => EventTarget \| null` | called per dispatch; `null` skips |
+
+```typescript
+// Global cart-add bus
+@element('add-to-cart-button')
+class AddToCartButton extends HTMLElement {
+  @on('click', 'button')
+  click() { this.add(this.productId); }
+
+  @dispatch('bus:cart-added', { scope: 'global' })
+  add(id: string) { return { id }; }
+}
+
+// Listener on any other element
+@element('cart-counter')
+class CartCounter extends HTMLElement {
+  @on('bus:cart-added', { scope: 'global' })
+  bump() { this.count++; }
+}
+```
+
+If `scope` cannot resolve (selector matches no ancestor, resolver returns `null`),
+the event is **not dispatched** and a `console.warn` is emitted. The method's return
+value still flows through `dispatchOnUndefined` / `debounce` / `throttle` semantics
+before the scope check.
 
 ### Debounce/Throttle
 

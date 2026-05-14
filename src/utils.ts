@@ -292,6 +292,39 @@ export function createThrottled<T extends (...args: any[]) => any>(fn: T, delay:
   } as T;
 }
 
+/**
+ * Resolve a scope option to a concrete EventTarget.
+ *
+ * - undefined → host element (default behavior)
+ * - 'global' → `document`
+ * - string → `host.closest(selector)` (nearest matching ancestor)
+ * - EventTarget instance → that target directly
+ * - resolver function → called with host as `this`, returns target or null
+ *
+ * Returns null when the scope cannot be resolved (e.g. selector matches no
+ * ancestor, resolver returns null). Caller decides how to handle null —
+ * typically warn in dev and skip listener attachment.
+ */
+export function resolveScope(host: HTMLElement, scope: unknown): EventTarget | null {
+  if (scope === undefined || scope === null) return host;
+  if (scope === 'global') return typeof document !== 'undefined' ? document : null;
+  if (typeof scope === 'function') {
+    try {
+      return (scope as (this: HTMLElement) => EventTarget | null).call(host) || null;
+    } catch {
+      return null;
+    }
+  }
+  if (typeof scope === 'string') {
+    return host.closest?.(scope) || null;
+  }
+  // Direct EventTarget instance.
+  if (scope && typeof (scope as EventTarget).addEventListener === 'function') {
+    return scope as EventTarget;
+  }
+  return null;
+}
+
 export function valueToAttribute(value: any, propertyOptions: PropertyOptions, initialValue?: any): string | null {
   // Handle null/undefined/false values and empty arrays
   if (value === null || value === undefined || value === false ||

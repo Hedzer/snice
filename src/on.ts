@@ -7,7 +7,7 @@ import { CLEANUP, ON_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, type KeyboardFilter } from './parts';
-import { createDebounced, createThrottled } from './utils';
+import { createDebounced, resolveScope } from './utils';
 
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
@@ -218,10 +218,30 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     // Apply key modifier wrapper
     const keyModifierMethod = createKeyModifierHandler(boundMethod);
 
+    // Resolve scope: explicit `scope` option redirects the listener target
+    // to document / ancestor / arbitrary EventTarget. Default = host element.
+    const hasExplicitScope = handlerOptions.scope !== undefined;
+    let scopedTarget: EventTarget | null = null;
+    if (hasExplicitScope) {
+      scopedTarget = resolveScope(targetElement, handlerOptions.scope);
+      if (!scopedTarget) {
+        // Dev warning — listener silently dropped when scope cannot resolve.
+        // Skip attachment so we don't bind to the wrong target.
+        console.warn(
+          `[snice/@on] scope did not resolve for "${handler.eventName}" on ${handler.methodName} — listener skipped.`
+        );
+        continue;
+      }
+    }
+
     // Main event handler with error handling and event delegation
     if (handler.selector) {
-      // Delegated event handling - use shadow root if available
-      const eventRoot = (targetElement as any).shadowRoot || targetElement;
+      // Delegated event handling.
+      // - Default eventRoot: shadow root if present, else host element.
+      // - With explicit scope: attach to the scoped target instead.
+      const eventRoot: EventTarget = hasExplicitScope
+        ? scopedTarget!
+        : ((targetElement as any).shadowRoot || targetElement);
 
       const delegatedHandler = (event: Event) => {
         const target = event.target as HTMLElement;
@@ -266,10 +286,12 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
         options: listenerOptions,
       });
     } else {
-      // Direct event handling - on the element itself
-      // If element has shadow root, listen on both shadow root AND host element
-      // to catch events from inside shadow DOM (with correct target) and on host itself.
-      const shadowRoot = (targetElement as any).shadowRoot;
+      // Direct event handling.
+      // - Default: shadow root + host element (so events inside shadow and on
+      //   the host itself both fire). A per-handler Symbol dedupes.
+      // - With explicit scope: attach to the scoped target ONLY (no duplication).
+      const shadowRoot = hasExplicitScope ? null : (targetElement as any).shadowRoot;
+
       // Per-handler private Symbol so dedup is scoped to THIS handler's two
       // listeners (shadowRoot + host). Using Symbol.for() with the method name
       // would collide across components that share a method name (e.g. a parent
@@ -297,6 +319,17 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
         once: handlerOptions.once || false,
         passive: handlerOptions.passive || false,
       };
+
+      if (hasExplicitScope) {
+        scopedTarget!.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
+        instance[CLEANUP].events.push({
+          target: scopedTarget!,
+          eventName: baseEventName,
+          handler: wrappedMethod,
+          options: listenerOptions,
+        });
+        continue;
+      }
 
       if (shadowRoot) {
         // Listen on shadow root for events inside shadow DOM

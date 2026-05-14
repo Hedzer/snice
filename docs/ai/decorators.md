@@ -27,8 +27,37 @@
 - `@queryAll('selector', { light? })` - NodeList
 
 ## Events
-- `@on('event', 'selector?')` - Delegation, auto-bound
-- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined? }`
+- `@on('event', 'selector?', options?)` - Delegation, auto-bound. Options: `{ capture?, once?, passive?, preventDefault?, stopPropagation?, debounce?, throttle?, scope? }`
+- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined?, scope?, ...EventInit }`
+
+### scope (on both `@on` and `@dispatch`)
+
+Redirects where the listener is attached / event is dispatched. Default: host element.
+
+```ts
+scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null)
+```
+
+| value | resolves to |
+|---|---|
+| omitted | host element |
+| `'global'` | `document` |
+| selector string | `host.closest(selector)` — nearest ancestor |
+| Element / EventTarget | that node |
+| resolver fn | called with host as `this`; `null` skips |
+
+```ts
+@on('bus:save', { scope: 'global' }) onSave(e) {}
+@on('bus:cart-added', { scope: 'cart-shell' }) onAdd(e) {}
+@on('go', { scope: someEl }) onGo(e) {}
+@on('beep', { scope() { return this.closest('app-shell'); } }) onBeep(e) {}
+
+@dispatch('bus:cart-added', { scope: 'global' }) add(id) { return { id }; }
+@dispatch('bus:x', { scope: 'cart-shell' }) fire() { return 1; }
+```
+
+Unresolved scope → `console.warn`, listener not attached / event not dispatched.
+Resolver re-runs on reconnect — listeners track DOM moves.
 
 ## Communication
 - `@request(channel, options?)` - Async generator request pattern

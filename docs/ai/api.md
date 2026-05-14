@@ -79,15 +79,31 @@ html`
 ```typescript
 @on(event: string | string[], selector?: string, options?: OnOptions)
 // Works in elements + controllers
-// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
+// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope? }
 // target: CSS selector for shadow DOM event delegation
+// scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects listener attachment
 // Keyboard: 'keydown:Enter', 'keydown.escape', 'keydown:ctrl+s', 'keydown:~Space'
 // Supports both ':' and '.' notation
 
-@dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined? })
+@dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, ...EventInit })
 // Fires CustomEvent after method, detail = return value
 // Supports async methods (dispatches after promise resolves)
 // dispatchOnUndefined: false (default) — skips dispatch if method returns undefined
+// scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects dispatch target
+```
+
+**scope option (shared by @on and @dispatch):**
+```typescript
+// omitted              → host element (default)
+// 'global'             → document
+// 'app-shell'          → host.closest('app-shell')
+// someEl               → that EventTarget
+// function             → called with host as `this`; null skips with console.warn
+
+@on('bus:save',     { scope: 'global' })       // document-level listener
+@on('bus:added',    { scope: 'cart-shell' })   // ancestor-scoped listener
+@dispatch('bus:save',  { scope: 'global' })    // dispatch on document
+@dispatch('bus:added', { scope: 'cart-shell' })// dispatch on ancestor
 ```
 
 ## Communication
@@ -257,7 +273,9 @@ attr="${val}" // Attribute
 ```typescript
 interface TemplateResult { readonly _$litType$: number; }
 interface CSSResult { cssText: string; }
-interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
+interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope? }
+interface DispatchOptions extends EventInit { debounce?, throttle?, dispatchOnUndefined?, scope? }
+type OnScope = 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null)
 interface RenderOptions { debounce?, throttle?, once?, sync?, differential? }
 interface Layout { update(context, placards, route, params) }
 interface Placard { name, title, icon?, description?, order?, show?, visibleOn?, parent?, group?, searchTerms?, hotkeys?, breadcrumbs?, tooltip? }

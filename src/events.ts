@@ -1,5 +1,6 @@
 import { DISPATCH_TIMERS } from './symbols';
 import { DispatchOptions } from './types/dispatch-options';
+import { resolveScope } from './utils';
 
 // @dispatch decorator - auto-dispatches custom events from method return values
 
@@ -7,7 +8,7 @@ import { DispatchOptions } from './types/dispatch-options';
 /**
  * Decorator that automatically dispatches a custom event after a method is called.
  * The return value of the method becomes the event detail.
- * 
+ *
  * @param eventName The name of the event to dispatch
  * @param options Optional configuration extending EventInit
  */
@@ -39,7 +40,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         if (detail === undefined && options?.dispatchOnUndefined === false) {
           return;
         }
-        
+
         // Create event with spread operator for options
         const event = new CustomEvent(eventName, {
           bubbles: true,  // Default to true for component events
@@ -47,7 +48,22 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           ...options,     // Spread all EventInit options
           detail
         });
-        
+
+        // Resolve scope target. Default is `this` (host element).
+        // Explicit scope dispatches the event on another target — useful for
+        // 'global' bus events on document, or routing through an ancestor.
+        if (options?.scope !== undefined) {
+          const target = resolveScope(this as HTMLElement, options.scope);
+          if (!target) {
+            console.warn(
+              `[snice/@dispatch] scope did not resolve for "${eventName}" — event not dispatched.`
+            );
+            return;
+          }
+          target.dispatchEvent(event);
+          return;
+        }
+
         this.dispatchEvent(event);
       };
       
