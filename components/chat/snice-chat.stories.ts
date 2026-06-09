@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-chat';
+import './snice-chat-message';
 
 type Args = {
   currentUser?: string;
@@ -8,6 +9,9 @@ type Args = {
   showTimestamps?: boolean;
   allowFiles?: boolean;
   showTyping?: boolean;
+  colorAuthors?: boolean;
+  markdown?: boolean;
+  layout?: 'default' | 'bubbles';
 };
 
 const meta: Meta<Args> = {
@@ -21,6 +25,9 @@ const meta: Meta<Args> = {
     showTimestamps: { control: 'boolean' },
     allowFiles:     { control: 'boolean' },
     showTyping:     { control: 'boolean' },
+    colorAuthors:   { control: 'boolean' },
+    markdown:       { control: 'boolean' },
+    layout:         { control: 'select', options: ['default', 'bubbles'] },
   },
   render: (args) => {
     const wrap = document.createElement('div');
@@ -33,6 +40,9 @@ const meta: Meta<Args> = {
     if (args.showTimestamps !== undefined) el.setAttribute('show-timestamps',   String(args.showTimestamps));
     if (args.allowFiles     !== undefined) el.setAttribute('allow-files',       String(args.allowFiles));
     if (args.showTyping     !== undefined) el.setAttribute('show-typing',       String(args.showTyping));
+    if (args.colorAuthors)                 el.setAttribute('color-authors',     '');
+    if (args.markdown)                     el.setAttribute('markdown',          '');
+    if (args.layout         !== undefined) el.setAttribute('layout',            args.layout);
     wrap.appendChild(el);
     const now = Date.now();
     customElements.whenDefined('snice-chat').then(() => {
@@ -157,8 +167,70 @@ export const MultipleReactionsOnAMessage: Story = {
   }),
 };
 
+// h2: color-authors (auto per-user name colors)
+export const ColorAuthorsAuto: Story = {
+  render: () => makeChat({ 'current-user': 'You', 'color-authors': '' }, (el) => {
+    (el as any).addMessage({ type: 'text', content: 'deploy is green', author: 'Alice', timestamp: new Date(now - 240000) });
+    (el as any).addMessage({ type: 'text', content: 'merging now', author: 'Bob', timestamp: new Date(now - 180000) });
+    (el as any).addMessage({ type: 'text', content: 'nice', author: 'Carol', timestamp: new Date(now - 120000) });
+    (el as any).addMessage({ type: 'text', content: 'ship it 🚀', author: 'You', timestamp: new Date(now - 60000) });
+  }),
+};
+
+// h2: authorColors map (explicit per-user colors)
+export const AuthorColorsMap: Story = {
+  render: () => makeChat({ 'current-user': 'You' }, (el) => {
+    (el as any).authorColors = { Alice: '#e11d48', Bob: '#2563eb' };
+    (el as any).addMessage({ type: 'text', content: 'my name is red', author: 'Alice', timestamp: new Date(now - 120000) });
+    (el as any).addMessage({ type: 'text', content: 'mine is blue', author: 'Bob', timestamp: new Date(now - 60000) });
+  }),
+};
+
+// h2: markdown (message bodies rendered as markdown; format="text" opts out)
+export const Markdown: Story = {
+  render: () => makeChat({ 'current-user': 'You', markdown: '' }, (el) => {
+    (el as any).addMessage({ type: 'text', format: 'markdown', author: 'Alice', timestamp: new Date(now - 120000),
+      content: '**Release 5.3** is out 🎉\n\n- per-user name colors\n- `layout="bubbles"`\n- markdown bodies\n\nRun `npm i snice@latest` — see the [changelog](#).' });
+    (el as any).addMessage({ type: 'text', format: 'markdown', author: 'You', timestamp: new Date(now - 60000),
+      content: 'on it — `git pull && npm test` ✅' });
+    (el as any).addMessage({ type: 'text', format: 'text', author: 'Bob', timestamp: new Date(now - 30000),
+      content: 'literal **stars** stay (format="text")' });
+  }),
+};
+
+// h2: layout="bubbles" (own messages right, others left)
+export const LayoutBubbles: Story = {
+  render: () => makeChat({ 'current-user': 'You', layout: 'bubbles' }, (el) => {
+    (el as any).addMessage({ type: 'text', content: 'hey, you around?', author: 'Alice', timestamp: new Date(now - 180000) });
+    (el as any).addMessage({ type: 'text', content: 'yep, one sec', author: 'You', timestamp: new Date(now - 120000) });
+    (el as any).addMessage({ type: 'text', content: 'cool — calling now', author: 'Alice', timestamp: new Date(now - 60000) });
+  }),
+};
+
+// h2: Declarative <snice-chat-message> children
+export const DeclarativeMessages: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'max-width:600px;';
+    const el = document.createElement('snice-chat');
+    (el as any).style.setProperty('--snice-chat-height', '400px');
+    el.setAttribute('current-user', 'Me');
+    el.setAttribute('color-authors', '');
+    el.innerHTML = `
+      <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:24:00Z">Hey, you around?</snice-chat-message>
+      <snice-chat-message slot="messages" author="Me" timestamp="2026-05-26T09:25:00Z">yep, one sec</snice-chat-message>
+      <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:26:00Z" format="markdown">check the **PR** then</snice-chat-message>
+    `;
+    wrap.appendChild(el);
+    return wrap;
+  },
+};
+
 // h2: CSS Parts Styling
-// Parts: base, messages, input-area, input-container, input
+// Parts: base, messages, message, message-own, message-other, system-message,
+// avatar, author, timestamp, edited, message-text, attachment, reactions,
+// reaction, reaction-active, actions, typing-indicator, input-area,
+// input-container, input
 export const CSSPartsStyling: Story = {
   render: () => {
     const wrap = document.createElement('div');
@@ -191,6 +263,15 @@ export const CSSPartsStyling: Story = {
         color: #fde68a;
         background: transparent;
         caret-color: #f59e0b;
+      }
+      .parts-demo--chat-styled snice-chat::part(author) {
+        color: #f59e0b;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .parts-demo--chat-styled snice-chat::part(message-own) {
+        background: rgba(245,158,11,0.08);
+        border-radius: 8px;
       }
     `;
     wrap.appendChild(style);

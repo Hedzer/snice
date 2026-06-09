@@ -82,6 +82,36 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       { emoji: '❤️', count: 1, users: ['Charlie'] },
       { emoji: '😂', count: 5, users: ['Alice','Bob','Charlie','Diana','Eve'] }
     ]});
+
+    // Per-user name colors (auto)
+    const chatColors = document.getElementById('chat-colors');
+    chatColors.addMessage({ type: 'text', content: 'deploy is green', author: 'Alice', timestamp: new Date(now - 240000) });
+    chatColors.addMessage({ type: 'text', content: 'merging now', author: 'Bob', timestamp: new Date(now - 180000) });
+    chatColors.addMessage({ type: 'text', content: 'nice', author: 'Carol', timestamp: new Date(now - 120000) });
+    chatColors.addMessage({ type: 'text', content: 'ship it 🚀', author: 'You', timestamp: new Date(now - 60000) });
+
+    // Explicit author colors (authorColors map)
+    const chatColorsMap = document.getElementById('chat-colors-map');
+    chatColorsMap.authorColors = { Alice: '#e11d48', Bob: '#2563eb' };
+    chatColorsMap.addMessage({ type: 'text', content: 'my name is red', author: 'Alice', timestamp: new Date(now - 120000) });
+    chatColorsMap.addMessage({ type: 'text', content: 'mine is blue', author: 'Bob', timestamp: new Date(now - 60000) });
+
+    // Markdown bodies
+    const chatMd = document.getElementById('chat-markdown');
+    chatMd.addMessage({ type: 'text', format: 'markdown', author: 'Alice', timestamp: new Date(now - 120000),
+      content: '**Release 5.3** is out 🎉\n\n- per-user name colors\n- `layout="bubbles"`\n- markdown bodies\n\nRun `npm i snice@latest` — see the [changelog](#).' });
+    chatMd.addMessage({ type: 'text', format: 'markdown', author: 'You', timestamp: new Date(now - 60000),
+      content: 'on it — `git pull && npm test` ✅' });
+
+    // Per-message format=text opts out when component markdown is on
+    chatMd.addMessage({ type: 'text', format: 'text', author: 'Bob', timestamp: new Date(now - 30000),
+      content: 'literal **stars** stay (format="text")' });
+
+    // Bubble layout
+    const chatBubbles = document.getElementById('chat-bubbles');
+    chatBubbles.addMessage({ type: 'text', content: 'hey, you around?', author: 'Alice', timestamp: new Date(now - 180000) });
+    chatBubbles.addMessage({ type: 'text', content: 'yep, one sec', author: 'You', timestamp: new Date(now - 120000) });
+    chatBubbles.addMessage({ type: 'text', content: 'cool — calling now', author: 'Alice', timestamp: new Date(now - 60000) });
   </script>
 </head>
 <body>
@@ -139,6 +169,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <section>
   <h2>Multiple reactions on a message</h2>
   <snice-chat id="chat-reactions" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>color-authors (auto per-user name colors)</h2>
+  <snice-chat id="chat-colors" current-user="You" color-authors></snice-chat>
+</section>
+
+<section>
+  <h2>authorColors map (explicit per-user colors)</h2>
+  <snice-chat id="chat-colors-map" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>markdown (message bodies rendered as markdown; format="text" opts out)</h2>
+  <snice-chat id="chat-markdown" current-user="You" markdown></snice-chat>
+</section>
+
+<section>
+  <h2>layout="bubbles" (own messages right, others left)</h2>
+  <snice-chat id="chat-bubbles" current-user="You" layout="bubbles"></snice-chat>
+</section>
+
+<section>
+  <h2>Declarative &lt;snice-chat-message&gt; children</h2>
+  <snice-chat current-user="Me" color-authors>
+    <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:24:00Z">Hey, you around?</snice-chat-message>
+    <snice-chat-message slot="messages" author="Me" timestamp="2026-05-26T09:25:00Z">yep, one sec</snice-chat-message>
+    <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:26:00Z" format="markdown">check the **PR** then</snice-chat-message>
+  </snice-chat>
 </section>
 
 </body>

@@ -94,7 +94,9 @@
 
 .message-author {
   font-weight: var(--snice-font-weight-bold, 700);
-  color: var(--snice-color-text, rgb(23 23 23));
+  /* Per-user color injected inline as --snice-chat-author-color; falls back to
+     the default text color when unset, so the default render is unchanged. */
+  color: var(--snice-chat-author-color, var(--snice-color-text, rgb(23 23 23)));
 }
 
 .message-timestamp {
@@ -112,6 +114,13 @@
   word-wrap: break-word;
   white-space: pre-wrap;
   color: var(--snice-color-text, rgb(23 23 23));
+}
+
+/* Markdown bodies render real block elements — pre-wrap would turn the
+   markup's own newlines into blank lines and inflate the height. */
+snice-markdown.message-text {
+  white-space: normal;
+  display: block;
 }
 
 /* System message */
@@ -253,6 +262,103 @@
 .action-button svg {
   width: 1rem;
   height: 1rem;
+}
+
+.action-emoji {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  line-height: 1;
+}
+
+/* Inline message editor */
+.message-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  margin-top: var(--snice-spacing-3xs, 0.125rem);
+}
+
+.edit-field {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 2.5rem;
+  font-family: inherit;
+  font-size: var(--snice-font-size-md, 1rem);
+  line-height: 1.5;
+  color: var(--snice-color-text, rgb(23 23 23));
+  background: var(--snice-color-surface-container-lowest, rgb(255 255 255));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  padding: var(--snice-spacing-xs, 0.5rem);
+}
+
+.edit-field:focus {
+  outline: none;
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.edit-actions,
+.confirm-actions {
+  display: flex;
+  gap: var(--snice-spacing-xs, 0.5rem);
+}
+
+.edit-button,
+.confirm-button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-sm, 0.75rem);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--snice-color-surface, rgb(255 255 255));
+  color: var(--snice-color-text, rgb(23 23 23));
+  transition: background var(--snice-transition-fast, 150ms);
+}
+
+.edit-button:hover,
+.confirm-button:hover {
+  background: var(--snice-color-surface-hover, rgb(242 242 242));
+}
+
+.edit-save {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.edit-save:hover {
+  background: var(--snice-color-primary-hover, rgb(29 78 216));
+}
+
+/* Inline delete confirmation */
+.message-confirm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  margin-top: var(--snice-spacing-xs, 0.5rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+}
+
+.confirm-text {
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
+.confirm-delete {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+}
+
+.confirm-delete:hover {
+  background: var(--snice-color-danger, rgb(220 38 38));
+  filter: brightness(0.92);
 }
 
 /* Typing indicators */
@@ -401,4 +507,33 @@
 /* File input (hidden) */
 input[type='file'] {
   display: none;
+}
+
+/* Opt-in bubble layout (layout="bubbles") — mobile-OS style: own messages
+   right-aligned in a primary-colored bubble, others left in a neutral bubble.
+   Absent the attribute, none of this applies and the default render is unchanged. */
+:host([layout='bubbles']) .message.own {
+  flex-direction: row-reverse;
+}
+
+:host([layout='bubbles']) .message.own .message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+:host([layout='bubbles']) .message.own .message-header {
+  flex-direction: row-reverse;
+}
+
+:host([layout='bubbles']) .message .message-text {
+  display: inline-block;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-lg, 0.5rem);
+  background: var(--snice-color-surface-container, rgb(242 242 242));
+}
+
+:host([layout='bubbles']) .message.own .message-text {
+  background: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }

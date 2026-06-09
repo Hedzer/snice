@@ -2254,44 +2254,155 @@ tiles.addEventListener('tile-click',
 </script>
     <div class="comp-section" data-category="Specialty" data-cat-index="7" data-cat-order="9">
       <h3>Chat</h3>
-      <p class="comp-desc">Real-time messaging interface</p>
+      <p class="comp-desc">Slack-style messaging — theming, markdown, bubble layouts, declarative messages</p>
+
+      <!-- 1 · Default -->
       <div class="comp-split">
-        <div class="comp-split-demo" style="min-height:300px">
-          <snice-chat id="demo-chat" current-user="You" placeholder="Type a message..." show-avatars show-timestamps style="height:300px;width:100%"></snice-chat>
+        <div class="comp-split-demo" style="min-height:340px">
+          <snice-chat id="chat-default" current-user="You" style="--snice-chat-height:320px;width:100%"></snice-chat>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">html</span>
-          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-chat
-  current-user="You"
-  placeholder="Type a message..."
-  show-avatars
-  show-timestamps
-&gt;&lt;/snice-chat&gt;
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Default --&gt;
+&lt;snice-chat current-user="You"&gt;&lt;/snice-chat&gt;
 
 &lt;script&gt;
   chat.messages = [
-    { id: '1', type: 'text',
-      content: 'Hello!',
-      author: 'Alice',
-      timestamp: new Date() }
+    { id:'1', type:'text', author:'Alice',
+      content:'Hey! How’s it going?',
+      timestamp:new Date() }
   ];
 &lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <!-- 2 · Per-user name colors -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:340px">
+          <snice-chat id="chat-colors" current-user="You" color-authors style="--snice-chat-height:320px;width:100%"></snice-chat>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Auto color per author --&gt;
+&lt;snice-chat color-authors&gt;&lt;/snice-chat&gt;
+
+&lt;!-- or explicit --&gt;
+chat.authorColors = {
+  Alice: '#e11d48', Bob: '#2563eb'
+};</snice-code-block>
+        </div>
+      </div>
+
+      <!-- 3 · Markdown -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:340px">
+          <snice-chat id="chat-md" current-user="You" markdown style="--snice-chat-height:320px;width:100%"></snice-chat>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Render bodies as markdown --&gt;
+&lt;snice-chat markdown&gt;&lt;/snice-chat&gt;
+
+chat.addMessage({
+  type:'text', author:'Alice',
+  format:'markdown',
+  content:'**Release 5.3** 🎉\n\n- colors\n- bubbles\n\n`npm i snice@latest`',
+  timestamp:new Date()
+});</snice-code-block>
+        </div>
+      </div>
+
+      <!-- 4 · Bubble layout -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:340px">
+          <snice-chat id="chat-bubbles" current-user="You" layout="bubbles" show-avatars style="--snice-chat-height:320px;width:100%"></snice-chat>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Mobile-OS aligned bubbles --&gt;
+&lt;snice-chat
+  layout="bubbles"
+  current-user="You"
+&gt;&lt;/snice-chat&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <!-- 5 · Declarative messages -->
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:340px">
+          <snice-chat current-user="Me" color-authors style="--snice-chat-height:320px;width:100%">
+            <snice-chat-message slot="messages" author="Alice" avatar="assets/avatars/pravatar-40-alice.jpg" timestamp="2026-05-26T09:24:00Z">Hey, you around?</snice-chat-message>
+            <snice-chat-message slot="messages" author="Me" avatar="assets/avatars/pravatar-80-1.jpg" timestamp="2026-05-26T09:25:00Z">yep, one sec</snice-chat-message>
+            <snice-chat-message slot="messages" author="Alice" avatar="assets/avatars/pravatar-40-alice.jpg" timestamp="2026-05-26T09:26:00Z" format="markdown">check the **PR** then</snice-chat-message>
+          </snice-chat>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Author messages as children --&gt;
+&lt;snice-chat current-user="Me" color-authors&gt;
+  &lt;snice-chat-message slot="messages"
+    author="Alice"&gt;Hey, you around?&lt;/snice-chat-message&gt;
+  &lt;snice-chat-message slot="messages"
+    author="Me"&gt;yep, one sec&lt;/snice-chat-message&gt;
+  &lt;snice-chat-message slot="messages"
+    author="Alice" format="markdown"&gt;check the **PR**&lt;/snice-chat-message&gt;
+&lt;/snice-chat&gt;</snice-code-block>
         </div>
       </div>
     </div>
 
 <script>
-// Initialize chat
-    customElements.whenDefined('snice-chat').then(() => {
-      const chat = document.getElementById('demo-chat');
-      if (chat) {
-        chat.messages = [
-          { id: '1', type: 'text', content: 'Hey! How\'s the project going?', author: 'Alice', timestamp: new Date(Date.now() - 300000) },
-          { id: '2', type: 'text', content: 'Going great! Just finished the new components.', author: 'You', timestamp: new Date(Date.now() - 240000) },
-          { id: '3', type: 'text', content: 'Awesome! Can\'t wait to see them.', author: 'Alice', timestamp: new Date(Date.now() - 180000) }
-        ];
-      }
-    });
+  customElements.whenDefined('snice-chat').then(() => {
+    const t = (m) => new Date(Date.now() - m * 60000);
+    const AV = {
+      Alice: 'assets/avatars/pravatar-40-alice.jpg',
+      Bob: 'assets/avatars/pravatar-40-bob.jpg',
+      Carol: 'assets/avatars/pravatar-80-a1.jpg',
+      You: 'assets/avatars/pravatar-80-1.jpg'
+    };
+
+    const def = document.getElementById('chat-default');
+    if (def) def.messages = [
+      { id: '1', type: 'system', content: 'Alice joined the channel', author: 'System', timestamp: t(6) },
+      { id: '2', type: 'text', content: 'Hey! How’s it going?', author: 'Alice', avatar: AV.Alice, timestamp: t(5) },
+      { id: '3', type: 'text', content: 'Going great 👍', author: 'You', avatar: AV.You, timestamp: t(4) }
+    ];
+
+    const colors = document.getElementById('chat-colors');
+    if (colors) colors.messages = [
+      { id: '1', type: 'text', content: 'deploy is green', author: 'Alice', avatar: AV.Alice, timestamp: t(4) },
+      { id: '2', type: 'text', content: 'merging now', author: 'Bob', avatar: AV.Bob, timestamp: t(3) },
+      { id: '3', type: 'text', content: 'nice', author: 'Carol', avatar: AV.Carol, timestamp: t(2) },
+      { id: '4', type: 'text', content: 'ship it 🚀', author: 'You', avatar: AV.You, timestamp: t(1),
+        reactions: [{ emoji: '🚀', count: 2, users: ['Alice', 'Bob'] }] }
+    ];
+
+    const md = document.getElementById('chat-md');
+    if (md) md.messages = [
+      { id: '1', type: 'text', format: 'markdown', author: 'Alice', avatar: AV.Alice, timestamp: t(3),
+        content: '**Release 5.3** is out 🎉\n\n- per-user name colors\n- `layout="bubbles"`\n- markdown bodies\n\nRun `npm i snice@latest` — see the [changelog](#).' },
+      { id: '2', type: 'text', format: 'markdown', author: 'You', avatar: AV.You, timestamp: t(1),
+        content: 'on it — `git pull && npm test` ✅' }
+    ];
+
+    const bub = document.getElementById('chat-bubbles');
+    if (bub) bub.messages = [
+      { id: '1', type: 'text', content: 'hey, you around?', author: 'Alice', avatar: AV.Alice, timestamp: t(3) },
+      { id: '2', type: 'text', content: 'yep, one sec', author: 'You', avatar: AV.You, timestamp: t(2) },
+      { id: '3', type: 'text', content: 'cool — calling now', author: 'Alice', avatar: AV.Alice, timestamp: t(1) }
+    ];
+
+    // Echo sent messages back so the demos feel live. React/edit/delete are
+    // self-applied by the component, so we only wire the send event here —
+    // wiring them again would double-apply.
+    function wire(chat) {
+      chat.addEventListener('message-send', (e) => {
+        if (!e.detail.message) return;
+        chat.addMessage({ type: 'text', content: e.detail.message, author: chat.currentUser, avatar: AV[chat.currentUser], timestamp: new Date() });
+      });
+    }
+    document.querySelectorAll('snice-chat').forEach(wire);
+  });
 </script>
     <div class="comp-section" data-category="Form Controls" data-cat-index="0" data-cat-order="3">
       <h3>Checkbox</h3>

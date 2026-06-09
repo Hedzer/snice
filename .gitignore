@@ -102,3 +102,6 @@ marketing/**
 !marketing/.gitkeep
 
 storybook-static/
+
+# Brainstorming companion session cache
+.superpowers/

@@ -11,6 +11,10 @@ export interface ChatProps extends SniceBaseProps {
     showTyping?: any;
     showAvatars?: any;
     showTimestamps?: any;
+    authorColors?: any;
+    colorAuthors?: any;
+    markdown?: any;
+    layout?: any;
     onMessageSend?: (event: any) => void;
     onMessageEdit?: (event: any) => void;
     onMessageDelete?: (event: any) => void;

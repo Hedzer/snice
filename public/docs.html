@@ -2251,7 +2251,38 @@ class EditorController implements IController {
 
   // Shadow DOM delegation
   target?: string;             // CSS selector to target specific elements within shadow root
+
+  // Where to attach the listener (see scope section below)
+  scope?: 'global' | string | EventTarget | ((this: HTMLElement) =&gt; EventTarget | null);
 }</snice-code-block>
+<h4 id="events-scope-controlling-the-listener-target">scope — controlling the listener target</h4>
+<p>By default, <code>@on</code> attaches the listener to the host element. The <code>scope</code> option redirects</p>
+<p>that attachment to another target, which is how Snice expresses cross-cutting events.</p>
+<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Listener attaches to</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) => EventTarget \</td><td>null`</td><td>called at connect; <code>null</code> skips</td></tr></tbody></table></div>
+<p>The resolver function is called with the host element as <code>this</code> and re-resolves each time</p>
+<p>the component reconnects to the DOM, so listeners follow the host when it moves.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Cross-cutting global event (document)
+@on('bus:save', { scope: 'global' })
+onSave(e: CustomEvent) { /* ... */ }
+
+// Scoped to nearest ancestor matching the selector
+@on('bus:cart-added', { scope: 'cart-shell' })
+onCartAdded(e: CustomEvent) { /* ... */ }
+
+// Explicit EventTarget
+@on('go', { scope: someElement })
+onGo() { /* ... */ }
+
+// Resolver — full control, re-runs on reconnect
+@on('beep', { scope() { return this.closest('app-shell'); } })
+onBeep() { /* ... */ }</snice-code-block>
+<p>If <code>scope</code> cannot resolve (selector matches no ancestor, resolver returns <code>null</code> or throws),</p>
+<p>the listener is <strong>not attached</strong> and a <code>console.warn</code> is emitted. The component still</p>
+<p>mounts; only the listener is skipped.</p>
+<p>Disconnect removes the listener from whichever target it was attached to. Reconnect</p>
+<p>re-resolves and re-attaches, so resolver-based scopes track DOM moves correctly.</p>
+<p><code>scope</code> is compatible with the delegation selector — the listener attaches on the</p>
+<p>scoped target and still matches the selector when an event fires within it.</p>
 <h4 id="events-throttling">Throttling</h4>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@controller('scroll-controller')
 class ScrollController implements IController {
@@ -2368,7 +2399,35 @@ class StatusIndicator extends HTMLElement {
   dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
   debounce?: number;             // Debounce dispatch by ms
   throttle?: number;             // Throttle dispatch by ms
+  // Where to dispatch the event (see scope section below)
+  scope?: 'global' | string | EventTarget | ((this: HTMLElement) =&gt; EventTarget | null);
 }</snice-code-block>
+<h4 id="events-scope-controlling-the-dispatch-target">scope — controlling the dispatch target</h4>
+<p>By default, <code>@dispatch</code> calls <code>this.dispatchEvent(event)</code> — the event originates from</p>
+<p>the host element. The <code>scope</code> option redirects the dispatch to another target so the</p>
+<p>event behaves as if it originated there. Use this with <code>@on({ scope })</code> to express</p>
+<p>cross-cutting events without going through bubbling.</p>
+<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Event dispatched on</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) => EventTarget \</td><td>null`</td><td>called per dispatch; <code>null</code> skips</td></tr></tbody></table></div>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Global cart-add bus
+@element('add-to-cart-button')
+class AddToCartButton extends HTMLElement {
+  @on('click', 'button')
+  click() { this.add(this.productId); }
+
+  @dispatch('bus:cart-added', { scope: 'global' })
+  add(id: string) { return { id }; }
+}
+
+// Listener on any other element
+@element('cart-counter')
+class CartCounter extends HTMLElement {
+  @on('bus:cart-added', { scope: 'global' })
+  bump() { this.count++; }
+}</snice-code-block>
+<p>If <code>scope</code> cannot resolve (selector matches no ancestor, resolver returns <code>null</code>),</p>
+<p>the event is <strong>not dispatched</strong> and a <code>console.warn</code> is emitted. The method's return</p>
+<p>value still flows through <code>dispatchOnUndefined</code> / <code>debounce</code> / <code>throttle</code> semantics</p>
+<p>before the scope check.</p>
 <h3 id="events-debounce-throttle">Debounce/Throttle</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('search-box')
 class SearchBox extends HTMLElement {

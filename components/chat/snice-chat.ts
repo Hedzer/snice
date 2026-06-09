@@ -1,4 +1,6 @@
-import { element, property, render, styles, dispatch, query, watch, ready, dispose, html, css } from 'snice';
+import { element, property, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
+import { PENCIL, TRASH } from '../icons';
+import { ChatLayout, MessageFormat } from './snice-chat.types';
 import type {
   ChatMessage,
   MessageType,
@@ -6,7 +8,10 @@ import type {
   SniceChatElement,
   SniceChatEventMap,
 } from './snice-chat.types';
+import type { SniceChatMessageElement } from './snice-chat-message.types';
 import '../empty-state/snice-empty-state';
+import '../markdown/snice-markdown';
+import './snice-chat-message';
 import cssContent from './snice-chat.css?inline';
 
 /**
@@ -45,6 +50,28 @@ function getInitials(name: string): string {
     .join('')
     .toUpperCase()
     .substring(0, 2);
+}
+
+/**
+ * Concrete fallbacks for the 8 data-viz accent tokens (mirrors theme.css), so
+ * auto author colors work without the theme loaded.
+ */
+const ACCENT_FALLBACKS = [
+  'hsl(214 55% 48%)', 'hsl(27 62% 50%)', 'hsl(160 40% 40%)', 'hsl(275 32% 52%)',
+  'hsl(42 62% 48%)', 'hsl(340 42% 55%)', 'hsl(110 32% 42%)', 'hsl(195 45% 46%)',
+];
+
+/**
+ * Stable color for an author name: hash → one of the 8 accent slots. Returns a
+ * theme accent var with a concrete fallback.
+ */
+function autoAuthorColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  const slot = (hash % 8) + 1;
+  return `var(--snice-color-accent-${slot}, ${ACCENT_FALLBACKS[slot - 1]})`;
 }
 
 /**
@@ -88,11 +115,34 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @property({ type: Boolean, attribute: 'show-timestamps' })
   showTimestamps: boolean = true;
 
+  @property({ type: Object, attribute: false })
+  authorColors: Record<string, string> = {};
+
+  @property({ type: Boolean, attribute: 'color-authors' })
+  colorAuthors: boolean = false;
+
+  @property({ type: Boolean })
+  markdown: boolean = false;
+
+  @property()
+  layout: ChatLayout = ChatLayout.Default;
+
+  // Internal reactive state: id of the message currently being edited inline.
+  @property({ attribute: false })
+  private editingId: string | null = null;
+
+  // Internal reactive state: id of the message pending inline delete-confirm.
+  @property({ attribute: false })
+  private confirmingDeleteId: string | null = null;
+
   @query('.messages-area')
   private messagesArea!: HTMLElement;
 
   @query('.input-field')
   private inputField!: HTMLTextAreaElement;
+
+  @query('.edit-field')
+  private editField?: HTMLTextAreaElement;
 
   private typingIndicators: Map<string, TypingIndicator> = new Map();
   private typingTimeout: number | null = null;
@@ -106,6 +156,28 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @ready()
   init() {
     this.addEventListener('keydown', this.handleKeyDown);
+    this.ingestSlottedMessages();
+  }
+
+  // Declarative dual-API: read slotted <snice-chat-message> children as the
+  // messages source. Slot wins over the imperative array when present; an
+  // empty slot leaves the array untouched. Mirrors snice-table / snice-column.
+  @observe('mutation:childList')
+  private onSlottedMessagesChanged() {
+    this.ingestSlottedMessages();
+  }
+
+  private ingestSlottedMessages() {
+    const els = Array.from(
+      this.querySelectorAll('snice-chat-message')
+    ) as SniceChatMessageElement[];
+
+    if (els.length === 0) return;
+
+    this.messages = els.map((el) => {
+      const definition = el.getMessageDefinition();
+      return { ...definition, id: definition.id || generateId() };
+    });
   }
 
   @dispose()
@@ -292,29 +364,77 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     this.inputField.style.height = `${Math.min(this.inputField.scrollHeight, 150)}px`;
   }
 
+  // Reactions are social: anyone can react to any message. Toggle the current
+  // user on/off the emoji, update the local model, and emit for a backend.
   private handleReaction(messageId: string, emoji: string) {
+    const me = this.currentUser;
+    this.messages = this.messages.map((m) => {
+      if (m.id !== messageId) return m;
+      const reactions = [...(m.reactions ?? [])];
+      const i = reactions.findIndex((r) => r.emoji === emoji);
+      if (i === -1) {
+        reactions.push({ emoji, count: 1, users: [me] });
+      } else {
+        const r = reactions[i];
+        const users = r.users.includes(me)
+          ? r.users.filter((u) => u !== me)
+          : [...r.users, me];
+        if (users.length === 0) reactions.splice(i, 1);
+        else reactions[i] = { ...r, count: users.length, users };
+      }
+      return { ...m, reactions };
+    });
     this.emitMessageReact(messageId, emoji);
   }
 
-  private handleEdit(messageId: string) {
+  // Edit is inline: clicking edit swaps the body for a textarea. Owner-only.
+  private startEdit(messageId: string) {
+    this.editingId = messageId;
+  }
+
+  private cancelEdit() {
+    this.editingId = null;
+  }
+
+  private commitEdit(messageId: string) {
+    const next = (this.editField?.value ?? '').trim();
     const message = this.messages.find((m) => m.id === messageId);
-    if (!message) return;
+    this.editingId = null;
+    if (!message || !next || next === message.content) return;
+    this.updateMessage(messageId, { content: next, edited: true });
+    this.emitMessageEdit(messageId, next);
+  }
 
-    // Simple prompt for now - in a real app, this would be inline editing
-    const newContent = prompt('Edit message:', message.content);
-    if (newContent && newContent !== message.content) {
-      this.emitMessageEdit(messageId, newContent);
+  private handleEditKeydown(e: KeyboardEvent, messageId: string) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.commitEdit(messageId);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.cancelEdit();
     }
   }
 
+  @watch('editingId')
+  private focusEditField() {
+    if (this.editingId === null) return;
+    queueMicrotask(() => this.editField?.focus());
+  }
+
+  // Delete asks for inline confirmation (not a native confirm dialog).
+  // Owner-only. On confirm, updates the local model and emits for a backend.
   private handleDelete(messageId: string) {
-    if (confirm('Delete this message?')) {
-      this.emitMessageDelete(messageId);
-    }
+    this.confirmingDeleteId = messageId;
   }
 
-  private handleThread(messageId: string) {
-    this.emitMessageThread(messageId);
+  private confirmDelete(messageId: string) {
+    this.confirmingDeleteId = null;
+    this.deleteMessage(messageId);
+    this.emitMessageDelete(messageId);
+  }
+
+  private cancelDelete() {
+    this.confirmingDeleteId = null;
   }
 
   @render()
@@ -345,25 +465,59 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
     `;
   }
 
+  // Per-message author color. Precedence: per-message override → authorColors
+  // map → auto (only when color-authors is set) → none (falls through to the
+  // default token in CSS). Computed per element instance — no global registry.
+  private resolveAuthorColor(message: ChatMessage): string {
+    if (message.authorColor) return message.authorColor;
+    if (this.authorColors[message.author]) return this.authorColors[message.author];
+    if (this.colorAuthors) return autoAuthorColor(message.author);
+    return '';
+  }
+
+  // Markdown is opt-in: per-message format='markdown', or the component-wide
+  // `markdown` attribute (which a per-message format='text' can override).
+  private shouldRenderMarkdown(message: ChatMessage): boolean {
+    if (message.format === MessageFormat.Markdown) return true;
+    if (this.markdown && message.format !== MessageFormat.Text) return true;
+    return false;
+  }
+
+  private renderMessageBody(message: ChatMessage) {
+    if (this.shouldRenderMarkdown(message)) {
+      return html/*html*/`<snice-markdown part="message-text" class="message-text" .content=${message.content}></snice-markdown>`;
+    }
+
+    return html/*html*/`<div part="message-text" class="message-text">${message.content}</div>`;
+  }
+
   private renderMessage(message: ChatMessage) {
     const isSystem = message.type === 'system';
     const isCurrentUser = message.author === this.currentUser;
 
     if (isSystem) {
       return html/*html*/`
-        <div class="message system" data-message-id="${message.id}">
+        <div part="message system-message" class="message system" data-message-id="${message.id}">
           <div class="message-content">
-            <div class="message-text">${message.content}</div>
+            <div part="message-text" class="message-text">${message.content}</div>
           </div>
         </div>
       `;
     }
 
+    const ownClass = isCurrentUser ? 'own' : 'other';
+    const ownPart = isCurrentUser ? 'message-own' : 'message-other';
+    const authorColor = this.resolveAuthorColor(message);
+    const authorStyle = authorColor ? `--snice-chat-author-color:${authorColor}` : '';
+    const isEditing = this.editingId === message.id;
+    const isConfirmingDelete = this.confirmingDeleteId === message.id;
+    const hasReactions = !!message.reactions && message.reactions.length > 0;
+
     return html/*html*/`
-      <div class="message" data-message-id="${message.id}">
+      <div part="message ${ownPart}" class="message ${ownClass}" data-message-id="${message.id}">
         ${this.showAvatars
           ? html`
-              <div class="message-avatar">
+              <div part="avatar" class="message-avatar">
                 ${message.avatar
                   ? html`<img src="${message.avatar}" alt="${message.author}" />`
                   : getInitials(message.author)}
@@ -372,55 +526,73 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
           : ''}
         <div class="message-content">
           <div class="message-header">
-            <span class="message-author">${message.author}</span>
+            <span part="author" class="message-author" style="${authorStyle}">${message.author}</span>
             ${this.showTimestamps
-              ? html`<span class="message-timestamp">${formatTime(message.timestamp)}</span>`
+              ? html`<span part="timestamp" class="message-timestamp">${formatTime(message.timestamp)}</span>`
               : ''}
-            ${message.edited ? html`<span class="message-edited">(edited)</span>` : ''}
+            ${message.edited ? html`<span part="edited" class="message-edited">(edited)</span>` : ''}
           </div>
-          ${message.content ? html`<div class="message-text">${message.content}</div>` : ''}
+          ${isEditing
+            ? this.renderEditor(message)
+            : message.content ? this.renderMessageBody(message) : ''}
           ${message.attachment ? this.renderAttachment(message.attachment) : ''}
-          ${message.reactions && message.reactions.length > 0
-            ? this.renderReactions(message.id, message.reactions, isCurrentUser)
-            : ''}
+          ${hasReactions ? this.renderReactions(message.id, message.reactions) : ''}
+          ${isConfirmingDelete ? this.renderDeleteConfirm(message) : ''}
         </div>
+        ${isEditing || isConfirmingDelete ? '' : this.renderActions(message.id, isCurrentUser)}
+      </div>
+    `;
+  }
+
+  // Inline message editor — replaces the body while editing. Enter saves,
+  // Shift+Enter newlines, Esc cancels.
+  private renderEditor(message: ChatMessage) {
+    return html/*html*/`
+      <div class="message-edit">
+        <textarea
+          part="edit-input"
+          class="edit-field"
+          .value=${message.content}
+          @keydown=${(e: KeyboardEvent) => this.handleEditKeydown(e, message.id)}
+        ></textarea>
+        <div class="edit-actions">
+          <button part="edit-save" class="edit-button edit-save" @click=${() => this.commitEdit(message.id)}>Save</button>
+          <button part="edit-cancel" class="edit-button" @click=${() => this.cancelEdit()}>Cancel</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Inline delete confirmation — replaces the hover actions while pending, so
+  // a misclick can't destroy a message. Confirm deletes + emits; Cancel aborts.
+  private renderDeleteConfirm(message: ChatMessage) {
+    return html/*html*/`
+      <div part="delete-confirm" class="message-confirm">
+        <span class="confirm-text">Delete this message?</span>
+        <div class="confirm-actions">
+          <button part="delete-confirm-yes" class="confirm-button confirm-delete" @click=${() => this.confirmDelete(message.id)}>Delete</button>
+          <button part="delete-confirm-no" class="confirm-button" @click=${() => this.cancelDelete()}>Cancel</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Hover action menu. React is available on every message (you react to
+  // others, not just yourself); edit and delete are owner-only.
+  private renderActions(messageId: string, isCurrentUser: boolean) {
+    return html/*html*/`
+      <div part="actions" class="message-actions">
+        <button class="action-button" @click=${() => this.handleReaction(messageId, '👍')} title="React" aria-label="React">
+          <span class="action-emoji" aria-hidden="true">🙂</span>
+        </button>
         ${isCurrentUser
           ? html`
-              <div class="message-actions">
-                <button
-                  class="action-button"
-                  @click="${() => this.handleReaction(message.id, '👍')}"
-                  title="React"
-                >
-                  <svg viewBox="0 0 16 16" fill="currentColor">
-                    <path
-                      d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM5.5 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm5 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM8 11c1.5 0 2.7-1 3.2-2H4.8c.5 1 1.7 2 3.2 2z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="action-button"
-                  @click="${() => this.handleEdit(message.id)}"
-                  title="Edit"
-                >
-                  <svg viewBox="0 0 16 16" fill="currentColor">
-                    <path
-                      d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25a1.75 1.75 0 0 1 .445-.758l8.61-8.61z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="action-button"
-                  @click="${() => this.handleDelete(message.id)}"
-                  title="Delete"
-                >
-                  <svg viewBox="0 0 16 16" fill="currentColor">
-                    <path
-                      d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75zM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15z"
-                    />
-                  </svg>
-                </button>
-              </div>
+              <button class="action-button" @click=${() => this.startEdit(messageId)} title="Edit" aria-label="Edit message">
+                ${unsafeHTML(PENCIL)}
+              </button>
+              <button class="action-button" @click=${() => this.handleDelete(messageId)} title="Delete" aria-label="Delete message">
+                ${unsafeHTML(TRASH)}
+              </button>
             `
           : ''}
       </div>
@@ -432,14 +604,14 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
     if (attachment.type === 'image') {
       return html/*html*/`
-        <div class="message-attachment">
+        <div part="attachment" class="message-attachment">
           <img src="${attachment.url}" alt="${attachment.name}" />
         </div>
       `;
     }
 
     return html/*html*/`
-      <div class="message-attachment">
+      <div part="attachment" class="message-attachment">
         <div class="attachment-file">
           <div class="attachment-icon">
             <svg viewBox="0 0 16 16" fill="currentColor">
@@ -461,24 +633,25 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   private renderReactions(
     messageId: string,
-    reactions: ChatMessage['reactions'],
-    isCurrentUser: boolean
+    reactions: ChatMessage['reactions']
   ) {
     if (!reactions || reactions.length === 0) return '';
 
     return html/*html*/`
-      <div class="message-reactions">
-        ${reactions.map(
-          (reaction) => html`
+      <div part="reactions" class="message-reactions">
+        ${reactions.map((reaction) => {
+          const isActive = reaction.users.includes(this.currentUser);
+          return html`
             <div
-              class="reaction ${reaction.users.includes(this.currentUser) ? 'active' : ''}"
+              part="reaction ${isActive ? 'reaction-active' : ''}"
+              class="reaction ${isActive ? 'active' : ''}"
               @click="${() => this.handleReaction(messageId, reaction.emoji)}"
             >
               <span class="reaction-emoji">${reaction.emoji}</span>
               <span class="reaction-count">${reaction.count}</span>
             </div>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }
@@ -489,7 +662,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
     return html/*html*/`
       <div class="typing-indicators">
-        <div class="typing-indicator">
+        <div part="typing-indicator" class="typing-indicator">
           <span>${users.map((u) => u.user).join(', ')} ${users.length === 1 ? 'is' : 'are'} typing</span>
           <div class="typing-dots">
             <div class="typing-dot"></div>

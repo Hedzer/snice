@@ -16,6 +16,10 @@ export interface ChatProps extends SniceBaseProps {
   showTyping?: any;
   showAvatars?: any;
   showTimestamps?: any;
+  authorColors?: any;
+  colorAuthors?: any;
+  markdown?: any;
+  layout?: any;
   onMessageSend?: (event: any) => void;
   onMessageEdit?: (event: any) => void;
   onMessageDelete?: (event: any) => void;
@@ -43,7 +47,7 @@ export interface ChatProps extends SniceBaseProps {
  */
 export const Chat = createReactAdapter<ChatProps>({
   tagName: 'snice-chat',
-  properties: ["messages","currentUser","currentAvatar","placeholder","allowFiles","showTyping","showAvatars","showTimestamps"],
+  properties: ["messages","currentUser","currentAvatar","placeholder","allowFiles","showTyping","showAvatars","showTimestamps","authorColors","colorAuthors","markdown","layout"],
   events: {"message-send":"onMessageSend","message-edit":"onMessageEdit","message-delete":"onMessageDelete","message-react":"onMessageReact","message-thread":"onMessageThread","typing-start":"onTypingStart","typing-stop":"onTypingStop"},
   formAssociated: false
 });

@@ -8,6 +8,22 @@
 export type MessageType = 'text' | 'file' | 'image' | 'system';
 
 /**
+ * How a message body is rendered
+ */
+export enum MessageFormat {
+  Text = 'text',
+  Markdown = 'markdown',
+}
+
+/**
+ * Built-in message layout for snice-chat
+ */
+export enum ChatLayout {
+  Default = 'default',
+  Bubbles = 'bubbles',
+}
+
+/**
  * Chat message
  */
 export interface ChatMessage {
@@ -21,6 +37,10 @@ export interface ChatMessage {
   reactions?: MessageReaction[];
   thread?: ChatMessage[];
   attachment?: MessageAttachment;
+  /** How the message body is rendered. Defaults to MessageFormat.Text. */
+  format?: MessageFormat;
+  /** Per-message author color override (CSS color). */
+  authorColor?: string;
 }
 
 /**
@@ -107,6 +127,26 @@ export interface SniceChatElement extends HTMLElement {
    * Whether to show timestamps
    */
   showTimestamps: boolean;
+
+  /**
+   * Per-author color overrides, keyed by author name (CSS color values)
+   */
+  authorColors: Record<string, string>;
+
+  /**
+   * Auto-assign a stable color to each author (opt-in)
+   */
+  colorAuthors: boolean;
+
+  /**
+   * Render message content as markdown by default (per-message format overrides)
+   */
+  markdown: boolean;
+
+  /**
+   * Built-in message layout. ChatLayout.Bubbles = mobile-OS style aligned bubbles.
+   */
+  layout: ChatLayout;
 
   /**
    * Add a message

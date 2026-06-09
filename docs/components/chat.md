@@ -5,6 +5,7 @@
 Slack-style chat interface with messages, typing indicators, reactions, file attachments, and message threading.
 
 ## Table of Contents
+- [Components](#components)
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
@@ -13,6 +14,13 @@ Slack-style chat interface with messages, typing indicators, reactions, file att
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
+
+## Components
+
+| Element | Description |
+|---------|-------------|
+| `snice-chat` | The chat container — renders messages, input, typing indicators. |
+| `snice-chat-message` | Declarative message authoring. Provide messages as child elements instead of (or as well as) the `messages` array; child elements win when present. |
 
 ## Properties
 
@@ -26,6 +34,23 @@ Slack-style chat interface with messages, typing indicators, reactions, file att
 | `showTyping` (attr: `show-typing`) | `boolean` | `true` | Show typing indicators |
 | `showAvatars` (attr: `show-avatars`) | `boolean` | `true` | Show user avatars |
 | `showTimestamps` (attr: `show-timestamps`) | `boolean` | `true` | Show message timestamps |
+| `authorColors` | `Record<string, string>` | `{}` | Per-author name colors, keyed by author name (property only) |
+| `colorAuthors` (attr: `color-authors`) | `boolean` | `false` | Auto-assign a stable color to each author |
+| `markdown` | `boolean` | `false` | Render message content as markdown by default |
+| `layout` | `'default' \| 'bubbles'` | `'default'` | Built-in message layout; `'bubbles'` aligns own messages right in colored bubbles |
+
+### snice-chat-message Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `author` | `string` | `''` | Message author name |
+| `avatar` | `string` | `''` | Author avatar URL |
+| `type` | `'text' \| 'file' \| 'image' \| 'system'` | `'text'` | Message type |
+| `format` | `'text' \| 'markdown'` | `'text'` | How the body is rendered |
+| `edited` | `boolean` | `false` | Marks the message as edited |
+| `author-color` | `string` | `''` | Per-message author color override |
+
+The message body is the element's text content.
 
 ### ChatMessage Interface
 
@@ -41,6 +66,8 @@ interface ChatMessage {
   reactions?: MessageReaction[];
   thread?: ChatMessage[];
   attachment?: MessageAttachment;
+  format?: 'text' | 'markdown';   // how the body is rendered (default 'text')
+  authorColor?: string;           // per-message author color override
 }
 
 interface MessageAttachment {
@@ -82,6 +109,8 @@ interface MessageReaction {
 | `message-thread` | `{ messageId: string }` | User starts a thread |
 | `typing-start` | `{}` | Current user starts typing |
 | `typing-stop` | `{}` | Current user stops typing |
+
+React, edit, and delete are applied to the local `messages` model by the component itself in addition to emitting the event — your handler should persist the change to a backend, not re-apply it to `messages` (doing both double-applies). Reactions work on any message (yours or another user's); edit and delete are owner-only. Delete asks for inline confirmation before removing. `message-send` is the exception: the component does not self-add the sent message, so your handler appends it.
 
 ## CSS Custom Properties
 
@@ -132,6 +161,27 @@ interface MessageReaction {
 |------|-------------|
 | `base` | The chat container |
 | `messages` | The scrollable messages area |
+| `message` | A message row (every message) |
+| `message-own` | A message row authored by the current user |
+| `message-other` | A message row authored by someone else |
+| `system-message` | A system message row |
+| `avatar` | A message avatar |
+| `author` | A message author name |
+| `timestamp` | A message timestamp |
+| `edited` | The "(edited)" marker |
+| `message-text` | A message body |
+| `attachment` | A message attachment |
+| `reactions` | A message's reactions container |
+| `reaction` | A single reaction |
+| `reaction-active` | A reaction the current user has added |
+| `actions` | The hover action menu |
+| `edit-input` | The inline edit textarea (shown while editing) |
+| `edit-save` | The save button in the inline editor |
+| `edit-cancel` | The cancel button in the inline editor |
+| `delete-confirm` | The inline delete-confirmation row |
+| `delete-confirm-yes` | The confirm (delete) button |
+| `delete-confirm-no` | The cancel button in the delete confirmation |
+| `typing-indicator` | A typing indicator row |
 | `input-area` | The input area wrapper |
 | `input-container` | Container holding the input and buttons |
 | `input` | The message input field |
@@ -229,6 +279,63 @@ setTimeout(() => {
     type: 'text', content: 'Sorry for the delay!', author: 'Alice', timestamp: new Date()
   });
 }, 2000);
+```
+
+### Declarative Messages
+
+Author messages as `snice-chat-message` children instead of the `messages` array. Child elements win when both are present.
+
+```html
+<snice-chat current-user="Me">
+  <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:24:00Z">Hey, deploy is green</snice-chat-message>
+  <snice-chat-message slot="messages" author="Me" timestamp="2026-05-26T09:25:00Z">Merging now</snice-chat-message>
+</snice-chat>
+```
+
+### Per-User Name Colors
+
+Set `colorAuthors` to auto-assign a stable color per author, or supply explicit colors with `authorColors`. A per-message `authorColor` overrides both.
+
+```html
+<snice-chat color-authors></snice-chat>
+```
+
+```javascript
+chat.authorColors = { Alice: '#e11d48', Bob: '#2563eb' };
+```
+
+### Markdown
+
+Set `markdown` to render every message body as markdown, or set `format: 'markdown'` per message. A per-message `format: 'text'` opts out of the component-wide default.
+
+```html
+<snice-chat markdown></snice-chat>
+```
+
+```javascript
+chat.addMessage({
+  type: 'text', author: 'Alice', timestamp: new Date(),
+  format: 'markdown',
+  content: 'shipped **v5.3** — run `npm i snice@latest`'
+});
+```
+
+### Bubble Layout
+
+Set `layout="bubbles"` for a mobile-OS style: own messages right-aligned in colored bubbles, others left.
+
+```html
+<snice-chat layout="bubbles" current-user="Me"></snice-chat>
+```
+
+### Custom Styling with Parts
+
+Every message internal is exposed as a CSS part.
+
+```css
+snice-chat::part(author)        { font-family: 'Inter'; }
+snice-chat::part(message-own)   { background: rgba(37, 99, 235, 0.06); }
+snice-chat::part(message-text)  { font-size: 0.9375rem; }
 ```
 
 ## Accessibility
