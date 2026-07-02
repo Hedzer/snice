@@ -1,5 +1,6 @@
 import { element, property, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
 import { PENCIL, TRASH, PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../icons';
+import { FALLBACK_ACCENTS } from '../utils';
 import { ChatLayout, MessageFormat } from './snice-chat.types';
 import type {
   ChatMessage,
@@ -53,17 +54,8 @@ function getInitials(name: string): string {
 }
 
 /**
- * Concrete fallbacks for the 8 data-viz accent tokens (mirrors theme.css), so
- * auto author colors work without the theme loaded.
- */
-const ACCENT_FALLBACKS = [
-  'hsl(214 55% 48%)', 'hsl(27 62% 50%)', 'hsl(160 40% 40%)', 'hsl(275 32% 52%)',
-  'hsl(42 62% 48%)', 'hsl(340 42% 55%)', 'hsl(110 32% 42%)', 'hsl(195 45% 46%)',
-];
-
-/**
  * Stable color for an author name: hash → one of the 8 accent slots. Returns a
- * theme accent var with a concrete fallback.
+ * theme accent var with the shared concrete fallback.
  */
 function autoAuthorColor(name: string): string {
   let hash = 0;
@@ -71,7 +63,16 @@ function autoAuthorColor(name: string): string {
     hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
   }
   const slot = (hash % 8) + 1;
-  return `var(--snice-color-accent-${slot}, ${ACCENT_FALLBACKS[slot - 1]})`;
+  return `var(--snice-color-accent-${slot}, ${FALLBACK_ACCENTS[slot - 1]})`;
+}
+
+/**
+ * Author colors ride on message data, so they can come from a backend. A CSS
+ * color never needs `;`, `{`, or `}` — reject values that could smuggle extra
+ * declarations into the inline style attribute.
+ */
+function isSafeCssColor(value: string): boolean {
+  return !/[;{}]/.test(value);
 }
 
 /**
@@ -85,7 +86,6 @@ function autoAuthorColor(name: string): string {
  * @fires {CustomEvent<{ messageId: string; newContent: string }>} message-edit - Fires when editing a message
  * @fires {CustomEvent<{ messageId: string }>} message-delete - Fires when deleting a message
  * @fires {CustomEvent<{ messageId: string; emoji: string }>} message-react - Fires when reacting to a message
- * @fires {CustomEvent<{ messageId: string }>} message-thread - Fires when starting a thread
  * @fires {CustomEvent<{}>} typing-start - Fires when user starts typing
  * @fires {CustomEvent<{}>} typing-stop - Fires when user stops typing
  */
@@ -166,12 +166,27 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   // Declarative dual-API: read slotted <snice-chat-message> children as the
-  // messages source. Slot wins over the imperative array when present; an
-  // empty slot leaves the array untouched. Mirrors snice-table / snice-column.
+  // messages source. An empty slot leaves the array untouched. Mirrors
+  // snice-table / snice-column. Slotted messages keep a stable id across
+  // re-ingests (keyed per element), runtime state (reactions, inline edits)
+  // survives, and imperatively-added messages are appended after the slot set.
   @observe('mutation:childList')
   private onSlottedMessagesChanged() {
     this.ingestSlottedMessages();
   }
+
+  @observe('mutation:attributes', { subtree: true })
+  private onSlottedMessageAttributesChanged() {
+    this.ingestSlottedMessages();
+  }
+
+  // Element → stable message id, so re-ingesting doesn't mint new ids and
+  // orphan reactions/edit state keyed to the old ones.
+  private slotMessageIds = new WeakMap<SniceChatMessageElement, string>();
+
+  // Every id ever minted for a slot element, so a removed slot child isn't
+  // misclassified as an imperative message and resurrected on re-ingest.
+  private mintedSlotIds = new Set<string>();
 
   private ingestSlottedMessages() {
     const els = Array.from(
@@ -180,10 +195,36 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
     if (els.length === 0) return;
 
-    this.messages = els.map((el) => {
-      const definition = el.getMessageDefinition();
-      return { ...definition, id: definition.id || generateId() };
+    const existingById = new Map(this.messages.map((m) => [m.id, m]));
+
+    const slotMessages = els.map((el) => {
+      let id = this.slotMessageIds.get(el);
+      if (!id) {
+        id = generateId();
+        this.slotMessageIds.set(el, id);
+        this.mintedSlotIds.add(id);
+      }
+
+      const definition = { ...el.getMessageDefinition(), id };
+      const existing = existingById.get(id);
+      if (!existing) return definition;
+
+      // Runtime state outranks the (possibly stale) light DOM: keep reactions
+      // accumulated via the UI unless the element declares its own, and keep
+      // an inline edit's content over the original slotted text.
+      if (!definition.reactions && existing.reactions) definition.reactions = existing.reactions;
+      if (existing.edited && !definition.edited) {
+        definition.content = existing.content;
+        definition.edited = true;
+      }
+      return definition;
     });
+
+    // Imperatively-added messages (addMessage) are not backed by an element;
+    // keep them, appended after the slot set.
+    const imperative = this.messages.filter((m) => !this.mintedSlotIds.has(m.id));
+
+    this.messages = [...slotMessages, ...imperative];
   }
 
   @dispose()
@@ -195,9 +236,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   @watch('messages')
-  private messagesChanged() {
-    // Scroll to bottom when new message added
-    setTimeout(() => this.scrollToBottom(), 0);
+  private messagesChanged(oldMessages?: ChatMessage[], newMessages?: ChatMessage[]) {
+    // Scroll to bottom only when a message was appended — reactions and edits
+    // reassign the array too, and must not yank the viewport while the user
+    // is scrolled up reading history.
+    if ((newMessages?.length ?? 0) > (oldMessages?.length ?? 0)) {
+      setTimeout(() => this.scrollToBottom(), 0);
+    }
   }
 
   @dispatch('message-send', { bubbles: true, composed: true })
@@ -218,11 +263,6 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @dispatch('message-react', { bubbles: true, composed: true })
   private emitMessageReact(messageId: string, emoji: string) {
     return { messageId, emoji };
-  }
-
-  @dispatch('message-thread', { bubbles: true, composed: true })
-  private emitMessageThread(messageId: string) {
-    return { messageId };
   }
 
   @dispatch('typing-start', { bubbles: true, composed: true })
@@ -382,11 +422,13 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
         reactions.push({ emoji, count: 1, users: [me] });
       } else {
         const r = reactions[i];
-        const users = r.users.includes(me)
-          ? r.users.filter((u) => u !== me)
-          : [...r.users, me];
-        if (users.length === 0) reactions.splice(i, 1);
-        else reactions[i] = { ...r, count: users.length, users };
+        const removing = r.users.includes(me);
+        const users = removing ? r.users.filter((u) => u !== me) : [...r.users, me];
+        // Adjust by ±1 — never recompute from users.length, which destroys
+        // server counts backed by truncated user lists (count 128, users [2]).
+        const count = Math.max(users.length, r.count + (removing ? -1 : 1));
+        if (count === 0) reactions.splice(i, 1);
+        else reactions[i] = { ...r, count, users };
       }
       return { ...m, reactions };
     });
@@ -394,7 +436,9 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   }
 
   // Edit is inline: clicking edit swaps the body for a textarea. Owner-only.
+  // Inline modes are exclusive: opening one closes the other.
   private startEdit(messageId: string) {
+    this.confirmingDeleteId = null;
     this.editingId = messageId;
   }
 
@@ -436,7 +480,9 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   // Delete asks for inline confirmation (not a native confirm dialog).
   // Owner-only. On confirm, updates the local model and emits for a backend.
+  // Inline modes are exclusive: opening one closes the other.
   private handleDelete(messageId: string) {
+    this.editingId = null;
     this.confirmingDeleteId = messageId;
   }
 
@@ -490,8 +536,9 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   // map → auto (only when color-authors is set) → none (falls through to the
   // default token in CSS). Computed per element instance — no global registry.
   private resolveAuthorColor(message: ChatMessage): string {
-    if (message.authorColor) return message.authorColor;
-    if (this.authorColors[message.author]) return this.authorColors[message.author];
+    if (message.authorColor && isSafeCssColor(message.authorColor)) return message.authorColor;
+    const mapped = this.authorColors[message.author];
+    if (mapped && isSafeCssColor(mapped)) return mapped;
     if (this.colorAuthors) return autoAuthorColor(message.author);
     return '';
   }

@@ -10,6 +10,13 @@ function iconPathData(icon: string): string {
   return icon.match(/ d="([^"]+)"/)![1];
 }
 
+// happy-dom doesn't implement Element.scrollIntoView; the chat calls it from
+// scrollToMessage and from the inline edit/delete-confirm reveal. Install a
+// no-op for the whole file; tests that care about calls spy on it.
+if (typeof (Element.prototype as any).scrollIntoView !== 'function') {
+  (Element.prototype as any).scrollIntoView = function () {};
+}
+
 describe('snice-chat', () => {
   let chat: SniceChat;
 
@@ -283,23 +290,13 @@ describe('snice-chat', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // happy-dom doesn't implement Element.scrollIntoView; stub it on the
-      // prototype so the call inside scrollToMessage resolves to a no-op.
-      const proto = Element.prototype as any;
-      const hadScrollIntoView = typeof proto.scrollIntoView === 'function';
-      let calls = 0;
-      if (!hadScrollIntoView) {
-        proto.scrollIntoView = function () { calls++; };
-      }
-
+      const spy = vi.spyOn(Element.prototype as any, 'scrollIntoView');
       try {
         const messageId = chat.messages[0].id;
         chat.scrollToMessage(messageId);
-        expect(calls).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(1);
       } finally {
-        if (!hadScrollIntoView) {
-          delete proto.scrollIntoView;
-        }
+        spy.mockRestore();
       }
     });
 
@@ -354,7 +351,7 @@ describe('snice-chat', () => {
       expect(c.messages[0].id).not.toBe(c.messages[1].id);
     });
 
-    it('slotted children take precedence over the messages array', async () => {
+    it('merges slotted children (first) with the messages array instead of discarding it', async () => {
       c = document.createElement('snice-chat') as SniceChat;
       c.messages = [
         { id: 'arr', type: 'text', content: 'array msg', author: 'Zoe', timestamp: new Date() },
@@ -363,9 +360,10 @@ describe('snice-chat', () => {
       document.body.appendChild(c);
       await c.ready;
 
-      expect(c.messages).toHaveLength(1);
+      expect(c.messages).toHaveLength(2);
       expect(c.messages[0].author).toBe('Alice');
       expect(c.messages[0].content).toBe('slot msg');
+      expect(c.messages[1].content).toBe('array msg');
     });
 
     it('keeps the messages array when there are no slotted children', async () => {
@@ -628,12 +626,6 @@ describe('snice-chat', () => {
       expect(handler).toHaveBeenCalledTimes(0);
     });
 
-    it('should emit message-thread event', () => {
-      const handler = vi.fn();
-      chat.addEventListener('message-thread', handler);
-      expect(handler).toHaveBeenCalledTimes(0);
-    });
-
     it('should emit typing-start event', () => {
       const handler = vi.fn();
       chat.addEventListener('typing-start', handler);
@@ -893,6 +885,202 @@ describe('snice-chat', () => {
       } finally {
         scroll.restore();
       }
+    });
+  });
+
+  describe('author color safety', () => {
+    it('rejects author colors that would inject extra CSS declarations', async () => {
+      const c = document.createElement('snice-chat') as SniceChat;
+      c.messages = [{
+        id: '1', type: 'text', content: 'hi', author: 'Eve', timestamp: new Date(),
+        authorColor: 'red;position:fixed;inset:0;z-index:9999',
+      }];
+      document.body.appendChild(c);
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 30));
+
+      const author = c.shadowRoot!.querySelector('.message-author') as HTMLElement;
+      expect(author.getAttribute('style') ?? '').not.toContain('position:fixed');
+      c.remove();
+    });
+
+    it('keeps legitimate CSS color values', async () => {
+      const c = document.createElement('snice-chat') as SniceChat;
+      c.messages = [{
+        id: '1', type: 'text', content: 'hi', author: 'Ann', timestamp: new Date(),
+        authorColor: 'hsl(214 55% 48%)',
+      }];
+      document.body.appendChild(c);
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 30));
+
+      const author = c.shadowRoot!.querySelector('.message-author') as HTMLElement;
+      expect(author.getAttribute('style') ?? '').toContain('hsl(214 55% 48%)');
+      c.remove();
+    });
+  });
+
+  describe('reaction count integrity', () => {
+    it('adjusts server-supplied counts by ±1 instead of recomputing from a truncated users array', async () => {
+      const c = document.createElement('snice-chat') as SniceChat;
+      c.currentUser = 'Me';
+      c.messages = [{
+        id: '1', type: 'text', content: 'popular', author: 'Alice', timestamp: new Date(),
+        reactions: [{ emoji: '❤️', count: 128, users: ['a', 'b'] }],
+      }];
+      document.body.appendChild(c);
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 30));
+
+      // React button adds 👍 (new reaction) — toggle the existing ❤️ chip instead
+      (c.shadowRoot!.querySelector('.reaction') as HTMLElement).click();
+      await new Promise((r) => setTimeout(r, 30));
+
+      expect(c.messages[0].reactions![0].count).toBe(129);
+
+      // Toggling off restores the original count
+      (c.shadowRoot!.querySelector('.reaction') as HTMLElement).click();
+      await new Promise((r) => setTimeout(r, 30));
+      expect(c.messages[0].reactions![0].count).toBe(128);
+      c.remove();
+    });
+  });
+
+  describe('scroll behavior on message changes', () => {
+    it('scrolls to bottom when a message is appended but NOT on reaction/edit', async () => {
+      const c = document.createElement('snice-chat') as SniceChat;
+      c.currentUser = 'Me';
+      c.messages = [
+        { id: '1', type: 'text', content: 'old', author: 'Alice', timestamp: new Date() },
+        { id: '2', type: 'text', content: 'mine', author: 'Me', timestamp: new Date() },
+      ];
+      document.body.appendChild(c);
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 30));
+
+      const spy = vi.spyOn(c, 'scrollToBottom');
+
+      // Reaction: messages reassigned, but nothing appended — must not scroll
+      (c.shadowRoot!.querySelector('.message-actions button[title="React"]') as HTMLButtonElement).click();
+      await new Promise((r) => setTimeout(r, 30));
+      expect(spy).not.toHaveBeenCalled();
+
+      // Append: must scroll
+      c.addMessage({ type: 'text', content: 'new', author: 'Alice', timestamp: new Date() });
+      await new Promise((r) => setTimeout(r, 30));
+      expect(spy).toHaveBeenCalled();
+      c.remove();
+    });
+  });
+
+  describe('inline UI exclusivity', () => {
+    it('opening the delete confirm closes an editor open on another message (and vice versa)', async () => {
+      const c = document.createElement('snice-chat') as SniceChat;
+      c.currentUser = 'Me';
+      c.messages = [
+        { id: 'a', type: 'text', content: 'first', author: 'Me', timestamp: new Date() },
+        { id: 'b', type: 'text', content: 'second', author: 'Me', timestamp: new Date() },
+      ];
+      document.body.appendChild(c);
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 30));
+
+      const sr = c.shadowRoot!;
+      const btn = (id: string, title: string) =>
+        sr.querySelector(`[data-message-id="${id}"] .message-actions button[title="${title}"]`) as HTMLButtonElement;
+
+      btn('a', 'Edit').click();
+      await new Promise((r) => setTimeout(r, 30));
+      expect(sr.querySelector('.message-edit')).toBeTruthy();
+
+      btn('b', 'Delete').click();
+      await new Promise((r) => setTimeout(r, 30));
+      expect(sr.querySelector('.message-confirm')).toBeTruthy();
+      expect(sr.querySelector('.message-edit')).toBeFalsy();
+      c.remove();
+    });
+  });
+
+  describe('declarative markdown + slot state stability', () => {
+    const hosts: HTMLElement[] = [];
+
+    function slottedChat(inner: string): SniceChat {
+      const host = document.createElement('div');
+      host.innerHTML = `<snice-chat markdown current-user="Me">${inner}</snice-chat>`;
+      document.body.appendChild(host);
+      hosts.push(host);
+      return host.querySelector('snice-chat') as SniceChat;
+    }
+
+    afterEach(() => {
+      hosts.splice(0).forEach((h) => h.remove());
+    });
+
+    it('renders slotted messages as markdown under a chat-level markdown flag', async () => {
+      const c = slottedChat(
+        `<snice-chat-message author="Alice">**bold**</snice-chat-message>`
+      );
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      expect(c.shadowRoot!.querySelector('snice-markdown')).toBeTruthy();
+    });
+
+    it('keeps stable ids and runtime reactions across a re-ingest', async () => {
+      const c = slottedChat(
+        `<snice-chat-message author="Alice">one</snice-chat-message>`
+      );
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      const idBefore = c.messages[0].id;
+      (c.shadowRoot!.querySelector('.message-actions button[title="React"]') as HTMLButtonElement).click();
+      await new Promise((r) => setTimeout(r, 30));
+      expect(c.messages[0].reactions).toHaveLength(1);
+
+      // Appending a new declarative message re-ingests; state must survive
+      const extra = document.createElement('snice-chat-message');
+      extra.setAttribute('author', 'Bob');
+      extra.textContent = 'two';
+      c.appendChild(extra);
+      await new Promise((r) => setTimeout(r, 50));
+
+      expect(c.messages).toHaveLength(2);
+      expect(c.messages[0].id).toBe(idBefore);
+      expect(c.messages[0].reactions).toHaveLength(1);
+    });
+
+    it('keeps imperatively-added messages when slotted children re-ingest', async () => {
+      const c = slottedChat(
+        `<snice-chat-message author="Alice">one</snice-chat-message>`
+      );
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      c.addMessage({ type: 'text', content: 'imperative', author: 'Me', timestamp: new Date() });
+      const extra = document.createElement('snice-chat-message');
+      extra.setAttribute('author', 'Bob');
+      extra.textContent = 'two';
+      c.appendChild(extra);
+      await new Promise((r) => setTimeout(r, 50));
+
+      const contents = c.messages.map((m) => m.content);
+      expect(contents).toContain('imperative');
+      expect(contents).toContain('one');
+      expect(contents).toContain('two');
+    });
+
+    it('re-ingests when an attribute changes on a slotted message', async () => {
+      const c = slottedChat(
+        `<snice-chat-message author="Alice">one</snice-chat-message>`
+      );
+      await c.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      c.querySelector('snice-chat-message')!.setAttribute('author', 'Renamed');
+      await new Promise((r) => setTimeout(r, 50));
+
+      expect(c.messages[0].author).toBe('Renamed');
     });
   });
 

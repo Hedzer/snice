@@ -5,7 +5,7 @@ Slack-style chat interface with messages, typing indicators, reactions, and file
 ## Components
 
 - `snice-chat` - container
-- `snice-chat-message` - declarative message child (slot wins over `messages` array)
+- `snice-chat-message` - declarative message child (rendered first; `messages`-array entries append after)
 
 ## Properties
 
@@ -24,7 +24,7 @@ markdown: boolean = false;             // render bodies as markdown by default
 layout: 'default' | 'bubbles' = 'default';  // 'bubbles' = aligned colored bubbles
 ```
 
-ChatMessage adds: `format?: 'text'|'markdown'` (default 'text'), `authorColor?: string`.
+ChatMessage adds: `format?: 'text'|'markdown'` (unset = chat-level `markdown` applies), `authorColor?: string` (CSS color; values containing `;`/`{`/`}` are rejected).
 
 ### snice-chat-message attributes
 
@@ -32,9 +32,11 @@ ChatMessage adds: `format?: 'text'|'markdown'` (default 'text'), `authorColor?: 
 author: string = '';
 avatar: string = '';
 type: 'text'|'file'|'image'|'system' = 'text';
-format: 'text'|'markdown' = 'text';
+format?: 'text'|'markdown';            // unset = chat-level markdown applies
 edited: boolean = false;
 authorColor: string = '';              // attribute: author-color
+reactions?: MessageReaction[];         // property only
+attachment?: MessageAttachment;        // property only
 // body = element text content
 ```
 
@@ -55,11 +57,10 @@ authorColor: string = '';              // attribute: author-color
 - `message-edit` -> `{ messageId: string, newContent: string }`
 - `message-delete` -> `{ messageId: string }`
 - `message-react` -> `{ messageId: string, emoji: string }`
-- `message-thread` -> `{ messageId: string }`
 - `typing-start` -> `{}`
 - `typing-stop` -> `{}`
 
-React, edit, and delete self-apply to the local `messages` model AND emit the event — don't also mutate in the handler or it double-applies. Delete is confirmed inline first. `message-send` does not self-add; the consumer adds the sent message.
+React, edit, and delete self-apply to the local `messages` model AND emit the event — don't also mutate in the handler or it double-applies. On backend rejection, revert via `updateMessage()`. Delete is confirmed inline first. `message-send` does not self-add; the consumer adds the sent message.
 
 ## CSS Parts
 
@@ -100,7 +101,7 @@ chat.removeTypingIndicator('Alice');
 ```
 
 ```html
-<!-- declarative messages (slot wins over messages array) -->
+<!-- declarative messages (slot first; messages array appends after) -->
 <snice-chat current-user="Me" color-authors layout="bubbles" markdown>
   <snice-chat-message slot="messages" author="Alice">shipped **v5.3**</snice-chat-message>
   <snice-chat-message slot="messages" author="Me" format="text">on it</snice-chat-message>

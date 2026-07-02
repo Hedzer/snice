@@ -66,7 +66,7 @@ export function renderIcon(icon: string, className = 'icon'): TemplateResult {
  * been applied (test environments, SSR) or when the 8 accent tokens have
  * been stripped. Keep in lockstep with `theme.css` --snice-color-accent-1..8.
  */
-const FALLBACK_ACCENTS = [
+export const FALLBACK_ACCENTS = [
   'hsl(214 55% 48%)', 'hsl(27 62% 50%)', 'hsl(160 40% 40%)', 'hsl(275 32% 52%)',
   'hsl(42 62% 48%)',  'hsl(340 42% 55%)', 'hsl(110 32% 42%)', 'hsl(195 45% 46%)',
 ];

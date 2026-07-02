@@ -2,7 +2,7 @@
 
 # Chat Component
 
-Slack-style chat interface with messages, typing indicators, reactions, file attachments, and message threading.
+Slack-style chat interface with messages, typing indicators, reactions, and file attachments.
 
 ## Table of Contents
 - [Components](#components)
@@ -20,7 +20,7 @@ Slack-style chat interface with messages, typing indicators, reactions, file att
 | Element | Description |
 |---------|-------------|
 | `snice-chat` | The chat container — renders messages, input, typing indicators. |
-| `snice-chat-message` | Declarative message authoring. Provide messages as child elements instead of (or as well as) the `messages` array; child elements win when present. |
+| `snice-chat-message` | Declarative message authoring. Provide messages as child elements instead of (or as well as) the `messages` array; child elements render first, array entries append after. |
 
 ## Properties
 
@@ -46,11 +46,11 @@ Slack-style chat interface with messages, typing indicators, reactions, file att
 | `author` | `string` | `''` | Message author name |
 | `avatar` | `string` | `''` | Author avatar URL |
 | `type` | `'text' \| 'file' \| 'image' \| 'system'` | `'text'` | Message type |
-| `format` | `'text' \| 'markdown'` | `'text'` | How the body is rendered |
+| `format` | `'text' \| 'markdown'` | — | How the body is rendered; unset defers to the chat-level `markdown` flag |
 | `edited` | `boolean` | `false` | Marks the message as edited |
 | `author-color` | `string` | `''` | Per-message author color override |
 
-The message body is the element's text content.
+The message body is the element's text content. Rich fields with no attribute form — `reactions`, `attachment` — can be set as JS properties on the element and are carried into the message.
 
 ### ChatMessage Interface
 
@@ -66,8 +66,8 @@ interface ChatMessage {
   reactions?: MessageReaction[];
   thread?: ChatMessage[];
   attachment?: MessageAttachment;
-  format?: 'text' | 'markdown';   // how the body is rendered (default 'text')
-  authorColor?: string;           // per-message author color override
+  format?: 'text' | 'markdown';   // unset = the chat-level markdown flag applies
+  authorColor?: string;           // per-message author color override (CSS color; values containing ; { } are rejected)
 }
 
 interface MessageAttachment {
@@ -106,11 +106,10 @@ interface MessageReaction {
 | `message-edit` | `{ messageId: string, newContent: string }` | User edits a message |
 | `message-delete` | `{ messageId: string }` | User deletes a message |
 | `message-react` | `{ messageId: string, emoji: string }` | User reacts to a message |
-| `message-thread` | `{ messageId: string }` | User starts a thread |
 | `typing-start` | `{}` | Current user starts typing |
 | `typing-stop` | `{}` | Current user stops typing |
 
-React, edit, and delete are applied to the local `messages` model by the component itself in addition to emitting the event — your handler should persist the change to a backend, not re-apply it to `messages` (doing both double-applies). Reactions work on any message (yours or another user's); edit and delete are owner-only. Delete asks for inline confirmation before removing. `message-send` is the exception: the component does not self-add the sent message, so your handler appends it.
+React, edit, and delete are applied to the local `messages` model by the component itself in addition to emitting the event — your handler should persist the change to a backend, not re-apply it to `messages` (doing both double-applies). If the backend rejects a change, revert it with `updateMessage()` (or by reassigning `messages`) from your handler. Reactions work on any message (yours or another user's); edit and delete are owner-only. Delete asks for inline confirmation before removing. `message-send` is the exception: the component does not self-add the sent message, so your handler appends it.
 
 ## CSS Custom Properties
 
@@ -283,7 +282,7 @@ setTimeout(() => {
 
 ### Declarative Messages
 
-Author messages as `snice-chat-message` children instead of the `messages` array. Child elements win when both are present.
+Author messages as `snice-chat-message` children instead of the `messages` array. When both are present, child elements render first and array entries (including `addMessage()` calls) append after them. Slotted messages keep their identity across DOM updates, so reactions and edits made in the UI survive re-renders.
 
 ```html
 <snice-chat current-user="Me">

@@ -79,7 +79,6 @@ export interface SniceChatEventMap {
   'message-edit': CustomEvent<{ messageId: string; newContent: string }>;
   'message-delete': CustomEvent<{ messageId: string }>;
   'message-react': CustomEvent<{ messageId: string; emoji: string }>;
-  'message-thread': CustomEvent<{ messageId: string }>;
   'typing-start': CustomEvent<{}>;
   'typing-stop': CustomEvent<{}>;
 }

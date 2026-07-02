@@ -1,6 +1,6 @@
 import { element, property, render, html } from 'snice';
-import { MessageFormat } from './snice-chat.types';
-import type { ChatMessage, MessageType } from './snice-chat.types';
+import type { MessageFormat } from './snice-chat.types';
+import type { ChatMessage, MessageType, MessageReaction, MessageAttachment } from './snice-chat.types';
 import type { SniceChatMessageElement } from './snice-chat-message.types';
 
 /**
@@ -24,14 +24,26 @@ export class SniceChatMessage extends HTMLElement implements SniceChatMessageEle
   @property()
   type: MessageType = 'text';
 
+  // No default: undefined defers to the chat-level `markdown` flag, exactly
+  // like an imperative addMessage() without a format.
   @property()
-  format: MessageFormat = MessageFormat.Text;
+  format?: MessageFormat;
 
   @property({ type: Boolean })
   edited: boolean = false;
 
   @property({ attribute: 'author-color' })
   authorColor: string = '';
+
+  // Rich fields have no attribute form — set them as JS properties.
+  @property({ type: Array, attribute: false })
+  reactions?: MessageReaction[];
+
+  @property({ type: Object, attribute: false })
+  attachment?: MessageAttachment;
+
+  @property({ type: Array, attribute: false })
+  thread?: ChatMessage[];
 
   @render()
   render() {
@@ -47,12 +59,15 @@ export class SniceChatMessage extends HTMLElement implements SniceChatMessageEle
       content: (this.textContent ?? '').trim(),
       author: this.author,
       timestamp: timestampAttr ? new Date(timestampAttr) : new Date(),
-      format: this.format,
       edited: this.edited,
     };
 
+    if (this.format) definition.format = this.format;
     if (this.avatar) definition.avatar = this.avatar;
     if (this.authorColor) definition.authorColor = this.authorColor;
+    if (this.reactions) definition.reactions = this.reactions;
+    if (this.attachment) definition.attachment = this.attachment;
+    if (this.thread) definition.thread = this.thread;
 
     return definition;
   }

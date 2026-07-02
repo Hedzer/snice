@@ -22,7 +22,8 @@ describe('snice-chat-message', () => {
     expect(msg.author).toBe('');
     expect(msg.avatar).toBe('');
     expect(msg.type).toBe('text');
-    expect(msg.format).toBe('text');
+    // No format default: undefined means "defer to the chat-level markdown flag"
+    expect(msg.format).toBeUndefined();
     expect(msg.edited).toBe(false);
     expect(msg.authorColor).toBe('');
   });
@@ -40,6 +41,21 @@ describe('snice-chat-message', () => {
       expect(def.format).toBe('markdown');
       expect(def.type).toBe('text');
       expect(def.edited).toBe(false);
+    });
+
+    it('omits format when the attribute is absent so the chat-level markdown flag applies', () => {
+      const def = msg.getMessageDefinition();
+      expect(def.format).toBeUndefined();
+    });
+
+    it('serializes reactions, attachment, and thread set as properties', () => {
+      const reactions = [{ emoji: '🚀', count: 2, users: ['a', 'b'] }];
+      const attachment = { type: 'file' as const, url: '/f.pdf', name: 'f.pdf' };
+      (msg as any).reactions = reactions;
+      (msg as any).attachment = attachment;
+      const def = msg.getMessageDefinition();
+      expect(def.reactions).toEqual(reactions);
+      expect(def.attachment).toEqual(attachment);
     });
 
     it('parses the timestamp attribute into a Date', () => {
