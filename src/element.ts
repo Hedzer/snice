@@ -4,8 +4,9 @@ import { setupResponseHandlers, cleanupResponseHandlers } from './request-respon
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
-import { requestRender, applyStyles } from './render';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS } from './symbols';
+import { requestRender, applyStyles, clearRenderTimers } from './render';
+import { clearDispatchTimers } from './events';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
 import { ElementOptions } from './types/element-options';
@@ -203,6 +204,15 @@ export function applyElementFunctionality(constructor: any) {
             }
           }
         }
+
+        // Replay a render that was dropped while disconnected. The scheduler
+        // sets this flag when it skips a detached element, so a property changed
+        // while detached still reaches the DOM on reattach. A plain move (no
+        // pending render) leaves the flag unset, so we don't re-render needlessly.
+        if (this[RENDER_METHOD] && this[PENDING_RECONNECT_RENDER]) {
+          this[PENDING_RECONNECT_RENDER] = false;
+          requestRender(this);
+        }
         return;
       }
 
@@ -360,6 +370,17 @@ export function applyElementFunctionality(constructor: any) {
       // Cleanup pending @debounce / @throttle timers so they don't fire on a dead element
       clearDebounceTimers(this);
       clearThrottleTimers(this);
+      // The render/dispatch debounce-throttle timers live in separate stores.
+      // A pending render is replayed on reconnect (same flag the scheduler
+      // uses); a pending dispatch is a one-shot signal, so it's dropped.
+      if (clearRenderTimers(this)) {
+        (this as any)[PENDING_RECONNECT_RENDER] = true;
+      }
+      clearDispatchTimers(this);
+      // @moved / @adopted debounce-throttle timers, likewise dropped so they
+      // don't fire on a dead element.
+      clearLifecycleTimers(this, MOVED_TIMERS);
+      clearLifecycleTimers(this, ADOPTED_TIMERS);
     };
     
     constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string, newValue: string) {
@@ -398,12 +419,14 @@ export function applyElementFunctionality(constructor: any) {
 
     // Add connectedMoveCallback for handling DOM moves
     constructor.prototype.connectedMoveCallback = async function() {
-      // Call @moved handlers
+      // Call @moved handlers via the prototype method (the debounce/throttle
+      // wrapper), not the raw handler — otherwise @moved({debounce}) options
+      // are ignored for real moves and only work when called directly.
       const movedHandlers = constructor[MOVED_HANDLERS];
       if (movedHandlers) {
         for (const handler of movedHandlers) {
           try {
-            await handler.method.call(this);
+            await (this as any)[handler.methodName]();
           } catch (error) {
             console.error(`Error in @moved handler ${handler.methodName}:`, error);
           }
@@ -413,12 +436,13 @@ export function applyElementFunctionality(constructor: any) {
 
     // Add adoptedCallback for handling document adoption
     constructor.prototype.adoptedCallback = async function() {
-      // Call @adopted handlers
+      // Call @adopted handlers via the prototype method (the debounce/throttle
+      // wrapper), not the raw handler — same reason as connectedMoveCallback.
       const adoptedHandlers = constructor[ADOPTED_HANDLERS];
       if (adoptedHandlers) {
         for (const handler of adoptedHandlers) {
           try {
-            await handler.method.call(this);
+            await (this as any)[handler.methodName]();
           } catch (error) {
             console.error(`Error in @adopted handler ${handler.methodName}:`, error);
           }
@@ -867,6 +891,23 @@ export function reconnect() {
   return function (target: any, context: ClassMethodDecoratorContext) {
     registerHandler(RECONNECT_HANDLERS, RECONNECT_METHODS, target, context);
   };
+}
+
+/**
+ * Clear any pending @moved / @adopted debounce/throttle timers on an instance
+ * (e.g. on disconnect), so they don't fire on a dead element.
+ */
+function clearLifecycleTimers(instance: any, timersSymbol: symbol): void {
+  const map = instance[timersSymbol];
+  if (!map) return;
+
+  for (const t of map.values()) {
+    if (t.debounceTimer) clearTimeout(t.debounceTimer);
+    if (t.throttleTimer) clearTimeout(t.throttleTimer);
+    t.debounceTimer = null;
+    t.throttleTimer = null;
+    t.lastThrottleCall = 0;
+  }
 }
 
 function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, methodsSymbol: symbol) {

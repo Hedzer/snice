@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { element, property, render, html } from '../src/index';
 
 describe('@render decorator - property and attribute bindings', () => {
@@ -11,6 +11,79 @@ describe('@render decorator - property and attribute bindings', () => {
 
   afterEach(() => {
     document.body.removeChild(container);
+  });
+
+  describe('single-expression bindings (. ? @) — value-index alignment', () => {
+    it('does not shift later bindings when a ?/./@ binding carries multiple interpolations', async () => {
+      // `?disabled="${a}${b}"` has two markers. If the parser only advances the
+      // value index by 1, the second value is consumed by the NEXT binding,
+      // corrupting `.value` downstream. The alignment must stay correct.
+      // The intentionally-misused `?disabled="${a}${b}"` shape warns; silence it
+      // here — this test asserts alignment, not the warning.
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      @element('test-multi-marker-align')
+      class TestMultiMarkerAlign extends HTMLElement {
+        @property() a = 'AAA';
+        @property() b = 'BBB';
+        @property() c = 'CCC';
+
+        @render()
+        renderContent() {
+          return html`<input ?disabled="${this.a}${this.b}" .value=${this.c} />`;
+        }
+      }
+
+      const el = document.createElement('test-multi-marker-align') as any;
+      container.appendChild(el);
+      await el.ready;
+
+      const input = el.shadowRoot?.querySelector('input') as HTMLInputElement;
+      // The downstream .value binding must get `c`, not the orphaned `b`.
+      expect(input.value).toBe('CCC');
+      warnSpy.mockRestore();
+    });
+
+    it('warns (once) when a single-expression binding carries static text', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      @element('test-static-text-property')
+      class TestStaticTextProperty extends HTMLElement {
+        @property() name = 'World';
+        @render()
+        renderContent() {
+          return html`<input .value="Hello ${this.name}" />`;
+        }
+      }
+
+      const el = document.createElement('test-static-text-property') as any;
+      container.appendChild(el);
+      await el.ready;
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(warnSpy.mock.calls.some((c) => /single expression/i.test(String(c[0])))).toBe(true);
+      warnSpy.mockRestore();
+    });
+
+    it('does NOT warn for a clean single-expression binding', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      @element('test-clean-property-binding')
+      class TestCleanPropertyBinding extends HTMLElement {
+        @property() v = 'x';
+        @render()
+        renderContent() {
+          return html`<input .value=${this.v} ?disabled=${false} @click=${() => {}} />`;
+        }
+      }
+
+      const el = document.createElement('test-clean-property-binding') as any;
+      container.appendChild(el);
+      await el.ready;
+
+      expect(warnSpy.mock.calls.some((c) => /single expression/i.test(String(c[0])))).toBe(false);
+      warnSpy.mockRestore();
+    });
   });
 
   it('should bind properties with .property syntax', async () => {

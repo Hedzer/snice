@@ -71,6 +71,32 @@ describe('audit: property changed while disconnected renders after reconnect', (
     // We expect the fix: shadow reflects count=5.
     expect(el.shadowRoot.textContent?.trim()).toBe('5');
   });
+
+  it('reflects a property changed while detached even when the flush runs before reattach', async () => {
+    @element('snice-reconnect-render-late')
+    class ReconnectRenderLate extends HTMLElement {
+      @property({ type: Number, attribute: false }) count = 0;
+      @render()
+      tpl() { return html/*html*/`<span>${this.count}</span>`; }
+    }
+
+    const el = document.createElement('snice-reconnect-render-late') as any;
+    document.body.appendChild(el);
+    await el.ready;
+    expect(el.shadowRoot.textContent?.trim()).toBe('0');
+
+    // Detach, change prop, and LET THE MICROTASK FLUSH RUN while detached
+    // (a real gap: setTimeout/route transition/async list op between the two).
+    el.remove();
+    el.count = 5;
+    await new Promise(r => setTimeout(r, 0)); // flush skips the disconnected el
+
+    // Reattach AFTER the dropped flush. Reconnect must catch up.
+    document.body.appendChild(el);
+    await new Promise(r => setTimeout(r, 50));
+
+    expect(el.shadowRoot.textContent?.trim()).toBe('5');
+  });
 });
 
 // ---------------------------------------------------------------------------

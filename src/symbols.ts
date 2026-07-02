@@ -15,6 +15,9 @@ export const READY_PROMISE = getSymbol('ready-promise');
 export const READY_RESOLVE = getSymbol('ready-resolve');
 export const RENDERED_PROMISE = getSymbol('rendered-promise');
 export const RENDERED_RESOLVE = getSymbol('rendered-resolve');
+// Set when a render is requested but dropped because the element was
+// disconnected; consumed on reconnect to replay exactly the missed render.
+export const PENDING_RECONNECT_RENDER = getSymbol('pending-reconnect-render');
 export const CONTROLLER = getSymbol('controller');
 export const INITIALIZED = getSymbol('initialized');
 

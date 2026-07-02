@@ -116,6 +116,23 @@ class Template {
               // Number of expressions = number of markers = attrStrings.length - 1
               const expressionCount = attrStrings.length - 1;
 
+              // Property/boolean/event bindings take a SINGLE expression — they
+              // can't concatenate static text (a `.prop` is an object, not a
+              // string). They consume the first expression; any static text or
+              // extra expressions are ignored. But the value index must still
+              // advance by the true marker count, or every later binding shifts.
+              const isSingleExpressionBinding = /^@@?|^[.?]/.test(originalName);
+              if (isSingleExpressionBinding) {
+                const hasStaticText = attrStrings.some((s) => s !== '');
+                if (expressionCount > 1 || hasStaticText) {
+                  console.warn(
+                    `snice: binding "${originalName}" takes a single expression; ` +
+                    `static text and extra interpolations are ignored. ` +
+                    `Use a plain attribute for string interpolation.`
+                  );
+                }
+              }
+
               if (originalName.startsWith('@@')) {
                 // Escaped event binding for events with @ in the name (e.g., @@snice/event -> @snice/event)
                 this.parts.push({
@@ -124,7 +141,7 @@ class Template {
                   name: originalName.slice(1), // Keep the @ in the event name
                   element
                 });
-                partIndex += 1;
+                partIndex += expressionCount;
               } else if (originalName.startsWith('@')) {
                 // Event binding (single value only)
                 this.parts.push({
@@ -133,7 +150,7 @@ class Template {
                   name: originalName.slice(1),
                   element
                 });
-                partIndex += 1;
+                partIndex += expressionCount;
               } else if (originalName.startsWith('.')) {
                 // Property binding (single value only)
                 this.parts.push({
@@ -142,7 +159,7 @@ class Template {
                   name: originalName.slice(1),
                   element
                 });
-                partIndex += 1;
+                partIndex += expressionCount;
               } else if (originalName.startsWith('?')) {
                 // Boolean attribute (single value only)
                 this.parts.push({
@@ -151,7 +168,7 @@ class Template {
                   name: originalName.slice(1),
                   element
                 });
-                partIndex += 1;
+                partIndex += expressionCount;
               } else {
                 // Regular attribute - supports multiple interpolations
                 // Store static string segments for interpolation
@@ -915,7 +932,9 @@ export class EventPart extends Part {
     // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter) to match @on decorator
     // Only parse colons for keyboard events, not custom events
     const isKeyboardEvent = ['keydown', 'keyup', 'keypress'].includes(eventName.split('.')[0].split(':')[0]);
-    const dotIndex = eventName.indexOf('.');
+    // Only keyboard events split on `.`/`:` into a key filter — a custom event
+    // name may legitimately contain a dot (e.g. `app.ready`) and must be kept whole.
+    const dotIndex = isKeyboardEvent ? eventName.indexOf('.') : -1;
     const colonIndex = isKeyboardEvent ? eventName.indexOf(':') : -1;
 
     // Use whichever delimiter comes first (dot or colon)

@@ -119,6 +119,54 @@ describe('Template event syntax with @ and / in event names', () => {
     container.remove();
   });
 
+  it('fires a handler bound to a custom event whose name contains a dot', async () => {
+    const readyHandler = vi.fn();
+
+    @element('test-dotted-emitter')
+    class TestDottedEmitter extends HTMLElement {
+      @render()
+      render() {
+        return html/*html*/`<div>Test</div>`;
+      }
+
+      emitReady() {
+        // A non-keyboard custom event whose name legitimately contains a dot.
+        this.dispatchEvent(new CustomEvent('app.ready', {
+          detail: { ok: true },
+          bubbles: true,
+        }));
+      }
+    }
+
+    @element('test-dotted-container')
+    class TestDottedContainer extends HTMLElement {
+      handleReady(e: CustomEvent) {
+        readyHandler(e.detail);
+      }
+
+      @render()
+      render() {
+        return html/*html*/`
+          <test-dotted-emitter
+            @app.ready=${(e: CustomEvent) => this.handleReady(e)}
+          ></test-dotted-emitter>
+        `;
+      }
+    }
+
+    const container = document.createElement('test-dotted-container');
+    document.body.appendChild(container);
+
+    await (container as any).ready;
+
+    const emitter = container.shadowRoot?.querySelector('test-dotted-emitter') as any;
+    emitter.emitReady();
+
+    expect(readyHandler).toHaveBeenCalledWith({ ok: true });
+
+    container.remove();
+  });
+
   it('should handle both . properties and @ events with slashes together', async () => {
     const scanHandler = vi.fn();
 

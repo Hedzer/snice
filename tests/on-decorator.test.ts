@@ -232,6 +232,32 @@ describe('@on decorator', () => {
       expect(escapeHandler).toHaveBeenCalledTimes(1); // Should not increment
     });
 
+    it('listens on a custom event whose name contains a dot (not treated as a key filter)', async () => {
+      const readyHandler = vi.fn();
+
+      @element('test-dotted-custom-event')
+      class TestDottedCustomEvent extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<div>Test</div>`;
+        }
+
+        @on('app.ready')
+        handleReady(e: CustomEvent) {
+          readyHandler(e.detail);
+        }
+      }
+
+      const el = document.createElement('test-dotted-custom-event') as TestDottedCustomEvent;
+      container.appendChild(el);
+      await el.ready;
+
+      el.dispatchEvent(new CustomEvent('app.ready', { detail: { ok: true }, bubbles: true }));
+      expect(readyHandler).toHaveBeenCalledWith({ ok: true });
+
+      container.removeChild(el);
+    });
+
     it('should handle ~Space (any modifiers) pattern', async () => {
       const spaceHandler = vi.fn();
 

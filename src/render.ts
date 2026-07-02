@@ -5,7 +5,7 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
 
 /**
  * Options for @render decorator
@@ -80,8 +80,14 @@ class RenderScheduler {
     this.scheduled = false;
 
     for (const element of elements) {
-      // Skip elements that were disconnected between scheduling and flush.
-      if (!element.isConnected) continue;
+      // Skip elements that were disconnected between scheduling and flush, but
+      // remember the dropped render so reconnect can replay it — otherwise the
+      // shadow DOM stays stale for a property changed while detached. The flag
+      // lives on the element, so it's GC'd with it (no leak if never reattached).
+      if (!element.isConnected) {
+        (element as any)[PENDING_RECONNECT_RENDER] = true;
+        continue;
+      }
       const options = (element as any)[RENDER_OPTIONS] || {};
       performRender(element, options);
     }
@@ -104,6 +110,17 @@ function flushRenderCallbacks(element: HTMLElement): void {
 }
 
 /**
+ * Backstop against a render() that mutates an observed property, which makes
+ * the property setter request another render from inside the current one. In
+ * `sync` mode that re-enters performRender synchronously and, unchecked,
+ * recurses to a stack overflow. The counter caps synchronous nesting and turns
+ * a silent crash into an actionable error. Normal renders never nest (child
+ * renders defer to a microtask), so this stays at depth 1 in the common case.
+ */
+let renderDepth = 0;
+const MAX_RENDER_DEPTH = 50;
+
+/**
  * Perform the actual render of an element
  */
 function performRender(element: HTMLElement, options: RenderOptions, precomputedResult?: any): void {
@@ -115,6 +132,16 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     return;
   }
 
+  if (renderDepth >= MAX_RENDER_DEPTH) {
+    const tag = element.tagName ? element.tagName.toLowerCase() : 'element';
+    console.error(
+      `snice: maximum render depth (${MAX_RENDER_DEPTH}) exceeded for <${tag}>. ` +
+      `render() is mutating an observed property, causing an infinite render loop.`
+    );
+    return;
+  }
+
+  renderDepth++;
   try {
     const result = precomputedResult !== undefined ? precomputedResult : renderMethod.call(element);
 
@@ -165,6 +192,8 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     flushRenderCallbacks(element);
   } catch (error) {
     console.error('Error rendering element:', error);
+  } finally {
+    renderDepth--;
   }
 }
 
@@ -228,6 +257,32 @@ export function requestRender(element: HTMLElement, immediate = false): void {
 
   // Normal rendering (with microtask batching unless sync)
   renderScheduler.schedule(element, options);
+}
+
+/**
+ * Clear any pending debounce/throttle render timers on an element (e.g. on
+ * disconnect, so they don't fire on a dead element and retain it until they
+ * expire). Returns true if a render was actually pending, so the caller can
+ * arrange a replay on reconnect via PENDING_RECONNECT_RENDER.
+ */
+export function clearRenderTimers(element: HTMLElement): boolean {
+  const timers = (element as any)[RENDER_TIMERS];
+  if (!timers) return false;
+
+  let hadPending = false;
+  if (timers.debounce) {
+    clearTimeout(timers.debounce);
+    timers.debounce = null;
+    hadPending = true;
+  }
+  if (timers.throttleTimer) {
+    clearTimeout(timers.throttleTimer);
+    timers.throttleTimer = null;
+    hadPending = true;
+  }
+  // Reset the throttle cooldown so a reconnected element starts fresh.
+  timers.lastThrottle = 0;
+  return hadPending;
 }
 
 /**

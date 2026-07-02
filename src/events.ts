@@ -118,3 +118,22 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
     };
   };
 }
+
+/**
+ * Clear any pending debounce/throttle dispatch timers on an instance (e.g. on
+ * disconnect, so a queued event doesn't fire into a detached node). A dispatch
+ * is a one-shot signal, so pending ones are dropped, not replayed.
+ */
+export function clearDispatchTimers(instance: any): void {
+  const timers = instance[DISPATCH_TIMERS];
+  if (!timers) return;
+
+  for (const t of timers.values()) {
+    if (t.debounceTimeout) clearTimeout(t.debounceTimeout);
+    if (t.throttleTimeout) clearTimeout(t.throttleTimeout);
+    t.debounceTimeout = null;
+    t.throttleTimeout = null;
+    t.throttleLastCall = 0;
+    t.latestDetail = undefined;
+  }
+}

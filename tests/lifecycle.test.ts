@@ -601,6 +601,34 @@ describe('element lifecycle', () => {
         // Should be called only once
         expect(movedSpy).toHaveBeenCalledTimes(1);
       });
+
+      it('debounces @moved handlers triggered by actual moves (connectedMoveCallback)', async () => {
+        const movedSpy = vi.fn();
+
+        @element('debounced-real-move-test')
+        class DebouncedRealMoveTest extends HTMLElement {
+          @moved({ debounce: 100 })
+          onMoved() {
+            movedSpy();
+          }
+        }
+
+        const el = document.createElement('debounced-real-move-test') as any;
+        document.body.appendChild(el);
+
+        // Three rapid real moves (the framework's own move dispatch, not a
+        // direct method call) must be debounced just like a direct call is.
+        await el.connectedMoveCallback();
+        await el.connectedMoveCallback();
+        await el.connectedMoveCallback();
+
+        expect(movedSpy).toHaveBeenCalledTimes(0);
+
+        await new Promise(resolve => setTimeout(resolve, 150));
+        expect(movedSpy).toHaveBeenCalledTimes(1);
+
+        el.remove();
+      });
     });
 
     describe('@adopted decorator', () => {

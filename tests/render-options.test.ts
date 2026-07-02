@@ -153,6 +153,40 @@ describe('@render decorator - render options', () => {
     expect(el.shadowRoot?.textContent).toBe('c');
   });
 
+  it('caps runaway synchronous re-entry instead of overflowing the stack', async () => {
+    // A sync render that mutates an observed property re-enters performRender
+    // synchronously with no natural stop. Without a depth cap this recurses to
+    // a stack overflow. The component self-limits at 500 only so the PRE-fix
+    // run demonstrates the uncontrolled re-entry without crashing the worker;
+    // the real bug is unbounded.
+    let renderCount = 0;
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    @element('test-sync-reentry')
+    class TestSyncReentry extends HTMLElement {
+      @property({ attribute: false })
+      n = 0;
+
+      @render({ sync: true })
+      renderContent() {
+        renderCount++;
+        if (this.n < 500) this.n = this.n + 1; // mutate observed state during render
+        return html`<div>${this.n}</div>`;
+      }
+    }
+
+    const el = document.createElement('test-sync-reentry') as TestSyncReentry;
+    container.appendChild(el);
+    await el.ready;
+
+    // The guard must stop the re-entry well before the self-limit and log once.
+    expect(renderCount).toBeLessThan(100);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls.some((c) => String(c[0]).includes('render depth'))).toBe(true);
+
+    errorSpy.mockRestore();
+  });
+
   it('should batch renders by default (no sync option)', async () => {
     let renderCount = 0;
 
