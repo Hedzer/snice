@@ -1,5 +1,5 @@
 import { element, property, render, styles, dispatch, query, watch, observe, ready, dispose, html, css, unsafeHTML } from 'snice';
-import { PENCIL, TRASH } from '../icons';
+import { PENCIL, TRASH, PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../icons';
 import { ChatLayout, MessageFormat } from './snice-chat.types';
 import type {
   ChatMessage,
@@ -143,6 +143,12 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
 
   @query('.edit-field')
   private editField?: HTMLTextAreaElement;
+
+  @query('.message-edit')
+  private editBox?: HTMLElement;
+
+  @query('.message-confirm')
+  private confirmBox?: HTMLElement;
 
   private typingIndicators: Map<string, TypingIndicator> = new Map();
   private typingTimeout: number | null = null;
@@ -418,13 +424,28 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   @watch('editingId')
   private focusEditField() {
     if (this.editingId === null) return;
-    queueMicrotask(() => this.editField?.focus());
+    // Watchers run before the re-render is even scheduled (renders flush on
+    // a microtask), so defer to a frame where the editor exists.
+    requestAnimationFrame(() => {
+      this.editField?.focus();
+      // The editor is taller than the message body it replaces; on the last
+      // message its Save/Cancel row would clip below the scroll area.
+      this.editBox?.scrollIntoView({ block: 'nearest' });
+    });
   }
 
   // Delete asks for inline confirmation (not a native confirm dialog).
   // Owner-only. On confirm, updates the local model and emits for a backend.
   private handleDelete(messageId: string) {
     this.confirmingDeleteId = messageId;
+  }
+
+  @watch('confirmingDeleteId')
+  private revealDeleteConfirm() {
+    if (this.confirmingDeleteId === null) return;
+    // Same clipping problem as the inline editor: the confirm row extends
+    // the last message past the bottom of the scroll area.
+    requestAnimationFrame(() => this.confirmBox?.scrollIntoView({ block: 'nearest' }));
   }
 
   private confirmDelete(messageId: string) {
@@ -694,20 +715,12 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
                     @click="${() => this.handleFileClick()}"
                     title="Attach file"
                   >
-                    <svg viewBox="0 0 16 16" fill="currentColor">
-                      <path
-                        d="M11.28 6.22a.75.75 0 0 0-1.06 0L7.25 9.19 5.78 7.72a.75.75 0 0 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0 0-1.06zM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-1.5 0a6.5 6.5 0 1 0-13 0 6.5 6.5 0 0 0 13 0z"
-                      />
-                    </svg>
+                    ${unsafeHTML(PAPER_CLIP)}
                   </button>
                 `
               : ''}
             <button class="input-button send" @click="${() => this.sendMessage()}" title="Send">
-              <svg viewBox="0 0 16 16" fill="currentColor">
-                <path
-                  d="M1.724 2.016a.75.75 0 0 1 1.048-.964l12.5 7a.75.75 0 0 1 0 1.292l-12.5 7a.75.75 0 0 1-1.048-.964l1.5-6.5a.75.75 0 0 1 .584-.584l5.916-1.188-5.916-1.188a.75.75 0 0 1-.584-.584l-1.5-6.5z"
-                />
-              </svg>
+              ${unsafeHTML(PAPER_AIRPLANE_SOLID)}
             </button>
           </div>
         </div>

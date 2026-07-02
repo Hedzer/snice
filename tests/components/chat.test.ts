@@ -1,8 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { SniceChat } from '../../components/chat/snice-chat';
 import type { ChatMessage } from '../../components/chat/snice-chat.types';
+import { PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../../components/icons';
 import '../../components/chat/snice-chat';
 import '../../components/chat/snice-chat-message';
+
+/** Extract the path data from an icon constant for containment assertions. */
+function iconPathData(icon: string): string {
+  return icon.match(/ d="([^"]+)"/)![1];
+}
 
 describe('snice-chat', () => {
   let chat: SniceChat;
@@ -645,7 +651,26 @@ describe('snice-chat', () => {
     let c: SniceChat;
     const flush = () => new Promise((r) => setTimeout(r, 30));
 
+    // happy-dom doesn't implement Element.scrollIntoView; the inline editor
+    // and delete confirm both scroll themselves into view after render, so
+    // stub it for every test in this block and count the calls.
+    let scrollIntoViewCalls = 0;
+    let restoreScrollIntoView: () => void;
+
+    beforeEach(() => {
+      scrollIntoViewCalls = 0;
+      const proto = Element.prototype as any;
+      const had = typeof proto.scrollIntoView === 'function';
+      const original = proto.scrollIntoView;
+      proto.scrollIntoView = function () { scrollIntoViewCalls++; };
+      restoreScrollIntoView = () => {
+        if (had) proto.scrollIntoView = original;
+        else delete proto.scrollIntoView;
+      };
+    });
+
     afterEach(() => {
+      restoreScrollIntoView();
       c?.remove();
     });
 
@@ -821,6 +846,73 @@ describe('snice-chat', () => {
       expect(deletes).not.toHaveBeenCalled();
       expect(sr.querySelector('[part~="delete-confirm"]')).toBeFalsy();
       expect(actionButton(sr, '1', 'Delete')).toBeTruthy();
+    });
+
+    // --- Inline UI stays visible inside the scroll area ---------------------
+    // Editing or delete-confirming the last message grows the message body
+    // past the bottom of .messages-area; the inline UI must scroll into view
+    // or its buttons are clipped and unreachable.
+    function stubScrollIntoView(): { calls: () => number; restore: () => void } {
+      const proto = Element.prototype as any;
+      const had = typeof proto.scrollIntoView === 'function';
+      const original = proto.scrollIntoView;
+      let count = 0;
+      proto.scrollIntoView = function () { count++; };
+      return {
+        calls: () => count,
+        restore: () => {
+          if (had) proto.scrollIntoView = original;
+          else delete proto.scrollIntoView;
+        },
+      };
+    }
+
+    it('starting an inline edit scrolls the editor into view', async () => {
+      const sr = await mount([
+        { id: '1', type: 'text', content: 'mine', author: 'Me', timestamp: new Date() },
+      ]);
+      const scroll = stubScrollIntoView();
+      try {
+        actionButton(sr, '1', 'Edit').click();
+        await flush();
+        expect(scroll.calls()).toBeGreaterThanOrEqual(1);
+      } finally {
+        scroll.restore();
+      }
+    });
+
+    it('opening the delete confirm scrolls it into view', async () => {
+      const sr = await mount([
+        { id: '1', type: 'text', content: 'mine', author: 'Me', timestamp: new Date() },
+      ]);
+      const scroll = stubScrollIntoView();
+      try {
+        actionButton(sr, '1', 'Delete').click();
+        await flush();
+        expect(scroll.calls()).toBeGreaterThanOrEqual(1);
+      } finally {
+        scroll.restore();
+      }
+    });
+  });
+
+  describe('composer icons (shared icon set)', () => {
+    it('attach-file button uses the shared paperclip icon', async () => {
+      await chat.ready;
+      const attach = chat.shadowRoot!.querySelector(
+        '.input-button[title="Attach file"]'
+      ) as HTMLButtonElement;
+      expect(attach).toBeTruthy();
+      expect(attach.innerHTML).toContain(iconPathData(PAPER_CLIP));
+    });
+
+    it('send button uses the shared paper-airplane icon', async () => {
+      await chat.ready;
+      const send = chat.shadowRoot!.querySelector(
+        '.input-button.send'
+      ) as HTMLButtonElement;
+      expect(send).toBeTruthy();
+      expect(send.innerHTML).toContain(iconPathData(PAPER_AIRPLANE_SOLID));
     });
   });
 });

@@ -1,6 +1,6 @@
 # snice-chat — Remaining Work / Handoff
 
-Branch: `feat/chat-theming` (uncommitted). Status as of this handoff.
+Branch: `feat/chat-theming`. Theming work committed in `8c1748ce`; custom-content design spec committed in `994b3078`. Status as of 2026-07-02.
 
 ## DONE (working, tested before the popover rework)
 - `<snice-chat-message>` config-carrier sub-element + dual-API ingestion (array OR slotted children; slot wins).
@@ -21,8 +21,15 @@ Branch: `feat/chat-theming` (uncommitted). Status as of this handoff.
 - **6.** `message-thread` KEPT (decision reversed): threads are now a planned feature — see "Threads" below.
 - Tests: 11 new cases (react-on-others, react toggle-off, edit show/Save/Enter/Escape, delete confirm/confirm-yes/cancel). Full `npm test` green (all 5 stages, 152 files / 1219 tests). Component rebuilt (`rebuild-single-component.mjs chat`, exit 0). Showcases rebuilt. Docs (human + AI) updated: action behavior + new parts.
 
-### STILL TODO this session
-- Visual check dark+light — BLOCKED: a 14h-old `vite --port 52891` (the user's, pid was 2119182) is hung and holding the port; needs the user to kill it or free the port.
+### DONE 2026-07-02 (visual QA session)
+- Visual check dark+light — done via showcase (:52891) + Storybook (:6006). All 5 showcase demos, hover actions, react/edit/delete/send flows exercised in both themes.
+- Fixes from that pass (uncommitted):
+  - Composer "Attach file" button had a check-circle glyph — replaced with new shared `PAPER_CLIP` icon; send button moved to new shared `PAPER_AIRPLANE_SOLID` (both added to `components/icons`).
+  - Inline editor and delete-confirm clipped below `.messages-area` on the last message — both now `scrollIntoView({block:'nearest'})` post-render (rAF; `@watch` runs before render flush, so a bare microtask races — this also fixed the latent no-op edit-field focus).
+  - Tests added: composer icon assertions + scroll-into-view for edit/confirm. Full `npm test` green (458 files / 6783 tests).
+- KNOWN ISSUE (pre-existing, not fixed): `scripts/generate-react-adapters.js` leaks `private` `@property` state into React adapter props (chat's `editingId`/`confirmingDeleteId`, kanban's `searchQuery`, cart's `couponInput`, etc.). Generator regex skips the `private` keyword instead of excluding the property. Fix = generator change + regen all adapters; needs approval.
+
+### STILL TODO
 - Cleanup: `.superpowers/brainstorm/**`, `.playwright-mcp/**` (not yet removed — awaiting commit-scope decision).
 - Commit (not done — never commit without asking).
 

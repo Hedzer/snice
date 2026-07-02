@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Chat = createReactAdapter({
     tagName: 'snice-chat',
-    properties: ["messages", "currentUser", "currentAvatar", "placeholder", "allowFiles", "showTyping", "showAvatars", "showTimestamps", "authorColors", "colorAuthors", "markdown", "layout"],
+    properties: ["messages", "currentUser", "currentAvatar", "placeholder", "allowFiles", "showTyping", "showAvatars", "showTimestamps", "authorColors", "colorAuthors", "markdown", "layout", "editingId", "confirmingDeleteId"],
     events: { "message-send": "onMessageSend", "message-edit": "onMessageEdit", "message-delete": "onMessageDelete", "message-react": "onMessageReact", "message-thread": "onMessageThread", "typing-start": "onTypingStart", "typing-stop": "onTypingStop" },
     formAssociated: false
 });

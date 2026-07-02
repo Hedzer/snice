@@ -34,6 +34,8 @@ export const EXCLAMATION_TRIANGLE_SOLID = /*html*/`<svg viewBox="0 0 24 24" fill
 
 export const X_CIRCLE_SOLID = /*html*/`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd"/></svg>`;
 
+export const PAPER_AIRPLANE_SOLID = /*html*/`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/></svg>`;
+
 // ─── OUTLINE — used for neutral UI chrome ──────────────────────────────────
 
 export const X_MARK = /*html*/`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg>`;
@@ -92,6 +94,8 @@ export const MAP_PIN = /*html*/`<svg viewBox="0 0 24 24" fill="none" stroke="cur
 
 export const ARROWS_RIGHT_LEFT = /*html*/`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>`;
 
+export const PAPER_CLIP = /*html*/`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>`;
+
 /** Small lookup for named access from template-string paths. */
 export const ICONS = {
   'info-circle':           INFO_CIRCLE_SOLID,
@@ -120,6 +124,8 @@ export const ICONS = {
   'star':                  STAR_SOLID,
   'star-outline':          STAR_OUTLINE,
   'circle':                CIRCLE_SOLID,
+  'paper-clip':            PAPER_CLIP,
+  'paper-airplane':        PAPER_AIRPLANE_SOLID,
 } as const;
 
 export type IconName = keyof typeof ICONS;
