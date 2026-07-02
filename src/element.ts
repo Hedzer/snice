@@ -925,10 +925,25 @@ function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, 
 
         const timers = (this as any)[timersSymbol].get(methodName);
         const exec = (...a: any[]) => originalMethod.apply(this, a);
+        // Deferred (debounce/throttle) calls run inside a setTimeout, outside
+        // the caller's try/catch — so catch their sync throws and async
+        // rejections here and log, rather than surface an uncaught error.
+        const execDeferred = (...a: any[]) => {
+          try {
+            const result = originalMethod.apply(this, a);
+            if (result && typeof result.then === 'function') {
+              (result as Promise<any>).catch((error) =>
+                console.error(`Error in deferred lifecycle handler ${methodName}:`, error)
+              );
+            }
+          } catch (error) {
+            console.error(`Error in deferred lifecycle handler ${methodName}:`, error);
+          }
+        };
 
         if (options.debounce > 0) {
           clearTimeout(timers.debounceTimer);
-          timers.debounceTimer = setTimeout(() => exec(...args), options.debounce);
+          timers.debounceTimer = setTimeout(() => execDeferred(...args), options.debounce);
           return undefined;
         }
 
@@ -943,7 +958,7 @@ function createLifecycleDecorator(handlersSymbol: symbol, timersSymbol: symbol, 
             timers.throttleTimer = setTimeout(() => {
               timers.throttleTimer = null;
               timers.lastThrottleCall = Date.now();
-              exec(...args);
+              execDeferred(...args);
             }, remaining);
           }
           return undefined;

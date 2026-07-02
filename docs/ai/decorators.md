@@ -87,9 +87,18 @@ attr="${val}"     - String attribute
 @event=${fn}      - Event listener (auto-bound)
 ```
 
-## Event Modifiers
+## Event Modifiers (keyboard only)
+Template dotted/colon modifiers apply ONLY to keydown/keyup/keypress — they are
+key filters, not general event options. A dot in any other event name is part of
+the event name (e.g. `@app.ready`).
 ```
 @keydown:Enter=${fn}    - Key filter
 @keydown.ctrl+s=${fn}   - Key combo
-@click.once=${fn}       - Fire once
+@keydown.~enter=${fn}   - Key, any modifiers
+```
+`once` / `preventDefault` / `stopPropagation` / `capture` are NOT template
+modifiers — use the `@on` decorator's options object:
+```typescript
+@on('click', { once: true, preventDefault: true, stopPropagation: true })
+handleClick(e: Event) {}
 ```

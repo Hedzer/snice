@@ -602,6 +602,32 @@ describe('element lifecycle', () => {
         expect(movedSpy).toHaveBeenCalledTimes(1);
       });
 
+      it('logs, not leaks, an error from a debounced @moved handler triggered by a real move', async () => {
+        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        @element('moved-debounce-throw')
+        class MovedDebounceThrow extends HTMLElement {
+          @moved({ debounce: 10 })
+          onMoved() {
+            throw new Error('moved-boom');
+          }
+        }
+
+        const el = document.createElement('moved-debounce-throw') as any;
+        document.body.appendChild(el);
+
+        // Real move → debounced wrapper defers the call into a setTimeout that
+        // runs OUTSIDE connectedMoveCallback's try/catch. The wrapper must catch
+        // it itself and log, rather than throw uncaught from the timer.
+        await el.connectedMoveCallback();
+        await new Promise((resolve) => setTimeout(resolve, 40));
+
+        expect(errorSpy.mock.calls.some((c) => String(c[0]).includes('onMoved') || /lifecycle handler/.test(String(c[0])))).toBe(true);
+
+        el.remove();
+        errorSpy.mockRestore();
+      });
+
       it('debounces @moved handlers triggered by actual moves (connectedMoveCallback)', async () => {
         const movedSpy = vi.fn();
 

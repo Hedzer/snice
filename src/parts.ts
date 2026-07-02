@@ -949,6 +949,7 @@ export class EventPart extends Part {
       this.keyFilter = parseKeyboardFilter(keySpec);
     } else {
       this.eventName = eventName;
+      warnIfModifierMisuse(eventName);
     }
   }
 
@@ -1023,6 +1024,29 @@ export interface KeyboardFilter {
  *   "ctrl+shift+s" -> { key: "s", ctrl: true, shift: true }
  *   "~enter" -> { key: "Enter", anyModifiers: true }
  */
+// once/preventDefault/stopPropagation/capture/passive are @on() OPTIONS, not
+// template modifiers. A dotted non-keyboard event whose suffix is one of these
+// is almost certainly a mistake (e.g. `@click.once`) — it binds a listener for
+// an event type the DOM never dispatches. Warn instead of failing silently. A
+// legitimate custom event name like `app.ready` won't match and stays quiet.
+const MODIFIER_WORDS = new Set([
+  'once', 'prevent', 'preventdefault', 'stop', 'stoppropagation', 'capture', 'passive',
+]);
+
+export function warnIfModifierMisuse(eventName: string): void {
+  const dot = eventName.lastIndexOf('.');
+  if (dot < 0) return;
+
+  const suffix = eventName.slice(dot + 1).toLowerCase();
+  if (!MODIFIER_WORDS.has(suffix)) return;
+
+  console.warn(
+    `snice: "@${eventName}" is not a valid modifier — once/preventDefault/` +
+    `stopPropagation/capture are @on() options, not template modifiers. ` +
+    `This registers a listener for event "${eventName}", which never fires.`
+  );
+}
+
 export function parseKeyboardFilter(spec: string): KeyboardFilter {
   // Handle ~ prefix for matching regardless of modifiers
   const anyModifiers = spec.startsWith('~');

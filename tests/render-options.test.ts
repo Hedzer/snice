@@ -187,6 +187,63 @@ describe('@render decorator - render options', () => {
     errorSpy.mockRestore();
   });
 
+  it('scopes the render-depth cap per element — a runaway component does not starve an unrelated one', async () => {
+    // Component B does a small, bounded synchronous self-re-render (3 frames).
+    // Component A is runaway and, while deep in its own re-entry, triggers B
+    // once. With a GLOBAL depth counter, B's frames run at A's accumulated
+    // depth and get rejected at the shared cap even though B did nothing wrong.
+    // A per-element counter isolates them, so B completes all 3 frames.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let bRenders = 0;
+    let bTriggered = false;
+
+    @element('depth-victim')
+    class DepthVictim extends HTMLElement {
+      @property({ attribute: false }) bn = 0;
+      @render({ sync: true })
+      tpl() {
+        bRenders++;
+        if (this.bn < 3) this.bn = this.bn + 1; // bounded 3-frame self re-render
+        return html`<span>${this.bn}</span>`;
+      }
+    }
+
+    const b = document.createElement('depth-victim') as any;
+    container.appendChild(b);
+    await b.ready;             // mount runs B to bn=3
+    bRenders = 0;             // count only the nested run triggered below
+
+    @element('depth-runaway')
+    class DepthRunaway extends HTMLElement {
+      @property({ attribute: false }) n = 0;
+      victim: any = b;
+      @render({ sync: true })
+      tpl() {
+        // Recurse to a deep frame, THEN (before any further increment, so the
+        // trigger fires while the stack is still deep) poke B exactly once.
+        if (this.n < 48) {
+          this.n = this.n + 1;
+        } else if (!bTriggered) {
+          bTriggered = true;
+          this.victim.bn = 1; // B renders while A's depth is ~49
+        }
+        return html`<span>${this.n}</span>`;
+      }
+    }
+
+    const a = document.createElement('depth-runaway') as any;
+    container.appendChild(a);
+    await a.ready;
+    await new Promise((r) => setTimeout(r, 5));
+
+    // B must have run all three of its own frames, unaffected by A's depth.
+    expect(bRenders).toBe(3);
+    // No depth error attributed to the victim.
+    expect(errorSpy.mock.calls.some((c) => String(c[0]).includes('depth-victim'))).toBe(false);
+
+    errorSpy.mockRestore();
+  });
+
   it('should batch renders by default (no sync option)', async () => {
     let renderCount = 0;
 

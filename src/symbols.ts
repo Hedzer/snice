@@ -18,6 +18,9 @@ export const RENDERED_RESOLVE = getSymbol('rendered-resolve');
 // Set when a render is requested but dropped because the element was
 // disconnected; consumed on reconnect to replay exactly the missed render.
 export const PENDING_RECONNECT_RENDER = getSymbol('pending-reconnect-render');
+// Per-element synchronous render-nesting depth, used to cap runaway re-entry
+// without a shared global counter that one element could exhaust for others.
+export const RENDER_DEPTH = getSymbol('render-depth');
 export const CONTROLLER = getSymbol('controller');
 export const INITIALIZED = getSymbol('initialized');
 

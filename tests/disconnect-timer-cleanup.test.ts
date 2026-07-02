@@ -66,4 +66,42 @@ describe('disconnect clears render/dispatch debounce-throttle timers', () => {
     // reaching the listener still bound to the element.
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it('preserves the @render throttle cooldown across a plain reparent', async () => {
+    let renders = 0;
+
+    @element('test-throttle-reparent')
+    class TestThrottleReparent extends HTMLElement {
+      @property({ attribute: false }) n = 0;
+      // Large window so the timing is unambiguous.
+      @render({ throttle: 10000 })
+      tpl() { renders++; return html`<span>${this.n}</span>`; }
+    }
+
+    const p1 = document.createElement('div');
+    const p2 = document.createElement('div');
+    document.body.append(p1, p2);
+    els.push(p1, p2);
+
+    const el = document.createElement('test-throttle-reparent') as any;
+    p1.appendChild(el);
+    await el.ready;                 // initial render is immediate (throttle bypassed)
+    const afterMount = renders;
+
+    el.n = 1;                       // first throttled call → renders now, sets lastThrottle
+    await new Promise((r) => setTimeout(r, 20));
+    const afterFirst = renders;
+    expect(afterFirst).toBe(afterMount + 1);
+
+    // Plain reparent: disconnect + reconnect. No render timer was pending, so
+    // nothing to replay — and the throttle cooldown must survive the move.
+    el.remove();
+    await new Promise((r) => setTimeout(r, 5)); // let disconnect cleanup run
+    p2.appendChild(el);
+    await el.ready;
+
+    el.n = 2;                       // within the 10s window → must be throttled, not immediate
+    await new Promise((r) => setTimeout(r, 20));
+    expect(renders).toBe(afterFirst);
+  });
 });

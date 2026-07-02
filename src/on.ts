@@ -6,7 +6,7 @@
 import { CLEANUP, ON_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
-import { parseKeyboardFilter, matchesKeyboardFilter, type KeyboardFilter } from './parts';
+import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './parts';
 import { createDebounced, resolveScope } from './utils';
 
 // Re-export OnOptions for public API
@@ -189,6 +189,8 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     const keyModifier = delimiterIndex > 0
       ? handler.eventName.substring(delimiterIndex + 1)
       : null;
+
+    if (delimiterIndex <= 0) warnIfModifierMisuse(handler.eventName);
 
     // Apply debounce (takes precedence over throttle)
     if (handlerOptions.debounce && handlerOptions.debounce > 0) {

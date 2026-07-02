@@ -2,6 +2,48 @@ import { describe, it, expect, vi } from 'vitest';
 import { element, render, html } from '../src/index';
 
 describe('Template event syntax with @ and / in event names', () => {
+  it('warns when a non-keyboard event uses a modifier-like dotted suffix (@click.once)', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    @element('test-modifier-misuse')
+    class TestModifierMisuse extends HTMLElement {
+      @render()
+      render() {
+        return html/*html*/`<button @click.once=${() => {}}>x</button>`;
+      }
+    }
+
+    const el = document.createElement('test-modifier-misuse');
+    document.body.appendChild(el);
+    await (el as any).ready;
+
+    expect(warnSpy.mock.calls.some((c) => /not a (valid )?modifier|@on\(\) options/.test(String(c[0])))).toBe(true);
+
+    el.remove();
+    warnSpy.mockRestore();
+  });
+
+  it('does NOT warn for a legitimate dotted custom event name (@app.ready)', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    @element('test-dotted-custom-ok')
+    class TestDottedCustomOk extends HTMLElement {
+      @render()
+      render() {
+        return html/*html*/`<div @app.ready=${() => {}}></div>`;
+      }
+    }
+
+    const el = document.createElement('test-dotted-custom-ok');
+    document.body.appendChild(el);
+    await (el as any).ready;
+
+    expect(warnSpy.mock.calls.some((c) => /not a (valid )?modifier|@on\(\) options/.test(String(c[0])))).toBe(false);
+
+    el.remove();
+    warnSpy.mockRestore();
+  });
+
   it('should handle event names that start with @ and contain /', async () => {
     const handler1 = vi.fn();
     const handler2 = vi.fn();

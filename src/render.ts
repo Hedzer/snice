@@ -5,7 +5,7 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH } from './symbols';
 
 /**
  * Options for @render decorator
@@ -116,8 +116,11 @@ function flushRenderCallbacks(element: HTMLElement): void {
  * recurses to a stack overflow. The counter caps synchronous nesting and turns
  * a silent crash into an actionable error. Normal renders never nest (child
  * renders defer to a microtask), so this stays at depth 1 in the common case.
+ *
+ * The depth is tracked PER ELEMENT (on RENDER_DEPTH), not globally: a runaway
+ * component must not consume a shared budget and reject an unrelated component
+ * that happens to render inside its call stack.
  */
-let renderDepth = 0;
 const MAX_RENDER_DEPTH = 50;
 
 /**
@@ -132,7 +135,8 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     return;
   }
 
-  if (renderDepth >= MAX_RENDER_DEPTH) {
+  const depth = ((element as any)[RENDER_DEPTH] ?? 0) as number;
+  if (depth >= MAX_RENDER_DEPTH) {
     const tag = element.tagName ? element.tagName.toLowerCase() : 'element';
     console.error(
       `snice: maximum render depth (${MAX_RENDER_DEPTH}) exceeded for <${tag}>. ` +
@@ -141,7 +145,7 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     return;
   }
 
-  renderDepth++;
+  (element as any)[RENDER_DEPTH] = depth + 1;
   try {
     const result = precomputedResult !== undefined ? precomputedResult : renderMethod.call(element);
 
@@ -193,7 +197,7 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
   } catch (error) {
     console.error('Error rendering element:', error);
   } finally {
-    renderDepth--;
+    (element as any)[RENDER_DEPTH] = depth;
   }
 }
 
@@ -280,8 +284,10 @@ export function clearRenderTimers(element: HTMLElement): boolean {
     timers.throttleTimer = null;
     hadPending = true;
   }
-  // Reset the throttle cooldown so a reconnected element starts fresh.
-  timers.lastThrottle = 0;
+  // Deliberately do NOT reset timers.lastThrottle: a plain DOM move is a
+  // disconnect+reconnect, and zeroing the cooldown would let the next render
+  // fire inside the throttle window. Preserving it keeps throttle honest
+  // across moves; on a true disconnect the element is discarded anyway.
   return hadPending;
 }
 
