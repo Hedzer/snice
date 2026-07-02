@@ -67,6 +67,23 @@ describe('snice-markdown', () => {
       expect(body?.innerHTML).toContain('Hello World');
     });
 
+    it('re-renders when the content property is assigned directly', async () => {
+      markdown = await createComponent<SniceMarkdownElement>('snice-markdown');
+      await wait(10);
+
+      markdown.setContent('# First');
+      await wait(50);
+
+      // Property assignment (what a parent template .content binding does)
+      // must re-render — not just setContent()
+      markdown.content = '# Second';
+      await wait(50);
+
+      const body = queryShadow(markdown as HTMLElement, '.markdown-body');
+      expect(body?.innerHTML).toContain('Second');
+      expect(body?.innerHTML).not.toContain('First');
+    });
+
     it('should render headings', async () => {
       markdown = await createComponent<SniceMarkdownElement>('snice-markdown');
       await wait(10);

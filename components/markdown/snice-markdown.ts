@@ -161,7 +161,9 @@ function parseMarkdown(md: string): string {
 
 @element('snice-markdown')
 export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
-  content: string = '';
+  // Reactive so parents can drive it via a .content template binding — a
+  // plain field would render once and go stale on later assignments.
+  @property({ attribute: false }) content: string = '';
 
   @property({ type: Boolean }) sanitize: boolean = true;
   @property() theme: MarkdownTheme = 'default';
@@ -194,6 +196,11 @@ export class SniceMarkdown extends HTMLElement implements SniceMarkdownElement {
       this.content = text;
       this.renderMarkdown();
     }
+  }
+
+  @watch('content')
+  handleContentChange() {
+    this.renderMarkdown();
   }
 
   @watch('sanitize')
