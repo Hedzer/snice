@@ -22,7 +22,6 @@ export interface DateTimePickerProps extends SniceBaseProps {
     invalid?: any;
     name?: any;
     variant?: any;
-    showPanel?: any;
     onDatetimepickerClear?: (event: any) => void;
     onDatetimeChange?: (event: any) => void;
     onDatetimepickerFocus?: (event: any) => void;

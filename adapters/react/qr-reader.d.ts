@@ -9,10 +9,6 @@ export interface QrReaderProps extends SniceBaseProps {
     manualSnap?: any;
     scanSpeed?: any;
     tapStart?: any;
-    scanning?: any;
-    lastScan?: any;
-    errorMessage?: any;
-    showSnapshot?: any;
     onQrScan?: (event: any) => void;
     onQrError?: (event: any) => void;
     onCameraReady?: (event: any) => void;

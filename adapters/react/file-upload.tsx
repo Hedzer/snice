@@ -23,8 +23,6 @@ export interface FileUploadProps extends SniceBaseProps {
   name?: any;
   dragDrop?: any;
   showPreview?: any;
-  isDragOver?: any;
-  selectedFiles?: any;
   onFileUploadChange?: (event: any) => void;
   onFileUploadError?: (event: any) => void;
 }
@@ -47,7 +45,7 @@ export interface FileUploadProps extends SniceBaseProps {
  */
 export const FileUpload = createReactAdapter<FileUploadProps>({
   tagName: 'snice-file-upload',
-  properties: ["size","variant","accept","multiple","disabled","required","invalid","label","helperText","errorText","maxSize","maxFiles","name","dragDrop","showPreview","isDragOver","selectedFiles"],
+  properties: ["size","variant","accept","multiple","disabled","required","invalid","label","helperText","errorText","maxSize","maxFiles","name","dragDrop","showPreview"],
   events: {"file-upload-change":"onFileUploadChange","file-upload-error":"onFileUploadError"},
   formAssociated: false
 });

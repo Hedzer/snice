@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Timer = createReactAdapter({
     tagName: 'snice-timer',
-    properties: ["mode", "initialTime", "running", "time"],
+    properties: ["mode", "initialTime", "running"],
     events: { "timer-start": "onTimerStart", "timer-stop": "onTimerStop", "timer-reset": "onTimerReset", "timer-complete": "onTimerComplete" },
     formAssociated: false
 });

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Heatmap = createReactAdapter({
     tagName: 'snice-heatmap',
-    properties: ["data", "colorScheme", "showLabels", "cellSize", "cellGap", "showTooltip", "weeks", "tooltipText", "tooltipX", "tooltipY", "tooltipVisible"],
+    properties: ["data", "colorScheme", "showLabels", "cellSize", "cellGap", "showTooltip", "weeks"],
     events: { "cell-click": "onCellClick" },
     formAssociated: false
 });

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const OrgChart = createReactAdapter({
     tagName: 'snice-org-chart',
-    properties: ["data", "direction", "compact", "renderVersion"],
+    properties: ["data", "direction", "compact"],
     events: { "node-click": "onNodeClick", "node-expand": "onNodeExpand", "node-collapse": "onNodeCollapse" },
     formAssociated: false
 });

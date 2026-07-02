@@ -9,9 +9,6 @@ export interface MapProps extends SniceBaseProps {
     maxZoom?: any;
     markers?: any;
     tileUrl?: any;
-    offsetX?: any;
-    offsetY?: any;
-    activePopupId?: any;
     onMapClick?: (event: any) => void;
     onMarkerClick?: (event: any) => void;
     onMapMove?: (event: any) => void;

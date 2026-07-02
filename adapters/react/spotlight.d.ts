@@ -4,8 +4,6 @@ import type { SniceBaseProps } from './types';
  */
 export interface SpotlightProps extends SniceBaseProps {
     steps?: any;
-    currentIndex?: any;
-    active?: any;
     onSpotlightStart?: (event: any) => void;
     onSpotlightStep?: (event: any) => void;
     onSpotlightEnd?: (event: any) => void;

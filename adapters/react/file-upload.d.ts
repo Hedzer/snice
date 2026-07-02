@@ -18,8 +18,6 @@ export interface FileUploadProps extends SniceBaseProps {
     name?: any;
     dragDrop?: any;
     showPreview?: any;
-    isDragOver?: any;
-    selectedFiles?: any;
     onFileUploadChange?: (event: any) => void;
     onFileUploadError?: (event: any) => void;
 }

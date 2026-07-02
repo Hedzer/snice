@@ -17,11 +17,6 @@ export interface RecipeProps extends SniceBaseProps {
     steps?: any;
     nutrition?: any;
     tags?: any;
-    currentServings?: any;
-    checkedIngredients?: any;
-    completedSteps?: any;
-    activeStep?: any;
-    timerVersion?: any;
     onRecipeServingChange?: (event: any) => void;
     onRecipeStepComplete?: (event: any) => void;
     onRecipeIngredientCheck?: (event: any) => void;

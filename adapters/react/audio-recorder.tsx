@@ -16,11 +16,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
   maxDuration?: any;
   showTimer?: any;
   showPlayback?: any;
-  state?: any;
-  errorMessage?: any;
   recordedUrl?: any;
-  isPlaying?: any;
-  playbackTime?: any;
   onRecorderStart?: (event: any) => void;
   onRecorderError?: (event: any) => void;
   onRecorderPause?: (event: any) => void;
@@ -47,7 +43,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
  */
 export const AudioRecorder = createReactAdapter<AudioRecorderProps>({
   tagName: 'snice-audio-recorder',
-  properties: ["autoStart","format","bitrate","showControls","showVisualizer","maxDuration","showTimer","showPlayback","state","errorMessage","recordedUrl","isPlaying","playbackTime"],
+  properties: ["autoStart","format","bitrate","showControls","showVisualizer","maxDuration","showTimer","showPlayback","recordedUrl"],
   events: {"recorder-start":"onRecorderStart","recorder-error":"onRecorderError","recorder-pause":"onRecorderPause","recorder-resume":"onRecorderResume","recorder-cancel":"onRecorderCancel","recorder-stop":"onRecorderStop"},
   formAssociated: false
 });

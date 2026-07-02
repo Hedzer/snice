@@ -3,9 +3,9 @@ import type { SniceBaseProps } from './types';
  * Props for the Markdown component
  */
 export interface MarkdownProps extends SniceBaseProps {
+    content?: any;
     sanitize?: any;
     theme?: any;
-    renderedHtml?: any;
     onMarkdownRender?: (event: any) => void;
     onLinkClick?: (event: any) => void;
 }

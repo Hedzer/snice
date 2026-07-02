@@ -25,7 +25,6 @@ export interface MusicPlayerProps extends SniceBaseProps {
   showArtwork?: any;
   showTrackInfo?: any;
   compact?: any;
-  showVolumeSlider?: any;
   onPlayerPlay?: (event: any) => void;
   onPlayerPause?: (event: any) => void;
   onPlayerStop?: (event: any) => void;
@@ -57,7 +56,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
  */
 export const MusicPlayer = createReactAdapter<MusicPlayerProps>({
   tagName: 'snice-music-player',
-  properties: ["tracks","currentTrackIndex","currentTrack","currentTime","duration","volume","muted","shuffle","repeat","state","autoplay","showPlaylist","showControls","showVolume","showArtwork","showTrackInfo","compact","showVolumeSlider"],
+  properties: ["tracks","currentTrackIndex","currentTrack","currentTime","duration","volume","muted","shuffle","repeat","state","autoplay","showPlaylist","showControls","showVolume","showArtwork","showTrackInfo","compact"],
   events: {"player-play":"onPlayerPlay","player-pause":"onPlayerPause","player-stop":"onPlayerStop","player-track-change":"onPlayerTrackChange","player-track-ended":"onPlayerTrackEnded","player-seek":"onPlayerSeek","player-volume-change":"onPlayerVolumeChange","player-shuffle-change":"onPlayerShuffleChange","player-repeat-change":"onPlayerRepeatChange","player-time-update":"onPlayerTimeUpdate","player-error":"onPlayerError"},
   formAssociated: false
 });

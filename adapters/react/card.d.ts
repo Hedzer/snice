@@ -8,8 +8,6 @@ export interface CardProps extends SniceBaseProps {
     clickable?: any;
     selected?: any;
     disabled?: any;
-    hasHeader?: any;
-    hasFooter?: any;
     onCardClick?: (event: any) => void;
 }
 /**

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Image = createReactAdapter({
     tagName: 'snice-image',
-    properties: ["src", "alt", "fallback", "placeholder", "srcset", "sizes", "variant", "size", "lazy", "fit", "width", "height", "imageError", "imageLoaded"],
+    properties: ["src", "alt", "fallback", "placeholder", "srcset", "sizes", "variant", "size", "lazy", "fit", "width", "height"],
     events: {},
     formAssociated: false
 });

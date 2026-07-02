@@ -6,7 +6,6 @@ export interface LeaderboardProps extends SniceBaseProps {
     variant?: any;
     size?: any;
     title?: any;
-    entries?: any;
     onEntryClick?: (event: any) => void;
 }
 /**

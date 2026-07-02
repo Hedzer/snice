@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const TimePicker = createReactAdapter({
     tagName: 'snice-time-picker',
-    properties: ["value", "format", "step", "minTime", "maxTime", "showSeconds", "disabled", "readonly", "placeholder", "label", "helperText", "errorText", "required", "invalid", "name", "variant", "size", "loading", "clearable", "showDropdown"],
+    properties: ["value", "format", "step", "minTime", "maxTime", "showSeconds", "disabled", "readonly", "placeholder", "label", "helperText", "errorText", "required", "invalid", "name", "variant", "size", "loading", "clearable"],
     events: { "time-change": "onTimeChange", "timepicker-focus": "onTimepickerFocus", "timepicker-blur": "onTimepickerBlur", "timepicker-open": "onTimepickerOpen", "timepicker-close": "onTimepickerClose", "timepicker-clear": "onTimepickerClear" },
     formAssociated: false
 });

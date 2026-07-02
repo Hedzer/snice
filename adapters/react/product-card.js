@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const ProductCard = createReactAdapter({
     tagName: 'snice-product-card',
-    properties: ["name", "price", "salePrice", "currency", "images", "rating", "reviewCount", "variants", "inStock", "variant", "badge", "badgeVariant", "loading", "favorite", "stockCount", "currentImageIndex", "selectedVariants", "heartAnimating"],
+    properties: ["name", "price", "salePrice", "currency", "images", "rating", "reviewCount", "variants", "inStock", "variant", "badge", "badgeVariant", "loading", "favorite", "stockCount"],
     events: { "add-to-cart": "onAddToCart", "variant-select": "onVariantSelect", "image-click": "onImageClick", "favorite": "onFavorite", "quick-view": "onQuickView" },
     formAssociated: false
 });

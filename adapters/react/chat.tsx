@@ -20,13 +20,10 @@ export interface ChatProps extends SniceBaseProps {
   colorAuthors?: any;
   markdown?: any;
   layout?: any;
-  editingId?: any;
-  confirmingDeleteId?: any;
   onMessageSend?: (event: any) => void;
   onMessageEdit?: (event: any) => void;
   onMessageDelete?: (event: any) => void;
   onMessageReact?: (event: any) => void;
-  onMessageThread?: (event: any) => void;
   onTypingStart?: (event: any) => void;
   onTypingStop?: (event: any) => void;
 }
@@ -49,7 +46,7 @@ export interface ChatProps extends SniceBaseProps {
  */
 export const Chat = createReactAdapter<ChatProps>({
   tagName: 'snice-chat',
-  properties: ["messages","currentUser","currentAvatar","placeholder","allowFiles","showTyping","showAvatars","showTimestamps","authorColors","colorAuthors","markdown","layout","editingId","confirmingDeleteId"],
-  events: {"message-send":"onMessageSend","message-edit":"onMessageEdit","message-delete":"onMessageDelete","message-react":"onMessageReact","message-thread":"onMessageThread","typing-start":"onTypingStart","typing-stop":"onTypingStop"},
+  properties: ["messages","currentUser","currentAvatar","placeholder","allowFiles","showTyping","showAvatars","showTimestamps","authorColors","colorAuthors","markdown","layout"],
+  events: {"message-send":"onMessageSend","message-edit":"onMessageEdit","message-delete":"onMessageDelete","message-react":"onMessageReact","typing-start":"onTypingStart","typing-stop":"onTypingStop"},
   formAssociated: false
 });

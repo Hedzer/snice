@@ -10,10 +10,6 @@ export interface HeatmapProps extends SniceBaseProps {
     cellGap?: any;
     showTooltip?: any;
     weeks?: any;
-    tooltipText?: any;
-    tooltipX?: any;
-    tooltipY?: any;
-    tooltipVisible?: any;
     onCellClick?: (event: any) => void;
 }
 /**

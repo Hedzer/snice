@@ -9,11 +9,6 @@ export interface ChartProps extends SniceBaseProps {
     options?: any;
     width?: any;
     height?: any;
-    renderTrigger?: any;
-    tooltipVisible?: any;
-    tooltipContent?: any;
-    tooltipX?: any;
-    tooltipY?: any;
 }
 /**
  * Chart - React adapter for snice-chart

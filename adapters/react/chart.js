@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Chart = createReactAdapter({
     tagName: 'snice-chart',
-    properties: ["type", "datasets", "labels", "options", "width", "height", "renderTrigger", "tooltipVisible", "tooltipContent", "tooltipX", "tooltipY"],
+    properties: ["type", "datasets", "labels", "options", "width", "height"],
     events: {},
     formAssociated: false
 });

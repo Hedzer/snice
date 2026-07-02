@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Countdown = createReactAdapter({
     tagName: 'snice-countdown',
-    properties: ["target", "format", "variant", "days", "hours", "minutes", "seconds"],
+    properties: ["target", "format", "variant"],
     events: { "countdown-complete": "onCountdownComplete", "countdown-tick": "onCountdownTick" },
     formAssociated: false
 });

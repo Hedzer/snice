@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Terminal = createReactAdapter({
     tagName: 'snice-terminal',
-    properties: ["renderTrigger", "prompt", "cwd", "readonly", "maxLines", "showTimestamps"],
+    properties: ["prompt", "cwd", "readonly", "maxLines", "showTimestamps"],
     events: { "terminal-command": "onTerminalCommand", "terminal-clear": "onTerminalClear", "terminal-ready": "onTerminalReady" },
     formAssociated: false
 });

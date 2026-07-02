@@ -17,7 +17,6 @@ export interface CarouselProps extends SniceBaseProps {
   showIndicators?: any;
   slidesPerView?: any;
   spaceBetween?: any;
-  slideCount?: any;
   onCarouselSlideChange?: (event: any) => void;
 }
 
@@ -39,7 +38,7 @@ export interface CarouselProps extends SniceBaseProps {
  */
 export const Carousel = createReactAdapter<CarouselProps>({
   tagName: 'snice-carousel',
-  properties: ["activeIndex","autoplay","autoplayInterval","autoplayDirection","loop","showControls","showIndicators","slidesPerView","spaceBetween","slideCount"],
+  properties: ["activeIndex","autoplay","autoplayInterval","autoplayDirection","loop","showControls","showIndicators","slidesPerView","spaceBetween"],
   events: {"carousel-slide-change":"onCarouselSlideChange"},
   formAssociated: false
 });

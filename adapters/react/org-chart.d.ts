@@ -6,7 +6,6 @@ export interface OrgChartProps extends SniceBaseProps {
     data?: any;
     direction?: any;
     compact?: any;
-    renderVersion?: any;
     onNodeClick?: (event: any) => void;
     onNodeExpand?: (event: any) => void;
     onNodeCollapse?: (event: any) => void;

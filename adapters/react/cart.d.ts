@@ -8,7 +8,6 @@ export interface CartProps extends SniceBaseProps {
     taxRate?: any;
     discount?: any;
     couponCode?: any;
-    couponInput?: any;
     onItemAdd?: (event: any) => void;
     onItemRemove?: (event: any) => void;
     onQuantityChange?: (event: any) => void;

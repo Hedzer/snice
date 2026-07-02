@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Card = createReactAdapter({
     tagName: 'snice-card',
-    properties: ["variant", "size", "clickable", "selected", "disabled", "hasHeader", "hasFooter"],
+    properties: ["variant", "size", "clickable", "selected", "disabled"],
     events: { "card-click": "onCardClick" },
     formAssociated: false
 });

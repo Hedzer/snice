@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const QrReader = createReactAdapter({
     tagName: 'snice-qr-reader',
-    properties: ["autoStart", "camera", "pickFirst", "manualSnap", "scanSpeed", "tapStart", "scanning", "lastScan", "errorMessage", "showSnapshot"],
+    properties: ["autoStart", "camera", "pickFirst", "manualSnap", "scanSpeed", "tapStart"],
     events: { "qr-scan": "onQrScan", "qr-error": "onQrError", "camera-ready": "onCameraReady", "camera-error": "onCameraError" },
     formAssociated: false
 });

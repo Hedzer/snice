@@ -18,7 +18,6 @@ export interface ChipProps extends SniceBaseProps {
   disabled?: any;
   icon?: any;
   avatar?: any;
-  hasIconSlot?: any;
   onChipClick?: (event: any) => void;
   onChipRemove?: (event: any) => void;
 }
@@ -41,7 +40,7 @@ export interface ChipProps extends SniceBaseProps {
  */
 export const Chip = createReactAdapter<ChipProps>({
   tagName: 'snice-chip',
-  properties: ["label","variant","size","shape","removable","selectable","selected","disabled","icon","avatar","hasIconSlot"],
+  properties: ["label","variant","size","shape","removable","selectable","selected","disabled","icon","avatar"],
   events: {"chip-click":"onChipClick","chip-remove":"onChipRemove"},
   formAssociated: false
 });

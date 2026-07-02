@@ -3,7 +3,6 @@ import type { SniceBaseProps } from './types';
  * Props for the Terminal component
  */
 export interface TerminalProps extends SniceBaseProps {
-    renderTrigger?: any;
     prompt?: any;
     cwd?: any;
     readonly?: any;

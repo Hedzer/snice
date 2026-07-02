@@ -54,11 +54,13 @@ export class SniceLogin extends HTMLElement implements SniceLoginElement {
   @queryAll('input')
   inputElements!: NodeListOf<HTMLInputElement>;
 
+  // Public: consumers (e.g. the React template) drive the inline alert
+  // banner via these props instead of calling showAlert().
   @property({ attribute: false })
-  private alertMessage = '';
+  alertMessage = '';
 
   @property({ attribute: false })
-  private alertVariant: 'error' | 'success' | '' = '';
+  alertVariant: 'error' | 'success' | '' = '';
 
   @render()
   render() {

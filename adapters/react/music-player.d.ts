@@ -20,7 +20,6 @@ export interface MusicPlayerProps extends SniceBaseProps {
     showArtwork?: any;
     showTrackInfo?: any;
     compact?: any;
-    showVolumeSlider?: any;
     onPlayerPlay?: (event: any) => void;
     onPlayerPause?: (event: any) => void;
     onPlayerStop?: (event: any) => void;

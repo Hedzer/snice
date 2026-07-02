@@ -17,10 +17,6 @@ export interface TagInputProps extends SniceBaseProps {
   readonly?: any;
   label?: any;
   name?: any;
-  inputValue?: any;
-  filteredSuggestions?: any;
-  showSuggestions?: any;
-  highlightedIndex?: any;
   onTagAdd?: (event: any) => void;
   onTagRemove?: (event: any) => void;
   onTagChange?: (event: any) => void;
@@ -44,7 +40,7 @@ export interface TagInputProps extends SniceBaseProps {
  */
 export const TagInput = createReactAdapter<TagInputProps>({
   tagName: 'snice-tag-input',
-  properties: ["value","suggestions","maxTags","allowDuplicates","placeholder","disabled","readonly","label","name","inputValue","filteredSuggestions","showSuggestions","highlightedIndex"],
+  properties: ["value","suggestions","maxTags","allowDuplicates","placeholder","disabled","readonly","label","name"],
   events: {"tag-add":"onTagAdd","tag-remove":"onTagRemove","tag-change":"onTagChange"},
   formAssociated: false
 });

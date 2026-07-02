@@ -11,7 +11,6 @@ export interface LeaderboardProps extends SniceBaseProps {
   variant?: any;
   size?: any;
   title?: any;
-  entries?: any;
   onEntryClick?: (event: any) => void;
 }
 
@@ -33,7 +32,7 @@ export interface LeaderboardProps extends SniceBaseProps {
  */
 export const Leaderboard = createReactAdapter<LeaderboardProps>({
   tagName: 'snice-leaderboard',
-  properties: ["variant","size","title","entries"],
+  properties: ["variant","size","title"],
   events: {"entry-click":"onEntryClick"},
   formAssociated: false
 });

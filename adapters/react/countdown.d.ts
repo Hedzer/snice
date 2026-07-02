@@ -6,10 +6,6 @@ export interface CountdownProps extends SniceBaseProps {
     target?: any;
     format?: any;
     variant?: any;
-    days?: any;
-    hours?: any;
-    minutes?: any;
-    seconds?: any;
     onCountdownComplete?: (event: any) => void;
     onCountdownTick?: (event: any) => void;
 }

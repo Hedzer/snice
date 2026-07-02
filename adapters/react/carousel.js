@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Carousel = createReactAdapter({
     tagName: 'snice-carousel',
-    properties: ["activeIndex", "autoplay", "autoplayInterval", "autoplayDirection", "loop", "showControls", "showIndicators", "slidesPerView", "spaceBetween", "slideCount"],
+    properties: ["activeIndex", "autoplay", "autoplayInterval", "autoplayDirection", "loop", "showControls", "showIndicators", "slidesPerView", "spaceBetween"],
     events: { "carousel-slide-change": "onCarouselSlideChange" },
     formAssociated: false
 });

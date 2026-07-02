@@ -30,11 +30,13 @@ function extractPropertiesFromFile(filePath) {
     const properties = [];
     const events = {};
 
-    // Look for @property decorators (skip visibility modifiers like private/public/protected and readonly)
-    const propertyRegex = /@property\(\s*(?:{[^}]*})?\s*\)\s+(?:private\s+|public\s+|protected\s+)?(?:readonly\s+)?(\w+)/g;
+    // Look for @property decorators. private/protected reactive state is
+    // internal — it must not leak into the public React props surface.
+    const propertyRegex = /@property\(\s*(?:{[^}]*})?\s*\)\s+(?:(private|protected)\s+|public\s+)?(?:readonly\s+)?(\w+)/g;
     let match;
     while ((match = propertyRegex.exec(content)) !== null) {
-      properties.push(match[1]);
+      if (match[1]) continue; // private or protected
+      properties.push(match[2]);
     }
 
     // Look for @dispatch decorators (custom events)

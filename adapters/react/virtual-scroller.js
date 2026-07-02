@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const VirtualScroller = createReactAdapter({
     tagName: 'snice-virtual-scroller',
-    properties: ["items", "itemHeight", "bufferSize", "estimatedItemHeight", "renderItem", "scrollTick"],
+    properties: ["items", "itemHeight", "bufferSize", "estimatedItemHeight", "renderItem"],
     events: {},
     formAssociated: false
 });

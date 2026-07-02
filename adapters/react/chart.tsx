@@ -14,11 +14,6 @@ export interface ChartProps extends SniceBaseProps {
   options?: any;
   width?: any;
   height?: any;
-  renderTrigger?: any;
-  tooltipVisible?: any;
-  tooltipContent?: any;
-  tooltipX?: any;
-  tooltipY?: any;
 
 }
 
@@ -40,7 +35,7 @@ export interface ChartProps extends SniceBaseProps {
  */
 export const Chart = createReactAdapter<ChartProps>({
   tagName: 'snice-chart',
-  properties: ["type","datasets","labels","options","width","height","renderTrigger","tooltipVisible","tooltipContent","tooltipX","tooltipY"],
+  properties: ["type","datasets","labels","options","width","height"],
   events: {},
   formAssociated: false
 });

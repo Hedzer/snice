@@ -12,7 +12,6 @@ export interface CarouselProps extends SniceBaseProps {
     showIndicators?: any;
     slidesPerView?: any;
     spaceBetween?: any;
-    slideCount?: any;
     onCarouselSlideChange?: (event: any) => void;
 }
 /**

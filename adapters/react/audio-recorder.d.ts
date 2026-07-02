@@ -11,11 +11,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
     maxDuration?: any;
     showTimer?: any;
     showPlayback?: any;
-    state?: any;
-    errorMessage?: any;
     recordedUrl?: any;
-    isPlaying?: any;
-    playbackTime?: any;
     onRecorderStart?: (event: any) => void;
     onRecorderError?: (event: any) => void;
     onRecorderPause?: (event: any) => void;

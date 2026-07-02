@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const CameraAnnotate = createReactAdapter({
     tagName: 'snice-camera-annotate',
-    properties: ["mode", "autoStart", "autoRotateColors", "showLabelsPanel", "strokes", "annotations", "activeColor", "strokeWidth", "highlightedAnnotationId"],
+    properties: ["mode", "autoStart", "autoRotateColors", "showLabelsPanel"],
     events: { "capture": "onCapture", "annotate": "onAnnotate", "annotation-change": "onAnnotationChange" },
     formAssociated: false
 });

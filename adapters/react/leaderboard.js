@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Leaderboard = createReactAdapter({
     tagName: 'snice-leaderboard',
-    properties: ["variant", "size", "title", "entries"],
+    properties: ["variant", "size", "title"],
     events: { "entry-click": "onEntryClick" },
     formAssociated: false
 });

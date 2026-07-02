@@ -23,9 +23,6 @@ export interface ProductCardProps extends SniceBaseProps {
   loading?: any;
   favorite?: any;
   stockCount?: any;
-  currentImageIndex?: any;
-  selectedVariants?: any;
-  heartAnimating?: any;
   onAddToCart?: (event: any) => void;
   onVariantSelect?: (event: any) => void;
   onImageClick?: (event: any) => void;
@@ -51,7 +48,7 @@ export interface ProductCardProps extends SniceBaseProps {
  */
 export const ProductCard = createReactAdapter<ProductCardProps>({
   tagName: 'snice-product-card',
-  properties: ["name","price","salePrice","currency","images","rating","reviewCount","variants","inStock","variant","badge","badgeVariant","loading","favorite","stockCount","currentImageIndex","selectedVariants","heartAnimating"],
+  properties: ["name","price","salePrice","currency","images","rating","reviewCount","variants","inStock","variant","badge","badgeVariant","loading","favorite","stockCount"],
   events: {"add-to-cart":"onAddToCart","variant-select":"onVariantSelect","image-click":"onImageClick","favorite":"onFavorite","quick-view":"onQuickView"},
   formAssociated: false
 });

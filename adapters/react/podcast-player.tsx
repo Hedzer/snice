@@ -25,8 +25,6 @@ export interface PodcastPlayerProps extends SniceBaseProps {
   currentEpisodeIndex?: any;
   sleepTimer?: any;
   state?: any;
-  sleepTimerRemaining?: any;
-  showVolumeSlider?: any;
   onPodcastPlay?: (event: any) => void;
   onPodcastPause?: (event: any) => void;
   onPodcastEnded?: (event: any) => void;
@@ -54,7 +52,7 @@ export interface PodcastPlayerProps extends SniceBaseProps {
  */
 export const PodcastPlayer = createReactAdapter<PodcastPlayerProps>({
   tagName: 'snice-podcast-player',
-  properties: ["src","fromRss","title","show","artwork","description","playbackRate","skipForward","skipBack","currentTime","duration","volume","muted","episodes","currentEpisodeIndex","sleepTimer","state","sleepTimerRemaining","showVolumeSlider"],
+  properties: ["src","fromRss","title","show","artwork","description","playbackRate","skipForward","skipBack","currentTime","duration","volume","muted","episodes","currentEpisodeIndex","sleepTimer","state"],
   events: {"podcast-play":"onPodcastPlay","podcast-pause":"onPodcastPause","podcast-ended":"onPodcastEnded","podcast-time-update":"onPodcastTimeUpdate","podcast-rate-change":"onPodcastRateChange","podcast-episode-change":"onPodcastEpisodeChange","podcast-feed-loaded":"onPodcastFeedLoaded"},
   formAssociated: false
 });

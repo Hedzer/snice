@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Spotlight = createReactAdapter({
     tagName: 'snice-spotlight',
-    properties: ["steps", "currentIndex", "active"],
+    properties: ["steps"],
     events: { "spotlight-start": "onSpotlightStart", "spotlight-step": "onSpotlightStep", "spotlight-end": "onSpotlightEnd", "spotlight-skip": "onSpotlightSkip", "spotlight-target-missing": "onSpotlightTargetMissing" },
     formAssociated: false
 });

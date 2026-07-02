@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Avatar = createReactAdapter({
     tagName: 'snice-avatar',
-    properties: ["src", "alt", "name", "size", "shape", "fallbackColor", "fallbackBackground", "imageError"],
+    properties: ["src", "alt", "name", "size", "shape", "fallbackColor", "fallbackBackground"],
     events: {},
     formAssociated: false
 });

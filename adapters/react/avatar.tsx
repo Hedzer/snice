@@ -15,7 +15,6 @@ export interface AvatarProps extends SniceBaseProps {
   shape?: any;
   fallbackColor?: any;
   fallbackBackground?: any;
-  imageError?: any;
 
 }
 
@@ -37,7 +36,7 @@ export interface AvatarProps extends SniceBaseProps {
  */
 export const Avatar = createReactAdapter<AvatarProps>({
   tagName: 'snice-avatar',
-  properties: ["src","alt","name","size","shape","fallbackColor","fallbackBackground","imageError"],
+  properties: ["src","alt","name","size","shape","fallbackColor","fallbackBackground"],
   events: {},
   formAssociated: false
 });

@@ -13,7 +13,6 @@ export interface VirtualScrollerProps extends SniceBaseProps {
   bufferSize?: any;
   estimatedItemHeight?: any;
   renderItem?: any;
-  scrollTick?: any;
 
 }
 
@@ -35,7 +34,7 @@ export interface VirtualScrollerProps extends SniceBaseProps {
  */
 export const VirtualScroller = createReactAdapter<VirtualScrollerProps>({
   tagName: 'snice-virtual-scroller',
-  properties: ["items","itemHeight","bufferSize","estimatedItemHeight","renderItem","scrollTick"],
+  properties: ["items","itemHeight","bufferSize","estimatedItemHeight","renderItem"],
   events: {},
   formAssociated: false
 });

@@ -22,7 +22,6 @@ export interface TimePickerProps extends SniceBaseProps {
     size?: any;
     loading?: any;
     clearable?: any;
-    showDropdown?: any;
     onTimeChange?: (event: any) => void;
     onTimepickerFocus?: (event: any) => void;
     onTimepickerBlur?: (event: any) => void;

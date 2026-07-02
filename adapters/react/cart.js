@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Cart = createReactAdapter({
     tagName: 'snice-cart',
-    properties: ["items", "currency", "taxRate", "discount", "couponCode", "couponInput"],
+    properties: ["items", "currency", "taxRate", "discount", "couponCode"],
     events: { "item-add": "onItemAdd", "item-remove": "onItemRemove", "quantity-change": "onQuantityChange", "coupon-apply": "onCouponApply", "checkout": "onCheckout" },
     formAssociated: false
 });

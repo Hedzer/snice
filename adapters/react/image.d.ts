@@ -15,8 +15,6 @@ export interface ImageProps extends SniceBaseProps {
     fit?: any;
     width?: any;
     height?: any;
-    imageError?: any;
-    imageLoaded?: any;
 }
 /**
  * Image - React adapter for snice-image

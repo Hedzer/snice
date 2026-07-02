@@ -22,6 +22,10 @@ export interface SniceLoginElement extends HTMLElement {
   showRememberMe: boolean;
   showForgotPassword: boolean;
   actionText: string;
+  /** Inline alert banner text; empty hides the banner */
+  alertMessage: string;
+  /** Inline alert banner variant */
+  alertVariant: 'error' | 'success' | '';
   login(credentials: LoginCredentials): Promise<LoginResult>;
   reset(): void;
   setError(message: string): void;

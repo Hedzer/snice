@@ -13,7 +13,6 @@ export interface BreadcrumbsProps extends SniceBaseProps {
   size?: any;
   maxItems?: any;
   collapsed?: any;
-  renderTrigger?: any;
   onBreadcrumbClick?: (event: any) => void;
 }
 
@@ -35,7 +34,7 @@ export interface BreadcrumbsProps extends SniceBaseProps {
  */
 export const Breadcrumbs = createReactAdapter<BreadcrumbsProps>({
   tagName: 'snice-breadcrumbs',
-  properties: ["items","separator","size","maxItems","collapsed","renderTrigger"],
+  properties: ["items","separator","size","maxItems","collapsed"],
   events: {"breadcrumb-click":"onBreadcrumbClick"},
   formAssociated: false
 });

@@ -10,7 +10,6 @@ export interface AvatarProps extends SniceBaseProps {
     shape?: any;
     fallbackColor?: any;
     fallbackBackground?: any;
-    imageError?: any;
 }
 /**
  * Avatar - React adapter for snice-avatar

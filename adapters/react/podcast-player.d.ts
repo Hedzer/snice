@@ -20,8 +20,6 @@ export interface PodcastPlayerProps extends SniceBaseProps {
     currentEpisodeIndex?: any;
     sleepTimer?: any;
     state?: any;
-    sleepTimerRemaining?: any;
-    showVolumeSlider?: any;
     onPodcastPlay?: (event: any) => void;
     onPodcastPause?: (event: any) => void;
     onPodcastEnded?: (event: any) => void;

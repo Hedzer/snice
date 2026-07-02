@@ -8,7 +8,6 @@ export interface VirtualScrollerProps extends SniceBaseProps {
     bufferSize?: any;
     estimatedItemHeight?: any;
     renderItem?: any;
-    scrollTick?: any;
 }
 /**
  * VirtualScroller - React adapter for snice-virtual-scroller
