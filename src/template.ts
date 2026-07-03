@@ -62,7 +62,10 @@ export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult 
   // Combine strings and values into final CSS text
   let cssText = strings[0];
   for (let i = 0; i < values.length; i++) {
-    cssText += String(values[i]) + strings[i + 1];
+    // Inline a nested css`` result by its text so style fragments compose;
+    // String() on a CSSResult object would yield "[object Object]".
+    const value = values[i];
+    cssText += (isCSSResult(value) ? value.cssText : String(value)) + strings[i + 1];
   }
 
   const result: CSSResult = {
