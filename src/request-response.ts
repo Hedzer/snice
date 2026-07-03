@@ -129,9 +129,22 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
       const remaining = options.throttle - (now - throttleLastCall);
 
       if (remaining <= 0) {
+        // Cancelling the scheduled trailing call must not orphan the promises
+        // queued for it — settle them with this fresh result. Also reset
+        // throttleTimeout so later within-window calls don't attach to a dead
+        // timer and hang.
         clearTimeout(throttleTimeout);
+        throttleTimeout = null;
         throttleLastCall = now;
-        return actualRequest();
+        const orphaned = throttleTrailingResolvers.splice(0);
+        const p = actualRequest();
+        if (orphaned.length) {
+          p.then(
+            (r) => { for (const x of orphaned) x.resolve(r); },
+            (e) => { for (const x of orphaned) x.reject(e); }
+          );
+        }
+        return p;
       }
 
       // Throttle: already has pending trailing call — attach to it
@@ -237,10 +250,21 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
         const remaining = handler.options.throttle! - (now - throttleLastCall);
 
         if (remaining <= 0) {
+          // Same as the @request side: settle any queued trailing callers with
+          // this fresh result rather than orphaning their promises.
           clearTimeout(throttleTimeout);
           throttleTimeout = null;
           throttleLastCall = now;
-          return originalMethod(...args);
+          const orphaned = throttleTrailingResolvers.splice(0);
+          throttleLatestArgs = null;
+          const result = originalMethod(...args);
+          if (orphaned.length) {
+            Promise.resolve(result).then(
+              (r) => { for (const x of orphaned) x.resolve(r); },
+              (e) => { for (const x of orphaned) x.reject(e); }
+            );
+          }
+          return result;
         }
 
         // Remember the LATEST args so the trailing call uses fresh input,

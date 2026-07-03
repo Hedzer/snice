@@ -51,6 +51,66 @@ describe('@respond throttle must not resolve caller with undefined', () => {
 });
 
 // ---------------------------------------------------------------------------
+// @request throttle — a boundary call that cancels the scheduled trailing call
+// must still settle the promises queued for it, not orphan them forever.
+// ---------------------------------------------------------------------------
+
+describe('@request throttle must not orphan trailing callers', () => {
+  it('a boundary call that cancels the pending trailing call still settles queued callers', async () => {
+    const rnd = () => Math.random().toString(36).slice(2, 8);
+    const ctrlName = `qctrl-${rnd()}`;
+    const elName = `qelem-${rnd()}`;
+    const chName = `qchan-${rnd()}`;
+
+    @controller(ctrlName)
+    class Responder {
+      element: HTMLElement | null = null;
+      attach(el: HTMLElement) { this.element = el; }
+      detach() { this.element = null; }
+
+      @respond(chName)
+      handle(p: any) { return { value: p.n * 2 }; }
+    }
+
+    @element(elName)
+    class Caller extends HTMLElement {
+      @request(chName, { throttle: 50 })
+      async *ask(n: number): any {
+        const r = await (yield { n });
+        return r;
+      }
+    }
+
+    const el = document.createElement(elName) as any;
+    document.body.appendChild(el);
+    await el.ready;
+    await attachController(el, ctrlName);
+    await new Promise((r) => setTimeout(r, 20));
+
+    const p1 = el.ask(1);   // leading call — runs immediately
+    const p2 = el.ask(2);   // within window — schedules a trailing call, queues its resolver
+
+    // Block the event loop past the throttle window so the trailing timer for
+    // p2 cannot fire before the next call runs.
+    const until = Date.now() + 70;
+    // eslint-disable-next-line no-empty
+    while (Date.now() < until) { /* busy-wait, holds the main thread */ }
+
+    const p3 = el.ask(3);   // remaining <= 0 → cancels p2's still-pending trailing timer
+
+    // p2 must not hang: everything settles well inside the guard timeout.
+    const outcome = await Promise.race([
+      Promise.allSettled([p1, p2, p3]).then(() => 'settled'),
+      new Promise((r) => setTimeout(() => r('HUNG'), 1000)),
+    ]);
+    expect(outcome).toBe('settled');
+
+    const [, r2] = await Promise.all([p1, p2, p3]);
+    expect(r2).toBeDefined(); // the queued caller got a real value, not undefined
+  });
+});
+
+// ---------------------------------------------------------------------------
 // @dispatch throttle trailing dispatches the LATEST detail, not the first.
 // ---------------------------------------------------------------------------
 
