@@ -712,7 +712,14 @@ export class NodePart extends Part {
    * Commit unsafe HTML string
    */
   private _commitUnsafeHTML(value: UnsafeHTML): void {
-    // Always recreate for unsafe HTML (can't diff arbitrary HTML)
+    // Can't diff arbitrary HTML, but when the STRING is unchanged the DOM is
+    // already correct — skip the clear+reparse so live state (typed input
+    // values, focus, scroll) inside the block survives unrelated re-renders.
+    const prev = this._committedValue;
+    if (isUnsafeHTML(prev) && (prev as UnsafeHTML).html === value.html) {
+      return;
+    }
+
     this._clear();
     const temp = document.createElement('template');
     temp.innerHTML = value.html;
