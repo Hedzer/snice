@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, wait } from './test-utils';
+import { createComponent, removeComponent, wait, waitFor } from './test-utils';
 import '../../components/grid/snice-grid';
 import type { SniceGridElement } from '../../components/grid/snice-grid.types';
 
@@ -374,7 +374,9 @@ describe('snice-grid', () => {
   describe('ready attribute', () => {
     it('should set ready attribute after initialization', async () => {
       el = await createComponent<SniceGridElement>('snice-grid');
-      await wait(20);
+      // `ready` is set via a double requestAnimationFrame, whose timing varies
+      // under load — wait for the condition instead of a fixed delay.
+      await waitFor(() => el.hasAttribute('ready'));
       expect(el.hasAttribute('ready')).toBe(true);
     });
   });

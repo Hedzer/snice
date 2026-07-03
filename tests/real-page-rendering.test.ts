@@ -37,6 +37,16 @@ async function settle(ms = 0): Promise<void> {
   if (ms > 0) await delay(ms);
 }
 
+/** Poll until a condition holds or the timeout elapses — deterministic under
+ *  load, unlike a fixed delay racing async fetch + render timing. */
+async function waitUntil(condition: () => boolean, timeoutMs = 3000): Promise<void> {
+  const start = Date.now();
+  while (!condition()) {
+    if (Date.now() - start > timeoutMs) throw new Error('waitUntil: condition not met before timeout');
+    await delay(5);
+  }
+}
+
 function jsonResponse(body: unknown, latencyMs: number): Promise<Response> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -361,8 +371,13 @@ describe('real-page declarative rendering with context + fetch + lists', () => {
     expect(page.shadowRoot?.querySelector('.loading')).toBeTruthy();
     expect(getRenderedItemsCount(page, 'li.item')).toBe(0);
 
-    // After fetch resolves: loading gone, list shown.
-    await settle(80);
+    // After fetch resolves: loading gone, list shown. Wait for the actual
+    // transition (context arrival + 25ms fetch + render) instead of a fixed
+    // delay that races the scheduler under load.
+    await waitUntil(() =>
+      page.shadowRoot?.querySelector('.loading') === null &&
+      getRenderedItemsCount(page, 'li.item') === 4
+    );
     expect(page.shadowRoot?.querySelector('.loading')).toBeNull();
     expect(page.shadowRoot?.querySelector('.empty')).toBeNull();
     expect(getRenderedItemsCount(page, 'li.item')).toBe(4);
