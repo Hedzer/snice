@@ -230,6 +230,12 @@ export default [
           const dest = 'adapters/react';
           if (fs.existsSync(src)) {
             for (const file of fs.readdirSync(src)) {
+              // Never copy index.* — the barrel is owned by adapters/react/index.ts
+              // (re-exports the hooks AND every component adapter via `export * from
+              // './components'`) and is compiled by `build:react`'s tsc. dist/react/index.*
+              // is the bundle of src/react/index.ts, which only has the router/provider
+              // hooks; copying it would strip all component adapters from the barrel.
+              if (file.startsWith('index.')) continue;
               if (file.endsWith('.js') || file.endsWith('.d.ts') || file.endsWith('.js.map') || file.endsWith('.d.ts.map')) {
                 fs.copyFileSync(path.join(src, file), path.join(dest, file));
               }
