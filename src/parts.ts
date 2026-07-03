@@ -980,17 +980,18 @@ export class EventPart extends Part {
 
     if (typeof value !== 'function') return;
 
-    // Auto-bind to host element (the custom element with shadow root)
-    if (!this.host) {
-      const rootNode = this.element.getRootNode();
-      this.host = (rootNode as ShadowRoot).host || null;
-    }
-
-    const context = this.host || null;
     const keyFilter = this.keyFilter;
     this.listener = ((event: Event) => {
       if (keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, keyFilter)) return;
-      value.call(context, event);
+      // Resolve the host (the custom element owning the shadow root) at dispatch
+      // time, not bind time: a binding inside an initially-hidden <if>/<case>
+      // branch commits while off-DOM, where getRootNode() has no host — caching
+      // that null permanently would call the handler with `this = null` once the
+      // branch is shown. By the time an event fires, the element is in the DOM.
+      if (!this.host) {
+        this.host = ((this.element.getRootNode() as ShadowRoot).host as Element) || null;
+      }
+      value.call(this.host || null, event);
     }) as EventListener;
 
     this.element.addEventListener(this.eventName, this.listener);
