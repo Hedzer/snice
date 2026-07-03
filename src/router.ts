@@ -1,4 +1,5 @@
 import { Route } from 'pica-route';
+import { routeSpecificity } from './route-specificity';
 import { applyElementFunctionality } from './element';
 import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER, CONTEXT_UPDATE } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
@@ -166,7 +167,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
     const needsSorting = !is_sorted;
     if (needsSorting) {
-      routes.sort((a: any, b: any) => b.route.spec.length - a.route.spec.length);
+      routes.sort((a: any, b: any) => routeSpecificity(b.route.spec) - routeSpecificity(a.route.spec));
       is_sorted = true;
     }
 

@@ -1,4 +1,5 @@
 import { Route, type RouteParams } from 'pica-route';
+import { routeSpecificity } from '../route-specificity';
 
 export interface RouteConfig {
   path: string;
@@ -14,11 +15,11 @@ export interface MatchResult {
 /**
  * Match a URL path against an array of route configs.
  * Uses pica-route — same matching as vanilla Snice's Router.
- * Routes are sorted by specificity (longest spec first).
+ * Routes are sorted by per-segment specificity (static > dynamic > wildcard).
  */
 export function matchRoutes(routes: RouteConfig[], pathname: string): MatchResult | null {
-  // Sort by specificity (longest path first), same as vanilla Router
-  const sorted = [...routes].sort((a, b) => b.path.length - a.path.length);
+  // Sort by specificity (most specific first), same model as the vanilla Router.
+  const sorted = [...routes].sort((a, b) => routeSpecificity(b.path) - routeSpecificity(a.path));
 
   for (const route of sorted) {
     const matcher = new Route(route.path);

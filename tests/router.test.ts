@@ -92,11 +92,36 @@ describe('Router', () => {
       expect(userPage?.getAttribute('id')).toBe('123');
     });
 
+    it('prefers a static route over a param route regardless of pattern length', async () => {
+      const { page, initialize, navigate } = router;
+
+      @page({ tag: 'post-param', routes: ['/post/:identifier'] })
+      class PostParam extends HTMLElement {
+        @render()
+        renderContent() { return html`<div>param</div>`; }
+      }
+
+      @page({ tag: 'post-new', routes: ['/post/new'] })
+      class PostNew extends HTMLElement {
+        @render()
+        renderContent() { return html`<div>new-page</div>`; }
+      }
+
+      initialize();
+
+      await navigate('/post/new');
+      expect(targetEl.querySelector('post-new')).toBeTruthy();
+      expect(targetEl.querySelector('post-param')).toBeFalsy();
+
+      await navigate('/post/42');
+      expect(targetEl.querySelector('post-param')).toBeTruthy();
+    });
+
     it('should show default 404 when no 404 page is registered', async () => {
       const { initialize, navigate } = router;
-      
+
       initialize();
-      
+
       // Navigate to non-existent route should show default 404
       await navigate('/non-existent');
       expect(targetEl.innerHTML).toContain('404');
