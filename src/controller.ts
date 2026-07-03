@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -153,12 +153,26 @@ export async function attachController(element: HTMLElement, controllerName: str
         abort.signal.addEventListener('abort', () => clearTimeout(timerId), { once: true });
       }),
     ]);
+  } catch (error) {
+    // Attach never got past `ready` (aborted or deadline). Roll back the stored
+    // references so nothing is left pointing at a controller that never
+    // attached — otherwise a later attach short-circuits as "already attached"
+    // and a detach would run detach() on it.
+    if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
+      delete (element as any)[CONTROLLER_KEY];
+      delete (element as any)[CONTROLLER_NAME_KEY];
+      delete (element as any)[CONTROLLER_OPERATIONS];
+    }
+    throw error;
   } finally {
     if ((element as any)[CONTROLLER_ABORT] === abort) {
       delete (element as any)[CONTROLLER_ABORT];
     }
   }
-  
+
+  // Past `ready` — mark the controller so detach knows attach was actually run.
+  (controllerInstance as any)[CONTROLLER_ATTACHED] = true;
+
   // Run attach in the controller's scope
   await scope.runOperation(async () => {
     await controllerInstance.attach(element);
@@ -195,7 +209,22 @@ export async function detachController(element: HTMLElement): Promise<void> {
   if (!controllerInstance) {
     return;
   }
-  
+
+  // Claim the controller immediately — before any await — so a second detach
+  // that overlaps this one (e.g. disconnect's fire-and-forget detach racing a
+  // controller reassignment) finds no instance and returns, instead of running
+  // detach() a second time on the same controller. The rest of this function
+  // works off the locals captured above.
+  delete (element as any)[CONTROLLER_KEY];
+  delete (element as any)[CONTROLLER_NAME_KEY];
+  delete (element as any)[CONTROLLER_OPERATIONS];
+
+  // A controller whose attach() was aborted before it ever ran must not have
+  // detach() (or the teardown/event) run on it.
+  if (!(controllerInstance as any)[CONTROLLER_ATTACHED]) {
+    return;
+  }
+
   // Run detach in the controller's scope
   if (scope) {
     await scope.runOperation(async () => {
@@ -223,11 +252,7 @@ export async function detachController(element: HTMLElement): Promise<void> {
   
   // Clean up router context reference
   delete (controllerInstance as any)[ROUTER_CONTEXT];
-  
-  delete (element as any)[CONTROLLER_KEY];
-  delete (element as any)[CONTROLLER_NAME_KEY];
-  delete (element as any)[CONTROLLER_OPERATIONS];
-  
+
   element.dispatchEvent(new CustomEvent('controller-detached', {
     detail: { name: controllerName, controller: controllerInstance }
   }));

@@ -116,4 +116,8 @@ export const ADOPTED_METHODS = getSymbol('adopted-methods');
 // Controller attach-abort — set to an AbortController while attachController
 // is awaiting element.ready, so detachController can short-circuit the wait.
 export const CONTROLLER_ABORT = getSymbol('controller-abort');
+// Set on a controller instance once it has gotten past element.ready and is
+// being attached, so detachController knows not to run detach() on a controller
+// whose attach() was aborted before it ever ran.
+export const CONTROLLER_ATTACHED = getSymbol('controller-attached');
 export const PROPERTY_DEFINERS = getSymbol('property-definers');

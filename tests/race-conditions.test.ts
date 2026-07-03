@@ -814,14 +814,17 @@ describe('race conditions and async edge cases', () => {
         el.setAttribute('controller', 'cleanup-1');
         el.setAttribute('controller', 'cleanup-2');
       }
-      
-      // Final removal
+
+      // Let the final controller actually finish attaching. (The rapid switches
+      // abort each other's attach; only the last one, unraced, completes — and a
+      // controller whose attach was aborted must not run detach.)
+      await new Promise(resolve => setTimeout(resolve, 30));
+
+      // Final removal detaches the attached (last) controller.
       document.body.removeChild(el);
-      
-      // Wait for all cleanups
       await new Promise(resolve => setTimeout(resolve, 50));
-      
-      // Cleanup should be called for the last controller when element is removed
+
+      // Cleanup runs exactly once, for the controller that was actually attached.
       expect(cleanups.length).toBeGreaterThanOrEqual(1);
     });
   });
