@@ -3,7 +3,7 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
-import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers } from './utils';
+import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers } from './render';
 import { clearDispatchTimers } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
@@ -403,7 +403,7 @@ export function applyElementFunctionality(constructor: any) {
 
         const changed = propOptions?.hasChanged
           ? propOptions.hasChanged(parsedValue, currentValue)
-          : currentValue !== parsedValue;
+          : notEqual(parsedValue, currentValue);
         if (!changed) break;
 
         ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
@@ -624,7 +624,7 @@ export function property(options?: PropertyOptions) {
             // (e.g. deep-equal objects, or forcing an update on a mutated ref).
             const changed = finalOptions?.hasChanged
               ? finalOptions.hasChanged(newValue, oldValue)
-              : oldValue !== newValue;
+              : notEqual(newValue, oldValue);
             if (!changed) return;
 
             // Pre-init: store for later, don't reflect to DOM yet

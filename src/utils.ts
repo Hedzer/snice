@@ -108,6 +108,15 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
  * @returns The string representation for the HTML attribute, or null if value should remove attribute
  */
 /**
+ * Default property dirty-check: has the value changed? Like `!==`, but treats
+ * NaN → NaN as unchanged (NaN !== NaN would otherwise re-fire forever).
+ */
+export function notEqual(value: unknown, old: unknown): boolean {
+  // Changed unless strictly equal, or both are NaN (each self-unequal).
+  return value !== old && (value === value || old === old);
+}
+
+/**
  * Extract attribute name from property options
  */
 export function getAttrName(opts: PropertyOptions, propName: string): string {
