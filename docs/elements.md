@@ -995,6 +995,27 @@ class ReactiveComponent extends HTMLElement {
 }
 ```
 
+**Initial values.** By default a watcher fires once during initialization with the element's starting value — from markup (`<reactive-component user-name="Ada">`) or the field default — with `oldValue` undefined, then again on every later change:
+
+```typescript
+@watch('userName')
+onUserNameChange(oldVal: string | undefined, newVal: string) {
+  // Init:   (undefined, 'Ada')
+  // Change: ('Ada', 'Grace')
+}
+```
+
+Pass `{ immediate: false }` as the last argument for a change-only watcher — one that must not run on mount, such as a watcher that dispatches an event:
+
+```typescript
+@watch('value', { immediate: false })
+onValueChange(oldVal: string, newVal: string) {
+  this.dispatchChange();   // only on real changes, never on mount
+}
+```
+
+The options object always comes after the property names, so it works with multiple watched properties too: `@watch('width', 'height', { immediate: false })`.
+
 ### @context() Decorator
 
 Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):

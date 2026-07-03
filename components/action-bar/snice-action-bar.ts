@@ -30,7 +30,7 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
     });
   }
 
-  @watch('open')
+  @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
       this.setAttribute('open', '');

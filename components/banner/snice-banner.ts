@@ -104,7 +104,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     this.hide();
   }
 
-  @watch('open')
+  @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
       this.dispatchOpenEvent();

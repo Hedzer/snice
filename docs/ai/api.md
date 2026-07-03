@@ -42,8 +42,9 @@
 // Syncs with attributes, triggers re-render
 // Types: String (default), Number, Boolean, Object, Array
 
-@watch(...propertyNames: string[])
-// Called on property change: (oldVal, newVal, propertyName) => void
+@watch(...propertyNames: string[], options?: { immediate?: boolean })
+// Fires once on init: (undefined, initialValue, propertyName), then on every change: (oldVal, newVal, propertyName)
+// { immediate: false } → change-only, skip the init call (use for event-dispatching watchers)
 ```
 
 ## Lifecycle

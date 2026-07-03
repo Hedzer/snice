@@ -88,7 +88,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     this.showSuggestions = false;
   };
 
-  @watch('value')
+  @watch('value', { immediate: false })
   handleValueChange() {
     this.emitChange();
   }

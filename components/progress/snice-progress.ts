@@ -135,7 +135,7 @@ export class SniceProgress extends HTMLElement implements SniceProgressElement {
     `;
   }
 
-  @watch('value', 'max', 'indeterminate')
+  @watch('value', 'max', 'indeterminate', { immediate: false })
   handleProgressChange() {
     this.dispatchProgressChange();
   }

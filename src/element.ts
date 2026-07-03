@@ -3,12 +3,13 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
-import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, notEqual } from './utils';
+import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers } from './render';
 import { clearDispatchTimers } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions } from './types/property-options';
+import { WatchOptions } from './types/watch-options';
 import { ElementOptions } from './types/element-options';
 import { clearDebounceTimers, clearThrottleTimers } from './method-decorators';
 import { AppContext } from './types/app-context';
@@ -269,6 +270,10 @@ export function applyElementFunctionality(constructor: any) {
 
       this[INITIALIZED] = true;
 
+      // Now that the initial value is settled, give @watch immediate handlers
+      // their one init call (before the first render, so derived state is ready).
+      invokeImmediateWatchers(this, constructor);
+
       if (originalConnectedCallback) {
         originalConnectedCallback.call(this);
       }
@@ -399,7 +404,13 @@ export function applyElementFunctionality(constructor: any) {
         if (attributeName.toLowerCase() !== name.toLowerCase()) continue;
 
         const currentValue = this[PROPERTY_VALUES]?.[propName];
-        const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
+        // A removed attribute reverts the property to its field default. Read it
+        // back through the getter (attribute is already gone at this point) so the
+        // watcher's newValue and PROPERTY_VALUES match what this[propName] now
+        // returns — parseAttributeValue(null) would diverge to null for String/Number.
+        const parsedValue = newValue === null
+          ? this[propName]
+          : parseAttributeValue(newValue, propOptions, currentValue, undefined);
 
         const changed = propOptions?.hasChanged
           ? propOptions.hasChanged(parsedValue, currentValue)
@@ -410,7 +421,12 @@ export function applyElementFunctionality(constructor: any) {
         ensureObj(this, PROPERTY_VALUES)[propName] = parsedValue;
 
         if (!this[SETTING_FROM_PROPERTY]?.has(name.toLowerCase())) {
-          invokeWatchers(this, constructor, propName, currentValue, parsedValue);
+          // Watchers react to changes only. During upgrade the initial value
+          // is not a change, so suppress until INITIALIZED; @watch immediate
+          // handlers get their one init call from invokeImmediateWatchers.
+          if (this[INITIALIZED]) {
+            invokeWatchers(this, constructor, propName, currentValue, parsedValue);
+          }
 
           if (this[RENDER_METHOD] && this[INITIALIZED]) {
             requestRender(this);
@@ -642,20 +658,29 @@ export function property(options?: PropertyOptions) {
               const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
 
               ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propertyKey);
-              ensureSet(this, SETTING_FROM_PROPERTY).add(attributeName.toLowerCase());
+              const attrKey = attributeName.toLowerCase();
+              ensureSet(this, SETTING_FROM_PROPERTY).add(attrKey);
 
+              // attributeChangedCallback runs synchronously inside setAttribute /
+              // removeAttribute (custom element reactions are synchronous), so the
+              // guard only needs to bracket this one reflection. Clear it right
+              // after — not on a microtask — otherwise an external attribute change
+              // in the same tick is mistaken for our own echo and silently dropped.
               if (attributeValue === null) {
                 this.removeAttribute?.(attributeName);
               } else {
                 this.setAttribute?.(attributeName, attributeValue);
               }
 
-              queueMicrotask(() => {
-                this[SETTING_FROM_PROPERTY]?.delete(attributeName.toLowerCase());
-              });
+              this[SETTING_FROM_PROPERTY].delete(attrKey);
             }
 
-            invokeWatchers(this, this.constructor, propertyKey, oldValue, newValue);
+            // See attributeChangedCallback: the initial value is not a change,
+            // so suppress watchers until INITIALIZED. @watch immediate handlers
+            // get their one init call from invokeImmediateWatchers.
+            if (this[INITIALIZED]) {
+              invokeWatchers(this, this.constructor, propertyKey, oldValue, newValue);
+            }
 
             if (this[RENDER_METHOD] && this[INITIALIZED]) {
               requestRender(this);
@@ -736,7 +761,13 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
 
 
 
-export function watch(...propertyNames: string[]) {
+export function watch(...args: (string | WatchOptions)[]) {
+  // A trailing options object is separated from the watched property names.
+  const propertyNames = args.filter((a): a is string => typeof a === 'string');
+  const options = args.find((a): a is WatchOptions => typeof a === 'object' && a !== null);
+  // Fire on init by default; opt out of the init call with { immediate: false }.
+  const immediate = options?.immediate !== false;
+
   return function (target: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
 
@@ -780,7 +811,8 @@ export function watch(...propertyNames: string[]) {
 
         constructor[PROPERTY_WATCHERS].get(propertyName).push({
           methodName,
-          method: target
+          method: target,
+          immediate
         });
       }
     });

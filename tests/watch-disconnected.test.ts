@@ -26,6 +26,9 @@ describe('@watch decorator - disconnected behavior', () => {
     // Wait for element to be ready
     await (el as any).ready;
 
+    // Fires once on init with the starting value (immediate default)
+    expect(watcherSpy).toHaveBeenCalledWith(undefined, 'initial');
+
     // Change property while connected
     el.name = 'connected';
     expect(watcherSpy).toHaveBeenCalledWith('initial', 'connected');
@@ -37,7 +40,8 @@ describe('@watch decorator - disconnected behavior', () => {
     el.name = 'disconnected';
     expect(watcherSpy).toHaveBeenCalledWith('connected', 'disconnected');
 
-    expect(watcherSpy).toHaveBeenCalledTimes(2);
+    // init fire + two changes
+    expect(watcherSpy).toHaveBeenCalledTimes(3);
   });
 
   it('should handle attribute changes that trigger watchers when disconnected', async () => {
@@ -60,6 +64,9 @@ describe('@watch decorator - disconnected behavior', () => {
     // Wait for element to be ready
     await (el as any).ready;
 
+    // Fires once on init with the starting value (immediate default)
+    expect(watcherSpy).toHaveBeenCalledWith(undefined, '');
+
     // Change attribute while connected
     el.setAttribute('user-name', 'connected');
     expect(watcherSpy).toHaveBeenCalledWith('', 'connected');
@@ -71,6 +78,7 @@ describe('@watch decorator - disconnected behavior', () => {
     el.setAttribute('user-name', 'disconnected');
     expect(watcherSpy).toHaveBeenCalledWith('connected', 'disconnected');
 
-    expect(watcherSpy).toHaveBeenCalledTimes(2);
+    // init fire + two changes
+    expect(watcherSpy).toHaveBeenCalledTimes(3);
   });
 });

@@ -72,7 +72,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
     this.updateFilteredCommands();
   }
 
-  @watch('open')
+  @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
       this.dispatchOpenEvent();

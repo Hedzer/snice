@@ -94,7 +94,7 @@ export class SniceProgressRing extends HTMLElement implements SniceProgressRingE
     }
   }
 
-  @watch('value')
+  @watch('value', { immediate: false })
   handleValueChange() {
     const clamped = Math.min(this.max, Math.max(0, this.value));
     if (clamped >= this.max && this.previousValue < this.max) {

@@ -1,6 +1,7 @@
 // Export all types from a centralized location
 export * from './query-options';
 export * from './property-options';
+export * from './watch-options';
 export * from './property-converter';
 export * from './snice-element';
 export * from './part-options';

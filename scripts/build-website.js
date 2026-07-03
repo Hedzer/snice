@@ -487,10 +487,17 @@ class HomePage extends HTMLElement { }</snice-code-block>
 @property() name = '';
 @property({ type: Number }) count = 0;
 @property({ type: Boolean, reflect: true }) active = false;</snice-code-block>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @watch: react when a property changes
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @watch: fires once on init as (undefined, value), then on every change
 @watch('count')
-onCountChange(newVal, oldVal) {
+onCountChange(oldVal, newVal) {
   console.log(\`Count: \${oldVal} → \${newVal}\`);
+}
+
+// { immediate: false }: change-only, skip the init call
+// (use for watchers that dispatch events, so they don't fire on mount)
+@watch('open', { immediate: false })
+onOpenChange(oldVal, newVal) {
+  this.dispatchEvent(new CustomEvent('toggle'));
 }</snice-code-block>
     </div>
 

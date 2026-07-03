@@ -49,7 +49,7 @@ export class SniceMenu extends HTMLElement implements SniceMenuElement {
     document.removeEventListener('click', this.closeOnOutsideClick);
   }
 
-  @watch('open')
+  @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
       if (this.panel) {

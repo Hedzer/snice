@@ -13,7 +13,8 @@
 
 ## Properties
 - `@property({ type?, attribute?: string|boolean, converter?, hasChanged? })` - Reactive, syncs attrs. Initial defaults NOT reflected to attrs.
-- `@watch('propName')` - React to changes: `(oldVal, newVal, propertyName) => void`
+- `@watch('propName')` - Fires once on init as `(undefined, initialValue, propertyName)`, then on every change: `(oldVal, newVal, propertyName) => void`.
+- `@watch('propName', { immediate: false })` - Change-only; skips the init call (use for watchers that dispatch events). Options object is the last arg (works with multiple names).
 
 ## Lifecycle
 - `@ready()` - After first render. Fires once.

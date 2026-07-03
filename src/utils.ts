@@ -275,6 +275,37 @@ export function invokeWatchers(instance: any, constructor: any, propName: string
 }
 
 /**
+ * Fire the one-time initialization call for `@watch(..., { immediate: true })`
+ * handlers. Runs once per declared property after the element is initialized,
+ * passing the effective initial value with `oldValue` undefined. Non-immediate
+ * watchers are untouched — they only react to later changes.
+ */
+export function invokeImmediateWatchers(instance: any, constructor: any): void {
+  const watchers = constructor[PROPERTY_WATCHERS];
+  const properties = constructor[PROPERTIES];
+  if (!watchers || !properties) return;
+
+  for (const [propName, propOptions] of properties) {
+    // A watcher may be registered under the JS name, the explicit `attribute:`
+    // name, or the `*` wildcard; fire each immediate one exactly once, keyed to
+    // this property's current value.
+    const keys: string[] = [propName];
+    const attrName = propOptions && typeof propOptions.attribute === 'string' ? propOptions.attribute : null;
+    if (attrName && attrName !== propName) keys.push(attrName);
+    keys.push('*');
+
+    for (const key of keys) {
+      if (!watchers.has(key)) continue;
+      for (const w of watchers.get(key)) {
+        if (!w.immediate) continue;
+        try { w.method.call(instance, undefined, instance[propName], propName); }
+        catch (e) { console.error(`Error in @watch('${key}') method ${w.methodName}:`, e); }
+      }
+    }
+  }
+}
+
+/**
  * Create a debounced version of a function
  */
 export function createDebounced<T extends (...args: any[]) => any>(fn: T, delay: number): T {

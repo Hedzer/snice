@@ -65,7 +65,7 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
     }
   }
 
-  @watch('items')
+  @watch('items', { immediate: false })
   handleItemsChange() {
     this.emitItemChange({
       items: this.items,
