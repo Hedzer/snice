@@ -78,11 +78,23 @@ export class Context {
   }
 
   /**
-   * Unregister an element from receiving context updates
+   * Unregister an element from receiving context updates. With a methodName,
+   * removes only that one handler (so a `once` handler tearing itself down
+   * doesn't kill the element's other @context handlers); without one, removes
+   * the element entirely (used on disconnect).
    * @internal Used by @context decorator cleanup
    */
-  [CONTEXT_UNREGISTER](element: HTMLElement): void {
-    (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>).delete(element);
+  [CONTEXT_UNREGISTER](element: HTMLElement, methodName?: string): void {
+    const map = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
+
+    if (methodName !== undefined) {
+      const names = map.get(element);
+      if (!names) return;
+      names.delete(methodName);
+      if (names.size > 0) return; // other handlers remain — keep the element
+    }
+
+    map.delete(element);
     (this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>).delete(element);
   }
 

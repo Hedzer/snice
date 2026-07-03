@@ -268,8 +268,8 @@ describe('@context memory leak tests', () => {
     // Handler should be called once during navigation
     expect(handler).toHaveBeenCalledTimes(1);
 
-    // CONTEXT_CALLED flag should be set
-    expect(pageElement[CONTEXT_CALLED]).toBe(true);
+    // CONTEXT_CALLED tracks which once-handlers have fired (per method).
+    expect(pageElement[CONTEXT_CALLED]?.has('handleContext')).toBe(true);
 
     // After first call, element should be unregistered
     const afterFirstCall = getRegisteredElementsCount(ctx);

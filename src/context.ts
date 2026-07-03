@@ -95,8 +95,12 @@ export function setupContextHandler(element: HTMLElement) {
 
     // Create wrapped method with timing controls
     (element as any)[wrappedMethodName] = function (context: Context) {
-      // Skip if already called once
-      if (options.once && (element as any)[CONTEXT_CALLED]) {
+      // `once` is tracked PER method (not a single element-level flag) so
+      // multiple once handlers on the same element each fire.
+      const called: Set<string> = (element as any)[CONTEXT_CALLED] ||
+        ((element as any)[CONTEXT_CALLED] = new Set<string>());
+
+      if (options.once && called.has(methodName)) {
         return;
       }
 
@@ -105,11 +109,12 @@ export function setupContextHandler(element: HTMLElement) {
 
         // Handle once option
         if (options.once) {
-          (element as any)[CONTEXT_CALLED] = true;
-          // Unregister after first call
+          called.add(methodName);
+          // Unregister ONLY this handler, not the whole element — otherwise the
+          // element's other @context handlers would stop receiving updates.
           const ctx = (element as any)[NAVIGATION_CONTEXT_INSTANCE];
           if (ctx && typeof ctx[CONTEXT_UNREGISTER] === 'function') {
-            (ctx[CONTEXT_UNREGISTER] as (element: HTMLElement) => void)(element);
+            (ctx[CONTEXT_UNREGISTER] as (element: HTMLElement, methodName?: string) => void)(element, wrappedMethodName);
           }
         }
       };

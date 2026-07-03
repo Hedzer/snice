@@ -149,6 +149,70 @@ describe('@context decorator', () => {
     }
   });
 
+  it('a once handler does not unregister the element\'s other @context handlers', async () => {
+    const onceSpy = vi.fn();
+    const updateSpy = vi.fn();
+
+    const router = Router({ target: '#app', context: {} });
+
+    @router.page({ tag: 'once-sibling-page', routes: ['/os'] })
+    class OnceSiblingPage extends HTMLElement {
+      @context({ once: true })
+      loadOnce(ctx: Context) { onceSpy(ctx); }
+      @context()
+      onUpdate(ctx: Context) { updateSpy(ctx); }
+    }
+
+    router.initialize();
+    await router.navigate('/os');
+    await waitFor(50);
+
+    expect(onceSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+
+    const el = document.querySelector('once-sibling-page') as any;
+    const ctx = el[Symbol.for('snice:context-handler')] as Context;
+    ctx.update();
+    await waitFor(20);
+    ctx.update();
+    await waitFor(20);
+
+    // The once handler stays at 1; the non-once sibling keeps firing.
+    expect(onceSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('supports multiple once handlers on the same element (each fires exactly once)', async () => {
+    const aSpy = vi.fn();
+    const bSpy = vi.fn();
+
+    const router = Router({ target: '#app', context: {} });
+
+    @router.page({ tag: 'two-once-page', routes: ['/two'] })
+    class TwoOncePage extends HTMLElement {
+      @context({ once: true })
+      onceA(ctx: Context) { aSpy(ctx); }
+      @context({ once: true })
+      onceB(ctx: Context) { bSpy(ctx); }
+    }
+
+    router.initialize();
+    await router.navigate('/two');
+    await waitFor(50);
+
+    expect(aSpy).toHaveBeenCalledTimes(1);
+    expect(bSpy).toHaveBeenCalledTimes(1);
+
+    const el = document.querySelector('two-once-page') as any;
+    const ctx = el[Symbol.for('snice:context-handler')] as Context;
+    ctx.update();
+    await waitFor(20);
+
+    // Neither re-fires after their single call.
+    expect(aSpy).toHaveBeenCalledTimes(1);
+    expect(bSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should signal subscribers when update() is called with no args', async () => {
     const spy = vi.fn();
 
