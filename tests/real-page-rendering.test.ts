@@ -365,9 +365,11 @@ describe('real-page declarative rendering with context + fetch + lists', () => {
     router.initialize();
     await router.navigate('/cond');
 
-    // Mid-flight: should be loading, no items rendered yet.
-    await settle(5);
+    // Mid-flight: the loading state renders first (loading = true is the
+    // default, rendered on connect before the fetch resolves). Wait for it
+    // rather than sampling at a fixed delay that the render can miss under load.
     const page = container.querySelector(tag) as HTMLElement;
+    await waitUntil(() => page?.shadowRoot?.querySelector('.loading') != null);
     expect(page.shadowRoot?.querySelector('.loading')).toBeTruthy();
     expect(getRenderedItemsCount(page, 'li.item')).toBe(0);
 

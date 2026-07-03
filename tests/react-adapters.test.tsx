@@ -132,6 +132,11 @@ describe('React Adapters', () => {
   });
 
   describe('Generated Adapters', () => {
+    // Dynamically importing the ~135-re-export barrel (each adapter pulls in
+    // React + the wrapper + a TS transform) can exceed the default 5s test
+    // timeout on a saturated parallel worker — which aborts the test outside
+    // the try/catch below. Give it generous headroom; the assertions are
+    // unchanged (the built adapters must actually import and export).
     it('should have adapters for all components', async () => {
       // Dynamically import the components export
       // This tests that all component adapters were generated correctly
@@ -147,7 +152,7 @@ describe('React Adapters', () => {
         // If components haven't been built yet, that's okay for this test
         console.warn('React adapters not built yet. Run `npm run build:react` to generate them.');
       }
-    });
+    }, 30000);
   });
 
   describe('TypeScript Types', () => {
