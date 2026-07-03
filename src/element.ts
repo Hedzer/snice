@@ -401,7 +401,10 @@ export function applyElementFunctionality(constructor: any) {
         const currentValue = this[PROPERTY_VALUES]?.[propName];
         const parsedValue = parseAttributeValue(newValue, propOptions, currentValue, undefined);
 
-        if (currentValue === parsedValue) break;
+        const changed = propOptions?.hasChanged
+          ? propOptions.hasChanged(parsedValue, currentValue)
+          : currentValue !== parsedValue;
+        if (!changed) break;
 
         ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
         ensureObj(this, PROPERTY_VALUES)[propName] = parsedValue;
@@ -617,7 +620,12 @@ export function property(options?: PropertyOptions) {
           },
           set(this: any, newValue: any) {
             const oldValue = this[propertyKey];
-            if (oldValue === newValue) return;
+            // A custom hasChanged comparator overrides the default === check
+            // (e.g. deep-equal objects, or forcing an update on a mutated ref).
+            const changed = finalOptions?.hasChanged
+              ? finalOptions.hasChanged(newValue, oldValue)
+              : oldValue !== newValue;
+            if (!changed) return;
 
             // Pre-init: store for later, don't reflect to DOM yet
             if (!this[PROPERTIES_INITIALIZED]) {
