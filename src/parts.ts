@@ -1170,9 +1170,14 @@ export class ConditionalIfPart extends Part {
     parent.insertBefore(this.startNode, ifElement);
     parent.insertBefore(this.endNode, ifElement.nextSibling);
 
-    // Move <if>'s children between the markers
+    // Park <if>'s children in an off-DOM fragment immediately, rather than
+    // leaving them in the live template fragment. Otherwise a branch that is
+    // hidden on first render would still connect its children (when the
+    // template mounts) and then disconnect them (on the first commit) — firing
+    // mount side effects spuriously. commit(true) inserts them when shown.
+    this.childFragment = document.createDocumentFragment();
     while (ifElement.firstChild) {
-      parent.insertBefore(ifElement.firstChild, this.endNode);
+      this.childFragment.appendChild(ifElement.firstChild);
     }
 
     // Remove the <if> element from DOM
