@@ -111,7 +111,11 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
  * Extract attribute name from property options
  */
 export function getAttrName(opts: PropertyOptions, propName: string): string {
-  return typeof opts.attribute === 'string' ? opts.attribute : propName.toLowerCase();
+  // Lowercase always: the DOM stores attribute names lowercase, so an explicit
+  // camelCase `attribute:` would otherwise never match observedAttributes and
+  // attributeChangedCallback would never fire. get/setAttribute are already
+  // case-insensitive, so this is safe for every caller.
+  return (typeof opts.attribute === 'string' ? opts.attribute : propName).toLowerCase();
 }
 
 /**
