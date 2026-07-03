@@ -1263,18 +1263,28 @@ export class ConditionalCasePart extends Part {
   }
 
   commit(value: any): void {
-    if (this.value === value) return;
-    this.value = value;
-
+    // Dirty-check on the SELECTED BRANCH, not the raw value. A value whose type
+    // changed but stringifies the same (number 1 vs string '1' — e.g. a numeric
+    // default replaced by a router param, which is always a string) selects the
+    // same branch, so tearing it down and re-inserting it would needlessly
+    // restart media/animations and lose focus inside it.
     const valueStr = String(value);
+    const hasBranch = this.branches.has(valueStr);
+    const nextKey = hasBranch ? valueStr : (this.defaultBranch ? '__default__' : null);
+
+    if (this.currentKey === nextKey) {
+      this.value = value;
+      return;
+    }
+
+    this.value = value;
 
     // Move current content back to its fragment
     this._collectCurrent();
 
     // Insert matching branch
-    const hasBranch = this.branches.has(valueStr);
     const matchingFragment = hasBranch ? this.branches.get(valueStr)! : this.defaultBranch;
-    this.currentKey = hasBranch ? valueStr : (this.defaultBranch ? '__default__' : null);
+    this.currentKey = nextKey;
 
     if (matchingFragment && matchingFragment.hasChildNodes()) {
       this.startNode.parentNode!.insertBefore(matchingFragment, this.endNode);
