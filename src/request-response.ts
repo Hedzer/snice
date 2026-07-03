@@ -101,12 +101,11 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
         const { value: finalValue } = await generator.next(response);
         return finalValue;
       } catch (error) {
-        // Send error to generator
-        try {
-          await generator.throw(error);
-        } catch (generatorError) {
-          throw generatorError;
-        }
+        // Drive the generator's own catch block and return whatever it recovers
+        // with (e.g. a cached fallback). If the generator re-throws instead,
+        // generator.throw rejects and the error propagates to the caller.
+        const { value: recovered } = await generator.throw(error);
+        return recovered;
       }
       }; // Close actualRequest function
       
