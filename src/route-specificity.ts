@@ -7,6 +7,9 @@
  * segment-scoring model mainstream routers (React Router, Remix) use.
  *
  * Sort callers descending by this score (highest = most specific = first).
+ *
+ * NOTE: mirrored in `src/react/route-specificity.ts` for the isolated React
+ * bundle — keep the two in sync.
  */
 const STATIC_SEGMENT = 10;
 const DYNAMIC_SEGMENT = 3;

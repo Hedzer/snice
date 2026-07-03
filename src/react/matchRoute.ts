@@ -1,5 +1,5 @@
 import { Route, type RouteParams } from 'pica-route';
-import { routeSpecificity } from '../route-specificity';
+import { routeSpecificity } from './route-specificity';
 
 export interface RouteConfig {
   path: string;

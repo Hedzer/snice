@@ -11,6 +11,6 @@ export interface MatchResult {
 /**
  * Match a URL path against an array of route configs.
  * Uses pica-route — same matching as vanilla Snice's Router.
- * Routes are sorted by specificity (longest spec first).
+ * Routes are sorted by per-segment specificity (static > dynamic > wildcard).
  */
 export declare function matchRoutes(routes: RouteConfig[], pathname: string): MatchResult | null;
