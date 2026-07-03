@@ -176,14 +176,20 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
       return;
     }
 
-    // Different template or first render. Remove only non-<style> children so
-    // the fallback @styles path (Safari <=16 / jsdom / SSR — no
-    // adoptedStyleSheets) doesn't lose its style tags on template switch.
+    // Different template or first render. Keep only the framework's own
+    // fallback <style> tags (marked data-snice-style) so the @styles path
+    // (Safari <=16 / jsdom / SSR — no adoptedStyleSheets) survives a template
+    // switch; template-emitted <style> tags are removed and re-created by the
+    // new instance, so they don't accumulate.
     if (instance) {
       const root = element.shadowRoot!;
       const toRemove: ChildNode[] = [];
       for (const child of Array.from(root.childNodes)) {
-        if (child.nodeType === 1 && (child as Element).tagName === 'STYLE') continue;
+        if (
+          child.nodeType === 1 &&
+          (child as Element).tagName === 'STYLE' &&
+          (child as Element).hasAttribute('data-snice-style')
+        ) continue;
         toRemove.push(child);
       }
       for (const node of toRemove) node.remove();
@@ -421,9 +427,12 @@ export function applyStyles(element: HTMLElement): void {
       return;
     }
 
-    // Fallback — one <style> tag per stylesheet, preserving cascade order
+    // Fallback — one <style> tag per stylesheet, preserving cascade order.
+    // Marked so the template-switch cleanup keeps these (framework styles) but
+    // still removes template-emitted <style> tags (which would otherwise pile up).
     for (const r of allResults) {
       const style = document.createElement('style');
+      style.setAttribute('data-snice-style', '');
       style.textContent = r.cssText;
       element.shadowRoot.appendChild(style);
     }
