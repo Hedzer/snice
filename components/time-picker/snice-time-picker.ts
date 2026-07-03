@@ -295,21 +295,27 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   private getFormattedValue(): string {
     if (!this.value) return '';
 
+    // Format straight from this.value (the canonical 24-hour string), NOT from
+    // this.hours/this.period. Those are dropdown-selection state and can lag the
+    // value during init — a real browser fires attributeChangedCallback for the
+    // pre-connect `value` attribute, so parseValue may run before `format` settles
+    // to 12h. Deriving from this.value is order-independent and always correct.
+    const parts = this.value.split(':');
+    const h24 = parseInt(parts[0], 10) || 0;
+    const mins = parseInt(parts[1], 10) || 0;
+    const secs = parts.length >= 3 ? (parseInt(parts[2], 10) || 0) : 0;
+    const mm = mins.toString().padStart(2, '0');
+    const ss = secs.toString().padStart(2, '0');
+
     if (this.format === '12h') {
-      const displayHour = this.hours === 0 ? 12 : this.hours > 12 ? this.hours - 12 : this.hours;
-      const period = this.hours >= 12 ? 'PM' : 'AM';
-      const base = `${displayHour}:${this.minutes.toString().padStart(2, '0')}`;
-      if (this.showSeconds) {
-        return `${base}:${this.seconds.toString().padStart(2, '0')} ${period}`;
-      }
-      return `${base} ${period}`;
+      const period = h24 >= 12 ? 'PM' : 'AM';
+      const displayHour = h24 % 12 === 0 ? 12 : h24 % 12;
+      const base = `${displayHour}:${mm}`;
+      return this.showSeconds ? `${base}:${ss} ${period}` : `${base} ${period}`;
     }
 
-    const base = `${this.hours.toString().padStart(2, '0')}:${this.minutes.toString().padStart(2, '0')}`;
-    if (this.showSeconds) {
-      return `${base}:${this.seconds.toString().padStart(2, '0')}`;
-    }
-    return base;
+    const base = `${h24.toString().padStart(2, '0')}:${mm}`;
+    return this.showSeconds ? `${base}:${ss}` : base;
   }
 
   private getPlaceholder(): string {

@@ -12,6 +12,36 @@ describe('snice-time-picker', () => {
     }
   });
 
+  describe('12h formatting is order-independent (derives from this.value)', () => {
+    // A real browser fires attributeChangedCallback for pre-connect setAttribute,
+    // so parseValue can run while `format` is still 24h — leaving this.hours in
+    // 24h-form with the default period. The input display must still be correct,
+    // so getFormattedValue derives from this.value (canonical 24h), not those fields.
+    it('formats 14:30 as 2:30 PM even if hours/period fields are stale', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', { value: '14:30', format: '12h' });
+      await wait(20);
+      (picker as any).hours = 14;
+      (picker as any).period = 'AM';
+      expect((picker as any).getFormattedValue()).toBe('2:30 PM');
+    });
+
+    it('formats midnight as 12:00 AM even if hours/period fields are stale', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', { value: '00:00', format: '12h' });
+      await wait(20);
+      (picker as any).hours = 0;
+      (picker as any).period = 'PM';
+      expect((picker as any).getFormattedValue()).toBe('12:00 AM');
+    });
+
+    it('formats noon as 12:00 PM even if hours/period fields are stale', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', { value: '12:00', format: '12h' });
+      await wait(20);
+      (picker as any).hours = 0;
+      (picker as any).period = 'AM';
+      expect((picker as any).getFormattedValue()).toBe('12:00 PM');
+    });
+  });
+
   describe('basic functionality', () => {
     it('should render time-picker element', async () => {
       picker = await createComponent<SniceTimePickerElement>('snice-time-picker');
