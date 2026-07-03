@@ -96,6 +96,44 @@ describe('Router Guards', () => {
     expect(container.innerHTML).toContain('Unauthorized');
   });
 
+  it('a superseded navigation whose guard later denies does not stomp the current page', async () => {
+    const adminTag = `race-admin-${Date.now()}`;
+    const dashTag = `race-dash-${Date.now()}`;
+
+    let releaseGuard!: (allowed: boolean) => void;
+    const gate = new Promise<boolean>((r) => { releaseGuard = r; });
+    const guard: Guard<{}> = () => gate; // resolves only when released
+
+    router = Router({ target: '#app', type: 'hash', context: {} });
+    const { page, initialize, navigate } = router;
+
+    @page({ tag: adminTag, routes: ['/admin'], guards: guard })
+    class AdminPage extends HTMLElement {
+      @render()
+      renderContent() { return html`<h1>Admin</h1>`; }
+    }
+
+    @page({ tag: dashTag, routes: ['/dashboard'] })
+    class DashPage extends HTMLElement {
+      @render()
+      renderContent() { return html`<h1>Dashboard</h1>`; }
+    }
+
+    initialize();
+
+    const pAdmin = navigate('/admin');   // gen1: guard pending on the gate
+    await navigate('/dashboard');        // gen2: renders the dashboard
+    expect(container.querySelector(dashTag)).toBeTruthy();
+
+    releaseGuard(false);                 // the stale /admin guard now denies
+    await pAdmin;
+
+    // The superseded denial must NOT replace the dashboard with a 403.
+    expect(container.querySelector(dashTag)).toBeTruthy();
+    expect(container.innerHTML).not.toContain('403');
+    expect(container.innerHTML).not.toContain('Unauthorized');
+  });
+
   it('should support guards with context checks', async () => {
     const uniqueName = `context-page-${Date.now()}`;
 

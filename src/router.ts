@@ -251,7 +251,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return container;
   }
 
-  async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element): Promise<boolean> {
+  async function checkGuards(guards: Guard<any> | Guard<any>[] | undefined, params: RouteParams, target: Element, stale?: () => boolean): Promise<boolean> {
     const hasGuards = !!guards;
     if (!hasGuards) {
       return true;
@@ -261,8 +261,10 @@ export function Router(options: RouterOptions): RouterInstance {
     let spinner: HTMLElement | null = null;
     let spinnerTimer: ReturnType<typeof setTimeout> | null = null;
 
-    // Show spinner after a short delay (avoids flash for fast sync guards)
+    // Show spinner after a short delay (avoids flash for fast sync guards).
+    // Skip if a newer navigation has already superseded this one.
     spinnerTimer = setTimeout(() => {
+      if (stale && stale()) return;
       spinner = createLoadingSpinner();
       target.appendChild(spinner);
     }, 50);
@@ -271,7 +273,11 @@ export function Router(options: RouterOptions): RouterInstance {
       for (const guard of guardsArray) {
         const allowed = await guard(context, params);
         if (!allowed) {
-          renderForbiddenPage(target);
+          // Don't stomp the current page with a 403 if a newer navigation
+          // already took over while this guard was resolving.
+          if (!stale || !stale()) {
+            renderForbiddenPage(target);
+          }
           return false;
         }
       }
@@ -310,7 +316,7 @@ export function Router(options: RouterOptions): RouterInstance {
     return { element: div, transition: undefined, layout: undefined };
   }
 
-  async function resolveRoute(path: string, target: Element): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
+  async function resolveRoute(path: string, target: Element, stale?: () => boolean): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
     for (const route of routes) {
       const params = route.route.match(path);
       const isMatch = params !== false;
@@ -318,7 +324,7 @@ export function Router(options: RouterOptions): RouterInstance {
         continue;
       }
 
-      const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target);
+      const guardsAllowed = await checkGuards(route.guards, params as RouteParams, target, stale);
       if (!guardsAllowed) {
         return { result: RouteResult.GUARDS_FAILED };
       }
@@ -471,7 +477,7 @@ export function Router(options: RouterOptions): RouterInstance {
     const isHomePath = (path?.trim() === '' || path === '/') && !!home;
     if (isHomePath) {
       const homeRoute = routes.find(r => r.route.match('/'));
-      if (!(await checkGuards(homeRoute?.guards, {}, target))) return;
+      if (!(await checkGuards(homeRoute?.guards, {}, target, stale))) return;
       if (stale()) return;
       const { element, transition, layout } = createHomeElement();
       await renderPage(target, element, transition, layout, path, {}, stale);
@@ -482,7 +488,7 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!path) return;
 
     // Resolve route
-    const routeResult = await resolveRoute(path, target);
+    const routeResult = await resolveRoute(path, target, stale);
     if (stale()) return;
 
     // Guards failed (403 already rendered by checkGuards)
@@ -497,7 +503,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
     // 404 fallthrough
     const { element, transition, layout } = create404Element();
-    await renderPage(target, element, transition, layout, path, {});
+    await renderPage(target, element, transition, layout, path, {}, stale);
   }
 
   async function performTransition(
