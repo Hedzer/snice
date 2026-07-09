@@ -5,7 +5,10 @@ import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, i
 // This parses as a comment node but doesn't get escaped in attributes
 const marker = `snice$${Math.random().toFixed(9).slice(2)}$`;
 const markerMatch = '?' + marker;
-const nodeMarker = `<${markerMatch}>`;
+// A true comment, not a processing instruction (<?...>): in HTML content both
+// parse to the same comment node, but PIs are dropped inside foreign content
+// (<svg>), which would silently kill any node binding inside an svg block.
+const nodeMarker = `<!--${markerMatch}-->`;
 // Escape the `$` chars — as a bare RegExp they'd be end anchors and the
 // pattern would never match, so marker-bearing text/comments never split.
 const markerRegex = new RegExp(marker.replace(/\$/g, '\\$'), 'g');
@@ -19,6 +22,35 @@ const NOT_COMMITTED = Symbol('not-committed');
 // noChange sentinel - signals a directive handled the value
 export const noChange = Symbol.for('snice:no-change');
 export type NoChange = typeof noChange;
+
+// live() wrapper - marks a property binding value for comparison against the
+// actual DOM property instead of the last committed value
+const LIVE_MARKER = Symbol.for('snice:live');
+
+interface LiveValue {
+  readonly _$liveMarker$: typeof LIVE_MARKER;
+  readonly value: unknown;
+}
+
+/**
+ * Wrap a property binding value so the commit compares against the element's
+ * CURRENT DOM property rather than the last committed value. Use for inputs
+ * whose DOM state the user can change out from under the binding:
+ *
+ * ```typescript
+ * html`<input .value=${live(this.text)} />`
+ * ```
+ *
+ * Without live(), re-rendering with an unchanged bound value skips the DOM
+ * write, leaving user-typed text in place.
+ */
+export function live(value: unknown): LiveValue {
+  return { _$liveMarker$: LIVE_MARKER, value };
+}
+
+function isLive(value: any): value is LiveValue {
+  return value && value._$liveMarker$ === LIVE_MARKER;
+}
 
 /**
  * Check if value is a primitive (can be compared with ===)
@@ -414,7 +446,18 @@ function prepareTemplate(result: TemplateResult): Template {
   const html = htmlParts.join('');
 
   const template = document.createElement('template');
-  template.innerHTML = html;
+  if (result.svg) {
+    // Parse in the SVG namespace by wrapping, then unwrap: the parsed nodes
+    // keep their namespace when moved out of the temporary <svg> element.
+    template.innerHTML = `<svg>${html}</svg>`;
+    const wrapper = template.content.firstElementChild!;
+    while (wrapper.firstChild) {
+      template.content.insertBefore(wrapper.firstChild, wrapper);
+    }
+    template.content.removeChild(wrapper);
+  } else {
+    template.innerHTML = html;
+  }
 
   const tmpl = new Template(result, template, attrNamesForParts);
   // Cache the template for reuse
@@ -1093,8 +1136,21 @@ export class PropertyPart extends Part {
   commit(value: unknown): void {
     if (value === noChange) return;
 
-    // Dirty check - skip if same value
-    if (value === this._committedValue) return;
+    // live(): compare against the element's actual DOM property, so state
+    // the user changed (typed text, toggled checkbox) is reset even when the
+    // bound value itself is unchanged.
+    if (isLive(value)) {
+      value = value.value;
+      if (value === noChange) return;
+      const domValue = (this.element as any)[this.name];
+      if (value === domValue) {
+        this._committedValue = value;
+        return;
+      }
+    } else {
+      // Dirty check - skip if same value
+      if (value === this._committedValue) return;
+    }
 
     this._committedValue = value;
     (this.element as any)[this.name] = value === nothing ? undefined : value;

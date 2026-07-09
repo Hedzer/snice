@@ -5,7 +5,39 @@
 
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
-import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH } from './symbols';
+import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
+
+/**
+ * When true, render errors are rethrown instead of logged, so tests and dev
+ * environments fail loudly rather than leaving the element silently stale.
+ * Production default is false (log and keep the previous DOM).
+ */
+let strictRenderErrors = false;
+
+export function setStrictRenderErrors(value: boolean): void {
+  strictRenderErrors = value;
+}
+
+/**
+ * Ensure the element has a pending `rendered` promise. Called whenever a
+ * render is requested; resolved by performRender once the render commits.
+ */
+function ensureRenderedPromise(element: HTMLElement): void {
+  if (!(element as any)[RENDERED_RESOLVE]) {
+    (element as any)[RENDERED_PROMISE] = new Promise<void>((resolve) => {
+      (element as any)[RENDERED_RESOLVE] = resolve;
+    });
+  }
+}
+
+/** Resolve the element's pending `rendered` promise, if any. */
+function resolveRendered(element: HTMLElement): void {
+  const resolve = (element as any)[RENDERED_RESOLVE];
+  if (resolve) {
+    (element as any)[RENDERED_RESOLVE] = null;
+    resolve();
+  }
+}
 
 /**
  * Options for @render decorator
@@ -128,10 +160,14 @@ const MAX_RENDER_DEPTH = 50;
  */
 function performRender(element: HTMLElement, options: RenderOptions, precomputedResult?: any): void {
   const renderMethod = (element as any)[RENDER_METHOD];
-  if (!renderMethod) return;
+  if (!renderMethod) {
+    resolveRendered(element);
+    return;
+  }
 
   // If once is true and we've already rendered, skip
   if (options.once && (element as any)[RENDER_INSTANCE]) {
+    resolveRendered(element);
     return;
   }
 
@@ -142,6 +178,7 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
       `snice: maximum render depth (${MAX_RENDER_DEPTH}) exceeded for <${tag}>. ` +
       `render() is mutating an observed property, causing an infinite render loop.`
     );
+    resolveRendered(element);
     return;
   }
 
@@ -201,9 +238,11 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     instance.update(result.values);
     flushRenderCallbacks(element);
   } catch (error) {
+    if (strictRenderErrors) throw error;
     console.error('Error rendering element:', error);
   } finally {
     (element as any)[RENDER_DEPTH] = depth;
+    resolveRendered(element);
   }
 }
 
@@ -219,6 +258,11 @@ export function requestRender(element: HTMLElement, immediate = false): void {
   if (options.once && (element as any)[RENDER_INSTANCE]) {
     return;
   }
+
+  // Arm the `rendered` promise: it resolves when this request's render
+  // commits (immediately below for sync/immediate, later for batched/
+  // debounced/throttled renders).
+  ensureRenderedPromise(element);
 
   // Force immediate render (for initial render)
   if (immediate) {

@@ -16,6 +16,8 @@ export interface TemplateResult {
   readonly _$litType$: typeof HTML_RESULT;
   readonly strings: TemplateStringsArray;
   readonly values: readonly any[];
+  /** True when created by svg`` — parses in the SVG namespace */
+  readonly svg?: boolean;
 }
 
 /**
@@ -44,6 +46,26 @@ export function html(strings: TemplateStringsArray, ...values: any[]): TemplateR
     _$litType$: HTML_RESULT,
     strings,
     values
+  };
+}
+
+/**
+ * Tagged template function for SVG fragments.
+ *
+ * Bare SVG elements (<circle>, <path>, ...) parse as unknown elements in an
+ * HTML context. Use svg`` for fragments composed into a surrounding <svg>:
+ *
+ * @example
+ * ```typescript
+ * html`<svg viewBox="0 0 100 100">${svg`<circle cx="50" cy="50" r=${r}></circle>`}</svg>`
+ * ```
+ */
+export function svg(strings: TemplateStringsArray, ...values: any[]): TemplateResult {
+  return {
+    _$litType$: HTML_RESULT,
+    strings,
+    values,
+    svg: true
   };
 }
 

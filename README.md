@@ -273,6 +273,15 @@ componentStyles() {
 }
 ```
 
+**`await el.rendered`** - Wait for the pending render to commit
+```typescript
+el.count = 42;
+await el.rendered; // resolves after the batched (or debounced/throttled)
+                   // render commits; resolves immediately when idle
+```
+
+**`setStrictRenderErrors(true)`** - Rethrow render errors instead of logging them. Off by default (errors log and the element keeps its previous DOM); turn on in tests and dev so broken templates fail loudly.
+
 ### Properties & State
 
 **`@property(options?)`** - Reactive properties that sync with attributes
@@ -607,6 +616,42 @@ html`
     `)}
   </ul>
 `
+```
+
+Add a `key` binding when list items hold state (inputs, media, animations). Keyed items keep their DOM when the list reorders or items are removed; unkeyed lists reuse DOM by position:
+
+```typescript
+${this.items.map(item => html`<li key=${item.id}>${item.name}</li>`)}
+```
+
+### Template Helpers
+
+**`classMap(obj)` / `styleMap(obj)`** - Build class and style strings from objects
+
+```typescript
+html`<div
+  class="${classMap({ box: true, 'box--active': this.active })}"
+  style="${styleMap({ color: this.color, fontWeight: 'bold' })}"
+></div>`
+// styleMap converts camelCase to kebab-case; --custom-props pass through
+```
+
+**`live(value)`** - Compare a property binding against the live DOM value
+
+```typescript
+html`<input .value=${live(this.text)} />`
+// Without live(), re-rendering with an unchanged bound value skips the DOM
+// write, leaving user-typed text in place. live() resets the input.
+```
+
+**`svg\`...\`** - SVG fragments
+
+```typescript
+html`<svg viewBox="0 0 100 100">
+  ${this.points.map(p => svg`<circle cx=${p.x} cy=${p.y} r="4"></circle>`)}
+</svg>`
+// Bare SVG elements need svg`` to parse in the SVG namespace.
+// Full inline <svg>...</svg> blocks inside html`` work as-is.
 ```
 
 ### Keyboard Shortcuts

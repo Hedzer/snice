@@ -33,6 +33,14 @@
 // Called once during initialization — NOT reactive
 // Only one per element (last wins if multiple declared)
 // For dynamic styles, use CSS custom properties set in template
+
+await el.rendered
+// Resolves after the pending batched/debounced/throttled render commits
+// Resolves immediately when no render is pending
+
+setStrictRenderErrors(true)
+// Render errors rethrow instead of console.error (default false: log, keep previous DOM)
+// Enable in tests/dev so broken templates fail loudly
 ```
 
 ## Properties
@@ -260,6 +268,8 @@ css`...` // CSSResult
 
 // Lists
 ${items.map(i => html`<li>${i}</li>`)}
+// Keyed: DOM identity follows key on reorder/removal (use for stateful items)
+${items.map(i => html`<li key=${i.id}>${i.name}</li>`)}
 
 // Bindings
 attr="${val}" // Attribute
@@ -267,6 +277,12 @@ attr="${val}" // Attribute
 ?attr="${bool}" // Boolean attribute
 @event="${handler}" // Event listener
 @event:modifier="${handler}" // With keyboard modifier
+.value=${live(v)} // Compare against live DOM value (resets user-typed drift)
+
+// Helpers
+classMap({ box: true, active: cond }) // → 'box active' (truthy keys)
+styleMap({ fontSize: '2rem', '--x': v }) // camelCase→kebab; --props pass through
+svg`<circle r=${r}></circle>` // SVG-namespace fragment for use inside <svg>
 ```
 
 ## Types
@@ -292,7 +308,8 @@ type Guard<T> = (context: T, params: RouteParams) => boolean
 import {
   element, controller, layout,  // NOTE: `page` comes from Router(), not from 'snice'
   property, watch, context,
-  render, styles, html, css,
+  render, styles, html, svg, css,
+  live, classMap, styleMap, setStrictRenderErrors,
   query, queryAll,
   on, dispatch,
   request, respond,

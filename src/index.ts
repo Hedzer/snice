@@ -20,12 +20,13 @@ export type { RequestRoute, RequestRouteMap, CreateRequestHandlerOptions } from 
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';
 
 // v3.0.0 new template system
-export { html, css, nothing, unsafeHTML } from './template';
+export { html, svg, css, nothing, unsafeHTML } from './template';
 export type { TemplateResult, CSSResult, Nothing, UnsafeHTML } from './template';
-export { render, styles } from './render';
-export { noChange } from './parts';
+export { render, styles, setStrictRenderErrors } from './render';
+export { noChange, live } from './parts';
 export type { NoChange } from './parts';
 export type { RenderOptions } from './render';
+export { classMap, styleMap } from './template-helpers';
 
 // v3.0.0 custom element readiness utilities
 export { waitForElementDefined, waitForElementReady, waitForAllCustomElements, setDisableElementReadyWarnings } from './element-ready';

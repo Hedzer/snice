@@ -3,7 +3,7 @@ import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
-import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, notEqual } from './utils';
+import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers } from './render';
 import { clearDispatchTimers } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
@@ -125,9 +125,16 @@ export function applyElementFunctionality(constructor: any) {
       configurable: true
     });
 
-    // Note: rendered promise is stored via symbols RENDERED_PROMISE and RENDERED_RESOLVE
-    // It's not exposed as a public property - only accessible via test utilities
-    // This prevents accidental misuse in production code
+    // Add rendered property - resolves when the pending render (batched,
+    // debounced, or throttled) has committed to the DOM; resolves
+    // immediately when no render is pending.
+    Object.defineProperty(constructor.prototype, 'rendered', {
+      get() {
+        return this[RENDERED_RESOLVE] ? this[RENDERED_PROMISE] : Promise.resolve();
+      },
+      enumerable: true,
+      configurable: true
+    });
 
     // Add controller property
     Object.defineProperty(constructor.prototype, 'controller', {
@@ -141,6 +148,11 @@ export function applyElementFunctionality(constructor: any) {
 
         if (value) {
           attachController(this, value).catch(error => {
+            // Detached before ready — designed teardown, not a failure
+            if (error?.name === 'ControllerAttachAborted') {
+              console.debug(`Controller "${value}" attach aborted (element detached before ready)`);
+              return;
+            }
             console.error(`Failed to attach controller "${value}":`, error);
           });
           return;
@@ -269,6 +281,10 @@ export function applyElementFunctionality(constructor: any) {
       setupContextHandler(this);
 
       this[INITIALIZED] = true;
+
+      // One-time (per class) sanity check: a @watch name with no matching
+      // @property never fires — surface the typo instead of staying silent.
+      validateWatchedProperties(this, constructor);
 
       // Now that the initial value is settled, give @watch immediate handlers
       // their one init call (before the first render, so derived state is ready).
