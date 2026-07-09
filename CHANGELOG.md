@@ -1,3 +1,50 @@
+# [6.0.0](https://github.com/Hedzer/snice/compare/v5.2.3...v6.0.0) (2026-07-09)
+
+
+* refactor(message-strip)!: rename dismissable attribute to dismissible ([0ccbddc](https://github.com/Hedzer/snice/commit/0ccbddcda8cd600d46aaba3ca2ab073cfc5be804))
+
+
+### Bug Fixes
+
+* **build:** stop copy-react-hooks stripping the snice/react barrel ([0d074a4](https://github.com/Hedzer/snice/commit/0d074a456b2e8c897ff5da705ad822fde7e19065))
+* **chat:** correctness fixes from code review ([c95b0bd](https://github.com/Hedzer/snice/commit/c95b0bd8d7f2abd70269840acb721418d9b5cd42))
+* **chat:** paperclip composer icon, scroll inline edit/delete into view ([aa61d25](https://github.com/Hedzer/snice/commit/aa61d252b0485356ca57931cbc1237a7ccb43c0d))
+* **context:** [@context](https://github.com/context)({ once }) unregisters only itself, not the element ([4adba12](https://github.com/Hedzer/snice/commit/4adba12f21ad34d9fbf03d72b4f2701910088394))
+* **controller:** no double-detach, no detach on a never-attached controller ([d42a636](https://github.com/Hedzer/snice/commit/d42a636d4823fbbc2d4a12b1d0205067c5a5cd87))
+* **element:** honor the [@property](https://github.com/property) hasChanged comparator ([846e796](https://github.com/Hedzer/snice/commit/846e796f5621a089ec18033d218cabeb5d06a1de))
+* **element:** observe camelCase attribute names case-insensitively ([766c4a3](https://github.com/Hedzer/snice/commit/766c4a3857694b1ff8ddab9415bb3618c2b9383a))
+* **element:** treat NaN property values as unchanged in dirty-check ([366def1](https://github.com/Hedzer/snice/commit/366def1f337ef6171d1e216497ad15e4205464ea))
+* **engine:** <case> dirty-checks the selected branch, not the raw value ([07996e5](https://github.com/Hedzer/snice/commit/07996e58ce1e23820145b3265c96dc2a2f12552b))
+* **engine:** <if> hidden on first render no longer connects its children ([5c75f37](https://github.com/Hedzer/snice/commit/5c75f379385a7339104a031c94311dee7cb8b3e2))
+* **engine:** correct regressions in the debounce/render-depth/event fixes ([720a658](https://github.com/Hedzer/snice/commit/720a65883cf8e4b997a5c23d952f7ab637450be2))
+* **engine:** dirty-check unsafeHTML so unchanged markup isn't re-parsed ([1a57395](https://github.com/Hedzer/snice/commit/1a573952405057fbf50cc770b29cafa91275c5d0))
+* **engine:** don't accumulate template-emitted <style> tags on switch ([448f615](https://github.com/Hedzer/snice/commit/448f6157fedf98eb36d836b7f1c38433d8676ee3))
+* **engine:** rendering engine correctness fixes ([27c5799](https://github.com/Hedzer/snice/commit/27c579978e3874894c537acb6e0c40d13d227d09))
+* **engine:** resolve event-handler host at dispatch time, not bind time ([b8946cd](https://github.com/Hedzer/snice/commit/b8946cd682e72c1651892b7a037f931cd1301f4e))
+* **markdown:** reactive content re-renders on property change ([302be1f](https://github.com/Hedzer/snice/commit/302be1fde0fec677967072c51c6c0daafb7433cc))
+* **product-card:** render variants that have no options without crashing ([dbac1c1](https://github.com/Hedzer/snice/commit/dbac1c102f57b1e0fdc983db086f8524cf111919))
+* **react-adapters:** don't leak private [@property](https://github.com/property) state into generated props ([65d15bb](https://github.com/Hedzer/snice/commit/65d15bb53d107b3faf61e1221c903f443c473e78))
+* **react:** mirror route-specificity into the isolated react bundle ([4c9496e](https://github.com/Hedzer/snice/commit/4c9496e83c9f430d3f115cc3e8e29098ab002692))
+* **request:** return a [@request](https://github.com/request) generator's error-recovery value ([fd7fc7a](https://github.com/Hedzer/snice/commit/fd7fc7ab6f09d78332048408881d86760545a0a4))
+* **request:** throttled @request/[@respond](https://github.com/respond) no longer hangs queued callers ([f35739b](https://github.com/Hedzer/snice/commit/f35739b46cba6d10362a2a123a3c0063baeb0d18))
+* **router:** don't let a superseded navigation stomp the current page ([6d02d3e](https://github.com/Hedzer/snice/commit/6d02d3e7c0ba9f1d7c11b1517c26749a9525838e))
+* **router:** rank routes by segment specificity, not pattern length ([5861125](https://github.com/Hedzer/snice/commit/58611251f3cf8813f3fd9c8ba4d0db051d10e04c))
+* **table:** fill host height via inline [@styles](https://github.com/styles), not orphan css ([dbd4395](https://github.com/Hedzer/snice/commit/dbd43950c7d85245c823322258e9a7ca35c2c817))
+* **template:** compose nested css results instead of [object Object] ([a69965f](https://github.com/Hedzer/snice/commit/a69965fb8911da622ab4c6784cf44b129a92a6f0))
+* **time-picker:** format 12h from this.value, not lagging hour/period fields ([d209fb5](https://github.com/Hedzer/snice/commit/d209fb52680bb6cdf6bad688f7b94e9987a2e3a7))
+
+
+### Features
+
+* **chat:** theming overhaul + dual-API message authoring ([8c1748c](https://github.com/Hedzer/snice/commit/8c1748cec3b1c217e62e0b41e9a292dc159493b1))
+* **element:** [@watch](https://github.com/watch) fires on init by default, with { immediate: false } opt-out ([c908156](https://github.com/Hedzer/snice/commit/c908156de618b011f9910de28784aa770bee55da))
+* **events:** add scope option to [@on](https://github.com/on) and [@dispatch](https://github.com/dispatch) ([ee87368](https://github.com/Hedzer/snice/commit/ee873683be9b86e76c7f4c08352bc16546e8f8d7))
+
+
+### BREAKING CHANGES
+
+* the message-strip dismiss attribute is renamed from dismissable to dismissible (matching alert/banner and correct spelling). Update `<snice-message-strip dismissable>` to `dismissible`.
+
 ## [5.2.3](https://github.com/Hedzer/snice/compare/v5.2.2...v5.2.3) (2026-05-05)
 
 
