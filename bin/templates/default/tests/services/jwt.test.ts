@@ -1,8 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { decodeJWT, isTokenExpired, getTokenExpiration } from '../../src/services/jwt';
 
 describe('JWT Service', () => {
   describe('decodeJWT', () => {
+    // decodeJWT logs a console.error when a token can't be parsed; several
+    // cases below feed intentionally-invalid tokens. Silence that expected
+    // log for this block — the assertions verify the null return, not the log.
+    let errorSpy: ReturnType<typeof vi.spyOn>;
+    beforeEach(() => { errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {}); });
+    afterEach(() => { errorSpy.mockRestore(); });
+
     it('should decode a valid JWT', () => {
       // Valid JWT: {"sub":"123","name":"Test","exp":9999999999}
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiVGVzdCIsImV4cCI6OTk5OTk5OTk5OX0.mock';

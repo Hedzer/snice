@@ -90,7 +90,7 @@ describe('Decorator duplication bug - all decorators', () => {
         return html`<div class="content">Test</div>`;
       }
 
-      @observe('mutation:.content', { attributes: true })
+      @observe('mutation:attributes', '.content')
       handleMutation(mutations: MutationRecord[]) {
         mutationHandler(mutations);
       }

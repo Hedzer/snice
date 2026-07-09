@@ -4,7 +4,7 @@
  * These tests verify that React adapters work correctly with Snice components
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import React from 'react';
 import { createReactAdapter } from '../adapters/react/wrapper';
 
@@ -157,6 +157,11 @@ describe('React Adapters', () => {
 
   describe('TypeScript Types', () => {
     it('should have proper type exports', async () => {
+      // In this environment the adapters/react/types module isn't built, so
+      // the catch branch below runs and logs a warn — that's the intentional
+      // "not built yet" fallback message, not something under test. Silence
+      // it here so the suite stays free of error-shaped stderr output.
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       try {
         const types = await import('../adapters/react/types');
         expect(types).toBeDefined();
@@ -166,6 +171,8 @@ describe('React Adapters', () => {
         expect(types).toHaveProperty('SniceFormProps');
       } catch (error) {
         console.warn('Type definitions not built yet.');
+      } finally {
+        warnSpy.mockRestore();
       }
     });
   });

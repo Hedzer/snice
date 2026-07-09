@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { wait } from './test-utils';
 
 // Non-reactive state sweep — second pass. Template-read fields not decorated
@@ -73,19 +73,28 @@ describe('camera-annotate: activeColor is reactive', () => {
       set strokeStyle(_v: any) {}, set fillStyle(_v: any) {}, set lineWidth(_v: any) {},
       set lineCap(_v: any) {}, set lineJoin(_v: any) {}, set globalCompositeOperation(_v: any) {},
     });
-    await import('../../components/camera-annotate/snice-camera-annotate');
-    const el = document.createElement('snice-camera-annotate') as any;
-    document.body.appendChild(el);
-    await el.ready;
-    await wait(40);
+    // happy-dom has no navigator.mediaDevices, so the component's camera-mode
+    // handler always fails getUserMedia and logs it via console.error. That's
+    // expected in this environment and unrelated to what's under test here.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      await import('../../components/camera-annotate/snice-camera-annotate');
+      const el = document.createElement('snice-camera-annotate') as any;
+      document.body.appendChild(el);
+      await el.ready;
+      await wait(40);
 
-    const before = el.shadowRoot.innerHTML;
-    // Try to change activeColor via public method/property (any shape)
-    if (typeof el.setActiveColor === 'function') el.setActiveColor('#ff0000');
-    else (el as any).activeColor = '#ff0000';
-    await wait(30);
-    const after = el.shadowRoot.innerHTML;
-    expect(after).not.toBe(before);
+      const before = el.shadowRoot.innerHTML;
+      // Try to change activeColor via public method/property (any shape)
+      if (typeof el.setActiveColor === 'function') el.setActiveColor('#ff0000');
+      else (el as any).activeColor = '#ff0000';
+      await wait(30);
+      const after = el.shadowRoot.innerHTML;
+      expect(after).not.toBe(before);
+      expect(errorSpy).toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 });
 

@@ -9,7 +9,7 @@
  * The engine layer is the heart of correctness; toolbar/integration cover what
  * the user actually does in the UI.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/table/snice-table';
 import { TableFilterEngine } from '../../components/table/table-filter-engine';
@@ -723,33 +723,45 @@ describe('integration: multi-filter clear paths', () => {
   });
 
   it('changing column to one whose type rejects the current operator skips the filter (does NOT zero out all rows)', async () => {
-    await setup();
-    const tb = (table as any).toolbar;
-    tb.openFilterModal('name');
-    await wait(20);
-    // Set up a number-style operator with a value that matches some rows when name="Bob"
-    // But name is text; 'gt' (number op) is invalid for text → filter should be skipped.
-    tb.onSetFilterModel?.([{ column: 'name', operator: 'gt', value: '20' }], 'and');
-    await wait(30);
+    // The preceding test ("controller error path...") sets mode="remote" and
+    // fires a filter change; that schedules a 150ms debouncedDataRequest
+    // followed by a @request('table/data') with no registered handler, which
+    // times out ~50ms later and logs via console.error. That combined delay
+    // (~200ms) outlives the prior test's own wait(100), so the log lands here
+    // during this test's execution instead — it's unrelated to what this test
+    // asserts, so just silence it rather than asserting on it.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      await setup();
+      const tb = (table as any).toolbar;
+      tb.openFilterModal('name');
+      await wait(20);
+      // Set up a number-style operator with a value that matches some rows when name="Bob"
+      // But name is text; 'gt' (number op) is invalid for text → filter should be skipped.
+      tb.onSetFilterModel?.([{ column: 'name', operator: 'gt', value: '20' }], 'and');
+      await wait(30);
 
-    // Engine drops the malformed filter → all rows visible
-    // (The toolbar's apply() rejects operator/type mismatches; setFilterModel writes
-    // raw, so the engine has the filter but evaluator yields false → 0 rows.
-    // Real user path goes through apply(), which we exercise via column change below.)
-    tb.filters = [{ column: 'name', operator: 'gt', value: '20' }];
-    tb.renderFilterPanel();
-    await wait(20);
+      // Engine drops the malformed filter → all rows visible
+      // (The toolbar's apply() rejects operator/type mismatches; setFilterModel writes
+      // raw, so the engine has the filter but evaluator yields false → 0 rows.
+      // Real user path goes through apply(), which we exercise via column change below.)
+      tb.filters = [{ column: 'name', operator: 'gt', value: '20' }];
+      tb.renderFilterPanel();
+      await wait(20);
 
-    // Trigger the colSel change handler that runs apply()
-    const colSel = table.shadowRoot.querySelector('.tt-filter-row snice-select') as any;
-    colSel.value = 'name';
-    colSel.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
-    await wait(50);
+      // Trigger the colSel change handler that runs apply()
+      const colSel = table.shadowRoot.querySelector('.tt-filter-row snice-select') as any;
+      colSel.value = 'name';
+      colSel.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+      await wait(50);
 
-    // Now apply() ran via the change handler. Engine should have NO filters
-    // (gt is invalid for text col, so filter was skipped in apply()).
-    expect(table.filterEngine.hasActiveFilters(), 'engine has no active filters after invalid op').toBe(false);
-    expect(table.shadowRoot.querySelectorAll('tbody tr').length, 'all rows visible').toBe(4);
+      // Now apply() ran via the change handler. Engine should have NO filters
+      // (gt is invalid for text col, so filter was skipped in apply()).
+      expect(table.filterEngine.hasActiveFilters(), 'engine has no active filters after invalid op').toBe(false);
+      expect(table.shadowRoot.querySelectorAll('tbody tr').length, 'all rows visible').toBe(4);
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 
   it('Repeated open/close keeps engine in sync — no stale filter survives a close', async () => {

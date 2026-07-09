@@ -111,6 +111,7 @@ describe('pdf-viewer: rapid page changes eventually render the latest page', () 
     // Install a fake pdfDoc with controllable render timing
     (el as any).pdfDoc = {
       numPages: 10,
+      destroy() {},
       async getPage(n: number) {
         return {
           getViewport: () => ({ width: 100, height: 100 }),

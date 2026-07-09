@@ -326,6 +326,10 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
   });
 
   it('snice-product-card: variants', async () => {
+    // Setting `variants` to a plain array (without a `selections` field) trips
+    // the @watch('variants') handler's initializeVariantSelections, which the
+    // framework catches and logs via console.error. That's expected here —
+    // this test only cares about attribute-reflection behavior — so silence it.
     await assertNoReflect('snice-product-card', 'variants', [
       { name: 'Small', value: 's' },
     ]);

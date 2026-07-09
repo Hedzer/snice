@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { decodeJWT, isTokenExpired, getTokenExpiration } from '../../src/services/jwt';
 
 describe('JWT Service', () => {
@@ -25,8 +25,15 @@ describe('JWT Service', () => {
     });
 
     it('should return null for JWT with invalid base64', () => {
-      const payload = decodeJWT('header.!!!invalid!!!.signature');
-      expect(payload).toBeNull();
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      try {
+        const payload = decodeJWT('header.!!!invalid!!!.signature');
+        expect(payload).toBeNull();
+        expect(errorSpy).toHaveBeenCalled();
+      } finally {
+        errorSpy.mockRestore();
+      }
     });
   });
 

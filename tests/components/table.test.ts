@@ -1959,75 +1959,101 @@ describe('snice-table', () => {
 
   describe('visual regressions: icon sizes + input alignment', () => {
     it('toolbar action buttons render at a consistent compact size (≤32px)', async () => {
-      table = await createTable();
-      table.setToolbar({ showExport: true });
-      await wait(30);
-      const btns = Array.from(table.shadowRoot.querySelectorAll('.toolbar-btn')) as HTMLElement[];
-      expect(btns.length).toBeGreaterThan(0);
-      for (const btn of btns) {
-        const r = btn.getBoundingClientRect();
-        expect(r.width, `${btn.getAttribute('aria-label')} button width`).toBeLessThanOrEqual(40);
-        expect(r.height, `${btn.getAttribute('aria-label')} button height`).toBeLessThanOrEqual(40);
-        // ...and SVG inside should be smaller
-        const svg = btn.querySelector('svg') as SVGElement | null;
-        if (svg) {
-          const sr = svg.getBoundingClientRect();
-          expect(sr.width, `${btn.getAttribute('aria-label')} svg width`).toBeLessThanOrEqual(24);
-          expect(sr.height, `${btn.getAttribute('aria-label')} svg height`).toBeLessThanOrEqual(24);
+      // createTable() fires an unhandled "table/data" request that times out
+      // ~50ms later and logs via console.error — a test-harness artifact, not a
+      // component fault. Silence it and wait past the timeout so it lands inside
+      // this spy's scope instead of leaking to stderr.
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      try {
+        table = await createTable();
+        table.setToolbar({ showExport: true });
+        await wait(30);
+        const btns = Array.from(table.shadowRoot.querySelectorAll('.toolbar-btn')) as HTMLElement[];
+        expect(btns.length).toBeGreaterThan(0);
+        for (const btn of btns) {
+          const r = btn.getBoundingClientRect();
+          expect(r.width, `${btn.getAttribute('aria-label')} button width`).toBeLessThanOrEqual(40);
+          expect(r.height, `${btn.getAttribute('aria-label')} button height`).toBeLessThanOrEqual(40);
+          // ...and SVG inside should be smaller
+          const svg = btn.querySelector('svg') as SVGElement | null;
+          if (svg) {
+            const sr = svg.getBoundingClientRect();
+            expect(sr.width, `${btn.getAttribute('aria-label')} svg width`).toBeLessThanOrEqual(24);
+            expect(sr.height, `${btn.getAttribute('aria-label')} svg height`).toBeLessThanOrEqual(24);
+          }
         }
+        await wait(60);
+      } finally {
+        errorSpy.mockRestore();
       }
     });
 
     it('column menu icons render at compact size, NOT raw 24x24 SVG default', async () => {
-      table = await createTable({ attrs: { 'column-menu': true } });
-      const ccm = (table as any).columnMenuManager;
-      // Show menu near a known column header
-      const th = table.shadowRoot.querySelector('th[data-key="name"]') as HTMLElement;
-      const r = th.getBoundingClientRect();
-      ccm.show(table, 'name', r.left + 4, r.top + 4, {
-        sortable: true, filterable: true, hideable: true, pinnable: true,
-      });
-      await wait(20);
+      // createTable({ attrs: { 'column-menu': true } }) kicks off a "table/data"
+      // request that has no handler in this test setup and times out ~50ms
+      // after the test body finishes; snice-table logs that via console.error.
+      // It's incidental to what this test verifies (icon sizing), so silence it.
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      try {
+        table = await createTable({ attrs: { 'column-menu': true } });
+        const ccm = (table as any).columnMenuManager;
+        // Show menu near a known column header
+        const th = table.shadowRoot.querySelector('th[data-key="name"]') as HTMLElement;
+        const r = th.getBoundingClientRect();
+        ccm.show(table, 'name', r.left + 4, r.top + 4, {
+          sortable: true, filterable: true, hideable: true, pinnable: true,
+        });
+        await wait(20);
 
-      const menu = table.shadowRoot.querySelector('.table-column-menu') as HTMLElement;
-      expect(menu, 'column menu mounted').toBeTruthy();
-      const icons = Array.from(menu.querySelectorAll('.column-menu-icon')) as HTMLElement[];
-      expect(icons.length, 'menu has icon spans').toBeGreaterThan(0);
-      for (const iconEl of icons) {
-        const ir = iconEl.getBoundingClientRect();
-        // 1rem = 16px in this context; cap at 24 to allow for theme variance
-        expect(ir.width, 'icon container width').toBeLessThanOrEqual(24);
-        expect(ir.height, 'icon container height').toBeLessThanOrEqual(24);
-        const svg = iconEl.querySelector('svg') as SVGElement | null;
-        if (svg) {
-          const sr = svg.getBoundingClientRect();
-          // Reject the SVG-default 300x150 rendering or anything else huge
-          expect(sr.width, 'icon svg width').toBeLessThanOrEqual(24);
-          expect(sr.height, 'icon svg height').toBeLessThanOrEqual(24);
+        const menu = table.shadowRoot.querySelector('.table-column-menu') as HTMLElement;
+        expect(menu, 'column menu mounted').toBeTruthy();
+        const icons = Array.from(menu.querySelectorAll('.column-menu-icon')) as HTMLElement[];
+        expect(icons.length, 'menu has icon spans').toBeGreaterThan(0);
+        for (const iconEl of icons) {
+          const ir = iconEl.getBoundingClientRect();
+          // 1rem = 16px in this context; cap at 24 to allow for theme variance
+          expect(ir.width, 'icon container width').toBeLessThanOrEqual(24);
+          expect(ir.height, 'icon container height').toBeLessThanOrEqual(24);
+          const svg = iconEl.querySelector('svg') as SVGElement | null;
+          if (svg) {
+            const sr = svg.getBoundingClientRect();
+            // Reject the SVG-default 300x150 rendering or anything else huge
+            expect(sr.width, 'icon svg width').toBeLessThanOrEqual(24);
+            expect(sr.height, 'icon svg height').toBeLessThanOrEqual(24);
+          }
         }
+        ccm.hide();
+      } finally {
+        errorSpy.mockRestore();
       }
-      ccm.hide();
     });
 
     it('column menu items have icon + label vertically centered', async () => {
-      table = await createTable({ attrs: { 'column-menu': true } });
-      const ccm = (table as any).columnMenuManager;
-      ccm.show(table, 'name', 100, 100, { sortable: true, filterable: true });
-      await wait(20);
+      // Same incidental "table/data" request-timeout console.error as above;
+      // this test doesn't exercise data loading, only menu item alignment.
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      try {
+        table = await createTable({ attrs: { 'column-menu': true } });
+        const ccm = (table as any).columnMenuManager;
+        ccm.show(table, 'name', 100, 100, { sortable: true, filterable: true });
+        await wait(20);
 
-      const items = Array.from(table.shadowRoot.querySelectorAll('.column-menu-item')) as HTMLElement[];
-      expect(items.length).toBeGreaterThan(0);
-      for (const item of items) {
-        const icon = item.querySelector('.column-menu-icon');
-        const labelSpan = item.querySelectorAll('span')[1];
-        if (!icon || !labelSpan) continue;
-        const ir = (icon as HTMLElement).getBoundingClientRect();
-        const lr = (labelSpan as HTMLElement).getBoundingClientRect();
-        const iconCenter = ir.top + ir.height / 2;
-        const labelCenter = lr.top + lr.height / 2;
-        expect(Math.abs(iconCenter - labelCenter), 'icon+label vertical centers').toBeLessThan(4);
+        const items = Array.from(table.shadowRoot.querySelectorAll('.column-menu-item')) as HTMLElement[];
+        expect(items.length).toBeGreaterThan(0);
+        for (const item of items) {
+          const icon = item.querySelector('.column-menu-icon');
+          const labelSpan = item.querySelectorAll('span')[1];
+          if (!icon || !labelSpan) continue;
+          const ir = (icon as HTMLElement).getBoundingClientRect();
+          const lr = (labelSpan as HTMLElement).getBoundingClientRect();
+          const iconCenter = ir.top + ir.height / 2;
+          const labelCenter = lr.top + lr.height / 2;
+          expect(Math.abs(iconCenter - labelCenter), 'icon+label vertical centers').toBeLessThan(4);
+        }
+        ccm.hide();
+      } finally {
+        errorSpy.mockRestore();
       }
-      ccm.hide();
     });
 
     it('filter panel rows align column / operator / value inputs on a single baseline', async () => {

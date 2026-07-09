@@ -166,6 +166,7 @@ describe('pdf-viewer: single page render completes normally', () => {
 
     (el as any).pdfDoc = {
       numPages: 1,
+      destroy() {},
       async getPage() {
         return {
           getViewport: () => ({ width: 100, height: 100 }),

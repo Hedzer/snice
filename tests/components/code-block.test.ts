@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/code-block/snice-code-block';
 import type { SniceCodeBlockElement, FormatterFunction } from '../../components/code-block/snice-code-block.types';
@@ -159,14 +159,21 @@ describe('snice-code-block', () => {
   });
 
   it('should gracefully handle formatter errors', async () => {
-    codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
-    codeBlock.setFormatter(() => { throw new Error('format fail'); });
-    codeBlock.format = 'pretty';
-    codeBlock.code = 'hello';
-    await codeBlock.highlight();
-    await wait(50);
-    // Code should remain unchanged on error
-    expect(codeBlock.code).toBe('hello');
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      codeBlock = await createComponent<SniceCodeBlockElement>('snice-code-block');
+      codeBlock.setFormatter(() => { throw new Error('format fail'); });
+      codeBlock.format = 'pretty';
+      codeBlock.code = 'hello';
+      await codeBlock.highlight();
+      await wait(50);
+      // Code should remain unchanged on error
+      expect(codeBlock.code).toBe('hello');
+      // Error should be logged for visibility
+      expect(consoleErrorSpy).toHaveBeenCalled();
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 
   it('should read code from slotted text content', async () => {

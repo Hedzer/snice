@@ -82,46 +82,55 @@ describe('Integration & Stress Tests', () => {
     });
 
     it('should handle rapid DOM mutations efficiently', async () => {
-      @controller('mutation-ctrl')
-      class MutationController {
-        element: HTMLElement | null = null;
-        mutationCount = 0;
-        
-        @on('custom-event')
-        handleEvent() {
-          this.mutationCount++;
+      // Rapid attach/detach races the controller's abort-on-detach path, which
+      // logs "Failed to attach controller" via console.error when a mutation
+      // element is removed before it finishes connecting. That's expected
+      // noise from this stress scenario, not a test failure — suppress it.
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      try {
+        @controller('mutation-ctrl')
+        class MutationController {
+          element: HTMLElement | null = null;
+          mutationCount = 0;
+
+          @on('custom-event')
+          handleEvent() {
+            this.mutationCount++;
+          }
+
+          async attach(element: HTMLElement) {
+            this.element = element;
+          }
+
+          async detach() {}
         }
-        
-        async attach(element: HTMLElement) {
-          this.element = element;
+
+        @element('mutation-element')
+        class MutationElement extends HTMLElement {
+          controller = 'mutation-ctrl';
         }
-        
-        async detach() {}
-      }
-      
-      @element('mutation-element')
-      class MutationElement extends HTMLElement {
-        controller = 'mutation-ctrl';
-      }
-      
-      const container = document.createElement('div');
-      document.body.appendChild(container);
-      
-      // Perform 1000 rapid DOM mutations
-      for (let i = 0; i < 1000; i++) {
-        const el = document.createElement('mutation-element');
-        container.appendChild(el);
-        
-        if (i % 2 === 0) {
-          el.remove();
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+
+        // Perform 1000 rapid DOM mutations
+        for (let i = 0; i < 1000; i++) {
+          const el = document.createElement('mutation-element');
+          container.appendChild(el);
+
+          if (i % 2 === 0) {
+            el.remove();
+          }
         }
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Should handle all mutations without errors
+        const remainingElements = container.querySelectorAll('mutation-element');
+        expect(remainingElements.length).toBe(500);
+      } finally {
+        consoleErrorSpy.mockRestore();
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Should handle all mutations without errors
-      const remainingElements = container.querySelectorAll('mutation-element');
-      expect(remainingElements.length).toBe(500);
     });
   });
 
