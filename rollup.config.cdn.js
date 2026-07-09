@@ -7,6 +7,19 @@ import { gzipSync } from 'zlib';
 import CleanCSS from 'clean-css';
 import { getWipComponents } from './scripts/wip-components.js';
 
+// Shared terser options for all minified CDN outputs. Defaults leave a lot on
+// the table: multiple compress passes, modern-syntax output, and getter-pure
+// property access buy real bytes with no source change.
+const TERSER_OPTS = {
+  ecma: 2020,
+  compress: {
+    ecma: 2020,
+    passes: 3,
+    pure_getters: true,
+  },
+  format: { comments: false },
+};
+
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
 
@@ -190,7 +203,7 @@ export function createCdnBuild(componentName, options = {}) {
           banner,
           sourcemap: true,
           globals: sharedGlobals,
-          plugins: [terser()]
+          plugins: [terser(TERSER_OPTS)]
         }
       });
     }
@@ -411,7 +424,7 @@ ${packageJson.license}
         format: 'es',
         banner,
         sourcemap: true,
-        plugins: [terser()]
+        plugins: [terser(TERSER_OPTS)]
       },
       plugins: [runtimeEntryPlugin, resolve({ browser: true, preferBuiltins: false })]
     },
@@ -436,7 +449,7 @@ ${packageJson.license}
         name: 'Snice',
         banner,
         sourcemap: true,
-        plugins: [terser()]
+        plugins: [terser(TERSER_OPTS)]
       },
       plugins: [runtimeEntryPlugin, resolve({ browser: true, preferBuiltins: false }), readmePlugin]
     }

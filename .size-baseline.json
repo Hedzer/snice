@@ -1,0 +1,549 @@
+{
+  "date": "2026-07-09T20:48:25.470Z",
+  "sizes": {
+    "accordion": {
+      "raw": 15288,
+      "gzip": 4277
+    },
+    "action-bar": {
+      "raw": 10292,
+      "gzip": 3227
+    },
+    "activity-feed": {
+      "raw": 14085,
+      "gzip": 4236
+    },
+    "alert": {
+      "raw": 14561,
+      "gzip": 4492
+    },
+    "app-tiles": {
+      "raw": 13227,
+      "gzip": 4115
+    },
+    "approval-flow": {
+      "raw": 12340,
+      "gzip": 3621
+    },
+    "audio-recorder": {
+      "raw": 24515,
+      "gzip": 6162
+    },
+    "availability": {
+      "raw": 17751,
+      "gzip": 4660
+    },
+    "avatar": {
+      "raw": 9469,
+      "gzip": 3309
+    },
+    "avatar-group": {
+      "raw": 12150,
+      "gzip": 3879
+    },
+    "badge": {
+      "raw": 10664,
+      "gzip": 3809
+    },
+    "banner": {
+      "raw": 12395,
+      "gzip": 4049
+    },
+    "binpack": {
+      "raw": 22672,
+      "gzip": 6524
+    },
+    "book": {
+      "raw": 13759,
+      "gzip": 4053
+    },
+    "booking": {
+      "raw": 26001,
+      "gzip": 5687
+    },
+    "breadcrumbs": {
+      "raw": 12659,
+      "gzip": 4176
+    },
+    "button": {
+      "raw": 20014,
+      "gzip": 5075
+    },
+    "calendar": {
+      "raw": 18878,
+      "gzip": 5249
+    },
+    "camera": {
+      "raw": 15890,
+      "gzip": 4609
+    },
+    "camera-annotate": {
+      "raw": 27096,
+      "gzip": 7301
+    },
+    "candlestick": {
+      "raw": 22693,
+      "gzip": 6556
+    },
+    "card": {
+      "raw": 10598,
+      "gzip": 3382
+    },
+    "carousel": {
+      "raw": 12378,
+      "gzip": 3695
+    },
+    "cart": {
+      "raw": 15228,
+      "gzip": 4323
+    },
+    "chart": {
+      "raw": 27749,
+      "gzip": 7625
+    },
+    "chat": {
+      "raw": 61260,
+      "gzip": 14149
+    },
+    "checkbox": {
+      "raw": 13059,
+      "gzip": 3876
+    },
+    "chip": {
+      "raw": 16446,
+      "gzip": 5095
+    },
+    "code-block": {
+      "raw": 27305,
+      "gzip": 7024
+    },
+    "color-display": {
+      "raw": 5971,
+      "gzip": 2363
+    },
+    "color-picker": {
+      "raw": 19044,
+      "gzip": 5400
+    },
+    "command-palette": {
+      "raw": 18328,
+      "gzip": 5061
+    },
+    "comments": {
+      "raw": 19254,
+      "gzip": 5122
+    },
+    "countdown": {
+      "raw": 8352,
+      "gzip": 2964
+    },
+    "cropper": {
+      "raw": 13640,
+      "gzip": 4174
+    },
+    "data-card": {
+      "raw": 15476,
+      "gzip": 4091
+    },
+    "date-picker": {
+      "raw": 38789,
+      "gzip": 9509
+    },
+    "date-range-picker": {
+      "raw": 44931,
+      "gzip": 10371
+    },
+    "date-time-picker": {
+      "raw": 39941,
+      "gzip": 9237
+    },
+    "diff": {
+      "raw": 15827,
+      "gzip": 4741
+    },
+    "divider": {
+      "raw": 8101,
+      "gzip": 2509
+    },
+    "doc": {
+      "raw": 24350,
+      "gzip": 6595
+    },
+    "draw": {
+      "raw": 20386,
+      "gzip": 6346
+    },
+    "drawer": {
+      "raw": 31830,
+      "gzip": 6899
+    },
+    "empty-state": {
+      "raw": 11154,
+      "gzip": 3376
+    },
+    "estimate": {
+      "raw": 39446,
+      "gzip": 8016
+    },
+    "file-gallery": {
+      "raw": 35606,
+      "gzip": 8177
+    },
+    "file-upload": {
+      "raw": 18434,
+      "gzip": 5130
+    },
+    "flip-card": {
+      "raw": 6032,
+      "gzip": 2348
+    },
+    "flow": {
+      "raw": 27268,
+      "gzip": 7666
+    },
+    "form-layout": {
+      "raw": 6927,
+      "gzip": 2316
+    },
+    "funnel": {
+      "raw": 13723,
+      "gzip": 4757
+    },
+    "gantt": {
+      "raw": 17788,
+      "gzip": 4926
+    },
+    "gauge": {
+      "raw": 7611,
+      "gzip": 2753
+    },
+    "grid": {
+      "raw": 21279,
+      "gzip": 6102
+    },
+    "heatmap": {
+      "raw": 14187,
+      "gzip": 4241
+    },
+    "image": {
+      "raw": 9973,
+      "gzip": 3427
+    },
+    "input": {
+      "raw": 31915,
+      "gzip": 7734
+    },
+    "invoice": {
+      "raw": 31621,
+      "gzip": 6686
+    },
+    "kanban": {
+      "raw": 18936,
+      "gzip": 5414
+    },
+    "key-value": {
+      "raw": 22076,
+      "gzip": 5740
+    },
+    "kpi": {
+      "raw": 19426,
+      "gzip": 5288
+    },
+    "layout": {
+      "raw": 21525,
+      "gzip": 6286
+    },
+    "leaderboard": {
+      "raw": 15465,
+      "gzip": 4082
+    },
+    "link": {
+      "raw": 6564,
+      "gzip": 2504
+    },
+    "link-preview": {
+      "raw": 11602,
+      "gzip": 3541
+    },
+    "list": {
+      "raw": 28139,
+      "gzip": 6987
+    },
+    "location": {
+      "raw": 10971,
+      "gzip": 3594
+    },
+    "login": {
+      "raw": 49018,
+      "gzip": 10589
+    },
+    "map": {
+      "raw": 15560,
+      "gzip": 5113
+    },
+    "markdown": {
+      "raw": 14275,
+      "gzip": 4410
+    },
+    "masonry": {
+      "raw": 5010,
+      "gzip": 2009
+    },
+    "menu": {
+      "raw": 17905,
+      "gzip": 4836
+    },
+    "message-strip": {
+      "raw": 9361,
+      "gzip": 3308
+    },
+    "metric-table": {
+      "raw": 12600,
+      "gzip": 4072
+    },
+    "modal": {
+      "raw": 13612,
+      "gzip": 4319
+    },
+    "music-player": {
+      "raw": 36839,
+      "gzip": 7813
+    },
+    "nav": {
+      "raw": 17557,
+      "gzip": 5463
+    },
+    "network-graph": {
+      "raw": 20846,
+      "gzip": 6415
+    },
+    "notification-center": {
+      "raw": 20167,
+      "gzip": 5239
+    },
+    "order-tracker": {
+      "raw": 11383,
+      "gzip": 3427
+    },
+    "org-chart": {
+      "raw": 12353,
+      "gzip": 3788
+    },
+    "pagination": {
+      "raw": 12415,
+      "gzip": 3329
+    },
+    "paint": {
+      "raw": 20542,
+      "gzip": 5886
+    },
+    "pdf-viewer": {
+      "raw": 331420,
+      "gzip": 94399
+    },
+    "permission-matrix": {
+      "raw": 11907,
+      "gzip": 3837
+    },
+    "podcast-player": {
+      "raw": 37471,
+      "gzip": 8424
+    },
+    "popover": {
+      "raw": 11358,
+      "gzip": 3552
+    },
+    "pricing-table": {
+      "raw": 19517,
+      "gzip": 5031
+    },
+    "product-card": {
+      "raw": 40146,
+      "gzip": 8967
+    },
+    "progress": {
+      "raw": 13776,
+      "gzip": 4077
+    },
+    "progress-ring": {
+      "raw": 8804,
+      "gzip": 2913
+    },
+    "qr-code": {
+      "raw": 29439,
+      "gzip": 9631
+    },
+    "qr-reader": {
+      "raw": 53538,
+      "gzip": 16899
+    },
+    "radio": {
+      "raw": 16786,
+      "gzip": 4649
+    },
+    "range-slider": {
+      "raw": 16776,
+      "gzip": 4535
+    },
+    "rating": {
+      "raw": 6606,
+      "gzip": 2653
+    },
+    "receipt": {
+      "raw": 30325,
+      "gzip": 6487
+    },
+    "recipe": {
+      "raw": 33142,
+      "gzip": 7369
+    },
+    "runtime": {
+      "raw": 70189,
+      "gzip": 21556
+    },
+    "sankey": {
+      "raw": 18324,
+      "gzip": 5752
+    },
+    "segmented-control": {
+      "raw": 9836,
+      "gzip": 3269
+    },
+    "select": {
+      "raw": 46050,
+      "gzip": 10019
+    },
+    "skeleton": {
+      "raw": 6478,
+      "gzip": 2431
+    },
+    "slider": {
+      "raw": 21570,
+      "gzip": 5846
+    },
+    "sortable": {
+      "raw": 6974,
+      "gzip": 2633
+    },
+    "sparkline": {
+      "raw": 11205,
+      "gzip": 3625
+    },
+    "spinner": {
+      "raw": 10431,
+      "gzip": 3351
+    },
+    "split-button": {
+      "raw": 21866,
+      "gzip": 5678
+    },
+    "split-pane": {
+      "raw": 11032,
+      "gzip": 3416
+    },
+    "spotlight": {
+      "raw": 15423,
+      "gzip": 4266
+    },
+    "stat-group": {
+      "raw": 9529,
+      "gzip": 3306
+    },
+    "step-input": {
+      "raw": 11449,
+      "gzip": 3645
+    },
+    "stepper": {
+      "raw": 11896,
+      "gzip": 3546
+    },
+    "switch": {
+      "raw": 17175,
+      "gzip": 4667
+    },
+    "table": {
+      "raw": 427364,
+      "gzip": 79168
+    },
+    "tabs": {
+      "raw": 29282,
+      "gzip": 6983
+    },
+    "tag": {
+      "raw": 8470,
+      "gzip": 2826
+    },
+    "tag-input": {
+      "raw": 16211,
+      "gzip": 4751
+    },
+    "terminal": {
+      "raw": 15072,
+      "gzip": 4924
+    },
+    "testimonial": {
+      "raw": 7346,
+      "gzip": 2701
+    },
+    "textarea": {
+      "raw": 19046,
+      "gzip": 4974
+    },
+    "time-picker": {
+      "raw": 30526,
+      "gzip": 7686
+    },
+    "time-range-picker": {
+      "raw": 19197,
+      "gzip": 5408
+    },
+    "timeline": {
+      "raw": 12291,
+      "gzip": 3746
+    },
+    "timer": {
+      "raw": 9273,
+      "gzip": 3111
+    },
+    "toast": {
+      "raw": 13773,
+      "gzip": 4154
+    },
+    "tooltip": {
+      "raw": 27195,
+      "gzip": 6773
+    },
+    "tree": {
+      "raw": 52361,
+      "gzip": 11398
+    },
+    "treemap": {
+      "raw": 16319,
+      "gzip": 5471
+    },
+    "user-card": {
+      "raw": 19988,
+      "gzip": 6346
+    },
+    "video-player": {
+      "raw": 29686,
+      "gzip": 7209
+    },
+    "virtual-scroller": {
+      "raw": 8211,
+      "gzip": 2800
+    },
+    "waterfall": {
+      "raw": 9224,
+      "gzip": 3326
+    },
+    "weather": {
+      "raw": 7201,
+      "gzip": 2620
+    },
+    "work-order": {
+      "raw": 34955,
+      "gzip": 7391
+    }
+  }
+}

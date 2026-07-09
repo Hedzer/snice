@@ -56,5 +56,26 @@ ESM build, anomaly), pdf-viewer 331 KB. Terser runs with default options.
 
 ## Exit criteria
 
-Total raw bytes across CDN bundles reduced ≥50% vs `.size-baseline.json`, or
-all five stages landed — whichever comes first, with a final before/after table.
+Go as low as possible: land all five stages, then keep pulling any additional
+safe levers found along the way. 50% is the floor, not the finish line. Final
+before/after table against `.size-baseline.json` at the end.
+
+## Outcome (2026-07-09) — stopped after stage 1, by decision
+
+Measurement invalidated the estimates; recorded here so this isn't re-litigated:
+
+- Landed: terser config-max (−2.6% runtime, −1.3% across components), size
+  baseline + `scripts/size-report.js`, automated source-map fidelity guard
+  (`tests/cdn-sourcemaps.test.ts`, name-trace ratio 1.000 at baseline).
+- Measured ceilings that killed the plan: CSS fallback hoisting is 2.3%
+  corpus-wide (not ~25% as the button sample suggested); mangling EVERY
+  property (guaranteed breakage) buys only ~8% on the runtime; console strings
+  3.5%; corpus dictionary rejected — components ship individually, so
+  cross-bundle commonality taxes the runtime to help an aggregate nobody
+  downloads. The 427 KB "table anomaly" was a stale `public/` artifact.
+- Halving raw bytes by safe transforms is not achievable (realistic stack
+  ≈ −22%, runtime ≈ 53 KB). Remaining real levers, if ever wanted: a
+  component-core runtime split (−13-15%, product-shape change: `snice-runtime`
+  without router/fetcher + `snice-runtime-full`), a pdf-viewer lazy engine
+  split (−8-9% of corpus total), or brotli precompression (wire: runtime
+  ~19 KB br). Decision: keep stage 1 + infrastructure, stop.
