@@ -49,6 +49,17 @@ claude mcp add snice -- npx snice mcp
 - `search_docs` - Search documentation
 - `validate_code` - Check code for common mistakes
 
+## CDN / Standalone Usage
+
+Runtime first, then one bundle per component (any order after runtime):
+```html
+<script src="snice-runtime.min.js"></script>   <!-- required, first -->
+<script src="snice-button.min.js"></script>
+<snice-button variant="primary">Click me</snice-button>
+```
+- Omit the runtime → elements never register → blank page.
+- Full details (load order, bundle families, `theme.css` + dark mode, `.min.js` vs `.esm`): [cdn.md](cdn.md).
+
 ## Pitfalls
 
 **Decorators:**

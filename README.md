@@ -755,20 +755,17 @@ Layouts receive placard data in `update()` and auto-build navigation. See [docs]
 
 ## Using Snice Components in Other Environments
 
-### Standalone Builds
+### Standalone Builds (CDN)
 
-Use any Snice component without installing the library:
-
-```bash
-snice build-component button
-```
-
-Creates CDN bundles that work anywhere:
+Use any Snice component without a bundler — load the runtime first, then one `.min.js` bundle per component:
 
 ```html
+<script src="snice-runtime.min.js"></script>   <!-- required, load first -->
 <script src="snice-button.min.js"></script>
 <snice-button variant="primary">Click me</snice-button>
 ```
+
+Full details — load order, `theme.css` + dark mode, bundle families — in [CDN usage](docs/cdn.md).
 
 ### React Integration
 
