@@ -926,6 +926,18 @@ class ReactiveComponent extends HTMLElement {
     `;
   }
 }</snice-code-block>
+<p><strong>Initial values.</strong> By default a watcher fires once during initialization with the element's starting value — from markup (<code><reactive-component user-name="Ada"></code>) or the field default — with <code>oldValue</code> undefined, then again on every later change:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@watch('userName')
+onUserNameChange(oldVal: string | undefined, newVal: string) {
+  // Init:   (undefined, 'Ada')
+  // Change: ('Ada', 'Grace')
+}</snice-code-block>
+<p>Pass <code>{ immediate: false }</code> as the last argument for a change-only watcher — one that must not run on mount, such as a watcher that dispatches an event:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@watch('value', { immediate: false })
+onValueChange(oldVal: string, newVal: string) {
+  this.dispatchChange();   // only on real changes, never on mount
+}</snice-code-block>
+<p>The options object always comes after the property names, so it works with multiple watched properties too: <code>@watch('width', 'height', { immediate: false })</code>.</p>
 <h3 id="elements-context-decorator">@context() Decorator</h3>
 <p>Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">import { element, context, property, render, html } from 'snice';

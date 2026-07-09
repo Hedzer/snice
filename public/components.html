@@ -5375,8 +5375,8 @@ md.addEventListener('link-click',
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col" style="gap:0.75rem">
           <snice-message-strip variant="info">This is an informational message.</snice-message-strip>
-          <snice-message-strip variant="success" dismissable>Changes saved successfully.</snice-message-strip>
-          <snice-message-strip variant="warning" dismissable>Your session will expire in 5 minutes.</snice-message-strip>
+          <snice-message-strip variant="success" dismissible>Changes saved successfully.</snice-message-strip>
+          <snice-message-strip variant="warning" dismissible>Your session will expire in 5 minutes.</snice-message-strip>
           <snice-message-strip variant="danger">Unable to connect to the server.</snice-message-strip>
         </div>
         <div class="comp-split-code">
@@ -5385,11 +5385,11 @@ md.addEventListener('link-click',
   This is an informational message.
 &lt;/snice-message-strip&gt;
 
-&lt;snice-message-strip variant="success" dismissable&gt;
+&lt;snice-message-strip variant="success" dismissible&gt;
   Changes saved successfully.
 &lt;/snice-message-strip&gt;
 
-&lt;snice-message-strip variant="warning" dismissable&gt;
+&lt;snice-message-strip variant="warning" dismissible&gt;
   Your session will expire in 5 minutes.
 &lt;/snice-message-strip&gt;
 
@@ -8440,7 +8440,7 @@ stepper.currentStep = 1;</snice-code-block>
         } else if (command === 'status') {
           terminal.writeln('All systems operational ✓', 'success');
         } else if (command === 'version') {
-          terminal.writeln('Snice v4.8.0 (build ea70767)', 'info');
+          terminal.writeln('Snice v5.2.3 (build ea70767)', 'info');
         } else if (command.startsWith('echo ')) {
           terminal.writeln(command.slice(5));
         } else {
