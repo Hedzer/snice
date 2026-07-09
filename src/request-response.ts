@@ -49,11 +49,15 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
       let discoveryResolve: () => void;
       let discoveryReject: (reason?: any) => void;
       let discoveryTimeoutId: NodeJS.Timeout;
+      let discovered = false;
       const discoveryPromise = new Promise<void>((resolve, reject) => {
         discoveryResolve = resolve;
         discoveryReject = reject;
         discoveryTimeoutId = setTimeout(() => {
-          reject(new Error(`Request "${requestName}" timed out after ${discoveryTimeout}ms - no handler found`));
+          reject(new Error(
+            `Request "${requestName}" found no @respond('${requestName}') handler within ${discoveryTimeout}ms — ` +
+            `attach a responding controller/element, or pass { optional: true } to resolve undefined when unhandled.`
+          ));
         }, discoveryTimeout);
       });
       
@@ -67,6 +71,7 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
           payload,
           discovery: {
             resolve: () => {
+              discovered = true;
               clearTimeout(discoveryTimeoutId);
               discoveryResolve();
             },
@@ -101,6 +106,14 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
         const { value: finalValue } = await generator.next(response);
         return finalValue;
       } catch (error) {
+        // optional: an unhandled request isn't an error — resume the generator
+        // with undefined so `const data = await (yield payload)` sees no data.
+        // A response TIMEOUT (handler exists but is slow) still throws.
+        if (options?.optional && !discovered) {
+          const { value: finalValue } = await generator.next(undefined);
+          return finalValue;
+        }
+
         // Drive the generator's own catch block and return whatever it recovers
         // with (e.g. a cached fallback). If the generator re-throws instead,
         // generator.throw rejects and the error propagates to the caller.

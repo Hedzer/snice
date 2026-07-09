@@ -403,3 +403,39 @@ export function valueToAttribute(value: any, propertyOptions: PropertyOptions, i
       return String(value);
   }
 }
+/**
+ * Warn (once per class) about @watch targets that match no @property —
+ * such watchers can never fire, and the typo is otherwise silent.
+ * Valid targets: property names, their attribute forms, and the '*' wildcard.
+ */
+const validatedWatchClasses = new WeakSet<Function>();
+
+export function validateWatchedProperties(instance: any, constructor: any): void {
+  if (validatedWatchClasses.has(constructor)) return;
+  validatedWatchClasses.add(constructor);
+
+  const watchers: Map<string, any[]> | undefined = constructor[PROPERTY_WATCHERS];
+  if (!watchers || watchers.size === 0) return;
+
+  const properties: Map<string, PropertyOptions> | undefined = constructor[PROPERTIES];
+  // invokeWatchers matches exactly: the property name, or an EXPLICIT
+  // `attribute:` string. A derived/lowercased attribute name is NOT watchable,
+  // so it must not be treated as valid here.
+  const valid = new Set<string>(['*']);
+  if (properties) {
+    for (const [name, opts] of properties) {
+      valid.add(name);
+      if (typeof opts?.attribute === 'string') valid.add(opts.attribute);
+    }
+  }
+
+  for (const key of watchers.keys()) {
+    if (valid.has(key)) continue;
+    const tag = instance.tagName ? instance.tagName.toLowerCase() : 'element';
+    const known = properties ? [...properties.keys()].join(', ') : '(none)';
+    console.warn(
+      `@watch('${key}') on <${tag}> matches no @property — it will never fire. ` +
+      `Known properties: ${known}.`
+    );
+  }
+}

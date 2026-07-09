@@ -142,9 +142,13 @@ export async function attachController(element: HTMLElement, controllerName: str
     await Promise.race([
       (element as any).ready,
       new Promise<never>((_, reject) => {
-        const onAbort = () => reject(
-          new Error(`attachController("${controllerName}"): aborted before element was ready (likely detached or never connected)`)
-        );
+        const onAbort = () => {
+          // Tagged so fire-and-forget call sites can tell this designed
+          // teardown path apart from real attach failures and stay quiet.
+          const error = new Error(`attachController("${controllerName}"): aborted before element was ready (likely detached or never connected)`);
+          error.name = 'ControllerAttachAborted';
+          reject(error);
+        };
         if (abort.signal.aborted) return onAbort();
         abort.signal.addEventListener('abort', onAbort, { once: true });
         const timerId = setTimeout(() => reject(
@@ -326,6 +330,11 @@ export function useNativeElementControllers() {
     }
 
     attachController(element as HTMLElement, controllerName).catch(error => {
+      // Detached before ready — designed teardown, not a failure
+      if (error?.name === 'ControllerAttachAborted') {
+        console.debug(`Controller "${controllerName}" attach aborted (element detached before ready)`);
+        return;
+      }
       console.error(`Failed to attach controller "${controllerName}" to native element:`, error);
     });
   }

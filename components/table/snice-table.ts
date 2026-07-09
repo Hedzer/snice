@@ -1399,12 +1399,10 @@ export class SniceTable extends HTMLElement {
     this.render(); // Re-render both header and body for checkbox columns
   }
 
-  @watch('columns')
-  handleColumnsChange() {
-    this.renderHeader();
-  }
-
-  @watch('data', 'loading')
+  // NOTE: `columns` and `data` are plain fields (not @property), so watching
+  // them never fired — the old @watch('columns') / @watch('data', ...) here
+  // were dead code. Rendering happens via setColumns()/setData() manual calls.
+  @watch('loading')
   handleDataChange() {
     this.renderBody();
   }

@@ -262,7 +262,7 @@ describe('useRequestHandler event protocol integration', () => {
 
     cleanup(); // Simulates React useEffect cleanup
 
-    await expect(el.fetchData()).rejects.toThrow(/no handler found/);
+    await expect(el.fetchData()).rejects.toThrow(/found no @respond/);
   });
 
   it('should handle async handlers correctly', async () => {

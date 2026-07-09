@@ -77,7 +77,7 @@ Runtime first, then one bundle per component (any order after runtime):
 
 **Properties:**
 - Boolean attrs: `"false"` string → `false` (not standard HTML)
-- Non-strings need type: `@property({ type: Number })` not just `@property()`
+- Type is inferred from the initializer: `@property() count = 0` parses attributes as Number. Explicit `@property({ type: Number })` is only needed when there is NO initializer (`@property() amount?: number` stays a string without it)
 - Union types use String: `@property() variant: 'a' | 'b' = 'a'` (type hint optional)
 - **No `reflect` option** - `@property({ reflect: true })` does NOT exist (Lit concept, not snice)
 - Attributes sync automatically for styling with `:host([attr])`

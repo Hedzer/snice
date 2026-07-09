@@ -375,3 +375,41 @@ describe('@observe decorator', () => {
     });
   });
 });
+describe('prescriptive mutation-target warnings', () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    container.remove();
+  });
+
+  it('suggests the selector argument when the mutation type looks like a selector', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const tag = `observe-selector-warn-${Date.now()}`;
+
+      @element(tag)
+      class BadObserve extends HTMLElement {
+        @render()
+        renderContent() { return html`<div class="content">x</div>`; }
+
+        @observe('mutation:.content', { attributes: true } as any)
+        onMutate() {}
+      }
+
+      const el = document.createElement(tag) as any;
+      container.appendChild(el);
+      await el.ready;
+      await new Promise(r => setTimeout(r, 10));
+
+      const calls = warnSpy.mock.calls.map(c => String(c[0]));
+      expect(calls.some(c => c.includes("did you mean") && c.includes("'.content'"))).toBe(true);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});

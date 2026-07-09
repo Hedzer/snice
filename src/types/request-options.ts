@@ -8,6 +8,11 @@ export interface RequestOptions extends EventInit {
    */
   discoveryTimeout?: number;
   /**
+   * When true, an unhandled request is not an error: the awaited yield
+   * resolves undefined instead of throwing. Response timeouts still throw.
+   */
+  optional?: boolean;
+  /**
    * Debounce the request by specified milliseconds
    */
   debounce?: number;

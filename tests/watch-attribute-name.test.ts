@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { element, property, watch } from '../src/index';
 
 // @watch should match both:
@@ -72,23 +72,31 @@ describe('@watch matches declared attribute name', () => {
 
   it('does NOT match kebab-case form when no explicit attribute is declared', async () => {
     const fired: string[] = [];
+    // this deliberately-dead watch also triggers the unknown-property warning
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    @element('watch-attr-test-d')
-    class D extends HTMLElement {
-      // no explicit `attribute:` — kebab form is not a declared name
-      @property({ type: Boolean })
-      showDropdown = false;
+    try {
+      @element('watch-attr-test-d')
+      class D extends HTMLElement {
+        // no explicit `attribute:` — kebab form is not a declared name
+        @property({ type: Boolean })
+        showDropdown = false;
 
-      @watch('show-dropdown')
-      onShowDropdown() { fired.push('kebab'); }
+        @watch('show-dropdown')
+        onShowDropdown() { fired.push('kebab'); }
+      }
+
+      const el = document.createElement('watch-attr-test-d') as any;
+      document.body.appendChild(el);
+      await el.ready;
+
+      el.showDropdown = true;
+      expect(fired).not.toContain('kebab');
+      // the framework flags the dead watch
+      expect(warnSpy.mock.calls.some(c => String(c[0]).includes("'show-dropdown'") && String(c[0]).includes('never fire'))).toBe(true);
+    } finally {
+      warnSpy.mockRestore();
     }
-
-    const el = document.createElement('watch-attr-test-d') as any;
-    document.body.appendChild(el);
-    await el.ready;
-
-    el.showDropdown = true;
-    expect(fired).not.toContain('kebab');
   });
 
   it('matches a custom-renamed attribute (not derived from property name)', async () => {

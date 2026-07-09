@@ -265,7 +265,7 @@ describe('createRequestHandler', () => {
     cleanup();
 
     // Should now timeout (no handler)
-    await expect(el.fetchData()).rejects.toThrow(/no handler found/);
+    await expect(el.fetchData()).rejects.toThrow(/found no @respond/);
   });
 
   it('should handle null/undefined return values', async () => {

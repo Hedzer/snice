@@ -95,7 +95,7 @@ describe('@request and @respond decorators', () => {
     container.appendChild(el);
     await el.ready;
     
-    await expect(el.communicate()).rejects.toThrow(/timed out after \d+ms/);
+    await expect(el.communicate()).rejects.toThrow(/found no @respond/);
   });
 
   it('should handle async controller responses', async () => {
@@ -258,7 +258,7 @@ describe('@request and @respond decorators', () => {
     await detachController(el);
     await new Promise(resolve => setTimeout(resolve, 10));
     
-    await expect(el.communicate()).rejects.toThrow(/timed out after \d+ms/);
+    await expect(el.communicate()).rejects.toThrow(/found no @respond/);
     expect(requestCount).toBe(1);
   });
 
@@ -845,4 +845,57 @@ describe('@request and @respond decorators', () => {
       processed: true
     });
   });
+});
+describe('optional requests', () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    container.remove();
+  });
+
+    it('resolves through the generator with undefined when no handler exists', async () => {
+      const channel = uniqueName('optional-chan');
+      const tag = uniqueName('optional-el');
+
+      @element(tag)
+      class OptEl extends HTMLElement {
+        @request(channel, { optional: true, discoveryTimeout: 30 })
+        async *fetchData(): any {
+          const data = await (yield { q: 1 });
+          return data ?? 'fallback';
+        }
+      }
+
+      const el = document.createElement(tag) as any;
+      container.appendChild(el);
+      await el.ready;
+
+      await expect(el.fetchData()).resolves.toBe('fallback');
+    });
+
+    it('unhandled non-optional request error names the channel and remedies', async () => {
+      const channel = uniqueName('strict-chan');
+      const tag = uniqueName('strict-el');
+
+      @element(tag)
+      class StrictEl extends HTMLElement {
+        @request(channel, { discoveryTimeout: 30 })
+        async *fetchData(): any {
+          return await (yield {});
+        }
+      }
+
+      const el = document.createElement(tag) as any;
+      container.appendChild(el);
+      await el.ready;
+
+      await expect(el.fetchData()).rejects.toThrow(
+        new RegExp(`@respond\\('${channel}'\\).*optional`)
+      );
+    });
 });

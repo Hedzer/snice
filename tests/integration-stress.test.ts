@@ -82,11 +82,12 @@ describe('Integration & Stress Tests', () => {
     });
 
     it('should handle rapid DOM mutations efficiently', async () => {
-      // Rapid attach/detach races the controller's abort-on-detach path, which
-      // logs "Failed to attach controller" via console.error when a mutation
-      // element is removed before it finishes connecting. That's expected
-      // noise from this stress scenario, not a test failure — suppress it.
+      // Rapid attach/detach races the controller's abort-on-detach path.
+      // Those aborts are designed teardown and log at debug level — a
+      // console.ERROR here would be a real regression, so assert none fire.
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // the ~250 designed attach-aborts log at debug level — keep output clean
+      const consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
       try {
         @controller('mutation-ctrl')
         class MutationController {
@@ -128,8 +129,15 @@ describe('Integration & Stress Tests', () => {
         // Should handle all mutations without errors
         const remainingElements = container.querySelectorAll('mutation-element');
         expect(remainingElements.length).toBe(500);
+
+        // Attach-aborts from the churn must NOT surface as console.error
+        const attachErrors = consoleErrorSpy.mock.calls.filter(c =>
+          String(c[0]).includes('Failed to attach controller')
+        );
+        expect(attachErrors.length).toBe(0);
       } finally {
         consoleErrorSpy.mockRestore();
+        consoleDebugSpy.mockRestore();
       }
     });
   });

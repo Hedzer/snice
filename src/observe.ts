@@ -292,9 +292,20 @@ function setupMutationObserver(
         options.attributeFilter = [attributeName];
       }
       break;
-    default:
-      console.warn(`Unknown mutation type: ${mutationType}`);
+    default: {
+      // A leading . # or [ means the author put a CSS selector where the
+      // mutation type goes — point at the correct two-argument form.
+      if (/^[.#[]/.test(mutationType)) {
+        console.warn(
+          `@observe: "mutation:${mutationType}" — "${mutationType}" looks like a selector. ` +
+          `Selectors are the second argument — did you mean ` +
+          `@observe('mutation:childList', '${mutationType}')?`
+        );
+      } else {
+        console.warn(`Unknown mutation type: ${mutationType} (expected childList or attributes)`);
+      }
       return;
+    }
   }
   
   // Apply subtree with safety limits
