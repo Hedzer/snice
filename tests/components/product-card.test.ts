@@ -151,6 +151,24 @@ describe('snice-product-card', () => {
     expect(selected?.textContent?.trim()).toBe('S');
   });
 
+  it('should not crash on a variant missing its options array', async () => {
+    el = await createComponent<SniceProductCardElement>('snice-product-card');
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      // A malformed variant with no `options` must not throw in
+      // initializeVariantSelections (regression: unguarded `v.options.length`).
+      el.variants = [{ type: 'Size' } as unknown as ProductVariant];
+      await wait(50);
+      expect(errorSpy).not.toHaveBeenCalled();
+      // A well-formed variant afterwards still selects its first option.
+      el.variants = [{ type: 'Color', options: ['Red', 'Blue'] }];
+      await wait(50);
+      expect((el as any).selectedVariants).toEqual({ Color: 'Red' });
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
   it('should emit variant-select event', async () => {
     el = await createComponent<SniceProductCardElement>('snice-product-card');
     el.variants = [

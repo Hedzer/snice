@@ -80,7 +80,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
   private initializeVariantSelections() {
     const selections: Record<string, string> = {};
     for (const v of this.variants) {
-      if (v.options.length > 0) {
+      if (v.options?.length > 0) {
         selections[v.type] = v.options[0];
       }
     }
@@ -364,7 +364,7 @@ export class SniceProductCard extends HTMLElement implements SniceProductCardEle
             <div class="product-card__variant-group" part="variant-group">
               <span class="product-card__variant-label">${v.type}</span>
               <div class="product-card__variant-options" role="radiogroup" aria-label="${v.type}">
-                ${v.options.map((opt: string) => {
+                ${(v.options ?? []).map((opt: string) => {
                   const isSelected = this.selectedVariants[v.type] === opt;
                   const classes = [
                     'product-card__variant-option',
