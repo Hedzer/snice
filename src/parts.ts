@@ -6,7 +6,9 @@ import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, i
 const marker = `snice$${Math.random().toFixed(9).slice(2)}$`;
 const markerMatch = '?' + marker;
 const nodeMarker = `<${markerMatch}>`;
-const markerRegex = new RegExp(marker, 'g');
+// Escape the `$` chars — as a bare RegExp they'd be end anchors and the
+// pattern would never match, so marker-bearing text/comments never split.
+const markerRegex = new RegExp(marker.replace(/\$/g, '\\$'), 'g');
 
 // Template cache - templates with same string array can be reused
 const templateCache = new WeakMap<TemplateStringsArray, Template>();
@@ -36,6 +38,11 @@ const isIterable = (value: unknown): value is Iterable<unknown> =>
 class Template {
   parts: TemplatePart[] = [];
   element: HTMLTemplateElement;
+  /**
+   * Value index of a `key=${...}` binding in this template, or -1 if unkeyed.
+   * Used by keyed list reconciliation in NodePart._commitIterable.
+   */
+  keyIndex = -1;
 
   constructor(result: TemplateResult, element: HTMLTemplateElement, attrNamesForParts: string[]) {
     this.element = element;
@@ -205,6 +212,19 @@ class Template {
             startNode: comment,
             endNode
           });
+        } else if (comment.data.includes(marker)) {
+          // Binding(s) inside an authored HTML comment (<!-- ${x} -->).
+          // Render values into the comment text; critically, consume the
+          // right number of value indices so later parts stay aligned.
+          const commentStrings = comment.data.split(markerRegex);
+
+          this.parts.push({
+            type: 'comment',
+            index: partIndex,
+            startNode: comment,
+            attrStrings: commentStrings
+          });
+          partIndex += commentStrings.length - 1;
         }
       } else if (node.nodeType === Node.TEXT_NODE) {
         const text = node as Text;
@@ -245,17 +265,26 @@ class Template {
     for (const node of nodesToRemove) {
       node.parentNode?.removeChild(node);
     }
+
+    // Record the value index of a `key=${...}` binding (first one wins) so
+    // list rendering can associate DOM with keys instead of indices.
+    for (const part of this.parts) {
+      if (part.type === 'attribute' && part.name === 'key') {
+        this.keyIndex = part.index;
+        break;
+      }
+    }
   }
 }
 
 interface TemplatePart {
-  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'conditional-if' | 'conditional-case';
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'conditional-if' | 'conditional-case' | 'comment';
   index: number;
   name?: string;
   element?: Element;
   startNode?: Comment;
   endNode?: Comment;
-  attrStrings?: string[]; // Static string segments for attributes with interpolation
+  attrStrings?: string[]; // Static string segments for attribute/comment interpolation
 }
 
 /**
@@ -279,6 +308,7 @@ function prepareTemplate(result: TemplateResult): Template {
   // State tracking for multi-interpolation support
   let inTag = false;           // Inside a tag (between < and >)
   let inAttrValue = false;     // Inside a quoted attribute value
+  let inComment = false;       // Inside an HTML comment (<!-- ... -->)
   let attrQuoteChar = '';      // The quote character (' or ")
   let currentAttrName = '';    // The current attribute name
 
@@ -291,10 +321,21 @@ function prepareTemplate(result: TemplateResult): Template {
       for (let j = 0; j < str.length; j++) {
         const char = str[j];
 
-        if (!inTag) {
-          // Looking for tag start
+        if (inComment) {
+          // Only the closing --> matters inside a comment
+          if (char === '-' && str.startsWith('-->', j)) {
+            inComment = false;
+            j += 2;
+          }
+        } else if (!inTag) {
+          // Looking for tag start (or comment start)
           if (char === '<') {
-            inTag = true;
+            if (str.startsWith('<!--', j)) {
+              inComment = true;
+              j += 3;
+            } else {
+              inTag = true;
+            }
           }
         } else if (!inAttrValue) {
           // Inside tag, but not in attribute value
@@ -323,7 +364,14 @@ function prepareTemplate(result: TemplateResult): Template {
       }
 
       // Now determine what kind of marker to insert based on current state
-      if (inAttrValue) {
+      if (inComment) {
+        // Binding inside an HTML comment — insert a plain marker into the
+        // comment text. The Template scanner turns it into a CommentPart so
+        // the value index stays aligned (a swallowed marker would shift every
+        // binding after the comment).
+        attrNamesForParts.push('');
+        htmlParts.push(marker);
+      } else if (inAttrValue) {
         // We're inside a quoted attribute value - this is an attribute binding
         // For subsequent interpolations in same attribute, keep using same attr name
         attrNamesForParts.push(currentAttrName);
@@ -372,6 +420,16 @@ function prepareTemplate(result: TemplateResult): Template {
   // Cache the template for reuse
   templateCache.set(strings, tmpl);
   return tmpl;
+}
+
+/**
+ * Extract the key of a list item rendered from a template with a
+ * `key=${...}` binding. Returns undefined for unkeyed items.
+ */
+function getItemKey(item: unknown): unknown {
+  if (!isTemplateResult(item)) return undefined;
+  const tmpl = prepareTemplate(item as TemplateResult);
+  return tmpl.keyIndex === -1 ? undefined : (item as TemplateResult).values[tmpl.keyIndex];
 }
 
 /**
@@ -457,6 +515,10 @@ export class TemplateInstance {
             const conditionalCaseElement = nodeMap.get(partDef.element!) as Element;
             part = new ConditionalCasePart(conditionalCaseElement);
             break;
+          case 'comment':
+            const commentNode = nodeMap.get(partDef.startNode!) as Comment;
+            part = new CommentPart(commentNode, partDef.attrStrings!);
+            break;
           default:
             throw new Error(`Unknown part type: ${(partDef as any).type}`);
         }
@@ -501,6 +563,9 @@ export class TemplateInstance {
         part.commit(values, index);
         // The part consumes (strings.length - 1) values
         // But since we're iterating by template part index, this is handled by the Template
+      } else if (part instanceof CommentPart) {
+        // CommentParts also consume (strings.length - 1) values
+        part.commit(values, index);
       } else {
         part.commit(values[index]);
       }
@@ -534,6 +599,7 @@ export class NodePart extends Part {
   private startNode: Comment;
   private endNode: Comment;
   private _committedValue: any = NOT_COMMITTED;
+  private _itemKeys: unknown[] | null = null; // keys of the last committed iterable, when fully keyed
 
   constructor(startNode: Comment, endNode: Comment) {
     super();
@@ -655,12 +721,33 @@ export class NodePart extends Part {
         !(this._committedValue[0] instanceof NodePart)) {
       this._clear();
       this._committedValue = [];
+      this._itemKeys = null;
+    }
+
+    const items = Array.isArray(value) ? (value as unknown[]) : Array.from(value);
+    const newKeys = items.map(getItemKey);
+    const allKeyed = items.length > 0 && newKeys.every(k => k !== undefined);
+    const oldKeys = this._itemKeys;
+
+    // Keyed reconciliation: when every item carries a key=${...} binding and
+    // the key order changed, DOM (and its state) follows the key, not the
+    // index. Unchanged key order falls through to the cheap index path.
+    if (allKeyed && oldKeys && (this._committedValue as NodePart[]).length > 0) {
+      const sameOrder =
+        oldKeys.length === newKeys.length &&
+        newKeys.every((k, i) => k === oldKeys[i]);
+
+      if (!sameOrder) {
+        this._reconcileKeyed(items, newKeys, this._committedValue as NodePart[], oldKeys);
+        this._itemKeys = newKeys;
+        return;
+      }
     }
 
     const itemParts = this._committedValue as NodePart[];
     let partIndex = 0;
 
-    for (const item of value) {
+    for (const item of items) {
       let itemPart: NodePart;
 
       if (partIndex >= itemParts.length) {
@@ -695,6 +782,88 @@ export class NodePart extends Part {
       // Truncate array
       itemParts.length = partIndex;
     }
+
+    // Remember keys so the next commit can reconcile by key
+    this._itemKeys = allKeyed ? newKeys : null;
+  }
+
+  /**
+   * Reorder/reuse item parts so each key keeps its DOM.
+   * Old parts whose keys disappeared are removed; new keys get fresh parts.
+   */
+  private _reconcileKeyed(
+    items: unknown[],
+    newKeys: unknown[],
+    oldParts: NodePart[],
+    oldKeys: unknown[]
+  ): void {
+    const parent = this.endNode.parentNode!;
+
+    // Map old parts by key (first occurrence wins on duplicate keys)
+    const oldByKey = new Map<unknown, NodePart>();
+    for (let i = 0; i < oldParts.length; i++) {
+      if (!oldByKey.has(oldKeys[i])) oldByKey.set(oldKeys[i], oldParts[i]);
+    }
+
+    // Choose a part for each new item: reuse by key, or create during placement
+    const reused = new Set<NodePart>();
+    const newParts: (NodePart | null)[] = new Array(items.length).fill(null);
+    for (let i = 0; i < items.length; i++) {
+      const candidate = oldByKey.get(newKeys[i]);
+      if (candidate && !reused.has(candidate)) {
+        reused.add(candidate);
+        newParts[i] = candidate;
+      }
+    }
+
+    // Remove parts whose keys are gone (before placement, so the DOM walk
+    // below only ever sees surviving nodes)
+    for (const part of oldParts) {
+      if (!reused.has(part)) {
+        part._clear();
+        part.startNode.remove();
+        part.endNode.remove();
+      }
+    }
+
+    // Place parts in order. `ref` walks the surviving DOM; a part already
+    // sitting at `ref` is skipped, anything else is moved (or created) there.
+    let ref: Node = this.startNode.nextSibling!;
+    for (let i = 0; i < newParts.length; i++) {
+      let part = newParts[i];
+
+      if (part) {
+        if (part.startNode === ref) {
+          // Already in position — advance past its range
+          ref = part.endNode.nextSibling!;
+        } else {
+          // Move the part's whole range [startNode..endNode] before ref.
+          // Detach into a fragment first, then insert in one operation —
+          // node identity (and any state inside) is preserved either way.
+          const range = document.createDocumentFragment();
+          let node: Node | null = part.startNode;
+          const stop: Node | null = part.endNode.nextSibling;
+          while (node && node !== stop) {
+            const next: Node | null = node.nextSibling;
+            range.appendChild(node);
+            node = next;
+          }
+          parent.insertBefore(range, ref);
+        }
+      } else {
+        // New key — fresh part inserted at the current position
+        const startMarker = document.createComment('');
+        const endMarker = document.createComment('');
+        parent.insertBefore(startMarker, ref);
+        parent.insertBefore(endMarker, ref);
+        part = new NodePart(startMarker, endMarker);
+        newParts[i] = part;
+      }
+
+      part.commit(items[i]);
+    }
+
+    this._committedValue = newParts as NodePart[];
   }
 
   /**
@@ -814,6 +983,10 @@ export class AttributePart extends Part {
         // Handle noChange sentinel
         if (v === noChange) {
           v = committedValues[i];
+          // First-ever commit: there is no previous value to keep — resolve
+          // to empty. Without this, the NOT_COMMITTED symbol would be
+          // string-concatenated below and throw.
+          if (v === NOT_COMMITTED) v = '';
         }
 
         // Track if any value changed
@@ -840,16 +1013,67 @@ export class AttributePart extends Part {
   }
 
   private _commitValue(value: unknown): void {
-    if (value === nothing || value === null || value === undefined) {
+    // Only the `nothing` sentinel removes the attribute. null/undefined
+    // commit an empty attribute value, consistent with the interpolated
+    // path above (which renders them as '').
+    if (value === nothing) {
       this.element.removeAttribute(this.name);
     } else {
-      this.element.setAttribute(this.name, String(value));
+      this.element.setAttribute(this.name, String(value ?? ''));
     }
   }
 
   clear(): void {
     this.element.removeAttribute(this.name);
   }
+}
+
+/**
+ * CommentPart renders binding values into an authored HTML comment's text
+ * (<!-- debug: ${x} -->). Its real job is index alignment: each binding in a
+ * comment consumes one value slot, so bindings after the comment stay bound
+ * to their own values.
+ */
+export class CommentPart extends Part {
+  readonly node: Comment;
+  readonly strings: readonly string[];
+  private _committedValues: unknown[];
+
+  constructor(node: Comment, strings: readonly string[]) {
+    super();
+    this.node = node;
+    this.strings = strings;
+    this._committedValues = new Array(strings.length - 1).fill(NOT_COMMITTED);
+  }
+
+  /**
+   * Commit values into the comment text.
+   * commit(values, startIndex) — like interpolated AttributePart, this part
+   * consumes (strings.length - 1) values from the template values array.
+   */
+  commit(values: unknown, startIndex: number = 0): void {
+    const vals = values as unknown[];
+    let change = false;
+    let text = this.strings[0];
+
+    for (let i = 0; i < this.strings.length - 1; i++) {
+      let v = vals[startIndex + i];
+
+      if (v === noChange) {
+        v = this._committedValues[i];
+        if (v === NOT_COMMITTED) v = '';
+      }
+
+      change = change || !isPrimitive(v) || v !== this._committedValues[i];
+      this._committedValues[i] = v;
+
+      text += String(v === nothing ? '' : (v ?? '')) + this.strings[i + 1];
+    }
+
+    if (change) this.node.data = text;
+  }
+
+  clear(): void {}
 }
 
 /**
@@ -927,6 +1151,7 @@ export class EventPart extends Part {
   readonly element: Element;
   readonly eventName: string;
   private listener: EventListener | null = null;
+  private listenerOptions: AddEventListenerOptions | undefined = undefined;
   private value: any = undefined;
   private keyFilter: KeyboardFilter | null = null;
   private host: Element | null = null; // Cache host element
@@ -972,10 +1197,11 @@ export class EventPart extends Part {
     // Skip if same value (but null/undefined always triggers update for cleanup)
     if (value === this.value && value !== null && value !== undefined) return;
 
-    // Remove old listener
+    // Remove old listener (with the same capture option it was added with)
     if (this.listener) {
-      this.element.removeEventListener(this.eventName, this.listener);
+      this.element.removeEventListener(this.eventName, this.listener, this.listenerOptions);
       this.listener = null;
+      this.listenerOptions = undefined;
     }
 
     this.value = value;
@@ -985,11 +1211,21 @@ export class EventPart extends Part {
       return;
     }
 
-    if (typeof value !== 'function') return;
+    // Accept plain functions AND EventListenerObject ({ handleEvent }).
+    // For listener objects, the object itself doubles as the
+    // addEventListener options bag (capture/once/passive).
+    const isListenerObject =
+      typeof value === 'object' && typeof (value as EventListenerObject).handleEvent === 'function';
+    if (typeof value !== 'function' && !isListenerObject) return;
 
     const keyFilter = this.keyFilter;
     this.listener = ((event: Event) => {
       if (keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, keyFilter)) return;
+      if (isListenerObject) {
+        // DOM spec: `this` inside handleEvent is the listener object itself
+        (value as EventListenerObject).handleEvent(event);
+        return;
+      }
       // Resolve the host (the custom element owning the shadow root) at dispatch
       // time, not bind time: a binding inside an initially-hidden <if>/<case>
       // branch commits while off-DOM, where getRootNode() has no host — caching
@@ -1001,13 +1237,15 @@ export class EventPart extends Part {
       value.call(this.host || null, event);
     }) as EventListener;
 
-    this.element.addEventListener(this.eventName, this.listener);
+    this.listenerOptions = isListenerObject ? (value as AddEventListenerOptions) : undefined;
+    this.element.addEventListener(this.eventName, this.listener, this.listenerOptions);
   }
 
   clear(): void {
     if (this.listener) {
-      this.element.removeEventListener(this.eventName, this.listener);
+      this.element.removeEventListener(this.eventName, this.listener, this.listenerOptions);
       this.listener = null;
+      this.listenerOptions = undefined;
     }
   }
 }

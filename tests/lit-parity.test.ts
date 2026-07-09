@@ -1814,4 +1814,237 @@ describe('lit-html parity - interpolation and reactivity', () => {
       expect(div?.querySelector('script')).toBeFalsy();
     });
   });
+
+  describe('bindings inside HTML comments', () => {
+    it('should not shift bindings that come after a comment binding', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property() note = 'AAA';
+        @property() title2 = 'BBB';
+        @property() text = 'CCC';
+
+        @render()
+        renderContent() {
+          return html`<!-- note: ${this.note} --><div title="${this.title2}">${this.text}</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      // A binding inside a comment must not corrupt later parts
+      expect(div?.getAttribute('title')).toBe('BBB');
+      expect(div?.textContent).toBe('CCC');
+
+      el.title2 = 'BBB2';
+      el.text = 'CCC2';
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.getAttribute('title')).toBe('BBB2');
+      expect(div?.textContent).toBe('CCC2');
+    });
+
+    it('should handle multiple bindings in one comment without corrupting later parts', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property() a = '1';
+        @property() b = '2';
+        @property() cls = 'ok';
+
+        @render()
+        renderContent() {
+          return html`<!-- ${this.a} / ${this.b} --><span class="${this.cls}">x</span>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const span = el.shadowRoot?.querySelector('span');
+      expect(span?.getAttribute('class')).toBe('ok');
+    });
+
+    it('should render binding values into the comment text', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property() note = 'hello';
+
+        @render()
+        renderContent() {
+          return html`<!-- debug: ${this.note} --><div>x</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const findComment = () => {
+        const walker = document.createTreeWalker(el.shadowRoot!, NodeFilter.SHOW_COMMENT);
+        let node: Comment | null;
+        while ((node = walker.nextNode() as Comment | null)) {
+          if (node.data.includes('debug:')) return node;
+        }
+        return null;
+      };
+
+      expect(findComment()?.data).toBe(' debug: hello ');
+
+      el.note = 'world';
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(findComment()?.data).toBe(' debug: world ');
+    });
+  });
+
+  describe('null/undefined in single-value attributes', () => {
+    it('should keep the attribute as "" for null', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ attribute: false }) val: any = 'hello';
+
+        @render()
+        renderContent() {
+          return html`<div title="${this.val}">x</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      expect(div?.getAttribute('title')).toBe('hello');
+
+      el.val = null;
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.hasAttribute('title')).toBe(true);
+      expect(div?.getAttribute('title')).toBe('');
+
+      el.val = 'again';
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.getAttribute('title')).toBe('again');
+
+      el.val = undefined;
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.hasAttribute('title')).toBe(true);
+      expect(div?.getAttribute('title')).toBe('');
+    });
+
+    it('should still remove the attribute for nothing', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ attribute: false }) val: any = 'hello';
+
+        @render()
+        renderContent() {
+          return html`<div title="${this.val}">x</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      el.val = nothing;
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.hasAttribute('title')).toBe(false);
+    });
+  });
+
+  describe('noChange as initial value in interpolated attributes', () => {
+    it('should render the static parts without throwing', async () => {
+      const tag = getUniqueTag();
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @property({ attribute: false }) val: any = noChange;
+
+        @render()
+        renderContent() {
+          return html`<div class="a ${this.val} b">x</div>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const div = el.shadowRoot?.querySelector('div');
+      // first-render noChange resolves to empty; render must not die
+      expect(div).toBeTruthy();
+      expect(div?.getAttribute('class')).toBe('a  b');
+
+      // a later real value still registers as a change
+      el.val = 'mid';
+      await new Promise(resolve => queueMicrotask(resolve));
+      expect(div?.getAttribute('class')).toBe('a mid b');
+    });
+  });
+
+  describe('event listener objects (handleEvent)', () => {
+    it('should support { handleEvent } listener objects', async () => {
+      const tag = getUniqueTag();
+      let called = 0;
+      let thisVal: any = null;
+      const listener = {
+        handleEvent(this: any) { called++; thisVal = this; }
+      };
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<button @click=${listener}>go</button>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      el.shadowRoot?.querySelector('button')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(called).toBe(1);
+      // DOM spec: `this` inside handleEvent is the listener object itself
+      expect(thisVal).toBe(listener);
+    });
+
+    it('should honor once:true on a listener object', async () => {
+      const tag = getUniqueTag();
+      let called = 0;
+      const listener = {
+        once: true,
+        handleEvent() { called++; }
+      };
+
+      @element(tag)
+      class TestElement extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<button @click=${listener}>go</button>`;
+        }
+      }
+
+      const el = document.createElement(tag) as InstanceType<typeof TestElement>;
+      container.appendChild(el);
+      await el.ready;
+
+      const btn = el.shadowRoot?.querySelector('button');
+      btn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      btn?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(called).toBe(1);
+    });
+  });
 });
