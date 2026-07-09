@@ -24,7 +24,7 @@ describe('snice-message-strip', () => {
       strip = await createComponent<SniceMessageStripElement>('snice-message-strip');
 
       expect(strip.variant).toBe('info');
-      expect(strip.dismissable).toBe(false);
+      expect(strip.dismissible).toBe(false);
       expect(strip.icon).toBe('');
     });
 
@@ -51,10 +51,10 @@ describe('snice-message-strip', () => {
     });
   });
 
-  describe('dismissable', () => {
-    it('should show dismiss button when dismissable', async () => {
+  describe('dismissible', () => {
+    it('should show dismiss button when dismissible', async () => {
       strip = await createComponent<SniceMessageStripElement>('snice-message-strip', {
-        dismissable: true
+        dismissible: true
       });
       await wait(200);
 
@@ -62,7 +62,7 @@ describe('snice-message-strip', () => {
       expect(dismissBtn).toBeTruthy();
     });
 
-    it('should not show dismiss button when not dismissable', async () => {
+    it('should not show dismiss button when not dismissible', async () => {
       strip = await createComponent<SniceMessageStripElement>('snice-message-strip');
       await wait(200);
 
@@ -72,7 +72,7 @@ describe('snice-message-strip', () => {
 
     it('should dispatch dismiss event when dismiss button clicked', async () => {
       strip = await createComponent<SniceMessageStripElement>('snice-message-strip', {
-        dismissable: true,
+        dismissible: true,
         variant: 'warning'
       });
       await wait(200);
@@ -165,7 +165,7 @@ describe('snice-message-strip', () => {
 
     it('should have accessible dismiss button', async () => {
       strip = await createComponent<SniceMessageStripElement>('snice-message-strip', {
-        dismissable: true
+        dismissible: true
       });
       await wait(200);
 

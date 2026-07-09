@@ -3,7 +3,7 @@
 # Message Strip
 `<snice-message-strip>`
 
-An inline contextual message bar for displaying status messages within content flow. Unlike alerts (dismissable card), banners (full-width top), and toasts (floating), message strips are designed to sit inline within your content.
+An inline contextual message bar for displaying status messages within content flow. Unlike alerts (dismissible card), banners (full-width top), and toasts (floating), message strips are designed to sit inline within your content.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -20,7 +20,7 @@ An inline contextual message bar for displaying status messages within content f
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `variant` | `'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` | Message type / color |
-| `dismissable` | `boolean` | `false` | Show dismiss button |
+| `dismissible` | `boolean` | `false` | Show dismiss button |
 | `icon` | `string` | `''` | Custom icon (set "none" to hide default icon) |
 
 ## Methods
@@ -86,12 +86,12 @@ Use the `variant` attribute to indicate the message type.
 <snice-message-strip variant="danger">An error occurred while saving.</snice-message-strip>
 ```
 
-### Dismissable
+### Dismissible
 
-Set the `dismissable` attribute to allow users to close the message.
+Set the `dismissible` attribute to allow users to close the message.
 
 ```html
-<snice-message-strip variant="info" dismissable>
+<snice-message-strip variant="info" dismissible>
   You can dismiss this message.
 </snice-message-strip>
 ```
@@ -142,7 +142,7 @@ messageStrip.show();
 
 ```html
 <form>
-  <snice-message-strip variant="danger" dismissable style="display: none;">
+  <snice-message-strip variant="danger" dismissible style="display: none;">
     Please fill in all required fields.
   </snice-message-strip>
 
@@ -155,10 +155,10 @@ messageStrip.show();
 
 ```html
 <div style="display: flex; flex-direction: column; gap: 8px;">
-  <snice-message-strip variant="danger" dismissable>
+  <snice-message-strip variant="danger" dismissible>
     Server connection lost.
   </snice-message-strip>
-  <snice-message-strip variant="warning" dismissable>
+  <snice-message-strip variant="warning" dismissible>
     Your session will expire in 5 minutes.
   </snice-message-strip>
   <snice-message-strip variant="info">

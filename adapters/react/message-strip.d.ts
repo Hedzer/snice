@@ -4,7 +4,7 @@ import type { SniceBaseProps } from './types';
  */
 export interface MessageStripProps extends SniceBaseProps {
     variant?: any;
-    dismissable?: any;
+    dismissible?: any;
     icon?: any;
     onDismiss?: (event: any) => void;
 }

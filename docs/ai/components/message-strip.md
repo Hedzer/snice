@@ -6,7 +6,7 @@ Inline contextual message bar within content flow. Differs from alert (card), ba
 
 ```ts
 variant: 'info'|'success'|'warning'|'danger' = 'info';
-dismissable: boolean = false;
+dismissible: boolean = false;
 icon: string = '';  // Custom icon (set "none" to hide)
 ```
 
@@ -43,8 +43,8 @@ import 'snice/components/message-strip/snice-message-strip';
 <snice-message-strip variant="warning">Review your changes.</snice-message-strip>
 <snice-message-strip variant="danger">An error occurred.</snice-message-strip>
 
-<!-- Dismissable -->
-<snice-message-strip variant="info" dismissable>You can close this.</snice-message-strip>
+<!-- Dismissible -->
+<snice-message-strip variant="info" dismissible>You can close this.</snice-message-strip>
 
 <!-- Custom icon -->
 <snice-message-strip variant="info" icon="🔔">New notification.</snice-message-strip>

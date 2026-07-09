@@ -9,7 +9,7 @@ import type { SniceBaseProps } from './types';
  */
 export interface MessageStripProps extends SniceBaseProps {
   variant?: any;
-  dismissable?: any;
+  dismissible?: any;
   icon?: any;
   onDismiss?: (event: any) => void;
 }
@@ -32,7 +32,7 @@ export interface MessageStripProps extends SniceBaseProps {
  */
 export const MessageStrip = createReactAdapter<MessageStripProps>({
   tagName: 'snice-message-strip',
-  properties: ["variant","dismissable","icon"],
+  properties: ["variant","dismissible","icon"],
   events: {"dismiss":"onDismiss"},
   formAssociated: false
 });

@@ -44,14 +44,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <snice-message-strip variant="warning">Warning variant</snice-message-strip>
 <snice-message-strip variant="danger">Danger variant</snice-message-strip>
 
-<h2>Dismissable: true</h2>
-<snice-message-strip variant="info" dismissable>Dismissable info message. Click X to close.</snice-message-strip>
-<snice-message-strip variant="success" dismissable>Dismissable success message.</snice-message-strip>
-<snice-message-strip variant="warning" dismissable>Dismissable warning message.</snice-message-strip>
-<snice-message-strip variant="danger" dismissable>Dismissable danger message.</snice-message-strip>
+<h2>Dismissible: true</h2>
+<snice-message-strip variant="info" dismissible>Dismissible info message. Click X to close.</snice-message-strip>
+<snice-message-strip variant="success" dismissible>Dismissible success message.</snice-message-strip>
+<snice-message-strip variant="warning" dismissible>Dismissible warning message.</snice-message-strip>
+<snice-message-strip variant="danger" dismissible>Dismissible danger message.</snice-message-strip>
 
-<h2>Dismissable: false (default)</h2>
-<snice-message-strip variant="info">Non-dismissable. No close button.</snice-message-strip>
+<h2>Dismissible: false (default)</h2>
+<snice-message-strip variant="info">Non-dismissible. No close button.</snice-message-strip>
 
 <h2>Custom icon (emoji)</h2>
 <snice-message-strip variant="info" icon="&#x1F514;">Custom bell icon notification.</snice-message-strip>
@@ -77,35 +77,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <snice-message-strip variant="warning">Default warning icon.</snice-message-strip>
 <snice-message-strip variant="danger">Default danger icon.</snice-message-strip>
 
-<h2>Variant x Dismissable matrix</h2>
-<snice-message-strip variant="info" dismissable>Info + Dismissable</snice-message-strip>
-<snice-message-strip variant="success" dismissable>Success + Dismissable</snice-message-strip>
-<snice-message-strip variant="warning" dismissable>Warning + Dismissable</snice-message-strip>
-<snice-message-strip variant="danger" dismissable>Danger + Dismissable</snice-message-strip>
+<h2>Variant x Dismissible matrix</h2>
+<snice-message-strip variant="info" dismissible>Info + Dismissible</snice-message-strip>
+<snice-message-strip variant="success" dismissible>Success + Dismissible</snice-message-strip>
+<snice-message-strip variant="warning" dismissible>Warning + Dismissible</snice-message-strip>
+<snice-message-strip variant="danger" dismissible>Danger + Dismissible</snice-message-strip>
 
-<h2>Variant x Custom icon x Dismissable</h2>
-<snice-message-strip variant="info" icon="&#x1F4E7;" dismissable>Info + Custom icon + Dismissable</snice-message-strip>
-<snice-message-strip variant="danger" icon="&#x26D4;" dismissable>Danger + Custom icon + Dismissable</snice-message-strip>
+<h2>Variant x Custom icon x Dismissible</h2>
+<snice-message-strip variant="info" icon="&#x1F4E7;" dismissible>Info + Custom icon + Dismissible</snice-message-strip>
+<snice-message-strip variant="danger" icon="&#x26D4;" dismissible>Danger + Custom icon + Dismissible</snice-message-strip>
 
-<h2>Variant x No icon x Dismissable</h2>
-<snice-message-strip variant="info" icon="none" dismissable>Info + No icon + Dismissable</snice-message-strip>
-<snice-message-strip variant="warning" icon="none" dismissable>Warning + No icon + Dismissable</snice-message-strip>
+<h2>Variant x No icon x Dismissible</h2>
+<snice-message-strip variant="info" icon="none" dismissible>Info + No icon + Dismissible</snice-message-strip>
+<snice-message-strip variant="warning" icon="none" dismissible>Warning + No icon + Dismissible</snice-message-strip>
 
 <h2>Long content</h2>
-<snice-message-strip variant="info" dismissable>This is a message strip with much longer content to show how it wraps. It contains enough text to demonstrate multi-line behavior within the component boundaries. The dismiss button should remain aligned properly regardless of content length.</snice-message-strip>
+<snice-message-strip variant="info" dismissible>This is a message strip with much longer content to show how it wraps. It contains enough text to demonstrate multi-line behavior within the component boundaries. The dismiss button should remain aligned properly regardless of content length.</snice-message-strip>
 
 <h2>Short content</h2>
 <snice-message-strip variant="success">Done.</snice-message-strip>
 
 <h2>Programmatic show/hide</h2>
-<snice-message-strip id="ms-toggle" variant="warning" dismissable>Toggle this message strip with show() and hide().</snice-message-strip>
+<snice-message-strip id="ms-toggle" variant="warning" dismissible>Toggle this message strip with show() and hide().</snice-message-strip>
 <div class="row" style="margin-top:0.5rem;">
   <button onclick="document.getElementById('ms-toggle').show()" style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border,#ddd);border-radius:4px;cursor:pointer;">show()</button>
   <button onclick="document.getElementById('ms-toggle').hide()" style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border,#ddd);border-radius:4px;cursor:pointer;">hide()</button>
 </div>
 
 <h2>Rich slot content</h2>
-<snice-message-strip variant="info" dismissable>
+<snice-message-strip variant="info" dismissible>
   <strong>Update available:</strong> Version 2.0 is ready. <a href="#" style="color:inherit;text-decoration:underline;">Learn more</a>
 </snice-message-strip>
 

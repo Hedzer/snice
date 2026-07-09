@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const MessageStrip = createReactAdapter({
     tagName: 'snice-message-strip',
-    properties: ["variant", "dismissable", "icon"],
+    properties: ["variant", "dismissible", "icon"],
     events: { "dismiss": "onDismiss" },
     formAssociated: false
 });

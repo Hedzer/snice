@@ -9,7 +9,7 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
   variant: MessageStripVariant = 'info';
 
   @property({ type: Boolean })
-  dismissable = false;
+  dismissible = false;
 
   @property()
   icon = '';
@@ -41,7 +41,7 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
         <div class="message-strip-content" part="content">
           <slot></slot>
         </div>
-        <if ${this.dismissable}>
+        <if ${this.dismissible}>
           <button class="message-strip-dismiss"
                   type="button"
                   aria-label="Dismiss"

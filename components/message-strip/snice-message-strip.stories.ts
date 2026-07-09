@@ -5,7 +5,7 @@ type MessageStripVariant = 'info' | 'success' | 'warning' | 'danger';
 
 type Args = {
   variant?: MessageStripVariant;
-  dismissable?: boolean;
+  dismissible?: boolean;
   icon?: string;
   message?: string;
 };
@@ -36,7 +36,7 @@ const meta: Meta<Args> = {
   tags: ['autodocs'],
   argTypes: {
     variant:    { control: 'select', options: VARIANTS },
-    dismissable:{ control: 'boolean' },
+    dismissible:{ control: 'boolean' },
     icon:       { control: 'text' },
     message:    { control: 'text' },
   },
@@ -45,7 +45,7 @@ const meta: Meta<Args> = {
     el.style.cssText = 'display:block;max-width:600px;';
     if (args.variant !== undefined) el.setAttribute('variant', args.variant);
     if (args.icon    !== undefined) el.setAttribute('icon', args.icon);
-    if (args.dismissable) el.toggleAttribute('dismissable', true);
+    if (args.dismissible) el.toggleAttribute('dismissible', true);
     el.textContent = args.message ?? 'This is a message strip.';
     return el;
   },
@@ -86,19 +86,19 @@ export const AllVariants: Story = {
   ),
 };
 
-// h2: Dismissable: true
-export const DismissableTrue: Story = {
+// h2: Dismissible: true
+export const DismissibleTrue: Story = {
   render: () => col(
-    makeStrip('Dismissable info message. Click X to close.', { variant: 'info',    dismissable: true }),
-    makeStrip('Dismissable success message.',                 { variant: 'success', dismissable: true }),
-    makeStrip('Dismissable warning message.',                 { variant: 'warning', dismissable: true }),
-    makeStrip('Dismissable danger message.',                  { variant: 'danger',  dismissable: true }),
+    makeStrip('Dismissible info message. Click X to close.', { variant: 'info',    dismissible: true }),
+    makeStrip('Dismissible success message.',                 { variant: 'success', dismissible: true }),
+    makeStrip('Dismissible warning message.',                 { variant: 'warning', dismissible: true }),
+    makeStrip('Dismissible danger message.',                  { variant: 'danger',  dismissible: true }),
   ),
 };
 
-// h2: Dismissable: false (default)
-export const DismissableFalse: Story = {
-  render: () => makeStrip('Non-dismissable. No close button.', { variant: 'info' }),
+// h2: Dismissible: false (default)
+export const DismissibleFalse: Story = {
+  render: () => makeStrip('Non-dismissible. No close button.', { variant: 'info' }),
 };
 
 // h2: Custom icon (emoji)
@@ -147,29 +147,29 @@ export const EmptyIconDefaultIconPerVariant: Story = {
   ),
 };
 
-// h2: Variant x Dismissable matrix
-export const VariantXDismissableMatrix: Story = {
+// h2: Variant x Dismissible matrix
+export const VariantXDismissibleMatrix: Story = {
   render: () => col(
-    makeStrip('Info + Dismissable',    { variant: 'info',    dismissable: true }),
-    makeStrip('Success + Dismissable', { variant: 'success', dismissable: true }),
-    makeStrip('Warning + Dismissable', { variant: 'warning', dismissable: true }),
-    makeStrip('Danger + Dismissable',  { variant: 'danger',  dismissable: true }),
+    makeStrip('Info + Dismissible',    { variant: 'info',    dismissible: true }),
+    makeStrip('Success + Dismissible', { variant: 'success', dismissible: true }),
+    makeStrip('Warning + Dismissible', { variant: 'warning', dismissible: true }),
+    makeStrip('Danger + Dismissible',  { variant: 'danger',  dismissible: true }),
   ),
 };
 
-// h2: Variant x Custom icon x Dismissable
-export const VariantXCustomIconXDismissable: Story = {
+// h2: Variant x Custom icon x Dismissible
+export const VariantXCustomIconXDismissible: Story = {
   render: () => col(
-    makeStrip('Info + Custom icon + Dismissable',   { variant: 'info',   icon: '📧', dismissable: true }),
-    makeStrip('Danger + Custom icon + Dismissable', { variant: 'danger', icon: '⛔', dismissable: true }),
+    makeStrip('Info + Custom icon + Dismissible',   { variant: 'info',   icon: '📧', dismissible: true }),
+    makeStrip('Danger + Custom icon + Dismissible', { variant: 'danger', icon: '⛔', dismissible: true }),
   ),
 };
 
-// h2: Variant x No icon x Dismissable
-export const VariantXNoIconXDismissable: Story = {
+// h2: Variant x No icon x Dismissible
+export const VariantXNoIconXDismissible: Story = {
   render: () => col(
-    makeStrip('Info + No icon + Dismissable',    { variant: 'info',    icon: 'none', dismissable: true }),
-    makeStrip('Warning + No icon + Dismissable', { variant: 'warning', icon: 'none', dismissable: true }),
+    makeStrip('Info + No icon + Dismissible',    { variant: 'info',    icon: 'none', dismissible: true }),
+    makeStrip('Warning + No icon + Dismissible', { variant: 'warning', icon: 'none', dismissible: true }),
   ),
 };
 
@@ -177,7 +177,7 @@ export const VariantXNoIconXDismissable: Story = {
 export const LongContent: Story = {
   render: () => makeStrip(
     'This is a message strip with much longer content to show how it wraps. It contains enough text to demonstrate multi-line behavior within the component boundaries. The dismiss button should remain aligned properly regardless of content length.',
-    { variant: 'info', dismissable: true },
+    { variant: 'info', dismissible: true },
   ),
 };
 
@@ -191,7 +191,7 @@ export const ProgrammaticShowHide: Story = {
   render: () => {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;max-width:600px;';
-    const strip = makeStrip('Toggle this message strip with show() and hide().', { variant: 'warning', dismissable: true });
+    const strip = makeStrip('Toggle this message strip with show() and hide().', { variant: 'warning', dismissible: true });
     strip.id = 'ms-story-toggle';
     wrap.appendChild(strip);
 
@@ -218,7 +218,7 @@ export const RichSlotContent: Story = {
     const el = document.createElement('snice-message-strip');
     el.style.cssText = 'display:block;max-width:600px;';
     el.setAttribute('variant', 'info');
-    el.toggleAttribute('dismissable', true);
+    el.toggleAttribute('dismissible', true);
     const strong = document.createElement('strong');
     strong.textContent = 'Update available:';
     el.appendChild(strong);
@@ -328,22 +328,22 @@ export const CSSPartsStyling: Story = {
       return item;
     };
 
-    const def = makeStrip('Default message strip — no part overrides applied.', { variant: 'info', dismissable: true });
+    const def = makeStrip('Default message strip — no part overrides applied.', { variant: 'info', dismissible: true });
     demo.appendChild(makeItem('default', def));
 
-    const icon = makeStrip('Custom ::part(icon) styling — rounded dark bubble.', { variant: 'info', dismissable: true });
+    const icon = makeStrip('Custom ::part(icon) styling — rounded dark bubble.', { variant: 'info', dismissible: true });
     icon.className = 'styled-icon';
     demo.appendChild(makeItem('::part(icon) — dark rounded bubble', icon));
 
-    const content = makeStrip('Custom ::part(content) styling — monospace success theme.', { variant: 'success', dismissable: true });
+    const content = makeStrip('Custom ::part(content) styling — monospace success theme.', { variant: 'success', dismissible: true });
     content.className = 'styled-content';
     demo.appendChild(makeItem('::part(content) — monospace green bg', content));
 
-    const dismiss = makeStrip('Custom ::part(dismiss) — bold red dismiss button with hover scale.', { variant: 'warning', dismissable: true });
+    const dismiss = makeStrip('Custom ::part(dismiss) — bold red dismiss button with hover scale.', { variant: 'warning', dismissible: true });
     dismiss.className = 'styled-dismiss';
     demo.appendChild(makeItem('::part(dismiss) — red circle with hover', dismiss));
 
-    const all = makeStrip('All three parts styled together for a coherent custom theme.', { variant: 'danger', dismissable: true });
+    const all = makeStrip('All three parts styled together for a coherent custom theme.', { variant: 'danger', dismissible: true });
     all.className = 'styled-all';
     demo.appendChild(makeItem('all parts combined', all));
 
