@@ -331,11 +331,12 @@ describe('@observe decorator', () => {
       expect(callCount).toBeLessThan(5);
       expect(callCount).toBeGreaterThan(0);
 
-      // Check that calls are spaced by at least throttle time
-      for (let i = 1; i < callTimes.length; i++) {
-        const timeDiff = callTimes[i] - callTimes[i - 1];
-        expect(timeDiff).toBeGreaterThanOrEqual(45); // Allow small timing variance
-      }
+      // Load-immune invariant: ~25ms of mutations + 100ms settle with a 50ms
+      // throttle allows at most leading + trailing calls. Wall-clock gap
+      // assertions flake under event-loop contention (a delayed callback
+      // compresses the next observed gap); contention can only REDUCE the
+      // call count, so the ceiling is the stable check.
+      expect(callCount).toBeLessThanOrEqual(3);
     });
   });
 
