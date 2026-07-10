@@ -109,6 +109,7 @@ export const ICONS = {
   'chevron-left':          CHEVRON_LEFT,
   'check':                 CHECK,
   'magnifying-glass':      MAGNIFYING_GLASS,
+  'search':                MAGNIFYING_GLASS, // common alias (table toolbar, inputs)
   'bars-3':                BARS_3,
   'photo':                 PHOTO,
   'ellipsis-horizontal':   ELLIPSIS_HORIZONTAL,

@@ -1,4 +1,5 @@
-import { html, TemplateResult } from 'snice';
+import { html, unsafeHTML, TemplateResult } from 'snice';
+import { ICONS } from './icons/index';
 
 /**
  * Detects icon type and returns appropriate template
@@ -49,6 +50,14 @@ export function renderIcon(icon: string, className = 'icon'): TemplateResult {
   // Covers: SVG, PNG, JPEG variants, GIF, WebP, AVIF, JPEG XL, ICO, BMP, TIFF, HEIC/HEIF, APNG
   if (/^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)(\?.*)?$/i.test(icon)) {
     return html`<img class="${className}" src="${icon}" alt="" part="icon" />`;
+  }
+
+  // Built-in SVG registry (components/icons) — named icons resolve here
+  // BEFORE the font-ligature fallback. Without this, names like 'search'
+  // render as literal text unless an external icon font is loaded.
+  const registered = (ICONS as Record<string, string>)[icon];
+  if (registered) {
+    return html`<span class="${className}" part="icon">${unsafeHTML(registered)}</span>`;
   }
 
   // Default: text content (emoji, font icon ligature names)
