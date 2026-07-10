@@ -177,3 +177,41 @@ d. **Sticky header** — primary path: `thead th` get `position: sticky; top: 0`
   keyboard/virtualizer seam and MUST follow 1/4).
 - Full `npm test` + commit between tasks is the coordinator's job.
 - Each agent reads: `.ai/coding-standards.md`, this spec, parent design spec.
+
+## Task 5 — real-browser e2e findings (added 2026-07-10; dispatch after Task 3)
+
+Found by driving Chrome against localhost:5566 full-showcase + dynamically
+created tables. happy-dom cannot reproduce these; fixes must be verified in
+the real browser by the coordinator.
+
+**5a. Keyboard listener never binds for dynamic tables.**
+`table-keyboard.ts:47-56` attach() binds keydown to `getTable()` (the inner
+<table>) ONCE at @ready via initializeModules. If data/columns arrive after
+ready (every real app), the inner table doesn't exist yet — attached stays
+false silently — or the element is later rebuilt and the listener is lost.
+Repro: create snice-table, await ready, setColumns/setData, dispatch
+ArrowDown/Ctrl+End at host/frame/table — no focus marker, no scroll.
+Fix direction: delegate keydown at the shadow-root or host level (survives
+table rebuilds), or re-attach after every renderHeader/renderBody structural
+build; roving tabindex/role=grid must also be (re)applied then. Keep the
+Task 2 getter-bounds design.
+Tests: happy-dom versions of the repro (attach-after-ready, re-render, then
+keydown produces focus movement) + coordinator re-runs the browser repro.
+
+**5b. `virtualize` set as a property post-ready renders an EMPTY table.**
+Repro: create table, await ready, setColumns, `v.virtualize = true`,
+setData(1000) → tbody has 0 rows (not even the non-virtual fallback);
+virtualizer.isEnabled() false while this.virtualize true. As an ATTRIBUTE
+before append it works (11 windowed rows + spacer). The renderBody branch
+`this.virtualize && this.virtualizer.isEnabled()` diverging from enablement
+state produces the empty render.
+Fix direction: make renderBody treat "virtualize requested but virtualizer
+not yet enabled" as: enable it (setup scroll listener + measurements) then
+render windowed; never fall through to nothing. (Full controlled-prop
+reactivity is Phase 2 C2 — this task only kills the empty-table state.)
+Tests: happy-dom (property-after-ready renders rows; count bounded when
+enabled) + coordinator browser repro.
+
+**5c. (Info) dev server serves stale `dist/` for engine core** — rebuild
+`npm run build:core` before browser verification sessions, or error texts
+etc. lag the source.
