@@ -37,7 +37,7 @@
 }
 
 .action-button:hover {
-  background: var(--snice-color-text, rgb(23 23 23 / 0.05));
+  background: var(--snice-color-surface-hover, rgb(243 244 246));
 }
 
 .action-button:focus-visible {

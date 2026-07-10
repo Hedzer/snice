@@ -138,6 +138,10 @@ export class SniceTable extends HTMLElement {
   @property({ type: Boolean,  attribute: 'loading' })
   loading: boolean = false;
 
+  // Set when a remote-mode load fails; cleared on the next successful load.
+  // Not a @property — renderBody() reads it directly, no attribute needed.
+  private loadError: string | null = null;
+
   @property({ type: Boolean, attribute: 'virtualize' })
   virtualize = false;
 
@@ -245,6 +249,8 @@ export class SniceTable extends HTMLElement {
       if (response.totalItems !== undefined) {
         this.totalItems = response.totalItems;
       }
+      this.loadError = null;
+      this.classList.remove('table--error');
       this.loading = false;
       // Wait for next frame to ensure DOM is updated
       await new Promise(resolve => requestAnimationFrame(resolve));
@@ -252,7 +258,13 @@ export class SniceTable extends HTMLElement {
       return response;
     } catch (error) {
       console.error('Error loading table data:', error);
+      this.loadError = error instanceof Error ? error.message : String(error);
+      this.classList.add('table--error');
+      this.dispatchLoadError(error);
       this.loading = false;
+      // Wait for next frame to ensure DOM is updated
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      this.renderBody();
     }
   }
 
@@ -432,6 +444,20 @@ export class SniceTable extends HTMLElement {
        * for cross-component visual consistency. */
       th.sortable:hover {
         background-color: var(--snice-color-surface-hover, rgb(243 244 246));
+      }
+
+      /* Sticky header (Task 4d) — thead cells stick to .table-frame's
+         scroll-top edge. z-index sits above tbody cells (plain cells are
+         unpositioned; pinned body td gets inline zIndex '1' in createRow) and
+         at the pinned-header corner's own inline zIndex '2' (renderHeader),
+         so a cell that is both pinned AND in the header still wins on
+         horizontal scroll. Background matches the existing th background so
+         rows never bleed through while scrolling underneath. */
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: var(--snice-color-surface-container-low, rgb(245 245 245));
       }
 
       /* Row styling */
@@ -713,6 +739,20 @@ export class SniceTable extends HTMLElement {
         text-align: center;
         padding: var(--snice-spacing-lg, 1.5rem);
         color: var(--snice-color-text-secondary, rgb(82 82 82));
+      }
+
+      /* Remote-mode load error (Task 4c) — informed by the dead
+         components/table/snice-table.css .table--error design. */
+      :host(.table--error) .table-frame {
+        border-color: var(--snice-color-danger, rgb(220 38 38));
+      }
+
+      .table-error-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--snice-spacing-2xs, 0.25rem);
+        color: var(--snice-color-danger, rgb(220 38 38));
       }
 
       /* Pagination */
@@ -1549,7 +1589,11 @@ export class SniceTable extends HTMLElement {
           }
         });
         th.appendChild(handle);
-        th.style.position = 'relative';
+        // No inline position:relative here — inline styles outrank the
+        // stylesheet and would stomp the sticky header (thead th) and
+        // pinned-column sticky positioning. `position: sticky` is itself a
+        // positioned ancestor, so the absolutely-positioned resize handle
+        // anchors correctly without it.
       }
 
       // Column menu (right-click)
@@ -1701,6 +1745,20 @@ export class SniceTable extends HTMLElement {
         td.colSpan = colSpan;
         td.className = 'no-data';
         td.innerHTML = '<snice-progress variant="circular" indeterminate size="small"></snice-progress>';
+        tr.appendChild(td);
+        this.tbody.appendChild(tr);
+        return;
+      } else if (this.loadError) {
+        // Show error state — surfaces a failed remote load instead of
+        // silently falling through to the generic "No data" empty state.
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = colSpan;
+        td.className = 'no-data';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'table-error-message';
+        errorDiv.textContent = `⚠️ ${this.loadError}`;
+        td.appendChild(errorDiv);
         tr.appendChild(td);
         this.tbody.appendChild(tr);
         return;
@@ -2203,9 +2261,7 @@ export class SniceTable extends HTMLElement {
 
       // Handle clickable row event
       if (this.clickable) {
-        this.dispatchEvent(new CustomEvent('row-clicked', {
-          detail: { rowData, rowIndex }
-        }));
+        this.dispatchRowClicked(rowData, rowIndex);
       }
     }
   }
@@ -2395,6 +2451,16 @@ export class SniceTable extends HTMLElement {
       rowIndex,
       selected
     };
+  }
+
+  @dispatch('row-clicked', { bubbles: true, composed: true })
+  private dispatchRowClicked(rowData: any, rowIndex: number) {
+    return { rowData, rowIndex };
+  }
+
+  @dispatch('table-load-error', { bubbles: true, composed: true })
+  private dispatchLoadError(error: unknown) {
+    return { error };
   }
 
   @dispatch('table-select-all-changed', { bubbles: true, composed: true })
