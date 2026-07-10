@@ -1719,10 +1719,12 @@ export class SniceTable extends HTMLElement {
       this.columnManager.initialize(this.columns, this);
     }
 
-    // Virtualized rendering: delegate to virtualizer
+    // Virtualized rendering: delegate to virtualizer. Total row count comes
+    // from the feature-aware model (flattened tree rows when tree data is on),
+    // NOT the raw filtered data — otherwise the virtualizer windows the wrong
+    // dataset and expand/collapse silently no-ops.
     if (this.virtualize && this.virtualizer.isEnabled()) {
-      const filtered = this.getFilteredData();
-      this.virtualizer.setTotalRows(filtered.length);
+      this.virtualizer.setTotalRows(this.getVirtualRows().length);
       this.virtualizer.refresh();
 
       // Still render pagination
@@ -1803,12 +1805,7 @@ export class SniceTable extends HTMLElement {
     const totalColSpan = this.columns.length + extraCols;
 
     // Pinned top rows
-    for (const row of this.pinnedTopRows) {
-      const tr = this.createRow(row, -1);
-      tr.classList.add('pinned-row', 'pinned-row--top');
-      // pinned row bg handled by CSS class
-      fragment.appendChild(tr);
-    }
+    fragment.appendChild(this.renderPinnedRows(this.pinnedTopRows, 'top'));
 
     // Tree data mode
     if (this.treeData.isEnabled()) {
@@ -1832,12 +1829,7 @@ export class SniceTable extends HTMLElement {
     }
 
     // Pinned bottom rows
-    for (const row of this.pinnedBottomRows) {
-      const tr = this.createRow(row, -1);
-      tr.classList.add('pinned-row', 'pinned-row--bottom');
-      // pinned row bg handled by CSS class
-      fragment.appendChild(tr);
-    }
+    fragment.appendChild(this.renderPinnedRows(this.pinnedBottomRows, 'bottom'));
 
     this.tbody.appendChild(fragment);
 
@@ -2555,22 +2547,68 @@ export class SniceTable extends HTMLElement {
     this.virtualizer.attach({
       rowHeight: this.rowHeight,
       bufferPx: this.virtualBuffer,
-      totalRows: this.getFilteredData().length,
+      totalRows: this.getVirtualRows().length,
       scrollContainer,
       renderRange: (start, end) => this.renderRowRange(start, end),
+      // Pinned rows live outside the windowed range so they are always present,
+      // exactly like the non-virtual path (renderBody).
+      renderPinnedTop: () => this.renderPinnedRows(this.pinnedTopRows, 'top'),
+      renderPinnedBottom: () => this.renderPinnedRows(this.pinnedBottomRows, 'bottom'),
     });
+  }
+
+  /**
+   * The feature-aware row list the virtualizer windows over. In tree-data mode
+   * this is the FLATTENED visible tree (so expand/collapse works while
+   * virtualized); otherwise it is the filtered data. Each descriptor carries
+   * the logical index used for `data-index`, selection, and detail lookups.
+   */
+  private getVirtualRows(): Array<{ data: any; index: number; treeRow?: TreeRow }> {
+    const filtered = this.getFilteredData();
+    if (this.treeData.isEnabled()) {
+      return this.treeData
+        .processData(filtered)
+        .map((treeRow, i) => ({ data: treeRow.data, index: i, treeRow }));
+    }
+    return filtered.map((data, i) => ({ data, index: i }));
   }
 
   private renderRowRange(startIndex: number, endIndex: number): DocumentFragment {
     const fragment = document.createDocumentFragment();
-    const displayData = this.getFilteredData();
+    const rows = this.getVirtualRows();
 
-    for (let i = startIndex; i < endIndex && i < displayData.length; i++) {
-      const rowData = displayData[i];
-      const tr = this.createRow(rowData, i);
-      fragment.appendChild(tr);
+    const extraCols =
+      (this.selectable ? 1 : 0) +
+      (this.masterDetail.isEnabled() ? 1 : 0) +
+      (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
+    const totalColSpan = this.columns.length + extraCols;
+
+    for (let i = startIndex; i < endIndex && i < rows.length; i++) {
+      const { data, index, treeRow } = rows[i];
+      fragment.appendChild(this.createRow(data, index, treeRow));
+
+      // Master-detail: render the expanded detail row in-window. The detail
+      // <tr> is an extra row the fixed-height spacer math does not account for,
+      // so spacer heights are approximate around expanded rows — acceptable for
+      // v1; exact variable-height support is Phase 3. Silent dropping was the
+      // bug. Tree rows never carry detail panels, so skip them.
+      if (!treeRow && this.masterDetail.isEnabled() && this.masterDetail.isExpanded(index)) {
+        const detailRow = this.masterDetail.createDetailRow(data, index, totalColSpan);
+        if (detailRow) fragment.appendChild(detailRow);
+      }
     }
 
+    return fragment;
+  }
+
+  /** Build a fragment of pinned rows for the given position (top/bottom). */
+  private renderPinnedRows(rows: any[], position: 'top' | 'bottom'): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+    for (const row of rows) {
+      const tr = this.createRow(row, -1);
+      tr.classList.add('pinned-row', position === 'top' ? 'pinned-row--top' : 'pinned-row--bottom');
+      fragment.appendChild(tr);
+    }
     return fragment;
   }
 

@@ -15,6 +15,14 @@ export interface VirtualizerOptions {
   scrollContainer: HTMLElement;
   /** Callback to render a range of rows */
   renderRange: (startIndex: number, endIndex: number) => DocumentFragment;
+  /**
+   * Optional: render pinned-top rows. These live OUTSIDE the windowed range
+   * (before the top spacer) so they are always present regardless of scroll
+   * position — the same guarantee the non-virtual path provides.
+   */
+  renderPinnedTop?: () => DocumentFragment;
+  /** Optional: render pinned-bottom rows (after the bottom spacer). */
+  renderPinnedBottom?: () => DocumentFragment;
 }
 
 export class TableVirtualizer {
@@ -115,6 +123,10 @@ export class TableVirtualizer {
     const tbody = this.options.scrollContainer.querySelector('tbody');
     if (tbody) {
       tbody.innerHTML = '';
+      // Pinned-top rows render outside (above) the windowed range so they are
+      // always present. Rebuilt every window recompute since tbody is wiped.
+      const pinnedTop = this.options.renderPinnedTop?.();
+      if (pinnedTop) tbody.appendChild(pinnedTop);
       if (topHeight > 0) {
         const topTd = document.createElement('td');
         topTd.colSpan = 999;
@@ -136,6 +148,9 @@ export class TableVirtualizer {
         this.bottomSpacer.appendChild(bottomTd);
         tbody.appendChild(this.bottomSpacer);
       }
+      // Pinned-bottom rows render outside (below) the windowed range.
+      const pinnedBottom = this.options.renderPinnedBottom?.();
+      if (pinnedBottom) tbody.appendChild(pinnedBottom);
     }
   }
 
