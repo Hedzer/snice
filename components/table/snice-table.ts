@@ -112,8 +112,13 @@ export class SniceTable extends HTMLElement {
   @property({ type: Number,  attribute: 'search-debounce' })
   searchDebounce = 500;
 
-  // Plain properties - no reflection to attributes
+  // C1: reactive, no attribute reflection. A post-mount assignment (or the
+  // setData/setColumns aliases) re-renders through the microtask-coalesced
+  // queue — see handleColumnsAssignment / handleDataAssignment.
+  @property({ attribute: false })
   columns: any[] = [];
+
+  @property({ attribute: false })
   data: any[] = [];
 
   /**
@@ -128,20 +133,23 @@ export class SniceTable extends HTMLElement {
    */
   @property() mode: 'local' | 'remote' = 'local';
 
-  setData(data: any[]) {
-    this.unsortedData = [...data];
-    this.data = data;
-    this.rebuildRowIndex();
-    this.render();
-  }
-
+  // C1: setColumns is a thin alias over the reactive assignment — its @watch
+  // resyncs the column model and coalesces the header+body render.
   setColumns(columns: any[]) {
     this.columns = columns;
-    // Task B: a new column set can change cell types/formatting without changing
-    // column keys, which the structural signature keys on. Drop the recycler map
-    // so every row rebuilds against the new definitions.
-    this.renderedRows = new Map();
-    this.render();
+  }
+
+  // C1: setData is the IMPERATIVE bulk-load path. It resyncs the data model
+  // (snapshot + row-index map) exactly like the reactive `table.data =` setter,
+  // but does NOT eagerly re-render — the established API fills the body via an
+  // explicit render (or the coalesced render from a paired setColumns). Keeping
+  // the eager render off this path avoids re-warming the filtered snapshot the
+  // caller may want left cold. The reactive PROPERTY (`table.data = rows`) is
+  // the auto-rendering entry point.
+  setData(data: any[]) {
+    this.settingDataImperative = true;
+    this.data = data;
+    this.settingDataImperative = false;
   }
 
   @property({ type: Array, attribute: false })
@@ -327,6 +335,40 @@ export class SniceTable extends HTMLElement {
   // (moved when order changes) instead of reconstructing it and every cell.
   // Rebuilt fresh on every render pass, so switching render modes is safe.
   private renderedRows = new Map<unknown, { el: HTMLElement; sig: string }>();
+
+  // C1: brackets the internal `this.data` reassignment inside sortLocalData so
+  // the data @watch treats a re-sorted view of the same rows as NOT a new
+  // dataset — it must not refresh the unsortedData snapshot or double-render.
+  private settingSortedData = false;
+
+  // C1: set while the imperative setData() runs so the data @watch resyncs the
+  // model but skips the auto-render (the caller drives the body fill).
+  private settingDataImperative = false;
+
+  // C1/C2: microtask-coalesced render queue. Reactive assignments schedule a
+  // render here instead of calling renderHeader/renderBody synchronously —
+  // MANDATORY, because happy-dom crashes constructing cell elements inside a
+  // property-setter stack. A burst of assignments in one tick flushes once.
+  private renderQueued = false;
+  private pendingHeaderRender = false;
+  private pendingBodyRender = false;
+
+  private scheduleRender(what: 'header' | 'body' | 'both') {
+    if (what === 'header' || what === 'both') this.pendingHeaderRender = true;
+    if (what === 'body' || what === 'both') this.pendingBodyRender = true;
+    if (this.renderQueued) return;
+
+    this.renderQueued = true;
+    queueMicrotask(() => {
+      this.renderQueued = false;
+      const doHeader = this.pendingHeaderRender;
+      const doBody = this.pendingBodyRender;
+      this.pendingHeaderRender = false;
+      this.pendingBodyRender = false;
+      if (doHeader) this.renderHeader();
+      if (doBody) this.renderBody();
+    });
+  }
 
 
   private debouncedDataRequest() {
@@ -1523,9 +1565,30 @@ export class SniceTable extends HTMLElement {
     this.render(); // Re-render both header and body for checkbox columns
   }
 
-  // NOTE: `columns` and `data` are plain fields (not @property), so watching
-  // them never fired — the old @watch('columns') / @watch('data', ...) here
-  // were dead code. Rendering happens via setColumns()/setData() manual calls.
+  // C1: reactive columns. A new column set can change cell types/formatting
+  // without changing keys (which the row signature keys on), so drop the
+  // recycler map and resync the column model before the header renders. All DOM
+  // construction is deferred to the coalescing queue (setter-stack landmine).
+  @watch('columns', { immediate: false })
+  handleColumnsAssignment() {
+    this.renderedRows = new Map();
+    if (this.columns.length > 0) this.columnManager.initialize(this.columns, this);
+    this.scheduleRender('both');
+  }
+
+  // C1: reactive data. `table.data = rows` refreshes the unsortedData snapshot
+  // and the row-index map, then renders the body. The internal sort path
+  // (sortLocalData) reassigns this.data with a re-sorted view of the SAME rows
+  // and owns its own snapshot/render — settingSortedData tells us to skip.
+  @watch('data', { immediate: false })
+  handleDataAssignment() {
+    if (this.settingSortedData) return;
+    this.unsortedData = [...this.data];
+    this.rebuildRowIndex();
+    if (this.settingDataImperative) return; // imperative setData(): caller renders
+    this.scheduleRender('body');
+  }
+
   @watch('loading')
   handleDataChange() {
     this.renderBody();
@@ -1556,6 +1619,85 @@ export class SniceTable extends HTMLElement {
   @watch('searchable', 'filterable')
   handleControlsChange() {
     this.renderControls();
+  }
+
+  // ── C2: controlled-state props. Assigning any of these post-mount routes to
+  // the same effect its imperative setter produces, rendering through the
+  // coalescing queue. immediate:false so the initial value never kicks a render
+  // (the initial render is driven by the other immediate watchers).
+
+  // A controlled `currentSort` must actually re-sort (local) or re-request
+  // (remote) — the sibling handleSortChange only repaints the arrows.
+  @watch('currentSort', { immediate: false })
+  handleControlledSort() {
+    if (this.mode === 'remote') this.debouncedDataRequest();
+    else this.sortLocalData();
+  }
+
+  @watch('currentPage', { immediate: false })
+  handleCurrentPageChange() {
+    if (this.paginationMode === 'server' && this.mode === 'remote') this.debouncedDataRequest();
+    else this.scheduleRender('body');
+  }
+
+  @watch('pageSize', { immediate: false })
+  handlePageSizeChange() {
+    this.currentPage = 1;
+    if (this.paginationMode === 'server' && this.mode === 'remote') this.debouncedDataRequest();
+    else this.scheduleRender('body');
+  }
+
+  @watch('density', { immediate: false })
+  handleDensityChange() {
+    // The density attribute reflects automatically (drives the CSS); the body
+    // rebuilds because density is part of the row signature.
+    this.scheduleRender('body');
+  }
+
+  @watch('editable', { immediate: false })
+  handleEditableChange() {
+    if (this.editable) this.setupEditor();
+    this.scheduleRender('body');
+  }
+
+  @watch('editMode', { immediate: false })
+  handleEditModeChange() {
+    if (this.editable) this.editor.setEditMode(this.editMode);
+    this.scheduleRender('body');
+  }
+
+  @watch('virtualize', { immediate: false })
+  handleVirtualizeChange() {
+    // renderBody self-heals virtualization (enables the virtualizer when
+    // requested); turning it off detaches so the normal path takes over.
+    if (!this.virtualize) this.virtualizer.detach();
+    this.scheduleRender('body');
+  }
+
+  @watch('rowHeight', { immediate: false })
+  handleRowHeightChange() {
+    this.scheduleRender('body');
+  }
+
+  @watch('columnResize', { immediate: false })
+  handleColumnResizeChange() {
+    this.scheduleRender('header');
+  }
+
+  @watch('headerFilters', { immediate: false })
+  handleHeaderFiltersChange() {
+    this.scheduleRender('header');
+  }
+
+  @watch('quickFilter', { immediate: false })
+  handleQuickFilterChange() {
+    this.scheduleRender('body');
+  }
+
+  @watch('columnMenu', { immediate: false })
+  handleColumnMenuChange() {
+    if (this.columnMenu) this.initColumnMenu();
+    this.scheduleRender('header');
   }
 
   renderHeader() {
@@ -2723,6 +2865,9 @@ export class SniceTable extends HTMLElement {
     if (!this.unsortedData.length) {
       this.unsortedData = [...this.data];
     }
+    // C1: bracket the reassignment so the data @watch does NOT treat this
+    // re-sorted view as a new dataset (would clobber unsortedData + double-render).
+    this.settingSortedData = true;
     if (this.currentSort.length === 0) {
       this.data = [...this.unsortedData];
     } else {
@@ -2745,10 +2890,13 @@ export class SniceTable extends HTMLElement {
         return 0;
       });
     }
+    this.settingSortedData = false;
     // Sort replaced this.data (new order + reference) — resync the row-index
-    // map and drop the stale filtered snapshot before re-rendering.
+    // map and drop the stale filtered snapshot before re-rendering. Render is
+    // queued (not synchronous): sortLocalData is reachable from the currentSort
+    // setter stack via handleControlledSort, and cells must never construct there.
     this.rebuildRowIndex();
-    this.renderBody();
+    this.scheduleRender('body');
   }
 
   @dispatch('table-row-selection-changed', { bubbles: true, composed: true })
