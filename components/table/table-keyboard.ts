@@ -14,10 +14,20 @@ export interface KeyboardOptions {
   onSelectAll?: () => void;
   /** Tab navigation mode */
   tabMode: 'none' | 'content' | 'header' | 'all';
-  /** Total data rows (for virtualized tables) */
-  totalRows: number;
-  /** Total columns */
-  totalColumns: number;
+  /**
+   * Total data rows. A getter callback keeps bounds live as the dataset is
+   * loaded / filtered / paginated; a plain number is accepted for callers that
+   * re-attach on every change.
+   */
+  totalRows: number | (() => number);
+  /** Total columns. Getter callback or plain number — see `totalRows`. */
+  totalColumns: number | (() => number);
+  /**
+   * Bring a logical (data-index) row into the rendered window before focus
+   * lands on it. Under virtualization only the current window is in the DOM;
+   * the host scrolls the row's range into view and renders it synchronously.
+   */
+  ensureRowVisible?: (rowIndex: number) => void;
   /** Whether editing is active */
   isEditing: () => boolean;
 }
@@ -58,13 +68,33 @@ export class TableKeyboard {
     return this.options.shadowRoot?.querySelector('table') ?? null;
   }
 
+  /** Resolve a bound that may be a live getter or a static number. */
+  private resolveBound(v: number | (() => number) | undefined): number {
+    return typeof v === 'function' ? v() : (v ?? 0);
+  }
+
+  private get totalRowCount(): number {
+    return this.resolveBound(this.options.totalRows);
+  }
+
+  private get totalColCount(): number {
+    return this.resolveBound(this.options.totalColumns);
+  }
+
+  /** Resolve a body row by its logical data-index (not its DOM position). */
+  private getBodyRow(index: number): HTMLElement | null {
+    const table = this.getTable();
+    if (!table) return null;
+    return table.querySelector(`tbody tr[data-index="${index}"]`);
+  }
+
   /** Apply ARIA attributes to the grid */
   applyARIA() {
     const table = this.getTable();
     if (!table) return;
 
-    table.setAttribute('aria-rowcount', String(this.options.totalRows + 1)); // +1 for header
-    table.setAttribute('aria-colcount', String(this.options.totalColumns));
+    table.setAttribute('aria-rowcount', String(this.totalRowCount + 1)); // +1 for header
+    table.setAttribute('aria-colcount', String(this.totalColCount));
 
     // Header row
     const headerRow = table.querySelector('thead tr');
@@ -140,8 +170,15 @@ export class TableKeyboard {
       const ths = table.querySelectorAll('thead th');
       targetCell = ths[this.focusedCol] as HTMLElement;
     } else {
-      const rows = table.querySelectorAll('tbody tr:not(.virtual-spacer)');
-      const row = rows[this.focusedRow] as HTMLElement;
+      // Resolve by logical data-index, not DOM position: under virtualization
+      // only the current window is in the DOM.
+      let row = this.getBodyRow(this.focusedRow);
+      if (!row) {
+        // Outside the rendered window — ask the host to scroll it into view,
+        // then look again.
+        this.options.ensureRowVisible?.(this.focusedRow);
+        row = this.getBodyRow(this.focusedRow);
+      }
       if (row) {
         const cells = row.querySelectorAll('td');
         targetCell = cells[this.focusedCol] as HTMLElement;
@@ -158,7 +195,8 @@ export class TableKeyboard {
     // Don't handle when editing
     if (this.options.isEditing()) return;
 
-    const { totalRows, totalColumns } = this.options;
+    const totalRows = this.totalRowCount;
+    const totalColumns = this.totalColCount;
 
     switch (e.key) {
       case 'ArrowDown':
@@ -237,9 +275,7 @@ export class TableKeyboard {
       case 'Enter':
         if (this.focusedRow >= 0 && this.focusedCol >= 0) {
           e.preventDefault();
-          const table = this.getTable();
-          const rows = table?.querySelectorAll('tbody tr:not(.virtual-spacer)');
-          const row = rows?.[this.focusedRow];
+          const row = this.getBodyRow(this.focusedRow);
           const cells = row?.querySelectorAll('td');
           const cell = cells?.[this.focusedCol];
           const columnKey = cell?.getAttribute('data-key') || '';
@@ -266,8 +302,13 @@ export class TableKeyboard {
 
     const focusedEl = table.querySelector('[data-grid-focus]') as HTMLElement;
     if (focusedEl) {
-      focusedEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      focusedEl.focus({ preventScroll: true });
+      // Guard: layout APIs are not implemented in some non-browser DOMs.
+      if (typeof focusedEl.scrollIntoView === 'function') {
+        focusedEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+      if (typeof focusedEl.focus === 'function') {
+        focusedEl.focus({ preventScroll: true });
+      }
     }
   }
 

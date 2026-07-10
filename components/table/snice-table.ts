@@ -2514,10 +2514,13 @@ export class SniceTable extends HTMLElement {
     if (this.shadowRoot) {
       this.keyboard.attach({
         shadowRoot: this.shadowRoot,
-        totalRows: this.data.length,
-        totalColumns: this.columns.length,
+        // Live getters: bounds always reflect the current filtered dataset and
+        // column set, even after async setData/setColumns/filter/pagination.
+        totalRows: () => this.getFilteredData().length,
+        totalColumns: () => this.columns.length,
         tabMode: 'all',
         isEditing: () => this.editor.isEditing(),
+        ensureRowVisible: (rowIndex) => this.ensureRowRendered(rowIndex),
         onCellActivate: (row, col) => {
           if (this.editable) this.startEdit(row, col);
         },
@@ -2573,6 +2576,19 @@ export class SniceTable extends HTMLElement {
 
   scrollToRow(index: number) {
     this.virtualizer.scrollToRow(index);
+  }
+
+  /**
+   * Ensure the row at `rowIndex` (a logical/data index) is present in the DOM.
+   * Under virtualization only the current window is rendered, so keyboard focus
+   * moving to a row outside the window must scroll that row's range into view
+   * and render it synchronously before focus can land on it. No-op when the row
+   * is already rendered or virtualization is off.
+   */
+  private ensureRowRendered(rowIndex: number) {
+    if (!this.virtualize || !this.virtualizer.isEnabled()) return;
+    if (this.tbody?.querySelector(`tr[data-index="${rowIndex}"]`)) return;
+    this.virtualizer.scrollToIndex(rowIndex);
   }
 
   getScrollPosition() {

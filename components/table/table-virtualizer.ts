@@ -151,6 +151,18 @@ export class TableVirtualizer {
     this.options.scrollContainer.scrollTop = top;
   }
 
+  /**
+   * Scroll a logical row index into view AND synchronously render its range.
+   * Unlike `scrollToRow`, this does not rely on a scroll event (a programmatic
+   * scrollTop assignment does not fire one) — it forces the window recompute
+   * immediately so the row is in the DOM by the time the caller focuses it.
+   */
+  scrollToIndex(index: number) {
+    if (!this.options.scrollContainer) return;
+    this.options.scrollContainer.scrollTop = index * this.options.rowHeight;
+    this.refresh();
+  }
+
   /** Get current scroll position */
   getScrollPosition(): { top: number; left: number } {
     const el = this.options.scrollContainer;
