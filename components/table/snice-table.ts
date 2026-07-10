@@ -1734,6 +1734,9 @@ export class SniceTable extends HTMLElement {
       this.virtualizer.setTotalRows(this.getVirtualRows().length);
       this.virtualizer.refresh();
 
+      // Re-establish grid role + roving tabindex on the freshly windowed rows.
+      this.keyboard.refresh();
+
       // Still render pagination
       if (this.pagination) this.renderPagination();
       return;
@@ -1839,6 +1842,10 @@ export class SniceTable extends HTMLElement {
     fragment.appendChild(this.renderPinnedRows(this.pinnedBottomRows, 'bottom'));
 
     this.tbody.appendChild(fragment);
+
+    // Re-establish grid role + roving tabindex after the body was rebuilt
+    // (tbody.innerHTML was reset above, dropping any focus attributes).
+    this.keyboard.refresh();
 
     // Render pagination after body
     if (this.pagination) {

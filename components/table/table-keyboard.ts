@@ -46,22 +46,54 @@ export class TableKeyboard {
 
   attach(options: KeyboardOptions) {
     this.options = options;
-    const table = this.getTable();
-    if (table) {
-      table.setAttribute('role', 'grid');
-      table.setAttribute('tabindex', '0');
-      table.addEventListener('keydown', this.keyHandler);
-      this.attached = true;
-      this.applyARIA();
-    }
+    const root = options.shadowRoot;
+    if (!root) return;
+
+    // Delegate keydown at the shadow root — a stable ancestor that always
+    // exists (even before the first render) and survives every <table> rebuild.
+    // Every keydown inside the shadow tree bubbles here, so navigation works no
+    // matter when data/columns arrive or how often renderHeader/renderBody
+    // replace the table structure. Binding to the inner <table> instead meant a
+    // table built after @ready was never listened to, and a rebuilt table
+    // silently dropped the listener.
+    root.addEventListener('keydown', this.keyHandler);
+    this.attached = true;
+    this.syncGridRole();
+    this.applyARIA();
   }
 
   detach() {
-    const table = this.getTable();
-    if (table) {
-      table.removeEventListener('keydown', this.keyHandler);
-    }
+    this.options.shadowRoot?.removeEventListener('keydown', this.keyHandler);
     this.attached = false;
+  }
+
+  /**
+   * (Re)apply the grid identity to the current <table>: role=grid, a focusable
+   * tabindex, and live row/col counts. Cheap, idempotent, and safe to call
+   * before the table exists (no-op). A structural rebuild that swaps the
+   * <table> node drops these attributes, so they must be re-applied afterwards.
+   */
+  private syncGridRole() {
+    const table = this.getTable();
+    if (!table) return;
+
+    table.setAttribute('role', 'grid');
+    table.setAttribute('tabindex', '0');
+    table.setAttribute('aria-rowcount', String(this.totalRowCount + 1)); // +1 header
+    table.setAttribute('aria-colcount', String(this.totalColCount));
+  }
+
+  /**
+   * Host hook: called after renderHeader/renderBody rebuild the table. The
+   * delegated keydown listener lives on the shadow root so it survives on its
+   * own; this restores the grid role and the roving tabindex on the focused
+   * cell, both of which a wiped thead/tbody (or a swapped <table>) would lose.
+   */
+  refresh() {
+    if (!this.attached) return;
+
+    this.syncGridRole();
+    this.updateFocusIndicator();
   }
 
   private getTable(): HTMLElement | null {
