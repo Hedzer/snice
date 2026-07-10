@@ -35,13 +35,18 @@ export interface KeyboardOptions {
 export class TableKeyboard {
   private options: KeyboardOptions;
   private focusedRow = -1;   // -1 = header
+  /** True after the first real user keydown — no focus paint at rest. */
+  private hasUserInteracted = false;
   private focusedCol = 0;
   private keyHandler: (e: KeyboardEvent) => void;
   private attached = false;
 
   constructor() {
     this.options = {} as KeyboardOptions;
-    this.keyHandler = (e: KeyboardEvent) => this.handleKeyDown(e);
+    this.keyHandler = (e: KeyboardEvent) => {
+      this.hasUserInteracted = true;
+      this.handleKeyDown(e);
+    };
   }
 
   attach(options: KeyboardOptions) {
@@ -186,6 +191,11 @@ export class TableKeyboard {
   }
 
   private updateFocusIndicator() {
+    // A grid that was never keyboard-focused must not wear focus styling —
+    // refresh() runs after every renderBody, and painting the default header
+    // position (focusedRow=-1) put a stuck blue ring on every table at rest.
+    if (!this.hasUserInteracted) return;
+
     const table = this.getTable();
     if (!table) return;
 

@@ -2244,7 +2244,13 @@ export class SniceTable extends HTMLElement {
     const sizeSelect = document.createElement('snice-select') as any;
     sizeSelect.size = 'small';
     sizeSelect.className = 'pagination__size-select';
-    for (const s of this.pageSizes) {
+    // Always include the CURRENT pageSize: when it isn't in pageSizes (e.g.
+    // pageSize=5 with the default list) no option matches the value and the
+    // select shows its placeholder instead of the active size.
+    const sizeOptions = this.pageSizes.includes(this.pageSize)
+      ? this.pageSizes
+      : [...this.pageSizes, this.pageSize].sort((a, b) => a - b);
+    for (const s of sizeOptions) {
       const opt = document.createElement('snice-option') as any;
       opt.setAttribute('value', String(s));
       opt.textContent = String(s);
