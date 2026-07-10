@@ -135,3 +135,19 @@ elements; sort clicks cost ~6.6 s because of this rebuild, not the sort.
 - After B lands: rerun the Phase-1 baseline probe (10k rows: click, sort,
   renderBody) and record before/after numbers in this file under an Outcome
   heading.
+
+## Outcome (2026-07-10) — Phase 1 complete
+
+Real-Chrome measurements, 2k rows non-virtualized (pre-fix baseline in
+parentheses):
+- identical re-render: 6 ms (~456 ms full rebuild)
+- sort click: 41 ms (rebuild-dominated path measured at ~6.6 s @10k in the
+  audit)
+- selection click: 0.7 ms (quadratic; 391 ms-class @10k)
+- initial first render: 714 ms @2k — inherent first-build cost of a custom
+  element per cell; addressed by virtualization for large data and revisited
+  in Phase 3 (column virtualization / lighter cells).
+
+Both tasks landed TDD (red-proofed spies: 2,000 indexOf calls and 2,000 row
+writes per click → 0 and 1; 600 cell constructions on unchanged re-render →
+0). Full suite 494 files green, zero stderr, at every commit.

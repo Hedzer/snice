@@ -47,6 +47,23 @@ import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup } from './table-column-manager';
 
+/**
+ * A single desired body row for the render-path reconciler (Task B). `key`
+ * identifies the row across renders (the row-object itself for data rows, a
+ * synthetic string for pinned / detail rows). `sig` captures everything about
+ * the row's DOM that a data-object move can't fix by re-stamping — when it is
+ * unchanged the existing element is reused. `alwaysRebuild` forces a fresh
+ * element (edit-state and detail rows). `restampIndex`, when present, updates
+ * the reused row's index-derived attributes after a reorder.
+ */
+interface RowEntry {
+  key: unknown;
+  sig: string;
+  create: () => HTMLElement;
+  alwaysRebuild?: boolean;
+  restampIndex?: number;
+}
+
 @element('snice-table')
 export class SniceTable extends HTMLElement {
 
@@ -120,6 +137,10 @@ export class SniceTable extends HTMLElement {
 
   setColumns(columns: any[]) {
     this.columns = columns;
+    // Task B: a new column set can change cell types/formatting without changing
+    // column keys, which the structural signature keys on. Drop the recycler map
+    // so every row rebuilds against the new definitions.
+    this.renderedRows = new Map();
     this.render();
   }
 
@@ -298,6 +319,14 @@ export class SniceTable extends HTMLElement {
   // applies if it is still the latest, so a slow earlier response can't clobber
   // a fast later one.
   private dataRequestSeq = 0;
+
+  // Task B: render-path recycling. Keyed by row-object identity (data rows) or a
+  // synthetic string key (pinned / detail rows). Maps a key to the <tr> element
+  // currently rendered for it plus the signature it was rendered with. On the
+  // next render, a key whose object and signature are unchanged reuses its <tr>
+  // (moved when order changes) instead of reconstructing it and every cell.
+  // Rebuilt fresh on every render pass, so switching render modes is safe.
+  private renderedRows = new Map<unknown, { el: HTMLElement; sig: string }>();
 
 
   private debouncedDataRequest() {
@@ -1375,6 +1404,10 @@ export class SniceTable extends HTMLElement {
       // Row identity is unchanged, so the index map stays valid — only the
       // filtered snapshot must be dropped.
       this.invalidateFilteredCache();
+      // Task B: the row object was mutated in place (same reference), so the
+      // reconciler would reuse its stale cell DOM. Drop its cached <tr> so the
+      // post-commit render rebuilds it with the new value.
+      if (row) this.invalidateRenderedRow(row);
     }) as EventListener);
 
     this.addEventListener('row-edit-commit', ((e: CustomEvent) => {
@@ -1791,9 +1824,13 @@ export class SniceTable extends HTMLElement {
       return;
     }
 
-    this.tbody.innerHTML = '';
-
     if (this.data.length === 0 && this.columns.length > 0) {
+      // Empty / loading / error states replace the body with a single message
+      // row. Reset the recycler map so a later data render starts from a clean
+      // slate (no stale reuse candidates pointing at removed rows).
+      this.tbody.innerHTML = '';
+      this.renderedRows = new Map();
+
       const toolCols = (this.selectable ? 1 : 0)
         + (this.masterDetail.isEnabled() ? 1 : 0)
         + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
@@ -1846,10 +1883,8 @@ export class SniceTable extends HTMLElement {
       }
     }
 
-    const fragment = document.createDocumentFragment();
-
-    // Apply client-side filters
-    let filteredData = this.getFilteredData();
+    // Apply client-side filters (cached snapshot — see getFilteredData).
+    const filteredData = this.getFilteredData();
 
     // Client-side pagination: slice data
     let displayData = filteredData;
@@ -1862,44 +1897,239 @@ export class SniceTable extends HTMLElement {
 
     const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
     const totalColSpan = this.columns.length + extraCols;
+    const structuralSig = this.computeStructuralSig();
 
-    // Pinned top rows
-    fragment.appendChild(this.renderPinnedRows(this.pinnedTopRows, 'top'));
+    // Task B: describe the desired body as an ordered list of keyed entries,
+    // then reconcile the tbody to match. Rows whose object + signature are
+    // unchanged are reused (moved on reorder); only new/changed rows construct
+    // fresh DOM. Replaces the old wipe-and-rebuild-everything path.
+    const entries: RowEntry[] = [];
 
-    // Tree data mode
+    // Pinned top rows — few, and rebuilt each pass under a positional key.
+    this.pinnedTopRows.forEach((row, i) => {
+      entries.push({
+        key: `__pinned_top_${i}`,
+        sig: 'pinned',
+        alwaysRebuild: true,
+        create: () => {
+          const tr = this.createRow(row, -1);
+          tr.classList.add('pinned-row', 'pinned-row--top');
+          return tr;
+        },
+      });
+    });
+
     if (this.treeData.isEnabled()) {
       const treeRows = this.treeData.processData(displayData);
       treeRows.forEach((treeRow, i) => {
         const index = startIndex + i;
-        fragment.appendChild(this.createRow(treeRow.data, index, treeRow));
+        const editing = this.isRowEditing(index);
+        entries.push({
+          key: treeRow.data,
+          // The edit marker makes the editing→display transition a signature
+          // change, so a row leaving edit state rebuilds (drops its editor DOM).
+          sig: this.rowSignature(treeRow.data, index, structuralSig, treeRow) + (editing ? '|edit' : ''),
+          alwaysRebuild: editing,
+          restampIndex: index,
+          create: () => this.createRow(treeRow.data, index, treeRow),
+        });
       });
     } else {
-      // Normal rows
       displayData.forEach((rowData, i) => {
         const index = startIndex + i;
-        fragment.appendChild(this.createRow(rowData, index));
+        const editing = this.isRowEditing(index);
+        entries.push({
+          key: rowData,
+          sig: this.rowSignature(rowData, index, structuralSig) + (editing ? '|edit' : ''),
+          alwaysRebuild: editing,
+          restampIndex: index,
+          create: () => this.createRow(rowData, index),
+        });
 
-        // Append detail row if expanded
+        // Detail row (master-detail): shape depends on state, always rebuilt.
         if (this.masterDetail.isEnabled() && this.masterDetail.isExpanded(index)) {
-          const detailRow = this.masterDetail.createDetailRow(rowData, index, totalColSpan);
-          if (detailRow) fragment.appendChild(detailRow);
+          entries.push({
+            key: `__detail_${index}`,
+            sig: 'detail',
+            alwaysRebuild: true,
+            create: () =>
+              this.masterDetail.createDetailRow(rowData, index, totalColSpan) ??
+              document.createElement('tr'),
+          });
         }
       });
     }
 
     // Pinned bottom rows
-    fragment.appendChild(this.renderPinnedRows(this.pinnedBottomRows, 'bottom'));
+    this.pinnedBottomRows.forEach((row, i) => {
+      entries.push({
+        key: `__pinned_bottom_${i}`,
+        sig: 'pinned',
+        alwaysRebuild: true,
+        create: () => {
+          const tr = this.createRow(row, -1);
+          tr.classList.add('pinned-row', 'pinned-row--bottom');
+          return tr;
+        },
+      });
+    });
 
-    this.tbody.appendChild(fragment);
+    this.reconcileRows(entries);
 
-    // Re-establish grid role + roving tabindex after the body was rebuilt
-    // (tbody.innerHTML was reset above, dropping any focus attributes).
+    // Re-establish grid role + roving tabindex after the body changed.
     this.keyboard.refresh();
 
     // Render pagination after body
     if (this.pagination) {
       this.renderPagination();
     }
+  }
+
+  // ── Task B: render-path reconciler ──────────────────────────────────────
+  //
+  // Reconcile the tbody's children to `entries` (an ordered list) while reusing
+  // existing <tr> elements keyed by identity. Mirrors the keyed-move algorithm
+  // in src/parts.ts `_reconcileKeyed`: drop departed rows first, then walk the
+  // survivors placing each desired row, moving out-of-position ones via a
+  // detach-into-fragment step (avoids the happy-dom stale-querySelectorAll bug
+  // that an in-place insertBefore move triggers). Stationary rows are never
+  // touched, so an unchanged re-render performs zero moves and constructs zero
+  // cells.
+  private reconcileRows(entries: RowEntry[]) {
+    const tbody = this.tbody;
+    if (!tbody) return;
+
+    const next = new Map<unknown, { el: HTMLElement; sig: string }>();
+    const desired: HTMLElement[] = [];
+    const used = new Set<HTMLElement>();
+
+    for (const entry of entries) {
+      const prev = this.renderedRows.get(entry.key);
+      let el: HTMLElement;
+
+      if (prev && !used.has(prev.el) && !entry.alwaysRebuild && prev.sig === entry.sig) {
+        // Reuse the existing element. A reorder may have changed its logical
+        // index without changing its signature — re-stamp index-derived DOM.
+        el = prev.el;
+        if (entry.restampIndex !== undefined) this.restampRowIndex(el, entry.restampIndex);
+      } else {
+        el = entry.create();
+      }
+
+      used.add(el);
+      desired.push(el);
+      // First occurrence wins on a duplicate key (matches rowIndexMap / _reconcileKeyed).
+      if (!next.has(entry.key)) next.set(entry.key, { el, sig: entry.sig });
+    }
+
+    // Remove any current child that is not part of the desired set (departed
+    // rows, plus a prior empty/loading/error message row).
+    const desiredSet = new Set(desired);
+    for (const child of Array.from(tbody.children)) {
+      if (!desiredSet.has(child as HTMLElement)) child.remove();
+    }
+
+    // Place desired rows in order. `ref` walks the surviving children; a row
+    // already sitting at `ref` is skipped, anything else is moved/inserted here.
+    let ref: Node | null = tbody.firstChild;
+    for (const el of desired) {
+      if (el === ref) {
+        ref = el.nextSibling;
+      } else {
+        const frag = document.createDocumentFragment();
+        frag.appendChild(el); // detaches el from its old position (if any)
+        tbody.insertBefore(frag, ref);
+      }
+    }
+
+    this.renderedRows = next;
+  }
+
+  /**
+   * A structural fingerprint of everything `createRow` reads that is NOT
+   * per-row data: visible columns + their widths/pinning/offsets, tool columns,
+   * density, uniform row height, tree group column. A change here (resize, pin,
+   * hide/show, density) forces every row to rebuild, since a reused element
+   * would carry stale layout.
+   */
+  private computeStructuralSig(): string {
+    const states = this.columnManager.getAllStates();
+    const visibleCols = states.length > 0
+      ? this.columns.filter(col => this.columnManager.getVisibleColumns().some(s => s.key === col.key))
+      : this.columns;
+
+    const cols = visibleCols.map(col => {
+      const state = this.columnManager.getState(col.key);
+      return `${col.key}:${state?.width ?? ''}:${state?.pinned ?? ''}`;
+    });
+
+    return [
+      cols.join(','),
+      `pl=${Array.from(this.columnManager.getPinnedLeftOffsets().values()).join('/')}`,
+      `pr=${Array.from(this.columnManager.getPinnedRightOffsets().values()).join('/')}`,
+      `sel=${this.selectable ? 1 : 0}`,
+      `md=${this.masterDetail.isEnabled() ? 1 : 0}`,
+      `rr=${this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0}`,
+      `rh=${this.rowHeight}`,
+      `d=${this.density}`,
+      `tree=${this.treeData.isEnabled() ? this.treeData.getGroupColumn() : ''}`,
+    ].join('|');
+  }
+
+  /**
+   * The per-row rebuild signature. Selection and the plain data-index are
+   * re-stamped on reuse (not here) so they never force a rebuild; this captures
+   * only what a re-stamp cannot repair: tree node state, per-row height, and —
+   * when a feature embeds the index in a row-scoped closure (row DnD drag index,
+   * master-detail toggle index) — the index itself.
+   */
+  private rowSignature(rowData: any, index: number, structuralSig: string, treeRow?: TreeRow): string {
+    const parts = [structuralSig];
+    if (treeRow) parts.push(`t:${treeRow.depth}:${treeRow.expanded ? 1 : 0}:${treeRow.hasChildren ? 1 : 0}`);
+    if (this.rowHeightCallback) parts.push(`h:${this.rowHeightCallback(rowData, index)}`);
+    // Features whose row DOM closes over the index must rebuild when it changes.
+    if ((this.rowReorder && this.rowDnD.isEnabled()) || this.masterDetail.isEnabled()) {
+      parts.push(`i:${index}`);
+    }
+    return parts.join('|');
+  }
+
+  /** Whether the row at `index` currently hosts an inline editor. */
+  private isRowEditing(index: number): boolean {
+    if (!this.editable) return false;
+    if (this.editMode === 'row') {
+      const rowState = this.editor.getRowEditState();
+      return !!(rowState?.isEditing && rowState.rowIndex === index);
+    }
+    const cellState = this.editor.getCellEditState();
+    return !!(cellState?.isEditing && cellState.rowIndex === index);
+  }
+
+  /**
+   * Update a reused row's index-derived DOM after a reorder: the tr's
+   * `data-index`, its selection reflection, and the select checkbox's
+   * `data-row-index` (read back by the click/change handlers). Everything else
+   * that depends on the index is captured by the signature and forces a rebuild.
+   */
+  private restampRowIndex(el: HTMLElement, index: number) {
+    el.setAttribute('data-index', String(index));
+    const isSelected = this.selectedRows.includes(index);
+    el.setAttribute('data-selected', String(isSelected));
+    const checkbox = el.querySelector('snice-checkbox.row-select') as any;
+    if (checkbox) {
+      checkbox.setAttribute('data-row-index', String(index));
+      checkbox.checked = isSelected;
+    }
+  }
+
+  /**
+   * Drop the cached <tr> for a row object so the next render rebuilds it. Used
+   * when the table mutates a row in place (cell-edit commit) — the object
+   * identity is unchanged, so the reconciler would otherwise reuse the stale
+   * cell DOM.
+   */
+  private invalidateRenderedRow(rowData: any) {
+    this.renderedRows.delete(rowData);
   }
 
   private get totalPages(): number {
@@ -2670,10 +2900,36 @@ export class SniceTable extends HTMLElement {
       (this.masterDetail.isEnabled() ? 1 : 0) +
       (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
     const totalColSpan = this.columns.length + extraCols;
+    const structuralSig = this.computeStructuralSig();
+
+    // Task B: recycle rows that stay in the window across a scroll shift. A row
+    // still visible after scrolling keeps its data-object key and signature, so
+    // it is MOVED into the freshly built fragment (appendChild detaches it from
+    // the live tbody) instead of reconstructed. The virtualizer wipes the tbody
+    // AFTER we build this fragment — reused rows are already parked in the
+    // fragment by then, so the wipe only clears departed rows and the spacers.
+    // Net cost of a small scroll: a few createRow calls for the entering rows.
+    const next = new Map<unknown, { el: HTMLElement; sig: string }>();
+    const used = new Set<HTMLElement>();
 
     for (let i = startIndex; i < endIndex && i < rows.length; i++) {
       const { data, index, treeRow } = rows[i];
-      fragment.appendChild(this.createRow(data, index, treeRow));
+      const editing = this.isRowEditing(index);
+      // Edit marker: see renderBody. Ensures leaving edit state rebuilds the row.
+      const sig = this.rowSignature(data, index, structuralSig, treeRow) + (editing ? '|edit' : '');
+      const prev = this.renderedRows.get(data);
+      let tr: HTMLElement;
+
+      if (prev && !used.has(prev.el) && !editing && prev.sig === sig) {
+        tr = prev.el;
+        this.restampRowIndex(tr, index);
+      } else {
+        tr = this.createRow(data, index, treeRow);
+      }
+
+      used.add(tr);
+      if (!next.has(data)) next.set(data, { el: tr, sig });
+      fragment.appendChild(tr);
 
       // Master-detail: render the expanded detail row in-window. The detail
       // <tr> is an extra row the fixed-height spacer math does not account for,
@@ -2686,6 +2942,7 @@ export class SniceTable extends HTMLElement {
       }
     }
 
+    this.renderedRows = next;
     return fragment;
   }
 
