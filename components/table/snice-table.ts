@@ -114,6 +114,7 @@ export class SniceTable extends HTMLElement {
   setData(data: any[]) {
     this.unsortedData = [...data];
     this.data = data;
+    this.rebuildRowIndex();
     this.render();
   }
 
@@ -229,6 +230,10 @@ export class SniceTable extends HTMLElement {
 
   @request('table/data')
   async *getTableData(): any {
+    // A5: capture this request's sequence number. A later request bumps the
+    // counter, so a slow earlier response finds seq !== this.dataRequestSeq and
+    // bails without touching the model — no out-of-order clobber.
+    const seq = ++this.dataRequestSeq;
     this.loading = true;
     this.selectedRows = []; // Clear selections when loading new data
 
@@ -245,7 +250,9 @@ export class SniceTable extends HTMLElement {
         params.pageSize = this.pageSize;
       }
       const response = await (yield params);
+      if (seq !== this.dataRequestSeq) return; // superseded by a newer request
       this.data = response.data || [];
+      this.rebuildRowIndex();
       if (response.totalItems !== undefined) {
         this.totalItems = response.totalItems;
       }
@@ -254,9 +261,11 @@ export class SniceTable extends HTMLElement {
       this.loading = false;
       // Wait for next frame to ensure DOM is updated
       await new Promise(resolve => requestAnimationFrame(resolve));
+      if (seq !== this.dataRequestSeq) return; // superseded while awaiting frame
       this.renderBody();
       return response;
     } catch (error) {
+      if (seq !== this.dataRequestSeq) return; // stale failure — ignore silently
       console.error('Error loading table data:', error);
       this.loadError = error instanceof Error ? error.message : String(error);
       this.classList.add('table--error');
@@ -270,7 +279,27 @@ export class SniceTable extends HTMLElement {
 
   private unsortedData: any[] = [];
   private dataRequestTimeout: any = null;
-  
+
+  // A1: row-object → its index in `this.data`. Replaces the O(n) `data.indexOf`
+  // that ran per row on every selection toggle (was O(n²) for select-all).
+  // `rowIndexDataRef` is the array the map was built from — a plain
+  // `table.data = [...]` assignment swaps the array without going through
+  // setData/rebuildRowIndex, so `ensureRowIndex()` lazily rebuilds when it
+  // detects the reference changed.
+  private rowIndexMap = new Map<any, number>();
+  private rowIndexDataRef: any[] | null = null;
+
+  // A4: the filtered snapshot getFilteredData() hands out. Recomputing it per
+  // rAF scroll frame re-ran the whole filter engine every frame. Invalidated on
+  // every mutation of data / filters / sort (see invalidateFilteredCache).
+  private filteredCache: any[] | null = null;
+
+  // A5: monotonic request id. Captured at request start; a response only
+  // applies if it is still the latest, so a slow earlier response can't clobber
+  // a fast later one.
+  private dataRequestSeq = 0;
+
+
   private debouncedDataRequest() {
     // Set loading immediately for instant feedback
     if (!this.loading) {
@@ -1342,11 +1371,18 @@ export class SniceTable extends HTMLElement {
       const { rowIndex, columnKey, newValue } = e.detail;
       const row = this.data[rowIndex];
       if (row) row[columnKey] = newValue;
+      // A4: an in-place cell change can alter which rows match an active filter.
+      // Row identity is unchanged, so the index map stays valid — only the
+      // filtered snapshot must be dropped.
+      this.invalidateFilteredCache();
     }) as EventListener);
 
     this.addEventListener('row-edit-commit', ((e: CustomEvent) => {
       const { rowIndex, newRow } = e.detail;
       if (this.data[rowIndex]) this.data[rowIndex] = newRow;
+      // A1/A4: an element was swapped in place (same array reference), so the
+      // ref-check can't see it — resync the index map and filtered snapshot.
+      this.rebuildRowIndex();
     }) as EventListener);
 
     // Wait for snice-column to be defined
@@ -1463,8 +1499,19 @@ export class SniceTable extends HTMLElement {
   }
 
   @watch('selectedRows')
-  handleSelectedRowsChange() {
-    this.updateRowSelectionState();
+  handleSelectedRowsChange(oldVal?: number[], newVal?: number[]) {
+    // A2: selection is a @property, so every reassignment lands here — the
+    // single source of truth for reflecting selection into the DOM. Touch only
+    // the rows whose membership actually changed (symmetric difference of old
+    // vs new), not every rendered <tr>. A single toggle updates one row; a
+    // select-all/clear-all naturally updates every changed row.
+    const oldSet = new Set(oldVal ?? []);
+    const newSet = new Set(newVal ?? this.selectedRows ?? []);
+    const changed = new Set<number>();
+    for (const i of oldSet) if (!newSet.has(i)) changed.add(i);
+    for (const i of newSet) if (!oldSet.has(i)) changed.add(i);
+
+    for (const i of changed) this.updateRowSelectionStateFor(i, newSet.has(i));
     this.updateSelectAllState();
   }
 
@@ -1503,7 +1550,7 @@ export class SniceTable extends HTMLElement {
       selectCell.setAttribute('scope', 'col');
       selectCell.className = 'select-column';
       const filteredData = this.getFilteredData();
-      const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+      const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
       const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
       const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
       const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
@@ -1663,8 +1710,10 @@ export class SniceTable extends HTMLElement {
         input.value = this.filterEngine.getHeaderFilter(column.key);
         input.style.cssText = 'width:100%;--snice-color-border:transparent;--snice-border-radius-md:0;';
         input.addEventListener('input', () => {
+          // A3: engine model updates synchronously (cheap); the expensive
+          // re-filter + re-render is debounced so a keystroke burst is one apply.
           this.filterEngine.setHeaderFilter(column.key, input.value);
-          this.applyClientFilters();
+          this.debouncedApplyClientFilters();
         });
         td.appendChild(input);
         filterRow.appendChild(td);
@@ -2260,8 +2309,7 @@ export class SniceTable extends HTMLElement {
           this.selectedRows = [...this.selectedRows, rowIndex];
         }
 
-        this.updateRowSelectionState();
-        this.updateSelectAllState();
+        // DOM update happens in the selectedRows @watch (delta, one row).
         this.dispatchRowSelectionChanged(rowIndex, !isCurrentlySelected);
       }
 
@@ -2288,8 +2336,7 @@ export class SniceTable extends HTMLElement {
         this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
       }
 
-      this.updateRowSelectionState();
-      this.updateSelectAllState();
+      // DOM update happens in the selectedRows @watch (delta, one row).
       this.dispatchRowSelectionChanged(rowIndex, checkbox.checked);
       return;
     }
@@ -2300,12 +2347,12 @@ export class SniceTable extends HTMLElement {
       if (checkbox.checked) {
         // Select only filtered/displayed rows, not all data
         const filteredData = this.getFilteredData();
-        this.selectedRows = filteredData.map((row) => this.data.indexOf(row));
+        this.selectedRows = filteredData.map((row) => this.indexOfRow(row));
       } else {
         this.selectedRows = [];
       }
 
-      this.updateRowSelectionState();
+      // Row DOM + header checkbox update in the selectedRows @watch.
       this.dispatchSelectAllChanged(checkbox.checked);
     }
   }
@@ -2350,6 +2397,9 @@ export class SniceTable extends HTMLElement {
   }
 
 
+  // A2: full sweep — kept for external/programmatic callers and post-render
+  // resync. NOT on the single-toggle path (that goes through the delta in
+  // handleSelectedRowsChange → updateRowSelectionStateFor).
   updateRowSelectionState() {
     if (!this.tbody) return;
 
@@ -2365,12 +2415,24 @@ export class SniceTable extends HTMLElement {
     });
   }
 
+  // A2: reflect one row's selection into the DOM (located by data-index). The
+  // reconciler (Task B) re-stamps data-index on moved rows, so this stays
+  // correct after reorder. No-op if the row isn't in the current window.
+  private updateRowSelectionStateFor(index: number, isSelected: boolean) {
+    if (!this.tbody) return;
+    const row = this.tbody.querySelector(`tr[data-index="${index}"]`) as HTMLElement | null;
+    if (!row) return;
+    row.setAttribute('data-selected', String(isSelected));
+    const checkbox = row.querySelector('snice-checkbox.row-select') as any;
+    if (checkbox) checkbox.checked = isSelected;
+  }
+
   updateSelectAllState() {
     const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all') as any;
     if (!selectAllCheckbox) return;
 
     const filteredData = this.getFilteredData();
-    const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+    const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
     const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
     const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
     const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
@@ -2447,6 +2509,9 @@ export class SniceTable extends HTMLElement {
         return 0;
       });
     }
+    // Sort replaced this.data (new order + reference) — resync the row-index
+    // map and drop the stale filtered snapshot before re-rendering.
+    this.rebuildRowIndex();
     this.renderBody();
   }
 
@@ -2688,11 +2753,65 @@ export class SniceTable extends HTMLElement {
   }
 
   private getFilteredData(): any[] {
-    if (!this.filterEngine.hasActiveFilters()) return this.data;
-    return this.filterEngine.applyFilters(this.data, this.columns);
+    // Keep the row-index map + filtered snapshot coherent with the current
+    // `this.data` reference (catches a direct `table.data = [...]` assignment).
+    this.ensureRowIndex();
+    if (this.filteredCache) return this.filteredCache;
+    const filteredDataOp = !this.filterEngine.hasActiveFilters()
+      ? this.data
+      : this.filterEngine.applyFilters(this.data, this.columns);
+    this.filteredCache = filteredDataOp;
+    return filteredDataOp;
+  }
+
+  // A1: rebuild the row-object → index map from `this.data`. Call wherever the
+  // data array is REPLACED (setData, remote load, sortLocalData) or an element
+  // is swapped in place (row-edit commit). First occurrence wins, matching
+  // `Array.prototype.indexOf` semantics. Also drops the filtered snapshot,
+  // since replacing the data invalidates any previously filtered view.
+  private rebuildRowIndex() {
+    this.rowIndexMap.clear();
+    const rows = this.data;
+    for (let i = 0; i < rows.length; i++) {
+      if (!this.rowIndexMap.has(rows[i])) this.rowIndexMap.set(rows[i], i);
+    }
+    this.rowIndexDataRef = rows;
+    this.filteredCache = null;
+  }
+
+  // Rebuild lazily if `this.data` was reassigned out from under the map (plain
+  // `table.data = [...]`, used widely by app code and tests, bypasses setData).
+  private ensureRowIndex() {
+    if (this.rowIndexDataRef !== this.data) this.rebuildRowIndex();
+  }
+
+  // A1: map lookup replacing `this.data.indexOf(row)`. Same identity semantics
+  // (reference equality, -1 when absent).
+  private indexOfRow(row: any): number {
+    this.ensureRowIndex();
+    const idx = this.rowIndexMap.get(row);
+    return idx === undefined ? -1 : idx;
+  }
+
+  // A4: the filtered snapshot must be dropped on every mutation of the model it
+  // is derived from. Enumerated invalidation sites:
+  //   1. data replacement    — rebuildRowIndex() (setData, remote load,
+  //                            sortLocalData) + the ensureRowIndex() ref-check
+  //                            for a direct `table.data = [...]` assignment.
+  //   2. in-place row change — cell-edit-commit / row-edit-commit handlers
+  //                            (see @ready initialize()).
+  //   3. filter model change — invalidateFilteredCache() below, called from
+  //                            applyClientFilters(); every setQuickFilter /
+  //                            setColumnFilter / setHeaderFilter / setFilterModel
+  //                            / clearAllFilters / removeColumnFilter and the
+  //                            header-filter INPUT path route through it.
+  //   4. sort                — sortLocalData() replaces this.data (case 1).
+  private invalidateFilteredCache() {
+    this.filteredCache = null;
   }
 
   private applyClientFilters() {
+    this.invalidateFilteredCache();
     this.dispatchFilterChange();
     if (this.mode === 'remote') {
       // Server-side: send filter params to controller
@@ -2701,6 +2820,22 @@ export class SniceTable extends HTMLElement {
       // Client-side: re-render with filtered data
       this.renderBody();
     }
+  }
+
+  // A3: 150 ms window (matches the remote debounce constant) so a burst of
+  // keystrokes into a live filter INPUT collapses into a single re-filter +
+  // re-render. Only the INPUT event paths (header-filter inputs) route through
+  // here; programmatic API (setQuickFilter/setColumnFilter/...) stays
+  // synchronous so callers and tests keep deterministic behavior.
+  private static readonly FILTER_INPUT_DEBOUNCE_MS = 150;
+  private filterInputDebounceTimeout: any = null;
+
+  private debouncedApplyClientFilters() {
+    if (this.filterInputDebounceTimeout) clearTimeout(this.filterInputDebounceTimeout);
+    this.filterInputDebounceTimeout = setTimeout(() => {
+      this.filterInputDebounceTimeout = null;
+      this.applyClientFilters();
+    }, SniceTable.FILTER_INPUT_DEBOUNCE_MS);
   }
 
   // ── Column API ──
@@ -2877,14 +3012,13 @@ export class SniceTable extends HTMLElement {
     } else {
       this.selectedRows = [...this.selectedRows, rowIndex];
     }
-    this.updateRowSelectionState();
-    this.updateSelectAllState();
+    // DOM update happens in the selectedRows @watch (delta, one row).
     this.dispatchRowSelectionChanged(rowIndex, !isSelected);
   }
 
   private selectAllRows() {
     const filteredData = this.getFilteredData();
-    const filteredIndices = filteredData.map((row) => this.data.indexOf(row));
+    const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
     const allFilteredSelected = filteredIndices.every(i => this.selectedRows.includes(i));
 
     if (allFilteredSelected) {
@@ -2893,8 +3027,7 @@ export class SniceTable extends HTMLElement {
       const combined = new Set([...this.selectedRows, ...filteredIndices]);
       this.selectedRows = Array.from(combined);
     }
-    this.updateRowSelectionState();
-    this.updateSelectAllState();
+    // Row DOM + header checkbox update in the selectedRows @watch.
     this.dispatchSelectAllChanged(allFilteredSelected);
   }
 
