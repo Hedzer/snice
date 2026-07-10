@@ -1719,6 +1719,13 @@ export class SniceTable extends HTMLElement {
       this.columnManager.initialize(this.columns, this);
     }
 
+    // Self-heal: virtualize requested but the virtualizer never enabled
+    // (property assigned after @ready, or the one-shot rAF setup missed the
+    // scroll container). Never fall through to an empty or full render.
+    if (this.virtualize && !this.virtualizer.isEnabled()) {
+      this.setupVirtualization();
+    }
+
     // Virtualized rendering: delegate to virtualizer. Total row count comes
     // from the feature-aware model (flattened tree rows when tree data is on),
     // NOT the raw filtered data — otherwise the virtualizer windows the wrong
@@ -2531,17 +2538,26 @@ export class SniceTable extends HTMLElement {
     this.virtualizer.detach();
     this.keyboard.detach();
     if (this.lazyLoadHandler) {
-      const sc = this.shadowRoot?.querySelector('.snice-table') as HTMLElement;
-      sc?.removeEventListener('scroll', this.lazyLoadHandler);
+      this.getScrollContainer()?.removeEventListener('scroll', this.lazyLoadHandler);
     }
   }
 
   // ── Virtualization API ──
 
+  /**
+   * The element that actually scrolls. `.table-frame` owns `overflow: auto`
+   * in the live styles — attaching scroll listeners to `.snice-table` works
+   * in happy-dom (no layout) but never fires in a real browser.
+   */
+  private getScrollContainer(): HTMLElement | null {
+    return (this.shadowRoot?.querySelector('.table-frame') ??
+            this.shadowRoot?.querySelector('.snice-table')) as HTMLElement | null;
+  }
+
   private setupVirtualization() {
     if (!this.virtualize || !this.shadowRoot) return;
 
-    const scrollContainer = this.shadowRoot.querySelector('.snice-table') as HTMLElement;
+    const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
 
     this.virtualizer.attach({
@@ -3079,7 +3095,7 @@ export class SniceTable extends HTMLElement {
   private setupLazyLoading() {
     if (!this.lazyLoad) return;
 
-    const scrollContainer = this.shadowRoot?.querySelector('.snice-table') as HTMLElement;
+    const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
 
     this.lazyLoadHandler = () => {

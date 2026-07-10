@@ -215,3 +215,15 @@ enabled) + coordinator browser repro.
 **5c. (Info) dev server serves stale `dist/` for engine core** — rebuild
 `npm run build:core` before browser verification sessions, or error texts
 etc. lag the source.
+
+**5d. FIXED (coordinator, 2026-07-10): virtualizer/lazy-load attached scroll
+listeners to `.snice-table`, but `.table-frame` owns overflow:auto — scrolling
+never updated the window in a real browser. All scroll-container lookups now go
+through `getScrollContainer()` (.table-frame first). 5b also FIXED: renderBody
+self-heals virtualizer enablement.**
+
+**Phase 3 evidence (row-height mismatch, real browser):** configured
+`rowHeight` 36 vs ~49px actual rendered height → spacer math drifts and the
+visible band can land inside spacer space (blank viewport) after deep scroll.
+Virtualizer should measure the first rendered row's offsetHeight (or accept a
+callback) instead of trusting the config blindly.

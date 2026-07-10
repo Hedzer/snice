@@ -54,7 +54,8 @@ function dataRowCount(table: any): number {
 }
 
 function scrollTo(table: any, top: number) {
-  const sc = queryShadow(table as HTMLElement, '.snice-table') as HTMLElement;
+  // .table-frame owns overflow:auto — it is the element that actually scrolls
+  const sc = queryShadow(table as HTMLElement, '.table-frame') as HTMLElement;
   sc.scrollTop = top;
   sc.dispatchEvent(new Event('scroll'));
 }
