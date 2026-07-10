@@ -134,3 +134,29 @@ select-all), ~4 s full renderBody @10k, ~6.6 s per sort click (render-bound),
 Broken features are trust-killers (0 first); every feature built on the old
 render path inherits its jank (1 before 2/3); polish reads best on a fast,
 correct grid (4 last).
+
+## Visual defect ledger (coordinator browser audit, 2026-07-10, dark mode)
+
+Bug-tier (fix immediately after Phase 1 Task B lands — same files):
+1. STUCK FOCUS RING at rest on every table: first header cell (or select-all
+   checkbox) shows a persistent blue focus rectangle without any user
+   interaction. Regression from Task 5a: keyboard.refresh() runs
+   updateFocusIndicator() on every renderBody, painting the focusedRow=-1
+   (header) indicator before the grid was ever focused. Fix: track
+   "user has interacted/focused" state; paint no indicator at rest. Test:
+   after createTable+setData+renderBody, no element carries focus styling
+   until a keydown/click occurs.
+2. Pagination page-size select shows placeholder "Select an option" instead
+   of the current pageSize value (footer, client-side pagination section).
+   Initialize the select to pageSize.
+
+Polish-tier (Phase 4 backlog additions):
+3. Standalone search input (pro section) is a bare rectangle — inconsistent
+   with the toolbar search (icon, height). Unify or restyle the fragment.
+4. Sort indicator diamonds are barely visible at rest (low contrast).
+5. RESOLVED this session: toolbar search rendered literal "search" text over
+   the placeholder (icon registry fix, committed).
+
+Verified visually OK: master-detail chevrons, tree indentation + group rows,
+column-group headers, row-reorder drag handles, pagination buttons, density,
+export/expand toolbar icons, zebra striping, hover states.
