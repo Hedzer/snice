@@ -122,8 +122,15 @@ export class TableEditor {
 
   // ── Cell Editing ──
 
-  /** Start editing a cell. Returns the edit state or null if not editable. */
-  startCellEdit(rowIndex: number, columnKey: string, value: any, row: any): CellEditState | null {
+  /**
+   * Start editing a cell. Returns the edit state or null if not editable.
+   *
+   * `columnType` is the column's data TYPE (e.g. 'number', 'boolean') and
+   * drives the editor kind. It is distinct from `columnKey` — passing the key
+   * here degrades every editor to plain text unless a key happens to equal a
+   * type name.
+   */
+  startCellEdit(rowIndex: number, columnKey: string, value: any, row: any, columnType?: string): CellEditState | null {
     if (!this.isCellEditable(row, columnKey)) return null;
 
     // Cancel any existing edit
@@ -134,7 +141,7 @@ export class TableEditor {
       columnKey,
       originalValue: value,
       currentValue: value,
-      editorType: this.getEditorType(columnKey),
+      editorType: this.getEditorType(columnType || ''),
       error: null,
       isEditing: true,
     };

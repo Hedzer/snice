@@ -33,6 +33,7 @@ import { TableVirtualizer } from './table-virtualizer';
 import { TableColumnManager } from './table-column-manager';
 import { TableFilterEngine } from './table-filter-engine';
 import { TableEditor } from './table-editor';
+import type { EditorType } from './table-editor';
 import { TableKeyboard } from './table-keyboard';
 import { TableExport } from './table-export';
 import { TableMasterDetail } from './table-master-detail';
@@ -1294,6 +1295,20 @@ export class SniceTable extends HTMLElement {
     // Listen for detail panel toggle
     this.addEventListener('detail-toggle', () => this.renderBody());
 
+    // Persist committed edits back into the local dataset so the re-render
+    // shows the new value. Fires before commitEdit()'s renderBody() (the
+    // editor dispatches synchronously), so data is current by render time.
+    this.addEventListener('cell-edit-commit', ((e: CustomEvent) => {
+      const { rowIndex, columnKey, newValue } = e.detail;
+      const row = this.data[rowIndex];
+      if (row) row[columnKey] = newValue;
+    }) as EventListener);
+
+    this.addEventListener('row-edit-commit', ((e: CustomEvent) => {
+      const { rowIndex, newRow } = e.detail;
+      if (this.data[rowIndex]) this.data[rowIndex] = newRow;
+    }) as EventListener);
+
     // Wait for snice-column to be defined
     await customElements.whenDefined('snice-column');
     await customElements.whenDefined('snice-row');
@@ -2427,24 +2442,7 @@ export class SniceTable extends HTMLElement {
     this.columnManager.initialize(this.columns, this);
 
     // Editor
-    if (this.editable) {
-      this.editor.attach(this);
-      this.editor.setEditMode(this.editMode);
-      const editableCols = this.columns.filter(c => c.editable !== false).map(c => c.key);
-      this.editor.setEditableColumns(editableCols);
-
-      // Register value pipelines
-      for (const col of this.columns) {
-        if (col.valueGetter || col.valueFormatter || col.valueParser || col.valueSetter) {
-          this.editor.setPipeline(col.key, {
-            valueGetter: col.valueGetter,
-            valueFormatter: col.valueFormatter,
-            valueParser: col.valueParser,
-            valueSetter: col.valueSetter,
-          });
-        }
-      }
-    }
+    this.setupEditor();
 
     // Keyboard
     if (this.shadowRoot) {
@@ -2624,19 +2622,65 @@ export class SniceTable extends HTMLElement {
 
   // ── Editing API ──
 
+  /**
+   * Configure the editor from the current columns. Safe to call repeatedly —
+   * columns/data are plain fields that can be assigned after @ready ran with an
+   * empty set, so this re-syncs editable columns + pipelines before an edit
+   * starts rather than trusting the one-time @ready snapshot.
+   */
+  private setupEditor() {
+    if (!this.editable) return;
+
+    this.editor.attach(this);
+    this.editor.setEditMode(this.editMode);
+    const editableCols = this.columns.filter(c => c.editable !== false).map(c => c.key);
+    this.editor.setEditableColumns(editableCols);
+
+    // Register value pipelines
+    for (const col of this.columns) {
+      if (col.valueGetter || col.valueFormatter || col.valueParser || col.valueSetter) {
+        this.editor.setPipeline(col.key, {
+          valueGetter: col.valueGetter,
+          valueFormatter: col.valueFormatter,
+          valueParser: col.valueParser,
+          valueSetter: col.valueSetter,
+        });
+      }
+    }
+  }
+
   startEdit(rowIndex: number, columnKey: string) {
     if (!this.editable) return;
     const row = this.data[rowIndex];
     if (!row) return;
 
+    // Ensure the editor knows which columns are editable for the current
+    // column set (columns may have been assigned after @ready).
+    this.setupEditor();
+
     if (this.editMode === 'row') {
       this.editor.startRowEdit(rowIndex, row);
     } else {
+      const column = this.columns.find(c => c.key === columnKey);
       const value = row[columnKey];
-      this.editor.startCellEdit(rowIndex, columnKey, value, row);
+      this.editor.startCellEdit(rowIndex, columnKey, value, row, column?.type);
     }
-    // Re-render the affected row to show editor
+    // Re-render the affected row to show the editor, then focus it.
     this.renderBody();
+    this.focusActiveEditor();
+  }
+
+  /** Focus the first rendered editor input (called after renderBody). */
+  private focusActiveEditor() {
+    const el = this.tbody?.querySelector(
+      '.table-editor-input, .table-editor-checkbox, .table-editor-select'
+    ) as HTMLElement | null;
+    if (!el) return;
+
+    el.focus();
+    if (el instanceof HTMLInputElement && (el.type === 'text' || el.type === 'number')) {
+      try { el.select(); } catch { /* happy-dom may not implement select */ }
+    }
   }
 
   async commitEdit(): Promise<string | null> {
@@ -3015,8 +3059,14 @@ export class SniceTable extends HTMLElement {
         }
       }
 
-      // Tree data: add indent + toggle on the group column
-      if (treeRow && column.key === this.treeData.getGroupColumn()) {
+      // Cell/row edit: when this cell is being edited, render its editor
+      // element instead of the display cell.
+      const editorEl = this.maybeCreateCellEditor(column, rowData, value, index);
+      if (editorEl) {
+        td.classList.add('editing');
+        td.appendChild(editorEl);
+      } else if (treeRow && column.key === this.treeData.getGroupColumn()) {
+        // Tree data: add indent + toggle on the group column
         const toggle = this.treeData.createToggle(treeRow);
         td.appendChild(toggle);
         const textSpan = document.createElement('span');
@@ -3060,6 +3110,94 @@ export class SniceTable extends HTMLElement {
     });
 
     return tr;
+  }
+
+  // ── Editor rendering ──
+
+  /**
+   * If the given cell is currently being edited (cell mode → this exact cell;
+   * row mode → any editable cell in the edited row), build and wire its editor
+   * element. Returns null when the cell is not in an edit state.
+   */
+  private maybeCreateCellEditor(column: any, rowData: any, value: any, index: number): HTMLElement | null {
+    if (!this.editable) return null;
+
+    let editing = false;
+    let editValue = value;
+    let editorType: EditorType;
+
+    if (this.editMode === 'row') {
+      const rowState = this.editor.getRowEditState();
+      if (rowState?.isEditing && rowState.rowIndex === index
+          && this.editor.isCellEditable(rowData, column.key)) {
+        editing = true;
+        editValue = rowState.editedRow[column.key];
+      }
+      editorType = this.resolveEditorType(column);
+    } else {
+      const cellState = this.editor.getCellEditState();
+      if (cellState?.isEditing && cellState.rowIndex === index
+          && cellState.columnKey === column.key) {
+        editing = true;
+        editValue = cellState.currentValue;
+      }
+      editorType = cellState?.editorType ?? this.resolveEditorType(column);
+    }
+
+    if (!editing) return null;
+
+    const options = column.selectOptions ? { selectOptions: column.selectOptions } : undefined;
+    const editorEl = this.editor.createEditor(editorType, editValue, options);
+    this.wireEditorElement(editorEl, column);
+    return editorEl;
+  }
+
+  /** Resolve the editor kind for a column (explicit override wins, else by type). */
+  private resolveEditorType(column: any): EditorType {
+    if (column.editorType) return column.editorType;
+    return this.editor.getEditorType(column.type || 'text');
+  }
+
+  /**
+   * Attach input/commit/cancel behavior to an editor element. Plain listeners
+   * on a module-created element — the established pattern for imperative table
+   * DOM (see createRow's checkbox/tree wiring).
+   */
+  private wireEditorElement(editorEl: HTMLElement, column: any) {
+    const isCheckbox = editorEl instanceof HTMLInputElement && editorEl.type === 'checkbox';
+    const readValue = () =>
+      isCheckbox ? (editorEl as HTMLInputElement).checked : (editorEl as any).value;
+
+    const syncValue = () => {
+      const v = readValue();
+      if (this.editMode === 'row') this.editor.updateRowField(column.key, v);
+      else this.editor.updateCellValue(v);
+    };
+
+    editorEl.addEventListener('input', syncValue);
+    editorEl.addEventListener('change', syncValue);
+
+    editorEl.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        syncValue();
+        this.commitEdit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        this.cancelEdit();
+      }
+    });
+
+    editorEl.addEventListener('blur', () => {
+      // Commit on blur only in cell mode — in row mode, tabbing between the
+      // row's editors would otherwise commit the whole row prematurely. Guard
+      // on isEditing so re-renders that remove the editor (also firing blur)
+      // don't re-trigger a commit.
+      if (this.editMode !== 'row' && this.editor.isEditing()) {
+        syncValue();
+        this.commitEdit();
+      }
+    });
   }
 
 }

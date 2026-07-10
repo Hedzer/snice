@@ -183,6 +183,10 @@ export interface ColumnDefinition {
   pinnable?: boolean;
   pinned?: 'left' | 'right' | false;
   editable?: boolean;
+  /** Override the inline editor kind (default: derived from `type`). */
+  editorType?: 'text' | 'number' | 'date' | 'boolean' | 'select';
+  /** Options for a `select` editor. */
+  selectOptions?: { value: string; label: string }[];
   exportable?: boolean;
   formatter?: (value: any, row?: any) => string;
   valueGetter?: (value: any, row: any) => any;
