@@ -67,11 +67,12 @@ describe('snice-table types (D1/D2)', () => {
     'column-resize-end',
     'tree-toggle',
     'cell-action',
+    'group-toggle',
   ];
 
-  it('SniceTableEventMap covers the full grepped dispatch inventory (26 events)', () => {
-    expect(sampleEventNames.length).toBe(26);
-    expect(new Set(sampleEventNames).size).toBe(26); // no accidental duplicates
+  it('SniceTableEventMap covers the full grepped dispatch inventory (27 events)', () => {
+    expect(sampleEventNames.length).toBe(27);
+    expect(new Set(sampleEventNames).size).toBe(27); // no accidental duplicates
   });
 
   // ── D2: runtime sanity — a small sample of the map's documented shapes,

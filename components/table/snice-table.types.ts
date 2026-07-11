@@ -2,6 +2,7 @@ import type { FilterModel, FilterOperator } from './table-filter-engine';
 import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions } from './table-tree-data';
+import type { Aggregator } from './table-grouping';
 import type { ColumnGroup } from './table-column-manager';
 import type { CSVExportOptions, PrintOptions, ClipboardOptions } from './table-export';
 
@@ -201,6 +202,12 @@ export interface ColumnDefinition {
   sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
   colSpan?: number | ((value: any, row: any) => number);
 
+  /** F: aggregate this column into per-group + table-level footer rows. A
+   *  built-in ('sum' | 'avg' | 'min' | 'max' | 'count') or a custom reducer
+   *  `(values, rows) => any`. Formatted through this column's normal
+   *  type/formatter pipeline. */
+  aggregate?: Aggregator;
+
   // Custom renderers (E2). When present these bypass the type-based cell/editor.
   /** Build the display cell. A string result is set via textContent (never
    *  innerHTML — no HTML parsing). Bypasses the type-based cell element. */
@@ -302,6 +309,13 @@ export interface SniceTableElement extends HTMLElement {
   selectionMode: SelectionMode;
   selector: string;
   selectorOptions: Array<{ value: string; label: string }>;
+
+  // ── Grouping / aggregation ──
+  /** Column key(s) to group rows by. Assigning post-mount re-renders reactively.
+   *  Empty = ungrouped (aggregation footers may still apply). */
+  groupBy: string | string[];
+  /** Initial group expansion. `{ expanded: false }` starts all groups collapsed. */
+  groupDefaults: { expanded?: boolean };
 
   // ── Pagination ──
   pagination: boolean;
@@ -515,6 +529,9 @@ export interface SniceTableEventMap {
   /** snice-cell-actions.ts dispatchAction() — bubbles from an `actions`-type
    *  cell the table renders via createCellElement. */
   'cell-action': { action: string; rowData: any; column: ColumnDefinition | null };
+  /** snice-table.ts dispatchGroupToggle() / table-grouping.ts createToggle() —
+   *  a group header expand/collapse. `value` is the group's value. */
+  'group-toggle': { key: string; value: any; expanded: boolean };
 }
 
 export interface SniceHeaderElement extends HTMLElement {

@@ -1,5 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { spawn } from 'child_process';
+
+// Each test spawns a node MCP-server process; under full-suite CPU
+// saturation the default 5s deadline flakes. Generous ceiling, same
+// philosophy as the repo-wide -timeout guidance.
+vi.setConfig({ testTimeout: 30_000 });
 import { join } from 'path';
 
 // Helper to call MCP server's validate_code tool
