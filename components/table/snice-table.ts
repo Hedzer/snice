@@ -46,6 +46,7 @@ import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup } from './table-column-manager';
+import type { SniceTableElement } from './snice-table.types';
 
 /**
  * A single desired body row for the render-path reconciler (Task B). `key`
@@ -65,7 +66,7 @@ interface RowEntry {
 }
 
 @element('snice-table')
-export class SniceTable extends HTMLElement {
+export class SniceTable extends HTMLElement implements SniceTableElement {
 
   @property({ type: Boolean,  attribute: 'striped' })
   striped = false;

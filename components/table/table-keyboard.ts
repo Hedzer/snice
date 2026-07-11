@@ -38,14 +38,16 @@ export class TableKeyboard {
   /** True after the first real user keydown — no focus paint at rest. */
   private hasUserInteracted = false;
   private focusedCol = 0;
-  private keyHandler: (e: KeyboardEvent) => void;
+  // EventListener-typed: ShadowRoot's TS event map only knows 'slotchange',
+  // so a KeyboardEvent-typed handler fails the addEventListener overloads.
+  private keyHandler: EventListener;
   private attached = false;
 
   constructor() {
     this.options = {} as KeyboardOptions;
-    this.keyHandler = (e: KeyboardEvent) => {
+    this.keyHandler = (e: Event) => {
       this.hasUserInteracted = true;
-      this.handleKeyDown(e);
+      this.handleKeyDown(e as KeyboardEvent);
     };
   }
 

@@ -24,25 +24,38 @@ Displays tabular data with sorting, filtering, search, selection, pagination, co
 | `sortable` | `boolean` | `false` | Enable column sorting |
 | `selectable` | `boolean` | `false` | Enable row selection with checkboxes |
 | `hoverable` | `boolean` | `true` | Highlight rows on hover |
-| `clickable` | `boolean` | `false` | Emit events on row click |
+| `clickable` | `boolean` | `false` | Emit `row-clicked` on row click |
 | `list` | `boolean` | `false` | Hide vertical cell borders |
-| `editable` | `boolean` | `false` | Enable inline cell editing |
-| `column-resize` | `boolean` | `false` | Enable column resizing by dragging |
-| `column-menu` | `boolean` | `false` | Enable right-click column menu |
-| `header-filters` | `boolean` | `false` | Show inline filter inputs below headers |
-| `density` | `'compact'\|'standard'\|'comfortable'` | `'standard'` | Row height density |
 | `loading` | `boolean` | `false` | Show loading state |
+| `mode` | `'local'\|'remote'` | `'local'` | `'local'`: table owns the dataset. `'remote'`: every filter/sort/search/page change requests data via `@request('table/data')` |
+| `columns` | `ColumnDefinition[]` | `[]` | Column definitions — reactive; assigning re-renders the header + body |
+| `data` | `any[]` | `[]` | Row data — reactive; assigning re-renders the body |
+| `searchText` | `string` | `''` | Current search text. Not an attribute; reassigning does not re-render (avoids stealing input focus while typing) |
 | `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
-| `currentSort` | `Array<{ column, direction }>` | `[]` | Current sort state (JS only) |
+| `currentSort` | `Array<{ column, direction }>` | `[]` | Current sort state — reactive; assigning re-sorts (local mode) or re-requests (remote mode) |
 | `selectedRows` | `number[]` | `[]` | Indices of selected rows (JS only) |
+| `selector` | `string` | `''` | Selected filter-dropdown value(s), comma-joined |
+| `selectorOptions` | `Array<{value, label}>` | `[]` | Options for the `filterable` dropdown (JS only) |
 | `pagination` | `boolean` | `false` | Enable pagination |
 | `paginationMode` (attr: `pagination-mode`) | `'client'\|'server'` | `'client'` | Client-side or server-side pagination |
 | `pageSize` (attr: `page-size`) | `number` | `10` | Rows per page |
 | `currentPage` (attr: `current-page`) | `number` | `1` | Current page number |
 | `totalItems` (attr: `total-items`) | `number` | `0` | Total item count (server mode) |
 | `pageSizes` | `number[]` | `[10, 25, 50, 100]` | Available page size options (JS only) |
-| `columns` | `any[]` | `[]` | Column definitions (JS only) |
-| `data` | `any[]` | `[]` | Row data (JS only) |
+| `virtualize` | `boolean` | `false` | Render only the visible row window (large datasets) |
+| `rowHeight` (attr: `row-height`) | `number` | `48` | Row height in pixels (virtualization and fixed-height rows) |
+| `virtualBuffer` (attr: `virtual-buffer`) | `number` | `200` | Extra pixels rendered above/below the viewport when `virtualize` is on |
+| `editable` | `boolean` | `false` | Enable inline cell/row editing |
+| `editMode` (attr: `edit-mode`) | `'cell'\|'row'` | `'cell'` | Edit one cell at a time, or the whole row |
+| `density` | `'compact'\|'standard'\|'comfortable'` | `'standard'` | Row height density |
+| `columnResize` (attr: `column-resize`) | `boolean` | `false` | Enable column resizing by dragging |
+| `headerFilters` (attr: `header-filters`) | `boolean` | `false` | Show inline filter inputs below headers |
+| `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Quick-filter row toggle — use `setQuickFilter()` to actually filter |
+| `rowReorder` (attr: `row-reorder`) | `boolean` | `false` | Enable drag-to-reorder rows |
+| `columnReorder` (attr: `column-reorder`) | `boolean` | `false` | Enable drag-to-reorder columns |
+| `columnMenu` (attr: `column-menu`) | `boolean` | `false` | Enable right-click column menu |
+| `lazyLoad` (attr: `lazy-load`) | `boolean` | `false` | Fire `lazy-load` when scrolled near the bottom |
+| `lazyLoadThreshold` (attr: `lazy-load-threshold`) | `number` | `200` | Distance from the bottom, in pixels, that triggers `lazy-load` |
 
 ## Column Definition
 
@@ -50,39 +63,73 @@ Displays tabular data with sorting, filtering, search, selection, pagination, co
 interface ColumnDefinition {
   key: string;
   label: string;
-  type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
-         'rating' | 'progress' | 'sparkline' | 'tag' | 'status' | 'email' |
-         'phone' | 'link' | 'color' | 'image' | 'duration' | 'filesize' |
-         'location' | 'json' | 'actions' | 'custom';
+  type?: ColumnType;                     // see Column Types below
   align?: 'left' | 'center' | 'right';
   width?: string;
+  flex?: number;
+  minWidth?: number;
+  maxWidth?: number;
   sortable?: boolean;
+  filterable?: boolean;
   resizable?: boolean;
   reorderable?: boolean;
   hideable?: boolean;
   pinnable?: boolean;
   pinned?: 'left' | 'right' | false;
   editable?: boolean;
+  editorType?: 'text' | 'number' | 'date' | 'boolean' | 'select'; // overrides the type-derived editor
+  selectOptions?: { value: string; label: string }[];             // options for a `select` editor
   exportable?: boolean;
   formatter?: (value: any, row?: any) => string;
+  valueGetter?: (value: any, row: any) => any;
+  valueFormatter?: (value: any, row: any) => string;
+  valueParser?: (value: string, row: any) => any;
+  valueSetter?: (value: any, row: any) => any;
+  sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
+  colSpan?: number | ((value, row) => number);
+  wrap?: boolean;
+  ellipsis?: boolean;
+  tooltip?: boolean | ((value: any, row?: any) => string);
+
+  // Excel-like per-type formatting
   numberFormat?: { decimals?, thousandsSeparator?, prefix?, suffix?, negativeStyle? };
+  dateFormat?: DateFormat;
+  booleanFormat?: BooleanFormat;
   ratingFormat?: { max?, color? };
   progressFormat?: { max?, color?, colorize?, showPercentage?, height? };
   sparklineFormat?: { type?, color?, width?, height? };
   percentageFormat?: { decimals?, colorize? };
-  currencyFormat?: CurrencyFormat;
-  dateFormat?: DateFormat;
-  booleanFormat?: BooleanFormat;
-  tagFormat?: TagFormat;
+  phoneFormat?: PhoneFormat;
   statusFormat?: StatusFormat;
+  tagFormat?: TagFormat;
+  actionsFormat?: { actions: ActionButton[] };
   linkFormat?: { target?, external? };
   colorFormat?: { showSwatch?, displayFormat? };
+  currencyFormat?: CurrencyFormat;
   emailFormat?: { showIcon? };
-  phoneFormat?: { showIcon?, format? };
+  imageFormat?: ImageFormat;
+  jsonFormat?: JsonFormat;
+  locationFormat?: LocationFormat;
+  style?: CellStyle;
   conditionalFormats?: ConditionalFormat[];
-  colSpan?: number | ((value, row) => number);
 }
 ```
+
+### Column Types
+
+`type` (source of truth: `ColumnType` in `snice-table.types.ts`):
+
+```typescript
+type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
+  'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' | 'fraction' |
+  'duration' | 'filesize' | 'custom';
+```
+
+The cell renderer (`getCellTagName()`) additionally recognizes `tag`, `status`,
+`actions`, `link`, `email`, `phone`, `color`, `image`, `location`, `json`, and
+`percentage` (alias of `percent`) — these render correctly at runtime but
+aren't yet part of the `ColumnType` union, so a strict `ColumnDefinition[]`
+needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
 
 ## Methods
 
@@ -115,14 +162,31 @@ interface ColumnDefinition {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
+| `row-clicked` | `{ rowData, rowIndex }` | Row clicked (requires `clickable`) |
 | `table-row-selection-changed` | `{ selectedRows, rowIndex, selected }` | A row's selection state changed |
 | `table-select-all-changed` | `{ selectedRows, allSelected }` | Select-all checkbox toggled |
-| `row-clicked` | `{ rowData, rowIndex }` | A row was clicked (requires `clickable`) |
+| `sort-change` | `{ sort }` | Sort state changed |
+| `filter-change` | `{ filters }` | Filter state changed |
 | `page-change` | `{ page, pageSize, totalPages, totalItems }` | Page or page size changed |
-| `column-resize` | `{ key, width }` | Column is being resized |
+| `column-visibility-change` | `{ key, visible, visibility }` | Column shown/hidden |
+| `column-pin-change` | `{ key, pinned }` | Column pinned left/right, or unpinned |
+| `column-order-change` | `{ key, toIndex }` | Column moved via `moveColumn()` |
+| `density-change` | `{ density }` | `density` controlled-state assignment took effect |
+| `table-load-error` | `{ error }` | Remote-mode data request failed |
+| `lazy-load` | `{ currentCount }` | Scrolled near the bottom (requires `lazyLoad`) |
+| `cell-edit-commit` | `{ rowIndex, columnKey, oldValue, newValue }` | Cell edit committed |
+| `cell-edit-cancel` | `{ rowIndex, columnKey }` | Cell edit canceled (Escape) |
+| `row-edit-commit` | `{ rowIndex, oldRow, newRow }` | Row edit committed (`edit-mode="row"`) |
+| `row-edit-cancel` | `{ rowIndex }` | Row edit canceled |
+| `row-expand` | `{ rowIndex }` | Master-detail row expanded |
+| `row-collapse` | `{ rowIndex }` | Master-detail row collapsed |
+| `detail-toggle` | `{ rowIndex, expanded }` | Master-detail toggle button clicked |
+| `row-reorder` | `{ fromIndex, toIndex }` | Row dragged to a new position (`row-reorder`) |
+| `column-reorder` | `{ fromKey, toKey }` | Column dragged to a new position (`column-reorder`) |
+| `column-resize` | `{ key, width }` | Column is being resized (live, per mouse move) |
 | `column-resize-end` | `{ key, width }` | Column resize finished |
-| `filter-change` | filter model | Filter state changed |
-| `sort-change` | sort model | Sort state changed |
+| `tree-toggle` | `{ key, expanded }` | Tree node expanded/collapsed (`setTreeData()`) |
+| `cell-action` | `{ action, rowData, column }` | An `actions`-type cell's button was clicked |
 
 ## Slots
 
@@ -131,6 +195,7 @@ interface ColumnDefinition {
 | `columns` | `<snice-column>` elements for declarative column definitions |
 | `rows` | `<snice-row>` elements for declarative row data |
 | `header` | Superheader content above column headers |
+| `empty-state` | Custom content shown instead of the default `<snice-empty-state>` when `data` is empty |
 
 ## Basic Usage
 
@@ -139,16 +204,23 @@ import 'snice/components/table/snice-table';
 ```
 
 ```javascript
-table.setColumns([
+const table = document.querySelector('snice-table');
+
+// Reactive — assigning `columns`/`data` re-renders automatically.
+table.columns = [
   { key: 'name', label: 'Name', sortable: true },
   { key: 'email', label: 'Email' },
   { key: 'age', label: 'Age', type: 'number', align: 'right' }
-]);
-table.setData([
+];
+table.data = [
   { name: 'Alice Johnson', email: 'alice@example.com', age: 32 },
   { name: 'Bob Smith', email: 'bob@example.com', age: 28 }
-]);
+];
 ```
+
+`setColumns()`/`setData()` are the equivalent imperative calls, useful when
+you also need to force a synchronous `renderHeader()`/`renderBody()` right
+after assigning (e.g. a CDN build missing `snice-column`/`snice-row`).
 
 ## Examples
 

@@ -1,5 +1,10 @@
-export type TableSize = 'small' | 'medium' | 'large';
-export type TableVariant = 'default' | 'striped' | 'bordered';
+import type { FilterModel, FilterOperator } from './table-filter-engine';
+import type { DetailPanelOptions } from './table-master-detail';
+import type { ToolbarOptions } from './table-toolbar';
+import type { TreeDataOptions } from './table-tree-data';
+import type { ColumnGroup } from './table-column-manager';
+import type { CSVExportOptions, PrintOptions, ClipboardOptions } from './table-export';
+
 export type ColumnAlign = 'left' | 'center' | 'right';
 export type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' | 
   'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' | 'fraction' | 
@@ -231,22 +236,50 @@ export interface TableSort {
 
 export type PaginationMode = 'client' | 'server';
 
+/**
+ * The real public surface of `SniceTable` (components/table/snice-table.ts),
+ * enumerated directly from the class — every `@property`, every plain public
+ * field, every method without a `private` modifier. Excludes framework
+ * plumbing decorated with `@query`/`@watch`/`@ready`/`@dispose`/`@render`/
+ * `@styles` (implementation detail, not consumer API — same convention as
+ * every other `Snice*Element` interface in this codebase) and the private
+ * `dispatch*`/helper methods.
+ *
+ * `SniceTable implements SniceTableElement` — if this interface drifts from
+ * the class (a member is renamed/removed, or a phantom one is added back),
+ * `tsc --project components/tsconfig.json --noEmit` fails.
+ */
 export interface SniceTableElement extends HTMLElement {
-  size: TableSize;
-  variant: TableVariant;
+  // ── Display / behavior toggles ──
   striped: boolean;
-  hoverable: boolean;
-  bordered: boolean;
-  stickyHeader: boolean;
+  searchable: boolean;
+  filterable: boolean;
   sortable: boolean;
   selectable: boolean;
+  hoverable: boolean;
   clickable: boolean;
+  list: boolean;
   loading: boolean;
-  data: any[];
-  columns: ColumnDefinition[];
-  showSearch: boolean;
 
-  // Pagination
+  // ── Data mode ──
+  /** 'local' (default): table owns the dataset. 'remote': every filter/sort/
+   *  search/page change fires @request('table/data'). */
+  mode: 'local' | 'remote';
+  columns: ColumnDefinition[];
+  data: any[];
+  /** Not a @property (would steal input focus while typing) — read/write directly. */
+  searchText: string;
+  searchDebounce: number;
+
+  // ── Sorting ──
+  currentSort: Array<{ column: string; direction: 'asc' | 'desc' }>;
+
+  // ── Selection ──
+  selectedRows: number[];
+  selector: string;
+  selectorOptions: Array<{ value: string; label: string }>;
+
+  // ── Pagination ──
   pagination: boolean;
   paginationMode: PaginationMode;
   pageSize: number;
@@ -254,11 +287,205 @@ export interface SniceTableElement extends HTMLElement {
   totalItems: number;
   pageSizes: number[];
 
+  // ── Virtualization ──
+  virtualize: boolean;
+  rowHeight: number;
+  virtualBuffer: number;
+
+  // ── Editing ──
+  editable: boolean;
+  editMode: 'cell' | 'row';
+
+  // ── Layout / density ──
+  density: 'compact' | 'standard' | 'comfortable';
+
+  // ── Column features ──
+  columnResize: boolean;
+  headerFilters: boolean;
+  quickFilter: boolean;
+  rowReorder: boolean;
+  columnReorder: boolean;
+  columnMenu: boolean;
+
+  // ── Lazy loading ──
+  lazyLoad: boolean;
+  lazyLoadThreshold: number;
+
+  // ── Request/respond (remote mode) ──
+  getTableConfig(): Promise<any>;
+  getTableData(): Promise<any>;
+
+  // ── Data + column setters (imperative aliases over the reactive props) ──
   setData(data: any[]): void;
-  sort(column: string): void;
-  getSelectedRows(): any[];
-  search(query: string): void;
+  setColumns(columns: ColumnDefinition[]): void;
+
+  // ── Rendering (public — documented workaround for CDN builds missing
+  //    snice-column/snice-row: setColumns()/setData() + requestAnimationFrame(
+  //    () => { table.renderHeader(); table.renderBody(); })) ──
+  renderControls(): void;
+  renderHeader(): void;
+  renderSortableHeader(column: ColumnDefinition): string;
+  renderBody(): void;
+  renderPagination(): void;
+
+  // ── Cell construction ──
+  createCellElement(column: ColumnDefinition, value: any): HTMLElement;
+  getCellTagName(type: string): string;
+
+  // ── Fullscreen ──
+  toggleFullscreen: () => Promise<void>;
+
+  // ── Selection ──
+  updateRowSelectionState(): void;
+  updateSelectAllState(): void;
+  getSelectedData(): any[];
+  setSelectabilityCheck(fn: (row: any, index: number) => boolean): void;
+
+  // ── Sorting ──
+  toggleSort(columnKey: string, multiSort?: boolean): void;
+  setSortComparator(columnKey: string, comparator: (a: any, b: any, direction: 'asc' | 'desc') => number): void;
+
+  // ── Pagination ──
   goToPage(page: number): void;
+  setPageSize(size: number): void;
+
+  // ── Virtualization / scrolling ──
+  scrollToRow(index: number): void;
+  scrollToColumn(columnKey: string): void;
+  getScrollPosition(): { top: number; left: number };
+
+  // ── Filtering ──
+  setColumnFilter(column: string, operator: FilterOperator, value: any): void;
+  removeColumnFilter(column: string): void;
+  setQuickFilter(text: string): void;
+  setFilterModel(model: FilterModel): void;
+  getFilterModel(): FilterModel;
+  clearAllFilters(): void;
+
+  // ── Column visibility / pinning / sizing / order ──
+  setColumnVisible(key: string, visible: boolean): void;
+  showAllColumns(): void;
+  hideAllColumns(): void;
+  getColumnVisibility(): Record<string, boolean>;
+  pinColumn(key: string, side: 'left' | 'right'): void;
+  unpinColumn(key: string): void;
+  autoSizeColumn(key: string): void;
+  autoSizeAllColumns(): void;
+  moveColumn(key: string, toIndex: number): void;
+  setColumnGroups(groups: ColumnGroup[]): void;
+
+  // ── Editing ──
+  startEdit(rowIndex: number, columnKey: string): void;
+  commitEdit(): Promise<string | null>;
+  cancelEdit(): void;
+
+  // ── Export ──
+  exportCSV(options?: CSVExportOptions): void;
+  printTable(options?: PrintOptions): void;
+  copyToClipboard(options?: ClipboardOptions): Promise<boolean>;
+
+  // ── Master-detail ──
+  setDetailPanel(options: DetailPanelOptions): void;
+  expandRow(index: number): void;
+  collapseRow(index: number): void;
+  toggleRowExpansion(index: number): void;
+  expandAllRows(): void;
+  collapseAllRows(): void;
+
+  // ── Toolbar ──
+  setToolbar(options: ToolbarOptions): void;
+
+  // ── Tree data ──
+  setTreeData(options: TreeDataOptions): void;
+  expandTreeNode(key: string): void;
+  collapseTreeNode(key: string): void;
+  toggleTreeNode(key: string): void;
+  expandAllTreeNodes(): void;
+  collapseAllTreeNodes(): void;
+
+  // ── Row pinning ──
+  pinRowTop(row: any): void;
+  pinRowBottom(row: any): void;
+  unpinRow(row: any): void;
+  clearPinnedRows(): void;
+
+  // ── Row height ──
+  setRowHeight(height: number): void;
+  setRowHeightCallback(fn: (row: any, index: number) => number): void;
+
+  // ── List view ──
+  setListViewRenderer(fn: (row: any, index: number) => string | HTMLElement): void;
+}
+
+/**
+ * Every event `<snice-table>` dispatches, keyed by event name → `detail`
+ * shape. Covers (a) `SniceTable`'s own `@dispatch`/`dispatchEvent` calls,
+ * (b) feature modules that dispatch directly on the table element via
+ * `tableElement.dispatchEvent(...)` (table-editor / table-master-detail /
+ * table-row-dnd / table-column-manager, each `.attach(tableEl)`-ed by
+ * SniceTable), and (c) elements the table itself constructs into its own
+ * shadow DOM whose `bubbles:true, composed:true` events reach a listener on
+ * `<snice-table>` (snice-cell-actions' cell-action, table-tree-data's
+ * tree-toggle). Excludes `row-click`/`row-select`/`row-hover`
+ * (snice-row.ts) and `header-sort`/`header-select-all`/`header-filter`
+ * (snice-header.ts) — those are the standalone `<snice-row>`/`<snice-header>`
+ * elements' own event surfaces, not generated by SniceTable's render path.
+ *
+ * Every shape below was read from its dispatch site, not guessed:
+ */
+export interface SniceTableEventMap {
+  /** snice-table.ts dispatchRowClicked() — row click, requires `clickable`. */
+  'row-clicked': { rowData: any; rowIndex: number };
+  /** snice-table.ts dispatchRowSelectionChanged() — one row's checkbox/click toggle. */
+  'table-row-selection-changed': { selectedRows: number[]; rowIndex: number; selected: boolean };
+  /** snice-table.ts dispatchSelectAllChanged() — header select-all checkbox toggled. */
+  'table-select-all-changed': { selectedRows: number[]; allSelected: boolean };
+  /** snice-table.ts dispatchSortChange() — currentSort changed (toggleSort/toolbar/column menu). */
+  'sort-change': { sort: Array<{ column: string; direction: 'asc' | 'desc' }> };
+  /** snice-table.ts dispatchFilterChange() — filter model changed (applyClientFilters). */
+  'filter-change': { filters: FilterModel };
+  /** snice-table.ts dispatchPageChange() — goToPage()/setPageSize(). */
+  'page-change': { page: number; pageSize: number; totalPages: number; totalItems: number };
+  /** snice-table.ts dispatchColumnVisibilityChange() — setColumnVisible(). */
+  'column-visibility-change': { key: string; visible: boolean; visibility: Record<string, boolean> };
+  /** snice-table.ts dispatchColumnPinChange() — pinColumn()/unpinColumn(). */
+  'column-pin-change': { key: string; pinned: 'left' | 'right' | false };
+  /** snice-table.ts dispatchColumnOrderChange() — moveColumn(). */
+  'column-order-change': { key: string; toIndex: number };
+  /** snice-table.ts dispatchDensityChange() — density controlled-state assignment. */
+  'density-change': { density: 'compact' | 'standard' | 'comfortable' };
+  /** snice-table.ts dispatchLoadError() — remote-mode getTableData() request rejected. */
+  'table-load-error': { error: unknown };
+  /** snice-table.ts setupLazyLoading()'s scroll handler — near scroll-bottom threshold. */
+  'lazy-load': { currentCount: number };
+  /** table-editor.ts commitCellEdit(). */
+  'cell-edit-commit': { rowIndex: number; columnKey: string; oldValue: any; newValue: any };
+  /** table-editor.ts cancelCellEdit(). */
+  'cell-edit-cancel': { rowIndex: number; columnKey: string };
+  /** table-editor.ts commitRowEdit(). */
+  'row-edit-commit': { rowIndex: number; oldRow: any; newRow: any };
+  /** table-editor.ts cancelRowEdit(). */
+  'row-edit-cancel': { rowIndex: number };
+  /** table-master-detail.ts expand(). */
+  'row-expand': { rowIndex: number };
+  /** table-master-detail.ts collapse(). */
+  'row-collapse': { rowIndex: number };
+  /** table-master-detail.ts createToggleButton()'s click handler. */
+  'detail-toggle': { rowIndex: number; expanded: boolean };
+  /** table-row-dnd.ts TableRowDnD's drop handler. */
+  'row-reorder': { fromIndex: number; toIndex: number };
+  /** table-row-dnd.ts TableColumnDnD's drop handler. */
+  'column-reorder': { fromKey: string; toKey: string };
+  /** table-column-manager.ts startResize()'s mousemove handler. */
+  'column-resize': { key: string; width: number };
+  /** table-column-manager.ts startResize()'s mouseup handler. */
+  'column-resize-end': { key: string; width: number };
+  /** table-tree-data.ts createToggle()'s click handler — bubbles from the
+   *  toggle button the table renders into a tree-mode group column cell. */
+  'tree-toggle': { key: string; expanded: boolean };
+  /** snice-cell-actions.ts dispatchAction() — bubbles from an `actions`-type
+   *  cell the table renders via createCellElement. */
+  'cell-action': { action: string; rowData: any; column: ColumnDefinition | null };
 }
 
 export interface SniceHeaderElement extends HTMLElement {
