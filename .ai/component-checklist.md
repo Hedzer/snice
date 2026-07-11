@@ -98,4 +98,3 @@ Description paragraph.
 - [ ] `npm run build` — succeeds
 - [ ] `npm test` — all tests pass
 - [ ] Remove from `components/.wip` if previously listed
-- [ ] Update `.ai/tasks.md` — mark component complete
