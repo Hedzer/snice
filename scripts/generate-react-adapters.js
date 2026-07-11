@@ -21,6 +21,28 @@ const componentMetadata = {
   // Will be populated by scanning component files
 };
 
+// Component-specific public types that cannot be recovered from the lightweight
+// decorator regex alone. Keep these inline so generated adapters remain
+// publishable without referring back to the unshipped TypeScript source tree.
+const reactTypeOverrides = {
+  table: {
+    properties: {
+      columns: 'any[]',
+      data: 'any[]',
+      pageSizes: 'number[]',
+      currentSort: "Array<{ column: string; direction: 'asc' | 'desc' }>",
+      selectedRows: 'number[]',
+      selectionMode: "'none' | 'single' | 'multiple'",
+      groupBy: 'string | string[]',
+      groupDefaults: '{ expanded?: boolean }',
+    },
+    events: {
+      onSelectionChanged: 'CustomEvent<{ selectedRows: number[]; rows: any[] }>',
+      onGroupToggle: 'CustomEvent<{ key: string; value: any; expanded: boolean }>',
+    },
+  },
+};
+
 /**
  * Extract properties from a component's TypeScript file
  */
@@ -77,6 +99,7 @@ function extractPropertiesFromFile(filePath) {
  */
 function generateReactComponent(componentName, metadata) {
   const { properties, events, isFormAssociated } = metadata;
+  const typeOverrides = reactTypeOverrides[componentName] || { properties: {}, events: {} };
   const tagName = `snice-${componentName}`;
   const componentClassName = componentName
     .split('-')
@@ -84,11 +107,11 @@ function generateReactComponent(componentName, metadata) {
     .join('');
 
   const propsInterface = properties.length > 0
-    ? properties.map(prop => `  ${prop}?: any;`).join('\n')
+    ? properties.map(prop => `  ${prop}?: ${typeOverrides.properties[prop] || 'any'};`).join('\n')
     : '';
 
   const eventProps = Object.values(events).map(callback =>
-    `  ${callback}?: (event: any) => void;`
+    `  ${callback}?: (event: ${typeOverrides.events[callback] || 'any'}) => void;`
   ).join('\n');
 
   const basePropsType = isFormAssociated ? 'SniceFormProps' : 'SniceBaseProps';

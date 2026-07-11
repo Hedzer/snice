@@ -1,4 +1,4 @@
-import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose } from 'snice';
+import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose, on } from 'snice';
 import '../input/snice-input';
 import '../select/snice-select';
 import '../button/snice-button';
@@ -264,7 +264,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private columnDnD = new TableColumnDnD();
   private pinnedTopRows: any[] = [];
   private pinnedBottomRows: any[] = [];
+  private toolbarOptions: ToolbarOptions | null = null;
   private lazyLoadHandler: (() => void) | null = null;
+  private lazyLoadContainer: HTMLElement | null = null;
   private rowHeightCallback: ((row: any, index: number) => number) | null = null;
 
   @query('table')
@@ -392,13 +394,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     this.renderQueued = true;
     queueMicrotask(() => {
-      this.renderQueued = false;
-      const doHeader = this.pendingHeaderRender;
-      const doBody = this.pendingBodyRender;
-      this.pendingHeaderRender = false;
-      this.pendingBodyRender = false;
-      if (doHeader) this.renderHeader();
-      if (doBody) this.renderBody();
+      // @property invokes watchers before it asks Snice to update the template.
+      // A second microtask lets that differential render commit first when a
+      // property changes the table's structural mode (notably slotted rows →
+      // grouped native table), while still coalescing a burst into one flush.
+      queueMicrotask(() => {
+        this.renderQueued = false;
+        const doHeader = this.pendingHeaderRender;
+        const doBody = this.pendingBodyRender;
+        this.pendingHeaderRender = false;
+        this.pendingBodyRender = false;
+        if (doHeader) this.renderHeader();
+        if (doBody) this.renderBody();
+      });
     });
   }
 
@@ -1128,6 +1136,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         color: var(--snice-color-text, rgb(23 23 23));
       }
 
+      .tree-toggle:focus-visible {
+        outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, hsl(217 91% 60% / 0.5));
+        outline-offset: var(--snice-focus-ring-offset, 2px);
+      }
+
       .tree-toggle-icon {
         width: 1rem;
         height: 1rem;
@@ -1146,13 +1159,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       /* Row grouping — group header row */
       .group-header-row {
-        background: var(--snice-color-surface-container-low, rgb(245 245 245));
+        background: var(--snice-table-group-header-bg, var(--snice-color-surface-container-low, hsl(0 0% 98%)));
       }
 
       .group-header-cell {
         cursor: pointer;
         font-weight: var(--snice-font-weight-semibold, 600);
-        color: var(--snice-color-text, rgb(23 23 23));
+        color: var(--snice-table-group-header-color, var(--snice-color-text, hsl(0 0% 9%)));
         user-select: none;
         padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
       }
@@ -1181,8 +1194,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         margin-left: var(--snice-spacing-xs, 0.5rem);
         padding: 0 var(--snice-spacing-2xs, 0.25rem);
         border-radius: 999px;
-        background: var(--snice-color-surface-container-high, rgb(252 251 249));
-        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        background: var(--snice-table-group-count-bg, var(--snice-color-surface-container-high, hsl(40 9% 97%)));
+        color: var(--snice-table-group-count-color, var(--snice-color-text-secondary, hsl(0 0% 32%)));
         font-size: var(--snice-font-size-xs, 0.75rem);
         font-weight: var(--snice-font-weight-medium, 500);
         vertical-align: middle;
@@ -1190,24 +1203,29 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       /* Row grouping — aggregate footer row */
       .group-aggregate-row {
-        background: var(--snice-color-surface-container, rgb(235 235 235));
+        background: var(--snice-table-aggregate-bg, var(--snice-color-surface-container, hsl(0 0% 95%)));
         font-weight: var(--snice-font-weight-medium, 500);
       }
 
       .group-aggregate-row[data-agg-scope="table"] {
-        border-top: 2px solid var(--snice-color-border, rgb(226 226 226));
+        border-top: 2px solid var(--snice-table-aggregate-border-color, var(--snice-color-border, hsl(0 0% 82%)));
         font-weight: var(--snice-font-weight-semibold, 600);
       }
 
       .group-aggregate-row .aggregate-cell {
-        color: var(--snice-color-text, rgb(23 23 23));
+        color: var(--snice-table-aggregate-color, var(--snice-color-text, hsl(0 0% 9%)));
       }
 
       .aggregate-label {
-        color: var(--snice-color-text-secondary, rgb(82 82 82));
+        color: var(--snice-table-aggregate-label-color, var(--snice-color-text-secondary, hsl(0 0% 32%)));
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-size: var(--snice-font-size-xs, 0.75rem);
+      }
+
+      .aggregate-label--inline {
+        display: block;
+        margin-bottom: var(--snice-spacing-2xs, 0.25rem);
       }
 
       /* Row pinning */
@@ -1436,7 +1454,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @render()
   render() {
     // Check if we have slotted rows
-    const hasSlottedRows = this.querySelectorAll('snice-row[slot="rows"]').length > 0;
+    const hasSlottedRows = this.querySelectorAll('snice-row[slot="rows"]').length > 0
+      && !this.shouldModelSlottedRows();
 
     if (hasSlottedRows) {
       // Use slotted rows layout
@@ -1564,6 +1583,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     // Process slotted columns and rows
     await this.processSlottedContent();
+    await (this as any).rendered;
+
+    // Pre-connect property assignments do not invoke change-only watchers in
+    // Snice. Configure grouping explicitly once initialization has applied
+    // those values so `table.groupBy = ...` works before the element is added
+    // to the document (React/story/programmatic creation path).
+    this.syncGrouping();
 
     // Render controls after initial setup
     this.renderControls();
@@ -1576,9 +1602,18 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.rowReorder) this.rowDnD.attach(this);
     if (this.columnReorder) this.columnDnD.attach(this);
 
+    // We are at the safe post-template point and all feature modules that
+    // affect row/header construction are attached. Finish the initial paint
+    // synchronously so the public `ready` promise includes pre-connect
+    // grouping, DnD handles, keyboard ARIA, and aggregate footers.
+    this.renderHeader();
+    this.renderBody();
+
     // Setup virtualization if enabled
     if (this.virtualize) {
-      requestAnimationFrame(() => this.setupVirtualization());
+      requestAnimationFrame(() => {
+        if (!this.virtualizer.isEnabled()) this.setupVirtualization();
+      });
     }
 
     // Setup lazy loading
@@ -1589,9 +1624,39 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Listen for DnD events
     this.addEventListener('row-reorder', ((e: CustomEvent) => {
       const { fromIndex, toIndex } = e.detail;
+      if (!Number.isInteger(fromIndex) || !Number.isInteger(toIndex)
+          || fromIndex < 0 || toIndex < 0
+          || fromIndex >= this.data.length || toIndex >= this.data.length) return;
+      if (fromIndex === toIndex) return;
+
+      const selectedRows = this.selectedRows
+        .map((index) => this.data[index])
+        .filter((row) => row !== undefined);
+      const expandedRows = Array.from(this.masterDetail.getExpandedRows())
+        .map((index) => this.data[index])
+        .filter((row) => row !== undefined);
       const item = this.data.splice(fromIndex, 1)[0];
+
+      // A drop onto another group means reparenting the row. Group rendering
+      // is derived from the groupBy fields, so merely changing raw array order
+      // would make a cross-group drop visually snap back to its old group.
+      // Copy the target leaf's grouping values before insertion so the rendered
+      // result honors the user's actual drop target (all nested levels too).
+      const targetBeforeRemoval = this.data[toIndex > fromIndex ? toIndex - 1 : toIndex];
+      if (item && targetBeforeRemoval && this.grouping.hasGrouping()) {
+        for (const key of this.grouping.getGroupByKeys()) {
+          item[key] = targetBeforeRemoval[key];
+        }
+      }
+
       this.data.splice(toIndex, 0, item);
-      this.setData([...this.data]);
+      this.data = [...this.data];
+      this.selectedRows = selectedRows
+        .map((row) => this.indexOfRow(row))
+        .filter((index) => index >= 0);
+      this.masterDetail.setExpandedRows(
+        expandedRows.map((row) => this.indexOfRow(row)).filter((index) => index >= 0)
+      );
     }) as EventListener);
 
     this.addEventListener('column-reorder', ((e: CustomEvent) => {
@@ -1608,53 +1673,93 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Listen for tree toggle
     this.addEventListener('tree-toggle', () => this.renderBody());
 
-    // F: a group chevron's own click already toggled the model + dispatched;
-    // re-render so the body reflects the new expansion. (The whole-cell click
-    // path routes through toggleGroup, which renders itself — this catches the
-    // chevron-button path, mirroring the tree-toggle listener above.)
-    this.addEventListener('group-toggle', ((e: Event) => {
-      // Only react to the module chevron's event, not toggleGroup's re-dispatch
-      // (toggleGroup renders synchronously; a second render here is harmless but
-      // wasteful). Distinguish by target: the chevron button carries .tree-toggle.
-      const target = e.target as HTMLElement;
-      if (target?.classList?.contains?.('tree-toggle')) {
-        this.invalidateGroupingCache();
-        this.renderBody();
-      }
-    }) as EventListener);
   }
 
   private async processSlottedContent() {
     // Get slotted column elements
     const columnElements = Array.from(this.querySelectorAll('snice-column[slot="columns"]')) as any[];
+    const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
+    await Promise.all(rowElements.map((row) => row.ready));
 
     if (columnElements.length > 0) {
       // Extract column definitions from snice-column elements
       this.columns = columnElements.map((col: any) => col.getColumnDefinition());
+    }
 
-      // Pass column definitions to slotted rows
-      const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
-      rowElements.forEach((row: any, index: number) => {
-        row.columns = this.columns;
-        row.index = index;
-        row.hoverable = this.hoverable;
-        row.clickable = this.clickable;
-        row.selectable = this.selectable;
-      });
+    // Pass declarative or programmatically assigned column definitions to rows.
+    rowElements.forEach((row: any, index: number) => {
+      row.columns = this.columns;
+      row.index = index;
+      row.hoverable = this.hoverable;
+      row.clickable = this.clickable;
+      row.selectable = this.selectable;
+    });
 
-      // Render the header for slotted mode (after next tick to ensure DOM is updated)
+    // Grouping/aggregation operates on the same model regardless of whether
+    // rows came from a JS array or declarative <snice-row> children.
+    if (this.shouldModelSlottedRows()) this.syncSlottedRowsIntoData();
+
+    // Render the header for slotted mode (after next tick to ensure DOM is updated)
+    if (columnElements.length > 0 && !this.shouldModelSlottedRows()) {
       requestAnimationFrame(() => this.renderSlottedHeader());
     }
+  }
+
+  /** Whether declarative rows need the full grouping/aggregation table model. */
+  private shouldModelSlottedRows(): boolean {
+    const keys = Array.isArray(this.groupBy) ? this.groupBy : (this.groupBy ? [this.groupBy] : []);
+    return keys.some(Boolean) || this.columns.some((column) => column.aggregate != null);
+  }
+
+  /** Copy declarative row data into the table model without parsing markup. */
+  private syncSlottedRowsIntoData() {
+    const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
+    if (rowElements.length === 0) return;
+
+    const rows = rowElements.map((row) => {
+      if (row.data && Object.keys(row.data).length > 0) return row.data;
+      const serialized = row.getAttribute('data');
+      if (serialized) {
+        try { return JSON.parse(serialized); }
+        catch { /* snice-row's data-* extraction remains the fallback */ }
+      }
+      return row.data ?? {};
+    });
+    this.data = rows;
   }
 
   private renderSlottedHeader() {
     const headerContainer = this.shadowRoot?.querySelector('#slotted-header');
     if (!headerContainer || this.columns.length === 0) return;
 
-    // Render column headers
-    headerContainer.innerHTML = this.columns.map(col =>
-      `<div class="header-cell">${col.label}</div>`
-    ).join('');
+    // Render column headers as DOM/text, never parsed definition markup.
+    headerContainer.replaceChildren();
+    for (const column of this.columns) {
+      const cell = document.createElement('div');
+      cell.className = 'header-cell';
+      cell.textContent = column.label ?? column.key;
+      headerContainer.appendChild(cell);
+    }
+  }
+
+  /** Keep declarative column definitions reactive, including aggregate. */
+  @on('column-changed')
+  private handleDeclarativeColumnChange() {
+    const columnElements = Array.from(this.querySelectorAll('snice-column[slot="columns"]')) as any[];
+    if (columnElements.length === 0) return;
+    this.columns = columnElements.map((column) => column.getColumnDefinition());
+
+    // Ungrouped declarative rows stay in their light-DOM rendering path, so
+    // they do not consume the native table render scheduled by the columns
+    // watcher. Keep their model and header synchronized explicitly. When a new
+    // aggregate switches the table to native mode the watcher instead copies
+    // row data into the shared model.
+    const rowElements = Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
+    rowElements.forEach((row) => { row.columns = this.columns; });
+    requestAnimationFrame(() => {
+      if (!this.shouldModelSlottedRows()) this.renderSlottedHeader();
+      this.renderControls();
+    });
   }
 
 
@@ -1690,6 +1795,22 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // model's aggregator list and drop its stale flattened snapshot.
     this.grouping.setColumns(this.columns);
     this.invalidateGroupingCache();
+    const hasSlottedRows = !!this.querySelector('snice-row[slot="rows"]');
+    const modelSlottedRows = this.shouldModelSlottedRows();
+    if (hasSlottedRows
+        && this.virtualizer.isEnabled()
+        && !!this.shadowRoot?.querySelector('table') !== modelSlottedRows) {
+      this.virtualizer.detach();
+    }
+    if (modelSlottedRows) this.syncSlottedRowsIntoData();
+    if (hasSlottedRows) {
+      requestAnimationFrame(() => {
+        if (!modelSlottedRows) this.renderSlottedHeader();
+        this.renderControls();
+        if (this.toolbarOptions) this.setToolbar(this.toolbarOptions);
+        if (this.lazyLoad) this.setupLazyLoading();
+      });
+    }
     this.scheduleRender('both');
   }
 
@@ -1701,7 +1822,27 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @watch('groupBy', 'groupDefaults', { immediate: false })
   handleGroupByChange() {
     this.syncGrouping();
-    this.scheduleRender('body');
+    const hasSlottedRows = !!this.querySelector('snice-row[slot="rows"]');
+    const modelSlottedRows = this.shouldModelSlottedRows();
+    if (hasSlottedRows
+        && this.virtualizer.isEnabled()
+        && !!this.shadowRoot?.querySelector('table') !== modelSlottedRows) {
+      this.virtualizer.detach();
+    }
+    if (modelSlottedRows) {
+      this.syncSlottedRowsIntoData();
+    }
+    if (hasSlottedRows) {
+      requestAnimationFrame(() => {
+        // Clearing the last model feature switches the structural template
+        // back to slotted mode; either direction replaces the controls.
+        if (!modelSlottedRows) this.renderSlottedHeader();
+        this.renderControls();
+        if (this.toolbarOptions) this.setToolbar(this.toolbarOptions);
+        if (this.lazyLoad) this.setupLazyLoading();
+      });
+    }
+    this.scheduleRender(hasSlottedRows ? 'both' : 'body');
   }
 
   // F: push the current groupBy/groupDefaults into the grouping model and drop
@@ -1845,6 +1986,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (!this.thead) return;
     
     const headerRow = document.createElement('tr');
+    headerRow.className = 'column-header-row';
 
     // Tool column headers — must match createRow order
     if (this.rowReorder && this.rowDnD.isEnabled()) {
@@ -2087,7 +2229,18 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // F: keep the grouping model's aggregator list current before any
     // isEnabled() check below — isEnabled() reports aggregation-only tables too,
     // and setColumns is what tells it which columns aggregate.
-    this.grouping.setColumns(this.columns);
+    if (this.grouping.setColumns(this.columns)) this.invalidateGroupingCache();
+
+    // In grouped client-pagination mode the public total is the flattened
+    // display model (headers + visible rows + aggregate footers), including on
+    // the virtual path which returns before the ordinary pagination block.
+    if (this.pagination && this.paginationMode === 'client') {
+      if (this.usesGroupingDisplayModel()) {
+        this.totalItems = this.getGroupingItems().length;
+      } else if (this.treeData.isEnabled()) {
+        this.totalItems = this.getTreeDisplayRows(false).length;
+      }
+    }
 
     // Self-heal: virtualize requested but the virtualizer never enabled
     // (property assigned after @ready, or the one-shot rAF setup missed the
@@ -2102,10 +2255,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // dataset and expand/collapse silently no-ops.
     if (this.virtualize && this.virtualizer.isEnabled()) {
       this.virtualizer.setTotalRows(this.getVirtualRows().length);
-      this.virtualizer.refresh();
-
-      // Re-establish grid role + roving tabindex on the freshly windowed rows.
-      this.keyboard.refresh();
+      // The virtualizer's afterRender hook re-establishes grid ARIA/focus on
+      // the freshly inserted window.
 
       // Still render pagination
       if (this.pagination) this.renderPagination();
@@ -2174,17 +2325,24 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Apply client-side filters (cached snapshot — see getFilteredData).
     const filteredData = this.getFilteredData();
 
-    // Client-side pagination: slice data
+    // Client-side pagination: slice ordinary data. Group and tree modes page
+    // their own flattened models and already set totalItems above; overwriting
+    // it here with the raw filtered-row count made public state differ between
+    // virtual and non-virtual rendering.
     let displayData = filteredData;
-    let startIndex = 0;
-    if (this.pagination && this.paginationMode === 'client') {
+    if (this.pagination && this.paginationMode === 'client'
+        && !this.usesGroupingDisplayModel() && !this.treeData.isEnabled()) {
       this.totalItems = filteredData.length;
-      startIndex = (this.currentPage - 1) * this.pageSize;
+      const startIndex = (this.currentPage - 1) * this.pageSize;
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
     const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
-    const totalColSpan = this.columns.length + extraCols;
+    const managedColumns = this.columnManager.getAllStates();
+    const visibleColumnCount = managedColumns.length > 0
+      ? this.columnManager.getVisibleColumns().length
+      : this.columns.length;
+    const totalColSpan = visibleColumnCount + extraCols;
     const structuralSig = this.computeStructuralSig();
 
     // Task B: describe the desired body as an ordered list of keyed entries,
@@ -2207,16 +2365,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       });
     });
 
-    if (this.grouping.isEnabled()) {
+    if (this.usesGroupingDisplayModel()) {
       // F: page over the FLATTENED group+row+aggregate list (built from the full
       // filtered data — grouping must see every row, not a pre-sliced page).
-      let items = this.getGroupingItems();
-      let itemStart = 0;
-      if (this.pagination && this.paginationMode === 'client') {
-        this.totalItems = items.length;
-        itemStart = (this.currentPage - 1) * this.pageSize;
-        items = items.slice(itemStart, itemStart + this.pageSize);
-      }
+      const items = this.getDisplayedGroupingItems();
 
       for (const item of items) {
         if (item.type === 'group') {
@@ -2248,26 +2400,50 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
             restampIndex: index,
             create: () => this.createRow(item.data, index),
           });
+
+          // Grouping/aggregation must compose with master-detail exactly like
+          // the ordinary and virtual paths. Aggregation-only mode also routes
+          // through this branch, so omitting this entry made enabling a footer
+          // silently remove every expanded detail panel.
+          if (this.masterDetail.isEnabled() && this.masterDetail.isExpanded(index)) {
+            entries.push({
+              key: `__detail_${index}`,
+              sig: 'detail',
+              alwaysRebuild: true,
+              create: () =>
+                this.masterDetail.createDetailRow(item.data, index, totalColSpan) ??
+                document.createElement('tr'),
+            });
+          }
         }
       }
     } else if (this.treeData.isEnabled()) {
-      const treeRows = this.treeData.processData(displayData);
-      treeRows.forEach((treeRow, i) => {
-        const index = startIndex + i;
+      const treeRows = this.getTreeDisplayRows(true);
+      treeRows.forEach(({ data: rowData, index, treeRow, groupItem }) => {
+        if (groupItem?.type === 'aggregate') {
+          entries.push({
+            key: groupItem.key,
+            sig: `${structuralSig}|agg:${groupItem.key}`,
+            alwaysRebuild: true,
+            create: () => this.createAggregateRow(groupItem, totalColSpan),
+          });
+          return;
+        }
+        if (!treeRow) return;
         const editing = this.isRowEditing(index);
         entries.push({
-          key: treeRow.data,
+          key: rowData,
           // The edit marker makes the editing→display transition a signature
           // change, so a row leaving edit state rebuilds (drops its editor DOM).
-          sig: this.rowSignature(treeRow.data, index, structuralSig, treeRow) + (editing ? '|edit' : ''),
+          sig: this.rowSignature(rowData, index, structuralSig, treeRow) + (editing ? '|edit' : ''),
           alwaysRebuild: editing,
           restampIndex: index,
-          create: () => this.createRow(treeRow.data, index, treeRow),
+          create: () => this.createRow(rowData, index, treeRow),
         });
       });
     } else {
-      displayData.forEach((rowData, i) => {
-        const index = startIndex + i;
+      displayData.forEach((rowData) => {
+        const index = this.indexOfRow(rowData);
         const editing = this.isRowEditing(index);
         entries.push({
           key: rowData,
@@ -2488,7 +2664,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // behavior is unchanged (data.length).
   private paginationTotal(): number {
     if (this.paginationMode !== 'client') return this.totalItems;
-    if (this.grouping.isEnabled()) return this.getGroupingItems().length;
+    if (this.usesGroupingDisplayModel()) return this.getGroupingItems().length;
+    if (this.treeData.isEnabled()) return this.getTreeDisplayRows(false).length;
     return this.data.length;
   }
 
@@ -2899,6 +3076,27 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Handle row click
     const tr = target.closest('tbody tr') as HTMLElement;
     if (tr) {
+      // Group rows have no data-index. Route the whole header cell (including
+      // its chevron) through the table's one Snice-bound click handler so the
+      // model toggles once and @dispatch emits from the host. Checkbox clicks
+      // are handled by handleChange and must not also collapse the group.
+      if (tr.classList.contains('group-header-row')) {
+        if (target.closest('snice-checkbox.group-select')) return;
+        const key = tr.getAttribute('data-group-key');
+        const group = key
+          ? this.getGroupingItems().find(
+              (item): item is GroupRow => item.type === 'group' && item.key === key
+            )
+          : undefined;
+        if (group) this.toggleGroup(group);
+        return;
+      }
+
+      // Aggregate, spacer, loading, error, and empty-state rows are structural
+      // rows, not row zero. Ignoring them prevents phantom selection/click
+      // events caused by parseInt(null || '0').
+      if (!tr.hasAttribute('data-index')) return;
+
       // Don't trigger if clicking on checkbox or other interactive elements
       if (target.matches('input[type="checkbox"], button, a, .interactive, snice-checkbox, snice-button, snice-input, snice-select')) {
         return;
@@ -2961,7 +3159,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       );
       if (!group) return;
 
-      const indices = group.rows.map((r) => this.indexOfRow(r)).filter((i) => i >= 0);
+      const indices = this.getSelectableGroupIndices(group);
       if (checkbox.checked) {
         this.selectedRows = Array.from(new Set([...this.selectedRows, ...indices]));
       } else {
@@ -3238,18 +3436,34 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.shadowRoot) {
       this.keyboard.attach({
         shadowRoot: this.shadowRoot,
-        // Live getters: bounds always reflect the current filtered dataset and
-        // column set, even after async setData/setColumns/filter/pagination.
-        totalRows: () => this.getFilteredData().length,
-        totalColumns: () => this.columns.length,
+        // Keyboard order follows the rows users can actually focus. In grouped
+        // mode this excludes group/aggregate rows and collapsed descendants;
+        // callbacks below translate that navigation position back to the raw
+        // data index expected by selection/editing APIs.
+        totalRows: () => this.getKeyboardRows().length,
+        ariaRows: () => this.usesGroupingDisplayModel()
+          ? this.getDisplayedGroupingItems().length
+          : (this.treeData.isEnabled()
+              ? this.getTreeDisplayRows(true).length
+              : this.getKeyboardRows().length),
+        ariaRowOffset: () => this.virtualize && this.virtualizer.isEnabled()
+          ? Math.max(0, this.virtualizer.getVisibleRange().start)
+          : 0,
+        // Use the actual main-header width: tool columns add grid cells and
+        // hidden data columns remove them. Raw columns.length made keyboard
+        // navigation stop early or point at nonexistent cells.
+        totalColumns: () => this.getKeyboardColumnCount(),
         tabMode: 'all',
         isEditing: () => this.editor.isEditing(),
-        ensureRowVisible: (rowIndex) => this.ensureRowRendered(rowIndex),
+        getRowElement: (rowIndex) => this.getKeyboardRowElement(rowIndex),
+        ensureRowVisible: (rowIndex) => this.ensureKeyboardRowRendered(rowIndex),
         onCellActivate: (row, col) => {
-          if (this.editable) this.startEdit(row, col);
+          const dataIndex = this.getKeyboardDataIndex(row);
+          if (this.editable && dataIndex >= 0 && col) this.startEdit(dataIndex, col);
         },
         onSelectionToggle: (row) => {
-          if (this.selectable) this.toggleRowSelection(row);
+          const dataIndex = this.getKeyboardDataIndex(row);
+          if (this.selectable && dataIndex >= 0) this.toggleRowSelection(dataIndex);
         },
         onSelectAll: () => {
           if (this.selectable) this.selectAllRows();
@@ -3262,9 +3476,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   cleanup() {
     this.virtualizer.detach();
     this.keyboard.detach();
-    if (this.lazyLoadHandler) {
-      this.getScrollContainer()?.removeEventListener('scroll', this.lazyLoadHandler);
-    }
+    if (this.lazyLoadHandler) this.lazyLoadContainer?.removeEventListener('scroll', this.lazyLoadHandler);
+    this.lazyLoadHandler = null;
+    this.lazyLoadContainer = null;
   }
 
   // ── Virtualization API ──
@@ -3280,7 +3494,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   private setupVirtualization() {
-    if (!this.virtualize || !this.shadowRoot) return;
+    if (!this.virtualize || !this.shadowRoot || !this.tbody) return;
 
     const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
@@ -3295,6 +3509,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       // exactly like the non-virtual path (renderBody).
       renderPinnedTop: () => this.renderPinnedRows(this.pinnedTopRows, 'top'),
       renderPinnedBottom: () => this.renderPinnedRows(this.pinnedBottomRows, 'bottom'),
+      // Scroll-driven windows bypass renderBody; restore grid roles, logical
+      // row indices, and roving focus after every inserted range.
+      afterRender: () => this.keyboard.refresh(),
     });
   }
 
@@ -3309,19 +3526,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // F: the flattened group+row+aggregate list is the virtual model when
     // grouping/aggregation is on — same pattern as tree data. Group/aggregate
     // rows carry no data index; data rows key off their index in `this.data`.
-    if (this.grouping.isEnabled()) {
-      return this.getGroupingItems().map((groupItem, i) => ({
+    if (this.usesGroupingDisplayModel()) {
+      return this.getDisplayedGroupingItems().map((groupItem, i) => ({
         data: groupItem.type === 'row' ? groupItem.data : undefined,
         index: i,
         groupItem,
       }));
     }
     if (this.treeData.isEnabled()) {
-      return this.treeData
-        .processData(filtered)
-        .map((treeRow, i) => ({ data: treeRow.data, index: i, treeRow }));
+      return this.getTreeDisplayRows(true);
     }
-    return filtered.map((data, i) => ({ data, index: i }));
+    return filtered.map((data) => ({ data, index: this.indexOfRow(data) }));
   }
 
   private renderRowRange(startIndex: number, endIndex: number): DocumentFragment {
@@ -3332,7 +3547,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       (this.selectable ? 1 : 0) +
       (this.masterDetail.isEnabled() ? 1 : 0) +
       (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
-    const totalColSpan = this.columns.length + extraCols;
+    const managedColumns = this.columnManager.getAllStates();
+    const visibleColumnCount = managedColumns.length > 0
+      ? this.columnManager.getVisibleColumns().length
+      : this.columns.length;
+    const totalColSpan = visibleColumnCount + extraCols;
     const structuralSig = this.computeStructuralSig();
 
     // Task B: recycle rows that stay in the window across a scroll shift. A row
@@ -3406,20 +3625,81 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   scrollToRow(index: number) {
+    // Public row indices refer to `this.data`; grouped/tree virtualization
+    // scrolls a flattened display model containing structural rows as well.
+    // Translate through row identity so callers still land on the requested
+    // data row rather than an unrelated header/subtotal.
+    if (this.usesGroupingDisplayModel() || this.treeData.isEnabled()) {
+      const row = this.data[index];
+      const displayIndex = this.getVirtualRows().findIndex((entry) => entry.data === row);
+      if (displayIndex >= 0) this.virtualizer.scrollToIndex(displayIndex);
+      return;
+    }
     this.virtualizer.scrollToRow(index);
   }
 
+  /** Rows currently reachable by grid keyboard navigation, in display order. */
+  private getKeyboardColumnCount(): number {
+    const rendered = this.shadowRoot?.querySelectorAll('thead tr.column-header-row > th').length ?? 0;
+    if (rendered > 0) return rendered;
+
+    const states = this.columnManager.getAllStates();
+    const dataColumns = states.length > 0
+      ? this.columnManager.getVisibleColumns().length
+      : this.columns.length;
+    return dataColumns
+      + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0)
+      + (this.masterDetail.isEnabled() ? 1 : 0)
+      + (this.selectable ? 1 : 0);
+  }
+
+  private getKeyboardRows(): any[] {
+    if (this.usesGroupingDisplayModel()) {
+      return this.getDisplayedGroupingItems()
+        .filter((item): item is Extract<DisplayItem, { type: 'row' }> => item.type === 'row')
+        .map((item) => item.data);
+    }
+
+    if (this.treeData.isEnabled()) {
+      return this.getTreeDisplayRows(true)
+        .filter((item) => !!item.treeRow)
+        .map((item) => item.data);
+    }
+
+    let rows = this.getFilteredData();
+    if (this.pagination && this.paginationMode === 'client') {
+      const start = (this.currentPage - 1) * this.pageSize;
+      rows = rows.slice(start, start + this.pageSize);
+    }
+    return rows;
+  }
+
+  /** Translate a keyboard navigation position to the table's raw data index. */
+  private getKeyboardDataIndex(rowIndex: number): number {
+    const row = this.getKeyboardRows()[rowIndex];
+    return row === undefined ? -1 : this.indexOfRow(row);
+  }
+
+  private getKeyboardRowElement(rowIndex: number): HTMLElement | null {
+    const dataIndex = this.getKeyboardDataIndex(rowIndex);
+    if (dataIndex < 0) return null;
+    return this.tbody?.querySelector(`tr[data-index="${dataIndex}"]`) as HTMLElement | null;
+  }
+
   /**
-   * Ensure the row at `rowIndex` (a logical/data index) is present in the DOM.
-   * Under virtualization only the current window is rendered, so keyboard focus
-   * moving to a row outside the window must scroll that row's range into view
-   * and render it synchronously before focus can land on it. No-op when the row
-   * is already rendered or virtualization is off.
+   * Ensure a keyboard row is in the virtual window. The virtualizer scrolls by
+   * flattened display position while keyboard navigation indexes visible data
+   * rows, so resolve through the shared virtual row model instead of assuming
+   * those two indices are interchangeable.
    */
-  private ensureRowRendered(rowIndex: number) {
+  private ensureKeyboardRowRendered(rowIndex: number) {
     if (!this.virtualize || !this.virtualizer.isEnabled()) return;
-    if (this.tbody?.querySelector(`tr[data-index="${rowIndex}"]`)) return;
-    this.virtualizer.scrollToIndex(rowIndex);
+    if (this.getKeyboardRowElement(rowIndex)) return;
+
+    const row = this.getKeyboardRows()[rowIndex];
+    if (row === undefined) return;
+    const displayIndex = this.getVirtualRows().findIndex((entry) => entry.data === row);
+    if (displayIndex >= 0) this.virtualizer.scrollToIndex(displayIndex);
   }
 
   getScrollPosition() {
@@ -3529,10 +3809,66 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // filtered data, cached like filteredCache. setColumns keeps the aggregator
   // set in sync with the live columns before each rebuild.
   private getGroupingItems(): DisplayItem[] {
+    if (this.grouping.setColumns(this.columns)) this.invalidateGroupingCache();
     if (this.groupingCache) return this.groupingCache;
-    this.grouping.setColumns(this.columns);
     this.groupingCache = this.grouping.processData(this.getFilteredData());
     return this.groupingCache;
+  }
+
+  /**
+   * Row grouping owns the hierarchy whenever groupBy is non-empty. With no
+   * groupBy, aggregation normally uses the same flattened row+footer model,
+   * except when tree data is active: tree hierarchy stays intact and the table
+   * total is appended to that tree model instead.
+   */
+  private usesGroupingDisplayModel(): boolean {
+    return this.grouping.hasGrouping()
+      || (this.grouping.hasAggregation() && !this.treeData.isEnabled());
+  }
+
+  /**
+   * Group display items on the active client-side page. This single helper is
+   * shared by normal rendering, virtualization, keyboard navigation, and ARIA
+   * so combining those features cannot produce four different row models.
+   */
+  private getDisplayedGroupingItems(): DisplayItem[] {
+    const items = this.getGroupingItems();
+    if (!this.pagination || this.paginationMode !== 'client') return items;
+
+    const totalPages = Math.max(1, Math.ceil(items.length / this.pageSize));
+    const page = Math.max(1, Math.min(this.currentPage, totalPages));
+    if (page !== this.currentPage) this.currentPage = page;
+    const start = (page - 1) * this.pageSize;
+    return items.slice(start, start + this.pageSize);
+  }
+
+  /** Tree rows plus an optional table-total footer, optionally page-sliced. */
+  private getTreeDisplayRows(paginate: boolean): Array<{
+    data: any;
+    index: number;
+    treeRow?: TreeRow;
+    groupItem?: AggregateRow;
+  }> {
+    const rows: Array<{ data: any; index: number; treeRow?: TreeRow; groupItem?: AggregateRow }> =
+      this.treeData.processData(this.getFilteredData()).map((treeRow) => ({
+        data: treeRow.data,
+        index: this.indexOfRow(treeRow.data),
+        treeRow,
+      }));
+
+    if (this.grouping.hasAggregation()) {
+      const total = this.getGroupingItems().find(
+        (item): item is AggregateRow => item.type === 'aggregate' && item.scope === 'table'
+      );
+      if (total) rows.push({ data: undefined, index: -1, groupItem: total });
+    }
+
+    if (!paginate || !this.pagination || this.paginationMode !== 'client') return rows;
+    const totalPages = Math.max(1, Math.ceil(rows.length / this.pageSize));
+    const page = Math.max(1, Math.min(this.currentPage, totalPages));
+    if (page !== this.currentPage) this.currentPage = page;
+    const start = (page - 1) * this.pageSize;
+    return rows.slice(start, start + this.pageSize);
   }
 
   private applyClientFilters() {
@@ -3854,6 +4190,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // ── Toolbar API ──
 
   setToolbar(options: ToolbarOptions) {
+    this.toolbarOptions = options;
     const container = this.shadowRoot?.querySelector('.table-controls-container') as HTMLElement;
     if (!container) return;
 
@@ -4033,6 +4370,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
 
+    if (this.lazyLoadHandler) {
+      this.lazyLoadContainer?.removeEventListener('scroll', this.lazyLoadHandler);
+    }
+
     this.lazyLoadHandler = () => {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
       if (scrollHeight - scrollTop - clientHeight < this.lazyLoadThreshold) {
@@ -4045,6 +4386,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     };
 
     scrollContainer.addEventListener('scroll', this.lazyLoadHandler, { passive: true });
+    this.lazyLoadContainer = scrollContainer;
   }
 
   // ── Scrolling API ──
@@ -4188,15 +4530,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   /**
    * A group-header row: a single full-width cell holding an optional group
    * checkbox (selectable), the expand/collapse chevron (reusing the tree-toggle
-   * affordance), the group value, and a leaf-count badge. The whole cell toggles
-   * on click (except the checkbox); the chevron additionally dispatches
-   * `group-toggle` for consumers.
+   * affordance), the group value, and a leaf-count badge. The table's delegated
+   * click handler toggles the whole cell (except the checkbox) and emits one
+   * host-level `group-toggle` event.
    */
   private createGroupRow(group: GroupRow, totalColSpan: number): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.className = 'group-header-row';
     tr.setAttribute('data-group-key', group.key);
     tr.setAttribute('data-depth', String(group.depth));
+    tr.setAttribute('aria-label', `${group.value == null || group.value === '' ? 'Blank' : String(group.value)} group, ${group.count} rows`);
 
     const td = document.createElement('td');
     td.colSpan = totalColSpan;
@@ -4207,16 +4550,21 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const state = this.groupSelectionState(group);
       const wrap = document.createElement('span');
       wrap.className = 'group-select-wrap';
-      wrap.innerHTML = `<snice-checkbox class="group-select" size="small" compact ${state === 'all' ? 'checked' : ''} data-group-key="${group.key}"></snice-checkbox>`;
+      const checkbox = document.createElement('snice-checkbox') as any;
+      checkbox.className = 'group-select';
+      checkbox.setAttribute('size', 'small');
+      checkbox.setAttribute('compact', '');
+      checkbox.setAttribute('data-group-key', group.key);
+      checkbox.setAttribute('aria-label', `Select all rows in ${group.value == null || group.value === '' ? 'blank' : String(group.value)} group`);
+      checkbox.checked = state === 'all';
+      checkbox.indeterminate = state === 'some';
+      checkbox.disabled = this.getSelectableGroupIndices(group).length === 0;
+      wrap.appendChild(checkbox);
       td.appendChild(wrap);
-      const checkbox = wrap.querySelector('.group-select') as any;
-      // indeterminate is a property, not an attribute — set after insertion.
-      setTimeout(() => { if (checkbox) checkbox.indeterminate = state === 'some'; }, 0);
     }
 
-    // Chevron (visual + group-toggle dispatch). The table owns the toggle logic
-    // via the cell click handler below; the chevron reuses the module's builder
-    // so the DOM/classes match tree data + master-detail.
+    // The chevron is passive DOM; the root template's @click handler owns the
+    // interaction and host-level group-toggle dispatch.
     const toggle = this.grouping.createToggle(group);
     td.appendChild(toggle);
 
@@ -4229,14 +4577,6 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     count.className = 'group-header-count';
     count.textContent = String(group.count);
     td.appendChild(count);
-
-    // Clicking anywhere on the cell (but not the checkbox or the chevron, which
-    // handles its own click + event) toggles the group.
-    td.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('.group-select-wrap') || target.closest('.tree-toggle')) return;
-      this.toggleGroup(group);
-    });
 
     tr.appendChild(td);
     return tr;
@@ -4253,6 +4593,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     tr.className = 'group-aggregate-row';
     tr.setAttribute('data-agg-scope', agg.scope);
     tr.setAttribute('data-depth', String(agg.depth));
+    if (agg.groupKey) tr.setAttribute('data-group-key', agg.groupKey);
+    const groupLabel = agg.groupValue == null || agg.groupValue === '' ? 'Blank' : String(agg.groupValue);
+    const scopeLabel = agg.scope === 'table'
+      ? 'Total'
+      : `${agg.groupColumn ? `${agg.groupColumn}: ` : ''}${groupLabel} subtotal`;
+    tr.setAttribute('aria-label', scopeLabel);
 
     // Tool-column spacers (match createRow / renderHeader order).
     if (this.rowReorder && this.rowDnD.isEnabled()) {
@@ -4278,6 +4624,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       ? this.columns.filter((col) => visibleCols.some((s) => s.key === col.key))
       : this.columns;
 
+    const labelColumn = columnsToRender.find(
+      (column) => !Object.prototype.hasOwnProperty.call(agg.aggregates, column.key)
+    );
+    // If every visible column aggregates, keep the scope/group label in the
+    // first aggregate cell instead of silently omitting it.
+    const inlineLabelKey = labelColumn ? null : columnsToRender[0]?.key;
     let labelled = false;
     columnsToRender.forEach((column) => {
       const td = document.createElement('td');
@@ -4285,20 +4637,34 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       td.className = 'aggregate-cell';
 
       const hasAgg = Object.prototype.hasOwnProperty.call(agg.aggregates, column.key);
+      if ((!hasAgg && !labelled) || (hasAgg && column.key === inlineLabelKey)) {
+        labelled = true;
+        const label = document.createElement('span');
+        label.className = `aggregate-label${hasAgg ? ' aggregate-label--inline' : ''}`;
+        label.textContent = scopeLabel;
+        if (agg.scope === 'group' && agg.depth > 0) {
+          label.style.paddingLeft = `${agg.depth * 1.5}rem`;
+        }
+        td.appendChild(label);
+      }
+
       if (hasAgg) {
         const value = agg.aggregates[column.key];
         td.setAttribute('data-agg-value', String(value));
         // Format through the type/formatter pipeline, but never a custom
         // renderCell (it's a per-row renderer; aggregates have no row).
-        const aggCol = column.renderCell ? { ...column, renderCell: undefined } : column;
+        const aggCol = (column.renderCell || (!column.formatter && column.valueFormatter))
+          ? {
+              ...column,
+              renderCell: undefined,
+              // valueFormatter is the newer pipeline spelling; cell elements
+              // consume the established `formatter` field. Adapt it only for
+              // the already-computed aggregate value (valueGetter ran before
+              // reduction and must not run a second time here).
+              formatter: column.formatter ?? column.valueFormatter,
+            }
+          : column;
         td.appendChild(this.createCellElement(aggCol, value));
-      } else if (!labelled) {
-        // First non-aggregated column carries the scope label.
-        labelled = true;
-        const label = document.createElement('span');
-        label.className = 'aggregate-label';
-        label.textContent = agg.scope === 'table' ? 'Total' : 'Subtotal';
-        td.appendChild(label);
       }
 
       // Keep pinned columns aligned under their headers.
@@ -4328,12 +4694,24 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   /** F: whether all / some / none of a group's rows are selected. */
   private groupSelectionState(group: GroupRow): 'all' | 'some' | 'none' {
-    const indices = group.rows.map((r) => this.indexOfRow(r)).filter((i) => i >= 0);
+    const indices = this.getSelectableGroupIndices(group);
     if (indices.length === 0) return 'none';
     const selected = indices.filter((i) => this.selectedRows.includes(i)).length;
     if (selected === 0) return 'none';
     if (selected === indices.length) return 'all';
     return 'some';
+  }
+
+  /** Raw indices in a group that the table's conditional selectability allows. */
+  private getSelectableGroupIndices(group: GroupRow): number[] {
+    const indices: number[] = [];
+    for (const row of group.rows) {
+      const index = this.indexOfRow(row);
+      if (index < 0) continue;
+      if (this.selectabilityCheck && !this.selectabilityCheck(row, index)) continue;
+      indices.push(index);
+    }
+    return indices;
   }
 
   /** F: toggle a group's expansion, dispatch `group-toggle`, and re-render. */
@@ -4348,7 +4726,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   // Called from the selectedRows @watch delta path (a data-row toggle must
   // update its group header's all/some/none without a full re-render).
   private updateGroupSelectionStates() {
-    if (!this.tbody || !this.grouping.isEnabled() || !this.selectable) return;
+    if (!this.tbody || !this.grouping.hasGrouping() || !this.selectable) return;
     const groups = this.getGroupingItems().filter((it): it is GroupRow => it.type === 'group');
     if (groups.length === 0) return;
     const byKey = new Map(groups.map((g) => [g.key, g]));

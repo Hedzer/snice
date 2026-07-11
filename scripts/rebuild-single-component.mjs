@@ -119,11 +119,17 @@ for (const config of cdnConfigs) {
   await bundle.close();
 }
 
-// Step 3: Copy .min.js to public/components/
-const src = `dist/cdn/${componentName}/snice-${componentName}.min.js`;
-const dest = `public/components/snice-${componentName}.min.js`;
-if (fs.existsSync(src) && fs.existsSync('public/components')) {
-  fs.copyFileSync(src, dest);
+// Step 3: Copy every minified output produced by this build. Some published
+// components (currently table) intentionally ship both IIFE and ESM formats.
+if (fs.existsSync('public/components')) {
+  const minifiedOutputs = cdnConfigs
+    .map((config) => config.output.file)
+    .filter((file) => typeof file === 'string' && file.endsWith('.min.js'));
+  for (const src of minifiedOutputs) {
+    if (!fs.existsSync(src)) continue;
+    const dest = path.join('public/components', path.basename(src));
+    fs.copyFileSync(src, dest);
+  }
 }
 
 // Step 4: Copy companion files (e.g. pdf.worker.min.mjs for pdf-viewer)

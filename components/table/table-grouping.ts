@@ -18,9 +18,9 @@
  * through this model in both cases.
  */
 
-export type AggregatorType = 'sum' | 'avg' | 'min' | 'max' | 'count';
-export type AggregatorFn = (values: any[], rows: any[]) => any;
-export type Aggregator = AggregatorType | AggregatorFn;
+import type { Aggregator } from './snice-table.types';
+
+export type { Aggregator, AggregatorFn, AggregatorType } from './snice-table.types';
 
 export interface GroupingOptions {
   /** Column key(s) to group rows by. Empty = no grouping (aggregation may still apply). */
@@ -29,16 +29,16 @@ export interface GroupingOptions {
   defaultExpanded?: boolean;
 }
 
-/** Minimal column shape this module reads — avoids importing the full
- *  ColumnDefinition (which lives in snice-table.types and imports back). */
+/** Minimal column shape this pure model reads from the public table types. */
 export interface AggregatableColumn {
   key: string;
   aggregate?: Aggregator;
+  valueGetter?: (value: any, row: any) => any;
 }
 
 export interface GroupRow {
   type: 'group';
-  /** Stable synthetic key, e.g. `group:dept=Eng` or `group:dept=Eng¦level=Sr`. */
+  /** Stable, typed synthetic identity. Treat as opaque outside the table. */
   key: string;
   /** Nesting depth (0 = top-level group). */
   depth: number;
@@ -54,8 +54,6 @@ export interface GroupRow {
   hasChildren: boolean;
   /** The leaf rows under this group (used for selection + aggregation). */
   rows: any[];
-  /** Per-column aggregate over this group's rows. */
-  aggregates: Record<string, any>;
 }
 
 export interface DataRow {
@@ -75,6 +73,10 @@ export interface AggregateRow {
   scope: 'group' | 'table';
   aggregates: Record<string, any>;
   rows: any[];
+  /** Present for group subtotals so renderers can identify the group. */
+  groupKey?: string;
+  groupValue?: any;
+  groupColumn?: string;
 }
 
 export type DisplayItem = GroupRow | DataRow | AggregateRow;
@@ -90,16 +92,33 @@ export function computeAggregate(agg: Aggregator, values: any[], rows: any[]): a
 
   if (agg === 'count') return rows.length;
 
-  const nums = values.map(Number).filter((v) => !Number.isNaN(v));
+  // Treat absent/blank values as missing rather than numeric zero. Numeric
+  // strings remain useful for data loaded from HTML/JSON APIs; everything else
+  // must coerce to a finite number. A loop avoids the large-array argument
+  // limit of Math.min(...values) / Math.max(...values).
+  const nums: number[] = [];
+  for (const value of values) {
+    if (value === null || value === undefined) continue;
+    if (typeof value === 'boolean') continue;
+    if (typeof value === 'string' && value.trim() === '') continue;
+    try {
+      const numeric = Number(value);
+      if (Number.isFinite(numeric)) nums.push(numeric);
+    } catch {
+      // Symbols and user-defined coercions may throw; they are non-numeric for
+      // the built-in reducers and must not abort the whole table render.
+    }
+  }
+
   switch (agg) {
     case 'sum':
       return nums.reduce((a, b) => a + b, 0);
     case 'avg':
       return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
     case 'min':
-      return nums.length ? Math.min(...nums) : null;
+      return nums.length ? nums.reduce((min, value) => value < min ? value : min, nums[0]) : null;
     case 'max':
-      return nums.length ? Math.max(...nums) : null;
+      return nums.length ? nums.reduce((max, value) => value > max ? value : max, nums[0]) : null;
     default:
       return null;
   }
@@ -118,14 +137,44 @@ export class TableGrouping {
 
   private flatItems: DisplayItem[] = [];
 
+  // Map grouping values according to the same identity semantics used by the
+  // bucket Map. Primitive encodings include their type; object/function and
+  // symbol values receive stable per-instance ids. This prevents expansion and
+  // recycler collisions for values such as 1 vs "1", two object references,
+  // or strings containing path separators.
+  private objectValueIds = new WeakMap<object, number>();
+  private symbolValueIds = new Map<symbol, number>();
+  private nextValueId = 1;
+
   configure(options: GroupingOptions) {
     this.groupByKeys = (options.groupBy ?? []).filter(Boolean);
     this.defaultExpanded = options.defaultExpanded !== false;
   }
 
-  /** Record which columns aggregate (read from the current column set). */
-  setColumns(columns: AggregatableColumn[]) {
-    this.aggregators = columns.filter((c) => c.aggregate != null);
+  /**
+   * Record which columns aggregate (read from the current column set).
+   * Snapshot the fields we consume rather than retaining column objects: app
+   * code may mutate `columns[i].aggregate`/`valueGetter` in place and call the
+   * public renderBody(), and a retained reference cannot detect that change.
+   * Returns whether the aggregation configuration changed so the table can
+   * invalidate its flattened cache without recomputing it on every render.
+   */
+  setColumns(columns: AggregatableColumn[]): boolean {
+    const next = columns
+      .filter((column) => column.aggregate != null)
+      .map((column) => ({
+        key: column.key,
+        aggregate: column.aggregate,
+        valueGetter: column.valueGetter,
+      }));
+    const changed = next.length !== this.aggregators.length || next.some((column, index) => {
+      const previous = this.aggregators[index];
+      return previous?.key !== column.key
+        || previous.aggregate !== column.aggregate
+        || previous.valueGetter !== column.valueGetter;
+    });
+    this.aggregators = next;
+    return changed;
   }
 
   hasGrouping(): boolean {
@@ -148,10 +197,52 @@ export class TableGrouping {
   computeAggregates(rows: any[]): Record<string, any> {
     const out: Record<string, any> = {};
     for (const col of this.aggregators) {
-      const values = rows.map((r) => r[col.key]);
+      const values = rows.map((row) => {
+        const value = row?.[col.key];
+        return col.valueGetter ? col.valueGetter(value, row) : value;
+      });
       out[col.key] = computeAggregate(col.aggregate!, values, rows);
     }
     return out;
+  }
+
+  /** Stable, collision-free representation of a Map grouping value. */
+  private valueKey(value: any): string {
+    if (value === null) return 'null';
+
+    switch (typeof value) {
+      case 'undefined':
+        return 'undefined';
+      case 'string':
+        return `string:${encodeURIComponent(value)}`;
+      case 'number':
+        if (Number.isNaN(value)) return 'number:NaN';
+        return `number:${Object.is(value, -0) ? '0' : String(value)}`;
+      case 'boolean':
+        return `boolean:${value ? '1' : '0'}`;
+      case 'bigint':
+        return `bigint:${String(value)}`;
+      case 'symbol': {
+        let id = this.symbolValueIds.get(value);
+        if (id === undefined) {
+          id = this.nextValueId++;
+          this.symbolValueIds.set(value, id);
+        }
+        return `symbol:${id}`;
+      }
+      case 'object':
+      case 'function': {
+        const objectValue = value as object;
+        let id = this.objectValueIds.get(objectValue);
+        if (id === undefined) {
+          id = this.nextValueId++;
+          this.objectValueIds.set(objectValue, id);
+        }
+        return `object:${id}`;
+      }
+      default:
+        return `${typeof value}:${encodeURIComponent(String(value))}`;
+    }
   }
 
   /**
@@ -204,15 +295,17 @@ export class TableGrouping {
     }
 
     // Groups ordered by group value (numeric-aware, like the local sorter).
-    const values = Array.from(buckets.keys()).sort((a, b) =>
-      String(a ?? '').localeCompare(String(b ?? ''), undefined, { numeric: true })
-    );
+    const values = Array.from(buckets.keys()).sort((a, b) => {
+      const displayOrder = String(a ?? '').localeCompare(String(b ?? ''), undefined, { numeric: true });
+      return displayOrder || this.valueKey(a).localeCompare(this.valueKey(b));
+    });
 
     const isLeafLevel = depth === this.groupByKeys.length - 1;
 
     for (const value of values) {
       const groupRows = buckets.get(value)!;
-      const path = parentPath ? `${parentPath}¦${groupKey}=${value}` : `${groupKey}=${value}`;
+      const segment = `${encodeURIComponent(groupKey)}=${this.valueKey(value)}`;
+      const path = parentPath ? `${parentPath}|${segment}` : segment;
       const key = `group:${path}`;
       const expanded = this.isExpanded(key);
 
@@ -226,7 +319,6 @@ export class TableGrouping {
         expanded,
         hasChildren: true,
         rows: groupRows,
-        aggregates: this.computeAggregates(groupRows),
       });
 
       if (!expanded) continue;
@@ -248,6 +340,9 @@ export class TableGrouping {
           scope: 'group',
           aggregates: this.computeAggregates(groupRows),
           rows: groupRows,
+          groupKey: key,
+          groupValue: value,
+          groupColumn: groupKey,
         });
       }
     }
@@ -302,8 +397,9 @@ export class TableGrouping {
   /**
    * Build the expand/collapse chevron for a group header — reuses the
    * tree-toggle DOM/classes so the affordance matches tree data + master-detail
-   * (indent by depth, rotating chevron). Clicking toggles and dispatches
-   * `group-toggle` (composed, crosses the shadow boundary).
+   * (indent by depth, rotating chevron). Interaction stays with SniceTable's
+   * template-bound delegated click handler so every toggle is dispatched from
+   * the component host through @dispatch (and works with browser retargeting).
    */
   createToggle(group: GroupRow): HTMLElement {
     const container = document.createElement('span');
@@ -313,17 +409,11 @@ export class TableGrouping {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = `tree-toggle${group.expanded ? ' tree-toggle--expanded' : ''}`;
+    btn.setAttribute('data-group-key', group.key);
     btn.innerHTML = `<svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
     btn.setAttribute('aria-expanded', String(group.expanded));
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggle(group.key);
-      btn.dispatchEvent(new CustomEvent('group-toggle', {
-        detail: { key: group.key, value: group.value, expanded: this.isExpanded(group.key) },
-        bubbles: true,
-        composed: true,
-      }));
-    });
+    const valueLabel = group.value == null || group.value === '' ? 'blank' : String(group.value);
+    btn.setAttribute('aria-label', `${group.expanded ? 'Collapse' : 'Expand'} ${valueLabel} group, ${group.count} rows`);
     container.appendChild(btn);
 
     return container;

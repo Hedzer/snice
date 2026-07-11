@@ -50,6 +50,11 @@ const COMPONENT_CHILDREN = {
   // 'timeline': ['timeline-item'],
 };
 
+// Components with committed public ESM artifacts must regenerate those files
+// on every normal/full and incremental build. Otherwise the IIFE can advance
+// while an older ESM bundle remains silently publishable.
+const COMPONENTS_WITH_ESM_ARTIFACTS = new Set(['table']);
+
 /**
  * Create a CDN build configuration for a single component.
  * All CDN builds use the shared runtime (external snice imports).
@@ -58,10 +63,13 @@ const COMPONENT_CHILDREN = {
  * @returns {Array} Array of Rollup configurations
  */
 export function createCdnBuild(componentName, options = {}) {
+  const defaultFormats = COMPONENTS_WITH_ESM_ARTIFACTS.has(componentName)
+    ? ['iife', 'es']
+    : ['iife'];
   const {
     minify = true,
     withTheme = false,
-    formats = ['iife'],
+    formats = defaultFormats,
   } = options;
 
   // Use pre-compiled JS from dist/components (avoids TypeScript parsing issues)
@@ -182,6 +190,7 @@ export function createCdnBuild(componentName, options = {}) {
   if (formats.includes('iife')) {
     configs.push({
       ...baseConfig,
+      plugins: [...baseConfig.plugins],
       output: {
         file: `${outputDir}/snice-${componentName}.js`,
         format: 'iife',
@@ -196,6 +205,7 @@ export function createCdnBuild(componentName, options = {}) {
     if (minify) {
       configs.push({
         ...baseConfig,
+        plugins: [...baseConfig.plugins],
         output: {
           file: `${outputDir}/snice-${componentName}.min.js`,
           format: 'iife',
@@ -204,6 +214,36 @@ export function createCdnBuild(componentName, options = {}) {
           sourcemap: true,
           globals: sharedGlobals,
           plugins: [terser(TERSER_OPTS)]
+        }
+      });
+    }
+  }
+
+  // ES module build (for <script type="module"> / bundler import maps). Like
+  // the IIFE build it shares the Snice runtime, but preserves external imports
+  // instead of rewriting them to the global `Snice` object.
+  if (formats.includes('es') || formats.includes('esm')) {
+    configs.push({
+      ...baseConfig,
+      plugins: [...baseConfig.plugins],
+      output: {
+        file: `${outputDir}/snice-${componentName}.esm.js`,
+        format: 'es',
+        banner,
+        sourcemap: true,
+      }
+    });
+
+    if (minify) {
+      configs.push({
+        ...baseConfig,
+        plugins: [...baseConfig.plugins],
+        output: {
+          file: `${outputDir}/snice-${componentName}.esm.min.js`,
+          format: 'es',
+          banner,
+          sourcemap: true,
+          plugins: [terser(TERSER_OPTS)],
         }
       });
     }

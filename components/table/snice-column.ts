@@ -11,7 +11,10 @@ import type {
   ProgressFormat,
   SparklineFormat,
   CellStyle,
-  ConditionalFormat
+  ConditionalFormat,
+  Aggregator,
+  AggregatorFn,
+  AggregatorType
 } from './snice-table.types';
 
 @element('snice-column')
@@ -45,6 +48,33 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
 
   @property({ type: Boolean,  })
   tooltip: boolean = false;
+
+  // Built-in aggregators are declarative via aggregate="sum". A custom
+  // function cannot be serialized to an attribute, so the public aggregate
+  // accessor retains it in memory while exposing one unified API.
+  @property({ attribute: 'aggregate' })
+  private aggregateType: AggregatorType | '' = '';
+
+  private aggregateFunction?: AggregatorFn;
+
+  get aggregate(): Aggregator | undefined {
+    return this.aggregateFunction ?? (this.aggregateType || undefined);
+  }
+
+  set aggregate(value: Aggregator | undefined) {
+    const previous = this.aggregate;
+    if (typeof value === 'function') {
+      this.aggregateFunction = value;
+      if (this.aggregateType !== '') this.aggregateType = '';
+      else if (previous !== value) this.notifyTableOfChange();
+      return;
+    }
+
+    this.aggregateFunction = undefined;
+    const next = value ?? '';
+    if (this.aggregateType !== next) this.aggregateType = next;
+    else if (previous !== this.aggregate) this.notifyTableOfChange();
+  }
 
   // Number formatting properties
   @property({ type: Number, attribute: 'decimals' })
@@ -198,6 +228,8 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
       conditionalFormats: this.conditionalFormats
     };
 
+    if (this.aggregate) definition.aggregate = this.aggregate;
+
     // Add type-specific formatting
     if (this.type === 'number' || this.type === 'currency' || this.type === 'percent' || 
         this.type === 'accounting' || this.type === 'scientific' || this.type === 'fraction') {
@@ -292,6 +324,12 @@ export class SniceColumn extends HTMLElement implements SniceColumnElement {
 
   @watch('key', 'label', 'type', 'align', 'width', 'sortable', 'filterable', 'wrap', 'ellipsis', 'tooltip')
   private handleBasicPropsChange() {
+    this.notifyTableOfChange();
+  }
+
+  @watch('aggregateType')
+  private handleAggregateChange() {
+    if (this.aggregateType) this.aggregateFunction = undefined;
     this.notifyTableOfChange();
   }
 

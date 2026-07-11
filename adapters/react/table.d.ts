@@ -16,10 +16,15 @@ export interface TableProps extends SniceBaseProps {
     pageSize?: any;
     currentPage?: any;
     totalItems?: any;
-    pageSizes?: any;
+    pageSizes?: number[];
     searchDebounce?: any;
+    columns?: any[];
+    data?: any[];
     mode?: any;
-    currentSort?: any;
+    currentSort?: Array<{
+        column: string;
+        direction: 'asc' | 'desc';
+    }>;
     selector?: any;
     selectorOptions?: any;
     loading?: any;
@@ -37,17 +42,32 @@ export interface TableProps extends SniceBaseProps {
     columnMenu?: any;
     lazyLoad?: any;
     lazyLoadThreshold?: any;
-    selectedRows?: any;
+    selectedRows?: number[];
+    selectionMode?: 'none' | 'single' | 'multiple';
+    groupBy?: string | string[];
+    groupDefaults?: {
+        expanded?: boolean;
+    };
     onPageChange?: (event: any) => void;
     onTableRowSelectionChanged?: (event: any) => void;
+    onRowClicked?: (event: any) => void;
+    onTableLoadError?: (event: any) => void;
     onTableSelectAllChanged?: (event: any) => void;
+    onSelectionChanged?: (event: CustomEvent<{
+        selectedRows: number[];
+        rows: any[];
+    }>) => void;
     onSortChange?: (event: any) => void;
     onFilterChange?: (event: any) => void;
     onColumnVisibilityChange?: (event: any) => void;
     onColumnPinChange?: (event: any) => void;
     onColumnOrderChange?: (event: any) => void;
     onDensityChange?: (event: any) => void;
-    onRowClicked?: (event: any) => void;
+    onGroupToggle?: (event: CustomEvent<{
+        key: string;
+        value: any;
+        expanded: boolean;
+    }>) => void;
     onLazyLoad?: (event: any) => void;
 }
 /**

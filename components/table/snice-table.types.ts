@@ -2,7 +2,6 @@ import type { FilterModel, FilterOperator } from './table-filter-engine';
 import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions } from './table-tree-data';
-import type { Aggregator } from './table-grouping';
 import type { ColumnGroup } from './table-column-manager';
 import type { CSVExportOptions, PrintOptions, ClipboardOptions } from './table-export';
 
@@ -11,6 +10,9 @@ export type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | '
   'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' | 'fraction' | 
   'duration' | 'filesize' | 'custom';
 export type SortDirection = 'asc' | 'desc' | null;
+export type AggregatorType = 'sum' | 'avg' | 'min' | 'max' | 'count';
+export type AggregatorFn = (values: any[], rows: any[]) => any;
+export type Aggregator = AggregatorType | AggregatorFn;
 
 export interface NumberFormat {
   decimals?: number;
@@ -353,13 +355,11 @@ export interface SniceTableElement extends HTMLElement {
   getTableConfig(): Promise<any>;
   getTableData(): Promise<any>;
 
-  // ── Data + column setters (imperative aliases over the reactive props) ──
+  // ── Data + column setters (`setColumns` reactive; `setData` non-eager bulk path) ──
   setData(data: any[]): void;
   setColumns(columns: ColumnDefinition[]): void;
 
-  // ── Rendering (public — documented workaround for CDN builds missing
-  //    snice-column/snice-row: setColumns()/setData() + requestAnimationFrame(
-  //    () => { table.renderHeader(); table.renderBody(); })) ──
+  // ── Rendering (public; use renderBody after an unpaired setData bulk load) ──
   renderControls(): void;
   renderHeader(): void;
   renderSortableHeader(column: ColumnDefinition): string;
@@ -529,8 +529,8 @@ export interface SniceTableEventMap {
   /** snice-cell-actions.ts dispatchAction() — bubbles from an `actions`-type
    *  cell the table renders via createCellElement. */
   'cell-action': { action: string; rowData: any; column: ColumnDefinition | null };
-  /** snice-table.ts dispatchGroupToggle() / table-grouping.ts createToggle() —
-   *  a group header expand/collapse. `value` is the group's value. */
+  /** snice-table.ts dispatchGroupToggle() — a group header expand/collapse.
+   *  `key` is an opaque stable group identity; `value` is the displayed value. */
   'group-toggle': { key: string; value: any; expanded: boolean };
 }
 
@@ -550,6 +550,9 @@ export interface SniceColumnElement extends HTMLElement {
   width: string;
   sortable: boolean;
   filterable: boolean;
+  /** Built-ins reflect through aggregate="..."; custom reducers are property-only. */
+  aggregate?: Aggregator;
+  getColumnDefinition(): ColumnDefinition;
 }
 
 export interface SniceRowElement extends HTMLElement {

@@ -3,7 +3,7 @@
 # Table
 `<snice-table>`
 
-Displays tabular data with sorting, filtering, search, selection, pagination, column resize, column menu, tree data, master-detail, toolbar, and 20+ specialized column types.
+Displays tabular data with row grouping, aggregation, sorting, filtering, search, selection, pagination, virtualization, editing, tree data, master-detail, and 20+ specialized column types.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -13,6 +13,8 @@ Displays tabular data with sorting, filtering, search, selection, pagination, co
 - [Slots](#slots)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 
@@ -34,8 +36,11 @@ Displays tabular data with sorting, filtering, search, selection, pagination, co
 | `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
 | `currentSort` | `Array<{ column, direction }>` | `[]` | Current sort state — reactive; assigning re-sorts (local mode) or re-requests (remote mode) |
 | `selectedRows` | `number[]` | `[]` | Indices of selected rows (JS only) |
+| `selectionMode` (attr: `selection-mode`) | `'none'\|'single'\|'multiple'` | `'multiple'` | Selection behavior. `multiple` supports Ctrl/Cmd additive and Shift range selection |
 | `selector` | `string` | `''` | Selected filter-dropdown value(s), comma-joined |
 | `selectorOptions` | `Array<{value, label}>` | `[]` | Options for the `filterable` dropdown (JS only) |
+| `groupBy` | `string \| string[]` | `''` | Column key(s) used for one or more grouping levels. JS-only and reactive; assign before or after connection |
+| `groupDefaults` | `{ expanded?: boolean }` | `{}` | Initial expansion policy. Set `{ expanded: false }` to start groups collapsed (JS only) |
 | `pagination` | `boolean` | `false` | Enable pagination |
 | `paginationMode` (attr: `pagination-mode`) | `'client'\|'server'` | `'client'` | Client-side or server-side pagination |
 | `pageSize` (attr: `page-size`) | `number` | `10` | Rows per page |
@@ -87,6 +92,10 @@ interface ColumnDefinition {
   valueSetter?: (value: any, row: any) => any;
   sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
   colSpan?: number | ((value, row) => number);
+  aggregate?: 'sum' | 'avg' | 'min' | 'max' | 'count' |
+    ((values: any[], rows: any[]) => any);
+  renderCell?: (value, row, column) => HTMLElement | string;
+  renderEditor?: (value, row, column, commit, cancel) => HTMLElement;
   wrap?: boolean;
   ellipsis?: boolean;
   tooltip?: boolean | ((value: any, row?: any) => string);
@@ -135,8 +144,8 @@ needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `setData()` | `data: any[]` | Set table row data |
-| `setColumns()` | `columns: ColumnDefinition[]` | Set column definitions |
+| `setData()` | `data: any[]` | Bulk-load row data without an eager paint; call `renderBody()` when needed |
+| `setColumns()` | `columns: ColumnDefinition[]` | Reactively set column definitions and schedule header/body paint |
 | `setToolbar()` | `options: ToolbarOptions` | Add toolbar with search, sort, filter, export |
 | `setTreeData()` | `options: TreeDataOptions` | Enable tree/hierarchical data |
 | `setDetailPanel()` | `options: DetailPanelOptions` | Enable master-detail expand rows |
@@ -165,6 +174,7 @@ needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
 | `row-clicked` | `{ rowData, rowIndex }` | Row clicked (requires `clickable`) |
 | `table-row-selection-changed` | `{ selectedRows, rowIndex, selected }` | A row's selection state changed |
 | `table-select-all-changed` | `{ selectedRows, allSelected }` | Select-all checkbox toggled |
+| `selection-changed` | `{ selectedRows, rows }` | Unified selection event for row, group, range, and select-all changes |
 | `sort-change` | `{ sort }` | Sort state changed |
 | `filter-change` | `{ filters }` | Filter state changed |
 | `page-change` | `{ page, pageSize, totalPages, totalItems }` | Page or page size changed |
@@ -187,6 +197,7 @@ needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
 | `column-resize-end` | `{ key, width }` | Column resize finished |
 | `tree-toggle` | `{ key, expanded }` | Tree node expanded/collapsed (`setTreeData()`) |
 | `cell-action` | `{ action, rowData, column }` | An `actions`-type cell's button was clicked |
+| `group-toggle` | `{ key, value, expanded }` | Group expanded/collapsed. `key` is an opaque stable identity |
 
 ## Slots
 
@@ -218,9 +229,10 @@ table.data = [
 ];
 ```
 
-`setColumns()`/`setData()` are the equivalent imperative calls, useful when
-you also need to force a synchronous `renderHeader()`/`renderBody()` right
-after assigning (e.g. a CDN build missing `snice-column`/`snice-row`).
+`setColumns()` is a reactive alias for assigning `columns`. `setData()` is the
+bulk-load path: it synchronizes row identity/filter state but intentionally
+does not paint eagerly, so call `renderBody()` when it is not paired with a
+column assignment that already schedules the paint.
 
 ## Examples
 
@@ -304,6 +316,89 @@ table.setFilterModel({
 // Boolean operators: is
 ```
 
+### Row Grouping and Aggregation
+
+Assign `groupBy` to one key or an ordered key array. Add `aggregate` to any
+column to render a subtotal under every expanded group and a grand total over
+all filtered rows.
+
+```javascript
+table.columns = [
+  { key: 'employee', label: 'Employee' },
+  { key: 'department', label: 'Department' },
+  { key: 'level', label: 'Level' },
+  {
+    key: 'salary',
+    label: 'Salary',
+    type: 'number',
+    aggregate: 'sum',
+    numberFormat: { prefix: '$', thousandsSeparator: true }
+  },
+  { key: 'headcount', label: 'Headcount', aggregate: 'count' }
+];
+
+table.groupBy = ['department', 'level'];
+table.groupDefaults = { expanded: true };
+table.data = employees;
+
+table.addEventListener('group-toggle', event => {
+  console.log(event.detail.value, event.detail.expanded);
+});
+```
+
+Built-ins are `sum`, `avg`, `min`, `max`, and `count`. Numeric reducers ignore
+null, blank, boolean, and non-numeric values; numeric strings are accepted.
+`count` counts rows. A custom reducer receives the column values after
+`valueGetter` and the matching raw rows:
+
+```javascript
+{
+  key: 'margin',
+  label: 'Weighted Margin',
+  valueGetter: (_value, row) => row.revenue * row.marginRate,
+  aggregate: (values, rows) => values.reduce((sum, value) => sum + value, 0)
+}
+```
+
+Sorting applies within each group, filtering removes empty groups, and totals
+use only filtered rows. Client pagination and virtualization operate on the
+same flattened sequence of group headers, data rows, and subtotal/total rows.
+Aggregate results use the column's type/`formatter`/`valueFormatter` display
+pipeline. With `rowReorder` enabled, a drop within a group changes order; a
+drop onto another group reparents the row by updating every active `groupBy`
+field to the target row's group values.
+In remote mode, totals cover the rows currently loaded in `data`. A non-empty
+`groupBy` is the active hierarchy model; when `groupBy` is empty, a table-level
+aggregate footer composes with tree data and master-detail rows.
+
+Grouping visuals inherit the active theme and can be customized with
+`--snice-table-group-header-bg`, `--snice-table-group-header-color`,
+`--snice-table-group-count-bg`, `--snice-table-group-count-color`,
+`--snice-table-aggregate-bg`, `--snice-table-aggregate-color`,
+`--snice-table-aggregate-label-color`, and
+`--snice-table-aggregate-border-color`.
+
+Declarative columns support built-in aggregators with the `aggregate`
+attribute. Custom reducers are property-only:
+
+```html
+<snice-table id="department-table">
+  <snice-column slot="columns" key="employee" label="Employee"></snice-column>
+  <snice-column slot="columns" key="department" label="Department"></snice-column>
+  <snice-column slot="columns" key="salary" label="Salary" type="number" aggregate="sum"></snice-column>
+  <snice-row slot="rows" data-employee="Alice" data-department="Engineering" data-salary="100000"></snice-row>
+  <snice-row slot="rows" data-employee="Bob" data-department="Engineering" data-salary="80000"></snice-row>
+</snice-table>
+
+<script>
+  const table = document.querySelector('#department-table');
+  table.groupBy = 'department';
+
+  const salary = table.querySelector('snice-column[key="salary"]');
+  salary.aggregate = (values, rows) => values.reduce((sum, value) => sum + Number(value), 0);
+</script>
+```
+
 ### Tree Data
 
 ```javascript
@@ -370,3 +465,19 @@ class UserTableController implements IController {
   }
 }
 ```
+
+## Keyboard Navigation
+
+- Arrow keys, Home/End, and Page Up/Down move the active grid cell.
+- Enter activates an editable cell.
+- Shift+Space toggles the focused row; Ctrl/Cmd+A selects all selectable rows.
+- Group chevrons are native buttons: Tab to them, then use Enter or Space to expand/collapse.
+- Group checkboxes select only rows allowed by `setSelectabilityCheck()` and expose mixed state for partial selection.
+
+## Accessibility
+
+- Uses native table semantics enhanced with the WAI-ARIA grid pattern.
+- `aria-rowcount` includes visible group headers and aggregate rows; collapsed descendants are excluded.
+- Group toggles expose an action label, row count, and `aria-expanded` state.
+- Group headers, subtotals, and grand totals have distinct accessible labels.
+- Focus indicators use `:focus-visible`, so keyboard focus is visible without a persistent mouse-focus ring.

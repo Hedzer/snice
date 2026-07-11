@@ -79,6 +79,59 @@ describe('CDN Runtime Builds', () => {
       const formats = configs.map(c => c.output.format);
       expect(formats.every(f => f === 'iife')).toBe(true);
     });
+
+    it('should produce minified and unminified ES component builds when requested', async () => {
+      const { createCdnBuild } = await import('../rollup.config.cdn.js');
+
+      const configs = createCdnBuild('button', {
+        minify: true,
+        formats: ['es'],
+      });
+
+      expect(configs).toHaveLength(2);
+      expect(configs.every(config => config.output.format === 'es')).toBe(true);
+      expect(configs.map(config => config.output.file)).toEqual([
+        'dist/cdn/button/snice-button.esm.js',
+        'dist/cdn/button/snice-button.esm.min.js',
+      ]);
+    });
+
+    it('should regenerate both published table formats by default', async () => {
+      const { createCdnBuild } = await import('../rollup.config.cdn.js');
+
+      const configs = createCdnBuild('table', { minify: true });
+
+      expect(configs.map(config => config.output.format)).toEqual([
+        'iife', 'iife', 'es', 'es',
+      ]);
+      expect(configs.map(config => config.output.file)).toEqual([
+        'dist/cdn/table/snice-table.js',
+        'dist/cdn/table/snice-table.min.js',
+        'dist/cdn/table/snice-table.esm.js',
+        'dist/cdn/table/snice-table.esm.min.js',
+      ]);
+    });
+
+    it('should ship current table grouping code in both public component formats', () => {
+      const artifacts = [
+        'public/components/snice-table.min.js',
+        'public/components/snice-table.esm.min.js',
+      ];
+
+      for (const artifact of artifacts) {
+        const content = fs.readFileSync(path.join(process.cwd(), artifact), 'utf8');
+        expect(content).toContain('group-toggle');
+        expect(content).toContain('group-header-row');
+        expect(content).toContain('data-group-key');
+      }
+
+      const esm = fs.readFileSync(
+        path.join(process.cwd(), 'public/components/snice-table.esm.min.js'),
+        'utf8',
+      );
+      expect(esm).toMatch(/^import\{/);
+      expect(esm).toContain('from"snice"');
+    });
   });
 
   describe('Runtime Build Output', () => {

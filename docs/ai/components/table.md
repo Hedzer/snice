@@ -1,6 +1,6 @@
 # snice-table
 
-Data table with sorting, filtering, search, selection, pagination, column resize, column menu, tree data, master-detail, toolbar, and 20+ column types.
+Data table with row grouping, aggregation, sorting, filtering, selection, pagination, virtualization, editing, tree data, master-detail, and 20+ column types.
 
 ## Properties
 
@@ -21,8 +21,11 @@ searchText: string = '';             // not an attribute — no re-render on ass
 searchDebounce: number = 500;        // attr: search-debounce
 currentSort: Array<{column: string, direction: 'asc'|'desc'}> = []; // reactive
 selectedRows: number[] = [];         // JS only
+selectionMode: 'none'|'single'|'multiple' = 'multiple'; // attr: selection-mode
 selector: string = '';
 selectorOptions: Array<{value: string, label: string}> = []; // JS only
+groupBy: string|string[] = '';       // JS only; reactive pre/post-connect
+groupDefaults: { expanded?: boolean } = {}; // JS only
 pagination: boolean = false;
 paginationMode: 'client'|'server' = 'client'; // attr: pagination-mode
 pageSize: number = 10;               // attr: page-size
@@ -74,6 +77,9 @@ interface ColumnDefinition {
   valueSetter?: (value, row) => any;
   sortComparator?: (a, b, direction: 'asc'|'desc') => number;
   colSpan?: number | ((value, row) => number);
+  aggregate?: 'sum'|'avg'|'min'|'max'|'count' | ((values, rows) => any);
+  renderCell?: (value, row, column) => HTMLElement|string;
+  renderEditor?: (value, row, column, commit, cancel) => HTMLElement;
   wrap?: boolean;
   ellipsis?: boolean;
   tooltip?: boolean | ((value, row?) => string);
@@ -125,6 +131,7 @@ Source of truth (`ColumnType`): `text, number, date, boolean, currency, percent,
 - `row-clicked` -> `{ rowData, rowIndex }` (requires `clickable`)
 - `table-row-selection-changed` -> `{ selectedRows, rowIndex, selected }`
 - `table-select-all-changed` -> `{ selectedRows, allSelected }`
+- `selection-changed` -> `{ selectedRows, rows }`
 - `sort-change` -> `{ sort }`
 - `filter-change` -> `{ filters }`
 - `page-change` -> `{ page, pageSize, totalPages, totalItems }`
@@ -147,6 +154,7 @@ Source of truth (`ColumnType`): `text, number, date, boolean, currency, percent,
 - `column-resize-end` -> `{ key, width }`
 - `tree-toggle` -> `{ key, expanded }`
 - `cell-action` -> `{ action, rowData, column }` (actions-type cell button click)
+- `group-toggle` -> `{ key, value, expanded }` (`key` opaque/stable)
 
 ## Slots
 
@@ -163,16 +171,54 @@ const table = document.querySelector('snice-table');
 // Reactive — assigning columns/data re-renders automatically.
 table.columns = [
   { key: 'name', label: 'Name', sortable: true },
+  { key: 'department', label: 'Department' },
   { key: 'revenue', label: 'Revenue', type: 'currency',
-    numberFormat: { prefix: '$', thousandsSeparator: true } },
+    aggregate: 'sum', numberFormat: { prefix: '$', thousandsSeparator: true } },
   { key: 'progress', label: 'Progress', type: 'progress',
     progressFormat: { colorize: true } }
 ];
 table.data = [
-  { name: 'A', revenue: 50000, progress: 85 }
+  { name: 'A', department: 'Engineering', revenue: 50000, progress: 85 }
 ];
+table.groupBy = 'department';
 table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
 ```
 
-`setColumns()`/`setData()` are the imperative equivalents (use alongside a
-forced `renderHeader()`/`renderBody()` when needed).
+`setColumns()` is a reactive alias for `columns = ...`. `setData()` is the
+non-eager bulk-load path; call `renderBody()` unless another assignment already
+schedules the paint.
+
+## Examples
+
+```typescript
+table.groupBy = ['department', 'level'];
+table.groupDefaults = { expanded: false };
+
+// Built-ins ignore null/blank/boolean/non-numeric values; count counts rows.
+// valueGetter runs before aggregate.
+columns[3].aggregate = (values, rows) => values.reduce((a, b) => a + b, 0);
+
+// Declarative built-in; custom reducers use column.aggregate property.
+// <snice-column slot="columns" key="salary" aggregate="sum"></snice-column>
+```
+
+- Sort: within groups; group order: group key.
+- Filter: empty groups removed; aggregates use filtered rows.
+- Pagination/virtualization: flattened group/header/row/footer model.
+- Aggregate display: column type + `formatter`/`valueFormatter` pipeline.
+- Row reorder: cross-group drops update active `groupBy` fields to reparent the row.
+- Group/aggregate colors: `--snice-table-group-*` and `--snice-table-aggregate-*` variables.
+- Remote mode: aggregates cover currently loaded `data`.
+- `groupBy` hierarchy takes precedence over tree hierarchy; aggregation-only preserves tree/master-detail.
+
+## Keyboard Navigation
+
+- Group chevron: Tab, Enter/Space.
+- Group checkbox: select allowed rows; partial selection -> mixed state.
+- Grid arrows/Home/End/Page keys follow visible grouped data order.
+
+## Accessibility
+
+- Group buttons: dynamic action label + row count + `aria-expanded`.
+- Grid `aria-rowcount`: visible group/data/aggregate rows.
+- Group/subtotal/total rows: distinct accessible labels.

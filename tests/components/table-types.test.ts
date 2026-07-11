@@ -23,7 +23,13 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../components/table/snice-table';
 import type { SniceTable } from '../../components/table/snice-table';
-import type { SniceTableElement, SniceTableEventMap } from '../../components/table/snice-table.types';
+import type {
+  Aggregator,
+  ColumnDefinition,
+  SniceColumnElement,
+  SniceTableElement,
+  SniceTableEventMap,
+} from '../../components/table/snice-table.types';
 
 describe('snice-table types (D1/D2)', () => {
   // ── D1: compile-time — SniceTable must structurally satisfy the honest
@@ -34,6 +40,18 @@ describe('snice-table types (D1/D2)', () => {
     const instance = {} as SniceTable;
     const asInterface: SniceTableElement = instance;
     expect(asInterface).toBeDefined();
+  });
+
+  it('grouping and aggregation public types accept built-in/custom/declarative APIs', () => {
+    const custom: Aggregator = (values) => values.length;
+    const builtIn: ColumnDefinition = { key: 'amount', label: 'Amount', aggregate: 'sum' };
+    const customColumn: ColumnDefinition = { key: 'items', label: 'Items', aggregate: custom };
+    const declarative = {} as SniceColumnElement;
+    declarative.aggregate = 'avg';
+
+    expect(builtIn.aggregate).toBe('sum');
+    expect(customColumn.aggregate).toBe(custom);
+    expect(declarative.aggregate).toBe('avg');
   });
 
   // ── D2: compile-time — a representative sample of real event names must be

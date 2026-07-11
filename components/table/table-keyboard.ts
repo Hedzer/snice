@@ -23,6 +23,19 @@ export interface KeyboardOptions {
   /** Total columns. Getter callback or plain number — see `totalRows`. */
   totalColumns: number | (() => number);
   /**
+   * Total rows exposed to assistive technology. This may exceed the keyboard
+   * navigation count when the body also contains non-focusable group and
+   * aggregate rows. Defaults to totalRows.
+   */
+  ariaRows?: number | (() => number);
+  /** Zero-based logical offset of the first rendered body row (virtual grids). */
+  ariaRowOffset?: number | (() => number);
+  /**
+   * Resolve a keyboard-navigation row to its rendered <tr>. Grouping/filtering
+   * can make navigation order differ from raw data-index order.
+   */
+  getRowElement?: (rowIndex: number) => HTMLElement | null;
+  /**
    * Bring a logical (data-index) row into the rendered window before focus
    * lands on it. Under virtualization only the current window is in the DOM;
    * the host scrolls the row's range into view and renders it synchronously.
@@ -45,10 +58,7 @@ export class TableKeyboard {
 
   constructor() {
     this.options = {} as KeyboardOptions;
-    this.keyHandler = (e: Event) => {
-      this.hasUserInteracted = true;
-      this.handleKeyDown(e as KeyboardEvent);
-    };
+    this.keyHandler = (e: Event) => this.handleKeyDown(e as KeyboardEvent);
   }
 
   attach(options: KeyboardOptions) {
@@ -86,7 +96,7 @@ export class TableKeyboard {
 
     table.setAttribute('role', 'grid');
     table.setAttribute('tabindex', '0');
-    table.setAttribute('aria-rowcount', String(this.totalRowCount + 1)); // +1 header
+    table.setAttribute('aria-rowcount', String(this.ariaRowCount + 1)); // +1 header
     table.setAttribute('aria-colcount', String(this.totalColCount));
   }
 
@@ -100,7 +110,7 @@ export class TableKeyboard {
     if (!this.attached) return;
 
     this.syncGridRole();
-    this.updateFocusIndicator();
+    this.applyARIA();
   }
 
   private getTable(): HTMLElement | null {
@@ -120,8 +130,17 @@ export class TableKeyboard {
     return this.resolveBound(this.options.totalColumns);
   }
 
+  private get ariaRowCount(): number {
+    return this.resolveBound(this.options.ariaRows ?? this.options.totalRows);
+  }
+
+  private get ariaRowOffset(): number {
+    return Math.max(0, this.resolveBound(this.options.ariaRowOffset));
+  }
+
   /** Resolve a body row by its logical data-index (not its DOM position). */
   private getBodyRow(index: number): HTMLElement | null {
+    if (this.options.getRowElement) return this.options.getRowElement(index);
     const table = this.getTable();
     if (!table) return null;
     return table.querySelector(`tbody tr[data-index="${index}"]`);
@@ -132,11 +151,12 @@ export class TableKeyboard {
     const table = this.getTable();
     if (!table) return;
 
-    table.setAttribute('aria-rowcount', String(this.totalRowCount + 1)); // +1 for header
+    table.setAttribute('aria-rowcount', String(this.ariaRowCount + 1)); // +1 for header
     table.setAttribute('aria-colcount', String(this.totalColCount));
 
     // Header row
-    const headerRow = table.querySelector('thead tr');
+    const headerRow = table.querySelector('thead tr.column-header-row')
+      ?? table.querySelector('thead tr:not(.column-group-row):not(.header-filter-row)');
     if (headerRow) {
       headerRow.setAttribute('role', 'row');
       headerRow.setAttribute('aria-rowindex', '1');
@@ -163,7 +183,7 @@ export class TableKeyboard {
     const bodyRows = table.querySelectorAll('tbody tr:not(.virtual-spacer)');
     bodyRows.forEach((row, i) => {
       row.setAttribute('role', 'row');
-      row.setAttribute('aria-rowindex', String(i + 2)); // +2 for 1-based + header
+      row.setAttribute('aria-rowindex', String(this.ariaRowOffset + i + 2)); // +2 for 1-based + header
 
       const isSelected = row.getAttribute('data-selected') === 'true';
       if (isSelected) row.setAttribute('aria-selected', 'true');
@@ -238,6 +258,19 @@ export class TableKeyboard {
   private handleKeyDown(e: KeyboardEvent) {
     // Don't handle when editing
     if (this.options.isEditing()) return;
+
+    // Let controls inside the grid keep their native keyboard contract. This
+    // includes group/tree toggle buttons (Enter/Space must click them), row
+    // checkboxes, links, and form controls rendered by custom cells. Inspect
+    // the composed path so controls nested in another component's shadow root
+    // are recognized too.
+    const interactiveSelector = 'button, a, input, select, textarea, [contenteditable="true"], snice-button, snice-checkbox, snice-input, snice-select';
+    const fromInteractiveControl = e.composedPath().some((node) =>
+      node instanceof Element && node.matches(interactiveSelector)
+    );
+    if (fromInteractiveControl) return;
+
+    this.hasUserInteracted = true;
 
     const totalRows = this.totalRowCount;
     const totalColumns = this.totalColCount;

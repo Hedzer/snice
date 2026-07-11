@@ -202,6 +202,35 @@ export const TreeDataHierarchical: Story = {
   },
 };
 
+// h2: Row Grouping + Aggregation
+export const RowGroupingAggregation: Story = {
+  render: () => {
+    const table = document.createElement('snice-table') as any;
+    table.toggleAttribute('sortable', true);
+    table.toggleAttribute('selectable', true);
+    table.toggleAttribute('hoverable', true);
+    table.toggleAttribute('striped', true);
+    table.columns = [
+      { key: 'name', label: 'Employee', type: 'text', sortable: true },
+      { key: 'department', label: 'Department', type: 'text', sortable: true },
+      { key: 'level', label: 'Level', type: 'text', sortable: true },
+      {
+        key: 'salary', label: 'Salary', type: 'number', sortable: true,
+        aggregate: 'sum', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+      },
+    ];
+    table.groupBy = 'department';
+    table.data = [
+      { name: 'Alice Johnson', department: 'Engineering', level: 'Senior', salary: 125000 },
+      { name: 'Eve Wilson', department: 'Engineering', level: 'Staff', salary: 148000 },
+      { name: 'Diana Prince', department: 'Design', level: 'Senior', salary: 118000 },
+      { name: 'Ivy Taylor', department: 'Design', level: 'Mid', salary: 96000 },
+      { name: 'Bob Smith', department: 'Marketing', level: 'Mid', salary: 88000 },
+    ];
+    return table;
+  },
+};
+
 // h2: Column Groups (Multi-Level Headers)
 export const ColumnGroupsMultiLevelHeaders: Story = {
   render: () => {

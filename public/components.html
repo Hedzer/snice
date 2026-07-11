@@ -8019,7 +8019,7 @@ stepper.currentStep = 1;</snice-code-block>
     <!-- ── 10. Table ── -->
     <div class="comp-section" data-category="Data Display" data-cat-index="3" data-cat-order="0">
       <h3>Table</h3>
-      <p class="comp-desc">Data tables with 20+ column types, sorting, filtering, search, column resize, toolbar, and Excel-like formatting</p>
+      <p class="comp-desc">Data tables with row grouping, aggregation, 20+ column types, sorting, filtering, virtualization, editing, and Excel-like formatting</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
           <snice-table id="demo-table" size="medium" hoverable sortable selectable column-resize column-menu striped style="width:100%"></snice-table>
@@ -8040,6 +8040,24 @@ stepper.currentStep = 1;</snice-code-block>
 // rating, progress, sparkline, boolean, date, tag,
 // duration, filesize, email, phone, link, color,
 // image, status, actions, location</snice-code-block>
+        </div>
+      </div>
+      <p class="comp-desc"><strong>Grouping + aggregation</strong> — collapse departments, select a whole group, and compare salary subtotals with the grand total.</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col">
+          <snice-table id="demo-table-grouped" hoverable sortable selectable striped style="width:100%"></snice-table>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">table.columns = [
+  { key: 'employee', label: 'Employee' },
+  { key: 'department', label: 'Department' },
+  { key: 'salary', label: 'Salary', type: 'number',
+    aggregate: 'sum',
+    numberFormat: { prefix: '$', thousandsSeparator: true } }
+];
+table.groupBy = 'department';
+table.data = employees;</snice-code-block>
         </div>
       </div>
     </div>
@@ -8075,6 +8093,29 @@ stepper.currentStep = 1;</snice-code-block>
           if (table.renderBody) table.renderBody();
           table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
         });
+      }
+
+      const grouped = document.getElementById('demo-table-grouped');
+      if (grouped) {
+        grouped.columns = [
+          { key: 'employee', label: 'Employee', type: 'text', sortable: true },
+          { key: 'department', label: 'Department', type: 'text', sortable: true },
+          { key: 'level', label: 'Level', type: 'text', sortable: true },
+          {
+            key: 'salary', label: 'Salary', type: 'number', sortable: true,
+            aggregate: 'sum', numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 }
+          }
+        ];
+        grouped.groupBy = 'department';
+        grouped.data = [
+          { employee: 'Alice Johnson', department: 'Engineering', level: 'Senior', salary: 125000 },
+          { employee: 'Eve Wilson', department: 'Engineering', level: 'Staff', salary: 148000 },
+          { employee: 'Henry Chen', department: 'Engineering', level: 'Senior', salary: 132000 },
+          { employee: 'Diana Prince', department: 'Design', level: 'Senior', salary: 118000 },
+          { employee: 'Ivy Taylor', department: 'Design', level: 'Mid', salary: 96000 },
+          { employee: 'Bob Smith', department: 'Marketing', level: 'Mid', salary: 88000 },
+          { employee: 'Frank Miller', department: 'Marketing', level: 'Senior', salary: 109000 }
+        ];
       }
     });
 </script>

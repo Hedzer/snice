@@ -21,10 +21,12 @@ export interface TableProps extends SniceBaseProps {
   pageSize?: any;
   currentPage?: any;
   totalItems?: any;
-  pageSizes?: any;
+  pageSizes?: number[];
   searchDebounce?: any;
+  columns?: any[];
+  data?: any[];
   mode?: any;
-  currentSort?: any;
+  currentSort?: Array<{ column: string; direction: 'asc' | 'desc' }>;
   selector?: any;
   selectorOptions?: any;
   loading?: any;
@@ -42,17 +44,23 @@ export interface TableProps extends SniceBaseProps {
   columnMenu?: any;
   lazyLoad?: any;
   lazyLoadThreshold?: any;
-  selectedRows?: any;
+  selectedRows?: number[];
+  selectionMode?: 'none' | 'single' | 'multiple';
+  groupBy?: string | string[];
+  groupDefaults?: { expanded?: boolean };
   onPageChange?: (event: any) => void;
   onTableRowSelectionChanged?: (event: any) => void;
+  onRowClicked?: (event: any) => void;
+  onTableLoadError?: (event: any) => void;
   onTableSelectAllChanged?: (event: any) => void;
+  onSelectionChanged?: (event: CustomEvent<{ selectedRows: number[]; rows: any[] }>) => void;
   onSortChange?: (event: any) => void;
   onFilterChange?: (event: any) => void;
   onColumnVisibilityChange?: (event: any) => void;
   onColumnPinChange?: (event: any) => void;
   onColumnOrderChange?: (event: any) => void;
   onDensityChange?: (event: any) => void;
-  onRowClicked?: (event: any) => void;
+  onGroupToggle?: (event: CustomEvent<{ key: string; value: any; expanded: boolean }>) => void;
   onLazyLoad?: (event: any) => void;
 }
 
@@ -74,7 +82,7 @@ export interface TableProps extends SniceBaseProps {
  */
 export const Table = createReactAdapter<TableProps>({
   tagName: 'snice-table',
-  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","mode","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows"],
-  events: {"page-change":"onPageChange","table-row-selection-changed":"onTableRowSelectionChanged","table-select-all-changed":"onTableSelectAllChanged","sort-change":"onSortChange","filter-change":"onFilterChange","column-visibility-change":"onColumnVisibilityChange","column-pin-change":"onColumnPinChange","column-order-change":"onColumnOrderChange","density-change":"onDensityChange","row-clicked":"onRowClicked","lazy-load":"onLazyLoad"},
+  properties: ["striped","searchable","filterable","sortable","selectable","hoverable","clickable","list","pagination","paginationMode","pageSize","currentPage","totalItems","pageSizes","searchDebounce","columns","data","mode","currentSort","selector","selectorOptions","loading","virtualize","rowHeight","virtualBuffer","columnResize","editable","editMode","density","headerFilters","quickFilter","rowReorder","columnReorder","columnMenu","lazyLoad","lazyLoadThreshold","selectedRows","selectionMode","groupBy","groupDefaults"],
+  events: {"page-change":"onPageChange","table-row-selection-changed":"onTableRowSelectionChanged","row-clicked":"onRowClicked","table-load-error":"onTableLoadError","table-select-all-changed":"onTableSelectAllChanged","selection-changed":"onSelectionChanged","sort-change":"onSortChange","filter-change":"onFilterChange","column-visibility-change":"onColumnVisibilityChange","column-pin-change":"onColumnPinChange","column-order-change":"onColumnOrderChange","density-change":"onDensityChange","group-toggle":"onGroupToggle","lazy-load":"onLazyLoad"},
   formAssociated: false
 });

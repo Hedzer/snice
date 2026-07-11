@@ -77,6 +77,11 @@ export class TableMasterDetail {
     return new Set(this.expandedRows);
   }
 
+  /** Replace expansion indices without emitting user-action events. */
+  setExpandedRows(rowIndices: Iterable<number>) {
+    this.expandedRows = new Set(rowIndices);
+  }
+
   /** Create the expand/collapse toggle button — uses same chevron SVG as snice-accordion */
   createToggleButton(rowIndex: number): HTMLElement {
     const expanded = this.isExpanded(rowIndex);

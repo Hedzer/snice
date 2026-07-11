@@ -63,7 +63,9 @@ if (command === 'create-app') {
 
   const componentName = positional[0];
   const outputDir = flags.output || './dist/cdn';
-  const formats = flags.format ? flags.format.split(',') : ['iife'];
+  const formats = flags.format
+    ? flags.format.split(',')
+    : (componentName === 'table' ? ['iife', 'es'] : ['iife']);
   // Accept `--minify=false`, `--no-minify`, etc. String 'false' must not be truthy.
   const minify = flags.minify !== false && flags.minify !== 'false' && flags['no-minify'] !== true;
   const withTheme = flags['with-theme'] === true;
@@ -91,7 +93,7 @@ Create App Options:
 
 Build Component Options:
   --output=<dir>                                        Output directory (default: ./dist/cdn)
-  --format=<formats>                                    Comma-separated formats: iife (default: iife)
+  --format=<formats>                                    Comma-separated formats: iife, es (default: iife; table: iife,es)
   --minify                                              Minify output (default: true)
   --with-theme                                          Include theme.css in output
 

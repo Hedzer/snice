@@ -23,6 +23,8 @@ export interface VirtualizerOptions {
   renderPinnedTop?: () => DocumentFragment;
   /** Optional: render pinned-bottom rows (after the bottom spacer). */
   renderPinnedBottom?: () => DocumentFragment;
+  /** Called after the new window has been inserted into tbody. */
+  afterRender?: () => void;
 }
 
 export class TableVirtualizer {
@@ -57,6 +59,8 @@ export class TableVirtualizer {
   attach(options: VirtualizerOptions) {
     this.options = options;
     this.enabled = true;
+    this.lastStartIndex = -1;
+    this.lastEndIndex = -1;
     this.options.scrollContainer.addEventListener('scroll', this.scrollHandler, { passive: true });
     window.addEventListener('resize', this.scrollHandler, { passive: true });
     this.update();
@@ -92,13 +96,25 @@ export class TableVirtualizer {
 
     const { rowHeight, bufferPx, totalRows, scrollContainer, renderRange } = this.options;
     const scrollTop = scrollContainer.scrollTop;
-    const viewportHeight = scrollContainer.clientHeight;
+    // Layoutless DOMs report a zero-height viewport; treating one row as the
+    // minimum keeps range math valid and mirrors the smallest useful browser
+    // viewport.
+    const viewportHeight = Math.max(rowHeight, scrollContainer.clientHeight);
 
     const totalHeight = totalRows * rowHeight;
 
+    // Filtering, pagination, or collapsing a group can shrink the flattened
+    // model while the container is scrolled near the old end. Clamp before
+    // deriving indices so startIndex never sits beyond totalRows and blanks the
+    // body. Reflect the clamp to the element as well so its next scroll event
+    // observes the same state.
+    const maxScrollTop = Math.max(0, totalHeight - viewportHeight);
+    const effectiveScrollTop = Math.min(Math.max(0, scrollTop), maxScrollTop);
+    if (scrollTop !== effectiveScrollTop) scrollContainer.scrollTop = effectiveScrollTop;
+
     // Calculate visible range with buffer
-    const startPx = Math.max(0, scrollTop - bufferPx);
-    const endPx = Math.min(totalHeight, scrollTop + viewportHeight + bufferPx);
+    const startPx = Math.max(0, effectiveScrollTop - bufferPx);
+    const endPx = Math.min(totalHeight, effectiveScrollTop + viewportHeight + bufferPx);
 
     const startIndex = Math.floor(startPx / rowHeight);
     const endIndex = Math.min(totalRows, Math.ceil(endPx / rowHeight));
@@ -151,6 +167,7 @@ export class TableVirtualizer {
       // Pinned-bottom rows render outside (below) the windowed range.
       const pinnedBottom = this.options.renderPinnedBottom?.();
       if (pinnedBottom) tbody.appendChild(pinnedBottom);
+      this.options.afterRender?.();
     }
   }
 
