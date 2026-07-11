@@ -200,7 +200,21 @@ export interface ColumnDefinition {
   valueSetter?: (value: any, row: any) => any;
   sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
   colSpan?: number | ((value: any, row: any) => number);
-  
+
+  // Custom renderers (E2). When present these bypass the type-based cell/editor.
+  /** Build the display cell. A string result is set via textContent (never
+   *  innerHTML — no HTML parsing). Bypasses the type-based cell element. */
+  renderCell?: (value: any, row: any, column: ColumnDefinition) => HTMLElement | string;
+  /** Build the inline editor. `commit(v)` writes the value and commits;
+   *  `cancel()` aborts. Bypasses the built-in editor for this cell. */
+  renderEditor?: (
+    value: any,
+    row: any,
+    column: ColumnDefinition,
+    commit: (value: any) => void,
+    cancel: () => void
+  ) => HTMLElement;
+
   // Excel-like formatting
   numberFormat?: NumberFormat;
   dateFormat?: DateFormat;
@@ -235,6 +249,14 @@ export interface TableSort {
 }
 
 export type PaginationMode = 'client' | 'server';
+
+/**
+ * Row-selection behavior. `multiple` (the default) is the historical
+ * additive-toggle behavior; `single` collapses to exactly one row per click;
+ * `none` disables selection entirely. Mirrors the `PaginationMode` string-union
+ * convention used across this file (attribute-reflectable, ergonomic to assign).
+ */
+export type SelectionMode = 'none' | 'single' | 'multiple';
 
 /**
  * The real public surface of `SniceTable` (components/table/snice-table.ts),
@@ -276,6 +298,8 @@ export interface SniceTableElement extends HTMLElement {
 
   // ── Selection ──
   selectedRows: number[];
+  /** 'multiple' (default) = additive toggle; 'single' = one row; 'none' = off. */
+  selectionMode: SelectionMode;
   selector: string;
   selectorOptions: Array<{ value: string; label: string }>;
 
@@ -329,7 +353,7 @@ export interface SniceTableElement extends HTMLElement {
   renderPagination(): void;
 
   // ── Cell construction ──
-  createCellElement(column: ColumnDefinition, value: any): HTMLElement;
+  createCellElement(column: ColumnDefinition, value: any, row?: any): HTMLElement;
   getCellTagName(type: string): string;
 
   // ── Fullscreen ──
@@ -378,6 +402,8 @@ export interface SniceTableElement extends HTMLElement {
   startEdit(rowIndex: number, columnKey: string): void;
   commitEdit(): Promise<string | null>;
   cancelEdit(): void;
+  /** Register a per-cell editability predicate (wraps the editor's check). */
+  setCellEditableCheck(fn: (row: any, column: string) => boolean): void;
 
   // ── Export ──
   exportCSV(options?: CSVExportOptions): void;
@@ -440,6 +466,9 @@ export interface SniceTableEventMap {
   'table-row-selection-changed': { selectedRows: number[]; rowIndex: number; selected: boolean };
   /** snice-table.ts dispatchSelectAllChanged() — header select-all checkbox toggled. */
   'table-select-all-changed': { selectedRows: number[]; allSelected: boolean };
+  /** snice-table.ts dispatchSelectionChanged() — unified event fired alongside
+   *  the two legacy selection events on every user-driven selection change. */
+  'selection-changed': { selectedRows: number[]; rows: any[] };
   /** snice-table.ts dispatchSortChange() — currentSort changed (toggleSort/toolbar/column menu). */
   'sort-change': { sort: Array<{ column: string; direction: 'asc' | 'desc' }> };
   /** snice-table.ts dispatchFilterChange() — filter model changed (applyClientFilters). */

@@ -46,7 +46,7 @@ import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup } from './table-column-manager';
-import type { SniceTableElement } from './snice-table.types';
+import type { SniceTableElement, SelectionMode } from './snice-table.types';
 
 /**
  * A single desired body row for the render-path reconciler (Task B). `key`
@@ -217,6 +217,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   @property({ type: Array, attribute: false })
   selectedRows: number[] = [];
+
+  // E1: selection behavior. 'multiple' (default) preserves the historical
+  // additive-toggle path; 'single' collapses to one row; 'none' disables it.
+  @property({ attribute: 'selection-mode' })
+  selectionMode: SelectionMode = 'multiple';
+
+  // E1: shift-range anchor. Holds the row OBJECT (not an index) so it tracks the
+  // row across a sort that moves it — the range is computed against the current
+  // filtered snapshot / rowIndexMap at click time.
+  private selectionAnchor: any = null;
 
   // Module instances
   private virtualizer = new TableVirtualizer();
@@ -2195,6 +2205,22 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
    * hide/show, density) forces every row to rebuild, since a reused element
    * would carry stale layout.
    */
+  // E2: stable identity for a custom renderer function, so computeStructuralSig
+  // can encode "which renderer" without stringifying the function. A new
+  // function reference gets a new id → the structural signature changes →
+  // reused rows rebuild.
+  private rendererIds = new WeakMap<object, number>();
+  private rendererIdSeq = 0;
+  private rendererIdFor(fn?: unknown): string {
+    if (typeof fn !== 'function') return '';
+    let id = this.rendererIds.get(fn as object);
+    if (id === undefined) {
+      id = ++this.rendererIdSeq;
+      this.rendererIds.set(fn as object, id);
+    }
+    return String(id);
+  }
+
   private computeStructuralSig(): string {
     const states = this.columnManager.getAllStates();
     const visibleCols = states.length > 0
@@ -2203,7 +2229,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const cols = visibleCols.map(col => {
       const state = this.columnManager.getState(col.key);
-      return `${col.key}:${state?.width ?? ''}:${state?.pinned ?? ''}`;
+      // E2: fold each column's custom renderer identity in so swapping a
+      // renderCell function invalidates every reused row (Task B recycling).
+      const rc = this.rendererIdFor((col as any).renderCell);
+      return `${col.key}:${state?.width ?? ''}:${state?.pinned ?? ''}:rc${rc}`;
     });
 
     return [
@@ -2426,7 +2455,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   /** Create a cell element safely using createElement + setAttribute */
-  createCellElement(column: any, value: any): HTMLElement {
+  createCellElement(column: any, value: any, row?: any): HTMLElement {
+    // E2: a custom renderCell bypasses the type-based cell entirely. A string
+    // result is set via textContent (never innerHTML — no HTML parsing / XSS);
+    // an HTMLElement is used as-is.
+    if (typeof column.renderCell === 'function') {
+      const rendered = column.renderCell(value, row, column);
+      if (rendered instanceof HTMLElement) return rendered;
+      const span = document.createElement('span');
+      span.className = 'custom-cell';
+      span.textContent = rendered == null ? '' : String(rendered);
+      return span;
+    }
+
     const tagName = this.getCellTagName(column.type);
     const el = document.createElement(tagName) as any;
 
@@ -2678,18 +2719,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const rowIndex = parseInt(tr.getAttribute('data-index') || '0');
       const rowData = this.data[rowIndex];
 
-      // Handle row selection if selectable
+      // Handle row selection if selectable. selectionMode + modifier intent
+      // (ctrl/meta = additive toggle, shift = range) resolved in one place.
       if (this.selectable) {
-        const isCurrentlySelected = this.selectedRows.includes(rowIndex);
-
-        if (isCurrentlySelected) {
-          this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
-        } else {
-          this.selectedRows = [...this.selectedRows, rowIndex];
-        }
-
-        // DOM update happens in the selectedRows @watch (delta, one row).
-        this.dispatchRowSelectionChanged(rowIndex, !isCurrentlySelected);
+        this.applyRowSelection(rowIndex, {
+          additive: e.ctrlKey || e.metaKey,
+          range: e.shiftKey,
+        });
       }
 
       // Handle clickable row event
@@ -2707,21 +2743,30 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const checkbox = target as any;
       const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
 
-      if (checkbox.checked) {
+      if (this.selectionMode === 'none') return;
+
+      if (this.selectionMode === 'single') {
+        this.selectedRows = checkbox.checked ? [rowIndex] : [];
+      } else if (checkbox.checked) {
         if (!this.selectedRows.includes(rowIndex)) {
           this.selectedRows = [...this.selectedRows, rowIndex];
         }
       } else {
         this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
       }
+      this.selectionAnchor = this.data[rowIndex];
 
       // DOM update happens in the selectedRows @watch (delta, one row).
       this.dispatchRowSelectionChanged(rowIndex, checkbox.checked);
+      this.dispatchSelectionChanged();
       return;
     }
 
     if (target.matches('snice-checkbox.select-all')) {
       const checkbox = target as any;
+
+      // Select-all only carries meaning in multiple mode.
+      if (this.selectionMode !== 'multiple') return;
 
       if (checkbox.checked) {
         // Select only filtered/displayed rows, not all data
@@ -2733,6 +2778,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       // Row DOM + header checkbox update in the selectedRows @watch.
       this.dispatchSelectAllChanged(checkbox.checked);
+      this.dispatchSelectionChanged();
     }
   }
 
@@ -2924,6 +2970,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     return {
       selectedRows: this.selectedRows,
       allSelected
+    };
+  }
+
+  // E1: unified selection event, emitted alongside the two legacy events on
+  // every user-driven selection change. `rows` are the current row objects.
+  @dispatch('selection-changed', { bubbles: true, composed: true })
+  private dispatchSelectionChanged() {
+    return {
+      selectedRows: this.selectedRows,
+      rows: this.selectedRows.map(i => this.data[i]),
     };
   }
 
@@ -3414,21 +3470,82 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   // ── Selection helpers ──
 
-  private toggleRowSelection(rowIndex: number) {
-    // Check conditional selectability
+  /**
+   * E1: the single entry point for a pointer/keyboard interaction on one row.
+   * Resolves selectionMode + modifier intent (`additive` = ctrl/meta,
+   * `range` = shift), mutates `selectedRows` (delta DOM via the @watch), moves
+   * the object-valued anchor for non-range interactions, and emits the legacy
+   * row-selection event plus the unified `selection-changed` event.
+   */
+  private applyRowSelection(rowIndex: number, opts: { additive: boolean; range: boolean }) {
+    if (this.selectionMode === 'none') return;
+    // Conditional selectability gate (shared with the keyboard path).
     if (this.selectabilityCheck && !this.selectabilityCheck(this.data[rowIndex], rowIndex)) return;
 
-    const isSelected = this.selectedRows.includes(rowIndex)
-    if (isSelected) {
-      this.selectedRows = this.selectedRows.filter(i => i !== rowIndex);
-    } else {
-      this.selectedRows = [...this.selectedRows, rowIndex];
+    const row = this.data[rowIndex];
+
+    // Single mode: always collapse to exactly the interacted row.
+    if (this.selectionMode === 'single') {
+      this.selectedRows = [rowIndex];
+      this.selectionAnchor = row;
+      this.dispatchRowSelectionChanged(rowIndex, true);
+      this.dispatchSelectionChanged();
+      return;
     }
+
+    // Multiple mode. Shift extends the contiguous range from the anchor object.
+    if (opts.range && this.selectionAnchor != null) {
+      this.selectRange(this.selectionAnchor, row); // anchor stays put
+      this.dispatchRowSelectionChanged(rowIndex, this.selectedRows.includes(rowIndex));
+      this.dispatchSelectionChanged();
+      return;
+    }
+
+    // Plain or additive (ctrl/meta) click → toggle this row (historical path).
+    const isSelected = this.selectedRows.includes(rowIndex);
+    this.selectedRows = isSelected
+      ? this.selectedRows.filter(i => i !== rowIndex)
+      : [...this.selectedRows, rowIndex];
+    this.selectionAnchor = row;
+
     // DOM update happens in the selectedRows @watch (delta, one row).
     this.dispatchRowSelectionChanged(rowIndex, !isSelected);
+    this.dispatchSelectionChanged();
+  }
+
+  /**
+   * E1: replace the selection with the contiguous range between the anchor and
+   * target ROW OBJECTS, resolved against the current filtered snapshot (display
+   * order). Object-valued endpoints mean the range follows the rows across a
+   * sort — `getFilteredData()` reflects the reordered `this.data`, and each
+   * position maps back to a data index via `indexOfRow` (rowIndexMap).
+   */
+  private selectRange(anchorRow: any, targetRow: any) {
+    const view = this.getFilteredData();
+    let posA = view.indexOf(anchorRow);
+    const posT = view.indexOf(targetRow);
+    if (posT === -1) return;
+    if (posA === -1) posA = posT;
+
+    const lo = Math.min(posA, posT);
+    const hi = Math.max(posA, posT);
+    const indices: number[] = [];
+    for (let p = lo; p <= hi; p++) {
+      const idx = this.indexOfRow(view[p]);
+      if (idx >= 0) indices.push(idx);
+    }
+    this.selectedRows = indices;
+  }
+
+  private toggleRowSelection(rowIndex: number) {
+    // Keyboard Space/Shift+Space toggle — additive intent, no range.
+    this.applyRowSelection(rowIndex, { additive: true, range: false });
   }
 
   private selectAllRows() {
+    // Select-all only carries meaning in multiple mode.
+    if (this.selectionMode !== 'multiple') return;
+
     const filteredData = this.getFilteredData();
     const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
     const allFilteredSelected = filteredIndices.every(i => this.selectedRows.includes(i));
@@ -3441,6 +3558,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
     // Row DOM + header checkbox update in the selectedRows @watch.
     this.dispatchSelectAllChanged(allFilteredSelected);
+    this.dispatchSelectionChanged();
   }
 
   // ── Master-Detail API ──
@@ -3638,6 +3756,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.selectabilityCheck = fn;
   }
 
+  // E2: register a per-cell editability predicate. Wraps the editor's check —
+  // gates whether a given (row, columnKey) may enter edit mode, on top of the
+  // column's `editable` flag. Stored on the editor instance, so it survives the
+  // setupEditor() re-sync that startEdit() performs.
+  setCellEditableCheck(fn: (row: any, column: string) => boolean) {
+    this.editor.setEditabilityCheck(fn);
+  }
+
   getSelectedData(): any[] {
     return this.selectedRows.map(i => this.data[i]).filter(Boolean);
   }
@@ -3770,7 +3896,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         }
         td.appendChild(textSpan);
       } else {
-        td.appendChild(this.createCellElement(column, value));
+        td.appendChild(this.createCellElement(column, value, rowData));
       }
 
       // Apply column width
@@ -3833,6 +3959,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
 
     if (!editing) return null;
+
+    // E2: a custom renderEditor bypasses the built-in editor. commit(v) writes
+    // the value through the same pipeline the default editor uses, then commits;
+    // cancel() aborts. No default wiring is attached — the renderer owns its UI.
+    if (typeof column.renderEditor === 'function') {
+      const commit = (v: any) => {
+        if (this.editMode === 'row') this.editor.updateRowField(column.key, v);
+        else this.editor.updateCellValue(v);
+        this.commitEdit();
+      };
+      const cancel = () => this.cancelEdit();
+      return column.renderEditor(editValue, rowData, column, commit, cancel);
+    }
 
     const options = column.selectOptions ? { selectOptions: column.selectOptions } : undefined;
     const editorEl = this.editor.createEditor(editorType, editValue, options);

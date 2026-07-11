@@ -44,6 +44,7 @@ describe('snice-table types (D1/D2)', () => {
     'row-clicked',
     'table-row-selection-changed',
     'table-select-all-changed',
+    'selection-changed',
     'sort-change',
     'filter-change',
     'page-change',
@@ -68,9 +69,9 @@ describe('snice-table types (D1/D2)', () => {
     'cell-action',
   ];
 
-  it('SniceTableEventMap covers the full grepped dispatch inventory (25 events)', () => {
-    expect(sampleEventNames.length).toBe(25);
-    expect(new Set(sampleEventNames).size).toBe(25); // no accidental duplicates
+  it('SniceTableEventMap covers the full grepped dispatch inventory (26 events)', () => {
+    expect(sampleEventNames.length).toBe(26);
+    expect(new Set(sampleEventNames).size).toBe(26); // no accidental duplicates
   });
 
   // ── D2: runtime sanity — a small sample of the map's documented shapes,
