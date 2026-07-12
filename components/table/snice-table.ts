@@ -48,7 +48,7 @@ import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup } from './table-column-manager';
-import type { SniceTableElement, SelectionMode } from './snice-table.types';
+import type { ColumnDefinition, SniceTableElement, SelectionMode } from './snice-table.types';
 
 /**
  * A single desired body row for the render-path reconciler (Task B). `key`
@@ -613,7 +613,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         cursor: pointer;
       }
 
-      :host([selectable]) tbody tr {
+      :host([selectable]:not([selection-mode="none"])) tbody tr {
         cursor: pointer;
       }
 
@@ -1548,6 +1548,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     // Listen for select change events from the filter dropdown
     this.addEventListener('select-change', this.handleSelectorChange as EventListener);
+    this.addEventListener('row-select', this.handleSlottedRowSelect as EventListener);
 
     // Listen for detail panel toggle
     this.addEventListener('detail-toggle', () => this.renderBody());
@@ -1662,7 +1663,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.addEventListener('column-reorder', ((e: CustomEvent) => {
       const { fromKey, toKey } = e.detail;
       const fromIdx = this.columns.findIndex(c => c.key === fromKey);
-      const toIdx = this.columns.findIndex(c => c.key === toKey);
+      const toIdx = this.columnManager.getVisibleColumns().findIndex(c => c.key === toKey);
       if (fromIdx >= 0 && toIdx >= 0) {
         this.columnManager.moveColumn(fromKey, toIdx);
         this.renderHeader();
@@ -1692,8 +1693,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       row.index = index;
       row.hoverable = this.hoverable;
       row.clickable = this.clickable;
-      row.selectable = this.selectable;
     });
+    this.syncSlottedSelectionState();
 
     // Grouping/aggregation operates on the same model regardless of whether
     // rows came from a JS array or declarative <snice-row> children.
@@ -1781,6 +1782,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @watch('selectable')
   handleSelectableChange() {
     this.render(); // Re-render both header and body for checkbox columns
+    queueMicrotask(() => this.syncSlottedSelectionState());
   }
 
   // C1: reactive columns. A new column set can change cell types/formatting
@@ -1893,6 +1895,21 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.updateGroupSelectionStates();
   }
 
+  @watch('selectionMode', { immediate: false })
+  handleSelectionModeChange() {
+    if (this.selectionMode === 'none') {
+      this.selectedRows = [];
+      this.selectionAnchor = null;
+    } else if (this.selectionMode === 'single' && this.selectedRows.length > 1) {
+      this.selectedRows = this.selectedRows.slice(0, 1);
+      this.selectionAnchor = this.data[this.selectedRows[0]] ?? null;
+    }
+    this.syncSlottedSelectionState();
+    // The selection mode changes the tool-column structure (none has no
+    // checkbox column; single has row checkboxes but no select-all control).
+    this.scheduleRender('both');
+  }
+
   @watch('currentSort')
   handleSortChange() {
     this.renderHeader();
@@ -1982,6 +1999,22 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.scheduleRender('header');
   }
 
+  /** Column definitions in their actual painted order. Column state owns
+   * visibility/order; pinned columns are partitioned to their physical edges
+   * so right-pinned cells do not overlap later unpinned columns. */
+  private getVisibleColumnDefinitions(): ColumnDefinition[] {
+    if (this.columnManager.getAllStates().length === 0) return this.columns;
+    const states = [
+      ...this.columnManager.getPinnedLeft(),
+      ...this.columnManager.getUnpinned(),
+      ...this.columnManager.getPinnedRight(),
+    ];
+    const byKey = new Map(this.columns.map((column) => [column.key, column]));
+    return states
+      .map((state) => byKey.get(state.key))
+      .filter((column): column is ColumnDefinition => !!column);
+  }
+
   renderHeader() {
     if (!this.thead) return;
     
@@ -2003,34 +2036,31 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       headerRow.appendChild(th);
     }
 
-    if (this.selectable) {
+    if (this.hasSelectionColumn()) {
       const selectCell = document.createElement('th');
       selectCell.setAttribute('scope', 'col');
       selectCell.className = 'select-column';
-      const filteredData = this.getFilteredData();
-      const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
-      const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
-      const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
-      const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
-      selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
+      if (this.selectionMode === 'multiple') {
+        const filteredIndices = this.getSelectableIndices(this.getFilteredData());
+        const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
+        const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
+        const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
+        selectCell.innerHTML = `<snice-checkbox class="select-all" size="small" compact ${allSelected ? 'checked' : ''}></snice-checkbox>`;
+
+        // Set indeterminate after insertion.
+        setTimeout(() => {
+          const checkbox = selectCell.querySelector('.select-all') as HTMLInputElement;
+          if (checkbox) checkbox.indeterminate = someSelected;
+        }, 0);
+      } else {
+        selectCell.setAttribute('aria-label', 'Select one row');
+      }
       headerRow.appendChild(selectCell);
-      
-      // Set indeterminate after insertion
-      setTimeout(() => {
-        const checkbox = selectCell.querySelector('.select-all') as HTMLInputElement;
-        if (checkbox) {
-          checkbox.indeterminate = someSelected;
-        }
-      }, 0);
     }
 
-    // Determine which columns are visible
-    const visibleStates = this.columnManager.getVisibleColumns();
-    const visibleKeys = visibleStates.length > 0 ? new Set(visibleStates.map(s => s.key)) : null;
+    const visibleColumns = this.getVisibleColumnDefinitions();
 
-    this.columns.forEach(column => {
-      // Skip hidden columns
-      if (visibleKeys && !visibleKeys.has(column.key)) return;
+    visibleColumns.forEach(column => {
 
       const th = document.createElement('th');
       th.setAttribute('data-key', column.key);
@@ -2118,7 +2148,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       // Column DnD
       if (this.columnReorder && this.columnDnD.isEnabled()) {
-        this.columnDnD.makeHeaderDraggable(th, column.key, column.reorderable !== false);
+        // A pinned column has a fixed physical edge. Presenting it as draggable
+        // would emit a reorder event that the column manager correctly ignores.
+        this.columnDnD.makeHeaderDraggable(th, column.key, column.reorderable !== false && !state?.pinned);
       }
 
       headerRow.appendChild(th);
@@ -2131,7 +2163,24 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (groups.length > 0) {
       const groupRow = document.createElement('tr');
       groupRow.className = 'column-group-row';
-      groupRow.innerHTML = this.columnManager.renderGroupHeaders();
+      // Tool-column spacers must line up with the equivalent cells in the main
+      // header row before the grouped data-column runs.
+      const toolColumnClasses = [
+        this.rowReorder && this.rowDnD.isEnabled() ? 'drag-handle-cell' : '',
+        this.masterDetail.isEnabled() ? 'detail-toggle-cell' : '',
+        this.hasSelectionColumn() ? 'select-column' : '',
+      ].filter(Boolean);
+      for (const className of toolColumnClasses) {
+        const spacer = document.createElement('th');
+        spacer.className = className;
+        spacer.setAttribute('aria-hidden', 'true');
+        groupRow.appendChild(spacer);
+      }
+      const groupedHeaders = document.createElement('template');
+      groupedHeaders.innerHTML = this.columnManager.renderGroupHeaders(
+        visibleColumns.map((column) => column.key)
+      );
+      groupRow.appendChild(groupedHeaders.content);
       this.thead.appendChild(groupRow);
     }
 
@@ -2152,14 +2201,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         spacer.className = 'detail-toggle-cell';
         filterRow.appendChild(spacer);
       }
-      if (this.selectable) {
+      if (this.hasSelectionColumn()) {
         const spacer = document.createElement('td');
         spacer.className = 'select-column';
         filterRow.appendChild(spacer);
       }
 
-      this.columns.forEach(column => {
-        if (visibleKeys && !visibleKeys.has(column.key)) return;
+      visibleColumns.forEach(column => {
         const td = document.createElement('td');
         const input = document.createElement('snice-input') as any;
         input.size = 'small';
@@ -2270,7 +2318,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       this.tbody.innerHTML = '';
       this.renderedRows = new Map();
 
-      const toolCols = (this.selectable ? 1 : 0)
+      const toolCols = (this.hasSelectionColumn() ? 1 : 0)
         + (this.masterDetail.isEnabled() ? 1 : 0)
         + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
       const colSpan = this.columns.length + toolCols;
@@ -2337,7 +2385,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       displayData = filteredData.slice(startIndex, startIndex + this.pageSize);
     }
 
-    const extraCols = (this.selectable ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
+    const extraCols = (this.hasSelectionColumn() ? 1 : 0) + (this.masterDetail.isEnabled() ? 1 : 0) + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
     const managedColumns = this.columnManager.getAllStates();
     const visibleColumnCount = managedColumns.length > 0
       ? this.columnManager.getVisibleColumns().length
@@ -2576,12 +2624,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   private computeStructuralSig(): string {
-    const states = this.columnManager.getAllStates();
-    const visibleCols = states.length > 0
-      ? this.columns.filter(col => this.columnManager.getVisibleColumns().some(s => s.key === col.key))
-      : this.columns;
-
-    const cols = visibleCols.map(col => {
+    const cols = this.getVisibleColumnDefinitions().map(col => {
       const state = this.columnManager.getState(col.key);
       // E2: fold each column's custom renderer identity in so swapping a
       // renderCell function invalidates every reused row (Task B recycling).
@@ -2593,7 +2636,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       cols.join(','),
       `pl=${Array.from(this.columnManager.getPinnedLeftOffsets().values()).join('/')}`,
       `pr=${Array.from(this.columnManager.getPinnedRightOffsets().values()).join('/')}`,
-      `sel=${this.selectable ? 1 : 0}`,
+      `sel=${this.selectable ? this.selectionMode : 'off'}`,
+      `selectable=${this.rendererIdFor(this.selectabilityCheck)}`,
       `md=${this.masterDetail.isEnabled() ? 1 : 0}`,
       `rr=${this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0}`,
       `rh=${this.rowHeight}`,
@@ -2645,6 +2689,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (checkbox) {
       checkbox.setAttribute('data-row-index', String(index));
       checkbox.checked = isSelected;
+      const disabled = !!(this.selectabilityCheck && !this.selectabilityCheck(this.data[index], index));
+      checkbox.disabled = disabled;
+      checkbox.toggleAttribute('disabled', disabled);
     }
   }
 
@@ -2854,6 +2901,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     // Column definition as property (for formatter access etc.)
     el.column = column;
+    // Row-aware formatters, conditional formatting, and action-cell events all
+    // consume the originating row through the cell's property API.
+    el.rowData = row ?? null;
 
     // Type-specific attributes
     switch (column.type) {
@@ -3130,6 +3180,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const rowIndex = parseInt(checkbox.getAttribute('data-row-index') || '0');
 
       if (this.selectionMode === 'none') return;
+      if (this.selectabilityCheck && !this.selectabilityCheck(this.data[rowIndex], rowIndex)) {
+        checkbox.checked = this.selectedRows.includes(rowIndex);
+        return;
+      }
 
       if (this.selectionMode === 'single') {
         this.selectedRows = checkbox.checked ? [rowIndex] : [];
@@ -3180,8 +3234,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       if (checkbox.checked) {
         // Select only filtered/displayed rows, not all data
-        const filteredData = this.getFilteredData();
-        this.selectedRows = filteredData.map((row) => this.indexOfRow(row));
+        this.selectedRows = this.getSelectableIndices(this.getFilteredData());
       } else {
         this.selectedRows = [];
       }
@@ -3266,8 +3319,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const selectAllCheckbox = this.thead?.querySelector('snice-checkbox.select-all') as any;
     if (!selectAllCheckbox) return;
 
-    const filteredData = this.getFilteredData();
-    const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
+    const filteredIndices = this.getSelectableIndices(this.getFilteredData());
     const selectedInFiltered = filteredIndices.filter(i => this.selectedRows.includes(i));
     const allSelected = selectedInFiltered.length === filteredIndices.length && filteredIndices.length > 0;
     const someSelected = selectedInFiltered.length > 0 && selectedInFiltered.length < filteredIndices.length;
@@ -3389,7 +3441,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private dispatchSelectionChanged() {
     return {
       selectedRows: this.selectedRows,
-      rows: this.selectedRows.map(i => this.data[i]),
+      rows: this.getSelectedData(),
     };
   }
 
@@ -3544,7 +3596,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const rows = this.getVirtualRows();
 
     const extraCols =
-      (this.selectable ? 1 : 0) +
+      (this.hasSelectionColumn() ? 1 : 0) +
       (this.masterDetail.isEnabled() ? 1 : 0) +
       (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0);
     const managedColumns = this.columnManager.getAllStates();
@@ -3650,7 +3702,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     return dataColumns
       + (this.rowReorder && this.rowDnD.isEnabled() ? 1 : 0)
       + (this.masterDetail.isEnabled() ? 1 : 0)
-      + (this.selectable ? 1 : 0);
+      + (this.hasSelectionColumn() ? 1 : 0);
   }
 
   private getKeyboardRows(): any[] {
@@ -4002,7 +4054,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     } else {
       const column = this.columns.find(c => c.key === columnKey);
       const value = row[columnKey];
-      this.editor.startCellEdit(rowIndex, columnKey, value, row, column?.type);
+      this.editor.startCellEdit(rowIndex, columnKey, value, row, column?.editorType ?? column?.type);
     }
     // Re-render the affected row to show the editor, then focus it.
     this.renderBody();
@@ -4062,6 +4114,86 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   // ── Selection helpers ──
+
+  private hasSelectionColumn(): boolean {
+    return this.selectable && this.selectionMode !== 'none';
+  }
+
+  private getSlottedSelectionRows(): any[] {
+    if (this.shouldModelSlottedRows()) return [];
+    return Array.from(this.querySelectorAll('snice-row[slot="rows"]')) as any[];
+  }
+
+  private getSelectionSourceRows(): any[] {
+    const slotted = this.getSlottedSelectionRows();
+    return slotted.length > 0 ? slotted.map((row) => row.data) : this.data;
+  }
+
+  /** Keep light-DOM rows aligned with the table's live selection mode and
+   * conditional selectability, including property changes after connection. */
+  private syncSlottedSelectionState() {
+    const rows = this.getSlottedSelectionRows();
+    if (rows.length === 0) return;
+
+    const showSelectors = this.hasSelectionColumn();
+    let keptSingleSelection = false;
+    rows.forEach((row, index) => {
+      const disabled = !!(showSelectors && this.selectabilityCheck
+        && !this.selectabilityCheck(row.data, index));
+      row.index = index;
+      row.selectable = showSelectors;
+      row.selectionDisabled = disabled;
+
+      if (!showSelectors || disabled) {
+        row.selected = false;
+      } else if (this.selectionMode === 'single' && row.selected) {
+        if (keptSingleSelection) row.selected = false;
+        else keptSingleSelection = true;
+      }
+    });
+
+    this.selectedRows = rows
+      .map((row, index) => row.selected && !row.selectionDisabled ? index : -1)
+      .filter((index) => index >= 0);
+  }
+
+  private handleSlottedRowSelect = (event: CustomEvent) => {
+    const row = event.detail?.element as any;
+    const rows = this.getSlottedSelectionRows();
+    const index = rows.indexOf(row);
+    if (index < 0) return;
+
+    const blocked = !this.hasSelectionColumn()
+      || !!(this.selectabilityCheck && !this.selectabilityCheck(row.data, index));
+    if (blocked) {
+      row.selected = false;
+      this.syncSlottedSelectionState();
+      return;
+    }
+
+    if (this.selectionMode === 'single' && row.selected) {
+      rows.forEach((candidate, candidateIndex) => {
+        if (candidateIndex !== index) candidate.selected = false;
+      });
+    }
+    this.selectedRows = rows
+      .map((candidate, candidateIndex) => candidate.selected ? candidateIndex : -1)
+      .filter((candidateIndex) => candidateIndex >= 0);
+    this.selectionAnchor = row.data;
+    this.dispatchRowSelectionChanged(index, row.selected);
+    this.dispatchSelectionChanged();
+  };
+
+  private getSelectableIndices(rows: any[]): number[] {
+    const indices: number[] = [];
+    for (const row of rows) {
+      const index = this.indexOfRow(row);
+      if (index < 0) continue;
+      if (this.selectabilityCheck && !this.selectabilityCheck(row, index)) continue;
+      indices.push(index);
+    }
+    return indices;
+  }
 
   /**
    * E1: the single entry point for a pointer/keyboard interaction on one row.
@@ -4125,7 +4257,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const indices: number[] = [];
     for (let p = lo; p <= hi; p++) {
       const idx = this.indexOfRow(view[p]);
-      if (idx >= 0) indices.push(idx);
+      if (idx < 0) continue;
+      if (this.selectabilityCheck && !this.selectabilityCheck(view[p], idx)) continue;
+      indices.push(idx);
     }
     this.selectedRows = indices;
   }
@@ -4139,8 +4273,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // Select-all only carries meaning in multiple mode.
     if (this.selectionMode !== 'multiple') return;
 
-    const filteredData = this.getFilteredData();
-    const filteredIndices = filteredData.map((row) => this.indexOfRow(row));
+    const filteredIndices = this.getSelectableIndices(this.getFilteredData());
     const allFilteredSelected = filteredIndices.every(i => this.selectedRows.includes(i));
 
     if (allFilteredSelected) {
@@ -4348,6 +4481,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   setSelectabilityCheck(fn: (row: any, index: number) => boolean) {
     this.selectabilityCheck = fn;
+    const sourceRows = this.getSelectionSourceRows();
+    this.selectedRows = this.selectedRows.filter((index) => {
+      const row = sourceRows[index];
+      return !!row && fn(row, index);
+    });
+    this.syncSlottedSelectionState();
+    this.scheduleRender('both');
   }
 
   // E2: register a per-cell editability predicate. Wraps the editor's check —
@@ -4359,7 +4499,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   getSelectedData(): any[] {
-    return this.selectedRows.map(i => this.data[i]).filter(Boolean);
+    const rows = this.getSelectionSourceRows();
+    return this.selectedRows.map(i => rows[i]).filter(Boolean);
   }
 
   // ── Lazy Loading ──
@@ -4435,20 +4576,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       tr.appendChild(toggleCell);
     }
 
-    if (this.selectable) {
+    if (this.hasSelectionColumn()) {
       const selectCell = document.createElement('td');
       selectCell.className = 'select-column';
-      selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} data-row-index="${index}"></snice-checkbox>`;
+      const disabled = !!(this.selectabilityCheck && !this.selectabilityCheck(rowData, index));
+      selectCell.innerHTML = `<snice-checkbox class="row-select" size="small" compact ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-row-index="${index}"></snice-checkbox>`;
+      const checkbox = selectCell.querySelector('snice-checkbox') as any;
+      checkbox.disabled = disabled;
       tr.appendChild(selectCell);
     }
 
-    const visibleCols = this.columnManager.getAllStates().length > 0
-      ? this.columnManager.getVisibleColumns()
-      : null;
-
-    const columnsToRender = visibleCols
-      ? this.columns.filter(col => visibleCols.some(s => s.key === col.key))
-      : this.columns;
+    const columnsToRender = this.getVisibleColumnDefinitions();
 
     let skipColumns = 0;
     columnsToRender.forEach((column, colIdx) => {
@@ -4611,18 +4749,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       spacer.className = 'detail-toggle-cell';
       tr.appendChild(spacer);
     }
-    if (this.selectable) {
+    if (this.hasSelectionColumn()) {
       const spacer = document.createElement('td');
       spacer.className = 'select-column';
       tr.appendChild(spacer);
     }
 
-    const visibleCols = this.columnManager.getAllStates().length > 0
-      ? this.columnManager.getVisibleColumns()
-      : null;
-    const columnsToRender = visibleCols
-      ? this.columns.filter((col) => visibleCols.some((s) => s.key === col.key))
-      : this.columns;
+    const columnsToRender = this.getVisibleColumnDefinitions();
 
     const labelColumn = columnsToRender.find(
       (column) => !Object.prototype.hasOwnProperty.call(agg.aggregates, column.key)

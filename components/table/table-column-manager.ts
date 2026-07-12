@@ -286,13 +286,30 @@ export class TableColumnManager {
     return this.groups;
   }
 
-  /** Render group header row HTML */
-  renderGroupHeaders(): string {
+  /** Render group headers in the same order as the painted columns. Reordering
+   * can split one declared group into multiple visual runs; repeating its
+   * label for each run keeps every colspan aligned with the columns below. */
+  renderGroupHeaders(columnKeys = this.getVisibleColumns().map((column) => column.key)): string {
     if (this.groups.length === 0) return '';
 
-    return this.groups.map(group => {
-      const span = group.children.filter(key => this.states.get(key)?.visible).length;
-      if (span === 0) return '';
+    const groupForKey = new Map<string, ColumnGroup>();
+    for (const group of this.groups) {
+      for (const key of group.children) groupForKey.set(key, group);
+    }
+
+    const runs: { group: ColumnGroup | null; span: number }[] = [];
+    for (const key of columnKeys) {
+      if (!this.states.get(key)?.visible) continue;
+      const group = groupForKey.get(key) ?? null;
+      const current = runs[runs.length - 1];
+      if (current && current.group === group) current.span++;
+      else runs.push({ group, span: 1 });
+    }
+
+    return runs.map(({ group, span }) => {
+      if (!group) {
+        return `<th colspan="${span}" class="column-group-header column-group-header--ungrouped" aria-hidden="true"></th>`;
+      }
       return `<th colspan="${span}" class="column-group-header ${group.headerClass || ''}">${group.label}</th>`;
     }).join('');
   }

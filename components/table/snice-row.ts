@@ -37,6 +37,11 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
   @property({ type: Boolean,  })
   selectable: boolean = false;
 
+  /** Table-owned guard for declarative rows that remain visible but fail a
+   * conditional selectability predicate. */
+  @property({ type: Boolean, attribute: false })
+  selectionDisabled: boolean = false;
+
   @property({ type: Object, attribute: false })
   data: any = {};
 
@@ -129,11 +134,12 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
-  @watch('hoverable', 'clickable', 'selectable')
+  @watch('hoverable', 'clickable', 'selectable', 'selectionDisabled')
   updateRowAttributes() {
     this.classList.toggle('row--hoverable', this.hoverable);
     this.classList.toggle('row--clickable', this.clickable);
     this.classList.toggle('row--selectable', this.selectable);
+    this.classList.toggle('row--selection-disabled', this.selectionDisabled);
     this.classList.toggle('row--selected', this.selected);
   }
 
@@ -161,7 +167,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
       this.dispatchRowClick();
     }
 
-    if (this.selectable) {
+    if (this.selectable && !this.selectionDisabled) {
       this.toggleSelection();
     }
   }
@@ -171,6 +177,10 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     if (!target.matches('.row-checkbox')) return;
 
     const checkbox = target as HTMLInputElement;
+    if (this.selectionDisabled) {
+      checkbox.checked = this.selected;
+      return;
+    }
     this.selected = checkbox.checked;
     this.dispatchRowSelect();
   }
@@ -179,7 +189,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
 
-      if (this.selectable) {
+      if (this.selectable && !this.selectionDisabled) {
         this.toggleSelection();
       } else if (this.clickable) {
         this.dispatchRowClick();
@@ -194,6 +204,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
           type="checkbox"
           class="row-checkbox"
           ?checked=${this.selected}
+          ?disabled=${this.selectionDisabled}
           tabindex="-1"
           @change=${(e: Event) => this.handleChange(e)}
         />
@@ -344,6 +355,7 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   // Public API methods
   select() {
+    if (this.selectionDisabled || !this.selectable) return;
     this.selected = true;
     this.dispatchRowSelect();
   }

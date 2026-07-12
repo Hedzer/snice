@@ -146,7 +146,7 @@ needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
 |--------|-----------|-------------|
 | `setData()` | `data: any[]` | Bulk-load row data without an eager paint; call `renderBody()` when needed |
 | `setColumns()` | `columns: ColumnDefinition[]` | Reactively set column definitions and schedule header/body paint |
-| `setToolbar()` | `options: ToolbarOptions` | Add toolbar with search, sort, filter, export |
+| `setToolbar()` | `options: ToolbarOptions` | Add search, optional CSV export, and fullscreen controls; also hosts the column-menu filter panel |
 | `setTreeData()` | `options: TreeDataOptions` | Enable tree/hierarchical data |
 | `setDetailPanel()` | `options: DetailPanelOptions` | Enable master-detail expand rows |
 | `renderHeader()` | -- | Re-render the table header |
@@ -243,7 +243,7 @@ column assignment that already schedules the paint.
 table.setColumns([
   { key: 'product', label: 'Product', sortable: true },
   { key: 'revenue', label: 'Revenue', type: 'currency',
-    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
+    currencyFormat: { currency: 'USD', decimals: 0 } },
   { key: 'rating', label: 'Rating', type: 'rating' },
   { key: 'progress', label: 'Completion', type: 'progress',
     progressFormat: { colorize: true } },
@@ -257,7 +257,7 @@ table.setData([
   { product: 'Beta', revenue: 891200, rating: 4, progress: 34,
     trend: { values: [50,48,45,43,42,40], color: '#ef4444' }, status: 'Paused' }
 ]);
-table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
+table.setToolbar({ showSearch: true, showExport: true });
 ```
 
 ### Per-Row Cell Styling
@@ -280,11 +280,15 @@ Set `colorize: true` on `progressFormat` to auto-color based on value:
 ```javascript
 table.setToolbar({
   showSearch: true,     // Search input (left-aligned)
-  showSort: true,       // Opens sort modal (multi-sort)
-  showFilter: true,     // Opens filter modal
-  showExport: true      // CSV export button
+  showExport: true,     // CSV export button
+  searchPlaceholder: 'Search employees...'
 });
 ```
+
+Fullscreen is always present. Sorting stays on column headers; click additional
+headers to build a multi-sort. Advanced filtering opens from **Filter...** in
+the right-click column menu. Enable `column-menu` and call `setToolbar()` so
+that filter panel has a host.
 
 ### Column Menu (Right-Click)
 
@@ -310,10 +314,11 @@ table.setFilterModel({
   logic: 'and'  // 'and' | 'or'
 });
 
-// Text operators: contains, equals, startsWith, endsWith, isEmpty, isNotEmpty
-// Number operators: eq, neq, gt, gte, lt, lte
-// Date operators: is, not, after, before, onOrAfter, onOrBefore
-// Boolean operators: is
+// Text: contains, notContains, equals, notEquals, startsWith, endsWith,
+//       isEmpty, isNotEmpty
+// Number: eq, neq, gt, gte, lt, lte, isEmpty, isNotEmpty
+// Date: is, isNot, after, before, onOrAfter, onOrBefore, isEmpty, isNotEmpty
+// Boolean: isTrue, isFalse
 ```
 
 ### Row Grouping and Aggregation
@@ -461,7 +466,7 @@ class UserTableController implements IController {
   async getTableData(params) {
     const response = await fetch(`/api/users?search=${params.search}`);
     const json = await response.json();
-    return { data: json.users, total: json.total };
+    return { data: json.users, totalItems: json.total };
   }
 }
 ```

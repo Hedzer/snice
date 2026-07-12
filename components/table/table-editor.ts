@@ -24,6 +24,7 @@ export interface EditValidation {
 export interface CellEditState {
   rowIndex: number;
   columnKey: string;
+  rowData: any;
   originalValue: any;
   currentValue: any;
   editorType: EditorType;
@@ -115,6 +116,8 @@ export class TableEditor {
         return 'date';
       case 'boolean':
         return 'boolean';
+      case 'select':
+        return 'select';
       default:
         return 'text';
     }
@@ -139,6 +142,7 @@ export class TableEditor {
     this.cellState = {
       rowIndex,
       columnKey,
+      rowData: row,
       originalValue: value,
       currentValue: value,
       editorType: this.getEditorType(columnType || ''),
@@ -161,19 +165,19 @@ export class TableEditor {
   async commitCellEdit(): Promise<string | null> {
     if (!this.cellState?.isEditing) return null;
 
-    const { columnKey, currentValue, rowIndex } = this.cellState;
+    const { columnKey, currentValue, rowIndex, rowData } = this.cellState;
 
     // Parse value through pipeline
     const pipeline = this.pipelines.get(columnKey);
     let parsedValue = currentValue;
     if (pipeline?.valueParser) {
-      parsedValue = pipeline.valueParser(String(currentValue), {});
+      parsedValue = pipeline.valueParser(String(currentValue), rowData);
     }
 
     // Validate
     const validator = this.validators.get(columnKey);
     if (validator) {
-      const error = await validator.validate(parsedValue, {});
+      const error = await validator.validate(parsedValue, rowData);
       if (error) {
         this.cellState.error = error;
         return error;
@@ -182,7 +186,17 @@ export class TableEditor {
 
     // Apply value through pipeline
     if (pipeline?.valueSetter) {
-      parsedValue = pipeline.valueSetter(parsedValue, {});
+      const result = pipeline.valueSetter(parsedValue, rowData);
+      if (result && typeof result === 'object' && !Array.isArray(result)) {
+        // MUI-style setters return the updated row. Preserve the existing row
+        // identity so the table's commit listener and external references see
+        // every field the setter changed, then report this cell's final value.
+        Object.assign(rowData, result);
+        parsedValue = rowData[columnKey];
+      } else if (result !== undefined) {
+        // Also support the simpler field-value setter convention.
+        parsedValue = result;
+      }
     }
 
     // Dispatch commit event
@@ -253,13 +267,22 @@ export class TableEditor {
     if (!this.rowState?.isEditing) return null;
 
     const errors = new Map<string, string>();
+    const parsedRow = { ...this.rowState.editedRow };
+
+    // Cell and row modes share the same value-parser contract. Parse the whole
+    // edited row first so validators and setters receive the typed values.
+    for (const [key, pipeline] of this.pipelines) {
+      if (pipeline.valueParser && key in parsedRow) {
+        parsedRow[key] = pipeline.valueParser(String(parsedRow[key]), parsedRow);
+      }
+    }
 
     // Validate each edited field
     for (const columnKey of this.editableColumns) {
       const validator = this.validators.get(columnKey);
       if (validator) {
-        const value = this.rowState.editedRow[columnKey];
-        const error = await validator.validate(value, this.rowState.editedRow);
+        const value = parsedRow[columnKey];
+        const error = await validator.validate(value, parsedRow);
         if (error) {
           errors.set(columnKey, error);
         }
@@ -272,10 +295,15 @@ export class TableEditor {
     }
 
     // Apply value pipelines
-    const finalRow = { ...this.rowState.editedRow };
+    let finalRow = { ...parsedRow };
     for (const [key, pipeline] of this.pipelines) {
       if (pipeline.valueSetter && key in finalRow) {
-        finalRow[key] = pipeline.valueSetter(finalRow[key], finalRow);
+        const result = pipeline.valueSetter(finalRow[key], finalRow);
+        if (result && typeof result === 'object' && !Array.isArray(result)) {
+          finalRow = { ...finalRow, ...result };
+        } else if (result !== undefined) {
+          finalRow[key] = result;
+        }
       }
     }
 

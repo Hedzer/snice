@@ -346,6 +346,42 @@ describe('snice-table', () => {
       table = await createTable();
       expect(typeof table.moveColumn).toBe('function');
     });
+
+    it('table API paints reordered headers and body cells in the same order', async () => {
+      table = await createTable();
+      table.moveColumn('age', 0);
+      await wait(20);
+
+      const headerKeys = Array.from(table.shadowRoot.querySelectorAll('tr.column-header-row th[data-key]'))
+        .map((cell: Element) => cell.getAttribute('data-key'));
+      const bodyKeys = Array.from(table.shadowRoot.querySelectorAll('tbody tr[data-index="0"] td[data-key]'))
+        .map((cell: Element) => cell.getAttribute('data-key'));
+      expect(headerKeys[0]).toBe('age');
+      expect(bodyKeys).toEqual(headerKeys);
+    });
+
+    it('left- and right-pinned columns paint at their physical edges', async () => {
+      table = await createTable();
+      table.pinColumn('name', 'right');
+      table.pinColumn('age', 'left');
+      await wait(20);
+
+      const headerKeys = Array.from(table.shadowRoot.querySelectorAll('tr.column-header-row th[data-key]'))
+        .map((cell: Element) => cell.getAttribute('data-key'));
+      expect(headerKeys[0]).toBe('age');
+      expect(headerKeys.at(-1)).toBe('name');
+    });
+
+    it('does not advertise pinned headers as draggable reorder sources', async () => {
+      table = await createTable({ attrs: { 'column-reorder': true } });
+      table.pinColumn('id', 'left');
+      await wait(20);
+
+      const pinned = table.shadowRoot.querySelector('th[data-key="id"]') as HTMLTableCellElement;
+      const movable = table.shadowRoot.querySelector('th[data-key="name"]') as HTMLTableCellElement;
+      expect(pinned.draggable).not.toBe(true);
+      expect(movable.draggable).toBe(true);
+    });
   });
 
   // ── Feature 6: Column Pinning ──
@@ -438,6 +474,28 @@ describe('snice-table', () => {
       expect(html).toContain('colspan="2"');
     });
 
+    it('renders group runs in painted order after a column moves across groups', () => {
+      const cm = new TableColumnManager();
+      const el = document.createElement('div');
+      cm.initialize(TEST_COLUMNS, el);
+      cm.setColumnGroups([
+        { label: 'Identity', children: ['id', 'name'] },
+        { label: 'Details', children: ['age'] },
+      ]);
+      cm.moveColumn('name', 2);
+      const wrapper = document.createElement('tr');
+      wrapper.innerHTML = cm.renderGroupHeaders();
+      const groups = Array.from(wrapper.querySelectorAll('th')).map((header) => ({
+        label: header.textContent,
+        span: header.getAttribute('colspan'),
+      }));
+      expect(groups).toEqual([
+        { label: 'Identity', span: '1' },
+        { label: 'Details', span: '1' },
+        { label: 'Identity', span: '1' },
+      ]);
+    });
+
     it('should have setColumnGroups on table', async () => {
       table = await createTable();
       expect(typeof table.setColumnGroups).toBe('function');
@@ -453,6 +511,27 @@ describe('snice-table', () => {
 
       const groupRow = queryShadow(table as HTMLElement, '.column-group-row');
       expect(groupRow).toBeTruthy();
+    });
+
+    it('keeps grouped colspans aligned with reordered table headers', async () => {
+      table = await createTable();
+      table.setColumnGroups([
+        { label: 'Identity', children: ['id', 'name'] },
+        { label: 'Details', children: ['age'] },
+      ]);
+      table.moveColumn('name', 2);
+      await wait(30);
+
+      const keys = Array.from(table.shadowRoot.querySelectorAll('.column-header-row th[data-key]'))
+        .map((header: Element) => header.getAttribute('data-key'));
+      const groups = Array.from(table.shadowRoot.querySelectorAll('.column-group-header'))
+        .map((header: Element) => ({ label: header.textContent, span: header.getAttribute('colspan') }));
+      expect(keys).toEqual(['id', 'age', 'name']);
+      expect(groups).toEqual([
+        { label: 'Identity', span: '1' },
+        { label: 'Details', span: '1' },
+        { label: 'Identity', span: '1' },
+      ]);
     });
   });
 
@@ -1316,13 +1395,19 @@ describe('snice-table', () => {
       const ed = new TableEditor();
       ed.attach(document.createElement('div'));
       ed.setEditableColumns(['name']);
+      const row = { name: 'Alice', allowed: true };
+      let validatedRow: any;
       ed.setValidation('name', {
-        validate: (v: any) => v === '' ? 'Required' : null,
+        validate: (v: any, candidate: any) => {
+          validatedRow = candidate;
+          return v === '' || !candidate.allowed ? 'Required' : null;
+        },
       });
-      ed.startCellEdit(0, 'name', 'Alice', {});
+      ed.startCellEdit(0, 'name', 'Alice', row);
       ed.updateCellValue('Bob');
       const error = await ed.commitCellEdit();
       expect(error).toBeNull();
+      expect(validatedRow).toBe(row);
     });
 
     it('should validate row edits', async () => {

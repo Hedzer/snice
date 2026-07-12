@@ -97,9 +97,14 @@ for (const entry of readdirSync(componentsDir)) {
         return true;
       });
       if (nonImportLines.length > 0 && nonImportLines.some(l => l.trim())) {
-        // Escape $ in code to prevent regex replacement interpretation
-        const code = nonImportLines.join('\n').replace(/\$/g, '$$$$');
-        scripts += '  <script>\n' + code + '\n  </script>\n';
+        // This outer replace uses a callback, so the returned string is inserted
+        // literally. Escaping `$` here would corrupt template interpolation by
+        // turning `${value}` into `$${value}` in the deployed showcase.
+        const code = nonImportLines.join('\n');
+        // Preserve module semantics for the remaining demo code. Several
+        // showcases intentionally use top-level await; converting this block
+        // to a classic script makes those production pages fail at parse time.
+        scripts += '  <script type="module">\n' + code + '\n  </script>\n';
       }
 
       return scripts;
@@ -140,7 +145,10 @@ function verifySiteDir(dir) {
       continue;
     }
     if (!entry.endsWith('.html')) continue;
-    const content = readFileSync(fullPath, 'utf-8');
+    const content = readFileSync(fullPath, 'utf-8').replace(
+      /<snice-code-block\b[^>]*>[\s\S]*?<\/snice-code-block>/gi,
+      ''
+    );
     let m;
     while ((m = ATTR_RE.exec(content)) !== null) {
       const url = m[1];

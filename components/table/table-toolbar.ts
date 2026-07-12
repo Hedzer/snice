@@ -1,8 +1,8 @@
 /**
  * Toolbar for snice-table — MUI X DataGrid pattern.
  *
- * Sort: click column header (cycles asc→desc→none); shift+click adds to
- * multi-column sort.
+ * Sort: click a column header (cycles asc→desc→none); clicking another
+ * header adds it to the multi-column sort.
  * Filter: opened from the column header menu (right-click or ⋮). The toolbar
  * itself only carries Search, Export, and Fullscreen — no sort/filter
  * buttons.

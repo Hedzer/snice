@@ -314,6 +314,8 @@
   --snice-color-border-focus: hsl(var(--snice-color-blue-400));
   --snice-color-border-subtle: hsl(0 0% 100% / 0.12);
 
+  --snice-color-surface-hover: hsl(var(--snice-color-gray-700));
+  --snice-color-surface-active: hsl(var(--snice-color-gray-600));
   --snice-color-surface-disabled: hsl(var(--snice-color-gray-800));
   --snice-color-text-disabled: hsl(var(--snice-color-gray-600));
 

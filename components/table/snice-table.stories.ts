@@ -129,7 +129,13 @@ export const CellTypes: Story = {
 
 // h2: Pro: Sortable + Header Filters + Column Menu (right-click headers)
 export const ProSortableHeaderFiltersColumnMenu: Story = {
-  render: () => makeTable({ sortable: true, searchable: true, selectable: true, 'column-resize': true, 'column-menu': true, 'header-filters': true, hoverable: true, striped: true }),
+  render: () => {
+    const table = makeTable({ sortable: true, selectable: true, 'column-resize': true, 'column-menu': true, 'header-filters': true, hoverable: true, striped: true }) as any;
+    requestAnimationFrame(() => {
+      table.setToolbar({ showSearch: true, showExport: true, searchPlaceholder: 'Search employees...' });
+    });
+    return table;
+  },
 };
 
 // h2: Toolbar + Export + Quick Filter
@@ -139,12 +145,13 @@ export const ToolbarExportQuickFilter: Story = {
     table.toggleAttribute('sortable', true);
     table.toggleAttribute('selectable', true);
     table.toggleAttribute('hoverable', true);
+    table.toggleAttribute('column-menu', true);
     table.setColumns(COLUMNS);
     table.setData(DATA);
     requestAnimationFrame(() => {
       table.renderHeader();
       table.renderBody();
-      table.setToolbar({ showSearch: true, showDensity: true, showExport: true, searchPlaceholder: 'Search employees...' });
+      table.setToolbar({ showSearch: true, showExport: true, searchPlaceholder: 'Search employees...' });
     });
     return table;
   },
@@ -261,7 +268,21 @@ export const ColumnPinningVisibility: Story = {
       { key: 'email', label: 'Email', type: 'text' },
       { key: 'salary', label: 'Salary', type: 'number', prefix: '$', thousandsSeparator: true },
     ];
-    return makeTable({ sortable: true, 'column-resize': true, hoverable: true }, pinnedCols);
+    const wrapper = document.createElement('div');
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.textContent = 'Hide email';
+    toggle.style.margin = '0.75rem';
+    const table = makeTable({ sortable: true, 'column-resize': true, 'column-menu': true, hoverable: true }, pinnedCols) as any;
+    let emailVisible = true;
+    toggle.addEventListener('click', () => {
+      emailVisible = !emailVisible;
+      table.setColumnVisible('email', emailVisible);
+      toggle.textContent = emailVisible ? 'Hide email' : 'Show email';
+    });
+    requestAnimationFrame(() => table.setToolbar({ showSearch: false, showExport: false }));
+    wrapper.append(toggle, table);
+    return wrapper;
   },
 };
 

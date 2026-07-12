@@ -110,7 +110,7 @@ Source of truth (`ColumnType`): `text, number, date, boolean, currency, percent,
 - `toggleSort(columnKey, multiSort?)` - Toggle sort on a column
 - `goToPage(page)` - Navigate to a specific page
 - `setPageSize(size)` - Change rows per page
-- `setToolbar(options)` - Add toolbar (search, sort, filter, export buttons)
+- `setToolbar(options)` - Add search, optional CSV export, and fullscreen controls; hosts the column-menu filter panel
 - `setTreeData(options)` - Enable tree/hierarchical data
 - `setDetailPanel(options)` - Enable master-detail expand rows
 - `setColumnFilter(column, operator, value)` - Set filter on column
@@ -173,7 +173,7 @@ table.columns = [
   { key: 'name', label: 'Name', sortable: true },
   { key: 'department', label: 'Department' },
   { key: 'revenue', label: 'Revenue', type: 'currency',
-    aggregate: 'sum', numberFormat: { prefix: '$', thousandsSeparator: true } },
+    aggregate: 'sum', currencyFormat: { currency: 'USD', decimals: 0 } },
   { key: 'progress', label: 'Progress', type: 'progress',
     progressFormat: { colorize: true } }
 ];
@@ -181,7 +181,7 @@ table.data = [
   { name: 'A', department: 'Engineering', revenue: 50000, progress: 85 }
 ];
 table.groupBy = 'department';
-table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
+table.setToolbar({ showSearch: true, showExport: true });
 ```
 
 `setColumns()` is a reactive alias for `columns = ...`. `setData()` is the

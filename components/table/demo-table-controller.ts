@@ -90,7 +90,7 @@ export class DemoTableController implements IController {
     
     return {
       data: filteredData,
-      total: filteredData.length
+      totalItems: filteredData.length
     };
   }
 }

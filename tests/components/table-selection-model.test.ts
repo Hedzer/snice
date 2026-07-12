@@ -93,6 +93,7 @@ describe('snice-table selection model (E1)', () => {
     clickRow(table, 1);
     await wait(10);
     expect(table.selectedRows).toEqual([]);
+    expect(table.shadowRoot.querySelector('.select-column')).toBeNull();
   });
 
   // ── mode: single ──
@@ -115,6 +116,71 @@ describe('snice-table selection model (E1)', () => {
     clickRow(table, 3, { ctrlKey: true });
     await wait(10);
     expect(table.selectedRows).toEqual([3]);
+  });
+
+  it('single mode shows row selectors without a misleading select-all control', async () => {
+    table = await makeTable({ attrs: { 'selection-mode': 'single' } });
+    expect(table.shadowRoot.querySelector('snice-checkbox.select-all')).toBeNull();
+    expect(table.shadowRoot.querySelectorAll('snice-checkbox.row-select')).toHaveLength(DATA.length);
+  });
+
+  it('changing selectionMode updates the checkbox-column structure', async () => {
+    table = await makeTable();
+    expect(table.shadowRoot.querySelector('snice-checkbox.select-all')).toBeTruthy();
+
+    table.selectionMode = 'none';
+    await wait(20);
+    expect(table.shadowRoot.querySelector('.select-column')).toBeNull();
+
+    table.selectionMode = 'single';
+    await wait(20);
+    expect(table.shadowRoot.querySelector('snice-checkbox.select-all')).toBeNull();
+    expect(table.shadowRoot.querySelectorAll('snice-checkbox.row-select')).toHaveLength(DATA.length);
+  });
+
+  it('keeps declarative rows in sync with mode, single selection, and selectability', async () => {
+    table = document.createElement('snice-table') as any;
+    table.setAttribute('selectable', '');
+    table.innerHTML = `
+      <snice-column slot="columns" key="id" label="ID" type="text"></snice-column>
+      <snice-column slot="columns" key="name" label="Name" type="text"></snice-column>
+      <snice-row slot="rows" data-id="r0" data-name="Alice"></snice-row>
+      <snice-row slot="rows" data-id="r1" data-name="Bob"></snice-row>
+      <snice-row slot="rows" data-id="r2" data-name="Carol"></snice-row>
+    `;
+    document.body.appendChild(table);
+    await table.ready;
+    await wait(30);
+    const rows = Array.from(table.querySelectorAll('snice-row[slot="rows"]')) as any[];
+
+    expect(rows.every((row) => row.selectable)).toBe(true);
+    table.selectionMode = 'none';
+    await wait(30);
+    expect(rows.every((row) => !row.selectable)).toBe(true);
+    expect(rows.every((row) => !row.shadowRoot.querySelector('.row-checkbox'))).toBe(true);
+    rows[0].shadowRoot.querySelector('.row-container').click();
+    expect(rows[0].selected).toBe(false);
+
+    table.selectionMode = 'multiple';
+    table.setSelectabilityCheck((row: any) => row.id !== 'r1');
+    await wait(30);
+    const blocked = rows[1].shadowRoot.querySelector('.row-checkbox') as HTMLInputElement;
+    expect(rows[1].selectionDisabled).toBe(true);
+    expect(blocked.disabled).toBe(true);
+    blocked.click();
+    expect(rows[1].selected).toBe(false);
+
+    rows[0].shadowRoot.querySelector('.row-container').click();
+    await wait(10);
+    expect(table.selectedRows).toEqual([0]);
+
+    table.selectionMode = 'single';
+    await wait(20);
+    rows[2].shadowRoot.querySelector('.row-container').click();
+    await wait(10);
+    expect(rows[0].selected).toBe(false);
+    expect(rows[2].selected).toBe(true);
+    expect(table.selectedRows).toEqual([2]);
   });
 
   // ── mode: multiple (default) ──
@@ -163,6 +229,30 @@ describe('snice-table selection model (E1)', () => {
     clickRow(table, 2, { shiftKey: true });
     await wait(10);
     expect(table.selectedRows).toEqual([2]);
+  });
+
+  it('conditional selectability disables direct checkboxes and excludes rows from range/select-all', async () => {
+    table = await makeTable();
+    table.setSelectabilityCheck((row: any) => row.id !== 'r1');
+    await wait(20);
+
+    const blocked = trFor(table, 1).querySelector('snice-checkbox.row-select') as any;
+    expect(blocked.disabled).toBe(true);
+    blocked.checked = true;
+    blocked.dispatchEvent(new Event('change', { bubbles: true }));
+    await wait(10);
+    expect(table.selectedRows).toEqual([]);
+
+    clickRow(table, 0);
+    clickRow(table, 3, { shiftKey: true });
+    await wait(10);
+    expect(table.selectedRows).toEqual([0, 2, 3]);
+
+    const selectAll = table.shadowRoot.querySelector('snice-checkbox.select-all') as any;
+    selectAll.checked = true;
+    selectAll.dispatchEvent(new Event('change', { bubbles: true }));
+    await wait(10);
+    expect(table.selectedRows).toEqual([0, 2, 3, 4]);
   });
 
   // ── anchor follows the ROW OBJECT across a sort ──

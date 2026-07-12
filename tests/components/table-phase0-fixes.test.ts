@@ -130,6 +130,35 @@ describe('table phase 0 — task 4 polish fixes', () => {
         document.removeEventListener('row-clicked', handler);
       }
     });
+
+    it('action cells receive the originating row in their event payload', async () => {
+      const actionColumns = [
+        { key: 'name', label: 'Name', type: 'text' },
+        {
+          key: 'actions',
+          label: 'Actions',
+          type: 'actions',
+          actionsFormat: { actions: [{ action: 'inspect', label: 'Inspect' }] },
+        },
+      ];
+      table = await createTable({ columns: actionColumns });
+      const events: any[] = [];
+      table.addEventListener('cell-action', (event: CustomEvent) => events.push(event.detail));
+
+      const actionCell = table.shadowRoot.querySelector(
+        'tbody tr[data-index="0"] td[data-key="actions"] snice-cell-actions'
+      ) as any;
+      const button = actionCell.shadowRoot.querySelector('button') as HTMLButtonElement;
+      button.click();
+      await wait(10);
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toMatchObject({
+        action: 'inspect',
+        rowData: TEST_DATA[0],
+        column: actionColumns[1],
+      });
+    });
   });
 
   // ── c. Error state ──

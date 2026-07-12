@@ -111,6 +111,30 @@ describe('snice-table cell editing UI', () => {
     expect(boolInput!.type).toBe('checkbox');
   });
 
+  it('editorType overrides the type-derived editor in cell mode', async () => {
+    table = await makeTable({
+      columns: [{
+        key: 'role',
+        label: 'Role',
+        type: 'text',
+        editorType: 'select',
+        selectOptions: [
+          { value: 'Engineer', label: 'Engineer' },
+          { value: 'Designer', label: 'Designer' },
+        ],
+      }],
+      data: [{ role: 'Engineer' }],
+    });
+
+    table.startEdit(0, 'role');
+    await wait(10);
+
+    const select = cellTd(table, 0, 'role')?.querySelector('select') as HTMLSelectElement | null;
+    expect(select).toBeTruthy();
+    expect(select!.value).toBe('Engineer');
+    expect(Array.from(select!.options).map(option => option.value)).toEqual(['Engineer', 'Designer']);
+  });
+
   it('commits on Enter: new value rendered and cell-edit-commit fires', async () => {
     table = await makeTable();
     const commits: any[] = [];
@@ -134,6 +158,64 @@ describe('snice-table cell editing UI', () => {
     const td = cellTd(table, 0, 'name');
     expect(td?.querySelector('input')).toBeFalsy();
     expect(displayValue(td)).toBe('Alicia');
+  });
+
+  it('passes the source row through parser and setter callbacks', async () => {
+    const parserRows: any[] = [];
+    const setterRows: any[] = [];
+    table = await makeTable({
+      columns: [{
+        key: 'name',
+        label: 'Name',
+        type: 'text',
+        valueParser: (value: string, row: any) => {
+          parserRows.push(row);
+          return `${value.trim()} ${row.suffix}`;
+        },
+        valueSetter: (value: string, row: any) => {
+          setterRows.push(row);
+          return { ...row, name: value, edited: true };
+        },
+      }],
+      data: [{ name: 'Alice', suffix: 'Jr.', edited: false }],
+    });
+
+    table.startEdit(0, 'name');
+    await wait(10);
+    const input = cellTd(table, 0, 'name')?.querySelector('input') as HTMLInputElement;
+    input.value = '  Alicia  ';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await wait(30);
+
+    expect(parserRows).toEqual([table.data[0]]);
+    expect(setterRows).toEqual([table.data[0]]);
+    expect(table.data[0]).toMatchObject({ name: 'Alicia Jr.', suffix: 'Jr.', edited: true });
+  });
+
+  it('applies value parsers when committing a full row', async () => {
+    table = await makeTable({
+      attrs: { 'edit-mode': 'row' },
+      columns: [
+        { key: 'name', label: 'Name', type: 'text' },
+        // Keep the display cell text-only for happy-dom; the parser result is
+        // still numeric and proves row-mode pipelines run on commit.
+        { key: 'age', label: 'Age', type: 'text', valueParser: (value: string) => Number(value) },
+      ],
+      data: [{ name: 'Alice', age: 30 }],
+      render: false,
+    });
+
+    table.startEdit(0, 'name');
+    await wait(10);
+    const age = cellTd(table, 0, 'age')?.querySelector('input') as HTMLInputElement;
+    age.value = '41';
+    age.dispatchEvent(new Event('input', { bubbles: true }));
+    await table.commitEdit();
+    await wait(20);
+
+    expect(table.data[0].age).toBe(41);
+    expect(typeof table.data[0].age).toBe('number');
   });
 
   it('cancels on Escape: original value restored and cell-edit-cancel fires', async () => {

@@ -563,6 +563,7 @@ export interface SniceRowElement extends HTMLElement {
   index: number;
   columns: ColumnDefinition[];
   selectable: boolean;
+  selectionDisabled: boolean;
   updateCells(): void;
 }
 
