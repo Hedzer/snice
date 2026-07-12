@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const demoPath = 'http://localhost:5566/components/table/demo.html';
+const demoPath = 'http://localhost:5566/components/table/full-showcase.html';
 
 test.describe('Snice Cell Image', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +9,7 @@ test.describe('Snice Cell Image', () => {
   });
 
   test('should change variant when attribute is updated', async ({ page }) => {
-    const cellImage = page.locator('snice-cell-image').first();
+    const cellImage = page.locator('#cell-type-grid snice-cell-image');
 
     // Set initial variant to rounded
     await cellImage.evaluate((el: any) => {
@@ -45,7 +45,7 @@ test.describe('Snice Cell Image', () => {
   });
 
   test('should change size when attribute is updated', async ({ page }) => {
-    const cellImage = page.locator('snice-cell-image').first();
+    const cellImage = page.locator('#cell-type-grid snice-cell-image');
 
     // Set initial size to small
     await cellImage.evaluate((el: any) => {
@@ -80,7 +80,7 @@ test.describe('Snice Cell Image', () => {
   });
 
   test('should react to setAttribute for variant', async ({ page }) => {
-    const cellImage = page.locator('snice-cell-image').first();
+    const cellImage = page.locator('#cell-type-grid snice-cell-image');
 
     // Set via setAttribute
     await cellImage.evaluate((el: HTMLElement) => {
@@ -98,7 +98,7 @@ test.describe('Snice Cell Image', () => {
   });
 
   test('should react to setAttribute for size', async ({ page }) => {
-    const cellImage = page.locator('snice-cell-image').first();
+    const cellImage = page.locator('#cell-type-grid snice-cell-image');
 
     // Set via setAttribute
     await cellImage.evaluate((el: HTMLElement) => {

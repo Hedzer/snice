@@ -1,6 +1,7 @@
 import { element, property, watch, ready, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell-phone.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-phone')
 export class SniceCellPhone extends HTMLElement implements SniceCellElement {
@@ -65,6 +66,7 @@ export class SniceCellPhone extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.updatePhoneAttributes();
   }
 

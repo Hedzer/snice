@@ -1,6 +1,7 @@
 import { element, property, watch, ready, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell-location.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-location')
 export class SniceCellLocation extends HTMLElement implements SniceCellElement {
@@ -73,6 +74,7 @@ export class SniceCellLocation extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.updateLocationAttributes();
   }
 
@@ -81,8 +83,10 @@ export class SniceCellLocation extends HTMLElement implements SniceCellElement {
     if (this.column?.locationFormat) {
       const format = this.column.locationFormat;
       this.address = format.address || this.value;
-      this.latitude = format.latitude ? String(format.latitude) : '';
-      this.longitude = format.longitude ? String(format.longitude) : '';
+      const latitude = format.latitude ?? format.lat;
+      const longitude = format.longitude ?? format.lng;
+      this.latitude = latitude !== undefined && latitude !== null ? String(latitude) : '';
+      this.longitude = longitude !== undefined && longitude !== null ? String(longitude) : '';
       this.showMapLink = format.showMapLink ?? true;
       this.mapProvider = format.mapProvider || 'google';
       this.showIcon = format.showIcon ?? true;

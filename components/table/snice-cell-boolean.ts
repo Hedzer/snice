@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { BooleanFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-boolean')
 export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
@@ -60,6 +61,7 @@ export class SniceCellBoolean extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
   }
 

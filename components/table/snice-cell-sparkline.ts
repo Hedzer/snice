@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, SimpleArray, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { SparklineFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-sparkline')
 export class SniceCellSparkline extends HTMLElement implements SniceCellElement {
@@ -73,6 +74,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
     this.updateSparkline();
   }
@@ -135,7 +137,13 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     const color = rowColor ?? format.color ?? this.color;
     const type = format.type ?? this.chartType;
 
-    return this.createCanvas(data, width, height, color, type);
+    return this.createCanvas(data, width, height, color, type, {
+      showDots: format.showDots ?? this.showDots,
+      showBaseline: format.showBaseline ?? this.showBaseline,
+      strokeWidth: format.strokeWidth ?? this.strokeWidth,
+      minValue: format.minValue ?? this.minValue,
+      maxValue: format.maxValue ?? this.maxValue,
+    });
   }
 
   private parseData(): number[] {
@@ -187,7 +195,14 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     return [];
   }
 
-  private createCanvas(data: number[], width: number, height: number, color: string, type: string): string {
+  private createCanvas(
+    data: number[],
+    width: number,
+    height: number,
+    color: string,
+    type: string,
+    options: { showDots: boolean; showBaseline: boolean; strokeWidth: number; minValue?: number; maxValue?: number }
+  ): string {
     if (data.length === 0) return '';
 
     // Create a canvas element
@@ -202,8 +217,8 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     const chartWidth = width - (padding * 2);
     const chartHeight = height - (padding * 2);
 
-    const min = this.minValue ?? Math.min(...data);
-    const max = this.maxValue ?? Math.max(...data);
+    const min = options.minValue ?? Math.min(...data);
+    const max = options.maxValue ?? Math.max(...data);
     const range = max - min || 1;
 
     // Clear canvas
@@ -221,13 +236,25 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
     // Set color and line properties
     ctx.strokeStyle = resolvedColor;
     ctx.fillStyle = resolvedColor;
-    ctx.lineWidth = this.strokeWidth;
+    ctx.lineWidth = options.strokeWidth;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
+    const zeroY = padding + chartHeight - ((Math.min(max, Math.max(min, 0)) - min) / range) * chartHeight;
+    if (options.showBaseline) {
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, zeroY);
+      ctx.lineTo(width - padding, zeroY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     if (type === 'line' || type === 'area') {
       const points = data.map((val, i) => {
-        const x = padding + (i / (data.length - 1)) * chartWidth;
+        const x = data.length === 1 ? padding + chartWidth / 2 : padding + (i / (data.length - 1)) * chartWidth;
         const y = padding + chartHeight - ((val - min) / range) * chartHeight;
         return [x, y];
       });
@@ -252,7 +279,7 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
       ctx.stroke();
 
       // Draw dots if enabled
-      if (this.showDots) {
+      if (options.showDots) {
         points.forEach(([x, y]) => {
           ctx.beginPath();
           ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
@@ -265,9 +292,10 @@ export class SniceCellSparkline extends HTMLElement implements SniceCellElement 
       const barSpacing = (chartWidth / data.length) * 0.2;
 
       data.forEach((val, i) => {
-        const barHeight = ((val - min) / range) * chartHeight;
+        const valueY = padding + chartHeight - ((val - min) / range) * chartHeight;
+        const barHeight = Math.abs(zeroY - valueY);
         const x = padding + i * (barWidth + barSpacing);
-        const y = padding + chartHeight - barHeight;
+        const y = Math.min(zeroY, valueY);
         
         ctx.fillRect(x, y, barWidth, barHeight);
       });

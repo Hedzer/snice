@@ -5,6 +5,7 @@ export interface SniceRatingElement extends HTMLElement {
   value: number;
   max: number;
   icon: string;
+  emptyIcon: string;
   size: RatingSize;
   readonly: boolean;
   precision: RatingPrecision;

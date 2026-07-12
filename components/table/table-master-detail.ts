@@ -20,10 +20,31 @@ export class TableMasterDetail {
   private expandedRows: Set<number> = new Set();
   private options: DetailPanelOptions | null = null;
   private tableElement: HTMLElement | null = null;
+  private contentCache = new Map<any, string | HTMLElement>();
+  private rowByIndex = new Map<number, any>();
+  private measuredHeights = new Map<any, number>();
+  onHeightChange: (() => void) | null = null;
 
   attach(tableEl: HTMLElement, options: DetailPanelOptions) {
     this.tableElement = tableEl;
     this.options = options;
+    this.contentCache.clear();
+    this.rowByIndex.clear();
+    this.measuredHeights.clear();
+  }
+
+  /** Eagerly construct detail content when lazy=false. */
+  prepare(rows: any[]) {
+    if (!this.options) return;
+    this.rowByIndex = new Map(rows.map((row, index) => [index, row]));
+    const currentRows = new Set(rows);
+    for (const row of this.contentCache.keys()) {
+      if (!currentRows.has(row)) this.contentCache.delete(row);
+    }
+    for (const row of this.measuredHeights.keys()) {
+      if (!currentRows.has(row)) this.measuredHeights.delete(row);
+    }
+    if (this.options.lazy === false) rows.forEach((row, index) => this.getContent(row, index));
   }
 
   /** Check if a row is expanded */
@@ -53,6 +74,13 @@ export class TableMasterDetail {
   /** Collapse a row */
   collapse(rowIndex: number) {
     this.expandedRows.delete(rowIndex);
+    if (this.options?.lazy !== false) {
+      const row = this.rowByIndex.get(rowIndex);
+      if (row !== undefined) {
+        this.contentCache.delete(row);
+        this.measuredHeights.delete(row);
+      }
+    }
     this.tableElement?.dispatchEvent(new CustomEvent('row-collapse', {
       detail: { rowIndex },
       bubbles: true,
@@ -70,6 +98,10 @@ export class TableMasterDetail {
   /** Collapse all rows */
   collapseAll() {
     this.expandedRows.clear();
+    if (this.options?.lazy !== false) {
+      this.contentCache.clear();
+      this.measuredHeights.clear();
+    }
   }
 
   /** Get set of expanded row indices */
@@ -79,7 +111,18 @@ export class TableMasterDetail {
 
   /** Replace expansion indices without emitting user-action events. */
   setExpandedRows(rowIndices: Iterable<number>) {
-    this.expandedRows = new Set(rowIndices);
+    const next = new Set(rowIndices);
+    if (this.options?.lazy !== false) {
+      for (const index of this.expandedRows) {
+        if (next.has(index)) continue;
+        const row = this.rowByIndex.get(index);
+        if (row !== undefined) {
+          this.contentCache.delete(row);
+          this.measuredHeights.delete(row);
+        }
+      }
+    }
+    this.expandedRows = next;
   }
 
   /** Create the expand/collapse toggle button — uses same chevron SVG as snice-accordion */
@@ -90,7 +133,13 @@ export class TableMasterDetail {
     btn.className = `detail-toggle${expanded ? ' detail-toggle--expanded' : ''}`;
     btn.setAttribute('aria-expanded', String(expanded));
     btn.setAttribute('aria-label', expanded ? 'Collapse row' : 'Expand row');
-    btn.innerHTML = `<svg class="detail-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
+    const customIcon = expanded ? this.options?.collapseIcon : this.options?.expandIcon;
+    if (customIcon) {
+      if (customIcon.trim().startsWith('<')) btn.innerHTML = customIcon;
+      else btn.textContent = customIcon;
+    } else {
+      btn.innerHTML = `<svg class="detail-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
+    }
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -126,7 +175,7 @@ export class TableMasterDetail {
     const inner = document.createElement('div');
     inner.className = 'detail-content-inner';
 
-    const content = this.options.getDetailContent(row, rowIndex);
+    const content = this.getContent(row, rowIndex);
     if (typeof content === 'string') {
       inner.innerHTML = content;
     } else if (content instanceof HTMLElement) {
@@ -138,9 +187,22 @@ export class TableMasterDetail {
 
     // Trigger animation after insertion
     requestAnimationFrame(() => {
-      const height = inner.scrollHeight;
-      wrapper.style.setProperty('--detail-max-height', `${height}px`);
+      const configuredHeight = this.options?.detailHeight;
+      const height = configuredHeight === undefined || configuredHeight === 'auto'
+        ? `${inner.scrollHeight}px`
+        : (typeof configuredHeight === 'number' ? `${configuredHeight}px` : configuredHeight);
+      if (configuredHeight !== undefined && configuredHeight !== 'auto') {
+        inner.style.height = height;
+        inner.style.overflow = 'auto';
+      }
+      wrapper.style.setProperty('--detail-max-height', height);
       wrapper.classList.add('detail-content--open');
+      const measuredHeight = inner.getBoundingClientRect().height || inner.scrollHeight;
+      const previousHeight = this.measuredHeights.get(row);
+      if (measuredHeight > 0 && measuredHeight !== previousHeight) {
+        this.measuredHeights.set(row, measuredHeight);
+        this.onHeightChange?.();
+      }
     });
 
     tr.appendChild(td);
@@ -149,5 +211,27 @@ export class TableMasterDetail {
 
   isEnabled(): boolean {
     return this.options !== null;
+  }
+
+  /** Extra height contributed by an expanded detail row. Auto/non-pixel
+   * panels use the most recent browser measurement. */
+  getFixedAdditionalHeight(rowIndex: number): number {
+    if (!this.isExpanded(rowIndex)) return 0;
+    const configured = this.options?.detailHeight;
+    if (typeof configured === 'number') return Math.max(0, configured);
+    if (typeof configured === 'string' && /^\d+(?:\.\d+)?px$/.test(configured.trim())) {
+      return Math.max(0, Number.parseFloat(configured));
+    }
+    const row = this.rowByIndex.get(rowIndex);
+    return row === undefined ? 0 : (this.measuredHeights.get(row) || 0);
+  }
+
+  private getContent(row: any, rowIndex: number): string | HTMLElement {
+    if (!this.options) return '';
+    this.rowByIndex.set(rowIndex, row);
+    if (!this.contentCache.has(row)) {
+      this.contentCache.set(row, this.options.getDetailContent(row, rowIndex));
+    }
+    return this.contentCache.get(row)!;
   }
 }

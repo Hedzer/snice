@@ -229,8 +229,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <div class="demo-card"><h3>Comfortable</h3><snice-table id="density-comfy" density="comfortable" sortable striped hoverable></snice-table></div>
 </div>
 
-<h2>List Mode (Borderless Rows)</h2>
-<p class="note">List mode removes vertical cell dividers for a lighter directory-style presentation.</p>
+<h2>List Mode (Custom Rows)</h2>
+<p class="note">List mode can replace the normal data cells with a row-level renderer for directory and card layouts.</p>
 <snice-table id="list-mode" list hoverable></snice-table>
 
 <h2>Loading + Empty States</h2>
@@ -325,8 +325,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     { key: 'department', label: 'Department', type: 'text', sortable: true },
     { key: 'email', label: 'Email', type: 'email', sortable: true },
     {
-      key: 'salary', label: 'Salary', type: 'number', sortable: true,
-      numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+      key: 'salary', label: 'Salary', type: 'currency', sortable: true,
+      currencyFormat: { currency: 'USD', decimals: 0 },
     },
   ];
 
@@ -372,6 +372,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   requestAnimationFrame(() => {
     proTable.setToolbar({
       showSearch: true,
+      showSort: true,
+      showFilter: true,
       showExport: true,
       searchPlaceholder: 'Search employees...',
     });
@@ -763,7 +765,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   setup('density-comfy');
 
   // ── List Mode ──
-  setup('list-mode');
+  const listTable = setup('list-mode');
+  listTable.setListViewRenderer((row) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.25rem 0;';
+    card.innerHTML = '<span><strong>' + row.name + '</strong><br><small>'
+      + row.department + ' · ' + row.email + '</small></span><strong>$'
+      + Number(row.salary || 0).toLocaleString() + '</strong>';
+    return card;
+  });
 
   // ── Loading ──
   const loading = document.getElementById('loading');

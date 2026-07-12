@@ -46,7 +46,7 @@ class ColorCell {color:string='';showSwatch:boolean=true;showHex:boolean=true;sh
 class ImageCell {src:string='';alt:string='';fallback:string='';variant:'rounded'|'square'|'circle'='rounded';size:'small'|'medium'|'large'='medium';lazy:boolean=true;imageError:boolean=false} // attr imageerror
 class LocationCell {address:string='';latitude:string='';longitude:string='';showMapLink:boolean=true;mapProvider:'google'|'openstreetmap'|'apple'='google';showIcon:boolean=true} class JsonCell {collapsed:boolean=true;maxDepth:number=3;showToggle:boolean=true} // attrs showmaplink/mapprovider/showicon/maxdepth/showtoggle
 // Rating/progress/duration/filesize add no direct format props; rating/progress use JS-only column.ratingFormat/progressFormat.
-type ColumnType = 'text'|'number'|'date'|'boolean'|'currency'|'percent'|'rating'|'progress'|'sparkline'|'accounting'|'scientific'|'fraction'|'duration'|'filesize'|'custom';
+type ColumnType = 'text'|'number'|'date'|'boolean'|'currency'|'percent'|'percentage'|'rating'|'progress'|'sparkline'|'accounting'|'scientific'|'fraction'|'duration'|'filesize'|'tag'|'status'|'actions'|'link'|'email'|'phone'|'color'|'image'|'location'|'json'|'custom';
 interface ColumnDefinition {
   key:string; label:string; type?:ColumnType; align?:'left'|'center'|'right'; width?:string; flex?:number; minWidth?:number; maxWidth?:number;
   sortable?:boolean; filterable?:boolean; resizable?:boolean; reorderable?:boolean; hideable?:boolean; pinnable?:boolean; pinned?:'left'|'right'|false;
@@ -63,24 +63,22 @@ interface ColumnDefinition {
 type Aggregator='sum'|'avg'|'min'|'max'|'count'|((values:any[],rows:any[])=>any);
 type NumberFormat={decimals?:number;thousandsSeparator?:boolean;prefix?:string;suffix?:string;negativeStyle?:'parentheses'|'red'|'minus'}; type DateFormat={format?:'short'|'medium'|'long'|'full'|'custom';customFormat?:string;locale?:string};
 type BooleanFormat={trueValue?:string;falseValue?:string;useSymbols?:boolean;trueSymbol?:string;falseSymbol?:string}; type RatingFormat={max?:number;symbol?:string;emptySymbol?:string;color?:string};
-type ProgressFormat={max?:number;showPercentage?:boolean;color?:string;colorize?:boolean;backgroundColor?:string;height?:string}; type SparklineFormat={type?:'line'|'bar'|'area';color?:string;width?:number;height?:number};
+type ProgressFormat={max?:number;showPercentage?:boolean;color?:string;colorize?:boolean;backgroundColor?:string;height?:string}; type SparklineFormat={type?:'line'|'bar'|'area';color?:string;width?:number;height?:number;showDots?:boolean;showBaseline?:boolean;strokeWidth?:number;minValue?:number;maxValue?:number};
 type PercentageFormat={decimals?:number;showTrend?:boolean;trendValue?:number|null;colorize?:boolean}; type PhoneFormat={phone?:string;displayText?:string;showIcon?:boolean;format?:boolean;country?:string};
 type StatusFormat={status?:string;label?:string;showDot?:boolean;variant?:'online'|'offline'|'busy'|'away'|'custom'}; type TagFormat={variant?:string};
 type ActionsFormat={actions:ActionButton[]}; type ActionButton={action:string;label?:string;icon?:string;variant?:'primary'|'secondary'|'danger'|'success';title?:string;disabled?:boolean};
 type LinkFormat={href?:string;target?:string;external?:boolean;icon?:string;text?:string}; type EmailFormat={email?:string;showIcon?:boolean;displayText?:string};
 type ColorFormat={color?:string;size?:'small'|'medium'|'large';displayFormat?:'hex'|'rgb'|'hsl'|'name';showSwatch?:boolean;showHex?:boolean;showRgb?:boolean;swatchSize?:'small'|'medium'|'large'};
-type CurrencyFormat={currency?:string;locale?:string;display?:'symbol'|'code'|'name';currencyDisplay?:'symbol'|'code'|'name';decimals?:number;negativeStyle?:'parentheses'|'red'|'minus'};
+type CurrencyFormat={currency?:string;locale?:string;display?:'symbol'|'code'|'name';currencyDisplay?:'symbol'|'code'|'name';decimals?:number;thousandsSeparator?:boolean;negativeStyle?:'parentheses'|'red'|'minus'};
 type ImageFormat={src?:string;fallback?:string;shape?:'rounded'|'square'|'circle';variant?:'rounded'|'square'|'circle';size?:'small'|'medium'|'large';alt?:string;lazy?:boolean}; type JsonFormat={maxDepth?:number;expanded?:boolean;collapsed?:boolean;showToggle?:boolean};
 type LocationFormat={address?:string;latitude?:string|number;longitude?:string|number;showMapLink?:boolean;mapProvider?:'google'|'openstreetmap'|'apple';showIcon?:boolean;lat?:number;lng?:number};
 type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold'|'lighter';fontStyle?:'normal'|'italic';fontSize?:string;textDecoration?:'none'|'underline'|'line-through'}; type ConditionalFormat={condition:(value:any,row?:any)=>boolean;style?:CellStyle;className?:string};
 ```
 
-- Runtime-only type strings: `percentage`, `tag`, `status`, `actions`, `link`, `email`, `phone`, `color`, `image`, `location`, `json` (cast for strict `ColumnDefinition[]`).
 - `table.columns =`/`table.data =` rerender; `setData()` is non-eager, so call `renderBody()` when unpaired.
-- `searchable`/`filterable` are legacy request controls; local search uses `setQuickFilter()` or toolbar search. `quickFilter` is a legacy no-op flag.
-- Table `type:'currency'` routes through `snice-cell-number`: use `numberFormat`, `formatter`, or `renderCell`; standalone `snice-cell-currency` supports currency properties. Cells do not call `valueFormatter`; actions/color/email/image/JSON/link/location/phone/progress/rating/status/tag also ignore `formatter`.
-- Ignored/bounded fields: rating `emptySymbol`; percentage-format `showTrend` (`trendValue` is read but direct cell `showTrend` gates the arrow); currency `display` and normal-path `thousandsSeparator`; color `size`/`displayFormat`; image `shape` (use `variant`); JSON `expanded`; location `lat`/`lng`; sparkline `showBaseline` draws no baseline; `tooltip`; specialized-cell `style`/`conditionalFormats`; detail `detailHeight`/`lazy`/icons; print `includeCheckboxes`; clipboard `useFormatted`. Generic-cell base `style` requires `conditionalFormats`; generic percent takes a ratio while specialized/Table percent takes an already-percent value; use primitive progress values and JSON text (not an object) for JSON cells.
-- Set `rowReorder`, `columnReorder`, `lazyLoad` before initialization. `setListViewRenderer()` stores its callback but rendering ignores it. Density rerenders but emits no `density-change`.
+- `searchable` filters locally or requests remotely; `quickFilter` shows a model-backed input; `filterable` is the legacy remote selector.
+- Currency uses `snice-cell-currency`. Formatter/valueFormatter, tooltip, base/conditional styles, all declared format aliases, object progress/JSON/sparkline values, sparkline baselines, and already-percent semantics work across Table/declarative/standalone paths.
+- `rowReorder`, `columnReorder`, `lazyLoad`, and its threshold are post-mount reactive. List renderers execute in list mode. Density emits `density-change`.
 
 ## Methods
 
@@ -93,18 +91,18 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 - Filter operators: text `contains/notContains/equals/notEquals/startsWith/endsWith/isEmpty/isNotEmpty`; number `eq/neq/gt/gte/lt/lte/isEmpty/isNotEmpty`; date `is/isNot/before/onOrBefore/after/onOrAfter/isEmpty/isNotEmpty`; boolean `isTrue/isFalse`
 - `setColumnVisible(key,visible)` - Set visibility; `showAllColumns()` - show all; `hideAllColumns()` - hide hideable; `getColumnVisibility()` - read map; `pinColumn(key,side)` - pin; `unpinColumn(key)` - unpin
 - `autoSizeColumn(key)` - Measure one; `autoSizeAllColumns()` - measure all; `moveColumn(key,index)` - move; `setColumnGroups(groups)` - add grouped headers
-- `scrollToRow(index)` - Reveal data row; `scrollToColumn(key)` - reveal header; `getScrollPosition()` - read `{top,left}`; `setRowHeight(px)` - set fixed height; `setRowHeightCallback(fn)` - set normal-row height (virtual math stays fixed)
+- `scrollToRow(index)` - Reveal data row; `scrollToColumn(key)` - reveal header; `getScrollPosition()` - read `{top,left}`; `setRowHeight(px)` - set fixed height; `setRowHeightCallback(fn)` - set rendered/virtual height
 - `startEdit(row,key)` - Start cell/row edit; `commitEdit()` - validate/commit; `cancelEdit()` - cancel; `setCellEditableCheck(fn)` - install predicate. Parsers/setters receive the real row; setters may return a value or row
-- `exportCSV(options?)` - Download filtered raw data; `printTable(options?)` - print native table; `copyToClipboard(options?)` - copy filtered raw data; `toggleFullscreen()` - toggle native/fallback fullscreen
-- `setToolbar(options)` - Install search/export/fullscreen/filter panel; `setListViewRenderer(fn)` - store currently unused callback
-- `setDetailPanel(options)` - Configure detail content; `expandRow(i)` - expand; `collapseRow(i)` - collapse; `toggleRowExpansion(i)` - toggle; `expandAllRows()` - expand all; `collapseAllRows()` - collapse all
+- `exportCSV(options?)` - Download filtered raw data; `printTable(options?)` - print visible text with toolbar/footer/checkbox options; `copyToClipboard(options?)` - copy formatted (default) or raw filtered data; `toggleFullscreen()` - toggle native/fallback fullscreen
+- `setToolbar(options)` - Install search/sort/filter/export/fullscreen UI; `setListViewRenderer(fn)` - render full-width custom list rows
+- `setDetailPanel(options)` - Configure content/height/lazy lifecycle/icons; `expandRow(i)` - expand; `collapseRow(i)` - collapse; `toggleRowExpansion(i)` - toggle; `expandAllRows()` - expand all; `collapseAllRows()` - collapse all
 - `setTreeData(options)` - Configure path hierarchy; `expandTreeNode(key)` - expand; `collapseTreeNode(key)` - collapse; `toggleTreeNode(key)` - toggle; `expandAllTreeNodes()` - expand all; `collapseAllTreeNodes()` - collapse all
 - `pinRowTop(row)` - Pin above; `pinRowBottom(row)` - pin below; `unpinRow(row)` - unpin same object; `clearPinnedRows()` - clear both areas
 - `<snice-column>`: `setFormatter(fn)` - set formatter; `addConditionalFormat(rule)` - append; `removeConditionalFormat(i)` - remove; `clearConditionalFormats()` - clear; `getColumnDefinition()` - build definition
 - `<snice-row>`: `select()` - select if allowed; `deselect()` - deselect; `focusRow()` - focus/scroll; `getCellValue(key)` - read; `setCellValue(key,value)` - update; `getCellElement(key)` - find cell; `updateCells()` - reconfigure cells; `highlight(ms?)` - temporary highlight
-- Toolbar options: `{showSearch?,showExport?,searchPlaceholder?}`; fullscreen always appears; `showSort`/`showFilter` are accepted but ignored. Header clicks always use additive multi-sort.
+- Toolbar options: `{showSearch?,showSort?,showFilter?,showExport?,searchPlaceholder?}`; fullscreen always appears; sort/filter buttons edit the header/menu models.
 - Remote `table/data` payload: `{search,sort,filter,selector,page?,pageSize?}`; response: `{data,totalItems?}`. Automatic initial request requires `mode="remote"`; page requests also require `pagination-mode="server"`.
-- Selected-only export caveat: `selectedRows` are raw indices but CSV/clipboard apply them to filtered data; with active filters selection may target the wrong/no row.
+- CSV/clipboard resolve raw selected identities before intersecting filters, so active filters cannot retarget selection.
 
 ## Events
 
@@ -117,7 +115,7 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 - `row-edit-commit` → `{rowIndex,oldRow,newRow}`; `row-edit-cancel` → `{rowIndex}`
 - `row-expand`/`row-collapse` → `{rowIndex}`; `detail-toggle` → `{rowIndex,expanded}`; `tree-toggle` → `{key,expanded}`
 - `group-toggle` → `{key,value,expanded}`; `<snice-cell-actions>` `cell-action` → `{action,rowData,column}` (bubbles/composed through a table); `lazy-load` → `{currentCount}`; `table-load-error` → `{error}`
-- `<snice-column>` `column-changed` → `{column}`; `<snice-row>` `row-click` → `{data,index,element}`; `row-select` → `{selected,data,index,element}`. Declared `row-hover` and table `density-change` are not emitted.
+- `<snice-column>` `column-changed` → `{column}`; `<snice-row>` `row-click` → `{data,index,element}`; `row-select` → `{selected,data,index,element}`; `row-hover` → `{data,index,element}`; table `density-change` → `{density}`.
 
 ## Slots
 
@@ -136,14 +134,14 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 
 ```typescript
 const table = document.querySelector('snice-table');
-table.columns = [{key:'name',label:'Name',sortable:true},{key:'salary',label:'Salary',type:'number',numberFormat:{prefix:'$',thousandsSeparator:true}}];
+table.columns = [{key:'name',label:'Name',sortable:true},{key:'salary',label:'Salary',type:'currency',currencyFormat:{currency:'USD',decimals:0}}];
 table.data = employees;
-table.setToolbar({showSearch:true,showExport:true});
+table.setToolbar({showSearch:true,showSort:true,showFilter:true,showExport:true});
 ```
 
 ## Keyboard Navigation
 
-- Grid: arrows, Home/End, Page Up/Down; Enter edits; Shift+Space toggles selection; Ctrl/Cmd+A selects filtered selectable rows; plain Space is consumed. Group/tree/detail buttons: Tab then Enter/Space.
+- Grid: arrows, Home/End, Page Up/Down; Enter edits; Space/Shift+Space toggles selection; Ctrl/Cmd+A selects filtered selectable rows. Group/tree/detail buttons: Tab then Enter/Space.
 
 ## Accessibility
 

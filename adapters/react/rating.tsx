@@ -11,6 +11,7 @@ export interface RatingProps extends SniceBaseProps {
   value?: any;
   max?: any;
   icon?: any;
+  emptyIcon?: any;
   size?: any;
   readonly?: any;
   precision?: any;
@@ -35,7 +36,7 @@ export interface RatingProps extends SniceBaseProps {
  */
 export const Rating = createReactAdapter<RatingProps>({
   tagName: 'snice-rating',
-  properties: ["value","max","icon","size","readonly","precision"],
+  properties: ["value","max","icon","emptyIcon","size","readonly","precision"],
   events: {"rating-change":"onRatingChange"},
   formAssociated: false
 });

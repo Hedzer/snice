@@ -34,8 +34,8 @@ const COLUMNS = [
   { key: 'department', label: 'Department', type: 'text' },
   { key: 'email', label: 'Email', type: 'text' },
   {
-    key: 'salary', label: 'Salary', type: 'number',
-    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+    key: 'salary', label: 'Salary', type: 'currency',
+    currencyFormat: { currency: 'USD', decimals: 0 },
   },
 ];
 
@@ -230,7 +230,7 @@ export const ProSortableHeaderFiltersColumnMenu: Story = {
   render: () => {
     const table = makeTable({ sortable: true, selectable: true, 'column-resize': true, 'column-menu': true, 'header-filters': true, hoverable: true, striped: true }) as any;
     requestAnimationFrame(() => {
-      table.setToolbar({ showSearch: true, showExport: true, searchPlaceholder: 'Search employees...' });
+      table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true, searchPlaceholder: 'Search employees...' });
     });
     return table;
   },
@@ -709,7 +709,16 @@ export const DensityComfortable: Story = {
 
 // h2: List Mode
 export const ListMode: Story = {
-  render: () => makeTable({ list: true, hoverable: true }),
+  render: () => {
+    const table = makeTable({ list: true, hoverable: true }) as any;
+    requestAnimationFrame(() => table.setListViewRenderer((row: any) => {
+      const card = document.createElement('div');
+      card.style.cssText = 'display:flex;justify-content:space-between;gap:1rem;padding:0.25rem 0;';
+      card.innerHTML = `<span><strong>${row.name}</strong><br><small>${row.department} · ${row.email}</small></span><strong>$${Number(row.salary).toLocaleString()}</strong>`;
+      return card;
+    }));
+    return table;
+  },
 };
 
 // h2: Loading State

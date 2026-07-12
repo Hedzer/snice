@@ -139,13 +139,14 @@ describe('Table documentation alignment', () => {
   it.each([
     ['human', human],
     ['AI', ai],
-  ])('%s reference identifies quickFilter as a non-functional flag', (_name, doc) => {
-    expect(doc).toMatch(/quickFilter[^\n]*(?:no-op|does not|doesn't|inert|legacy)/i);
+  ])('%s reference documents the working quick-filter control', (_name, doc) => {
+    expect(doc).toMatch(/quickFilter[^\n]*(?:input|control|shows|filter)/i);
+    expect(doc).not.toMatch(/quickFilter[^\n]*(?:no-op|does not|doesn't|inert)/i);
   });
 
-  it('does not advertise the currently un-emitted density event', () => {
-    expect(human).not.toMatch(/^\|\s*`density-change`/m);
-    expect(ai).not.toMatch(/^['`-]*density-change['`]*\s*(?:->|→|:)/m);
+  it('documents the emitted density event', () => {
+    expect(human).toMatch(/^\|\s*`density-change`/m);
+    expect(ai).toMatch(/density-change` → `\{density\}`/m);
   });
 
   it('keeps typed AI signatures and declarative child properties', () => {
@@ -175,13 +176,13 @@ describe('Table documentation alignment', () => {
     expect(ai).toMatch(/row-select` → `\{selected,data,index,element\}`/);
   });
 
-  it('documents source-compatible format fields that current cells ignore', () => {
-    expect(human).toMatch(/image `shape` \(use `variant`\)/);
-    expect(ai).toMatch(/image `shape` \(use `variant`\)/);
+  it('documents source-compatible format fields as implemented', () => {
     for (const doc of [human, ai]) {
-      expect(doc).toMatch(/showBaseline[^\n]*(?:no baseline|no rendered baseline|draws no baseline|Ignored|bounded)/i);
-      expect(doc).toMatch(/(?:specialized-cell `style`\/`conditionalFormats`|specialized cells ignore both)/i);
-      expect(doc).toMatch(/generic[^\n]*percent[^\n]*(?:ratio|already-percent)/i);
+      expect(doc).toMatch(/showBaseline|show-baseline/);
+      expect(doc).toMatch(/(?:conditionalFormats|conditional styles)/i);
+      expect(doc).toMatch(/already-percent/i);
+      expect(doc).not.toMatch(/showBaseline[^\n]*(?:no baseline|draws no baseline)/i);
+      expect(doc).not.toMatch(/specialized cells ignore/i);
     }
   });
 

@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { RatingFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 import '../rating/snice-rating';
 
 @element('snice-cell-rating')
@@ -44,6 +45,7 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.applyAlignment();
     this.createRatingElement();
   }
@@ -75,6 +77,7 @@ export class SniceCellRating extends HTMLElement implements SniceCellElement {
     const format: RatingFormat = this.column.ratingFormat || {};
     rating.max = format.max ?? 5;
     if (format.symbol) rating.icon = format.symbol;
+    if (format.emptySymbol) rating.emptyIcon = format.emptySymbol;
     rating.size = 'small';
     rating.readonly = true;
     rating.precision = 'half';

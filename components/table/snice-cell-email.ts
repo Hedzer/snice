@@ -1,6 +1,7 @@
 import { element, property, watch, ready, render, styles, html, css, unsafeHTML } from 'snice';
 import cssContent from './snice-cell-email.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-email')
 export class SniceCellEmail extends HTMLElement implements SniceCellElement {
@@ -59,6 +60,7 @@ export class SniceCellEmail extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.updateEmailAttributes();
   }
 

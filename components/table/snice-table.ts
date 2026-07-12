@@ -268,6 +268,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private lazyLoadHandler: (() => void) | null = null;
   private lazyLoadContainer: HTMLElement | null = null;
   private rowHeightCallback: ((row: any, index: number) => number) | null = null;
+  private virtualRowsSnapshot: Array<{ data: any; index: number; treeRow?: TreeRow; groupItem?: DisplayItem }> = [];
 
   @query('table')
   table!: HTMLTableElement;
@@ -1493,19 +1494,37 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const container = this.shadowRoot?.querySelector('.table-controls-container');
     if (!container) return;
 
-    const showControls = this.searchable || this.filterable;
+    // A configured toolbar owns this container. Reattach it when a structural
+    // render replaces the shadow template; legacy controls must not overwrite it.
+    if (this.toolbarOptions) {
+      this.setToolbar(this.toolbarOptions);
+      return;
+    }
+
+    const showControls = this.searchable || this.filterable || this.quickFilter;
     if (!showControls) {
       container.innerHTML = '';
       return;
     }
 
-    // Only render if container is empty (first time)
-    if (container.children.length === 0) {
-      const controlsDiv = document.createElement('div');
-      controlsDiv.className = 'table-controls';
-      controlsDiv.setAttribute('part', 'controls');
+    container.innerHTML = '';
+    const controlsDiv = document.createElement('div');
+    controlsDiv.className = 'table-controls';
+    controlsDiv.setAttribute('part', 'controls');
 
-      if (this.searchable) {
+    if (this.quickFilter) {
+      const quickInput = document.createElement('snice-input') as any;
+      quickInput.className = 'quick-filter-input';
+      quickInput.type = 'search';
+      quickInput.placeholder = 'Quick filter...';
+      quickInput.size = 'small';
+      quickInput.clearable = true;
+      quickInput.style.width = '16rem';
+      quickInput.style.maxWidth = '16rem';
+      quickInput.value = this.filterEngine.getFilterModel().quickFilter || '';
+      quickInput.addEventListener('input', this.handleQuickFilterInput);
+      controlsDiv.appendChild(quickInput);
+    } else if (this.searchable) {
         const searchInput = document.createElement('snice-input');
         searchInput.className = 'search-input';
         searchInput.setAttribute('type', 'search');
@@ -1516,9 +1535,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         searchInput.style.flex = '0 0 auto';
         searchInput.addEventListener('input', this.handleSearchInput);
         controlsDiv.appendChild(searchInput);
-      }
+    }
 
-      if (this.filterable) {
+    if (this.filterable) {
         const select = document.createElement('snice-select');
         select.className = 'selector-input';
         select.setAttribute('multiple', '');
@@ -1535,10 +1554,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
         });
 
         controlsDiv.appendChild(select);
-      }
-
-      container.appendChild(controlsDiv);
     }
+
+    container.appendChild(controlsDiv);
   }
 
   @ready()
@@ -1867,6 +1885,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.settingSortedData) return;
     this.unsortedData = [...this.data];
     this.rebuildRowIndex();
+    this.masterDetail.prepare(this.data);
     if (this.settingDataImperative) return; // imperative setData(): caller renders
     this.scheduleRender('body');
   }
@@ -1915,9 +1934,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.renderHeader();
   }
 
-  @watch('searchable', 'filterable')
+  @watch('searchable', 'filterable', 'quickFilter')
   handleControlsChange() {
     this.renderControls();
+    if (this.quickFilter) this.scheduleRender('body');
   }
 
   // ── C2: controlled-state props. Assigning any of these post-mount routes to
@@ -1950,6 +1970,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   handleDensityChange() {
     // The density attribute reflects automatically (drives the CSS); the body
     // rebuilds because density is part of the row signature.
+    this.scheduleRender('body');
+    this.dispatchDensityChange();
+  }
+
+  @watch('list', { immediate: false })
+  handleListChange() {
+    this.renderedRows = new Map();
     this.scheduleRender('body');
   }
 
@@ -1988,9 +2015,29 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.scheduleRender('header');
   }
 
-  @watch('quickFilter', { immediate: false })
-  handleQuickFilterChange() {
-    this.scheduleRender('body');
+  @watch('rowReorder', { immediate: false })
+  handleRowReorderChange() {
+    if (this.rowReorder) this.rowDnD.attach(this);
+    else this.rowDnD.detach();
+    this.scheduleRender('both');
+  }
+
+  @watch('columnReorder', { immediate: false })
+  handleColumnReorderChange() {
+    if (this.columnReorder) this.columnDnD.attach(this);
+    else this.columnDnD.detach();
+    this.scheduleRender('header');
+  }
+
+  @watch('lazyLoad', 'lazyLoadThreshold', { immediate: false })
+  handleLazyLoadChange() {
+    if (this.lazyLoad) {
+      queueMicrotask(() => this.setupLazyLoading());
+    } else {
+      if (this.lazyLoadHandler) this.lazyLoadContainer?.removeEventListener('scroll', this.lazyLoadHandler);
+      this.lazyLoadHandler = null;
+      this.lazyLoadContainer = null;
+    }
   }
 
   @watch('columnMenu', { immediate: false })
@@ -2302,7 +2349,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     // NOT the raw filtered data — otherwise the virtualizer windows the wrong
     // dataset and expand/collapse silently no-ops.
     if (this.virtualize && this.virtualizer.isEnabled()) {
-      this.virtualizer.setTotalRows(this.getVirtualRows().length);
+      this.virtualRowsSnapshot = this.getVirtualRows();
+      this.virtualizer.setTotalRows(this.virtualRowsSnapshot.length);
       // The virtualizer's afterRender hook re-establishes grid ARIA/focus on
       // the freshly inserted window.
 
@@ -2657,6 +2705,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const parts = [structuralSig];
     if (treeRow) parts.push(`t:${treeRow.depth}:${treeRow.expanded ? 1 : 0}:${treeRow.hasChildren ? 1 : 0}`);
     if (this.rowHeightCallback) parts.push(`h:${this.rowHeightCallback(rowData, index)}`);
+    if (this.masterDetail.isEnabled()) parts.push(`detail:${this.masterDetail.isExpanded(index) ? 1 : 0}`);
     // Features whose row DOM closes over the index must rebuild when it changes.
     if ((this.rowReorder && this.rowDnD.isEnabled()) || this.masterDetail.isEnabled()) {
       parts.push(`i:${index}`);
@@ -2891,11 +2940,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (column.align) el.setAttribute('align', column.align);
     el.setAttribute('in-table', 'true');
 
-    // Value: serialize objects to JSON, primitives as string
-    const isObjectValue = value !== null && typeof value === 'object';
-    if (isObjectValue) {
+    // Set the property directly so arrays/objects reach progress, sparkline,
+    // JSON, action, and tag cells without a lossy attribute conversion. Keep a
+    // primitive attribute for declarative inspection and CSS selectors.
+    if (column.type === 'sparkline' && value !== null && typeof value === 'object') {
       el.setAttribute('value', JSON.stringify(value));
+      if (Array.isArray(value)) el.data = value;
     } else {
+      el.value = value ?? '';
+    }
+    if (value === null || typeof value !== 'object') {
       el.setAttribute('value', String(value ?? ''));
     }
 
@@ -2918,8 +2972,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
           if (cf) {
             if (cf.currency) el.setAttribute('currency', cf.currency);
             if (cf.locale) el.setAttribute('locale', cf.locale);
-            if (cf.display) el.setAttribute('display', cf.display);
+            if (cf.display || cf.currencyDisplay) {
+              el.setAttribute('currencydisplay', cf.currencyDisplay || cf.display);
+            }
             if (cf.decimals !== undefined) el.setAttribute('decimals', String(cf.decimals));
+            if (cf.thousandsSeparator === false) el.thousandsSeparator = false;
           }
         }
         break;
@@ -3027,8 +3084,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       case 'text':
         return 'snice-cell-text';
       case 'number':
-      case 'currency':
         return 'snice-cell-number';
+      case 'currency':
+        return 'snice-cell-currency';
       case 'date':
         return 'snice-cell-date';
       case 'boolean':
@@ -3266,8 +3324,18 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       clearTimeout(this.searchDebounceTimeout);
     }
     this.searchDebounceTimeout = setTimeout(() => {
-      this.debouncedDataRequest();
+      if (this.mode === 'remote') this.getTableData();
+      else this.setQuickFilter(this.searchText);
     }, this.searchDebounce);
+  }
+
+  private handleQuickFilterInput = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (this.filterInputDebounceTimeout) clearTimeout(this.filterInputDebounceTimeout);
+    this.filterInputDebounceTimeout = setTimeout(() => {
+      this.filterInputDebounceTimeout = null;
+      this.setQuickFilter(input.value || '');
+    }, SniceTable.FILTER_INPUT_DEBOUNCE_MS);
   }
 
   private selectorDebounceTimeout: any = null;
@@ -3531,6 +3599,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.lazyLoadHandler) this.lazyLoadContainer?.removeEventListener('scroll', this.lazyLoadHandler);
     this.lazyLoadHandler = null;
     this.lazyLoadContainer = null;
+    this.rowDnD.detach();
+    this.columnDnD.detach();
   }
 
   // ── Virtualization API ──
@@ -3551,10 +3621,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     const scrollContainer = this.getScrollContainer();
     if (!scrollContainer) return;
 
+    this.virtualRowsSnapshot = this.getVirtualRows();
     this.virtualizer.attach({
-      rowHeight: this.rowHeight,
+      rowHeight: (displayIndex) => this.getVirtualRowHeight(displayIndex),
       bufferPx: this.virtualBuffer,
-      totalRows: this.getVirtualRows().length,
+      totalRows: this.virtualRowsSnapshot.length,
       scrollContainer,
       renderRange: (start, end) => this.renderRowRange(start, end),
       // Pinned rows live outside the windowed range so they are always present,
@@ -3565,6 +3636,16 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       // row indices, and roving focus after every inserted range.
       afterRender: () => this.keyboard.refresh(),
     });
+  }
+
+  private getVirtualRowHeight(displayIndex: number): number {
+    const entry = this.virtualRowsSnapshot[displayIndex];
+    if (!entry || (entry.groupItem && entry.groupItem.type !== 'row')) return this.rowHeight;
+    const dataIndex = entry.groupItem ? this.indexOfRow(entry.data) : entry.index;
+    const base = this.rowHeightCallback
+      ? this.rowHeightCallback(entry.data, dataIndex)
+      : this.rowHeight;
+    return base + this.masterDetail.getFixedAdditionalHeight(dataIndex);
   }
 
   /**
@@ -3593,7 +3674,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   private renderRowRange(startIndex: number, endIndex: number): DocumentFragment {
     const fragment = document.createDocumentFragment();
-    const rows = this.getVirtualRows();
+    const rows = this.virtualRowsSnapshot.length > 0
+      ? this.virtualRowsSnapshot
+      : this.getVirtualRows();
 
     const extraCols =
       (this.hasSelectionColumn() ? 1 : 0) +
@@ -3651,10 +3734,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       fragment.appendChild(tr);
 
       // Master-detail: render the expanded detail row in-window. The detail
-      // <tr> is an extra row the fixed-height spacer math does not account for,
-      // so spacer heights are approximate around expanded rows — acceptable for
-      // v1; exact variable-height support is Phase 3. Silent dropping was the
-      // bug. Tree rows never carry detail panels, so skip them.
+      // A fixed detailHeight participates in virtual spacer math through
+      // getVirtualRowHeight. Auto-height content is still rendered in-window
+      // and contributes through normal table layout. Tree rows never carry
+      // detail panels, so skip them.
       if (!treeRow && this.masterDetail.isEnabled() && this.masterDetail.isExpanded(dataIndex)) {
         const detailRow = this.masterDetail.createDetailRow(data, dataIndex, totalColSpan);
         if (detailRow) fragment.appendChild(detailRow);
@@ -4100,7 +4183,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   exportCSV(options?: any) {
     const data = this.getFilteredData();
     const selectedData = options?.selectedOnly
-      ? this.selectedRows.map(i => data[i]).filter(Boolean)
+      ? this.getSelectedRowsIn(data)
       : data;
     this.exporter.exportCSV(selectedData, this.columns, options);
   }
@@ -4110,7 +4193,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   }
 
   async copyToClipboard(options?: any): Promise<boolean> {
-    return this.exporter.copyToClipboard(this.getFilteredData(), this.columns, this.selectedRows, options);
+    const filtered = this.getFilteredData();
+    const rows = this.selectedRows.length > 0 ? this.getSelectedRowsIn(filtered) : filtered;
+    return this.exporter.copyToClipboard(rows, this.columns, options);
+  }
+
+  /** Resolve raw selection indices against the source data first, then retain
+   * only rows present in the current filtered view. Filtered positions are not
+   * interchangeable with raw indices. */
+  private getSelectedRowsIn(view: any[]): any[] {
+    const selected = new Set(this.getSelectedData());
+    return view.filter((row) => selected.has(row));
   }
 
   // ── Selection helpers ──
@@ -4291,6 +4384,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   setDetailPanel(options: DetailPanelOptions) {
     this.masterDetail.attach(this, options);
+    this.masterDetail.onHeightChange = () => {
+      if (!this.virtualize || !this.virtualizer.isEnabled()) return;
+      this.virtualRowsSnapshot = this.getVirtualRows();
+      this.virtualizer.setTotalRows(this.virtualRowsSnapshot.length);
+    };
+    this.masterDetail.prepare(this.data);
     this.renderHeader();
     this.renderBody();
   }
@@ -4334,12 +4433,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.toolbar.onSearch = (query) => this.setQuickFilter(query);
     this.toolbar.onSortColumn = (key, dir) => {
       this.currentSort = [{ column: key, direction: dir }];
+      this.dispatchSortChange();
       this.renderHeader();
       if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.toolbar.onSetSortModel = (sortModel) => {
       this.currentSort = sortModel;
+      this.dispatchSortChange();
       this.renderHeader();
       if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
@@ -4411,12 +4512,14 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     this.columnMenuManager.attach(this);
     this.columnMenuManager.onSortAsc = (col) => {
       this.currentSort = [{ column: col, direction: 'asc' }];
+      this.dispatchSortChange();
       this.renderHeader();
       if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
     };
     this.columnMenuManager.onSortDesc = (col) => {
       this.currentSort = [{ column: col, direction: 'desc' }];
+      this.dispatchSortChange();
       this.renderHeader();
       if (this.mode === 'remote') this.debouncedDataRequest();
       else this.sortLocalData();
@@ -4543,7 +4646,12 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   setListViewRenderer(fn: (row: any, index: number) => string | HTMLElement) {
     this.listViewRenderer = fn;
-    if (this.list) this.renderBody();
+    if (this.list) {
+      // The row recycler cannot infer that a callback identity changed from
+      // row data alone. Force fresh rows so list markup replaces table cells.
+      this.renderedRows = new Map();
+      this.renderBody();
+    }
   }
 
   // ── Row creation helper (used by both regular and virtualized rendering) ──
@@ -4588,6 +4696,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const columnsToRender = this.getVisibleColumnDefinitions();
 
+    if (this.list && this.listViewRenderer) {
+      const td = document.createElement('td');
+      td.className = 'list-view-cell';
+      td.colSpan = Math.max(1, columnsToRender.length);
+      const rendered = this.listViewRenderer(rowData, index);
+      if (rendered instanceof HTMLElement) td.appendChild(rendered);
+      else td.textContent = rendered == null ? '' : String(rendered);
+      tr.appendChild(td);
+      return tr;
+    }
+
     let skipColumns = 0;
     columnsToRender.forEach((column, colIdx) => {
       // Column spanning: skip cells consumed by a previous span
@@ -4599,6 +4718,8 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const td = document.createElement('td');
       td.setAttribute('data-key', column.key);
       const value = rowData[column.key];
+
+      this.applyCellPresentation(td, column, value, rowData);
 
       // Column span
       const colSpanDef = (column as any).colSpan;
@@ -4661,6 +4782,32 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     });
 
     return tr;
+  }
+
+  private applyCellPresentation(td: HTMLTableCellElement, column: ColumnDefinition, value: any, row: any) {
+    const applyStyle = (style?: ColumnDefinition['style']) => {
+      if (!style) return;
+      if (style.backgroundColor) td.style.backgroundColor = style.backgroundColor;
+      if (style.color) td.style.color = style.color;
+      if (style.fontWeight) td.style.fontWeight = style.fontWeight;
+      if (style.fontStyle) td.style.fontStyle = style.fontStyle;
+      if (style.fontSize) td.style.fontSize = style.fontSize;
+      if (style.textDecoration) td.style.textDecoration = style.textDecoration;
+    };
+
+    applyStyle(column.style);
+    for (const rule of column.conditionalFormats || []) {
+      if (!rule.condition(value, row)) continue;
+      applyStyle(rule.style);
+      if (rule.className) td.classList.add(rule.className);
+      break;
+    }
+
+    if (column.tooltip) {
+      td.title = typeof column.tooltip === 'function'
+        ? column.tooltip(value, row)
+        : (value == null ? '' : String(value));
+    }
   }
 
   // ── F: group + aggregate row construction ──

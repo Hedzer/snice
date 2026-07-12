@@ -1,4 +1,4 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, watch, ready, dispatch, render, styles, html, css, unsafeHTML, on } from 'snice';
 import cssContent from './snice-row.css?inline';
 import type {
   SniceRowElement,
@@ -9,6 +9,11 @@ import './snice-cell';
 import './snice-cell-text';
 import './snice-cell-number';
 import './snice-cell-date';
+import './snice-cell-boolean';
+import './snice-cell-rating';
+import './snice-cell-progress';
+import './snice-cell-duration';
+import './snice-cell-filesize';
 import './snice-cell-sparkline';
 import './snice-cell-link';
 import './snice-cell-actions';
@@ -113,9 +118,23 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
       const cellElement = this.shadowRoot?.querySelector(`[data-column-index="${index}"]`) as any;
       if (cellElement) {
         const value = this.data[column.key];
-        cellElement.value = value;
-        cellElement.column = column;
+        if (typeof column.renderCell === 'function') {
+          const output = column.renderCell(value, this.data, column);
+          const replacement = output instanceof HTMLElement ? output : document.createElement('span');
+          if (!(output instanceof HTMLElement)) replacement.textContent = output == null ? '' : String(output);
+          replacement.setAttribute('data-column-index', String(index));
+          cellElement.replaceWith(replacement);
+          this.applyCellPresentation(replacement.parentElement as HTMLElement, column, value);
+          return;
+        }
+
+        const formatter = column.formatter || column.valueFormatter;
+        cellElement.value = formatter ? formatter(value, this.data) : value;
+        cellElement.column = formatter
+          ? { ...column, type: 'text', formatter: undefined, valueFormatter: undefined }
+          : column;
         cellElement.rowData = this.data;
+        this.applyCellPresentation(cellElement.parentElement as HTMLElement, column, value);
 
         // For sparkline cells, also set the data property if value is an array
         if (column.type === 'sparkline' && Array.isArray(value)) {
@@ -197,6 +216,11 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
     }
   }
 
+  @on('mouseenter')
+  private handleRowHover() {
+    this.dispatchRowHover();
+  }
+
   private renderCheckbox() {
     return html/*html*/`
       <div class="cell cell--checkbox" part="checkbox-cell">
@@ -214,17 +238,45 @@ export class SniceRow extends HTMLElement implements SniceRowElement {
 
   private renderCell(column: ColumnDefinition, columnIndex: number) {
     const value = this.data[column.key];
-    const cellComponent = this.getCellComponent(column.type);
+    const cellComponent = this.getCellComponent(
+      column.formatter || column.valueFormatter ? 'text' : column.type
+    );
 
     return html/*html*/`
       <div class="cell cell--${column.type}" part="cell" style="${this.getCellStyles(column)}">
         ${unsafeHTML(`<${cellComponent}
           type="${column.type}"
-          align="${column.align || 'left'}"
+          align="${column.align || this.getDefaultAlign(column.type)}"
           data-column-index="${columnIndex}"
         ></${cellComponent}>`)}
       </div>
     `;
+  }
+
+  private getDefaultAlign(type?: string): 'left' | 'center' | 'right' {
+    if (['number', 'currency', 'percent', 'percentage', 'duration', 'filesize', 'accounting', 'scientific', 'fraction'].includes(type || '')) return 'right';
+    if (['boolean', 'rating', 'image'].includes(type || '')) return 'center';
+    return 'left';
+  }
+
+  private applyCellPresentation(wrapper: HTMLElement | null, column: ColumnDefinition, value: any) {
+    if (!wrapper) return;
+    const applyStyle = (style?: ColumnDefinition['style']) => {
+      if (!style) return;
+      Object.assign(wrapper.style, style);
+    };
+    applyStyle(column.style);
+    for (const rule of column.conditionalFormats || []) {
+      if (!rule.condition(value, this.data)) continue;
+      applyStyle(rule.style);
+      if (rule.className) wrapper.classList.add(rule.className);
+      break;
+    }
+    if (column.tooltip) {
+      wrapper.title = typeof column.tooltip === 'function'
+        ? column.tooltip(value, this.data)
+        : (value == null ? '' : String(value));
+    }
   }
 
   private getCellComponent(type: string | undefined): string {

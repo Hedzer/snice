@@ -1,22 +1,19 @@
 /**
  * Toolbar for snice-table — MUI X DataGrid pattern.
  *
- * Sort: click a column header (cycles asc→desc→none); clicking another
- * header adds it to the multi-column sort.
- * Filter: opened from the column header menu (right-click or ⋮). The toolbar
- * itself only carries Search, Export, and Fullscreen — no sort/filter
- * buttons.
+ * Optional Sort and Filter buttons expose in-flow panels for the same models
+ * used by sortable headers and column menus.
  *
  * Filter UI: in-flow panel between toolbar and grid, appears when a column's
  * "Filter" menu item is invoked.
  */
 import type { FilterOperator, FilterLogic } from './table-filter-engine';
 import { TableFilterEngine } from './table-filter-engine';
-import { X_MARK, PLUS, ARROW_DOWN_TRAY, ARROWS_POINTING_OUT } from '../icons';
+import { X_MARK, PLUS, ARROW_DOWN_TRAY, ARROWS_POINTING_OUT, FUNNEL, ARROWS_RIGHT_LEFT } from '../icons';
 
 export interface ToolbarOptions {
   showSearch?: boolean;
-  showSort?: boolean;       // ignored — kept for backwards-compat with existing call sites
+  showSort?: boolean;
   showFilter?: boolean;
   showExport?: boolean;
   searchPlaceholder?: string;
@@ -39,6 +36,8 @@ export class TableToolbar {
   private filters: FilterRow[] = [];
   private logic: FilterLogic = 'and';
   private pendingDebounces: number[] = [];
+  private sortPanel: HTMLElement | null = null;
+  private sortPanelOpen = false;
 
   onSearch: ((query: string) => void) | null = null;
   onSortColumn: ((columnKey: string, direction: 'asc' | 'desc') => void) | null = null;
@@ -92,6 +91,23 @@ export class TableToolbar {
     const actions = document.createElement('div');
     actions.className = 'toolbar-actions';
 
+    if (this.options.showSort) {
+      const sortBtn = this.mkBtn('Sort', ARROWS_RIGHT_LEFT);
+      sortBtn.classList.add('toolbar-sort');
+      sortBtn.addEventListener('click', () => this.toggleSortPanel());
+      actions.appendChild(sortBtn);
+    }
+
+    if (this.options.showFilter) {
+      const filterBtn = this.mkBtn('Filter', FUNNEL);
+      filterBtn.classList.add('toolbar-filter');
+      filterBtn.addEventListener('click', () => {
+        if (this.filterPanelOpen) this.closeFilterPanel();
+        else this.openFilterModal();
+      });
+      actions.appendChild(filterBtn);
+    }
+
     if (this.options.showExport) {
       const exportBtn = this.mkBtn('Export CSV', ARROW_DOWN_TRAY);
       exportBtn.addEventListener('click', () => this.onExportCSV?.());
@@ -110,11 +126,19 @@ export class TableToolbar {
     this.filterPanel.hidden = !this.filterPanelOpen;
     wrap.appendChild(this.filterPanel);
 
+    this.sortPanel = document.createElement('div');
+    this.sortPanel.className = 'tt-sort-panel';
+    this.sortPanel.hidden = !this.sortPanelOpen;
+    wrap.appendChild(this.sortPanel);
+
     this.container.appendChild(wrap);
+    if (this.filterPanelOpen) this.renderFilterPanel();
+    if (this.sortPanelOpen) this.renderSortPanel();
   }
 
   /** Public name kept for backwards-compat with snice-table.ts column-menu Filter action. */
   openFilterModal(presetColumn?: string) {
+    this.closeSortPanel();
     const engine = this.ensureEngine();
     // When the panel is opening (was closed), resync local filter state from
     // the engine so the panel always reflects the actually-applied filters,
@@ -145,6 +169,136 @@ export class TableToolbar {
     if (this.filterPanel) this.filterPanel.hidden = true;
   }
 
+  private toggleSortPanel() {
+    if (this.sortPanelOpen) {
+      this.closeSortPanel();
+      return;
+    }
+    this.closeFilterPanel();
+    this.sortPanelOpen = true;
+    if (this.sortPanel) this.sortPanel.hidden = false;
+    this.renderSortPanel();
+  }
+
+  private closeSortPanel() {
+    this.sortPanelOpen = false;
+    if (this.sortPanel) this.sortPanel.hidden = true;
+  }
+
+  private renderSortPanel() {
+    if (!this.sortPanel) return;
+    const columns = (this.tableElement?.columns || []).filter((column: any) => column.sortable !== false);
+    let model: Array<{ column: string; direction: 'asc' | 'desc' }> =
+      (this.tableElement?.currentSort || []).map((sort: any) => ({ ...sort }));
+
+    this.sortPanel.innerHTML = '';
+    this.sortPanel.appendChild(this.styleTag());
+    const inner = document.createElement('div');
+    inner.className = 'tt-filter-inner';
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'tt-filter-corner-close';
+    close.setAttribute('aria-label', 'Close sort panel');
+    close.innerHTML = X_MARK;
+    close.addEventListener('click', () => this.closeSortPanel());
+    inner.appendChild(close);
+
+    const rows = document.createElement('div');
+    rows.className = 'tt-filter-rows';
+    inner.appendChild(rows);
+
+    const apply = () => this.onSetSortModel?.(model.map((sort) => ({ ...sort })));
+    const rerender = () => this.renderSortPanel();
+
+    if (model.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'tt-filter-empty';
+      empty.textContent = 'No sorting applied';
+      rows.appendChild(empty);
+    } else {
+      model.forEach((sort, index) => {
+        const row = document.createElement('div');
+        row.className = 'tt-filter-row tt-sort-row';
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'tt-filter-x';
+        remove.setAttribute('aria-label', 'Remove sort');
+        remove.innerHTML = X_MARK;
+        remove.addEventListener('click', () => {
+          model.splice(index, 1);
+          apply();
+          rerender();
+        });
+        row.appendChild(remove);
+
+        const columnSelect = document.createElement('snice-select') as any;
+        columnSelect.size = 'small';
+        const usedByOtherRows = new Set(model
+          .filter((_candidate, candidateIndex) => candidateIndex !== index)
+          .map((candidate) => candidate.column));
+        columnSelect.options = columns
+          .filter((column: any) => column.key === sort.column || !usedByOtherRows.has(column.key))
+          .map((column: any) => ({ value: column.key, label: column.label || column.key }));
+        columnSelect.value = sort.column;
+        columnSelect.style.width = '12rem';
+        columnSelect.addEventListener('change', () => {
+          sort.column = columnSelect.value;
+          apply();
+        });
+        row.appendChild(columnSelect);
+
+        const direction = document.createElement('snice-select') as any;
+        direction.size = 'small';
+        direction.options = [
+          { value: 'asc', label: 'Ascending' },
+          { value: 'desc', label: 'Descending' },
+        ];
+        direction.value = sort.direction;
+        direction.style.width = '9rem';
+        direction.addEventListener('change', () => {
+          sort.direction = direction.value;
+          apply();
+        });
+        row.appendChild(direction);
+        rows.appendChild(row);
+      });
+    }
+
+    const footer = document.createElement('div');
+    footer.className = 'tt-filter-footer';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'tt-filter-add';
+    add.innerHTML = `${PLUS}<span>Add sort</span>`;
+    add.addEventListener('click', () => {
+      const used = new Set(model.map((sort) => sort.column));
+      const next = columns.find((column: any) => !used.has(column.key));
+      if (!next) return;
+      model.push({ column: next.key, direction: 'asc' });
+      apply();
+      rerender();
+    });
+    add.disabled = model.length >= columns.length;
+    footer.appendChild(add);
+
+    if (model.length > 0) {
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'tt-filter-clear';
+      clear.textContent = 'Clear all';
+      clear.addEventListener('click', () => {
+        model = [];
+        apply();
+        rerender();
+      });
+      footer.appendChild(clear);
+    }
+    inner.appendChild(footer);
+    this.sortPanel.appendChild(inner);
+  }
+
   // ── Filter panel ─────────────────────────────────────────────────
 
   private ensureEngine(): TableFilterEngine {
@@ -152,8 +306,7 @@ export class TableToolbar {
     return this.filterEngine;
   }
 
-  // (filter panel toggling is driven by openFilterModal / closeFilterPanel —
-  // the toolbar no longer has a Filter button.)
+  // Filter panels can be opened from either the toolbar or a column menu.
 
   private cancelPendingDebounces() {
     for (const t of this.pendingDebounces) clearTimeout(t);
@@ -416,6 +569,10 @@ const TT_STYLES = `
   .tt-wrap { display: flex; flex-direction: column; }
 
   .tt-filter-panel {
+    border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
+    background: var(--snice-color-surface-container-low, rgb(250 250 250));
+  }
+  .tt-sort-panel {
     border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
     background: var(--snice-color-surface-container-low, rgb(250 250 250));
   }

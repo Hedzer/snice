@@ -2,6 +2,7 @@ import { element, property, watch, ready, render, styles, html, css, unsafeHTML 
 import { PHOTO } from '../icons';
 import cssContent from './snice-cell-image.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-image')
 export class SniceCellImage extends HTMLElement implements SniceCellElement {
@@ -82,17 +83,18 @@ export class SniceCellImage extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.updateImageAttributes();
   }
 
-  @watch('column')
+  @watch('value', 'column')
   updateImageAttributes() {
     if (this.column?.imageFormat) {
       const format = this.column.imageFormat;
       this.src = format.src || this.value;
       this.alt = format.alt || '';
       this.fallback = format.fallback || '';
-      this.variant = format.variant || 'rounded';
+      this.variant = format.variant || format.shape || 'rounded';
       this.size = format.size || 'medium';
       this.lazy = format.lazy ?? true;
     }

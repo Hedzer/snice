@@ -5,8 +5,8 @@
  */
 
 export interface VirtualizerOptions {
-  /** Fixed row height in pixels. Required for virtualization. */
-  rowHeight: number;
+  /** Row height in pixels, or a per-logical-row height resolver. */
+  rowHeight: number | ((index: number) => number);
   /** Buffer size in pixels above and below viewport */
   bufferPx: number;
   /** Total number of rows in the dataset */
@@ -37,6 +37,8 @@ export class TableVirtualizer {
   private lastStartIndex = -1;
   private lastEndIndex = -1;
   private enabled = false;
+  private offsets: number[] = [];
+  private offsetsTotalRows = -1;
 
   constructor() {
     this.topSpacer = document.createElement('tr');
@@ -61,6 +63,7 @@ export class TableVirtualizer {
     this.enabled = true;
     this.lastStartIndex = -1;
     this.lastEndIndex = -1;
+    this.invalidateOffsets();
     this.options.scrollContainer.addEventListener('scroll', this.scrollHandler, { passive: true });
     window.addEventListener('resize', this.scrollHandler, { passive: true });
     this.update();
@@ -75,6 +78,7 @@ export class TableVirtualizer {
 
   setTotalRows(total: number) {
     this.options.totalRows = total;
+    this.invalidateOffsets();
     this.lastStartIndex = -1; // Force re-render
     this.update();
   }
@@ -83,6 +87,7 @@ export class TableVirtualizer {
    * Force a full re-render of the visible range.
    */
   refresh() {
+    this.invalidateOffsets();
     this.lastStartIndex = -1;
     this.lastEndIndex = -1;
     this.update();
@@ -94,14 +99,16 @@ export class TableVirtualizer {
   private update() {
     if (!this.enabled || !this.options.scrollContainer) return;
 
-    const { rowHeight, bufferPx, totalRows, scrollContainer, renderRange } = this.options;
+    const { bufferPx, totalRows, scrollContainer, renderRange } = this.options;
     const scrollTop = scrollContainer.scrollTop;
+    const offsets = this.buildOffsets(totalRows);
+    const minimumViewport = totalRows > 0 ? Math.max(1, offsets[1] - offsets[0]) : 1;
     // Layoutless DOMs report a zero-height viewport; treating one row as the
     // minimum keeps range math valid and mirrors the smallest useful browser
     // viewport.
-    const viewportHeight = Math.max(rowHeight, scrollContainer.clientHeight);
+    const viewportHeight = Math.max(minimumViewport, scrollContainer.clientHeight);
 
-    const totalHeight = totalRows * rowHeight;
+    const totalHeight = offsets[totalRows] || 0;
 
     // Filtering, pagination, or collapsing a group can shrink the flattened
     // model while the container is scrolled near the old end. Clamp before
@@ -116,8 +123,8 @@ export class TableVirtualizer {
     const startPx = Math.max(0, effectiveScrollTop - bufferPx);
     const endPx = Math.min(totalHeight, effectiveScrollTop + viewportHeight + bufferPx);
 
-    const startIndex = Math.floor(startPx / rowHeight);
-    const endIndex = Math.min(totalRows, Math.ceil(endPx / rowHeight));
+    const startIndex = this.findRowAtOffset(offsets, startPx);
+    const endIndex = Math.min(totalRows, this.findFirstOffsetAtOrAfter(offsets, endPx));
 
     // Skip if range hasn't changed
     if (startIndex === this.lastStartIndex && endIndex === this.lastEndIndex) return;
@@ -126,8 +133,8 @@ export class TableVirtualizer {
     this.lastEndIndex = endIndex;
 
     // Update spacers
-    const topHeight = startIndex * rowHeight;
-    const bottomHeight = Math.max(0, (totalRows - endIndex) * rowHeight);
+    const topHeight = offsets[startIndex] || 0;
+    const bottomHeight = Math.max(0, totalHeight - (offsets[endIndex] || totalHeight));
 
     this.topSpacer.style.height = `${topHeight}px`;
     this.bottomSpacer.style.height = `${bottomHeight}px`;
@@ -179,7 +186,7 @@ export class TableVirtualizer {
   /** Scroll to bring a specific row into view */
   scrollToRow(index: number) {
     if (!this.options.scrollContainer) return;
-    const top = index * this.options.rowHeight;
+    const top = this.offsetForIndex(index);
     this.options.scrollContainer.scrollTop = top;
   }
 
@@ -191,7 +198,7 @@ export class TableVirtualizer {
    */
   scrollToIndex(index: number) {
     if (!this.options.scrollContainer) return;
-    this.options.scrollContainer.scrollTop = index * this.options.rowHeight;
+    this.options.scrollContainer.scrollTop = this.offsetForIndex(index);
     this.refresh();
   }
 
@@ -203,5 +210,61 @@ export class TableVirtualizer {
 
   isEnabled() {
     return this.enabled;
+  }
+
+  private heightForIndex(index: number): number {
+    const configured = typeof this.options.rowHeight === 'function'
+      ? this.options.rowHeight(index)
+      : this.options.rowHeight;
+    return Number.isFinite(configured) && configured > 0 ? configured : 1;
+  }
+
+  private buildOffsets(totalRows: number): number[] {
+    if (this.offsetsTotalRows === totalRows && this.offsets.length === totalRows + 1) {
+      return this.offsets;
+    }
+    this.offsets = new Array(totalRows + 1);
+    this.offsets[0] = 0;
+    for (let index = 0; index < totalRows; index++) {
+      this.offsets[index + 1] = this.offsets[index] + this.heightForIndex(index);
+    }
+    this.offsetsTotalRows = totalRows;
+    return this.offsets;
+  }
+
+  private invalidateOffsets() {
+    this.offsets = [];
+    this.offsetsTotalRows = -1;
+  }
+
+  private offsetForIndex(index: number): number {
+    const clamped = Math.max(0, Math.min(index, this.options.totalRows));
+    return this.buildOffsets(this.options.totalRows)[clamped] || 0;
+  }
+
+  /** Index of the logical row containing the offset. */
+  private findRowAtOffset(offsets: number[], offset: number): number {
+    const totalRows = offsets.length - 1;
+    if (totalRows <= 0) return 0;
+    let low = 0;
+    let high = totalRows;
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      if (offsets[mid + 1] <= offset) low = mid + 1;
+      else high = mid;
+    }
+    return Math.min(totalRows, low);
+  }
+
+  /** First prefix offset at or after the requested pixel. */
+  private findFirstOffsetAtOrAfter(offsets: number[], offset: number): number {
+    let low = 0;
+    let high = offsets.length - 1;
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      if (offsets[mid] < offset) low = mid + 1;
+      else high = mid;
+    }
+    return low;
   }
 }

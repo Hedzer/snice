@@ -2,6 +2,7 @@ import { element, property, watch, ready, query, render, styles, html, css, unsa
 import { ARROW_TRENDING_UP, ARROW_TRENDING_DOWN, ARROW_RIGHT } from '../icons';
 import cssContent from './snice-cell-percentage.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-percentage')
 export class SniceCellPercentage extends HTMLElement implements SniceCellElement {
@@ -44,7 +45,7 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
     return html/*html*/`
       <div class="cell-content cell-content--percentage" part="content" style="${styles}">
         ${formattedValue}
-        ${this.showTrend && trendArrow ? unsafeHTML(`<span class="percentage-trend">${trendArrow}</span>`) : ''}
+        ${this.shouldShowTrend() && trendArrow ? unsafeHTML(`<span class="percentage-trend">${trendArrow}</span>`) : ''}
       </div>
     `;
   }
@@ -56,6 +57,7 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
   }
 
@@ -68,14 +70,14 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
     this.applyAlignment();
   }
 
-  @watch('value', 'column')
+  @watch('value', 'column', 'showTrend', 'trendValue', 'decimals', 'colorize')
   updateContent() {
     if (this.contentElement) {
       const formattedValue = this.formatPercentageValue();
       const trendArrow = this.getTrendArrow();
       const styles = this.getPercentageStyles();
 
-      const trendHTML = this.showTrend && trendArrow
+      const trendHTML = this.shouldShowTrend() && trendArrow
         ? `<span class="percentage-trend">${trendArrow}</span>`
         : '';
 
@@ -122,6 +124,10 @@ export class SniceCellPercentage extends HTMLElement implements SniceCellElement
     if (trend > 0) return ARROW_TRENDING_UP;
     if (trend < 0) return ARROW_TRENDING_DOWN;
     return ARROW_RIGHT;
+  }
+
+  private shouldShowTrend(): boolean {
+    return this.column?.percentageFormat?.showTrend ?? this.showTrend;
   }
 
   private getPercentageStyles(): string {

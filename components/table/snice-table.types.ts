@@ -6,9 +6,10 @@ import type { ColumnGroup } from './table-column-manager';
 import type { CSVExportOptions, PrintOptions, ClipboardOptions } from './table-export';
 
 export type ColumnAlign = 'left' | 'center' | 'right';
-export type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' | 
-  'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' | 'fraction' | 
-  'duration' | 'filesize' | 'custom';
+export type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
+  'percentage' | 'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' |
+  'fraction' | 'duration' | 'filesize' | 'tag' | 'status' | 'actions' | 'link' |
+  'email' | 'phone' | 'color' | 'image' | 'location' | 'json' | 'custom';
 export type SortDirection = 'asc' | 'desc' | null;
 export type AggregatorType = 'sum' | 'avg' | 'min' | 'max' | 'count';
 export type AggregatorFn = (values: any[], rows: any[]) => any;
@@ -72,6 +73,11 @@ export interface SparklineFormat {
   color?: string;
   width?: number;
   height?: number;
+  showDots?: boolean;
+  showBaseline?: boolean;
+  strokeWidth?: number;
+  minValue?: number;
+  maxValue?: number;
 }
 
 export interface PercentageFormat {
@@ -137,6 +143,7 @@ export interface CurrencyFormat {
   display?: 'symbol' | 'code' | 'name';
   currencyDisplay?: 'symbol' | 'code' | 'name';
   decimals?: number;
+  thousandsSeparator?: boolean;
   negativeStyle?: 'parentheses' | 'red' | 'minus';
 }
 

@@ -1,5 +1,6 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
+import { installCellPresentation } from './table-cell-presentation';
 import type { 
   SniceCellElement, 
   ColumnType, 
@@ -56,6 +57,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
     this.applyConditionalFormatting();
   }
@@ -78,11 +80,12 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   }
 
   private applyConditionalFormatting() {
-    if (!this.column || !this.column.conditionalFormats) return;
+    if (!this.column) return;
 
     // Reset any previous conditional formatting
-    this.removeAttribute('style');
-    this.className = 'snice-cell';
+    for (const property of ['backgroundColor', 'color', 'fontWeight', 'fontStyle', 'fontSize', 'textDecoration'] as const) {
+      this.style[property] = '';
+    }
     this.applyAlignment();
 
     // Apply column base style if defined
@@ -91,7 +94,7 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     }
 
     // Check and apply conditional formats
-    for (const format of this.column.conditionalFormats) {
+    for (const format of this.column.conditionalFormats || []) {
       if (format.condition(this.value, this.rowData)) {
         if (format.style) {
           this.applyStyle(format.style);
@@ -121,6 +124,9 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
     // Use custom formatter if provided
     if (this.column.formatter) {
       return this.column.formatter(this.value, this.rowData);
+    }
+    if (this.column.valueFormatter) {
+      return this.column.valueFormatter(this.value, this.rowData);
     }
 
     // Apply type-specific formatting
@@ -205,18 +211,12 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
   }
 
   private formatPercent(): string {
-    const format = this.column.numberFormat || {};
+    const format = this.column.percentageFormat || this.column.numberFormat || {};
     const num = Number(this.value);
     
     if (isNaN(num)) return String(this.value);
 
-    const percentFormat: Intl.NumberFormatOptions = {
-      style: 'percent',
-      minimumFractionDigits: format.decimals ?? 1,
-      maximumFractionDigits: format.decimals ?? 1
-    };
-
-    return new Intl.NumberFormat('en-US', percentFormat).format(num);
+    return `${num.toFixed(format.decimals ?? 2)}%`;
   }
 
   private formatAccounting(): string {
@@ -253,25 +253,33 @@ export class SniceCell extends HTMLElement implements SniceCellElement {
 
   private formatFraction(): string {
     const num = Number(this.value);
-    if (isNaN(num)) return String(this.value);
+    if (!Number.isFinite(num)) return String(this.value);
 
-    // Simple fraction conversion
+    const sign = num < 0 ? -1 : 1;
+    const target = Math.abs(num);
     const tolerance = 1e-6;
-    let h1 = 1, h2 = 0, k1 = 0, k2 = 1;
-    let b = num;
-    
-    do {
-      const a = Math.floor(b);
-      let aux = h1;
-      h1 = a * h1 + h2;
-      h2 = aux;
-      aux = k1;
-      k1 = a * k1 + k2;
-      k2 = aux;
-      b = 1 / (b - a);
-    } while (Math.abs(num - h1 / k1) > num * tolerance);
+    let previousNumerator = 0;
+    let numerator = 1;
+    let previousDenominator = 1;
+    let denominator = 0;
+    let remainder = target;
 
-    return `${h1}/${k1}`;
+    for (let iteration = 0; iteration < 32; iteration++) {
+      const whole = Math.floor(remainder);
+      const nextNumerator = whole * numerator + previousNumerator;
+      const nextDenominator = whole * denominator + previousDenominator;
+      if (nextDenominator > 10000) break;
+      previousNumerator = numerator;
+      numerator = nextNumerator;
+      previousDenominator = denominator;
+      denominator = nextDenominator;
+      if (Math.abs(target - numerator / denominator) <= tolerance) break;
+      const fractional = remainder - whole;
+      if (fractional <= Number.EPSILON) break;
+      remainder = 1 / fractional;
+    }
+
+    return `${sign * numerator}/${denominator || 1}`;
   }
 
   private formatDate(): string {

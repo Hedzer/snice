@@ -22,7 +22,7 @@ test('public website table card opens the complete working showcase', async ({ p
     const section = document.querySelector('#comp-table')!;
     const table = section.querySelector('#demo-table') as any;
     const revenue = table.shadowRoot.querySelector(
-      'tbody tr[data-index] td[data-key="revenue"] snice-cell-number'
+      'tbody tr[data-index] td[data-key="revenue"] snice-cell-currency'
     ) as any;
     return {
       tables: section.querySelectorAll('snice-table').length,

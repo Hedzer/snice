@@ -2,10 +2,11 @@ import { element, property, watch, ready, render, styles, html, css, unsafeHTML,
 import { CHEVRON_RIGHT, CHEVRON_DOWN } from '../icons';
 import cssContent from './snice-cell-json.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-json')
 export class SniceCellJson extends HTMLElement implements SniceCellElement {
-  @property({ type: String })
+  @property({ type: Object })
   value: any = null;
 
   @property({ type: Boolean })
@@ -66,6 +67,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.updateJsonAttributes();
   }
 
@@ -73,7 +75,7 @@ export class SniceCellJson extends HTMLElement implements SniceCellElement {
   updateJsonAttributes() {
     if (this.column?.jsonFormat) {
       const format = this.column.jsonFormat;
-      this.collapsed = format.collapsed ?? true;
+      this.collapsed = format.collapsed ?? (format.expanded !== undefined ? !format.expanded : true);
       this.maxDepth = format.maxDepth ?? 3;
       this.showToggle = format.showToggle ?? true;
     }

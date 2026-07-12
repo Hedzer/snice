@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-filesize')
 export class SniceCellFilesize extends HTMLElement implements SniceCellElement {
@@ -45,6 +46,7 @@ export class SniceCellFilesize extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
   }
 

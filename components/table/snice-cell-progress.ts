@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { ProgressFormat, SniceCellElement, ColumnType, ColumnAlign, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 import './snice-progress';
 
 @element('snice-cell-progress')
@@ -11,7 +12,7 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
   @property({  })
   type: ColumnType = 'progress';
 
-  @property({  })
+  @property({ type: Object })
   value: any = 0;
 
   @property({ type: Object, attribute: false })
@@ -44,6 +45,7 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this, true);
     this.applyAlignment();
     this.createProgressElement();
   }

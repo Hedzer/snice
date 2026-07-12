@@ -10,8 +10,8 @@
           <span class="code-lang">javascript</span>
           <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">table.columns = [
   { key: 'product', label: 'Product', sortable: true },
-  { key: 'revenue', label: 'Revenue', type: 'number',
-    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
+  { key: 'revenue', label: 'Revenue', type: 'currency',
+    currencyFormat: { currency: 'USD', decimals: 0 } },
   { key: 'growth', label: 'Growth', type: 'percent' },
   { key: 'rating', label: 'Rating', type: 'rating' },
   { key: 'progress', label: 'Completion', type: 'progress' },
@@ -33,8 +33,8 @@
       if (table) {
         table.columns = [
           { key: 'product', label: 'Product', type: 'text', sortable: true, width: '160' },
-          { key: 'revenue', label: 'Revenue', type: 'number', sortable: true, width: '120',
-            numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
+          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120',
+            currencyFormat: { currency: 'USD', decimals: 0 } },
           { key: 'growth', label: 'Growth', type: 'percent', sortable: true, width: '80' },
           { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '110' },
           { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120',
@@ -56,7 +56,7 @@
         requestAnimationFrame(() => {
           if (table.renderHeader) table.renderHeader();
           if (table.renderBody) table.renderBody();
-          table.setToolbar({ showSearch: true, showExport: true });
+          table.setToolbar({ showSearch: true, showSort: true, showFilter: true, showExport: true });
         });
       }
     });

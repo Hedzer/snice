@@ -62,6 +62,14 @@ test.describe('table full showcase', () => {
         compact: table('density-compact').density,
         comfortable: table('density-comfy').density,
         list: table('list-mode').list,
+        toolbarControls: {
+          sort: !!table('pro-table').shadowRoot.querySelector('.toolbar-sort'),
+          filter: !!table('pro-table').shadowRoot.querySelector('.toolbar-filter'),
+        },
+        listView: {
+          rows: table('list-mode').shadowRoot.querySelectorAll('.list-view-cell').length,
+          dataCells: table('list-mode').shadowRoot.querySelectorAll('td[data-key]').length,
+        },
         densityPadding: {
           compact: getComputedStyle(table('density-compact').shadowRoot.querySelector('tbody td')).paddingTop,
           comfortable: getComputedStyle(table('density-comfy').shadowRoot.querySelector('tbody td')).paddingTop,
@@ -105,6 +113,8 @@ test.describe('table full showcase', () => {
     expect(snapshot.compact).toBe('compact');
     expect(snapshot.comfortable).toBe('comfortable');
     expect(snapshot.list).toBe(true);
+    expect(snapshot.toolbarControls).toEqual({ sort: true, filter: true });
+    expect(snapshot.listView).toEqual({ rows: 12, dataCells: 0 });
     expect(parseFloat(snapshot.densityPadding.comfortable)).toBeGreaterThan(
       parseFloat(snapshot.densityPadding.compact)
     );
@@ -135,6 +145,50 @@ test.describe('table full showcase', () => {
   });
 
   test('pro grid search, sorting, filter panel, selection modes, and actions work', async ({ page }) => {
+    await page.evaluate(() => {
+      const table = document.querySelector('#pro-table') as any;
+      (table.shadowRoot.querySelector('.toolbar-sort') as HTMLButtonElement).click();
+    });
+    await page.waitForFunction(() => {
+      const table = document.querySelector('#pro-table') as any;
+      const panel = table.shadowRoot.querySelector('.tt-sort-panel') as HTMLElement;
+      return panel && !panel.hidden
+        && panel.querySelector('.tt-filter-empty')?.textContent?.includes('No sorting applied')
+        && panel.querySelector('.tt-filter-add');
+    });
+    await page.evaluate(() => {
+      const table = document.querySelector('#pro-table') as any;
+      (table.shadowRoot.querySelector('.tt-sort-panel .tt-filter-add') as HTMLButtonElement).click();
+    });
+    await page.waitForFunction(() => {
+      const table = document.querySelector('#pro-table') as any;
+      const panel = table.shadowRoot.querySelector('.tt-sort-panel') as HTMLElement;
+      return table.currentSort.length === 1
+        && panel.querySelectorAll('.tt-sort-row snice-select').length === 2;
+    });
+    await page.evaluate(() => {
+      const table = document.querySelector('#pro-table') as any;
+      (table.shadowRoot.querySelector('.tt-sort-panel .tt-filter-clear') as HTMLButtonElement).click();
+    });
+    await page.waitForFunction(() => {
+      const table = document.querySelector('#pro-table') as any;
+      return table.currentSort.length === 0;
+    });
+    await page.evaluate(() => {
+      const table = document.querySelector('#pro-table') as any;
+      (table.shadowRoot.querySelector('.toolbar-sort') as HTMLButtonElement).click();
+      (table.shadowRoot.querySelector('.toolbar-filter') as HTMLButtonElement).click();
+    });
+    await page.waitForFunction(() => {
+      const table = document.querySelector('#pro-table') as any;
+      const panel = table.shadowRoot.querySelector('.tt-filter-panel') as HTMLElement;
+      return panel && !panel.hidden;
+    });
+    await page.evaluate(() => {
+      const table = document.querySelector('#pro-table') as any;
+      (table.shadowRoot.querySelector('.tt-filter-corner-close') as HTMLButtonElement).click();
+    });
+
     await page.evaluate(() => {
       const table = document.querySelector('#pro-table') as any;
       const search = table.shadowRoot.querySelector('snice-input.toolbar-search') as any;

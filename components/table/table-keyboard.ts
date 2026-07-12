@@ -343,9 +343,7 @@ export class TableKeyboard {
       case ' ':
         if (this.focusedRow >= 0) {
           e.preventDefault();
-          if (e.shiftKey) {
-            this.options.onSelectionToggle?.(this.focusedRow);
-          }
+          this.options.onSelectionToggle?.(this.focusedRow);
         }
         break;
 

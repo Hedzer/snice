@@ -15,6 +15,14 @@ export class TableRowDnD {
     this.enabled = true;
   }
 
+  detach() {
+    this.removeDropIndicator();
+    this.tableElement = null;
+    this.dragSourceIndex = -1;
+    this.dropTargetIndex = -1;
+    this.enabled = false;
+  }
+
   isEnabled(): boolean {
     return this.enabled;
   }
@@ -107,6 +115,12 @@ export class TableColumnDnD {
   attach(tableEl: HTMLElement) {
     this.tableElement = tableEl;
     this.enabled = true;
+  }
+
+  detach() {
+    this.tableElement = null;
+    this.dragSourceKey = null;
+    this.enabled = false;
   }
 
   isEnabled(): boolean {

@@ -22,6 +22,7 @@ An interactive star rating input with configurable precision, custom icons, and 
 | `value` | `number` | `0` | Current rating value |
 | `max` | `number` | `5` | Maximum number of stars |
 | `icon` | `string` | `'★'` | Character used for each rating item |
+| `emptyIcon` (attr: `empty-icon`) | `string` | `''` | Optional character for the unfilled layer; empty uses `icon` |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Display size |
 | `readonly` | `boolean` | `false` | Disable user interaction |
 | `precision` | `'full' \| 'half'` | `'full'` | Click precision (full or half star increments) |
@@ -79,11 +80,12 @@ Use the `size` attribute to adjust the display size.
 
 ### Custom Icons
 
-Use the `icon` attribute to replace the default star with any character or emoji.
+Use `icon` for the filled layer and optional `empty-icon` for the unfilled layer.
 
 ```html
 <snice-rating value="3" icon="❤" max="5"></snice-rating>
 <snice-rating value="7" icon="👍" max="10"></snice-rating>
+<snice-rating value="3" icon="★" empty-icon="·" max="5"></snice-rating>
 ```
 
 ### Readonly Display

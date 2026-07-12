@@ -36,13 +36,13 @@ The imperative `columns` and `data` properties are the most complete path. Decla
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `striped` | `boolean` | `false` | Alternates data-row backgrounds |
-| `searchable` | `boolean` | `false` | Shows the legacy search control. Its debounced input updates `searchText` and calls `getTableData()`; it does not apply a local quick filter. For local search, use `setToolbar()` or `setQuickFilter()` |
+| `searchable` | `boolean` | `false` | Shows the search control. Its debounced input applies the local quick filter in local mode and updates `searchText`/requests `table/data` in remote mode |
 | `filterable` | `boolean` | `false` | Shows the legacy multi-select control backed by `selectorOptions`. Its value is sent as `selector` in data requests; it is separate from column filters |
 | `sortable` | `boolean` | `false` | Enables sortable headers for columns whose `sortable` option is not `false` |
 | `selectable` | `boolean` | `false` | Enables row selection when `selectionMode` is not `'none'` |
 | `hoverable` | `boolean` | `true` | Highlights rows on hover |
 | `clickable` | `boolean` | `false` | Emits `row-clicked` for non-interactive row clicks |
-| `list` | `boolean` | `false` | Removes vertical cell borders. It does not change the row markup |
+| `list` | `boolean` | `false` | Removes vertical cell borders and, when configured with `setListViewRenderer()`, replaces normal data cells with one row-level rendered cell |
 | `loading` | `boolean` | `false` | Fades existing rows or shows an indeterminate progress indicator when no rows are present |
 | `mode` | `'local' \| 'remote'` | `'local'` | In local mode, sorting and filtering use `data`. In remote mode, search, filter, sort, and server-page changes request `table/data` |
 | `columns` | `ColumnDefinition[]` | `[]` | Reactive JS-only column definitions; assignment schedules header and body rendering |
@@ -67,19 +67,18 @@ The imperative `columns` and `data` properties are the most complete path. Decla
 | `virtualBuffer` (attr: `virtual-buffer`) | `number` | `200` | Extra virtualized pixels rendered above and below the viewport |
 | `editable` | `boolean` | `false` | Enables the inline editing engine |
 | `editMode` (attr: `edit-mode`) | `'cell' \| 'row'` | `'cell'` | Edits one cell or every editable cell in a row |
-| `density` | `'compact' \| 'standard' \| 'comfortable'` | `'standard'` | Changes header and cell padding. Assignment rerenders rows; the table does not currently emit a `density-change` event |
+| `density` | `'compact' \| 'standard' \| 'comfortable'` | `'standard'` | Changes header and cell padding, rerenders rows, and emits `density-change` after post-mount assignment |
 | `columnResize` (attr: `column-resize`) | `boolean` | `false` | Adds draggable resize handles to resizable columns |
 | `headerFilters` (attr: `header-filters`) | `boolean` | `false` | Adds debounced contains inputs below filterable headers |
-| `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Legacy compatibility flag. It currently only schedules a body render and does not add UI or filtering; call `setQuickFilter(text)` to filter |
+| `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Shows a debounced local/remote quick-filter input backed by the same model as `setQuickFilter(text)` |
 | `rowReorder` (attr: `row-reorder`) | `boolean` | `false` | Adds row drag handles and mutates local row order on drop |
 | `columnReorder` (attr: `column-reorder`) | `boolean` | `false` | Makes unpinned, reorderable headers draggable |
 | `columnMenu` (attr: `column-menu`) | `boolean` | `false` | Enables the right-click header menu for sort, filter, visibility, pinning, and auto-size |
 | `lazyLoad` (attr: `lazy-load`) | `boolean` | `false` | Emits `lazy-load` when the table frame nears its bottom |
 | `lazyLoadThreshold` (attr: `lazy-load-threshold`) | `number` | `200` | Bottom distance in pixels that triggers `lazy-load` |
 
-Set `row-reorder`, `column-reorder`, and `lazy-load` before the element finishes
-initializing. Their feature modules attach during initialization and do not have
-post-mount property watchers.
+`rowReorder`, `columnReorder`, `lazyLoad`, and `lazyLoadThreshold` are reactive;
+they may be changed before or after initialization.
 
 ### Column Definitions
 
@@ -150,26 +149,27 @@ interface ColumnDefinition {
 
 Column capability flags default to enabled unless explicitly set to `false` when the corresponding table feature is active. `renderCell()` bypasses the built-in renderer; string results are assigned through `textContent`, not parsed as HTML. `renderEditor()` bypasses the built-in editor and must call `commit(value)` or `cancel()`.
 
-`formatter` is the row-aware display callback for the generic/core cells.
-Actions, color, email, image, JSON, link, location, phone, progress, rating,
-status, and tag cells currently ignore it. `valueGetter` participates in local
-sorting and aggregation. `valueParser` and `valueSetter` run during editing; a
-setter may return either the final field value or an updated row object.
-`valueFormatter` is registered with the editing pipeline and formats aggregate
-output, but normal display cells do not call it.
+`formatter` is the row-aware display override for every built-in cell.
+`valueFormatter` is the fallback display formatter and is also used by the
+editing pipeline, aggregate output, and formatted clipboard export.
+`valueGetter` participates in local sorting and aggregation. `valueParser` and
+`valueSetter` run during editing; a setter may return either the final field
+value or an updated row object.
 
 The declared `ColumnType` union is:
 
 ```typescript
 type ColumnType =
   | 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent'
-  | 'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific'
-  | 'fraction' | 'duration' | 'filesize' | 'custom';
+  | 'percentage' | 'rating' | 'progress' | 'sparkline' | 'accounting'
+  | 'scientific' | 'fraction' | 'duration' | 'filesize' | 'tag' | 'status'
+  | 'actions' | 'link' | 'email' | 'phone' | 'color' | 'image'
+  | 'location' | 'json' | 'custom';
 ```
 
-The runtime table also recognizes `percentage`, `tag`, `status`, `actions`, `link`, `email`, `phone`, `color`, `image`, `location`, and `json`. TypeScript callers currently need a cast for these runtime-only strings.
-
-> **Current currency behavior:** imperative `<snice-table>` rows route `type: 'currency'` through `snice-cell-number`, so `currencyFormat` does not supply the symbol or locale there. Use `numberFormat`, such as `{ prefix: '$', thousandsSeparator: true, decimals: 2 }`, for currency-looking table columns. The standalone `<snice-cell-currency>` component does honor `currencyFormat`/currency attributes.
+All listed strings are recognized by both the runtime table and the exported
+TypeScript union. `currency` columns use `<snice-cell-currency>` and honor the
+complete `currencyFormat` object.
 
 The formatting option shapes are:
 
@@ -199,7 +199,7 @@ interface BooleanFormat {
 interface RatingFormat {
   max?: number;
   symbol?: string;
-  emptySymbol?: string; // declared; the current rating cell ignores it
+  emptySymbol?: string;
   color?: string;
 }
 
@@ -217,12 +217,17 @@ interface SparklineFormat {
   color?: string;
   width?: number;
   height?: number;
+  showDots?: boolean;
+  showBaseline?: boolean;
+  strokeWidth?: number;
+  minValue?: number;
+  maxValue?: number;
 }
 
 interface PercentageFormat {
   decimals?: number;
-  showTrend?: boolean; // declared; a table column does not activate the arrow
-  trendValue?: number | null; // read, but the arrow is gated by the cell property
+  showTrend?: boolean;
+  trendValue?: number | null;
   colorize?: boolean;
 }
 
@@ -232,6 +237,7 @@ interface CurrencyFormat {
   display?: 'symbol' | 'code' | 'name';
   currencyDisplay?: 'symbol' | 'code' | 'name';
   decimals?: number;
+  thousandsSeparator?: boolean;
   negativeStyle?: 'parentheses' | 'red' | 'minus';
 }
 
@@ -330,18 +336,12 @@ interface ConditionalFormat {
 }
 ```
 
-Some source-compatible fields are not consumed by the current specialized
-renderers: rating `emptySymbol`; percentage `showTrend` (the cell does read
-`trendValue`, but only displays an arrow when its direct `showTrend` property is
-true); currency `display` (use `currencyDisplay` on a standalone currency
-cell); color `size` and `displayFormat`; image `shape` (use `variant`); JSON
-`expanded` (use `collapsed`); and location `lat`/`lng` (use
-`latitude`/`longitude`). `tooltip` is also currently unused. `wrap` and
-`ellipsis` affect the text-cell renderer only.
-
-`style` and `conditionalFormats` are consumed only by generic `<snice-cell>`;
-the specialized cells ignore both. The generic cell applies its base `style`
-only when a `conditionalFormats` array is present.
+Compatibility aliases are fully consumed: `display`/`currencyDisplay`,
+`size`/`swatchSize`, `shape`/`variant`, `expanded`/`collapsed`, and
+`lat`/`latitude` plus `lng`/`longitude`. `tooltip`, base `style`, and the first
+matching `conditionalFormats` rule apply consistently to Table cells,
+declarative rows, and standalone specialized cells. `wrap` and `ellipsis`
+remain text-layout options.
 
 ### Declarative Column Properties
 
@@ -453,7 +453,7 @@ listed below; direct JS property assignment is clearer for names such as
 | `<snice-cell-sparkline>` `chartType` (attr: `chart-type`) | `'line' \| 'bar' \| 'area'` | `'line'` | Chart form |
 | `<snice-cell-sparkline>` `color` | `string` | `var(--snice-color-primary)` | Chart color |
 | `<snice-cell-sparkline>` `width` / `height` | `number` | `80` / `24` | Rendered chart/image dimensions |
-| `<snice-cell-sparkline>` `showDots` / `showBaseline` (attrs: `show-dots` / `show-baseline`) | `boolean` | `false` | Dots work; `showBaseline` is watched but currently draws no baseline |
+| `<snice-cell-sparkline>` `showDots` / `showBaseline` (attrs: `show-dots` / `show-baseline`) | `boolean` | `false` | Draw point markers and a zero/clamped baseline |
 | `<snice-cell-sparkline>` `strokeWidth` (attr: `stroke-width`) | `number` | `1.5` | Line width |
 | `<snice-cell-sparkline>` `minValue` / `maxValue` (attrs: `min-value` / `max-value`) | `number \| undefined` | — | Explicit domain |
 | `<snice-cell-sparkline>` `data` | `number[]` | `[]` | Alternate series; assign in JS. `value` also accepts arrays, comma text, or JSON |
@@ -490,16 +490,15 @@ listed below; direct JS property assignment is clearer for names such as
 `<snice-cell-rating>` and `<snice-cell-progress>` have only the common direct
 properties; configure their display through JS-only `column.ratingFormat` and
 `column.progressFormat`. `<snice-cell-duration>` and `<snice-cell-filesize>`
-also use only the common properties. Use a primitive numeric progress `value`;
-the source's object-value branch is not reliable through the reactive value
-converter.
+also use only the common properties. Progress accepts either a number or
+`{ value, color? }`; JSON accepts JSON text or a directly assigned object.
 
 Standalone behavior boundaries:
 
-- Generic `<snice-cell type="percent">` expects a ratio (`0.125` → `12.5%`), while `<snice-cell-percentage>` and Table `percent` columns expect an already-percent value (`12.5` → `12.50%`). Generic and specialized duration/filesize/rating/progress/sparkline renderers also differ; Table uses the specialized elements.
-- Sparkline input accepts arrays, comma/JSON text, `{ values, color }` JSON, or `data`; `showBaseline` is declared and watched but currently draws no baseline.
+- Generic `<snice-cell type="percent">`, `<snice-cell-percentage>`, and Table percent columns all use already-percent values (`12.5` → `12.50%`). Table uses specialized duration/filesize/rating/progress/sparkline elements.
+- Sparkline input accepts arrays, comma/JSON text, `{ values, color }` JSON, or `data`; dots, baseline, stroke width, and explicit min/max values work through direct properties or `sparklineFormat`.
 - Tags parse JSON arrays or comma text. Status recognizes common online/offline/busy/away synonyms. Phone formatting handles US 10/11-digit numbers.
-- Links auto-open HTTP(S) values externally. Location builds Google, OpenStreetMap, or Apple URLs. JSON supports collapse, toggle, and depth controls; pass JSON text because direct object assignment is reflected as `[object Object]`.
+- Links auto-open HTTP(S) values externally. Location builds Google, OpenStreetMap, or Apple URLs. JSON supports collapse, toggle, depth controls, JSON text, and direct object assignment.
 - Date supports relative time, custom tokens, and optional time. Image supports fallback, `variant`, size, lazy loading, and a placeholder/error state.
 
 ## Methods
@@ -575,7 +574,7 @@ Filter operators are type-specific:
 | `setCellEditableCheck()` | `(row, columnKey) => boolean` | Adds a per-cell editability predicate on top of column `editable` state |
 | `exportCSV()` | `options?: CSVExportOptions` | Downloads raw filtered data as CSV |
 | `printTable()` | `options?: PrintOptions` | Opens a print window containing the rendered native table |
-| `copyToClipboard()` | `options?: ClipboardOptions` | Copies raw filtered rows and resolves to success. See the selected-row indexing limitation below |
+| `copyToClipboard()` | `options?: ClipboardOptions` | Copies formatted filtered rows by default, raw rows with `useFormatted: false`, and resolves to success |
 
 ```typescript
 interface CSVExportOptions {
@@ -590,27 +589,26 @@ interface CSVExportOptions {
 interface PrintOptions {
   hideFooter?: boolean;
   hideToolbar?: boolean;
-  includeCheckboxes?: boolean; // accepted but currently unused
+  includeCheckboxes?: boolean; // false
   pageStyles?: string;
 }
 
 interface ClipboardOptions {
   delimiter?: string;          // tab
-  useFormatted?: boolean;      // accepted but currently unused; raw values are copied
+  useFormatted?: boolean;      // true
 }
 ```
 
-`selectedRows` contains indices into raw `data`, while selected-only
-`exportCSV()` and `copyToClipboard()` currently apply those indices to the
-filtered array. With an active filter, a non-empty selection can therefore
-export/copy the wrong row or no row. Clear filters before selected-only export,
-or avoid selected-only export until that runtime indexing path is corrected.
+Selection is resolved against raw `data` first and then intersected with the
+filtered view, so selected-only CSV and clipboard output retain the correct row
+identity while filters are active. Printing flattens shadow-cell content to
+visible text and honors toolbar, footer, and checkbox options.
 
 ### Detail, Tree, Row, and List APIs
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `setDetailPanel()` | `{ getDetailContent(row, index) }` | Enables master-detail rows. The declared `detailHeight`, `lazy`, and icon options are currently accepted but not consumed |
+| `setDetailPanel()` | `{ getDetailContent, detailHeight?, lazy?, expandIcon?, collapseIcon? }` | Enables master-detail rows with auto/fixed height, eager or per-expansion content lifecycle, and custom toggle icons |
 | `expandRow()` / `collapseRow()` | `index: number` | Expands or collapses a detail row and emits `row-expand` / `row-collapse` |
 | `toggleRowExpansion()` | `index: number` | Toggles one detail row |
 | `expandAllRows()` / `collapseAllRows()` | — | Changes all detail expansion state without per-row events |
@@ -622,26 +620,29 @@ or avoid selected-only export until that runtime indexing path is corrected.
 | `unpinRow()` | `row: any` | Removes the same row object from both pin areas |
 | `clearPinnedRows()` | — | Clears top and bottom pinned rows |
 | `setRowHeight()` | `height: number` | Updates the fixed row height and rerenders |
-| `setRowHeightCallback()` | `(row, index) => number` | Computes normal rendered row height. Virtualization still uses the fixed `rowHeight` estimate |
-| `setListViewRenderer()` | `(row, index) => string \| HTMLElement` | Stores a compatibility callback, but the current body renderer does not invoke it |
+| `setRowHeightCallback()` | `(row, index) => number` | Computes rendered row height and participates in virtual spacer/scroll calculations |
+| `setListViewRenderer()` | `(row, index) => string \| HTMLElement` | Renders one full-width list cell per data row while `list` is enabled; strings are assigned as text |
 
 ### Toolbar
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `setToolbar()` | `ToolbarOptions` | Installs search, optional CSV export, fullscreen, and the advanced-filter panel in the controls area |
+| `setToolbar()` | `ToolbarOptions` | Installs search, sort, filter, optional CSV export, fullscreen, and in-flow model panels |
 
 ```typescript
 interface ToolbarOptions {
   showSearch?: boolean;       // defaults to true
   showExport?: boolean;       // defaults to false
   searchPlaceholder?: string;
-  showSort?: boolean;         // legacy, currently ignored
-  showFilter?: boolean;       // legacy, currently ignored
+  showSort?: boolean;         // defaults to false
+  showFilter?: boolean;       // defaults to false
 }
 ```
 
-Fullscreen is always present. Sorting remains on headers. The toolbar's search calls `setQuickFilter()` after a 300 ms debounce. The advanced-filter panel opens from **Filter...** in the column menu, so enable `column-menu` and install a toolbar before using that menu action.
+Fullscreen is always present. The toolbar search calls `setQuickFilter()` after
+a 300 ms debounce. Optional Sort and Filter buttons edit the same multi-sort and
+filter models as headers and the column menu; the column menu's **Filter...**
+action opens the installed toolbar panel directly.
 
 ### Declarative Child Methods
 
@@ -691,8 +692,10 @@ Fullscreen is always present. Sorting remains on headers. The toolbar's search c
 | `cell-action` | `{ action, rowData, column }` | Originates on `<snice-cell-actions>` and bubbles/composes through a containing table |
 | `lazy-load` | `{ currentCount }` | Scrolled within `lazyLoadThreshold` of the bottom |
 | `table-load-error` | `{ error }` | Latest remote data request failed |
+| `density-change` | `{ density }` | Post-mount density assignment rerendered the table |
 
-Direct property assignments update controlled state but do not generally emit the corresponding user-action event. Although a private `density-change` dispatcher exists in the source, no runtime path currently calls it, so consumers must not rely on that event.
+Direct property assignments update controlled state but do not generally emit
+the corresponding user-action event; density is the explicit exception.
 
 ### Declarative Child Events
 
@@ -701,8 +704,7 @@ Direct property assignments update controlled state but do not generally emit th
 | `<snice-column>` | `column-changed` | `{ column }` | A declarative definition changed |
 | `<snice-row>` | `row-click` | `{ data, index, element }` | Click/keyboard activation when `clickable` |
 | `<snice-row>` | `row-select` | `{ selected, data, index, element }` | Selection changed |
-
-`<snice-row>` contains a `row-hover` dispatch helper, but the current component does not invoke it.
+| `<snice-row>` | `row-hover` | `{ data, index, element }` | Pointer entered the row |
 
 ## Slots
 
@@ -1143,12 +1145,20 @@ Use `row-reorder` for local drag-and-drop, and pin independent summary rows with
 
 Pinned rows are separate from `data`, use index `-1`, and remain outside sorting and filtering.
 
-### List Renderer Compatibility
+### List Renderer
 
-The current `list` feature is visual: it removes the table's outer and vertical
-borders but keeps the normal cells. `setListViewRenderer()` stores the supplied
-callback for compatibility, but the current body render path does not call it.
-Use `renderCell()` on a spanning column when custom row content is required.
+`list` removes outer/vertical borders. Add `setListViewRenderer()` to replace
+each row's normal data cells with one full-width custom row. Tool cells such as
+selection and detail toggles remain available.
+
+```javascript
+table.list = true;
+table.setListViewRenderer((row) => {
+  const card = document.createElement('article');
+  card.textContent = `${row.name} · ${row.department}`;
+  return card;
+});
+```
 
 ### Loading and Empty States
 
@@ -1322,9 +1332,9 @@ table.printTable({ pageStyles: '@page { size: landscape; }' });
 ```
 
 CSV output uses raw row values and skips columns with `exportable: false`.
-Clipboard output copies every filtered row when selection is empty. When a
-selection and filter are both active, the raw-index/filtered-array limitation
-documented in the Methods section applies.
+Clipboard output uses formatted values by default and copies every filtered row
+when selection is empty. With a selection, both helpers intersect the correct
+raw row identities with the filtered view.
 
 ## Keyboard Navigation
 
@@ -1333,7 +1343,7 @@ documented in the Methods section applies.
 - Ctrl/Cmd+Home and Ctrl/Cmd+End move to the first and last grid cell.
 - Page Up and Page Down move by the visible page size.
 - Enter activates an editable focused cell.
-- Shift+Space toggles the focused row when selection is enabled. Plain Space is currently consumed without toggling selection.
+- Space or Shift+Space toggles the focused row when selection is enabled.
 - Ctrl/Cmd+A selects or clears all currently filtered selectable rows in multiple mode.
 - Tab moves through grid cells because the table uses the keyboard module's `all` tab mode.
 - Group, tree, and detail chevrons are native buttons; focus them with Tab and activate with Enter or Space.

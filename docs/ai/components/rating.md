@@ -8,6 +8,7 @@ Interactive star rating input with full/half precision, custom icons, and keyboa
 value: number = 0;
 max: number = 5;
 icon: string = '★';
+emptyIcon: string = ''; // attr empty-icon; empty falls back to icon
 size: 'small'|'medium'|'large' = 'medium';
 readonly: boolean = false;
 precision: 'full'|'half' = 'full';
@@ -34,6 +35,7 @@ precision: 'full'|'half' = 'full';
 <snice-rating value="3.5" precision="half" max="5"></snice-rating>
 <snice-rating value="4" readonly></snice-rating>
 <snice-rating icon="❤" value="3" max="5"></snice-rating>
+<snice-rating icon="★" empty-icon="·" value="3" max="5"></snice-rating>
 <snice-rating value="4" size="large"></snice-rating>
 ```
 

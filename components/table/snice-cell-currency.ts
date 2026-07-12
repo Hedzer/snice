@@ -1,6 +1,7 @@
 import { element, property, watch, ready, query, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
+import { installCellPresentation } from './table-cell-presentation';
 
 @element('snice-cell-currency')
 export class SniceCellCurrency extends HTMLElement implements SniceCellElement {
@@ -67,6 +68,7 @@ export class SniceCellCurrency extends HTMLElement implements SniceCellElement {
 
   @ready()
   init() {
+    installCellPresentation(this);
     this.applyAlignment();
   }
 
@@ -118,7 +120,8 @@ export class SniceCellCurrency extends HTMLElement implements SniceCellElement {
       const formatter = new Intl.NumberFormat(format.locale || this.locale, {
         style: 'currency',
         currency: format.currency || this.currency,
-        currencyDisplay: format.currencyDisplay || this.currencyDisplay,
+        currencyDisplay: format.currencyDisplay || format.display || this.currencyDisplay,
+        useGrouping: format.thousandsSeparator ?? this.thousandsSeparator,
         minimumFractionDigits: format.decimals ?? this.decimals,
         maximumFractionDigits: format.decimals ?? this.decimals
       });
@@ -142,7 +145,7 @@ export class SniceCellCurrency extends HTMLElement implements SniceCellElement {
       // Fallback to basic formatting if Intl.NumberFormat fails
       let formatted = num.toFixed(format.decimals ?? this.decimals);
 
-      if (this.thousandsSeparator) {
+      if (format.thousandsSeparator ?? this.thousandsSeparator) {
         const parts = formatted.split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         formatted = parts.join('.');

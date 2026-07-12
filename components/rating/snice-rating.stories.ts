@@ -6,6 +6,7 @@ type Args = {
   value?: number;
   max?: number;
   icon?: string;
+  emptyIcon?: string;
   size?: RatingSize;
   readonly?: boolean;
   precision?: RatingPrecision;
@@ -45,6 +46,7 @@ const meta: Meta<Args> = {
     value:     { control: 'number' },
     max:       { control: 'number' },
     icon:      { control: 'text' },
+    emptyIcon: { control: 'text' },
     size:      { control: 'select', options: SIZES },
     readonly:  { control: 'boolean' },
     precision: { control: 'select', options: PRECISIONS },
@@ -54,6 +56,7 @@ const meta: Meta<Args> = {
     if (args.value     !== undefined) el.setAttribute('value',     String(args.value));
     if (args.max       !== undefined) el.setAttribute('max',       String(args.max));
     if (args.icon      !== undefined) el.setAttribute('icon',      String(args.icon));
+    if (args.emptyIcon !== undefined) el.setAttribute('empty-icon', String(args.emptyIcon));
     if (args.size      !== undefined) el.setAttribute('size',      String(args.size));
     if (args.precision !== undefined) el.setAttribute('precision', String(args.precision));
     if (args.readonly) el.toggleAttribute('readonly', true);
