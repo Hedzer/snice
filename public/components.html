@@ -8019,7 +8019,7 @@ stepper.currentStep = 1;</snice-code-block>
     <!-- ── 10. Table ── -->
     <div class="comp-section" data-category="Data Display" data-cat-index="3" data-cat-order="0">
       <h3>Table</h3>
-      <p class="comp-desc">Data tables with row grouping, aggregation, 20+ column types, sorting, filtering, virtualization, editing, and Excel-like formatting</p>
+      <p class="comp-desc">Data tables with 24 built-in cell formats, grouping, aggregation, sorting, filtering, selection, editing, virtualization, and remote data</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col">
           <snice-table id="demo-table" hoverable sortable selectable column-resize column-menu striped style="width:100%"></snice-table>
@@ -8028,7 +8028,8 @@ stepper.currentStep = 1;</snice-code-block>
           <span class="code-lang">javascript</span>
           <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">table.columns = [
   { key: 'product', label: 'Product', sortable: true },
-  { key: 'revenue', label: 'Revenue', type: 'currency' },
+  { key: 'revenue', label: 'Revenue', type: 'number',
+    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
   { key: 'growth', label: 'Growth', type: 'percent' },
   { key: 'rating', label: 'Rating', type: 'rating' },
   { key: 'progress', label: 'Completion', type: 'progress' },
@@ -8036,10 +8037,10 @@ stepper.currentStep = 1;</snice-code-block>
   { key: 'status', label: 'Status', type: 'tag' }
 ];
 
-// 20+ built-in types: text, number, currency, percent,
-// rating, progress, sparkline, boolean, date, tag,
-// duration, filesize, email, phone, link, color,
-// image, status, actions, location</snice-code-block>
+// 24 built-in formats: text, number, currency, accounting,
+// scientific, fraction, percentage, date, boolean, rating,
+// progress, sparkline, duration, filesize, tags, status,
+// email, phone, link, color, image, JSON, location, actions</snice-code-block>
         </div>
       </div>
     </div>
@@ -8050,8 +8051,8 @@ stepper.currentStep = 1;</snice-code-block>
       if (table) {
         table.columns = [
           { key: 'product', label: 'Product', type: 'text', sortable: true, width: '160' },
-          { key: 'revenue', label: 'Revenue', type: 'currency', sortable: true, width: '120',
-            currencyFormat: { currency: 'USD', decimals: 0 } },
+          { key: 'revenue', label: 'Revenue', type: 'number', sortable: true, width: '120',
+            numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 } },
           { key: 'growth', label: 'Growth', type: 'percent', sortable: true, width: '80' },
           { key: 'rating', label: 'Rating', type: 'rating', sortable: true, width: '110' },
           { key: 'progress', label: 'Completion', type: 'progress', sortable: true, width: '120',
@@ -9970,7 +9971,7 @@ weather.data = {
         const name = candidates[0];
         const src = isDev
           ? '/components/' + name + '/full-showcase.html'
-          : 'showcase/' + name + '?v=' + (window.__sv||'');
+          : 'showcase/' + name + '.html?v=' + (window.__sv||'');
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }

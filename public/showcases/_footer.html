@@ -626,7 +626,7 @@
         const name = candidates[0];
         const src = isDev
           ? '/components/' + name + '/full-showcase.html'
-          : 'showcase/' + name + '?v=' + (window.__sv||'');
+          : 'showcase/' + name + '.html?v=' + (window.__sv||'');
         if (!iframe.src || !iframe.src.endsWith(src)) {
           iframe.src = src;
         }

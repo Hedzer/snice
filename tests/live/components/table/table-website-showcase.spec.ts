@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const websiteUrl = 'http://127.0.0.1:5566/components.html#comp-table';
+const websiteUrl = process.env.TABLE_WEBSITE_URL
+  || 'http://127.0.0.1:5566/components.html#comp-table';
 
 test('public website table card opens the complete working showcase', async ({ page }) => {
   test.setTimeout(60_000);
@@ -19,14 +20,27 @@ test('public website table card opens the complete working showcase', async ({ p
 
   const compact = await page.evaluate(() => {
     const section = document.querySelector('#comp-table')!;
+    const table = section.querySelector('#demo-table') as any;
+    const revenue = table.shadowRoot.querySelector(
+      'tbody tr[data-index] td[data-key="revenue"] snice-cell-number'
+    ) as any;
     return {
       tables: section.querySelectorAll('snice-table').length,
       groupingCopy: section.textContent?.includes('Grouping + aggregation'),
       groupedId: !!section.querySelector('#demo-table-grouped'),
       moreLink: !!section.querySelector('.more-link[data-slug="table"]'),
+      formatCountCopy: section.textContent?.includes('24 built-in cell formats'),
+      firstRevenue: revenue?.shadowRoot?.querySelector('.cell-content')?.textContent?.trim(),
     };
   });
-  expect(compact).toEqual({ tables: 1, groupingCopy: false, groupedId: false, moreLink: true });
+  expect(compact).toEqual({
+    tables: 1,
+    groupingCopy: false,
+    groupedId: false,
+    moreLink: true,
+    formatCountCopy: true,
+    firstRevenue: '$284,500',
+  });
 
   await page.locator('#comp-table .more-link[data-slug="table"]').click();
   await expect(page.locator('#help-drawer')).toHaveClass(/open/);
@@ -46,8 +60,11 @@ test('public website table card opens the complete working showcase', async ({ p
     return remote?.data?.length === 5 && remote.totalItems === 42;
   });
 
+  const expectedShowcasePath = process.env.TABLE_WEBSITE_URL
+    ? 'showcase/table.html'
+    : '/components/table/full-showcase.html';
   expect(await page.locator('#help-drawer-iframe').getAttribute('src'))
-    .toContain('/components/table/full-showcase.html');
+    .toContain(expectedShowcasePath);
 
   await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
   await expect(frame.locator('html')).toHaveAttribute('data-theme', 'light');

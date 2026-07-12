@@ -328,4 +328,4 @@ The container isn't just a wrapper — it provides layout and behavior that indi
 ### Known Gotchas
 - `contain: layout style paint` on `:host` can block flex `align-items: stretch` — fix with `width: 100%` on `:host`
 - Compound expressions in `<if>` template get stripped by Rollup/Terser — pre-compute as separate `const` variables
-- Table CDN build doesn't include snice-column/snice-row — use programmatic `setColumns()`/`setData()` + `requestAnimationFrame`
+- The Table CDN build includes `snice-table`, `snice-column`, `snice-row`, and cell dependencies. Declarative named slots and the programmatic API are both supported. Prefer reactive `table.columns = ...` / `table.data = ...`; an unpaired `setData()` is intentionally non-eager, so call `renderBody()` afterward.

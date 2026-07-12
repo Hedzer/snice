@@ -4,14 +4,28 @@ import './snice-table';
 type Args = {
   sortable?: boolean;
   selectable?: boolean;
+  selectionMode?: 'none' | 'single' | 'multiple';
   hoverable?: boolean;
+  clickable?: boolean;
   striped?: boolean;
   searchable?: boolean;
   pagination?: boolean;
+  paginationMode?: 'client' | 'server';
   pageSize?: number;
-  density?: string;
+  density?: 'compact' | 'standard' | 'comfortable';
   list?: boolean;
   loading?: boolean;
+  editable?: boolean;
+  editMode?: 'cell' | 'row';
+  virtualize?: boolean;
+  rowHeight?: number;
+  lazyLoad?: boolean;
+  lazyLoadThreshold?: number;
+  columnResize?: boolean;
+  columnReorder?: boolean;
+  columnMenu?: boolean;
+  headerFilters?: boolean;
+  rowReorder?: boolean;
 };
 
 const COLUMNS = [
@@ -19,7 +33,10 @@ const COLUMNS = [
   { key: 'age', label: 'Age', type: 'number' },
   { key: 'department', label: 'Department', type: 'text' },
   { key: 'email', label: 'Email', type: 'text' },
-  { key: 'salary', label: 'Salary', type: 'number', prefix: '$', thousandsSeparator: true },
+  {
+    key: 'salary', label: 'Salary', type: 'number',
+    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+  },
 ];
 
 const DATA = [
@@ -51,29 +68,58 @@ const meta: Meta<Args> = {
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
   argTypes: {
-    sortable:   { control: 'boolean' },
-    selectable: { control: 'boolean' },
-    hoverable:  { control: 'boolean' },
-    striped:    { control: 'boolean' },
-    searchable: { control: 'boolean' },
-    pagination: { control: 'boolean' },
-    pageSize:   { control: 'number' },
-    density:    { control: 'select', options: ['compact', 'comfortable'] },
-    list:       { control: 'boolean' },
-    loading:    { control: 'boolean' },
+    sortable:       { control: 'boolean', table: { category: 'Behavior' } },
+    selectable:     { control: 'boolean', table: { category: 'Selection' } },
+    selectionMode:  { control: 'select', options: ['multiple', 'single', 'none'], table: { category: 'Selection' } },
+    hoverable:      { control: 'boolean', table: { category: 'Behavior' } },
+    clickable:      { control: 'boolean', table: { category: 'Behavior' } },
+    striped:        { control: 'boolean', table: { category: 'Appearance' } },
+    searchable:     { control: 'boolean', table: { category: 'Filtering' } },
+    pagination:     { control: 'boolean', table: { category: 'Pagination' } },
+    paginationMode: { control: 'select', options: ['client', 'server'], table: { category: 'Pagination' } },
+    pageSize:       { control: { type: 'number', min: 1 }, table: { category: 'Pagination' } },
+    density:        { control: 'select', options: ['compact', 'standard', 'comfortable'], table: { category: 'Appearance' } },
+    list:           { control: 'boolean', table: { category: 'Appearance' } },
+    loading:        { control: 'boolean', table: { category: 'Data state' } },
+    editable:       { control: 'boolean', table: { category: 'Editing' } },
+    editMode:       { control: 'select', options: ['cell', 'row'], table: { category: 'Editing' } },
+    virtualize:     { control: 'boolean', table: { category: 'Large data' } },
+    rowHeight:      { control: { type: 'number', min: 24 }, table: { category: 'Large data' } },
+    lazyLoad:       { control: 'boolean', table: { category: 'Large data' } },
+    lazyLoadThreshold: { control: { type: 'number', min: 0 }, table: { category: 'Large data' } },
+    columnResize:   { control: 'boolean', table: { category: 'Columns' } },
+    columnReorder:  { control: 'boolean', table: { category: 'Columns' } },
+    columnMenu:     { control: 'boolean', table: { category: 'Columns' } },
+    headerFilters:  { control: 'boolean', table: { category: 'Filtering' } },
+    rowReorder:     { control: 'boolean', table: { category: 'Rows' } },
   },
   render: (args) => {
     const table = document.createElement('snice-table') as any;
     if (args.sortable)   table.toggleAttribute('sortable', true);
     if (args.selectable) table.toggleAttribute('selectable', true);
-    if (args.hoverable)  table.toggleAttribute('hoverable', true);
+    if (args.hoverable !== undefined) table.hoverable = args.hoverable;
+    if (args.clickable)  table.toggleAttribute('clickable', true);
     if (args.striped)    table.toggleAttribute('striped', true);
     if (args.searchable) table.toggleAttribute('searchable', true);
     if (args.pagination) table.toggleAttribute('pagination', true);
     if (args.list)       table.toggleAttribute('list', true);
     if (args.loading)    table.toggleAttribute('loading', true);
+    if (args.editable)   table.toggleAttribute('editable', true);
+    if (args.virtualize) table.toggleAttribute('virtualize', true);
+    if (args.lazyLoad)   table.toggleAttribute('lazy-load', true);
+    if (args.columnResize)  table.toggleAttribute('column-resize', true);
+    if (args.columnReorder) table.toggleAttribute('column-reorder', true);
+    if (args.columnMenu)    table.toggleAttribute('column-menu', true);
+    if (args.headerFilters) table.toggleAttribute('header-filters', true);
+    if (args.rowReorder)    table.toggleAttribute('row-reorder', true);
+    if (args.selectionMode !== undefined) table.setAttribute('selection-mode', args.selectionMode);
+    if (args.paginationMode !== undefined) table.setAttribute('pagination-mode', args.paginationMode);
+    if (args.editMode !== undefined) table.setAttribute('edit-mode', args.editMode);
     if (args.pageSize !== undefined) table.setAttribute('page-size', String(args.pageSize));
     if (args.density !== undefined)  table.setAttribute('density', String(args.density));
+    if (args.rowHeight !== undefined) table.setAttribute('row-height', String(args.rowHeight));
+    if (args.lazyLoadThreshold !== undefined) table.setAttribute('lazy-load-threshold', String(args.lazyLoadThreshold));
+    if (args.virtualize) table.style.height = '24rem';
     table.setColumns(COLUMNS);
     table.setData(DATA);
     requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
@@ -85,31 +131,73 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Default: Story = {
-  args: { sortable: true, hoverable: true },
+  args: {
+    sortable: true,
+    selectable: false,
+    selectionMode: 'multiple',
+    hoverable: true,
+    density: 'standard',
+    pageSize: 10,
+    editMode: 'cell',
+  },
 };
 
 // h2: Cell Types
 export const CellTypes: Story = {
   render: () => {
+    type CellCard = {
+      tag: string;
+      label: string;
+      attrs?: Record<string, string>;
+      props?: Record<string, unknown>;
+    };
+
+    const section = document.createElement('div');
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:0.75rem;';
-    const cells = [
+    const actionColumn = {
+      key: 'actions',
+      label: 'Actions',
+      type: 'actions',
+      actionsFormat: { actions: [
+        { action: 'inspect', label: 'Inspect', icon: '⌕', variant: 'primary' },
+        { action: 'archive', icon: '⌁', title: 'Archive row' },
+      ] },
+    };
+    const cells: CellCard[] = [
       { tag: 'snice-cell-text', label: 'Text', attrs: { value: 'Alice Johnson' } },
       { tag: 'snice-cell-number', label: 'Number', attrs: { value: '95000', decimals: '0', 'thousands-separator': 'true' } },
-      { tag: 'snice-cell-number', label: 'Currency', attrs: { value: '95000', decimals: '2', prefix: '$', 'thousands-separator': 'true' } },
-      { tag: 'snice-cell-percentage', label: 'Percent', attrs: { value: '12.5' } },
-      { tag: 'snice-cell-date', label: 'Date', attrs: { value: '2024-03-15' } },
-      { tag: 'snice-cell-boolean', label: 'Boolean', attrs: { value: 'true' } },
-      { tag: 'snice-cell-rating', label: 'Rating', attrs: { value: '4' } },
-      { tag: 'snice-cell-progress', label: 'Progress', attrs: { value: '75' } },
+      { tag: 'snice-cell-currency', label: 'Currency', attrs: { value: '95000', currency: 'USD', decimals: '0' } },
+      { tag: 'snice-cell', label: 'Accounting', attrs: { value: '-12840.5', type: 'accounting' } },
+      { tag: 'snice-cell', label: 'Scientific', attrs: { value: '1250000', type: 'scientific' } },
+      { tag: 'snice-cell', label: 'Fraction', attrs: { value: '0.75', type: 'fraction' } },
+      { tag: 'snice-cell-percentage', label: 'Percentage', attrs: { value: '12.5', colorize: 'true' } },
+      { tag: 'snice-cell-date', label: 'Date', attrs: { value: '2026-03-15' } },
+      { tag: 'snice-cell-boolean', label: 'Boolean', attrs: { value: 'true', 'use-symbols': 'true' } },
+      {
+        tag: 'snice-cell-rating', label: 'Rating', attrs: { value: '4.5' },
+        props: { column: { key: 'rating', label: 'Rating', type: 'rating', ratingFormat: { max: 5 } } },
+      },
+      {
+        tag: 'snice-cell-progress', label: 'Progress', attrs: { value: '75' },
+        props: { column: { key: 'progress', label: 'Progress', type: 'progress', progressFormat: { showPercentage: true } } },
+      },
+      { tag: 'snice-cell-sparkline', label: 'Sparkline', attrs: { value: '32,35,38,36,42,45,48', color: '#3b82f6' } },
       { tag: 'snice-cell-duration', label: 'Duration', attrs: { value: '3661' } },
       { tag: 'snice-cell-filesize', label: 'File Size', attrs: { value: '1048576' } },
-      { tag: 'snice-cell-tag', label: 'Tag', attrs: { value: 'Engineering' } },
-      { tag: 'snice-cell-status', label: 'Status', attrs: { value: 'Active', 'show-dot': 'true' } },
+      { tag: 'snice-cell-tag', label: 'Tags', attrs: { value: 'Engineering,Remote' } },
+      { tag: 'snice-cell-status', label: 'Status', attrs: { value: 'Active' } },
       { tag: 'snice-cell-email', label: 'Email', attrs: { value: 'alice@example.com' } },
       { tag: 'snice-cell-phone', label: 'Phone', attrs: { value: '+1-555-0101' } },
-      { tag: 'snice-cell-link', label: 'Link', attrs: { value: 'https://example.com' } },
+      { tag: 'snice-cell-link', label: 'Link', attrs: { value: 'https://example.com', external: 'true' } },
       { tag: 'snice-cell-color', label: 'Color', attrs: { value: '#3b82f6' } },
+      { tag: 'snice-cell-image', label: 'Image', attrs: { value: '/images/snice-logo.png', variant: 'circle', size: 'small', alt: 'Snice logo' } },
+      { tag: 'snice-cell-json', label: 'JSON', attrs: { value: '{"plan":"pro","seats":12}' } },
+      { tag: 'snice-cell-location', label: 'Location', attrs: { value: 'New York, NY' }, props: { showMapLink: false } },
+      {
+        tag: 'snice-cell-actions', label: 'Actions',
+        props: { column: actionColumn, actions: actionColumn.actionsFormat.actions, rowData: { id: 7, name: 'Alice Johnson' } },
+      },
     ];
     cells.forEach(c => {
       const card = document.createElement('div');
@@ -119,11 +207,21 @@ export const CellTypes: Story = {
       lbl.textContent = c.label;
       card.appendChild(lbl);
       const el = document.createElement(c.tag);
-      for (const [k, v] of Object.entries(c.attrs)) el.setAttribute(k, String(v));
+      for (const [k, v] of Object.entries(c.attrs || {})) el.setAttribute(k, String(v));
+      if (c.props) Object.assign(el, c.props);
       card.appendChild(el);
       wrap.appendChild(card);
     });
-    return wrap;
+
+    const status = document.createElement('p');
+    status.style.cssText = 'margin:0.75rem 0 0;color:#888;font-size:0.8rem;';
+    status.textContent = 'Action cells emit the source row and column.';
+    wrap.addEventListener('cell-action', (event) => {
+      const detail = (event as CustomEvent).detail;
+      status.textContent = `${detail.action} · ${detail.rowData.name} · ${detail.column.label}`;
+    });
+    section.append(wrap, status);
+    return section;
   },
 };
 
@@ -138,8 +236,8 @@ export const ProSortableHeaderFiltersColumnMenu: Story = {
   },
 };
 
-// h2: Toolbar + Export + Quick Filter
-export const ToolbarExportQuickFilter: Story = {
+// h2: Toolbar Search + Export
+export const ToolbarSearchExport: Story = {
   render: () => {
     const table = document.createElement('snice-table') as any;
     table.toggleAttribute('sortable', true);
@@ -152,6 +250,244 @@ export const ToolbarExportQuickFilter: Story = {
       table.renderHeader();
       table.renderBody();
       table.setToolbar({ showSearch: true, showExport: true, searchPlaceholder: 'Search employees...' });
+    });
+    return table;
+  },
+};
+
+// h2: Selection Modes + Conditional Selectability
+export const SelectionModesConditionalSelectability: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:grid;grid-template-columns:repeat(3,minmax(16rem,1fr));gap:1rem;padding:1rem;';
+
+    for (const mode of ['multiple', 'single', 'none'] as const) {
+      const card = document.createElement('section');
+      const heading = document.createElement('h3');
+      heading.textContent = `${mode[0].toUpperCase()}${mode.slice(1)} selection`;
+      heading.style.cssText = 'margin:0 0 0.25rem;font-size:1rem;';
+      const note = document.createElement('p');
+      note.textContent = mode === 'multiple'
+        ? 'Toggle rows or Shift-select a range. Charlie is locked.'
+        : mode === 'single'
+          ? 'Selecting a row replaces the previous selection. Charlie is locked.'
+          : 'Selection controls and row selection are disabled.';
+      note.style.cssText = 'margin:0 0 0.75rem;color:#888;font-size:0.8rem;';
+      const table = makeTable({
+        selectable: true,
+        'selection-mode': mode,
+        hoverable: true,
+      }, COLUMNS.slice(0, 3), DATA.slice(0, 4)) as any;
+      table.setSelectabilityCheck((row: any) => row.name !== 'Charlie Brown');
+      card.append(heading, note, table);
+      wrap.appendChild(card);
+    }
+
+    return wrap;
+  },
+};
+
+// h2: Inline Editing: Cell + Row + Custom Editor
+export const InlineEditingCellRowCustomEditor: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.padding = '1rem';
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;';
+    const editName = document.createElement('button');
+    editName.type = 'button';
+    editName.textContent = 'Edit first name';
+    const editRow = document.createElement('button');
+    editRow.type = 'button';
+    editRow.textContent = 'Edit second row';
+    const status = document.createElement('span');
+    status.style.cssText = 'color:#888;font-size:0.8rem;';
+    status.textContent = 'Double-click an editable cell, or use an edit button.';
+    actions.append(editName, editRow, status);
+
+    const table = document.createElement('snice-table') as any;
+    table.toggleAttribute('editable', true);
+    table.toggleAttribute('hoverable', true);
+    table.toggleAttribute('striped', true);
+    table.setColumns([
+      { key: 'name', label: 'Name', type: 'text' },
+      {
+        key: 'role', label: 'Role', type: 'text', editorType: 'select',
+        selectOptions: [
+          { value: 'Engineer', label: 'Engineer' },
+          { value: 'Designer', label: 'Designer' },
+          { value: 'Manager', label: 'Manager' },
+        ],
+      },
+      { key: 'startDate', label: 'Start Date', type: 'date' },
+      {
+        key: 'salary', label: 'Salary', type: 'number',
+        numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+        valueParser: (value: string) => Number(value),
+      },
+      { key: 'active', label: 'Active', type: 'boolean' },
+      {
+        key: 'status', label: 'Custom Status', type: 'text',
+        renderCell: (value: string) => {
+          const pill = document.createElement('span');
+          pill.textContent = value;
+          pill.style.cssText = 'display:inline-flex;padding:0.15rem 0.5rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.75rem;';
+          return pill;
+        },
+        renderEditor: (value: string, _row: any, _column: any, commit: (next: string) => void) => {
+          const select = document.createElement('select');
+          select.className = 'table-editor-select';
+          for (const optionValue of ['Active', 'On leave']) {
+            const option = document.createElement('option');
+            option.value = optionValue;
+            option.textContent = optionValue;
+            option.selected = optionValue === value;
+            select.appendChild(option);
+          }
+          select.addEventListener('change', () => commit(select.value));
+          return select;
+        },
+      },
+    ]);
+    table.setData([
+      { name: 'Alice Johnson', role: 'Engineer', startDate: '2022-03-14', salary: 125000, active: true, status: 'Active' },
+      { name: 'Diana Prince', role: 'Designer', startDate: '2023-08-21', salary: 118000, active: true, status: 'Active' },
+      { name: 'Bob Smith', role: 'Manager', startDate: '2021-11-02', salary: 109000, active: false, status: 'On leave' },
+    ]);
+    table.setCellEditableCheck(() => true);
+    requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
+
+    editName.addEventListener('click', () => {
+      table.editMode = 'cell';
+      table.startEdit(0, 'name');
+      status.textContent = 'Editing Alice’s name; Enter or blur commits, Escape cancels.';
+    });
+    editRow.addEventListener('click', () => {
+      table.editMode = 'row';
+      table.startEdit(1, 'name');
+      status.textContent = 'Editing Diana’s full row.';
+    });
+    table.addEventListener('cell-edit-commit', (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      status.textContent = `Saved ${detail.columnKey}: ${detail.newValue}`;
+    });
+    table.addEventListener('row-edit-commit', () => { status.textContent = 'Saved the row.'; });
+
+    wrap.append(actions, table);
+    return wrap;
+  },
+};
+
+// h2: Virtualization + Lazy Append
+export const VirtualizationLazyAppend: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.padding = '1rem';
+    const status = document.createElement('p');
+    status.style.cssText = 'margin:0 0 0.75rem;color:#888;font-size:0.8rem;';
+    const table = document.createElement('snice-table') as any;
+    table.toggleAttribute('virtualize', true);
+    table.toggleAttribute('lazy-load', true);
+    table.toggleAttribute('sortable', true);
+    table.toggleAttribute('hoverable', true);
+    table.setAttribute('row-height', '40');
+    table.style.height = '24rem';
+    table.setColumns([
+      { key: 'id', label: 'ID', type: 'number', sortable: true, width: '80' },
+      { key: 'account', label: 'Account', type: 'text', sortable: true },
+      { key: 'region', label: 'Region', type: 'text', sortable: true },
+      { key: 'usage', label: 'Usage', type: 'progress' },
+    ]);
+    const makeRows = (start: number, count: number) => Array.from({ length: count }, (_, offset) => {
+      const index = start + offset;
+      return {
+        id: index + 1,
+        account: `Account ${String(index + 1).padStart(4, '0')}`,
+        region: ['Americas', 'EMEA', 'APAC'][index % 3],
+        usage: (index * 17) % 101,
+      };
+    });
+    let rows = makeRows(0, 1200);
+    table.setData(rows);
+    const updateStatus = () => requestAnimationFrame(() => {
+      const mounted = table.shadowRoot?.querySelectorAll('tbody tr[data-index]').length || 0;
+      status.textContent = `${rows.length.toLocaleString()} records; ${mounted} data rows mounted.`;
+    });
+    table.addEventListener('lazy-load', () => {
+      if (rows.length >= 2000) return;
+      rows = [...rows, ...makeRows(rows.length, 200)];
+      table.data = rows;
+      updateStatus();
+    });
+    requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); updateStatus(); });
+    wrap.append(status, table);
+    return wrap;
+  },
+};
+
+// h2: Remote Data + Server Pagination
+export const RemoteDataServerPagination: Story = {
+  render: () => {
+    const table = document.createElement('snice-table') as any;
+    table.setAttribute('mode', 'remote');
+    table.toggleAttribute('pagination', true);
+    table.setAttribute('pagination-mode', 'server');
+    table.setAttribute('page-size', '5');
+    table.toggleAttribute('sortable', true);
+    table.toggleAttribute('hoverable', true);
+    table.toggleAttribute('striped', true);
+    table.setColumns([
+      { key: 'id', label: 'ID', type: 'number', sortable: true, width: '70' },
+      { key: 'company', label: 'Company', type: 'text', sortable: true },
+      { key: 'region', label: 'Region', type: 'text', sortable: true },
+      { key: 'plan', label: 'Plan', type: 'tag', sortable: true },
+      {
+        key: 'arr', label: 'ARR', type: 'number', sortable: true,
+        numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+      },
+    ]);
+    table.setData([]);
+    const rows = Array.from({ length: 42 }, (_, index) => ({
+      id: index + 1,
+      company: ['Acme', 'Globex', 'Initech', 'Umbrella'][index % 4] + ` ${Math.floor(index / 4) + 1}`,
+      region: ['Americas', 'EMEA', 'APAC'][index % 3],
+      plan: ['Starter', 'Growth', 'Enterprise'][index % 3],
+      arr: 12000 + ((index * 13731) % 180000),
+    }));
+    table.addEventListener('@request/table/data', (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      event.stopImmediatePropagation();
+      detail.discovery.resolve();
+      setTimeout(() => {
+        let result = [...rows];
+        const query = String(
+          detail.payload.filter?.quickFilter || detail.payload.search || ''
+        ).trim().toLowerCase();
+        if (query) {
+          result = result.filter((row) => Object.values(row).some((value) =>
+            String(value).toLowerCase().includes(query)
+          ));
+        }
+        result.sort((left, right) => {
+          for (const sort of detail.payload.sort || []) {
+            const comparison = String(left[sort.column as keyof typeof left]).localeCompare(
+              String(right[sort.column as keyof typeof right]), undefined, { numeric: true }
+            );
+            if (comparison !== 0) return sort.direction === 'desc' ? -comparison : comparison;
+          }
+          return 0;
+        });
+        const page = detail.payload.page || 1;
+        const pageSize = detail.payload.pageSize || 5;
+        const start = (page - 1) * pageSize;
+        detail.data.resolve({ data: result.slice(start, start + pageSize), totalItems: result.length });
+      }, 180);
+    });
+    requestAnimationFrame(() => {
+      table.renderHeader();
+      table.renderBody();
+      table.setToolbar({ showSearch: true, showExport: false, searchPlaceholder: 'Search remote records...' });
+      table.getTableData();
     });
     return table;
   },
@@ -189,7 +525,10 @@ export const TreeDataHierarchical: Story = {
     const treeCols = [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'role', label: 'Role', type: 'text' },
-      { key: 'salary', label: 'Salary', type: 'number', prefix: '$', thousandsSeparator: true },
+      {
+        key: 'salary', label: 'Salary', type: 'number',
+        numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+      },
     ];
     const treeData = [
       { name: 'Alice Johnson', role: 'VP Engineering', salary: 180000, path: ['Engineering', 'Alice Johnson'] },
@@ -258,7 +597,7 @@ export const ColumnGroupsMultiLevelHeaders: Story = {
   },
 };
 
-// h2: Column Pinning + Visibility
+// h2: Column Pinning + Visibility + Resize + Reorder
 export const ColumnPinningVisibility: Story = {
   render: () => {
     const pinnedCols = [
@@ -266,22 +605,39 @@ export const ColumnPinningVisibility: Story = {
       { key: 'age', label: 'Age', type: 'number' },
       { key: 'department', label: 'Department', type: 'text' },
       { key: 'email', label: 'Email', type: 'text' },
-      { key: 'salary', label: 'Salary', type: 'number', prefix: '$', thousandsSeparator: true },
+      {
+        key: 'salary', label: 'Salary', type: 'number',
+        numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+      },
     ];
     const wrapper = document.createElement('div');
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.textContent = 'Hide email';
     toggle.style.margin = '0.75rem';
-    const table = makeTable({ sortable: true, 'column-resize': true, 'column-menu': true, hoverable: true }, pinnedCols) as any;
+    const status = document.createElement('span');
+    status.textContent = 'Drag an unpinned header to reorder it.';
+    status.style.cssText = 'color:#888;font-size:0.8rem;';
+    const table = makeTable({
+      sortable: true,
+      'column-resize': true,
+      'column-reorder': true,
+      'column-menu': true,
+      hoverable: true,
+    }, pinnedCols) as any;
     let emailVisible = true;
     toggle.addEventListener('click', () => {
       emailVisible = !emailVisible;
       table.setColumnVisible('email', emailVisible);
       toggle.textContent = emailVisible ? 'Hide email' : 'Show email';
+      status.textContent = `Email ${emailVisible ? 'shown' : 'hidden'}.`;
+    });
+    table.addEventListener('column-reorder', (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      status.textContent = `Moved ${detail.fromKey} before ${detail.toKey}.`;
     });
     requestAnimationFrame(() => table.setToolbar({ showSearch: false, showExport: false }));
-    wrapper.append(toggle, table);
+    wrapper.append(toggle, status, table);
     return wrapper;
   },
 };
@@ -380,10 +736,8 @@ export const EmptyTable: Story = {
 };
 
 // h2: CSS Parts Styling
-// Parts available on snice-table: superheader
-// Parts available on snice-header: container, checkbox-cell, cell, sort-indicator, filter-button
-// Parts available on snice-row: container, checkbox-cell, cell
-// Parts available on snice-cell: content
+// Imperative snice-table exposes superheader, controls, toolbar, and pagination.
+// Its native header/body/cells are not forwarded as parts.
 export const CSSPartsStyling: Story = {
   render: () => {
     const wrap = document.createElement('div');
@@ -398,39 +752,21 @@ export const CSSPartsStyling: Story = {
         letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem;
       }
 
-      /* Styled table: superheader, header cells, row cells */
-      .parts-demo .styled-table snice-header::part(container) {
-        background: linear-gradient(135deg, #1e3a5f, #2d5986);
-        border-radius: 6px 6px 0 0;
-      }
-      .parts-demo .styled-table snice-header::part(cell) {
+      .parts-demo .styled-table::part(superheader) {
+        background: linear-gradient(135deg, #162b44, #2d5986);
         color: #fff;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        border-bottom: 2px solid #4a90d9;
-      }
-      .parts-demo .styled-table snice-header::part(sort-indicator) {
-        color: #4af;
-        font-size: 1rem;
-      }
-      .parts-demo .styled-table snice-row::part(container) {
-        border-bottom: 1px solid rgba(74, 144, 217, 0.2);
-        transition: background 0.15s;
-      }
-      .parts-demo .styled-table snice-row::part(container):hover {
-        background: rgba(74, 144, 217, 0.08);
-      }
-      .parts-demo .styled-table snice-row::part(cell) {
-        color: #c8e0ff;
-        padding: 0.6rem 0.75rem;
-      }
-      .parts-demo .styled-table snice-cell::part(content) {
-        font-size: 0.85rem;
-      }
-      .parts-demo .styled-table snice-table::part(superheader) {
-        background: #162b44;
-        padding: 0.5rem 0.75rem;
+        padding: 0.65rem 0.85rem;
         border-radius: 8px 8px 0 0;
+      }
+      .parts-demo .styled-table::part(toolbar) {
+        background: #eef6ff;
+        border: 1px solid #93c5fd;
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
+      .parts-demo .styled-table::part(pagination) {
+        background: #f8fbff;
+        border-top: 2px solid #4a90d9;
       }
     `;
     wrap.appendChild(style);
@@ -446,22 +782,33 @@ export const CSSPartsStyling: Story = {
       if (className) table.classList.add(className);
       if (sortable) table.toggleAttribute('sortable', true);
       table.toggleAttribute('hoverable', true);
+      table.toggleAttribute('pagination', true);
+      table.setAttribute('page-size', '2');
+      const superheader = document.createElement('div');
+      superheader.slot = 'header';
+      superheader.textContent = 'Employee directory';
+      table.appendChild(superheader);
       table.setColumns(COLUMNS.slice(0, 3));
       table.setData(DATA.slice(0, 4));
-      requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
+      requestAnimationFrame(() => {
+        table.renderHeader();
+        table.renderBody();
+        table.setToolbar({ showSearch: true, showExport: true });
+      });
       box.appendChild(table);
       return box;
     };
 
     wrap.appendChild(makeDemo('Default (no ::part() styles)', '', true));
-    wrap.appendChild(makeDemo('Styled via ::part() — header, cells, rows, content', 'styled-table', true));
+    wrap.appendChild(makeDemo('Styled table parts — superheader, toolbar, pagination', 'styled-table', true));
 
     return wrap;
   },
 };
 
-// h2: CSS Parts Advanced
-// Demonstrates checkbox-cell, filter-button, and row checkbox-cell parts
+// h2: Standalone Row + Cell Parts
+// snice-row and cell parts are available when those elements are direct
+// light-DOM children; snice-table does not forward them through its shadow root.
 export const CSSPartsAdvanced: Story = {
   render: () => {
     const wrap = document.createElement('div');
@@ -475,48 +822,46 @@ export const CSSPartsAdvanced: Story = {
         letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem;
       }
 
-      /* Style checkbox-cell in header and rows */
-      .parts-demo-adv snice-header::part(checkbox-cell) {
-        background: #2a1a4a;
-        border-right: 2px solid #7c3aed;
-        min-width: 3rem;
-      }
       .parts-demo-adv snice-row::part(checkbox-cell) {
         background: rgba(124, 58, 237, 0.08);
         border-right: 2px solid #7c3aed44;
       }
-      /* Style the header cell column labels */
-      .parts-demo-adv snice-header::part(cell) {
-        background: #1a0a2e;
-        color: #c4b5fd;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+      .parts-demo-adv snice-row::part(container) {
+        border: 1px solid #7c3aed;
+        border-radius: 6px;
+        overflow: hidden;
       }
-      /* Style data cells */
       .parts-demo-adv snice-row::part(cell) {
+        background: #1a0a2e;
         color: #e2d9f3;
+        padding: 0.65rem 0.75rem;
       }
-      /* Style cell inner content */
-      .parts-demo-adv snice-cell::part(content) {
+      .parts-demo-adv snice-cell-text::part(content) {
+        background: #ede9fe;
+        color: #5b21b6;
         border-radius: 4px;
+        padding: 0.35rem 0.55rem;
       }
     `;
     wrap.appendChild(style);
 
     const lbl = document.createElement('div');
     lbl.className = 'adv-label';
-    lbl.textContent = 'Styled: checkbox-cell, header cell, row cell, cell content via ::part()';
+    lbl.textContent = 'Direct snice-row and snice-cell-text elements styled through their own parts';
     wrap.appendChild(lbl);
 
-    const table = document.createElement('snice-table') as any;
-    table.toggleAttribute('selectable', true);
-    table.toggleAttribute('sortable', true);
-    table.toggleAttribute('hoverable', true);
-    table.setColumns(COLUMNS.slice(0, 4));
-    table.setData(DATA.slice(0, 4));
-    requestAnimationFrame(() => { table.renderHeader(); table.renderBody(); });
-    wrap.appendChild(table);
+    const row = document.createElement('snice-row') as any;
+    row.selectable = true;
+    row.hoverable = true;
+    row.columns = COLUMNS.slice(0, 4);
+    row.data = DATA[0];
+
+    const cellLabel = document.createElement('div');
+    cellLabel.className = 'adv-label';
+    cellLabel.textContent = 'Standalone cell content part';
+    const cell = document.createElement('snice-cell-text');
+    cell.setAttribute('value', 'Part styling stays at the component boundary');
+    wrap.append(row, cellLabel, cell);
 
     return wrap;
   },

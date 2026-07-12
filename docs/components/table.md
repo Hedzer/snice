@@ -1,79 +1,101 @@
 <!-- AI: For the AI-optimized version of this doc, see docs/ai/components/table.md -->
 
 # Table
-`<snice-table>`
 
-Displays tabular data with row grouping, aggregation, sorting, filtering, search, selection, pagination, virtualization, editing, tree data, master-detail, and 20+ specialized column types.
+`<snice-table>` displays local or remote tabular data with rich cell renderers, sorting, filtering, selection, editing, pagination, virtualization, grouping and aggregation, tree data, master-detail rows, column tools, drag-and-drop, and export helpers. Declarative `<snice-column>` and `<snice-row>` elements are also available for static markup.
 
 ## Table of Contents
+
+- [Components](#components)
 - [Properties](#properties)
-- [Column Definition](#column-definition)
 - [Methods](#methods)
 - [Events](#events)
 - [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Keyboard Navigation](#keyboard-navigation)
 - [Accessibility](#accessibility)
 
+## Components
+
+| Element | Description |
+|---------|-------------|
+| `<snice-table>` | Table host and the primary data, state, and feature API |
+| `<snice-column>` | Optional declarative column definition placed in the `columns` slot |
+| `<snice-row>` | Optional declarative row placed in the `rows` slot |
+| `<snice-cell>` / `<snice-cell-*>` | Generic and specialized standalone cells registered by the Table bundle |
+
+The imperative `columns` and `data` properties are the most complete path. Declarative rows use a lighter layout until a model feature such as grouping or aggregation requires the native table renderer.
+
 ## Properties
+
+### Table Properties
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `striped` | `boolean` | `false` | Alternating row background colors |
-| `searchable` | `boolean` | `false` | Show search input |
-| `filterable` | `boolean` | `false` | Show filter dropdown |
-| `sortable` | `boolean` | `false` | Enable column sorting |
-| `selectable` | `boolean` | `false` | Enable row selection with checkboxes |
-| `hoverable` | `boolean` | `true` | Highlight rows on hover |
-| `clickable` | `boolean` | `false` | Emit `row-clicked` on row click |
-| `list` | `boolean` | `false` | Hide vertical cell borders |
-| `loading` | `boolean` | `false` | Show loading state |
-| `mode` | `'local'\|'remote'` | `'local'` | `'local'`: table owns the dataset. `'remote'`: every filter/sort/search/page change requests data via `@request('table/data')` |
-| `columns` | `ColumnDefinition[]` | `[]` | Column definitions — reactive; assigning re-renders the header + body |
-| `data` | `any[]` | `[]` | Row data — reactive; assigning re-renders the body |
-| `searchText` | `string` | `''` | Current search text. Not an attribute; reassigning does not re-render (avoids stealing input focus while typing) |
-| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Search input debounce in milliseconds |
-| `currentSort` | `Array<{ column, direction }>` | `[]` | Current sort state — reactive; assigning re-sorts (local mode) or re-requests (remote mode) |
-| `selectedRows` | `number[]` | `[]` | Indices of selected rows (JS only) |
-| `selectionMode` (attr: `selection-mode`) | `'none'\|'single'\|'multiple'` | `'multiple'` | Selection behavior. `multiple` supports Ctrl/Cmd additive and Shift range selection |
-| `selector` | `string` | `''` | Selected filter-dropdown value(s), comma-joined |
-| `selectorOptions` | `Array<{value, label}>` | `[]` | Options for the `filterable` dropdown (JS only) |
-| `groupBy` | `string \| string[]` | `''` | Column key(s) used for one or more grouping levels. JS-only and reactive; assign before or after connection |
-| `groupDefaults` | `{ expanded?: boolean }` | `{}` | Initial expansion policy. Set `{ expanded: false }` to start groups collapsed (JS only) |
-| `pagination` | `boolean` | `false` | Enable pagination |
-| `paginationMode` (attr: `pagination-mode`) | `'client'\|'server'` | `'client'` | Client-side or server-side pagination |
-| `pageSize` (attr: `page-size`) | `number` | `10` | Rows per page |
-| `currentPage` (attr: `current-page`) | `number` | `1` | Current page number |
-| `totalItems` (attr: `total-items`) | `number` | `0` | Total item count (server mode) |
-| `pageSizes` | `number[]` | `[10, 25, 50, 100]` | Available page size options (JS only) |
-| `virtualize` | `boolean` | `false` | Render only the visible row window (large datasets) |
-| `rowHeight` (attr: `row-height`) | `number` | `48` | Row height in pixels (virtualization and fixed-height rows) |
-| `virtualBuffer` (attr: `virtual-buffer`) | `number` | `200` | Extra pixels rendered above/below the viewport when `virtualize` is on |
-| `editable` | `boolean` | `false` | Enable inline cell/row editing |
-| `editMode` (attr: `edit-mode`) | `'cell'\|'row'` | `'cell'` | Edit one cell at a time, or the whole row |
-| `density` | `'compact'\|'standard'\|'comfortable'` | `'standard'` | Row height density |
-| `columnResize` (attr: `column-resize`) | `boolean` | `false` | Enable column resizing by dragging |
-| `headerFilters` (attr: `header-filters`) | `boolean` | `false` | Show inline filter inputs below headers |
-| `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Quick-filter row toggle — use `setQuickFilter()` to actually filter |
-| `rowReorder` (attr: `row-reorder`) | `boolean` | `false` | Enable drag-to-reorder rows |
-| `columnReorder` (attr: `column-reorder`) | `boolean` | `false` | Enable drag-to-reorder columns |
-| `columnMenu` (attr: `column-menu`) | `boolean` | `false` | Enable right-click column menu |
-| `lazyLoad` (attr: `lazy-load`) | `boolean` | `false` | Fire `lazy-load` when scrolled near the bottom |
-| `lazyLoadThreshold` (attr: `lazy-load-threshold`) | `number` | `200` | Distance from the bottom, in pixels, that triggers `lazy-load` |
+| `striped` | `boolean` | `false` | Alternates data-row backgrounds |
+| `searchable` | `boolean` | `false` | Shows the legacy search control. Its debounced input updates `searchText` and calls `getTableData()`; it does not apply a local quick filter. For local search, use `setToolbar()` or `setQuickFilter()` |
+| `filterable` | `boolean` | `false` | Shows the legacy multi-select control backed by `selectorOptions`. Its value is sent as `selector` in data requests; it is separate from column filters |
+| `sortable` | `boolean` | `false` | Enables sortable headers for columns whose `sortable` option is not `false` |
+| `selectable` | `boolean` | `false` | Enables row selection when `selectionMode` is not `'none'` |
+| `hoverable` | `boolean` | `true` | Highlights rows on hover |
+| `clickable` | `boolean` | `false` | Emits `row-clicked` for non-interactive row clicks |
+| `list` | `boolean` | `false` | Removes vertical cell borders. It does not change the row markup |
+| `loading` | `boolean` | `false` | Fades existing rows or shows an indeterminate progress indicator when no rows are present |
+| `mode` | `'local' \| 'remote'` | `'local'` | In local mode, sorting and filtering use `data`. In remote mode, search, filter, sort, and server-page changes request `table/data` |
+| `columns` | `ColumnDefinition[]` | `[]` | Reactive JS-only column definitions; assignment schedules header and body rendering |
+| `data` | `any[]` | `[]` | Reactive JS-only rows; assignment schedules body rendering |
+| `searchText` | `string` | `''` | Current legacy/controller search text. This is a plain JS field so typing does not rerender and steal focus |
+| `searchDebounce` (attr: `search-debounce`) | `number` | `500` | Delay in milliseconds before the legacy search control requests data |
+| `currentSort` | `Array<{ column: string; direction: 'asc' \| 'desc' }>` | `[]` | Reactive JS-only sort model. Assignment sorts locally or requests remote data |
+| `selectedRows` | `number[]` | `[]` | Reactive JS-only indices into the raw `data` array, not indices into a filtered or sorted page |
+| `selectionMode` (attr: `selection-mode`) | `'none' \| 'single' \| 'multiple'` | `'multiple'` | Selection model. `'none'` removes selection controls; `'single'` shows row checkboxes without select-all; `'multiple'` enables row, range, group, and select-all selection |
+| `selector` | `string` | `''` | Comma-joined value from the legacy filter selector and the value sent in remote requests |
+| `selectorOptions` | `Array<{ value: string; label: string }>` | `[]` | JS-only options for the legacy `filterable` selector |
+| `groupBy` | `string \| string[]` | `''` | Reactive JS-only grouping key or ordered grouping keys. An empty value disables hierarchy grouping |
+| `groupDefaults` | `{ expanded?: boolean }` | `{}` | JS-only initial group expansion policy. `{ expanded: false }` starts groups collapsed |
+| `pagination` | `boolean` | `false` | Shows pagination controls |
+| `paginationMode` (attr: `pagination-mode`) | `'client' \| 'server'` | `'client'` | Client mode slices the local display model. Server mode uses `totalItems` and, with `mode="remote"`, requests each page |
+| `pageSize` (attr: `page-size`) | `number` | `10` | Rows or flattened display items per page |
+| `currentPage` (attr: `current-page`) | `number` | `1` | One-based current page |
+| `totalItems` (attr: `total-items`) | `number` | `0` | Total server-side result count. Remote responders return this as `totalItems` |
+| `pageSizes` | `number[]` | `[10, 25, 50, 100]` | JS-only page-size choices; the current `pageSize` is added when absent |
+| `virtualize` | `boolean` | `false` | Windows rendered rows inside the table frame for large datasets |
+| `rowHeight` (attr: `row-height`) | `number` | `48` | Fixed row height in pixels and the virtualizer's row-height estimate |
+| `virtualBuffer` (attr: `virtual-buffer`) | `number` | `200` | Extra virtualized pixels rendered above and below the viewport |
+| `editable` | `boolean` | `false` | Enables the inline editing engine |
+| `editMode` (attr: `edit-mode`) | `'cell' \| 'row'` | `'cell'` | Edits one cell or every editable cell in a row |
+| `density` | `'compact' \| 'standard' \| 'comfortable'` | `'standard'` | Changes header and cell padding. Assignment rerenders rows; the table does not currently emit a `density-change` event |
+| `columnResize` (attr: `column-resize`) | `boolean` | `false` | Adds draggable resize handles to resizable columns |
+| `headerFilters` (attr: `header-filters`) | `boolean` | `false` | Adds debounced contains inputs below filterable headers |
+| `quickFilter` (attr: `quick-filter`) | `boolean` | `false` | Legacy compatibility flag. It currently only schedules a body render and does not add UI or filtering; call `setQuickFilter(text)` to filter |
+| `rowReorder` (attr: `row-reorder`) | `boolean` | `false` | Adds row drag handles and mutates local row order on drop |
+| `columnReorder` (attr: `column-reorder`) | `boolean` | `false` | Makes unpinned, reorderable headers draggable |
+| `columnMenu` (attr: `column-menu`) | `boolean` | `false` | Enables the right-click header menu for sort, filter, visibility, pinning, and auto-size |
+| `lazyLoad` (attr: `lazy-load`) | `boolean` | `false` | Emits `lazy-load` when the table frame nears its bottom |
+| `lazyLoadThreshold` (attr: `lazy-load-threshold`) | `number` | `200` | Bottom distance in pixels that triggers `lazy-load` |
 
-## Column Definition
+Set `row-reorder`, `column-reorder`, and `lazy-load` before the element finishes
+initializing. Their feature modules attach during initialization and do not have
+post-mount property watchers.
+
+### Column Definitions
+
+Every imperative column requires `key` and `label`.
 
 ```typescript
 interface ColumnDefinition {
   key: string;
   label: string;
-  type?: ColumnType;                     // see Column Types below
+  type?: ColumnType;
   align?: 'left' | 'center' | 'right';
   width?: string;
   flex?: number;
   minWidth?: number;
   maxWidth?: number;
+
   sortable?: boolean;
   filterable?: boolean;
   resizable?: boolean;
@@ -82,250 +104,886 @@ interface ColumnDefinition {
   pinnable?: boolean;
   pinned?: 'left' | 'right' | false;
   editable?: boolean;
-  editorType?: 'text' | 'number' | 'date' | 'boolean' | 'select'; // overrides the type-derived editor
-  selectOptions?: { value: string; label: string }[];             // options for a `select` editor
   exportable?: boolean;
-  formatter?: (value: any, row?: any) => string;
-  valueGetter?: (value: any, row: any) => any;
-  valueFormatter?: (value: any, row: any) => string;
-  valueParser?: (value: string, row: any) => any;
-  valueSetter?: (value: any, row: any) => any;
-  sortComparator?: (a: any, b: any, direction: 'asc' | 'desc') => number;
+
+  editorType?: 'text' | 'number' | 'date' | 'boolean' | 'select';
+  selectOptions?: Array<{ value: string; label: string }>;
+  renderCell?: (value, row, column) => HTMLElement | string;
+  renderEditor?: (value, row, column, commit, cancel) => HTMLElement;
+
+  formatter?: (value, row?) => string;
+  valueGetter?: (value, row) => any;
+  valueFormatter?: (value, row) => string;
+  valueParser?: (value: string, row) => any;
+  valueSetter?: (value, row) => any;
+  sortComparator?: (a, b, direction: 'asc' | 'desc') => number;
   colSpan?: number | ((value, row) => number);
   aggregate?: 'sum' | 'avg' | 'min' | 'max' | 'count' |
     ((values: any[], rows: any[]) => any);
-  renderCell?: (value, row, column) => HTMLElement | string;
-  renderEditor?: (value, row, column, commit, cancel) => HTMLElement;
-  wrap?: boolean;
-  ellipsis?: boolean;
-  tooltip?: boolean | ((value: any, row?: any) => string);
 
-  // Excel-like per-type formatting
-  numberFormat?: { decimals?, thousandsSeparator?, prefix?, suffix?, negativeStyle? };
+  numberFormat?: NumberFormat;
   dateFormat?: DateFormat;
   booleanFormat?: BooleanFormat;
-  ratingFormat?: { max?, color? };
-  progressFormat?: { max?, color?, colorize?, showPercentage?, height? };
-  sparklineFormat?: { type?, color?, width?, height? };
-  percentageFormat?: { decimals?, colorize? };
+  ratingFormat?: RatingFormat;
+  progressFormat?: ProgressFormat;
+  sparklineFormat?: SparklineFormat;
+  percentageFormat?: PercentageFormat;
   phoneFormat?: PhoneFormat;
   statusFormat?: StatusFormat;
   tagFormat?: TagFormat;
-  actionsFormat?: { actions: ActionButton[] };
-  linkFormat?: { target?, external? };
-  colorFormat?: { showSwatch?, displayFormat? };
+  actionsFormat?: ActionsFormat;
+  linkFormat?: LinkFormat;
+  colorFormat?: ColorFormat;
   currencyFormat?: CurrencyFormat;
-  emailFormat?: { showIcon? };
+  emailFormat?: EmailFormat;
   imageFormat?: ImageFormat;
   jsonFormat?: JsonFormat;
   locationFormat?: LocationFormat;
   style?: CellStyle;
   conditionalFormats?: ConditionalFormat[];
+
+  wrap?: boolean;
+  ellipsis?: boolean;
+  tooltip?: boolean | ((value, row?) => string);
 }
 ```
 
-### Column Types
+Column capability flags default to enabled unless explicitly set to `false` when the corresponding table feature is active. `renderCell()` bypasses the built-in renderer; string results are assigned through `textContent`, not parsed as HTML. `renderEditor()` bypasses the built-in editor and must call `commit(value)` or `cancel()`.
 
-`type` (source of truth: `ColumnType` in `snice-table.types.ts`):
+`formatter` is the row-aware display callback for the generic/core cells.
+Actions, color, email, image, JSON, link, location, phone, progress, rating,
+status, and tag cells currently ignore it. `valueGetter` participates in local
+sorting and aggregation. `valueParser` and `valueSetter` run during editing; a
+setter may return either the final field value or an updated row object.
+`valueFormatter` is registered with the editing pipeline and formats aggregate
+output, but normal display cells do not call it.
+
+The declared `ColumnType` union is:
 
 ```typescript
-type ColumnType = 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent' |
-  'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific' | 'fraction' |
-  'duration' | 'filesize' | 'custom';
+type ColumnType =
+  | 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'percent'
+  | 'rating' | 'progress' | 'sparkline' | 'accounting' | 'scientific'
+  | 'fraction' | 'duration' | 'filesize' | 'custom';
 ```
 
-The cell renderer (`getCellTagName()`) additionally recognizes `tag`, `status`,
-`actions`, `link`, `email`, `phone`, `color`, `image`, `location`, `json`, and
-`percentage` (alias of `percent`) — these render correctly at runtime but
-aren't yet part of the `ColumnType` union, so a strict `ColumnDefinition[]`
-needs `type: 'status' as ColumnType` (or a looser array type) until it's added.
+The runtime table also recognizes `percentage`, `tag`, `status`, `actions`, `link`, `email`, `phone`, `color`, `image`, `location`, and `json`. TypeScript callers currently need a cast for these runtime-only strings.
+
+> **Current currency behavior:** imperative `<snice-table>` rows route `type: 'currency'` through `snice-cell-number`, so `currencyFormat` does not supply the symbol or locale there. Use `numberFormat`, such as `{ prefix: '$', thousandsSeparator: true, decimals: 2 }`, for currency-looking table columns. The standalone `<snice-cell-currency>` component does honor `currencyFormat`/currency attributes.
+
+The formatting option shapes are:
+
+```typescript
+interface NumberFormat {
+  decimals?: number;
+  thousandsSeparator?: boolean;
+  prefix?: string;
+  suffix?: string;
+  negativeStyle?: 'parentheses' | 'red' | 'minus';
+}
+
+interface DateFormat {
+  format?: 'short' | 'medium' | 'long' | 'full' | 'custom';
+  customFormat?: string;
+  locale?: string;
+}
+
+interface BooleanFormat {
+  trueValue?: string;
+  falseValue?: string;
+  useSymbols?: boolean;
+  trueSymbol?: string;
+  falseSymbol?: string;
+}
+
+interface RatingFormat {
+  max?: number;
+  symbol?: string;
+  emptySymbol?: string; // declared; the current rating cell ignores it
+  color?: string;
+}
+
+interface ProgressFormat {
+  max?: number;
+  showPercentage?: boolean;
+  color?: string;
+  colorize?: boolean;
+  backgroundColor?: string;
+  height?: string;
+}
+
+interface SparklineFormat {
+  type?: 'line' | 'bar' | 'area';
+  color?: string;
+  width?: number;
+  height?: number;
+}
+
+interface PercentageFormat {
+  decimals?: number;
+  showTrend?: boolean; // declared; a table column does not activate the arrow
+  trendValue?: number | null; // read, but the arrow is gated by the cell property
+  colorize?: boolean;
+}
+
+interface CurrencyFormat {
+  currency?: string;
+  locale?: string;
+  display?: 'symbol' | 'code' | 'name';
+  currencyDisplay?: 'symbol' | 'code' | 'name';
+  decimals?: number;
+  negativeStyle?: 'parentheses' | 'red' | 'minus';
+}
+
+interface PhoneFormat {
+  phone?: string;
+  displayText?: string;
+  showIcon?: boolean;
+  format?: boolean;
+  country?: string;
+}
+
+interface StatusFormat {
+  status?: string;
+  label?: string;
+  showDot?: boolean;
+  variant?: 'online' | 'offline' | 'busy' | 'away' | 'custom';
+}
+
+interface TagFormat { variant?: string }
+
+interface ActionButton {
+  action: string;
+  label?: string;
+  icon?: string;
+  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  title?: string;
+  disabled?: boolean;
+}
+interface ActionsFormat { actions: ActionButton[] }
+
+interface LinkFormat {
+  href?: string;
+  target?: string;
+  external?: boolean;
+  icon?: string;
+  text?: string;
+}
+
+interface ColorFormat {
+  color?: string;
+  size?: 'small' | 'medium' | 'large';
+  displayFormat?: 'hex' | 'rgb' | 'hsl' | 'name';
+  showSwatch?: boolean;
+  showHex?: boolean;
+  showRgb?: boolean;
+  swatchSize?: 'small' | 'medium' | 'large';
+}
+
+interface EmailFormat {
+  email?: string;
+  showIcon?: boolean;
+  displayText?: string;
+}
+
+interface ImageFormat {
+  src?: string;
+  fallback?: string;
+  shape?: 'rounded' | 'square' | 'circle';
+  variant?: 'rounded' | 'square' | 'circle';
+  size?: 'small' | 'medium' | 'large';
+  alt?: string;
+  lazy?: boolean;
+}
+
+interface JsonFormat {
+  maxDepth?: number;
+  expanded?: boolean;
+  collapsed?: boolean;
+  showToggle?: boolean;
+}
+
+interface LocationFormat {
+  address?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  showMapLink?: boolean;
+  mapProvider?: 'google' | 'openstreetmap' | 'apple';
+  showIcon?: boolean;
+  lat?: number;
+  lng?: number;
+}
+
+interface CellStyle {
+  backgroundColor?: string;
+  color?: string;
+  fontWeight?: 'normal' | 'bold' | 'lighter';
+  fontStyle?: 'normal' | 'italic';
+  fontSize?: string;
+  textDecoration?: 'none' | 'underline' | 'line-through';
+}
+
+interface ConditionalFormat {
+  condition: (value: any, row?: any) => boolean;
+  style?: CellStyle;
+  className?: string;
+}
+```
+
+Some source-compatible fields are not consumed by the current specialized
+renderers: rating `emptySymbol`; percentage `showTrend` (the cell does read
+`trendValue`, but only displays an arrow when its direct `showTrend` property is
+true); currency `display` (use `currencyDisplay` on a standalone currency
+cell); color `size` and `displayFormat`; image `shape` (use `variant`); JSON
+`expanded` (use `collapsed`); and location `lat`/`lng` (use
+`latitude`/`longitude`). `tooltip` is also currently unused. `wrap` and
+`ellipsis` affect the text-cell renderer only.
+
+`style` and `conditionalFormats` are consumed only by generic `<snice-cell>`;
+the specialized cells ignore both. The generic cell applies its base `style`
+only when a `conditionalFormats` array is present.
+
+### Declarative Column Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `key` | `string` | `''` | Row-object field |
+| `label` | `string` | `''` | Header label |
+| `type` | `ColumnType` | `'text'` | Cell type |
+| `align` | `'left' \| 'center' \| 'right'` | `'left'` | Cell alignment |
+| `width` | `string` | `''` | CSS width |
+| `sortable` | `boolean` | `true` | Allows sorting |
+| `filterable` | `boolean` | `true` | Allows filtering |
+| `wrap` | `boolean` | `false` | Wraps text content |
+| `ellipsis` | `boolean` | `true` | Truncates overflowing text |
+| `tooltip` | `boolean` | `false` | Enables a value tooltip |
+| `aggregate` | built-in aggregator or function | — | Built-ins work through the `aggregate` attribute; custom reducers are property-only |
+| `decimals` | `number` | — | Number decimal places |
+| `thousandsSeparator` (attr: `thousands-separator`) | `boolean` | — | Adds digit grouping |
+| `numberPrefix` (attr: `number-prefix`) | `string` | — | Number prefix |
+| `numberSuffix` (attr: `number-suffix`) | `string` | — | Number suffix |
+| `negativeStyle` (attr: `negative-style`) | `'parentheses' \| 'red' \| 'minus'` | — | Negative-number style |
+| `dateFormat` (attr: `date-format`) | `'short' \| 'medium' \| 'long' \| 'full' \| 'custom'` | — | Date presentation |
+| `customDateFormat` (attr: `custom-date-format`) | `string` | — | Custom date pattern |
+| `dateLocale` (attr: `date-locale`) | `string` | — | Date locale |
+| `trueValue` / `falseValue` (attrs: `true-value` / `false-value`) | `string` | — | Boolean labels |
+| `useSymbols` (attr: `use-symbols`) | `boolean` | — | Uses symbols for booleans |
+| `trueSymbol` / `falseSymbol` (attrs: `true-symbol` / `false-symbol`) | `string` | — | Boolean symbols |
+| `ratingMax` (attr: `rating-max`) | `number` | — | Maximum rating |
+| `ratingSymbol` / `ratingEmptySymbol` | `string` | — | Filled and empty rating symbols |
+| `ratingColor` | `string` | — | Rating color |
+| `progressMax` (attr: `progress-max`) | `number` | — | Progress maximum |
+| `showPercentage` (attr: `show-percentage`) | `boolean` | — | Shows progress percentage |
+| `progressColor` / `progressBgColor` | `string` | — | Progress foreground/background colors |
+| `progressHeight` | `string` | — | Progress-bar height |
+| `sparklineType` | `'line' \| 'bar' \| 'area'` | — | Sparkline form |
+| `sparklineColor` | `string` | — | Sparkline color |
+| `sparklineWidth` / `sparklineHeight` | `number` | — | Sparkline dimensions |
+| `cellBgColor` / `cellColor` | `string` | — | Base cell colors |
+| `cellFontWeight` | `'normal' \| 'bold' \| 'lighter'` | — | Cell font weight |
+| `cellFontStyle` | `'normal' \| 'italic'` | — | Cell font style |
+| `cellFontSize` | `string` | — | Cell font size |
+| `cellTextDecoration` | `'none' \| 'underline' \| 'line-through'` | — | Cell decoration |
+
+The camel-case properties in the last rows use their kebab-case attribute equivalents, such as `rating-color`, `progress-bg-color`, and `cell-font-weight`.
+
+### Declarative Row Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `selected` | `boolean` | `false` | Selected state |
+| `hoverable` | `boolean` | `true` | Hover highlight |
+| `clickable` | `boolean` | `false` | Emits `row-click` on activation |
+| `selectable` | `boolean` | `false` | Enables the row checkbox and click selection |
+| `data` | `any` | `{}` | JS-only row object. If empty, the row collects its `data-*` attributes |
+| `index` | `number` | `0` | Row index reported in events |
+| `columns` | `ColumnDefinition[]` | `[]` | JS-only definitions used to render cells |
+
+`selectionDisabled` is managed internally by `<snice-table>` when `setSelectabilityCheck()` is used and is not an attribute.
+
+### Standalone Cell Properties
+
+The Table bundle registers `<snice-cell>` plus every `<snice-cell-*>` element
+used by the showcase. These elements can be used directly without a table.
+
+#### Common Cell Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | `any` | `''` | Display value. Defaults are `false` for boolean, `0` for rating/progress/duration/filesize, and `null` for JSON |
+| `align` | `'left' \| 'center' \| 'right'` | Varies | Right for number/currency/percentage/duration/filesize; center for boolean/rating/image; left otherwise |
+| `type` | `string` | Tag-specific | Renderer type. Generic `<snice-cell>` defaults to `'text'` |
+| `column` | `ColumnDefinition \| null` | Core definition or `null` | JS-only format/formatter configuration; generic/core cells start with a matching definition, runtime-only cells with `null` |
+| `rowData` | `any` | `null` | JS-only row context for formatters and `cell-action` |
+
+#### Specialized Cell Properties
+
+When `@property` does not provide an explicit attribute name, Snice currently
+lowercases camelCase without inserting hyphens. The actual attributes are
+listed below; direct JS property assignment is clearer for names such as
+`showMapLink`.
+
+| Element / Property | Type | Default | Description |
+|--------------------|------|---------|-------------|
+| `<snice-cell-text>` `multiline` | `boolean` | `false` | Allows multiline content |
+| `<snice-cell-text>` `maxLines` (attr: `max-lines`) | `number \| undefined` | — | Clamps visible lines |
+| `<snice-cell-number>` `decimals` | `number` | `0` | Fraction digits |
+| `<snice-cell-number>` `thousandsSeparator` (attr: `thousands-separator`) | `boolean` | `false` | Groups digits |
+| `<snice-cell-number>` `prefix` / `suffix` | `string` | `''` | Text before/after the number |
+| `<snice-cell-number>` `negativeStyle` (attr: `negative-style`) | `'parentheses' \| 'red' \| 'minus'` | `'minus'` | Negative presentation |
+| `<snice-cell-number>` `highlight` | `boolean` | `false` | Highlight styling |
+| `<snice-cell-currency>` `decimals` | `number` | `2` | Fraction digits |
+| `<snice-cell-currency>` `thousandsSeparator` (attr: `thousands-separator`) | `boolean` | `true` | Public compatibility property; `Intl.NumberFormat` controls grouping |
+| `<snice-cell-currency>` `currency` / `locale` | `string` | `'USD'` / `'en-US'` | Currency and locale |
+| `<snice-cell-currency>` `currencyDisplay` (attr: `currencydisplay`) | `'symbol' \| 'code' \| 'name'` | `'symbol'` | Currency label style |
+| `<snice-cell-currency>` `negativeStyle` (attr: `negative-style`) | `'parentheses' \| 'red' \| 'minus'` | `'red'` | Negative presentation |
+| `<snice-cell-currency>` `highlight` | `boolean` | `false` | Highlight styling |
+| `<snice-cell-date>` `dateFormat` (attr: `date-format`) | `'short' \| 'medium' \| 'long' \| 'full' \| 'custom'` | `'short'` | Date format |
+| `<snice-cell-date>` `customFormat` (attr: `custom-format`) | `string \| undefined` | — | Custom date pattern |
+| `<snice-cell-date>` `locale` | `string` | `'en-US'` | Date locale |
+| `<snice-cell-date>` `relativeTime` (attr: `relative-time`) | `boolean` | `false` | Relative-time output |
+| `<snice-cell-date>` `showTime` (attr: `show-time`) | `boolean` | `false` | Includes time |
+| `<snice-cell-boolean>` `trueValue` / `falseValue` (attrs: `true-value` / `false-value`) | `string` | `'true'` / `'false'` | Text labels |
+| `<snice-cell-boolean>` `useSymbols` (attr: `use-symbols`) | `boolean` | `true` | Uses symbols instead of labels |
+| `<snice-cell-boolean>` `trueSymbol` / `falseSymbol` (attrs: `true-symbol` / `false-symbol`) | `string` | `'svg'` | Symbol values; `'svg'` uses built-in icons |
+| `<snice-cell-percentage>` `decimals` | `number` | `2` | Fraction digits |
+| `<snice-cell-percentage>` `showTrend` (attr: `showtrend`) | `boolean` | `false` | Shows an arrow when `trendValue` is set |
+| `<snice-cell-percentage>` `trendValue` (attr: `trendvalue`) | `number \| null` | `null` | Arrow direction |
+| `<snice-cell-percentage>` `colorize` | `boolean` | `true` | Colors positive/negative output |
+| `<snice-cell-sparkline>` `chartType` (attr: `chart-type`) | `'line' \| 'bar' \| 'area'` | `'line'` | Chart form |
+| `<snice-cell-sparkline>` `color` | `string` | `var(--snice-color-primary)` | Chart color |
+| `<snice-cell-sparkline>` `width` / `height` | `number` | `80` / `24` | Rendered chart/image dimensions |
+| `<snice-cell-sparkline>` `showDots` / `showBaseline` (attrs: `show-dots` / `show-baseline`) | `boolean` | `false` | Dots work; `showBaseline` is watched but currently draws no baseline |
+| `<snice-cell-sparkline>` `strokeWidth` (attr: `stroke-width`) | `number` | `1.5` | Line width |
+| `<snice-cell-sparkline>` `minValue` / `maxValue` (attrs: `min-value` / `max-value`) | `number \| undefined` | — | Explicit domain |
+| `<snice-cell-sparkline>` `data` | `number[]` | `[]` | Alternate series; assign in JS. `value` also accepts arrays, comma text, or JSON |
+| `<snice-cell-tag>` `tags` | `string[]` | `[]` | JS-only tags; otherwise comma-separated `value` is parsed |
+| `<snice-cell-tag>` `variant` | `string` | `'default'` | Tag style |
+| `<snice-cell-status>` `status` / `label` | `string` | `''` | State and display label |
+| `<snice-cell-status>` `showDot` (attr: `showdot`) | `boolean` | `true` | Shows the status dot |
+| `<snice-cell-status>` `variant` | `'online' \| 'offline' \| 'busy' \| 'away' \| 'custom'` | `'custom'` | State style |
+| `<snice-cell-actions>` `actions` | `ActionButton[]` | `[]` | JS-only buttons; may also come from `column.actionsFormat` |
+| `<snice-cell-link>` `href` / `text` / `icon` | `string` | `''` | URL, label, and optional icon |
+| `<snice-cell-link>` `target` | `string` | `'_self'` | Anchor target |
+| `<snice-cell-link>` `external` | `boolean` | `false` | Marks an external link |
+| `<snice-cell-email>` `email` / `displayText` (attr for latter: `displaytext`) | `string` | `''` | Address and label |
+| `<snice-cell-email>` `showIcon` (attr: `showicon`) | `boolean` | `true` | Shows the email icon |
+| `<snice-cell-phone>` `phone` / `displayText` (attr for latter: `displaytext`) | `string` | `''` | Number and label |
+| `<snice-cell-phone>` `showIcon` (attr: `showicon`) / `format` | `boolean` | `true` | Icon and number formatting |
+| `<snice-cell-phone>` `country` | `string` | `'US'` | Formatting country |
+| `<snice-cell-color>` `color` | `string` | `''` | Overrides `value` |
+| `<snice-cell-color>` `showSwatch` / `showHex` / `showRgb` (attrs: `showswatch` / `showhex` / `showrgb`) | `boolean` | `true` / `true` / `false` | Visible color representations |
+| `<snice-cell-color>` `swatchSize` (attr: `swatchsize`) | `'small' \| 'medium' \| 'large'` | `'medium'` | Swatch size |
+| `<snice-cell-image>` `src` / `alt` / `fallback` | `string` | `''` | Image source, alternative text, and fallback source |
+| `<snice-cell-image>` `variant` | `'rounded' \| 'square' \| 'circle'` | `'rounded'` | Image shape |
+| `<snice-cell-image>` `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Image size |
+| `<snice-cell-image>` `lazy` | `boolean` | `true` | Native lazy loading |
+| `<snice-cell-image>` `imageError` (attr: `imageerror`) | `boolean` | `false` | Public reflected error state managed after an image failure |
+| `<snice-cell-location>` `address` / `latitude` / `longitude` | `string` | `''` | Address or coordinates |
+| `<snice-cell-location>` `showMapLink` (attr: `showmaplink`) | `boolean` | `true` | Wraps the location in a map link |
+| `<snice-cell-location>` `mapProvider` (attr: `mapprovider`) | `'google' \| 'openstreetmap' \| 'apple'` | `'google'` | Map URL provider |
+| `<snice-cell-location>` `showIcon` (attr: `showicon`) | `boolean` | `true` | Shows the location icon |
+| `<snice-cell-json>` `collapsed` | `boolean` | `true` | Collapsed state |
+| `<snice-cell-json>` `maxDepth` (attr: `maxdepth`) | `number` | `3` | Expansion depth |
+| `<snice-cell-json>` `showToggle` (attr: `showtoggle`) | `boolean` | `true` | Shows the toggle |
+
+`<snice-cell-rating>` and `<snice-cell-progress>` have only the common direct
+properties; configure their display through JS-only `column.ratingFormat` and
+`column.progressFormat`. `<snice-cell-duration>` and `<snice-cell-filesize>`
+also use only the common properties. Use a primitive numeric progress `value`;
+the source's object-value branch is not reliable through the reactive value
+converter.
+
+Standalone behavior boundaries:
+
+- Generic `<snice-cell type="percent">` expects a ratio (`0.125` → `12.5%`), while `<snice-cell-percentage>` and Table `percent` columns expect an already-percent value (`12.5` → `12.50%`). Generic and specialized duration/filesize/rating/progress/sparkline renderers also differ; Table uses the specialized elements.
+- Sparkline input accepts arrays, comma/JSON text, `{ values, color }` JSON, or `data`; `showBaseline` is declared and watched but currently draws no baseline.
+- Tags parse JSON arrays or comma text. Status recognizes common online/offline/busy/away synonyms. Phone formatting handles US 10/11-digit numbers.
+- Links auto-open HTTP(S) values externally. Location builds Google, OpenStreetMap, or Apple URLs. JSON supports collapse, toggle, and depth controls; pass JSON text because direct object assignment is reflected as `[object Object]`.
+- Date supports relative time, custom tokens, and optional time. Image supports fallback, `variant`, size, lazy loading, and a placeholder/error state.
 
 ## Methods
 
+### Data, Requests, and Rendering
+
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `setData()` | `data: any[]` | Bulk-load row data without an eager paint; call `renderBody()` when needed |
-| `setColumns()` | `columns: ColumnDefinition[]` | Reactively set column definitions and schedule header/body paint |
-| `setToolbar()` | `options: ToolbarOptions` | Add search, optional CSV export, and fullscreen controls; also hosts the column-menu filter panel |
-| `setTreeData()` | `options: TreeDataOptions` | Enable tree/hierarchical data |
-| `setDetailPanel()` | `options: DetailPanelOptions` | Enable master-detail expand rows |
-| `renderHeader()` | -- | Re-render the table header |
-| `renderBody()` | -- | Re-render the table body |
-| `toggleSort()` | `columnKey: string, multiSort?: boolean` | Toggle sort on a column |
-| `goToPage()` | `page: number` | Navigate to a specific page |
-| `setPageSize()` | `size: number` | Change rows per page |
-| `setColumnFilter()` | `column, operator, value` | Set filter on a column |
-| `removeColumnFilter()` | `column: string` | Remove filter from column |
-| `clearAllFilters()` | -- | Clear all filters |
-| `setFilterModel()` | `model: FilterModel` | Set full filter model |
-| `getFilterModel()` | -- | Get current filter model |
-| `setQuickFilter()` | `text: string` | Set quick search filter |
-| `pinColumn()` | `key, side: 'left'\|'right'` | Pin column to left or right |
-| `unpinColumn()` | `key: string` | Unpin column |
-| `setColumnVisible()` | `key, visible: boolean` | Show/hide column |
-| `autoSizeColumn()` | `key: string` | Auto-size column to fit content |
-| `autoSizeAllColumns()` | -- | Auto-size all columns |
-| `moveColumn()` | `key, toIndex: number` | Reorder column position |
+| `setColumns()` | `columns: ColumnDefinition[]` | Reactive alias for assigning `columns`; schedules header and body rendering |
+| `setData()` | `data: any[]` | Bulk-loads and indexes data without an eager paint. Follow it with `renderBody()`, or use reactive `table.data = rows` |
+| `getTableConfig()` | — | Sends `@request/table/config`, then applies `columns` and `selectorOptions` from the response |
+| `getTableData()` | — | Sends the current remote request, applies `{ data, totalItems? }`, suppresses stale responses, and renders loading/error states |
+| `renderControls()` | — | Rebuilds legacy search/selector controls when needed |
+| `renderHeader()` | — | Rebuilds column, group, tool, and header-filter rows |
+| `renderSortableHeader()` | `column: ColumnDefinition` | Returns the table's sortable-header HTML string |
+| `renderBody()` | — | Rebuilds or reconciles the active row display model |
+| `renderPagination()` | — | Rebuilds pagination controls |
+| `createCellElement()` | `column, value, row?` | Creates the current built-in or custom-rendered cell element |
+| `getCellTagName()` | `type: string` | Returns the runtime cell tag used for a type |
+
+### Selection, Sorting, Filtering, and Pagination
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `getSelectedData()` | — | Returns row objects for the raw `selectedRows` indices |
+| `setSelectabilityCheck()` | `(row, index) => boolean` | Disables selection for rows that fail the predicate and removes them from current, range, group, and select-all selections |
+| `updateRowSelectionState()` | — | Synchronizes rendered rows from `selectedRows` |
+| `updateSelectAllState()` | — | Synchronizes the multiple-mode select-all checkbox |
+| `toggleSort()` | `columnKey: string, multiSort = false` | Cycles ascending → descending → none. `multiSort=false` replaces other sorts; header clicks pass `true` and therefore accumulate sorts |
+| `setSortComparator()` | `columnKey, (a, b, direction) => number` | Installs a custom local comparator |
+| `setColumnFilter()` | `column, operator, value` | Adds or replaces one column filter |
+| `removeColumnFilter()` | `column: string` | Removes a column filter |
+| `setQuickFilter()` | `text: string` | Searches all configured columns. Applies synchronously in local mode and requests data in remote mode |
+| `setFilterModel()` | `model: FilterModel` | Replaces column and quick-filter state |
+| `getFilterModel()` | — | Returns `{ filters, logic, quickFilter?, quickFilterLogic? }` |
+| `clearAllFilters()` | — | Clears column, header, and quick filters |
+| `goToPage()` | `page: number` | Clamps and navigates to a page, then emits `page-change` |
+| `setPageSize()` | `size: number` | Changes page size, returns to page 1, and emits `page-change` |
+
+Filter operators are type-specific:
+
+- Text: `contains`, `notContains`, `equals`, `notEquals`, `startsWith`, `endsWith`, `isEmpty`, `isNotEmpty`
+- Number-like: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `isEmpty`, `isNotEmpty`
+- Date: `is`, `isNot`, `before`, `onOrBefore`, `after`, `onOrAfter`, `isEmpty`, `isNotEmpty`
+- Boolean: `isTrue`, `isFalse`
+
+### Columns, Layout, and Scrolling
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setColumnVisible()` | `key, visible: boolean` | Changes one hideable column and emits `column-visibility-change` |
+| `showAllColumns()` | — | Shows every managed column |
+| `hideAllColumns()` | — | Hides all hideable columns |
+| `getColumnVisibility()` | — | Returns `{ [columnKey]: boolean }` |
+| `pinColumn()` | `key, side: 'left' \| 'right'` | Pins a pinnable column to a physical edge |
+| `unpinColumn()` | `key: string` | Removes a column pin |
+| `autoSizeColumn()` | `key: string` | Measures the rendered header and body cells |
+| `autoSizeAllColumns()` | — | Auto-sizes all managed columns |
+| `moveColumn()` | `key, toIndex: number` | Moves an unpinned, reorderable column and emits `column-order-change` |
+| `setColumnGroups()` | `Array<{ label, children, headerClass? }>` | Adds a multi-level header row. `children` contains column keys |
+| `scrollToRow()` | `index: number` | Scrolls the virtualized display to a raw data row, translating grouped/tree positions when needed |
+| `scrollToColumn()` | `columnKey: string` | Scrolls the rendered header into view |
+| `getScrollPosition()` | — | Returns the virtualizer's `{ top, left }` position |
+| `toggleFullscreen()` | — | Toggles native fullscreen with a CSS fallback |
+
+### Editing and Export
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `startEdit()` | `rowIndex, columnKey` | Starts the configured cell or row edit when allowed |
+| `commitEdit()` | — | Commits the active edit. Resolves to a cell error string, `'Validation errors'`, or `null` |
+| `cancelEdit()` | — | Cancels the active cell or row edit |
+| `setCellEditableCheck()` | `(row, columnKey) => boolean` | Adds a per-cell editability predicate on top of column `editable` state |
+| `exportCSV()` | `options?: CSVExportOptions` | Downloads raw filtered data as CSV |
+| `printTable()` | `options?: PrintOptions` | Opens a print window containing the rendered native table |
+| `copyToClipboard()` | `options?: ClipboardOptions` | Copies raw filtered rows and resolves to success. See the selected-row indexing limitation below |
+
+```typescript
+interface CSVExportOptions {
+  delimiter?: string;          // ','
+  filename?: string;           // 'export.csv'
+  includeHeaders?: boolean;    // true
+  selectedOnly?: boolean;      // false
+  columns?: string[];
+  utf8BOM?: boolean;           // true
+}
+
+interface PrintOptions {
+  hideFooter?: boolean;
+  hideToolbar?: boolean;
+  includeCheckboxes?: boolean; // accepted but currently unused
+  pageStyles?: string;
+}
+
+interface ClipboardOptions {
+  delimiter?: string;          // tab
+  useFormatted?: boolean;      // accepted but currently unused; raw values are copied
+}
+```
+
+`selectedRows` contains indices into raw `data`, while selected-only
+`exportCSV()` and `copyToClipboard()` currently apply those indices to the
+filtered array. With an active filter, a non-empty selection can therefore
+export/copy the wrong row or no row. Clear filters before selected-only export,
+or avoid selected-only export until that runtime indexing path is corrected.
+
+### Detail, Tree, Row, and List APIs
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setDetailPanel()` | `{ getDetailContent(row, index) }` | Enables master-detail rows. The declared `detailHeight`, `lazy`, and icon options are currently accepted but not consumed |
+| `expandRow()` / `collapseRow()` | `index: number` | Expands or collapses a detail row and emits `row-expand` / `row-collapse` |
+| `toggleRowExpansion()` | `index: number` | Toggles one detail row |
+| `expandAllRows()` / `collapseAllRows()` | — | Changes all detail expansion state without per-row events |
+| `setTreeData()` | `{ getPath, groupColumn?, defaultExpansionDepth? }` | Enables path-based hierarchy. Set `data` reactively after this call or explicitly rerender after `setData()` |
+| `expandTreeNode()` / `collapseTreeNode()` | `key: string` | Changes one opaque path key and rerenders |
+| `toggleTreeNode()` | `key: string` | Toggles one tree key and rerenders |
+| `expandAllTreeNodes()` / `collapseAllTreeNodes()` | — | Changes all tree expansion state |
+| `pinRowTop()` / `pinRowBottom()` | `row: any` | Adds an independent pinned row above or below the main display model |
+| `unpinRow()` | `row: any` | Removes the same row object from both pin areas |
+| `clearPinnedRows()` | — | Clears top and bottom pinned rows |
+| `setRowHeight()` | `height: number` | Updates the fixed row height and rerenders |
+| `setRowHeightCallback()` | `(row, index) => number` | Computes normal rendered row height. Virtualization still uses the fixed `rowHeight` estimate |
+| `setListViewRenderer()` | `(row, index) => string \| HTMLElement` | Stores a compatibility callback, but the current body renderer does not invoke it |
+
+### Toolbar
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `setToolbar()` | `ToolbarOptions` | Installs search, optional CSV export, fullscreen, and the advanced-filter panel in the controls area |
+
+```typescript
+interface ToolbarOptions {
+  showSearch?: boolean;       // defaults to true
+  showExport?: boolean;       // defaults to false
+  searchPlaceholder?: string;
+  showSort?: boolean;         // legacy, currently ignored
+  showFilter?: boolean;       // legacy, currently ignored
+}
+```
+
+Fullscreen is always present. Sorting remains on headers. The toolbar's search calls `setQuickFilter()` after a 300 ms debounce. The advanced-filter panel opens from **Filter...** in the column menu, so enable `column-menu` and install a toolbar before using that menu action.
+
+### Declarative Child Methods
+
+| Element | Method | Description |
+|---------|--------|-------------|
+| `<snice-column>` | `setFormatter(fn)` | Sets a row-aware formatter and notifies its table |
+| `<snice-column>` | `addConditionalFormat(rule)` | Appends a conditional format |
+| `<snice-column>` | `removeConditionalFormat(index)` | Removes a conditional format |
+| `<snice-column>` | `clearConditionalFormats()` | Clears conditional formats |
+| `<snice-column>` | `getColumnDefinition()` | Returns the current imperative definition |
+| `<snice-row>` | `select()` / `deselect()` | Changes selection and emits `row-select`; `select()` respects selectability |
+| `<snice-row>` | `focusRow()` | Focuses and scrolls the row into view |
+| `<snice-row>` | `getCellValue(key)` / `setCellValue(key, value)` | Reads or replaces one data field |
+| `<snice-row>` | `getCellElement(key)` | Returns a rendered cell element or `null` |
+| `<snice-row>` | `updateCells()` | Reconfigures rendered cells after `data` or `columns` changes |
+| `<snice-row>` | `highlight(duration = 2000)` | Temporarily applies the highlight class |
 
 ## Events
 
+### Table Events
+
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `row-clicked` | `{ rowData, rowIndex }` | Row clicked (requires `clickable`) |
-| `table-row-selection-changed` | `{ selectedRows, rowIndex, selected }` | A row's selection state changed |
-| `table-select-all-changed` | `{ selectedRows, allSelected }` | Select-all checkbox toggled |
-| `selection-changed` | `{ selectedRows, rows }` | Unified selection event for row, group, range, and select-all changes |
-| `sort-change` | `{ sort }` | Sort state changed |
-| `filter-change` | `{ filters }` | Filter state changed |
-| `page-change` | `{ page, pageSize, totalPages, totalItems }` | Page or page size changed |
-| `column-visibility-change` | `{ key, visible, visibility }` | Column shown/hidden |
-| `column-pin-change` | `{ key, pinned }` | Column pinned left/right, or unpinned |
-| `column-order-change` | `{ key, toIndex }` | Column moved via `moveColumn()` |
-| `density-change` | `{ density }` | `density` controlled-state assignment took effect |
-| `table-load-error` | `{ error }` | Remote-mode data request failed |
-| `lazy-load` | `{ currentCount }` | Scrolled near the bottom (requires `lazyLoad`) |
+| `row-clicked` | `{ rowData, rowIndex }` | Non-interactive row click when `clickable` is enabled |
+| `selection-changed` | `{ selectedRows, rows }` | Unified user-driven row, range, group, and select-all selection event |
+| `table-row-selection-changed` | `{ selectedRows, rowIndex, selected }` | Legacy event for an individual row interaction |
+| `table-select-all-changed` | `{ selectedRows, allSelected }` | Legacy select-all event |
+| `sort-change` | `{ sort }` | `toggleSort()` or sortable-header state changed |
+| `filter-change` | `{ filters: FilterModel }` | A filter API, header input, or toolbar filter changed |
+| `page-change` | `{ page, pageSize, totalPages, totalItems }` | `goToPage()` or `setPageSize()` changed pagination |
+| `column-visibility-change` | `{ key, visible, visibility }` | `setColumnVisible()` changed visibility |
+| `column-pin-change` | `{ key, pinned }` | `pinColumn()` or `unpinColumn()` changed a pin |
+| `column-order-change` | `{ key, toIndex }` | `moveColumn()` moved a column programmatically |
+| `column-resize` | `{ key, width }` | Live resize movement |
+| `column-resize-end` | `{ key, width }` | Resize completed |
+| `column-reorder` | `{ fromKey, toKey }` | Header drag-and-drop completed |
+| `row-reorder` | `{ fromIndex, toIndex }` | Row drag-and-drop completed |
 | `cell-edit-commit` | `{ rowIndex, columnKey, oldValue, newValue }` | Cell edit committed |
-| `cell-edit-cancel` | `{ rowIndex, columnKey }` | Cell edit canceled (Escape) |
-| `row-edit-commit` | `{ rowIndex, oldRow, newRow }` | Row edit committed (`edit-mode="row"`) |
+| `cell-edit-cancel` | `{ rowIndex, columnKey }` | Cell edit canceled |
+| `row-edit-commit` | `{ rowIndex, oldRow, newRow }` | Row edit committed |
 | `row-edit-cancel` | `{ rowIndex }` | Row edit canceled |
-| `row-expand` | `{ rowIndex }` | Master-detail row expanded |
-| `row-collapse` | `{ rowIndex }` | Master-detail row collapsed |
-| `detail-toggle` | `{ rowIndex, expanded }` | Master-detail toggle button clicked |
-| `row-reorder` | `{ fromIndex, toIndex }` | Row dragged to a new position (`row-reorder`) |
-| `column-reorder` | `{ fromKey, toKey }` | Column dragged to a new position (`column-reorder`) |
-| `column-resize` | `{ key, width }` | Column is being resized (live, per mouse move) |
-| `column-resize-end` | `{ key, width }` | Column resize finished |
-| `tree-toggle` | `{ key, expanded }` | Tree node expanded/collapsed (`setTreeData()`) |
-| `cell-action` | `{ action, rowData, column }` | An `actions`-type cell's button was clicked |
-| `group-toggle` | `{ key, value, expanded }` | Group expanded/collapsed. `key` is an opaque stable identity |
+| `row-expand` | `{ rowIndex }` | Detail row expanded |
+| `row-collapse` | `{ rowIndex }` | Detail row collapsed |
+| `detail-toggle` | `{ rowIndex, expanded }` | Built-in detail toggle activated |
+| `tree-toggle` | `{ key, expanded }` | Built-in tree toggle activated |
+| `group-toggle` | `{ key, value, expanded }` | Group header expanded or collapsed. `key` is an opaque stable identity |
+| `cell-action` | `{ action, rowData, column }` | Originates on `<snice-cell-actions>` and bubbles/composes through a containing table |
+| `lazy-load` | `{ currentCount }` | Scrolled within `lazyLoadThreshold` of the bottom |
+| `table-load-error` | `{ error }` | Latest remote data request failed |
+
+Direct property assignments update controlled state but do not generally emit the corresponding user-action event. Although a private `density-change` dispatcher exists in the source, no runtime path currently calls it, so consumers must not rely on that event.
+
+### Declarative Child Events
+
+| Element | Event | Detail | Description |
+|---------|-------|--------|-------------|
+| `<snice-column>` | `column-changed` | `{ column }` | A declarative definition changed |
+| `<snice-row>` | `row-click` | `{ data, index, element }` | Click/keyboard activation when `clickable` |
+| `<snice-row>` | `row-select` | `{ selected, data, index, element }` | Selection changed |
+
+`<snice-row>` contains a `row-hover` dispatch helper, but the current component does not invoke it.
 
 ## Slots
 
+### `<snice-table>` Slots
+
 | Name | Description |
 |------|-------------|
-| `columns` | `<snice-column>` elements for declarative column definitions |
-| `rows` | `<snice-row>` elements for declarative row data |
-| `header` | Superheader content above column headers |
-| `empty-state` | Custom content shown instead of the default `<snice-empty-state>` when `data` is empty |
+| `columns` | Declarative `<snice-column>` definitions |
+| `rows` | Declarative `<snice-row>` data |
+| `header` | Super-header content above the native column headers |
+| `empty-state` | Custom content cloned into the empty table body |
+
+`<snice-table>` has no default slot.
+
+### Declarative Child Slots
+
+| Element | Name | Description |
+|---------|------|-------------|
+| `<snice-column>` | (default) | Optional inert metadata/content rendered by the column element itself |
+| `<snice-row>` | (none) | Cells are generated from `data` and `columns` |
+| `<snice-cell>` / `<snice-cell-*>` | (none) | Standalone cells expose properties and CSS parts, not slots |
+
+## CSS Parts
+
+| Element | Part | Description |
+|---------|------|-------------|
+| `<snice-table>` | `superheader` | Wrapper for the `header` slot in native-table mode |
+| `<snice-table>` | `controls` | Legacy search/selector controls |
+| `<snice-table>` | `toolbar` | Toolbar installed by `setToolbar()` |
+| `<snice-table>` | `pagination` | Pagination wrapper |
+| `<snice-row>` | `container` | Standalone declarative row wrapper |
+| `<snice-row>` | `checkbox-cell` | Standalone row selection cell |
+| `<snice-row>` | `cell` | Standalone row data cells |
+| Cell components | `content` | Inner content on standalone `snice-cell*` elements |
+| `<snice-cell-actions>` | `action-button` | Each standalone action button |
+| `<snice-cell-json>` | `toggle` | JSON expand/collapse button |
+| `<snice-cell-tag>` | `tag` | Rendered tag badge |
+| `<snice-cell-link>`, `<snice-cell-email>`, `<snice-cell-phone>`, `<snice-cell-location>` | `link` | Rendered anchor |
+
+The internal native header/body do not currently expose `header` or `body` parts. Cell components have their own parts when used standalone, but those parts are not forwarded through `<snice-table>`.
+
+## CSS Custom Properties
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `--snice-table-body-bg` | Native table body background | `--snice-color-surface` |
+| `--snice-table-group-header-bg` | Group-header background | `--snice-color-surface-container-low` |
+| `--snice-table-group-header-color` | Group-header text | `--snice-color-text` |
+| `--snice-table-group-count-bg` | Group count badge background | `--snice-color-surface-container-high` |
+| `--snice-table-group-count-color` | Group count badge text | `--snice-color-text-secondary` |
+| `--snice-table-aggregate-bg` | Aggregate-row background | `--snice-color-surface-container` |
+| `--snice-table-aggregate-color` | Aggregate value text | `--snice-color-text` |
+| `--snice-table-aggregate-label-color` | Aggregate label text | `--snice-color-text-secondary` |
+| `--snice-table-aggregate-border-color` | Grand-total top border | `--snice-color-border` |
+
+The component also consumes global Snice color, spacing, typography, radius, focus-ring, shadow, and transition tokens.
 
 ## Basic Usage
+
+Import the table module, then assign `columns` and `data`. These property assignments are reactive and do not need manual rendering.
 
 ```typescript
 import 'snice/components/table/snice-table';
 ```
 
-```javascript
-const table = document.querySelector('snice-table');
+```html
+<snice-table id="employees" sortable striped hoverable></snice-table>
 
-// Reactive — assigning `columns`/`data` re-renders automatically.
-table.columns = [
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'email', label: 'Email' },
-  { key: 'age', label: 'Age', type: 'number', align: 'right' }
-];
-table.data = [
-  { name: 'Alice Johnson', email: 'alice@example.com', age: 32 },
-  { name: 'Bob Smith', email: 'bob@example.com', age: 28 }
-];
+<script type="module">
+  const table = document.querySelector('#employees');
+
+  table.columns = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'email', label: 'Email', type: 'email' },
+    { key: 'age', label: 'Age', type: 'number', align: 'right' },
+  ];
+
+  table.data = [
+    { name: 'Alice Johnson', email: 'alice@example.com', age: 32 },
+    { name: 'Bob Smith', email: 'bob@example.com', age: 28 },
+  ];
+</script>
 ```
 
-`setColumns()` is a reactive alias for assigning `columns`. `setData()` is the
-bulk-load path: it synchronizes row identity/filter state but intentionally
-does not paint eagerly, so call `renderBody()` when it is not paired with a
-column assignment that already schedules the paint.
+`setColumns()` is equally reactive. `setData()` is deliberately non-eager for bulk loading; pair it with an explicit `renderBody()` or prefer `table.data = rows`.
 
 ## Examples
 
-### Pro Table (All Features)
+### Density and List Styling
 
-```javascript
-// <snice-table sortable selectable column-resize column-menu striped hoverable>
-table.setColumns([
-  { key: 'product', label: 'Product', sortable: true },
-  { key: 'revenue', label: 'Revenue', type: 'currency',
-    currencyFormat: { currency: 'USD', decimals: 0 } },
-  { key: 'rating', label: 'Rating', type: 'rating' },
-  { key: 'progress', label: 'Completion', type: 'progress',
-    progressFormat: { colorize: true } },
-  { key: 'trend', label: 'Trend', type: 'sparkline',
-    sparklineFormat: { type: 'line', height: 24, width: 80 } },
-  { key: 'status', label: 'Status', type: 'tag' }
-]);
-table.setData([
-  { product: 'Alpha', revenue: 284500, rating: 4.5, progress: 92,
-    trend: { values: [32,35,38,42,45,48], color: '#22c55e' }, status: 'Active' },
-  { product: 'Beta', revenue: 891200, rating: 4, progress: 34,
-    trend: { values: [50,48,45,43,42,40], color: '#ef4444' }, status: 'Paused' }
-]);
-table.setToolbar({ showSearch: true, showExport: true });
+Use `density` and `list` for compact grids or lighter directory rows.
+
+```html
+<snice-table id="compact" density="compact" striped></snice-table>
+<snice-table id="directory" density="comfortable" list hoverable></snice-table>
 ```
 
-### Per-Row Cell Styling
+### Toolbar Search, Export, and Fullscreen
 
-Sparklines and progress bars support per-row color via object values:
-
-```javascript
-// Sparkline with per-row color
-{ trend: { values: [10, 20, 30, 40], color: '#22c55e' } }
-
-// Progress with per-row color
-{ completion: { value: 85, color: '#22c55e' } }
-```
-
-Set `colorize: true` on `progressFormat` to auto-color based on value:
-- Green (>=70%), Yellow (>=40%), Red (<40%)
-
-### Toolbar
+Use `setToolbar()` for local quick search, optional CSV export, and fullscreen.
 
 ```javascript
 table.setToolbar({
-  showSearch: true,     // Search input (left-aligned)
-  showExport: true,     // CSV export button
-  searchPlaceholder: 'Search employees...'
+  showSearch: true,
+  showExport: true,
+  searchPlaceholder: 'Search employees...',
 });
 ```
 
-Fullscreen is always present. Sorting stays on column headers; click additional
-headers to build a multi-sort. Advanced filtering opens from **Filter...** in
-the right-click column menu. Enable `column-menu` and call `setToolbar()` so
-that filter panel has a host.
+Header clicks always use additive multi-sort: each new header joins the sort model, and repeated clicks cycle ascending → descending → none.
 
-### Column Menu (Right-Click)
+```html
+<snice-table id="employees" sortable></snice-table>
+```
 
-Enable with `column-menu` attribute. Right-click any column header for:
-- Sort Ascending / Descending
-- Filter (opens filter modal pre-populated with that column)
-- Hide Column
-- Pin Left / Pin Right / Unpin
-- Auto-size
+To replace the whole sort model programmatically, assign `currentSort` or call `toggleSort(key, false)`.
 
-### Column Resize
+### Header and Advanced Filters
 
-Enable with `column-resize` attribute. Drag the right edge of any column header to resize. Double-click the resize handle to auto-size to content.
+Use `header-filters` for inline contains filters. Enable `column-menu` and install a toolbar to host the advanced filter panel opened by a header's **Filter...** menu item.
 
-### Filter Model
+```html
+<snice-table id="orders" header-filters column-menu></snice-table>
+
+<script type="module">
+  const table = document.querySelector('#orders');
+  table.columns = [
+    { key: 'customer', label: 'Customer', filterable: true },
+    { key: 'total', label: 'Total', type: 'number', filterable: true },
+  ];
+  table.data = orders;
+  table.setToolbar({ showSearch: true, showExport: false });
+</script>
+```
+
+Use the filter model for deterministic programmatic filtering.
 
 ```javascript
 table.setFilterModel({
   filters: [
-    { column: 'name', operator: 'contains', value: 'john' },
-    { column: 'age', operator: 'gt', value: 25 }
+    { column: 'customer', operator: 'contains', value: 'alice' },
+    { column: 'total', operator: 'gte', value: 100 },
   ],
-  logic: 'and'  // 'and' | 'or'
+  logic: 'and',
+  quickFilter: 'priority',
+  quickFilterLogic: 'and',
 });
-
-// Text: contains, notContains, equals, notEquals, startsWith, endsWith,
-//       isEmpty, isNotEmpty
-// Number: eq, neq, gt, gte, lt, lte, isEmpty, isNotEmpty
-// Date: is, isNot, after, before, onOrAfter, onOrBefore, isEmpty, isNotEmpty
-// Boolean: isTrue, isFalse
 ```
+
+### Selection Modes
+
+Use `selectable` with `selection-mode`. In multiple mode, a plain click or Ctrl/Cmd-click toggles a row, Shift-click replaces the selection with a contiguous range in the filtered display order, and the header checkbox selects all currently filtered selectable rows.
+
+```html
+<snice-table id="approvals" selectable selection-mode="multiple"></snice-table>
+
+<script type="module">
+  const table = document.querySelector('#approvals');
+  table.setSelectabilityCheck((row) => row.status !== 'Locked');
+
+  table.addEventListener('selection-changed', (event) => {
+    console.log(event.detail.selectedRows, event.detail.rows);
+  });
+
+  // Runtime mode changes rebuild the selection controls.
+  table.selectionMode = 'single';
+</script>
+```
+
+In single mode, selecting a row replaces the previous selection; its row checkbox can clear the selection. In none mode, selection controls and row-selection behavior are removed.
+
+### Rich Cells and Currency-Looking Columns
+
+Use specialized runtime types for status, progress, actions, and related cells. Use `numberFormat` for currency-looking values inside the table until the table routes `currency` through its dedicated currency cell.
+
+```javascript
+table.columns = [
+  { key: 'account', label: 'Account', type: 'text' },
+  {
+    key: 'arr',
+    label: 'ARR',
+    type: 'number',
+    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
+  },
+  {
+    key: 'usage',
+    label: 'Usage',
+    type: 'progress',
+    progressFormat: { max: 100, showPercentage: true, colorize: true },
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    type: 'status',
+    statusFormat: { showDot: true },
+  },
+  {
+    key: 'actions',
+    label: 'Actions',
+    type: 'actions',
+    actionsFormat: {
+      actions: [{ action: 'inspect', label: 'Inspect', variant: 'primary' }],
+    },
+  },
+];
+
+table.addEventListener('cell-action', (event) => {
+  console.log(event.detail.action, event.detail.rowData);
+});
+```
+
+### Custom Cell and Editor Renderers
+
+Use `renderCell` and `renderEditor` when a built-in type is not enough.
+
+```javascript
+const statusColumn = {
+  key: 'status',
+  label: 'Status',
+  renderCell(value) {
+    const badge = document.createElement('strong');
+    badge.textContent = value;
+    return badge;
+  },
+  renderEditor(value, row, column, commit, cancel) {
+    const select = document.createElement('select');
+    for (const label of ['Active', 'Paused']) {
+      select.add(new Option(label, label, false, label === value));
+    }
+    select.addEventListener('change', () => commit(select.value));
+    select.addEventListener('keydown', event => {
+      if (event.key === 'Escape') cancel();
+    });
+    return select;
+  },
+};
+```
+
+### Cell and Row Editing
+
+Use `editable`, `edit-mode`, editor options, and value pipelines for typed edits.
+
+```html
+<snice-table id="people" editable edit-mode="cell"></snice-table>
+
+<script type="module">
+  const table = document.querySelector('#people');
+  table.columns = [
+    { key: 'name', label: 'Name', type: 'text' },
+    {
+      key: 'role',
+      label: 'Role',
+      editorType: 'select',
+      selectOptions: [
+        { value: 'Engineer', label: 'Engineer' },
+        { value: 'Manager', label: 'Manager' },
+      ],
+    },
+    {
+      key: 'salary',
+      label: 'Salary',
+      type: 'number',
+      valueParser: value => Number(value),
+    },
+    { key: 'active', label: 'Active', type: 'boolean' },
+  ];
+  table.data = people;
+  table.setCellEditableCheck((row, key) => !(row.locked && key === 'salary'));
+
+  table.startEdit(0, 'role');
+  table.addEventListener('cell-edit-commit', event => {
+    console.log(event.detail.newValue);
+  });
+</script>
+```
+
+Double-clicking an editable cell or pressing Enter on the focused grid cell starts editing. Enter and blur commit built-in editors; Escape cancels. Set `table.editMode = 'row'` before `startEdit(rowIndex, anyColumnKey)` to edit a whole row.
 
 ### Row Grouping and Aggregation
 
-Assign `groupBy` to one key or an ordered key array. Add `aggregate` to any
-column to render a subtotal under every expanded group and a grand total over
-all filtered rows.
+Assign `groupBy` to one key or an ordered key array. Add `aggregate` to columns for per-group subtotals and a filtered grand total.
 
 ```javascript
 table.columns = [
@@ -337,104 +995,223 @@ table.columns = [
     label: 'Salary',
     type: 'number',
     aggregate: 'sum',
-    numberFormat: { prefix: '$', thousandsSeparator: true }
+    numberFormat: { prefix: '$', thousandsSeparator: true, decimals: 0 },
   },
-  { key: 'headcount', label: 'Headcount', aggregate: 'count' }
+  { key: 'headcount', label: 'Headcount', aggregate: 'count' },
 ];
-
 table.groupBy = ['department', 'level'];
 table.groupDefaults = { expanded: true };
 table.data = employees;
-
-table.addEventListener('group-toggle', event => {
-  console.log(event.detail.value, event.detail.expanded);
-});
 ```
 
-Built-ins are `sum`, `avg`, `min`, `max`, and `count`. Numeric reducers ignore
-null, blank, boolean, and non-numeric values; numeric strings are accepted.
-`count` counts rows. A custom reducer receives the column values after
-`valueGetter` and the matching raw rows:
+Built-in aggregators are `sum`, `avg`, `min`, `max`, and `count`. Numeric reducers accept numeric strings and ignore null, blank, boolean, and non-numeric values. `count` counts rows. Custom reducers receive values after `valueGetter` and their matching raw rows.
 
 ```javascript
 {
-  key: 'margin',
+  key: 'weightedMargin',
   label: 'Weighted Margin',
   valueGetter: (_value, row) => row.revenue * row.marginRate,
-  aggregate: (values, rows) => values.reduce((sum, value) => sum + value, 0)
+  aggregate: (values, rows) => values.reduce((sum, value) => sum + value, 0),
 }
 ```
 
-Sorting applies within each group, filtering removes empty groups, and totals
-use only filtered rows. Client pagination and virtualization operate on the
-same flattened sequence of group headers, data rows, and subtotal/total rows.
-Aggregate results use the column's type/`formatter`/`valueFormatter` display
-pipeline. With `rowReorder` enabled, a drop within a group changes order; a
-drop onto another group reparents the row by updating every active `groupBy`
-field to the target row's group values.
-In remote mode, totals cover the rows currently loaded in `data`. A non-empty
-`groupBy` is the active hierarchy model; when `groupBy` is empty, a table-level
-aggregate footer composes with tree data and master-detail rows.
+Sorting runs within groups, filters remove empty groups, and aggregates use filtered rows. Client pagination and virtualization operate on the flattened group/header/data/aggregate sequence. In remote mode, aggregates cover only the currently loaded `data`. Row drops within grouped data can reorder within a group or reparent a row by updating its active grouping fields.
 
-Grouping visuals inherit the active theme and can be customized with
-`--snice-table-group-header-bg`, `--snice-table-group-header-color`,
-`--snice-table-group-count-bg`, `--snice-table-group-count-color`,
-`--snice-table-aggregate-bg`, `--snice-table-aggregate-color`,
-`--snice-table-aggregate-label-color`, and
-`--snice-table-aggregate-border-color`.
+### Client Pagination
 
-Declarative columns support built-in aggregators with the `aggregate`
-attribute. Custom reducers are property-only:
+Use `pagination-mode="client"` to page the local filtered display model.
 
 ```html
-<snice-table id="department-table">
-  <snice-column slot="columns" key="employee" label="Employee"></snice-column>
-  <snice-column slot="columns" key="department" label="Department"></snice-column>
-  <snice-column slot="columns" key="salary" label="Salary" type="number" aggregate="sum"></snice-column>
-  <snice-row slot="rows" data-employee="Alice" data-department="Engineering" data-salary="100000"></snice-row>
-  <snice-row slot="rows" data-employee="Bob" data-department="Engineering" data-salary="80000"></snice-row>
-</snice-table>
+<snice-table pagination pagination-mode="client" page-size="25"></snice-table>
+```
 
-<script>
-  const table = document.querySelector('#department-table');
-  table.groupBy = 'department';
+When grouping or tree data is active, a client page contains flattened visible display items, including structural rows, rather than exactly `pageSize` raw data rows.
 
-  const salary = table.querySelector('snice-column[key="salary"]');
-  salary.aggregate = (values, rows) => values.reduce((sum, value) => sum + Number(value), 0);
+### Virtualization and Lazy Loading
+
+Use `virtualize` on a fixed-height table and append data in response to `lazy-load`.
+
+```html
+<snice-table
+  id="logs"
+  style="height: 32rem"
+  virtualize
+  lazy-load
+  row-height="40"
+  lazy-load-threshold="240"
+></snice-table>
+
+<script type="module">
+  const table = document.querySelector('#logs');
+  table.columns = logColumns;
+  table.data = firstPage;
+
+  let loading = false;
+  table.addEventListener('lazy-load', async () => {
+    if (loading) return;
+    loading = true;
+    const next = await loadMore(table.data.length);
+    table.data = [...table.data, ...next];
+    loading = false;
+  });
 </script>
 ```
 
-### Tree Data
+Guard the handler because continued scrolling can emit more than once.
+
+### Master-Detail Rows
+
+Use `setDetailPanel()` to add an expand control and render detail content below a row.
 
 ```javascript
-table.setTreeData({
-  getPath: (row) => row.path,
-  groupColumn: 'name',
-  defaultExpansionDepth: 1
+table.setDetailPanel({
+  getDetailContent(row) {
+    const panel = document.createElement('div');
+    panel.style.padding = '1rem';
+    panel.textContent = `${row.name} — ${row.email}`;
+    return panel;
+  },
 });
-
-table.setData([
-  { id: 1, name: 'USA', path: ['USA'] },
-  { id: 2, name: 'California', path: ['USA', 'CA'] },
-  { id: 3, name: 'New York', path: ['USA', 'NY'] }
-]);
 ```
 
-### Declarative Columns and Rows
+String detail content is parsed as HTML; use trusted strings or return an `HTMLElement` for untrusted data.
+
+### Tree Data
+
+Call `setTreeData()` before assigning `data` reactively. Each row's path identifies its place in the hierarchy; missing ancestors become generated gap nodes.
+
+```javascript
+const table = document.querySelector('#org-tree');
+
+table.columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'role', label: 'Role' },
+];
+
+table.setTreeData({
+  getPath: row => row.path,
+  groupColumn: 'name',
+  defaultExpansionDepth: 1,
+});
+
+table.data = [
+  { name: 'Engineering', role: 'Department', path: ['Engineering'] },
+  { name: 'Alice', role: 'Staff Engineer', path: ['Engineering', 'Alice'] },
+  { name: 'Bob', role: 'Engineer', path: ['Engineering', 'Bob'] },
+  { name: 'Design', role: 'Department', path: ['Design'] },
+  { name: 'Diana', role: 'Designer', path: ['Design', 'Diana'] },
+];
+```
+
+`defaultExpansionDepth: 0` starts collapsed; `1` expands root nodes; `Infinity` expands all levels. Tree node keys are slash-joined paths, such as `Engineering/Alice`.
+
+### Column Groups and Layout Controls
+
+Use `setColumnGroups()` for multi-level headers and column methods for layout state.
+
+```javascript
+table.setColumnGroups([
+  { label: 'Personal', children: ['name', 'age'] },
+  { label: 'Work', children: ['department', 'salary'] },
+]);
+
+table.pinColumn('name', 'left');
+table.pinColumn('salary', 'right');
+table.setColumnVisible('age', false);
+table.autoSizeAllColumns();
+table.moveColumn('department', 1);
+```
+
+Enable `column-resize`, `column-reorder`, and `column-menu` for equivalent pointer controls. Pinned headers stay at their physical edges and are not draggable.
+
+### Row Reordering and Pinning
+
+Use `row-reorder` for local drag-and-drop, and pin independent summary rows with the row-pinning methods.
 
 ```html
-<snice-table striped hoverable>
-  <snice-column slot="columns" key="name" label="Name"></snice-column>
-  <snice-column slot="columns" key="email" label="Email"></snice-column>
-  <snice-row slot="rows" data='{"name":"Alice","email":"alice@example.com"}'></snice-row>
-  <snice-row slot="rows" data='{"name":"Bob","email":"bob@example.com"}'></snice-row>
+<snice-table id="priorities" row-reorder></snice-table>
+
+<script type="module">
+  table.pinRowTop({ task: 'Critical incident', owner: 'On-call' });
+  table.pinRowBottom({ task: 'End of queue', owner: 'Unassigned' });
+
+  table.addEventListener('row-reorder', event => {
+    console.log(event.detail.fromIndex, event.detail.toIndex);
+  });
+</script>
+```
+
+Pinned rows are separate from `data`, use index `-1`, and remain outside sorting and filtering.
+
+### List Renderer Compatibility
+
+The current `list` feature is visual: it removes the table's outer and vertical
+borders but keeps the normal cells. `setListViewRenderer()` stores the supplied
+callback for compatibility, but the current body render path does not call it.
+Use `renderCell()` on a spanning column when custom row content is required.
+
+### Loading and Empty States
+
+Use `loading` for progress and the `empty-state` slot for a custom zero-row message.
+
+```html
+<snice-table id="results" loading>
+  <div slot="empty-state">No employees match this view.</div>
 </snice-table>
 ```
 
-### With Controller (Request/Respond)
+The slotted empty content is cloned into the table body. Remove `loading` after the request completes so the empty state can appear.
+
+### Remote Data with Request/Response Events
+
+Use `mode="remote"` with server pagination. The request payload contains `search`, `sort`, `filter`, and `selector`, plus `page` and `pageSize` when pagination is enabled. Resolve with `{ data, totalItems }`.
 
 ```html
-<snice-table searchable sortable controller="user-table"></snice-table>
+<snice-table
+  id="accounts"
+  mode="remote"
+  sortable
+  pagination
+  pagination-mode="server"
+  page-size="25"
+></snice-table>
+
+<script type="module">
+  const table = document.querySelector('#accounts');
+  table.columns = accountColumns;
+  table.setToolbar({ showSearch: true, showExport: false });
+
+  table.addEventListener('@request/table/data', async (event) => {
+    event.stopImmediatePropagation();
+    const { payload, discovery, data: response } = event.detail;
+    discovery.resolve();
+
+    try {
+      const result = await fetchAccounts(payload);
+      response.resolve({ data: result.rows, totalItems: result.totalItems });
+    } catch (error) {
+      response.reject(error);
+    }
+  });
+
+  table.getTableData();
+</script>
+```
+
+Only the newest overlapping request may update the table. A rejected latest request emits `table-load-error` and renders its error message.
+
+### Remote Data with a Controller
+
+Set `mode="remote"` when a controller provides `table/config` and `table/data`; local-mode controller attachment intentionally does not fetch.
+
+```html
+<snice-table
+  controller="user-table"
+  mode="remote"
+  sortable
+  pagination
+  pagination-mode="server"
+></snice-table>
 ```
 
 ```typescript
@@ -454,35 +1231,124 @@ class UserTableController implements IController {
   async getTableConfig() {
     return {
       columns: [
-        { key: 'name', label: 'Name' },
-        { key: 'email', label: 'Email' },
-        { key: 'role', label: 'Role' },
-        { key: 'active', label: 'Status', type: 'boolean' }
-      ]
+        { key: 'name', label: 'Name', sortable: true },
+        { key: 'email', label: 'Email', type: 'email' },
+        { key: 'active', label: 'Active', type: 'boolean' },
+      ],
+      selectorOptions: [
+        { value: 'staff', label: 'Staff' },
+        { value: 'contractor', label: 'Contractors' },
+      ],
     };
   }
 
   @respond('table/data')
-  async getTableData(params) {
-    const response = await fetch(`/api/users?search=${params.search}`);
+  async getTableData(params: {
+    search: string;
+    sort: Array<{ column: string; direction: 'asc' | 'desc' }>;
+    filter: FilterModel;
+    selector: string;
+    page?: number;
+    pageSize?: number;
+  }) {
+    const query = new URLSearchParams({
+      search: params.search,
+      page: String(params.page ?? 1),
+      pageSize: String(params.pageSize ?? 10),
+    });
+    const response = await fetch(`/api/users?${query}`);
     const json = await response.json();
-    return { data: json.users, totalItems: json.total };
+    return { data: json.users, totalItems: json.totalItems };
   }
 }
 ```
 
+### Declarative Columns and Rows
+
+Use slotted children for static markup. In HTML, individual `data-*` attributes
+populate rows; the `data` object itself is a JS-only property.
+
+```html
+<snice-table striped hoverable selectable>
+  <snice-column slot="columns" key="name" label="Name"></snice-column>
+  <snice-column
+    slot="columns"
+    key="salary"
+    label="Salary"
+    type="number"
+    aggregate="sum"
+    number-prefix="$"
+    thousands-separator
+  ></snice-column>
+
+  <snice-row
+    slot="rows"
+    data-name="Alice"
+    data-salary="125000"
+  ></snice-row>
+  <snice-row
+    slot="rows"
+    data-name="Bob"
+    data-salary="98000"
+  ></snice-row>
+</snice-table>
+```
+
+For JS row objects, custom aggregators, or formatters, assign the child
+property/method after connection.
+
+```javascript
+const bob = table.querySelectorAll('snice-row')[1];
+bob.data = { name: 'Bob', salary: 98000 };
+
+const salary = table.querySelector('snice-column[key="salary"]');
+salary.aggregate = values => values.reduce((sum, value) => sum + Number(value), 0);
+salary.setFormatter(value => `$${Number(value).toLocaleString()}`);
+```
+
+### Export and Clipboard
+
+Use export helpers on the current filtered data.
+
+```javascript
+table.exportCSV({
+  filename: 'employees.csv',
+  columns: ['name', 'department', 'salary'],
+  selectedOnly: true,
+});
+
+const copied = await table.copyToClipboard({ delimiter: '\t' });
+table.printTable({ pageStyles: '@page { size: landscape; }' });
+```
+
+CSV output uses raw row values and skips columns with `exportable: false`.
+Clipboard output copies every filtered row when selection is empty. When a
+selection and filter are both active, the raw-index/filtered-array limitation
+documented in the Methods section applies.
+
 ## Keyboard Navigation
 
-- Arrow keys, Home/End, and Page Up/Down move the active grid cell.
-- Enter activates an editable cell.
-- Shift+Space toggles the focused row; Ctrl/Cmd+A selects all selectable rows.
-- Group chevrons are native buttons: Tab to them, then use Enter or Space to expand/collapse.
-- Group checkboxes select only rows allowed by `setSelectabilityCheck()` and expose mixed state for partial selection.
+- Arrow keys move between grid cells.
+- Home and End move to the first and last cell in a row.
+- Ctrl/Cmd+Home and Ctrl/Cmd+End move to the first and last grid cell.
+- Page Up and Page Down move by the visible page size.
+- Enter activates an editable focused cell.
+- Shift+Space toggles the focused row when selection is enabled. Plain Space is currently consumed without toggling selection.
+- Ctrl/Cmd+A selects or clears all currently filtered selectable rows in multiple mode.
+- Tab moves through grid cells because the table uses the keyboard module's `all` tab mode.
+- Group, tree, and detail chevrons are native buttons; focus them with Tab and activate with Enter or Space.
+- Escape cancels the active built-in editor and exits native fullscreen through browser behavior.
 
 ## Accessibility
 
-- Uses native table semantics enhanced with the WAI-ARIA grid pattern.
-- `aria-rowcount` includes visible group headers and aggregate rows; collapsed descendants are excluded.
-- Group toggles expose an action label, row count, and `aria-expanded` state.
-- Group headers, subtotals, and grand totals have distinct accessible labels.
-- Focus indicators use `:focus-visible`, so keyboard focus is visible without a persistent mouse-focus ring.
+- The native table is enhanced with `role="grid"`, `aria-rowcount`, and `aria-colcount`.
+- Header and data cells receive `columnheader`/`gridcell` roles, one-based ARIA indices, and a roving `tabindex`.
+- Sortable headers expose `aria-sort`; multi-sort order is also shown visually.
+- Selected data rows expose `aria-selected="true"`.
+- Single selection labels its selector column and omits the misleading select-all control.
+- Conditional selectability disables row checkboxes and excludes those rows from range, group, and select-all operations.
+- Group rows expose an accessible group label, descendant count, and `aria-expanded`; group selection uses checked, unchecked, and mixed states.
+- Tree and detail toggles expose `aria-expanded` and action labels.
+- Aggregate rows and grand totals have distinct accessible labels and are included in the visible row count.
+- Virtualized rows retain logical ARIA row indices as the rendered window changes.
+- Focus indicators use `:focus-visible` and inherited Snice focus-ring tokens.

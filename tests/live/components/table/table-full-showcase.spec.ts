@@ -37,6 +37,15 @@ test.describe('table full showcase', () => {
         'density-comfy', 'list-mode', 'loading', 'empty',
       ];
       const table = (id: string) => document.querySelector(`#${id}`) as any;
+      const numberText = (id: string, key: string) => {
+        const cell = table(id).shadowRoot.querySelector(
+          `tbody tr[data-index] td[data-key="${key}"] snice-cell-number`
+        ) as any;
+        return cell?.shadowRoot?.querySelector('.cell-content')?.textContent?.trim();
+      };
+      const standaloneCurrency = document.querySelector('#cell-type-grid snice-cell-currency') as any;
+      const standaloneProgress = document.querySelector('#cell-type-grid snice-cell-progress') as any;
+      const standaloneLocation = document.querySelector('#cell-type-grid snice-cell-location') as any;
       return {
         headings: Array.from(document.querySelectorAll('h2')).map((heading) => heading.textContent?.trim()),
         cellCards: document.querySelectorAll('#cell-type-grid > div').length,
@@ -59,6 +68,16 @@ test.describe('table full showcase', () => {
         },
         listBorder: getComputedStyle(table('list-mode').shadowRoot.querySelector('tbody td')).borderRightWidth,
         remoteTotal: table('remote-demo').totalItems,
+        standaloneBehavior: {
+          progressPercentage: standaloneProgress.shadowRoot.querySelector('snice-progress')?.showPercentage,
+          locationHasLink: !!standaloneLocation.shadowRoot.querySelector('a'),
+          locationShowMapLink: standaloneLocation.showMapLink,
+        },
+        currencyText: {
+          standalone: standaloneCurrency.shadowRoot.querySelector('.cell-content')?.textContent?.trim(),
+          virtual: numberText('virtual-demo', 'revenue'),
+          remote: numberText('remote-demo', 'arr'),
+        },
       };
     });
 
@@ -91,6 +110,16 @@ test.describe('table full showcase', () => {
     );
     expect(snapshot.listBorder).toBe('0px');
     expect(snapshot.remoteTotal).toBe(42);
+    expect(snapshot.standaloneBehavior).toEqual({
+      progressPercentage: true,
+      locationHasLink: false,
+      locationShowMapLink: false,
+    });
+    expect(snapshot.currencyText).toEqual({
+      standalone: '$95,000',
+      virtual: '$1,200',
+      remote: '$12,000',
+    });
 
     await page.evaluate(() => {
       const cell = document.querySelector('#cell-type-grid snice-cell-actions') as any;
@@ -547,6 +576,30 @@ test.describe('table full showcase', () => {
     });
     const remoteArr = await page.evaluate(() => (document.querySelector('#remote-demo') as any).data.map((row: any) => row.arr));
     expect(remoteArr).toEqual([...remoteArr].sort((left, right) => left - right));
+
+    await page.evaluate(() => {
+      const table = document.querySelector('#remote-demo') as any;
+      const search = table.shadowRoot.querySelector('snice-input.toolbar-search') as any;
+      search.value = '';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+      table.currentSort = [
+        { column: 'region', direction: 'asc' },
+        { column: 'arr', direction: 'desc' },
+      ];
+    });
+    await page.waitForFunction(() => {
+      const table = document.querySelector('#remote-demo') as any;
+      return table.loading === false
+        && table.totalItems === 42
+        && table.currentSort.map((sort: any) => sort.column).join(',') === 'region,arr'
+        && table.data.length === 5;
+    });
+    const remoteMultiSort = await page.evaluate(() => {
+      const rows = (document.querySelector('#remote-demo') as any).data;
+      return { regions: rows.map((row: any) => row.region), arr: rows.map((row: any) => row.arr) };
+    });
+    expect(new Set(remoteMultiSort.regions).size).toBe(1);
+    expect(remoteMultiSort.arr).toEqual([...remoteMultiSort.arr].sort((left, right) => right - left));
 
     await page.evaluate(() => {
       const table = document.querySelector('#pin-row-demo') as any;
