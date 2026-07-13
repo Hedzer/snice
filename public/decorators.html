@@ -43,7 +43,7 @@
 
     <div class="dec-section">
       <h3><code>@element</code></h3>
-      <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
+      <p class="desc">Register a custom element with configurable open/closed shadow or light-DOM rendering.</p>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('my-card')
 class MyCard extends HTMLElement {
   @property() title = '';
@@ -54,6 +54,11 @@ class MyCard extends HTMLElement {
     return html`&lt;h1&gt;${this.title}&lt;/h1&gt;`;
   }
 }</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('light-card', { renderRoot: 'light' })
+class LightCard extends SniceElement { /* ... */ }
+
+@element('closed-card', { shadow: 'closed', delegatesFocus: true })
+class ClosedCard extends SniceElement { /* ... */ }</snice-code-block>
       <p class="doc-link"><a href="docs.html#elements">Full documentation →</a></p>
     </div>
 
@@ -125,12 +130,19 @@ class HomePage extends HTMLElement { }</snice-code-block>
     </div>
 
     <div class="dec-section">
-      <h3><code>@property</code> & <code>@watch</code></h3>
-      <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @property: reactive props, re-render on change
+      <h3><code>@property</code>, <code>@state</code> & <code>@watch</code></h3>
+      <p class="desc">Separate public attribute/property input from internal state, optionally observe nested collections, and watch changes.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Public property: attribute input + reflection
 @property() name = '';
 @property({ type: Number }) count = 0;
-@property({ type: Boolean, reflect: true }) active = false;</snice-code-block>
+@property({ type: Boolean, reflect: false }) active = false;
+
+// Internal state: never an attribute
+@state() open = false;
+@state({ deep: true }) model = { rows: [], selected: new Set() };
+
+// Type conversion is only for string attributes.
+// Direct JS property assignments preserve type and identity.</snice-code-block>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @watch: fires once on init as (undefined, value), then on every change
 @watch('count')
 onCountChange(oldVal, newVal) {
@@ -159,6 +171,14 @@ template() {
       &lt;/if&gt;
     &lt;/div&gt;
   `;
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Optional convention-driven authoring
+class UserCard extends SniceElement {
+  static styles = css`:host { display: block; }`;
+
+  render() {
+    return html`&lt;article class:selected=${this.selected}&gt;...&lt;/article&gt;`;
+  }
 }</snice-code-block>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @styles: scoped CSS
 @styles()

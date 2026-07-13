@@ -11,6 +11,7 @@ Elements are the core building blocks of Snice components. They define custom HT
 - [Queries](#queries)
 - [Styling](#styling)
 - [Template Events](#template-events)
+- [Declarative Rendering](./rendering.md)
 - [Extending Elements](#extending-elements)
 - [Advanced Examples](#advanced-examples) (Watch, Context, Conditionals)
 
@@ -30,12 +31,33 @@ class MyButton extends HTMLElement {
 }
 ```
 
+For convention-based authoring, extend the optional `SniceElement` base and implement `render()` directly:
+
+```typescript
+import { SniceElement, css, element, html, state } from 'snice';
+
+@element('my-counter')
+class MyCounter extends SniceElement {
+  static styles = css`:host { display: inline-block; }`;
+  @state() count = 0;
+
+  render() {
+    return html`<button @click=${() => this.count++}>${this.count}</button>`;
+  }
+}
+```
+
+Plain `HTMLElement` subclasses and decorated render/style methods remain fully supported.
+
 ### Element Decorator Options
 
 The `@element` decorator accepts:
 - `tagName: string` - The custom element tag name (must contain a hyphen)
 - `options?: ElementOptions` - Optional configuration
   - `formAssociated?: boolean` - Enable form association (default: false)
+  - `renderRoot?: 'shadow' | 'light'` - Select shadow or light DOM rendering
+  - `shadow?: 'open' | 'closed' | false` - Shadow mode, or light-DOM shorthand
+  - `delegatesFocus?: boolean` - Forwarded to `attachShadow()`
 
 ## Lifecycle Methods
 
@@ -110,7 +132,7 @@ class SimpleList extends HTMLElement {
 - Avoiding differential rendering issues with dynamic attributes
 - Simple components where full re-render is acceptable
 
-**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Conditional rendering (`<if>`, `<switch>/<case>`) is NOT available — use ternary operators in the string template instead.
+**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Declarative directives and virtual control flow (`<if>`, `<case>`, and related tags) are not available in the raw-string mode.
 
 ### Imperative Rendering
 
@@ -300,9 +322,22 @@ document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready
 ```
 
-## Shadow DOM
+## Render Roots and Shadow DOM
 
-All elements automatically use Shadow DOM for style encapsulation.
+Elements use an open shadow root by default. Open/closed shadow roots and light DOM share the same differential renderer, lifecycle, event binding, styles, and query decorators.
+
+```typescript
+@element('closed-card', { shadow: 'closed' })
+class ClosedCard extends HTMLElement { /* ... */ }
+
+@element('light-card', { renderRoot: 'light' })
+class LightCard extends HTMLElement { /* ... */ }
+
+@element('focus-card', { delegatesFocus: true })
+class FocusCard extends HTMLElement { /* ... */ }
+```
+
+`shadow: false` is shorthand for `renderRoot: 'light'`. Framework-managed queries continue to work with a closed root. A `createRenderRoot()` override may return the host element or a `ShadowRoot` for a custom policy.
 
 ### Accessing Shadow DOM Elements
 
@@ -370,7 +405,10 @@ Usage:
 interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
   attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
+  reflect?: boolean;             // Property → attribute; default true
+  deep?: boolean;                // Observe nested object/array/Map/Set writes
   converter?: PropertyConverter;  // Custom converter
+  hasChanged?: (value, oldValue) => boolean;
 }
 ```
 
@@ -378,9 +416,30 @@ interface PropertyOptions {
 
 All properties automatically:
 - Read from DOM attributes when present
-- Reflect property setter changes to corresponding attributes
+- Reflect property setter changes to corresponding attributes unless `reflect: false`
 - Convert between string attributes and typed properties
 - Trigger re-renders when changed
+
+Attribute conversion is intentionally one-way at the HTML boundary. A direct JavaScript assignment is already typed and is stored exactly as assigned:
+
+```typescript
+const rows = [{ id: 1 }];
+element.rows = rows;
+element.rows === rows; // true
+```
+
+This preserves dates, union values, services, objects, and collection identity. `type` and `converter.fromAttribute` process strings arriving from attributes; `converter.toAttribute` serializes reflection.
+
+Use `reflect: false` for input-only attributes, `attribute: false` for JavaScript-only public properties, and `@state()` for internal reactive fields:
+
+```typescript
+@property({ type: Number, reflect: false }) page = 1;
+@property({ attribute: false }) service!: UserService;
+@state() open = false;
+@state({ deep: true }) model = { rows: [] as Row[] };
+```
+
+`@state()` never observes or writes an attribute. `deep: true` tracks nested plain objects, arrays, `Map`, and `Set` using native `Proxy` and `Reflect`; class instances and DOM objects remain intact. Deep observation targets modern evergreen browsers and is not available in Internet Explorer.
 
 **Note:** Initial field values (defaults like `name = 'Anonymous'`) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set `attribute: false` to disable attribute sync entirely.
 
@@ -1084,10 +1143,12 @@ class ConditionalContent extends HTMLElement {
       <if ${this.isLoggedIn}>
         <div>Welcome back!</div>
         <button @click=${this.logout}>Logout</button>
-      </if>
-
-      <if ${!this.isLoggedIn}>
-        <a href="/login">Please login</a>
+        <else-if ${this.sessionExpired}>
+          <button @click=${this.login}>Sign in again</button>
+        </else-if>
+        <else>
+          <a href="/login">Please login</a>
+        </else>
       </if>
     `;
   }
@@ -1098,4 +1159,5 @@ class ConditionalContent extends HTMLElement {
 }
 ```
 
+The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, dynamic `<component>`, bindings, refs/actions, async resources, portals, transitions, SSR, and hydration.
 

@@ -1,5 +1,15 @@
 
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
+import {
+  Directive,
+  DirectivePart,
+  DirectiveResult,
+  PartInfo,
+  PartType,
+  isDirectiveResult
+} from './directive';
+import { isRepeatResult } from './repeat';
+import { findRenderHost } from './render-root';
 
 // Unique marker for dynamic parts
 // This parses as a comment node but doesn't get escaped in attributes
@@ -64,6 +74,12 @@ const isPrimitive = (value: unknown): boolean =>
 const isIterable = (value: unknown): value is Iterable<unknown> =>
   Array.isArray(value) || typeof (value as any)?.[Symbol.iterator] === 'function';
 
+const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
+  !!value && typeof (value as PromiseLike<unknown>).then === 'function';
+
+const isAsyncIterable = (value: unknown): value is AsyncIterable<unknown> =>
+  !!value && typeof (value as AsyncIterable<unknown>)[Symbol.asyncIterator] === 'function';
+
 /**
  * A prepared template ready for rendering
  */
@@ -91,8 +107,16 @@ class Template {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element;
         const tagName = element.tagName.toLowerCase();
+        const parentTag = element.parentElement?.tagName.toLowerCase();
 
-        // Handle virtual elements: <if>, <case>
+        if ((tagName === 'else' || tagName === 'else-if') && parentTag !== 'if') {
+          throw new Error(`snice: <${tagName}> must be a direct child of <if>.`);
+        }
+        if ((tagName === 'when' || tagName === 'default') && parentTag !== 'case') {
+          throw new Error(`snice: <${tagName}> must be a direct child of <case>.`);
+        }
+
+        // Handle virtual elements: <if>, <else-if>, <case>, <when>
         // Keep them in the DOM with display:contents for now
         // Will optimize later with proper template extraction
         if (tagName === 'if') {
@@ -110,6 +134,8 @@ class Template {
             });
 
             // Continue processing children normally
+          } else {
+            throw new Error('snice: <if> requires a condition expression.');
           }
           continue;
         }
@@ -120,6 +146,19 @@ class Template {
           const valueAttr = element.getAttribute('value');
 
           if (valueAttr && valueAttr.includes(marker)) {
+            for (const child of Array.from(element.childNodes)) {
+              if (child.nodeType === Node.ELEMENT_NODE) {
+                const branchTag = (child as Element).tagName.toLowerCase();
+                if (branchTag !== 'when' && branchTag !== 'default') {
+                  throw new Error('snice: <case> may contain only direct <when> and <default> branches.');
+                }
+              } else if (
+                child.nodeType === Node.TEXT_NODE && child.textContent?.trim() ||
+                child.nodeType === Node.COMMENT_NODE && (child as Comment).data.includes(marker)
+              ) {
+                throw new Error('snice: content inside <case> must be nested in a <when> or <default> branch.');
+              }
+            }
             // Remove the value attribute
             element.removeAttribute('value');
 
@@ -130,8 +169,52 @@ class Template {
             });
 
             // Continue processing children normally
+          } else {
+            throw new Error('snice: <case> requires a value expression.');
           }
           continue;
+        }
+
+        if (tagName === 'else-if') {
+          const valueAttr = element.getAttribute('value');
+          if (valueAttr && valueAttr.includes(marker)) {
+            element.removeAttribute('value');
+            this.parts.push({
+              type: 'conditional-else-if',
+              index: partIndex++,
+              element
+            });
+          } else {
+            throw new Error('snice: <else-if> requires a condition expression.');
+          }
+          continue;
+        }
+
+        if (tagName === 'when') {
+          const valueAttr = element.getAttribute('value');
+          if (valueAttr && valueAttr.includes(marker)) {
+            element.removeAttribute('value');
+            this.parts.push({
+              type: 'conditional-when',
+              index: partIndex++,
+              element
+            });
+          }
+          continue;
+        }
+
+        if (tagName === 'component') {
+          const valueAttr = element.getAttribute('value');
+          if (valueAttr && valueAttr.includes(marker)) {
+            element.removeAttribute('value');
+            this.parts.push({
+              type: 'dynamic-component',
+              index: partIndex++,
+              element
+            });
+          } else {
+            throw new Error('snice: <component> requires a tag expression.');
+          }
         }
 
         if (element.hasAttributes()) {
@@ -160,7 +243,11 @@ class Template {
               // string). They consume the first expression; any static text or
               // extra expressions are ignored. But the value index must still
               // advance by the true marker count, or every later binding shifts.
-              const isSingleExpressionBinding = /^@@?|^[.?]/.test(originalName);
+              const isSingleExpressionBinding =
+                /^@@?|^[.?]/.test(originalName) ||
+                originalName.startsWith('...') ||
+                originalName.startsWith('class:') ||
+                originalName.startsWith('style:');
               if (isSingleExpressionBinding) {
                 const hasStaticText = attrStrings.some((s) => s !== '');
                 if (expressionCount > 1 || hasStaticText) {
@@ -172,7 +259,48 @@ class Template {
                 }
               }
 
-              if (originalName.startsWith('@@')) {
+              if (originalName === '$element') {
+                this.parts.push({
+                  type: 'element',
+                  index: partIndex,
+                  element
+                });
+                partIndex += expressionCount;
+              } else if (originalName.startsWith('...')) {
+                const spreadName = originalName.slice(3).toLowerCase();
+                if (!['props', 'properties', 'attrs', 'attributes', 'events'].includes(spreadName)) {
+                  throw new Error(
+                    `snice: unknown spread binding "${originalName}". ` +
+                    'Use ...props, ...attrs, or ...events.'
+                  );
+                }
+                this.parts.push({
+                  type: 'spread',
+                  index: partIndex,
+                  name: spreadName,
+                  element
+                });
+                partIndex += expressionCount;
+              } else if (originalName.startsWith('class:')) {
+                if (!originalName.slice(6)) throw new Error('snice: class: binding requires a class name.');
+                this.parts.push({
+                  type: 'class',
+                  index: partIndex,
+                  name: originalName.slice(6),
+                  element
+                });
+                partIndex += expressionCount;
+              } else if (originalName.startsWith('style:')) {
+                if (!originalName.slice(6)) throw new Error('snice: style: binding requires a CSS property name.');
+                this.parts.push({
+                  type: 'style',
+                  index: partIndex,
+                  name: originalName.slice(6),
+                  element
+                });
+                partIndex += expressionCount;
+              } else if (originalName.startsWith('@@')) {
+                if (!originalName.slice(2).split('|')[0]) throw new Error('snice: event binding requires an event name.');
                 // Escaped event binding for events with @ in the name (e.g., @@snice/event -> @snice/event)
                 this.parts.push({
                   type: 'event',
@@ -182,6 +310,7 @@ class Template {
                 });
                 partIndex += expressionCount;
               } else if (originalName.startsWith('@')) {
+                if (!originalName.slice(1).split('|')[0]) throw new Error('snice: event binding requires an event name.');
                 // Event binding (single value only)
                 this.parts.push({
                   type: 'event',
@@ -191,6 +320,7 @@ class Template {
                 });
                 partIndex += expressionCount;
               } else if (originalName.startsWith('.')) {
+                if (!originalName.slice(1)) throw new Error('snice: property binding requires a property name.');
                 // Property binding (single value only)
                 this.parts.push({
                   type: 'property',
@@ -200,6 +330,7 @@ class Template {
                 });
                 partIndex += expressionCount;
               } else if (originalName.startsWith('?')) {
+                if (!originalName.slice(1)) throw new Error('snice: boolean binding requires an attribute name.');
                 // Boolean attribute (single value only)
                 this.parts.push({
                   type: 'boolean-attribute',
@@ -310,7 +441,7 @@ class Template {
 }
 
 interface TemplatePart {
-  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'conditional-if' | 'conditional-case' | 'comment';
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'element' | 'class' | 'style' | 'spread' | 'dynamic-component' | 'conditional-if' | 'conditional-else-if' | 'conditional-case' | 'conditional-when' | 'comment';
   index: number;
   name?: string;
   element?: Element;
@@ -365,7 +496,7 @@ function prepareTemplate(result: TemplateResult): Template {
             if (str.startsWith('<!--', j)) {
               inComment = true;
               j += 3;
-            } else {
+            } else if (/[A-Za-z!/?]/.test(str[j + 1] || '')) {
               inTag = true;
             }
           }
@@ -381,7 +512,7 @@ function prepareTemplate(result: TemplateResult): Template {
             // Includes `~` for the "any-modifier" keyboard prefix
             // (e.g. `@keydown.~enter`) so it isn't truncated to `.enter`.
             let attrStart = j - 1;
-            while (attrStart >= 0 && /[\w\-\.@\?:\+~]/.test(str[attrStart])) {
+            while (attrStart >= 0 && /[\w\-\.@\?/:\+~|]/.test(str[attrStart])) {
               attrStart--;
             }
             currentAttrName = str.substring(attrStart + 1, j).trim();
@@ -416,7 +547,7 @@ function prepareTemplate(result: TemplateResult): Template {
           // Extract attribute name (same `~` inclusion as the in-tag branch
           // above — supports `@keydown.~enter` keyboard modifier prefix).
           let attrStart = trimmed.length - 2;
-          while (attrStart >= 0 && /[\w\-\.@\?\/:\+~]/.test(trimmed[attrStart])) {
+          while (attrStart >= 0 && /[\w\-\.@\?\/:\+~|]/.test(trimmed[attrStart])) {
             attrStart--;
           }
           currentAttrName = trimmed.substring(attrStart + 1, trimmed.length - 1).trim();
@@ -424,15 +555,18 @@ function prepareTemplate(result: TemplateResult): Template {
           htmlParts.push(marker);
         } else {
           // Check if this is a meta element (<if> or <case>)
-          const metaElementMatch = str.match(/<(if|case)\s*$/);
+          const metaElementMatch = str.match(/<(if|else-if|case|when|component)\s*$/);
           if (metaElementMatch) {
             currentAttrName = 'value';
             attrNamesForParts.push('value');
             htmlParts.push(`value="${marker}"`);
           } else {
-            // Element binding or error
-            attrNamesForParts.push('');
-            htmlParts.push(marker);
+            // Element-position directive: <div ${ref(...)} ${use(...)}>
+            // Use a real temporary attribute so the HTML parser retains each
+            // expression independently (duplicate bare marker attributes would
+            // otherwise collapse into one).
+            attrNamesForParts.push('$element');
+            htmlParts.push(` data-snice-element-${i}="${marker}"`);
           }
         }
       } else {
@@ -484,6 +618,7 @@ export class TemplateInstance {
   parts: Part[] = [];
   fragment: DocumentFragment | null = null;
   private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
+  private dynamicParts: Array<{part: DynamicComponentPart; index: number}> = [];
   private regularParts: Array<{part: Part; index: number}> = []; // all other parts with their indices
 
   constructor(result: TemplateResult) {
@@ -524,6 +659,15 @@ export class TemplateInstance {
         clonedNode = clonedWalker.nextNode()!;
       }
 
+      const dynamicWhenElements = new Set<Element>();
+      for (const definition of this.template.parts) {
+        if (definition.type === 'conditional-when') {
+          dynamicWhenElements.add(nodeMap.get(definition.element!) as Element);
+        }
+      }
+
+      const partRecords: Array<{ definition: TemplatePart; part: Part }> = [];
+
       for (let i = 0; i < this.template.parts.length; i++) {
         const partDef = this.template.parts[i];
         let part: Part;
@@ -550,13 +694,41 @@ export class TemplateInstance {
             const eventElement = nodeMap.get(partDef.element!) as Element;
             part = new EventPart(eventElement, partDef.name!);
             break;
+          case 'element':
+            const directiveElement = nodeMap.get(partDef.element!) as Element;
+            part = new ElementPart(directiveElement);
+            break;
+          case 'class':
+            const classElement = nodeMap.get(partDef.element!) as Element;
+            part = new ClassPart(classElement, partDef.name!);
+            break;
+          case 'style':
+            const styleElement = nodeMap.get(partDef.element!) as HTMLElement;
+            part = new StylePart(styleElement, partDef.name!);
+            break;
+          case 'spread':
+            const spreadElement = nodeMap.get(partDef.element!) as Element;
+            part = new SpreadPart(spreadElement, partDef.name!);
+            break;
+          case 'dynamic-component':
+            const componentElement = nodeMap.get(partDef.element!) as Element;
+            part = new DynamicComponentPart(componentElement);
+            break;
           case 'conditional-if':
             const conditionalIfElement = nodeMap.get(partDef.element!) as Element;
             part = new ConditionalIfPart(conditionalIfElement);
             break;
+          case 'conditional-else-if':
+            const conditionalElseIfElement = nodeMap.get(partDef.element!) as Element;
+            part = new ConditionalElseIfPart(conditionalElseIfElement);
+            break;
           case 'conditional-case':
             const conditionalCaseElement = nodeMap.get(partDef.element!) as Element;
-            part = new ConditionalCasePart(conditionalCaseElement);
+            part = new ConditionalCasePart(conditionalCaseElement, dynamicWhenElements);
+            break;
+          case 'conditional-when':
+            const conditionalWhenElement = nodeMap.get(partDef.element!) as Element;
+            part = new ConditionalWhenPart(conditionalWhenElement);
             break;
           case 'comment':
             const commentNode = nodeMap.get(partDef.startNode!) as Comment;
@@ -567,13 +739,36 @@ export class TemplateInstance {
         }
 
         this.parts.push(part);
+        partRecords.push({ definition: partDef, part });
 
         // Separate conditional parts from regular parts for optimized update
         // Use partDef.index (the VALUE index) not i (the part array index)
-        if (part instanceof ConditionalIfPart || part instanceof ConditionalCasePart) {
+        if (part instanceof DynamicComponentPart) {
+          this.dynamicParts.push({ part, index: partDef.index });
+        } else if (
+          part instanceof ConditionalIfPart ||
+          part instanceof ConditionalElseIfPart ||
+          part instanceof ConditionalCasePart ||
+          part instanceof ConditionalWhenPart
+        ) {
           this.conditionalParts.push({part, index: partDef.index});
         } else {
           this.regularParts.push({part, index: partDef.index});
+        }
+      }
+
+      const dynamicByTemplateElement = new Map<Element, DynamicComponentPart>();
+      for (const record of partRecords) {
+        if (record.part instanceof DynamicComponentPart && record.definition.element) {
+          dynamicByTemplateElement.set(record.definition.element, record.part);
+        }
+      }
+      for (const record of partRecords) {
+        const dynamic = record.definition.element
+          ? dynamicByTemplateElement.get(record.definition.element)
+          : undefined;
+        if (dynamic && record.part !== dynamic && 'retarget' in record.part) {
+          dynamic.addDependent(record.part as RetargetablePart);
         }
       }
     }
@@ -592,9 +787,32 @@ export class TemplateInstance {
     // Optimized: Process conditional parts first (if any), then regular parts
     // Using pre-separated arrays with cached indices avoids instanceof and indexOf calls
 
+    // Dynamic components choose their concrete element before bindings on that
+    // element commit.
+    for (const {part, index} of this.dynamicParts) {
+      part.commit(values[index]);
+    }
+
     // Process conditional parts first (they control visibility)
     for (const {part, index} of this.conditionalParts) {
       part.commit(values[index]);
+    }
+
+    // Conditions are staged above, then flushed once. This avoids transiently
+    // mounting an else/default branch while later else-if/when expressions in
+    // the same update are still being committed.
+    const flushed = new Set<Part>();
+    for (const {part} of this.conditionalParts) {
+      const coordinator = part instanceof ConditionalElseIfPart
+        ? part.coordinator
+        : part instanceof ConditionalWhenPart
+          ? part.coordinator
+          : part;
+      if (flushed.has(coordinator)) continue;
+      flushed.add(coordinator);
+      if (coordinator instanceof ConditionalIfPart || coordinator instanceof ConditionalCasePart) {
+        coordinator.flush();
+      }
     }
 
     // Then process regular parts
@@ -613,12 +831,80 @@ export class TemplateInstance {
         part.commit(values[index]);
       }
     }
+
+    // Branch switches can move directive-bearing nodes between the live DOM
+    // and parked fragments. Reconcile directive lifecycle after every update
+    // so refs/actions/resources see paired disconnect/reconnect callbacks.
+    let lifecycleError: unknown;
+    for (const part of this.parts) {
+      try {
+        if (part.isConnected) part.reconnected();
+        else part.disconnected();
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
   }
 
   clear(): void {
+    let lifecycleError: unknown;
     for (const part of this.parts) {
-      part.clear();
+      try {
+        part.destroy();
+      } catch (error) {
+        lifecycleError ??= error;
+      }
     }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  disconnected(preserveEventListeners = false): void {
+    let lifecycleError: unknown;
+    for (const part of this.parts) {
+      try {
+        part.disconnected(preserveEventListeners);
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  reconnected(): void {
+    let lifecycleError: unknown;
+    for (const part of this.parts) {
+      try {
+        part.reconnected();
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  /**
+   * Retarget a fully prepared instance from its detached client clone onto
+   * structurally equivalent server-rendered nodes. Used by hydrate() to keep
+   * the server DOM rather than replacing it.
+   */
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    let adoptionError: unknown;
+    for (const part of this.parts) {
+      try {
+        if ('element' in part && 'retarget' in part) {
+          const current = (part as any).element as Element;
+          const adopted = nodeMap.get(current);
+          if (adopted instanceof Element) {
+            (part as any as RetargetablePart).retarget(adopted, true);
+          }
+        }
+        part.adoptNodes(nodeMap);
+      } catch (error) {
+        adoptionError ??= error;
+      }
+    }
+    if (adoptionError) throw adoptionError;
   }
 }
 
@@ -626,9 +912,180 @@ export class TemplateInstance {
  * Base class for all parts
  */
 export abstract class Part {
+  abstract readonly type: PartType;
+
+  private directiveStates = new Map<number, {
+    instance: Directive;
+    constructor: DirectiveResult['directive'];
+    connected: boolean;
+    part: DirectivePart;
+  }>();
+  private committingDirectiveSlots = new Set<number>();
+
+  protected resolveDirective(value: unknown, slot = 0): unknown {
+    if (this.committingDirectiveSlots.has(slot)) return value;
+
+    if (!isDirectiveResult(value)) {
+      try {
+        this.disposeDirective(slot);
+      } catch (error) {
+        console.error('snice: directive cleanup failed while releasing a template slot:', error);
+      }
+      return value;
+    }
+
+    let state = this.directiveStates.get(slot);
+    if (!state || state.constructor !== value.directive) {
+      try {
+        this.disposeDirective(slot);
+      } catch (error) {
+        console.error('snice: directive cleanup failed while replacing a template slot:', error);
+      }
+      const info: PartInfo = {
+        type: this.type,
+        element: (this as any).element,
+        name: (this as any).name,
+        strings: (this as any).strings
+      };
+      const owner = this;
+      // Give every retained directive its own live view of the concrete Part.
+      // The prototype preserves built-in access to NodePart boundaries while
+      // the guarded setValue prevents a disposed async directive from writing
+      // into a slot now owned by another directive.
+      const directivePart = Object.create(owner) as DirectivePart;
+      Object.defineProperty(directivePart, 'setValue', {
+        value(next: unknown) {
+          if (owner.directiveStates.get(slot) === state) {
+            owner.setDirectiveValue(slot, next);
+          }
+        }
+      });
+      state = {
+        instance: new value.directive(info),
+        constructor: value.directive,
+        connected: this.isConnected,
+        part: directivePart
+      };
+      this.directiveStates.set(slot, state);
+    }
+
+    return state.instance.update(state.part, value.values);
+  }
+
+  /** Commit a directive-produced value without replacing that directive. */
+  setValue(value: unknown): void {
+    this.setDirectiveValue(0, value);
+  }
+
+  private setDirectiveValue(slot: number, value: unknown): void {
+    this.committingDirectiveSlots.add(slot);
+    try {
+      this.commitDirectiveValue(slot, value);
+    } finally {
+      this.committingDirectiveSlots.delete(slot);
+    }
+  }
+
+  protected commitDirectiveValue(_slot: number, value: unknown): void {
+    this.commit(value);
+  }
+
+  get isConnected(): boolean {
+    return (this as any).element?.isConnected ?? false;
+  }
+
+  disconnected(_preserveEventListeners = false): void {
+    let lifecycleError: unknown;
+    for (const state of this.directiveStates.values()) {
+      if (!state.connected) continue;
+      state.connected = false;
+      try {
+        state.instance.disconnected({ reason: _preserveEventListeners ? 'host' : 'branch' });
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  reconnected(): void {
+    let lifecycleError: unknown;
+    for (const state of this.directiveStates.values()) {
+      if (state.connected) continue;
+      state.connected = true;
+      try {
+        state.instance.reconnected();
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  protected disposeDirective(slot?: number): void {
+    const entries = slot === undefined
+      ? [...this.directiveStates.entries()]
+      : this.directiveStates.has(slot) ? [[slot, this.directiveStates.get(slot)!] as const] : [];
+    let lifecycleError: unknown;
+    for (const [index, state] of entries) {
+      // Invalidate the async publication channel before user teardown runs.
+      this.directiveStates.delete(index);
+      try {
+        if (state.connected) {
+          state.connected = false;
+          state.instance.disconnected({ reason: 'dispose' });
+        }
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  protected adoptDirectiveNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    let lifecycleError: unknown;
+    for (const state of this.directiveStates.values()) {
+      try {
+        state.instance.adopted(nodeMap);
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  /** Retarget directive-owned state while adopting server-rendered DOM. */
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  destroy(): void {
+    let lifecycleError: unknown;
+    try {
+      this.clear();
+    } catch (error) {
+      lifecycleError = error;
+    }
+    try {
+      this.disposeDirective();
+    } catch (error) {
+      lifecycleError ??= error;
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
   abstract commit(value: any): void;
   abstract clear(): void;
 }
+
+interface RetargetablePart {
+  retarget(element: Element, preserveDirectives?: boolean): void;
+}
+
+const htmlVoidElements = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
+  'meta', 'param', 'source', 'track', 'wbr'
+]);
 
 /**
  * NodePart handles text content and nested templates
@@ -639,10 +1096,16 @@ export abstract class Part {
  * - Reuses child NodeParts when rendering arrays
  */
 export class NodePart extends Part {
+  readonly type = 'node' as const;
   private startNode: Comment;
   private endNode: Comment;
   private _committedValue: any = NOT_COMMITTED;
   private _itemKeys: unknown[] | null = null; // keys of the last committed iterable, when fully keyed
+  private _asyncSource: PromiseLike<unknown> | AsyncIterable<unknown> | null = null;
+  private _asyncVersion = 0;
+  private _asyncIterator: AsyncIterator<unknown> | null = null;
+  private _asyncRunning = false;
+  private _committingAsyncValue = false;
 
   constructor(startNode: Comment, endNode: Comment) {
     super();
@@ -650,16 +1113,68 @@ export class NodePart extends Part {
     this.endNode = endNode;
   }
 
+  /** Boundary access for lifecycle-aware built-in directives. */
+  get startMarker(): Comment {
+    return this.startNode;
+  }
+
+  get endMarker(): Comment {
+    return this.endNode;
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    const start = nodeMap.get(this.startNode);
+    const end = nodeMap.get(this.endNode);
+    if (start instanceof Comment) this.startNode = start;
+    if (end instanceof Comment) this.endNode = end;
+
+    let adoptionError: unknown;
+    try {
+      if (this._committedValue instanceof TemplateInstance) {
+        this._committedValue.adoptNodes(nodeMap);
+      } else if (Array.isArray(this._committedValue)) {
+        for (const part of this._committedValue) {
+          if (!(part instanceof NodePart)) continue;
+          try {
+            part.adoptNodes(nodeMap);
+          } catch (error) {
+            adoptionError ??= error;
+          }
+        }
+      } else if (this._committedValue instanceof Node) {
+        this._committedValue = nodeMap.get(this._committedValue) || this._committedValue;
+      }
+    } catch (error) {
+      adoptionError ??= error;
+    }
+    try {
+      this.adoptDirectiveNodes(nodeMap);
+    } catch (error) {
+      adoptionError ??= error;
+    }
+    if (adoptionError) throw adoptionError;
+  }
+
   commit(value: any): void {
+    value = this.resolveDirective(value);
+
     // Handle noChange sentinel
     if (value === noChange) {
       return;
     }
 
+    if (isPromiseLike(value) || isAsyncIterable(value)) {
+      this._commitAsync(value);
+      return;
+    }
+    if (!this._committingAsyncValue && this._asyncSource) this._cancelAsync(true);
+
     // Handle nothing/null/undefined/empty - clear content
     if (value === nothing || value == null || value === '') {
       if (this._committedValue !== nothing) {
-        this._clear();
+        const cleanupError = this._clear();
+        this._committedValue = nothing;
+        if (cleanupError) throw cleanupError;
       }
       this._committedValue = nothing;
       return;
@@ -676,6 +1191,18 @@ export class NodePart extends Part {
     // Handle nested templates
     if (isTemplateResult(value)) {
       this._commitTemplateResult(value);
+      return;
+    }
+
+    // Explicit keyed repeat() result. It feeds keys directly into the list
+    // reconciler, so rendered roots do not need a synthetic key attribute or
+    // wrapper element.
+    if (isRepeatResult(value)) {
+      if (value.values.length === 0) {
+        this.commit(value.empty ?? nothing);
+      } else {
+        this._commitIterable(value.values, value.keys);
+      }
       return;
     }
 
@@ -722,9 +1249,10 @@ export class NodePart extends Part {
       }
     }
 
-    this._clear();
+    const cleanupError = this._clear();
     this._insertBefore(document.createTextNode(String(value)));
     this._committedValue = value;
+    if (cleanupError) throw cleanupError;
   }
 
   /**
@@ -745,30 +1273,83 @@ export class NodePart extends Part {
       }
     }
 
-    // Different template or first render - create new instance
-    this._clear();
+    // Different template or first render: prepare and validate the replacement
+    // while it is detached. If a binding/directive throws, the currently
+    // committed range remains intact and its lifecycle stays connected.
     const instance = new TemplateInstance(result);
     const fragment = instance.renderFragment();
+    try {
+      instance.update(result.values);
+    } catch (error) {
+      instance.clear();
+      throw error;
+    }
+
+    const previousValue = this._committedValue;
+    const previousKeys = this._itemKeys;
+    const previousFragment = this.endNode.ownerDocument.createDocumentFragment();
+    let previousNode = this.startNode.nextSibling;
+    while (previousNode && previousNode !== this.endNode) {
+      const next = previousNode.nextSibling;
+      previousFragment.appendChild(previousNode);
+      previousNode = next;
+    }
+
     this._insertBefore(fragment);
-    instance.update(result.values);
     this._committedValue = instance;
+    this._itemKeys = null;
+    try {
+      if (this.isConnected) instance.reconnected();
+    } catch (error) {
+      try {
+        instance.clear();
+      } catch (cleanupError) {
+        console.error('snice: failed to clean up a rejected nested template:', cleanupError);
+      }
+      let node = this.startNode.nextSibling;
+      while (node && node !== this.endNode) {
+        const next = node.nextSibling;
+        node.remove();
+        node = next;
+      }
+      this._insertBefore(previousFragment);
+      this._committedValue = previousValue;
+      this._itemKeys = previousKeys;
+      throw error;
+    }
+
+    this._disposeCommitted(previousValue);
   }
 
   /**
    * Commit an iterable (array, Set, etc.)
    * OPTIMIZATION: Reuses existing NodeParts for items
    */
-  private _commitIterable(value: Iterable<unknown>): void {
+  private _commitIterable(value: Iterable<unknown>, explicitKeys?: readonly unknown[]): void {
+    const items = Array.isArray(value) ? (value as unknown[]) : Array.from(value);
+    const newKeys = explicitKeys ? Array.from(explicitKeys) : items.map(getItemKey);
+    if (newKeys.length !== items.length) {
+      throw new Error('snice: keyed iterable produced a different number of keys and values.');
+    }
+    const definedKeys = newKeys.filter(key => key !== undefined);
+    if (definedKeys.length > 0 && definedKeys.length !== newKeys.length) {
+      console.warn(
+        'snice: a list mixes keyed and unkeyed items. Identity falls back to position; ' +
+        'use repeat(items, { key, render }) for deterministic updates.'
+      );
+    }
+    if (definedKeys.length > 0 && new Set(definedKeys).size !== definedKeys.length) {
+      throw new Error('snice: a keyed list contains duplicate keys.');
+    }
+
+    let cleanupError: unknown;
     // If previous value wasn't an array of parts, start fresh
     if (!Array.isArray(this._committedValue) ||
         !(this._committedValue[0] instanceof NodePart)) {
-      this._clear();
+      cleanupError = this._clear();
       this._committedValue = [];
       this._itemKeys = null;
     }
-
-    const items = Array.isArray(value) ? (value as unknown[]) : Array.from(value);
-    const newKeys = items.map(getItemKey);
     const allKeyed = items.length > 0 && newKeys.every(k => k !== undefined);
     const oldKeys = this._itemKeys;
 
@@ -781,8 +1362,14 @@ export class NodePart extends Part {
         newKeys.every((k, i) => k === oldKeys[i]);
 
       if (!sameOrder) {
-        this._reconcileKeyed(items, newKeys, this._committedValue as NodePart[], oldKeys);
+        cleanupError ??= this._reconcileKeyed(
+          items,
+          newKeys,
+          this._committedValue as NodePart[],
+          oldKeys
+        );
         this._itemKeys = newKeys;
+        if (cleanupError) throw cleanupError;
         return;
       }
     }
@@ -816,8 +1403,13 @@ export class NodePart extends Part {
       // Clear DOM for removed items
       for (let i = partIndex; i < itemParts.length; i++) {
         const part = itemParts[i];
-        // Remove the part's content and markers
-        part._clear();
+        // Dispose directive/async state as well as removing the content. These
+        // item parts are leaving the list permanently, not merely being moved.
+        try {
+          part.destroy();
+        } catch (error) {
+          cleanupError ??= error;
+        }
         // Remove the markers themselves
         part.startNode.remove();
         part.endNode.remove();
@@ -828,6 +1420,7 @@ export class NodePart extends Part {
 
     // Remember keys so the next commit can reconcile by key
     this._itemKeys = allKeyed ? newKeys : null;
+    if (cleanupError) throw cleanupError;
   }
 
   /**
@@ -839,8 +1432,9 @@ export class NodePart extends Part {
     newKeys: unknown[],
     oldParts: NodePart[],
     oldKeys: unknown[]
-  ): void {
+  ): unknown {
     const parent = this.endNode.parentNode!;
+    let cleanupError: unknown;
 
     // Map old parts by key (first occurrence wins on duplicate keys)
     const oldByKey = new Map<unknown, NodePart>();
@@ -863,7 +1457,11 @@ export class NodePart extends Part {
     // below only ever sees surviving nodes)
     for (const part of oldParts) {
       if (!reused.has(part)) {
-        part._clear();
+        try {
+          part.destroy();
+        } catch (error) {
+          cleanupError ??= error;
+        }
         part.startNode.remove();
         part.endNode.remove();
       }
@@ -907,6 +1505,7 @@ export class NodePart extends Part {
     }
 
     this._committedValue = newParts as NodePart[];
+    return cleanupError;
   }
 
   /**
@@ -914,9 +1513,10 @@ export class NodePart extends Part {
    */
   private _commitNode(node: Node): void {
     if (this._committedValue !== node) {
-      this._clear();
+      const cleanupError = this._clear();
       this._insertBefore(node);
       this._committedValue = node;
+      if (cleanupError) throw cleanupError;
     }
   }
 
@@ -932,20 +1532,119 @@ export class NodePart extends Part {
       return;
     }
 
-    this._clear();
+    const cleanupError = this._clear();
     const temp = document.createElement('template');
     temp.innerHTML = value.html;
     this._insertBefore(temp.content);
     this._committedValue = value;
+    if (cleanupError) throw cleanupError;
+  }
+
+  private _commitAsync(source: PromiseLike<unknown> | AsyncIterable<unknown>): void {
+    // A Promise/stream object is the identity of the async operation. Once it
+    // settles, unrelated parent renders must keep the committed result rather
+    // than clearing it and subscribing to the same source again.
+    if (source === this._asyncSource) return;
+    this._cancelAsync(false);
+    this._asyncSource = source;
+    const cleanupError = this._clear();
+    this._committedValue = nothing;
+    this._startAsyncSource();
+    if (cleanupError) throw cleanupError;
+  }
+
+  private _startAsyncSource(forceConnected = false): void {
+    const source = this._asyncSource;
+    if (!source || this._asyncRunning || (!forceConnected && !this.isConnected)) return;
+    this._asyncRunning = true;
+    const version = ++this._asyncVersion;
+
+    if (isAsyncIterable(source)) {
+      try {
+        this._asyncIterator = source[Symbol.asyncIterator]();
+      } catch (error) {
+        this._asyncRunning = false;
+        console.error('snice: async iterable template value failed:', error);
+        return;
+      }
+      void (async () => {
+        try {
+          while (this._asyncIterator) {
+            const result = await this._asyncIterator.next();
+            if (result.done || version !== this._asyncVersion) break;
+            this._commitAsyncValue(result.value);
+          }
+        } catch (error) {
+          if (version === this._asyncVersion) console.error('snice: async iterable template value failed:', error);
+        } finally {
+          if (version === this._asyncVersion) {
+            this._asyncIterator = null;
+            this._asyncRunning = false;
+          }
+        }
+      })();
+      return;
+    }
+
+    Promise.resolve(source).then(
+      value => {
+        if (version !== this._asyncVersion) return;
+        this._asyncRunning = false;
+        try {
+          this._commitAsyncValue(value);
+        } catch (error) {
+          console.error('snice: promise template value failed:', error);
+        }
+      },
+      error => {
+        if (version !== this._asyncVersion) return;
+        this._asyncRunning = false;
+        console.error('snice: promise template value failed:', error);
+      }
+    );
+  }
+
+  private _commitAsyncValue(value: unknown): void {
+    this._committingAsyncValue = true;
+    try {
+      this.commit(value);
+    } finally {
+      this._committingAsyncValue = false;
+    }
+  }
+
+  private _cancelAsync(clearSource: boolean): void {
+    this._asyncVersion++;
+    const iterator = this._asyncIterator;
+    this._asyncIterator = null;
+    this._asyncRunning = false;
+    if (clearSource) this._asyncSource = null;
+    if (iterator?.return) {
+      try {
+        void Promise.resolve(iterator.return()).catch(() => {});
+      } catch {
+        // Cancellation is best-effort; internal state is already detached.
+      }
+    }
   }
 
   private _insertBefore(node: Node): void {
     this.endNode.parentNode?.insertBefore(node, this.endNode);
   }
 
-  _clear(): void {
+  _clear(): unknown {
     const parent = this.startNode.parentNode;
-    if (!parent) return;
+    const committed = this._committedValue;
+    let cleanupError: unknown;
+    try {
+      this._disposeCommitted(committed);
+    } catch (error) {
+      cleanupError = error;
+    }
+    if (!parent) {
+      this._committedValue = nothing;
+      return cleanupError;
+    }
 
     let node = this.startNode.nextSibling;
     while (node && node !== this.endNode) {
@@ -954,10 +1653,92 @@ export class NodePart extends Part {
       node = next;
     }
     this._committedValue = nothing;
+    return cleanupError;
+  }
+
+  private _disposeCommitted(committed: unknown): void {
+    let lifecycleError: unknown;
+    if (committed instanceof TemplateInstance) {
+      try {
+        committed.clear();
+      } catch (error) {
+        lifecycleError = error;
+      }
+    } else if (Array.isArray(committed)) {
+      for (const item of committed) {
+        if (!(item instanceof NodePart)) continue;
+        try {
+          item.destroy();
+        } catch (error) {
+          lifecycleError ??= error;
+        }
+      }
+    }
+    if (lifecycleError) throw lifecycleError;
   }
 
   clear(): void {
-    this._clear();
+    this._cancelAsync(true);
+    const cleanupError = this._clear();
+    if (cleanupError) throw cleanupError;
+  }
+
+  get isConnected(): boolean {
+    return this.startNode.isConnected;
+  }
+
+  disconnected(preserveEventListeners = false): void {
+    let lifecycleError: unknown;
+    try {
+      super.disconnected(preserveEventListeners);
+    } catch (error) {
+      lifecycleError = error;
+    }
+    if (this._committedValue instanceof TemplateInstance) {
+      try {
+        this._committedValue.disconnected(preserveEventListeners);
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    } else if (Array.isArray(this._committedValue)) {
+      for (const part of this._committedValue) {
+        if (!(part instanceof NodePart)) continue;
+        try {
+          part.disconnected(preserveEventListeners);
+        } catch (error) {
+          lifecycleError ??= error;
+        }
+      }
+    }
+    if (this._asyncSource) this._cancelAsync(false);
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  reconnected(): void {
+    let lifecycleError: unknown;
+    try {
+      super.reconnected();
+    } catch (error) {
+      lifecycleError = error;
+    }
+    if (this._committedValue instanceof TemplateInstance) {
+      try {
+        this._committedValue.reconnected();
+      } catch (error) {
+        lifecycleError ??= error;
+      }
+    } else if (Array.isArray(this._committedValue)) {
+      for (const part of this._committedValue) {
+        if (!(part instanceof NodePart)) continue;
+        try {
+          part.reconnected();
+        } catch (error) {
+          lifecycleError ??= error;
+        }
+      }
+    }
+    this._startAsyncSource(true);
+    if (lifecycleError) throw lifecycleError;
   }
 }
 
@@ -968,10 +1749,13 @@ export class NodePart extends Part {
  * Lit-HTML style: tracks each value separately for dirty checking
  */
 export class AttributePart extends Part {
-  readonly element: Element;
+  readonly type = 'attribute' as const;
+  element: Element;
   readonly name: string;
   readonly strings?: readonly string[];  // Static strings for interpolation
   private _committedValue: unknown | unknown[] = NOT_COMMITTED;
+  private lastValues: unknown[] | null = null;
+  private lastValueIndex = 0;
 
   constructor(element: Element, name: string, strings?: string[]) {
     super();
@@ -1002,6 +1786,7 @@ export class AttributePart extends Part {
 
     // === SINGLE-VALUE BINDING ===
     if (this.strings === undefined) {
+      value = this.resolveDirective(value);
       if (value === noChange) return;
 
       change = !isPrimitive(value) ||
@@ -1017,11 +1802,16 @@ export class AttributePart extends Part {
     // === INTERPOLATION BINDING ===
     else {
       const values = value as unknown[];
+      this.lastValues = [...values];
+      this.lastValueIndex = valueIndex;
       const committedValues = this._committedValue as unknown[];
       finalValue = this.strings[0];
 
       for (let i = 0; i < this.strings.length - 1; i++) {
-        let v = values[valueIndex + i];
+        // Multi-interpolation attributes host one independent directive per
+        // expression. Slots start at 1 so slot 0 remains the ordinary
+        // single-expression DirectivePart whose setValue() calls commit().
+        let v = this.resolveDirective(values[valueIndex + i], i + 1);
 
         // Handle noChange sentinel
         if (v === noChange) {
@@ -1069,6 +1859,24 @@ export class AttributePart extends Part {
   clear(): void {
     this.element.removeAttribute(this.name);
   }
+
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    if (!this.strings || slot === 0) {
+      super.commitDirectiveValue(slot, value);
+      return;
+    }
+    if (!this.lastValues) return;
+    this.lastValues[this.lastValueIndex + slot - 1] = value;
+    this.commit(this.lastValues, this.lastValueIndex);
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
+    this._committedValue = this.strings
+      ? new Array(this.strings.length - 1).fill(NOT_COMMITTED)
+      : NOT_COMMITTED;
+  }
 }
 
 /**
@@ -1078,9 +1886,12 @@ export class AttributePart extends Part {
  * to their own values.
  */
 export class CommentPart extends Part {
-  readonly node: Comment;
+  readonly type = 'node' as const;
+  node: Comment;
   readonly strings: readonly string[];
   private _committedValues: unknown[];
+  private lastValues: unknown[] | null = null;
+  private lastValueIndex = 0;
 
   constructor(node: Comment, strings: readonly string[]) {
     super();
@@ -1096,11 +1907,13 @@ export class CommentPart extends Part {
    */
   commit(values: unknown, startIndex: number = 0): void {
     const vals = values as unknown[];
+    this.lastValues = [...vals];
+    this.lastValueIndex = startIndex;
     let change = false;
     let text = this.strings[0];
 
     for (let i = 0; i < this.strings.length - 1; i++) {
-      let v = vals[startIndex + i];
+      let v = this.resolveDirective(vals[startIndex + i], i + 1);
 
       if (v === noChange) {
         v = this._committedValues[i];
@@ -1113,17 +1926,458 @@ export class CommentPart extends Part {
       text += String(v === nothing ? '' : (v ?? '')) + this.strings[i + 1];
     }
 
-    if (change) this.node.data = text;
+    if (change) {
+      if (text.includes('--') || text.endsWith('-')) {
+        throw new Error('snice: comment expressions cannot produce "--" or end with "-".');
+      }
+      this.node.data = text;
+    }
   }
 
   clear(): void {}
+
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    if (slot === 0 || !this.lastValues) return;
+    this.lastValues[this.lastValueIndex + slot - 1] = value;
+    this.commit(this.lastValues, this.lastValueIndex);
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    const adopted = nodeMap.get(this.node);
+    if (adopted instanceof Comment) this.node = adopted;
+    this.adoptDirectiveNodes(nodeMap);
+  }
+}
+
+/**
+ * ElementPart is the host position for directives written directly in an
+ * opening tag: `<button ${ref(buttonRef)}>`.
+ *
+ * Plain values have no meaningful DOM representation here and are rejected
+ * with an actionable error instead of being silently ignored.
+ */
+export class ElementPart extends Part {
+  readonly type = 'element' as const;
+  element: Element;
+
+  constructor(element: Element) {
+    super();
+    this.element = element;
+  }
+
+  commit(value: unknown): void {
+    const wasDirective = isDirectiveResult(value);
+    const resolved = this.resolveDirective(value);
+    if (!wasDirective) {
+      throw new TypeError(
+        'snice: an expression in an opening tag must be an element directive ' +
+        '(for example ref(), use(), props(), attrs(), or events()).'
+      );
+    }
+    if (resolved === noChange || resolved === nothing || resolved == null) return;
+    throw new TypeError('snice: an element directive must return noChange, nothing, null, or undefined.');
+  }
+
+  clear(): void {}
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
+  }
+}
+
+/** Runtime target for the virtual `<component ${tag}>` element. */
+export class DynamicComponentPart extends Part {
+  readonly type = 'node' as const;
+  private readonly startNode: Comment;
+  private readonly endNode: Comment;
+  private readonly virtualElement: Element;
+  private readonly staticAttributes: Array<[string, string]>;
+  private readonly children = document.createDocumentFragment();
+  private readonly dependents: RetargetablePart[] = [];
+  private currentElement: Element | null = null;
+  private currentTag: string | null = null;
+
+  constructor(element: Element) {
+    super();
+    this.virtualElement = element;
+    this.staticAttributes = Array.from(element.attributes).map(attribute => [attribute.name, attribute.value]);
+    while (element.firstChild) this.children.appendChild(element.firstChild);
+
+    const parent = element.parentNode!;
+    this.startNode = document.createComment('component');
+    this.endNode = document.createComment('/component');
+    parent.insertBefore(this.startNode, element);
+    parent.insertBefore(this.endNode, element.nextSibling);
+    element.remove();
+  }
+
+  addDependent(part: RetargetablePart): void {
+    this.dependents.push(part);
+  }
+
+  commit(value: unknown): void {
+    value = this.resolveDirective(value);
+    if (value === noChange) return;
+    if (value === nothing || value == null || value === false) {
+      this.unmount();
+      return;
+    }
+    if (typeof value !== 'string' || !/^[a-z][a-z0-9._-]*$/i.test(value)) {
+      throw new TypeError('snice: <component> expects a valid element tag name string.');
+    }
+
+    if (value.toLowerCase() === 'component') {
+      throw new TypeError('snice: <component> cannot recursively target the virtual "component" tag.');
+    }
+
+    const parent = this.startNode.parentElement;
+    let namespace: string | null = this.virtualElement.namespaceURI ||
+      parent?.namespaceURI ||
+      'http://www.w3.org/1999/xhtml';
+    // Some lightweight DOMs do not implement HTML parser integration points.
+    // Derive those boundaries explicitly; real browsers arrive at the same
+    // namespace through parsing.
+    if (
+      parent?.namespaceURI === 'http://www.w3.org/2000/svg' &&
+      ['foreignobject', 'desc', 'title'].includes(parent.localName.toLowerCase())
+    ) {
+      namespace = 'http://www.w3.org/1999/xhtml';
+    } else if (parent?.namespaceURI === 'http://www.w3.org/1998/Math/MathML') {
+      const parentTag = parent.localName.toLowerCase();
+      const childTag = value.toLowerCase();
+      if (
+        ['mi', 'mo', 'mn', 'ms', 'mtext'].includes(parentTag) &&
+        !['mglyph', 'malignmark'].includes(childTag)
+      ) {
+        namespace = 'http://www.w3.org/1999/xhtml';
+      } else if (parentTag === 'annotation-xml') {
+        const encoding = parent.getAttribute('encoding')?.toLowerCase();
+        if (encoding === 'text/html' || encoding === 'application/xhtml+xml') {
+          namespace = 'http://www.w3.org/1999/xhtml';
+        }
+      }
+    }
+    const foreignNamespace = !!namespace && namespace !== 'http://www.w3.org/1999/xhtml';
+    // HTML names are ASCII-case-insensitive; SVG/MathML names are not
+    // (`linearGradient`, `clipPath`, and `foreignObject` must retain case).
+    const tag = foreignNamespace ? value : value.toLowerCase();
+    if (tag === this.currentTag && this.currentElement) return;
+    const next = foreignNamespace
+      ? document.createElementNS(namespace, tag)
+      : document.createElement(tag);
+    const isVoid = !foreignNamespace && htmlVoidElements.has(tag);
+    for (const [name, staticValue] of this.staticAttributes) next.setAttribute(name, staticValue);
+
+    if (this.currentElement) {
+      while (this.currentElement.firstChild) {
+        const child = this.currentElement.firstChild;
+        if (isVoid) this.children.appendChild(child);
+        else next.appendChild(child);
+      }
+      if (!isVoid) {
+        while (this.children.firstChild) next.appendChild(this.children.firstChild);
+      }
+      this.currentElement.replaceWith(next);
+    } else {
+      if (!isVoid) {
+        while (this.children.firstChild) next.appendChild(this.children.firstChild);
+      }
+      this.endNode.parentNode?.insertBefore(next, this.endNode);
+    }
+
+    this.currentElement = next;
+    this.currentTag = tag;
+    for (const dependent of this.dependents) dependent.retarget(next);
+  }
+
+  private unmount(): void {
+    if (!this.currentElement) return;
+    while (this.currentElement.firstChild) this.children.appendChild(this.currentElement.firstChild);
+    this.currentElement.remove();
+    this.currentElement = null;
+    this.currentTag = null;
+    for (const dependent of this.dependents) dependent.retarget(this.virtualElement);
+  }
+
+  clear(): void {
+    this.unmount();
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    const start = nodeMap.get(this.startNode);
+    const end = nodeMap.get(this.endNode);
+    if (start instanceof Comment) (this as any).startNode = start;
+    if (end instanceof Comment) (this as any).endNode = end;
+    if (this.currentElement) {
+      const element = nodeMap.get(this.currentElement);
+      if (element instanceof Element) {
+        this.currentElement = element;
+        for (const dependent of this.dependents) dependent.retarget(element, true);
+      }
+    }
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  get isConnected(): boolean {
+    return this.startNode.isConnected;
+  }
+}
+
+/** Toggle one class without rebuilding the element's full class string. */
+export class ClassPart extends Part {
+  readonly type = 'class' as const;
+  element: Element;
+  readonly name: string;
+  private committed: unknown = NOT_COMMITTED;
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: unknown): void {
+    value = this.resolveDirective(value);
+    if (value === noChange) return;
+    const enabled = value !== nothing && Boolean(value);
+    if (enabled === this.committed) return;
+    this.committed = enabled;
+    this.element.classList.toggle(this.name, enabled);
+  }
+
+  clear(): void {
+    this.element.classList.remove(this.name);
+    this.committed = NOT_COMMITTED;
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
+    this.committed = NOT_COMMITTED;
+  }
+}
+
+/** Set one CSS property, including custom properties, declaratively. */
+export class StylePart extends Part {
+  readonly type = 'style' as const;
+  element: Element;
+  readonly name: string;
+  private committed: unknown = NOT_COMMITTED;
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: unknown): void {
+    value = this.resolveDirective(value);
+    if (value === noChange || Object.is(value, this.committed)) return;
+    this.committed = value;
+    const style = (this.element as HTMLElement).style;
+    if (value === nothing || value == null || value === false) {
+      style.removeProperty(this.name);
+    } else {
+      style.setProperty(this.name, String(value));
+    }
+  }
+
+  clear(): void {
+    (this.element as HTMLElement).style.removeProperty(this.name);
+    this.committed = NOT_COMMITTED;
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
+    this.committed = NOT_COMMITTED;
+  }
+}
+
+type SpreadListener = {
+  value: unknown;
+  listener: EventListener;
+  options?: AddEventListenerOptions;
+};
+
+function validateSpreadEvents(next: Record<string, unknown>, label: string): void {
+  const names = new Set<string>();
+  for (const [rawName, value] of Object.entries(next)) {
+    const name = rawName.startsWith('@') ? rawName.slice(1) : rawName;
+    if (!name) throw new TypeError(`snice: ${label} contains an empty event name.`);
+    if (names.has(name)) {
+      throw new TypeError(`snice: ${label} contains duplicate event name "${name}".`);
+    }
+    names.add(name);
+    const listenerObject = !!value && typeof value === 'object' &&
+      typeof (value as EventListenerObject).handleEvent === 'function';
+    if (
+      value !== nothing && value != null && value !== false &&
+      typeof value !== 'function' && !listenerObject
+    ) {
+      throw new TypeError(`snice: ${label} event "${name}" expects a function, EventListenerObject, or null.`);
+    }
+  }
+}
+
+/** Named spreads: ...props, ...attrs, and ...events. */
+export class SpreadPart extends Part {
+  readonly type = 'spread' as const;
+  element: Element;
+  readonly name: string;
+  private committed: Record<string, unknown> = {};
+  private listeners = new Map<string, SpreadListener>();
+  private consumedOnce = new Map<string, unknown>();
+
+  constructor(element: Element, name: string) {
+    super();
+    this.element = element;
+    this.name = name;
+  }
+
+  commit(value: unknown): void {
+    value = this.resolveDirective(value);
+    if (value === noChange) return;
+    if (value === nothing || value == null) value = {};
+    if (typeof value !== 'object' || Array.isArray(value)) {
+      throw new TypeError(`snice: ...${this.name} expects an object.`);
+    }
+    const next = value as Record<string, unknown>;
+    if (this.name === 'events') this.commitEvents(next);
+    else if (this.name === 'props' || this.name === 'properties') this.commitProperties(next);
+    else this.commitAttributes(next);
+    this.committed = { ...next };
+  }
+
+  private commitProperties(next: Record<string, unknown>): void {
+    for (const key of Object.keys(this.committed)) {
+      if (!Object.prototype.hasOwnProperty.call(next, key)) (this.element as any)[key] = undefined;
+    }
+    for (const [key, value] of Object.entries(next)) {
+      if (Object.is(this.committed[key], value)) continue;
+      (this.element as any)[key] = value === nothing ? undefined : value;
+    }
+  }
+
+  private commitAttributes(next: Record<string, unknown>): void {
+    for (const key of Object.keys(this.committed)) {
+      if (!Object.prototype.hasOwnProperty.call(next, key)) this.element.removeAttribute(key);
+    }
+    for (const [key, value] of Object.entries(next)) {
+      if (Object.is(this.committed[key], value)) continue;
+      if (value === nothing || value == null || value === false) this.element.removeAttribute(key);
+      else this.element.setAttribute(key, value === true ? '' : String(value));
+    }
+  }
+
+  private commitEvents(next: Record<string, unknown>): void {
+    validateSpreadEvents(next, `...${this.name}`);
+    for (const [name, value] of this.consumedOnce) {
+      const rawName = Object.keys(next).find(key => this.eventName(key) === name);
+      if (!rawName || !Object.is(next[rawName], value)) this.consumedOnce.delete(name);
+    }
+    for (const [name, entry] of this.listeners) {
+      const rawName = Object.keys(next).find(key => this.eventName(key) === name);
+      if (rawName && Object.is(next[rawName], entry.value)) continue;
+      this.element.removeEventListener(name, entry.listener, entry.options);
+      this.listeners.delete(name);
+    }
+
+    for (const [rawName, value] of Object.entries(next)) {
+      const name = this.eventName(rawName);
+      if (this.listeners.has(name)) continue;
+      const listenerObject = !!value && typeof value === 'object' &&
+        typeof (value as EventListenerObject).handleEvent === 'function';
+      if (value === nothing || value == null || value === false) continue;
+      if (this.consumedOnce.has(name) && Object.is(this.consumedOnce.get(name), value)) continue;
+      this.consumedOnce.delete(name);
+      const options = listenerObject ? value as AddEventListenerOptions : undefined;
+      const listener = ((event: Event) => {
+        if (options?.once) this.consumedOnce.set(name, value);
+        if (listenerObject) (value as EventListenerObject).handleEvent(event);
+        else (value as EventListener).call(this.resolveHost(), event);
+      }) as EventListener;
+      this.element.addEventListener(name, listener, options);
+      this.listeners.set(name, { value, listener, options });
+    }
+  }
+
+  private eventName(name: string): string {
+    return name.startsWith('@') ? name.slice(1) : name;
+  }
+
+  private resolveHost(): Element | null {
+    return findRenderHost(this.element) || this.element;
+  }
+
+  clear(): void {
+    if (this.name === 'events') {
+      for (const [name, entry] of this.listeners) {
+        this.element.removeEventListener(name, entry.listener, entry.options);
+      }
+      this.listeners.clear();
+      this.consumedOnce.clear();
+    } else if (this.name !== 'props' && this.name !== 'properties') {
+      for (const key of Object.keys(this.committed)) this.element.removeAttribute(key);
+    }
+    // A property spread is being destroyed with the element that owns it.
+    // Resetting native/custom properties here is unnecessary and can throw for
+    // setters that reject undefined (textarea.value is a common example).
+    // Stale keys are still removed during an ordinary live spread update.
+    this.committed = {};
+  }
+
+  disconnected(preserveEventListeners = false): void {
+    let lifecycleError: unknown;
+    try {
+      super.disconnected(preserveEventListeners);
+    } catch (error) {
+      lifecycleError = error;
+    }
+    if (this.name === 'events' && !preserveEventListeners) this.detachListeners();
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  reconnected(): void {
+    let lifecycleError: unknown;
+    try {
+      super.reconnected();
+    } catch (error) {
+      lifecycleError = error;
+    }
+    try {
+      if (this.name === 'events' && this.listeners.size === 0) this.commitEvents(this.committed);
+    } catch (error) {
+      lifecycleError ??= error;
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  private detachListeners(): void {
+    for (const [name, entry] of this.listeners) {
+      this.element.removeEventListener(name, entry.listener, entry.options);
+    }
+    this.listeners.clear();
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    if (this.name === 'events') {
+      this.detachListeners();
+      this.consumedOnce.clear();
+    }
+    this.element = element;
+    this.committed = {};
+  }
 }
 
 /**
  * PropertyPart handles property bindings (.property=${value})
  */
 export class PropertyPart extends Part {
-  readonly element: Element;
+  readonly type = 'property' as const;
+  element: Element;
   readonly name: string;
   private _committedValue: unknown = NOT_COMMITTED;
 
@@ -1134,6 +2388,7 @@ export class PropertyPart extends Part {
   }
 
   commit(value: unknown): void {
+    value = this.resolveDirective(value);
     if (value === noChange) return;
 
     // live(): compare against the element's actual DOM property, so state
@@ -1157,7 +2412,15 @@ export class PropertyPart extends Part {
   }
 
   clear(): void {
-    (this.element as any)[this.name] = undefined;
+    // This part is being destroyed with its owning template. The element is
+    // about to leave the tree, so writing `undefined` is both unnecessary and
+    // unsafe for native setters such as HTMLTextAreaElement.value.
+    this._committedValue = NOT_COMMITTED;
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
     this._committedValue = NOT_COMMITTED;
   }
 }
@@ -1166,7 +2429,8 @@ export class PropertyPart extends Part {
  * BooleanAttributePart handles boolean attributes (?attribute=${value})
  */
 export class BooleanAttributePart extends Part {
-  readonly element: Element;
+  readonly type = 'boolean-attribute' as const;
+  element: Element;
   readonly name: string;
   private _committedValue: unknown = NOT_COMMITTED;
 
@@ -1177,6 +2441,7 @@ export class BooleanAttributePart extends Part {
   }
 
   commit(value: unknown): void {
+    value = this.resolveDirective(value);
     if (value === noChange) return;
 
     // Coerce to boolean
@@ -1198,32 +2463,63 @@ export class BooleanAttributePart extends Part {
     this.element.removeAttribute(this.name);
     this._committedValue = NOT_COMMITTED;
   }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.element = element;
+    this._committedValue = NOT_COMMITTED;
+  }
 }
 
 /**
  * EventPart handles event listener bindings with keyboard shortcut support
  */
 export class EventPart extends Part {
-  readonly element: Element;
+  readonly type = 'event' as const;
+  element: Element;
   readonly eventName: string;
   private listener: EventListener | null = null;
   private listenerOptions: AddEventListenerOptions | undefined = undefined;
   private value: any = undefined;
   private keyFilter: KeyboardFilter | null = null;
   private host: Element | null = null; // Cache host element
+  private modifiers = new Set<string>();
+  private once = false;
+  private onceConsumed = false;
 
   constructor(element: Element, eventName: string) {
     super();
     this.element = element;
 
+    const [eventSpec, ...modifierSpecs] = eventName.split('|');
+    const aliases: Record<string, string> = {
+      preventdefault: 'prevent',
+      stoppropagation: 'stop',
+      stopimmediatepropagation: 'immediate'
+    };
+    const allowed = new Set(['prevent', 'stop', 'immediate', 'once', 'capture', 'passive', 'self']);
+    for (const raw of modifierSpecs) {
+      const normalized = aliases[raw.toLowerCase()] || raw.toLowerCase();
+      if (!allowed.has(normalized)) {
+        throw new Error(
+          `snice: unknown event modifier "${raw}" in @${eventName}. ` +
+          'Supported modifiers: prevent, stop, immediate, once, capture, passive, self.'
+        );
+      }
+      this.modifiers.add(normalized);
+    }
+    if (this.modifiers.has('passive') && this.modifiers.has('prevent')) {
+      throw new Error(`snice: @${eventName} cannot combine passive and prevent.`);
+    }
+
     // Parse keyboard shortcuts:
     // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter) to match @on decorator
     // Only parse colons for keyboard events, not custom events
-    const isKeyboardEvent = ['keydown', 'keyup', 'keypress'].includes(eventName.split('.')[0].split(':')[0]);
+    const isKeyboardEvent = ['keydown', 'keyup', 'keypress'].includes(eventSpec.split('.')[0].split(':')[0]);
     // Only keyboard events split on `.`/`:` into a key filter — a custom event
     // name may legitimately contain a dot (e.g. `app.ready`) and must be kept whole.
-    const dotIndex = isKeyboardEvent ? eventName.indexOf('.') : -1;
-    const colonIndex = isKeyboardEvent ? eventName.indexOf(':') : -1;
+    const dotIndex = isKeyboardEvent ? eventSpec.indexOf('.') : -1;
+    const colonIndex = isKeyboardEvent ? eventSpec.indexOf(':') : -1;
 
     // Use whichever delimiter comes first (dot or colon)
     const delimiterIndex = dotIndex > 0 && colonIndex > 0
@@ -1231,23 +2527,37 @@ export class EventPart extends Part {
       : Math.max(dotIndex, colonIndex);
 
     if (delimiterIndex > 0) {
-      const baseEvent = eventName.substring(0, delimiterIndex);
-      const keySpec = eventName.substring(delimiterIndex + 1);
+      const baseEvent = eventSpec.substring(0, delimiterIndex);
+      const keySpec = eventSpec.substring(delimiterIndex + 1);
       this.eventName = baseEvent;
       this.keyFilter = parseKeyboardFilter(keySpec);
     } else {
-      this.eventName = eventName;
-      warnIfModifierMisuse(eventName);
+      this.eventName = eventSpec;
+      warnIfModifierMisuse(eventSpec);
     }
   }
 
   commit(value: any): void {
+    value = this.resolveDirective(value);
     // Handle noChange sentinel
     if (value === noChange) return;
 
     // Handle nothing sentinel - remove listener
     if (value === nothing) {
       value = null;
+    }
+
+    const isListenerObject = !!value &&
+      typeof value === 'object' &&
+      typeof (value as EventListenerObject).handleEvent === 'function';
+    if (
+      value !== null && value !== undefined && value !== false &&
+      typeof value !== 'function' && !isListenerObject
+    ) {
+      throw new TypeError(`snice: @${this.eventName} expects a function, EventListenerObject, or null.`);
+    }
+    if (isListenerObject && this.modifiers.has('prevent') && !!(value as AddEventListenerOptions).passive) {
+      throw new Error(`snice: @${this.eventName} cannot combine a passive listener object with prevent.`);
     }
 
     // Skip if same value (but null/undefined always triggers update for cleanup)
@@ -1260,23 +2570,40 @@ export class EventPart extends Part {
       this.listenerOptions = undefined;
     }
 
-    this.value = value;
-
     // Add new listener
-    if (value === null || value === undefined) {
+    if (value === null || value === undefined || value === false) {
+      this.value = value;
+      this.onceConsumed = false;
       return;
     }
 
-    // Accept plain functions AND EventListenerObject ({ handleEvent }).
-    // For listener objects, the object itself doubles as the
-    // addEventListener options bag (capture/once/passive).
-    const isListenerObject =
-      typeof value === 'object' && typeof (value as EventListenerObject).handleEvent === 'function';
-    if (typeof value !== 'function' && !isListenerObject) return;
+    this.onceConsumed = false;
+    try {
+      this.attachListener(value, isListenerObject);
+      this.value = value;
+    } catch (error) {
+      this.value = undefined;
+      throw error;
+    }
+  }
+
+  private attachListener(value: EventListener | (EventListenerObject & AddEventListenerOptions), isListenerObject: boolean): void {
+    // Accept plain functions AND EventListenerObject ({ handleEvent }). For
+    // listener objects, the object itself doubles as the options bag.
 
     const keyFilter = this.keyFilter;
-    this.listener = ((event: Event) => {
+    const listener = ((event: Event) => {
+      if (this.modifiers.has('self') && event.target !== this.element) return;
       if (keyFilter && !matchesKeyboardFilter(event as KeyboardEvent, keyFilter)) return;
+      if (this.once) {
+        this.onceConsumed = true;
+        this.element.removeEventListener(this.eventName, listener, listenerOptions);
+        this.listener = null;
+        this.listenerOptions = undefined;
+      }
+      if (this.modifiers.has('prevent')) event.preventDefault();
+      if (this.modifiers.has('immediate')) event.stopImmediatePropagation();
+      else if (this.modifiers.has('stop')) event.stopPropagation();
       if (isListenerObject) {
         // DOM spec: `this` inside handleEvent is the listener object itself
         (value as EventListenerObject).handleEvent(event);
@@ -1288,21 +2615,74 @@ export class EventPart extends Part {
       // that null permanently would call the handler with `this = null` once the
       // branch is shown. By the time an event fires, the element is in the DOM.
       if (!this.host) {
-        this.host = ((this.element.getRootNode() as ShadowRoot).host as Element) || null;
+        this.host = findRenderHost(this.element);
       }
-      value.call(this.host || null, event);
+      (value as EventListener).call(this.host || this.element, event);
     }) as EventListener;
 
-    this.listenerOptions = isListenerObject ? (value as AddEventListenerOptions) : undefined;
-    this.element.addEventListener(this.eventName, this.listener, this.listenerOptions);
+    const valueOptions = isListenerObject ? value as AddEventListenerOptions : {};
+    this.once = this.modifiers.has('once') || !!valueOptions.once;
+    const listenerOptions: AddEventListenerOptions = {
+      capture: this.modifiers.has('capture') || valueOptions.capture,
+      passive: this.modifiers.has('passive') || valueOptions.passive,
+      signal: valueOptions.signal
+    };
+    this.element.addEventListener(this.eventName, listener, listenerOptions);
+    this.listener = listener;
+    this.listenerOptions = listenerOptions;
   }
 
   clear(): void {
+    this.detachListener();
+    this.value = undefined;
+    this.host = null;
+    this.onceConsumed = false;
+  }
+
+  private detachListener(): void {
     if (this.listener) {
       this.element.removeEventListener(this.eventName, this.listener, this.listenerOptions);
       this.listener = null;
       this.listenerOptions = undefined;
     }
+  }
+
+  disconnected(preserveEventListeners = false): void {
+    let lifecycleError: unknown;
+    try {
+      super.disconnected(preserveEventListeners);
+    } catch (error) {
+      lifecycleError = error;
+    }
+    if (!preserveEventListeners) this.detachListener();
+    this.host = null;
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  reconnected(): void {
+    let lifecycleError: unknown;
+    try {
+      super.reconnected();
+    } catch (error) {
+      lifecycleError = error;
+    }
+    try {
+      if (!this.listener && !this.onceConsumed && this.value != null && this.value !== false) {
+        const isListenerObject = typeof this.value === 'object';
+        this.attachListener(this.value, isListenerObject);
+      }
+    } catch (error) {
+      lifecycleError ??= error;
+    }
+    if (lifecycleError) throw lifecycleError;
+  }
+
+  retarget(element: Element, preserveDirectives = false): void {
+    if (!preserveDirectives) this.disposeDirective();
+    this.clear();
+    this.element = element;
+    this.value = undefined;
+    this.host = null;
   }
 }
 
@@ -1447,10 +2827,13 @@ export function matchesKeyboardFilter(event: KeyboardEvent, filter: KeyboardFilt
 const NOT_SET = Symbol('not-set');
 
 export class ConditionalIfPart extends Part {
+  readonly type = 'node' as const;
   private startNode: Comment;
   private endNode: Comment;
-  private value: any = NOT_SET;
-  private childFragment: DocumentFragment | null = null;
+  private conditions: unknown[] = [NOT_SET];
+  private branches: DocumentFragment[] = [];
+  private defaultBranch = -1;
+  private currentBranch = -1;
 
   constructor(ifElement: Element) {
     super();
@@ -1464,54 +2847,152 @@ export class ConditionalIfPart extends Part {
     parent.insertBefore(this.startNode, ifElement);
     parent.insertBefore(this.endNode, ifElement.nextSibling);
 
-    // Park <if>'s children in an off-DOM fragment immediately, rather than
-    // leaving them in the live template fragment. Otherwise a branch that is
-    // hidden on first render would still connect its children (when the
-    // template mounts) and then disconnect them (on the first commit) — firing
-    // mount side effects spuriously. commit(true) inserts them when shown.
-    this.childFragment = document.createDocumentFragment();
-    while (ifElement.firstChild) {
-      this.childFragment.appendChild(ifElement.firstChild);
+    const primary = document.createDocumentFragment();
+    this.branches.push(primary);
+    let sawAlternative = false;
+    let lastBranch = primary;
+
+    for (const child of Array.from(ifElement.childNodes)) {
+      const tag = child.nodeType === Node.ELEMENT_NODE
+        ? (child as Element).tagName.toLowerCase()
+        : '';
+
+      if (tag === 'else-if' || tag === 'else') {
+        sawAlternative = true;
+        const wrapper = child as Element;
+        const fragment = document.createDocumentFragment();
+        while (wrapper.firstChild) fragment.appendChild(wrapper.firstChild);
+        const index = this.branches.push(fragment) - 1;
+        lastBranch = fragment;
+
+        if (tag === 'else-if') {
+          if (this.defaultBranch !== -1) {
+            throw new Error('snice: <else> must be the final branch inside <if>.');
+          }
+          this.conditions[index] = NOT_SET;
+          conditionalElseIfOwners.set(wrapper, { coordinator: this, index });
+        } else {
+          if (this.defaultBranch !== -1) {
+            throw new Error('snice: <if> may contain only one <else> branch.');
+          }
+          this.defaultBranch = index;
+        }
+        wrapper.remove();
+        continue;
+      }
+
+      if (!sawAlternative) {
+        primary.appendChild(child);
+      } else if (child.nodeType === Node.TEXT_NODE && !child.textContent?.trim()) {
+        child.remove();
+      } else {
+        lastBranch.appendChild(child);
+      }
     }
 
-    // Remove the <if> element from DOM
     parent.removeChild(ifElement);
   }
 
   commit(value: any): void {
-    const condition = Boolean(value);
-    if (this.value === value) return;
-    this.value = value;
+    value = this.resolveDirective(value);
+    if (value !== noChange) this.conditions[0] = value;
+  }
 
-    if (condition) {
-      // Show: restore children from fragment
-      if (this.childFragment && this.childFragment.hasChildNodes()) {
-        this.startNode.parentNode!.insertBefore(this.childFragment, this.endNode);
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    super.commitDirectiveValue(slot, value);
+    this.flush();
+  }
+
+  setAlternative(index: number, value: unknown): void {
+    if (value !== noChange) this.conditions[index] = value;
+  }
+
+  flush(): void {
+    let next = -1;
+    for (let i = 0; i < this.conditions.length; i++) {
+      if (
+        this.conditions[i] !== NOT_SET &&
+        this.conditions[i] !== nothing &&
+        Boolean(this.conditions[i])
+      ) {
+        next = i;
+        break;
       }
-    } else {
-      // Hide: move children to fragment
-      if (!this.childFragment) {
-        this.childFragment = document.createDocumentFragment();
-      }
-      let node = this.startNode.nextSibling;
-      while (node && node !== this.endNode) {
-        const next = node.nextSibling;
-        this.childFragment.appendChild(node);
-        node = next;
-      }
+    }
+    if (next === -1) next = this.defaultBranch;
+    if (next === this.currentBranch) return;
+
+    this.collectCurrent();
+    this.currentBranch = next;
+    if (next !== -1 && this.branches[next].hasChildNodes()) {
+      this.startNode.parentNode?.insertBefore(this.branches[next], this.endNode);
+    }
+  }
+
+  private collectCurrent(): void {
+    if (this.currentBranch === -1) return;
+    const fragment = this.branches[this.currentBranch];
+    let node = this.startNode.nextSibling;
+    while (node && node !== this.endNode) {
+      const next = node.nextSibling;
+      fragment.appendChild(node);
+      node = next;
     }
   }
 
   clear(): void {
-    if (!this.childFragment) {
-      this.childFragment = document.createDocumentFragment();
-    }
-    let node = this.startNode.nextSibling;
-    while (node && node !== this.endNode) {
-      const next = node.nextSibling;
-      this.childFragment.appendChild(node);
-      node = next;
-    }
+    this.collectCurrent();
+    this.currentBranch = -1;
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    const start = nodeMap.get(this.startNode);
+    const end = nodeMap.get(this.endNode);
+    if (start instanceof Comment) this.startNode = start;
+    if (end instanceof Comment) this.endNode = end;
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  get isConnected(): boolean {
+    return this.startNode.isConnected;
+  }
+}
+
+const conditionalElseIfOwners = new WeakMap<Element, {
+  coordinator: ConditionalIfPart;
+  index: number;
+}>();
+
+export class ConditionalElseIfPart extends Part {
+  readonly type = 'node' as const;
+  readonly coordinator: ConditionalIfPart;
+  private readonly index: number;
+
+  constructor(element: Element) {
+    super();
+    const owner = conditionalElseIfOwners.get(element);
+    if (!owner) throw new Error('snice: <else-if> must be a direct child of <if>.');
+    this.coordinator = owner.coordinator;
+    this.index = owner.index;
+  }
+
+  commit(value: unknown): void {
+    this.coordinator.setAlternative(this.index, this.resolveDirective(value));
+  }
+
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    super.commitDirectiveValue(slot, value);
+    this.coordinator.flush();
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  clear(): void {}
+
+  get isConnected(): boolean {
+    return this.coordinator.isConnected;
   }
 }
 
@@ -1520,14 +3001,19 @@ export class ConditionalIfPart extends Part {
  * Removes/inserts matching branch based on value
  */
 export class ConditionalCasePart extends Part {
+  readonly type = 'node' as const;
   private startNode: Comment;
   private endNode: Comment;
   private value: any = NOT_SET;
-  private branches: Map<string, DocumentFragment> = new Map();
-  private defaultBranch: DocumentFragment | null = null;
-  private currentKey: string | null = null;
+  private branches: Array<{
+    fragment: DocumentFragment;
+    dynamic: boolean;
+    expected: unknown;
+  }> = [];
+  private defaultBranch = -1;
+  private currentBranch = -1;
 
-  constructor(caseElement: Element) {
+  constructor(caseElement: Element, dynamicWhenElements: ReadonlySet<Element>) {
     super();
     const parent = caseElement.parentNode!;
 
@@ -1543,17 +3029,30 @@ export class ConditionalCasePart extends Part {
     for (const child of Array.from(caseElement.children)) {
       const childTag = child.tagName.toLowerCase();
       if (childTag === 'when') {
-        const whenValue = child.getAttribute('value') || '';
         const fragment = document.createDocumentFragment();
         while (child.firstChild) {
           fragment.appendChild(child.firstChild);
         }
-        this.branches.set(whenValue, fragment);
+        const dynamic = dynamicWhenElements.has(child);
+        const index = this.branches.push({
+          fragment,
+          dynamic,
+          expected: dynamic ? NOT_SET : (child.getAttribute('value') ?? '')
+        }) - 1;
+        if (dynamic) conditionalWhenOwners.set(child, { coordinator: this, index });
       } else if (childTag === 'default') {
-        this.defaultBranch = document.createDocumentFragment();
-        while (child.firstChild) {
-          this.defaultBranch.appendChild(child.firstChild);
+        if (this.defaultBranch !== -1) {
+          throw new Error('snice: <case> may contain only one <default> branch.');
         }
+        const fragment = document.createDocumentFragment();
+        while (child.firstChild) {
+          fragment.appendChild(child.firstChild);
+        }
+        this.defaultBranch = this.branches.push({
+          fragment,
+          dynamic: false,
+          expected: NOT_SET
+        }) - 1;
       }
     }
 
@@ -1562,42 +3061,39 @@ export class ConditionalCasePart extends Part {
   }
 
   commit(value: any): void {
-    // Dirty-check on the SELECTED BRANCH, not the raw value. A value whose type
-    // changed but stringifies the same (number 1 vs string '1' — e.g. a numeric
-    // default replaced by a router param, which is always a string) selects the
-    // same branch, so tearing it down and re-inserting it would needlessly
-    // restart media/animations and lose focus inside it.
-    const valueStr = String(value);
-    const hasBranch = this.branches.has(valueStr);
-    const nextKey = hasBranch ? valueStr : (this.defaultBranch ? '__default__' : null);
+    value = this.resolveDirective(value);
+    if (value !== noChange) this.value = value;
+  }
 
-    if (this.currentKey === nextKey) {
-      this.value = value;
-      return;
-    }
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    super.commitDirectiveValue(slot, value);
+    this.flush();
+  }
 
-    this.value = value;
+  setExpected(index: number, value: unknown): void {
+    if (value !== noChange) this.branches[index].expected = value;
+  }
 
-    // Move current content back to its fragment
-    this._collectCurrent();
+  flush(): void {
+    let next = this.branches.findIndex((branch, index) => {
+      if (index === this.defaultBranch) return false;
+      return branch.dynamic
+        ? Object.is(this.value, branch.expected)
+        : String(this.value) === branch.expected;
+    });
+    if (next === -1) next = this.defaultBranch;
+    if (next === this.currentBranch) return;
 
-    // Insert matching branch
-    const matchingFragment = hasBranch ? this.branches.get(valueStr)! : this.defaultBranch;
-    this.currentKey = nextKey;
-
-    if (matchingFragment && matchingFragment.hasChildNodes()) {
-      this.startNode.parentNode!.insertBefore(matchingFragment, this.endNode);
+    this.collectCurrent();
+    this.currentBranch = next;
+    if (next !== -1 && this.branches[next].fragment.hasChildNodes()) {
+      this.startNode.parentNode?.insertBefore(this.branches[next].fragment, this.endNode);
     }
   }
 
-  private _collectCurrent(): void {
-    if (this.currentKey === null) return;
-
-    const fragment = this.currentKey === '__default__'
-      ? this.defaultBranch
-      : this.branches.get(this.currentKey);
-
-    if (!fragment) return;
+  private collectCurrent(): void {
+    if (this.currentBranch === -1) return;
+    const fragment = this.branches[this.currentBranch].fragment;
 
     let node = this.startNode.nextSibling;
     while (node && node !== this.endNode) {
@@ -1608,8 +3104,57 @@ export class ConditionalCasePart extends Part {
   }
 
   clear(): void {
-    this._collectCurrent();
-    this.currentKey = null;
+    this.collectCurrent();
+    this.currentBranch = -1;
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    const start = nodeMap.get(this.startNode);
+    const end = nodeMap.get(this.endNode);
+    if (start instanceof Comment) this.startNode = start;
+    if (end instanceof Comment) this.endNode = end;
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  get isConnected(): boolean {
+    return this.startNode.isConnected;
   }
 }
 
+const conditionalWhenOwners = new WeakMap<Element, {
+  coordinator: ConditionalCasePart;
+  index: number;
+}>();
+
+export class ConditionalWhenPart extends Part {
+  readonly type = 'node' as const;
+  readonly coordinator: ConditionalCasePart;
+  private readonly index: number;
+
+  constructor(element: Element) {
+    super();
+    const owner = conditionalWhenOwners.get(element);
+    if (!owner) throw new Error('snice: dynamic <when> must be a direct child of <case>.');
+    this.coordinator = owner.coordinator;
+    this.index = owner.index;
+  }
+
+  commit(value: unknown): void {
+    this.coordinator.setExpected(this.index, this.resolveDirective(value));
+  }
+
+  protected commitDirectiveValue(slot: number, value: unknown): void {
+    super.commitDirectiveValue(slot, value);
+    this.coordinator.flush();
+  }
+
+  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
+    this.adoptDirectiveNodes(nodeMap);
+  }
+
+  clear(): void {}
+
+  get isConnected(): boolean {
+    return this.coordinator.isConnected;
+  }
+}

@@ -5,6 +5,7 @@ Event handling in Snice provides two powerful approaches: **template event synta
 
 ## Table of Contents
 - [Template Event Syntax](#template-event-syntax)
+- [Template Event Modifiers](#template-event-modifiers)
 - [@on Decorator](#on-decorator)
 - [@dispatch Decorator](#dispatch-decorator)
 - [Custom Events](#custom-events)
@@ -199,6 +200,32 @@ class KeyboardInput extends HTMLElement {
 - `@keydown.ctrl+shift+s` - Multiple modifiers
 - `@keydown.~enter` - Enter with any modifiers
 - `@keydown.escape`, `@keydown.down`, etc. - Named keys
+
+### Template Event Modifiers
+
+Append DOM listener and propagation behavior with `|`:
+
+```typescript
+html`
+  <form @submit|prevent=${this.submit}></form>
+  <button @click|once|stop=${this.runOnce}>Run once</button>
+  <section @click|self=${this.selectSection}>...</section>
+  <input @keydown.ctrl+s|prevent=${this.save}>
+  <div @pointermove|capture|passive=${this.track}></div>
+`
+```
+
+Supported modifiers:
+
+- `prevent` calls `preventDefault()` (`preventDefault` alias).
+- `stop` calls `stopPropagation()` (`stopPropagation` alias).
+- `immediate` calls `stopImmediatePropagation()` (`stopImmediatePropagation` alias).
+- `once`, `capture`, and `passive` configure DOM listener behavior.
+- `self` invokes the handler only when `event.target` is the bound element.
+
+`passive` and `prevent` are contradictory and produce a render error. Modifiers compose with dot or colon keyboard filters. Exact keyboard combinations reject extra modifiers; prefix the key filter with `~` to accept any modifier combination.
+
+Handlers may also be `EventListenerObject` values. Their `handleEvent()` method receives the object as `this`, and `capture`, `once`, or `passive` fields are honored. Function handlers receive the component that owns the render tree as `this`, including portal content rendered outside its shadow root.
 
 ### Arrow Functions in Templates
 
@@ -886,5 +913,4 @@ class KeyboardController implements IController {
   }
 }
 ```
-
 

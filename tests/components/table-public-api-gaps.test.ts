@@ -276,7 +276,7 @@ describe('Table public API gap regressions', () => {
     element = table;
     await wait(30);
     const cell = table.shadowRoot.querySelector('snice-cell-progress') as any;
-    const progress = cell.shadowRoot.querySelector('snice-progress') as any;
+    const progress = cell.shadowRoot.querySelector('snice-table-progress') as any;
     expect(cell.value).toEqual({ value: 72, color: '#123456' });
     expect(progress.value).toBe(72);
     expect(progress.color).toBe('#123456');

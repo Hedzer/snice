@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const showcaseUrl = process.env.TABLE_SHOWCASE_URL
-  || 'http://127.0.0.1:5566/components/table/full-showcase.html';
+  || '/components/table/full-showcase.html';
 
 test.describe('table full showcase', () => {
   let runtimeErrors: string[];
@@ -77,7 +77,7 @@ test.describe('table full showcase', () => {
         listBorder: getComputedStyle(table('list-mode').shadowRoot.querySelector('tbody td')).borderRightWidth,
         remoteTotal: table('remote-demo').totalItems,
         standaloneBehavior: {
-          progressPercentage: standaloneProgress.shadowRoot.querySelector('snice-progress')?.showPercentage,
+          progressPercentage: standaloneProgress.shadowRoot.querySelector('snice-table-progress')?.showPercentage,
           locationHasLink: !!standaloneLocation.shadowRoot.querySelector('a'),
           locationShowMapLink: standaloneLocation.showMapLink,
         },

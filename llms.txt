@@ -26,7 +26,7 @@ Tools: list_components, get_component_docs, get_decorator_docs, get_overview, ge
 
 ## What Snice Is
 
-A TypeScript web component framework using TC39 decorators and Shadow DOM. Components extend `HTMLElement` directly — no base class, no virtual DOM. Differential rendering patches only changed DOM nodes.
+A TypeScript web component framework using TC39 decorators and configurable shadow/light render roots. Components may extend `HTMLElement` directly or the optional `SniceElement` convention base. There is no virtual DOM; differential rendering patches only changed DOM parts.
 
 Four building blocks:
 - **Elements** (`@element`) — Visual components. Receive data via properties, emit events.
@@ -92,6 +92,9 @@ import { SniceButton } from 'snice/adapters/react';
 ## Key Warnings
 
 - Snice is NOT Lit — don't import from `lit` or extend `LitElement`
-- No `@state()` — use `@property()` for all reactive state
+- Use `@property()` for public attribute/property input and `@state()` for internal reactive state
+- Direct JavaScript property writes preserve type and identity; conversion happens at the string attribute boundary
+- `@state({ deep: true })` uses native Proxy/Reflect for nested objects, arrays, Map, and Set (modern browsers; no IE)
+- Full declarative syntax, directives, SSR, and hydration: https://snice.dev/docs.html#rendering
 - `page` decorator comes from `Router()`, not from `'snice'` exports
 - Elements are visual only — no fetch/API calls (use pages/controllers)

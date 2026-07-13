@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const showcaseUrl = 'http://127.0.0.1:5566/components/table/full-showcase.html';
+const showcaseUrl = '/components/table/full-showcase.html';
 
 test.describe('snice-table grouping and aggregation', () => {
   test.beforeEach(async ({ page }) => {

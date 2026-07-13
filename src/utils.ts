@@ -50,6 +50,10 @@ export function parseAttributeValue(attributeValue: string | null, propertyOptio
   // Use explicit type or detect from initial value
   const typeToUse = propertyOptions.type || detectType(initialValue);
 
+  if (propertyOptions.converter?.fromAttribute) {
+    return propertyOptions.converter.fromAttribute(attributeValue, typeToUse);
+  }
+
   switch (typeToUse) {
     case Boolean:
       // Boolean semantics per user specification:
@@ -124,7 +128,11 @@ export function getAttrName(opts: PropertyOptions, propName: string): string {
   // camelCase `attribute:` would otherwise never match observedAttributes and
   // attributeChangedCallback would never fire. get/setAttribute are already
   // case-insensitive, so this is safe for every caller.
-  return (typeof opts.attribute === 'string' ? opts.attribute : propName).toLowerCase();
+  if (typeof opts.attribute === 'string') return opts.attribute.toLowerCase();
+  if (opts.attribute === true || opts.attributeNaming === 'kebab') {
+    return propName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  }
+  return propName.toLowerCase();
 }
 
 /**

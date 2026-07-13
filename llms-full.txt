@@ -52,7 +52,10 @@ tsconfig.json:
 ### Class Decorators
 
 ```typescript
-@element('tag-name', options?: { formAssociated?: boolean })
+@element('tag-name', options?: {
+  formAssociated?, renderRoot?: 'shadow'|'light',
+  shadow?: 'open'|'closed'|false, delegatesFocus?
+})
 @page({ tag, routes, guards?, placard? })   // `page` from Router(), NOT 'snice'
 @controller('name')
 @layout('tag-name')
@@ -68,17 +71,32 @@ tsconfig.json:
 // once: true — imperative mode: renders once, use @watch + @query to update
 
 @styles()
-// Returns CSSResult from css`...`. Scoped to shadow DOM. Called once (not reactive).
+// Returns CSSResult from css`...`. Applied to the managed render root once.
+
+class SniceElement extends HTMLElement {
+  static styles?: CSSResult | CSSResult[]
+  static renderOptions?: RenderOptions
+  render(): TemplateResult
+  invalidate(): Promise<void>
+  renderNow(): Promise<void>
+}
+// Optional: render convention, static styles, kebab attrs, typed invalidation.
 ```
 
 ### Properties
 
 ```typescript
-@property(options?: { type?, attribute?, converter?, hasChanged? })
-// Types: String (default), Number, Boolean, Object, Array
-// Syncs with attributes, triggers re-render
+@property(options?: { type?, attribute?, reflect?, deep?, converter?, hasChanged? })
+// Types: String, Number, Boolean, Object, Array, Date, BigInt, SimpleArray
+// Attribute input + reflection (reflect defaults true), triggers re-render
+// type/fromAttribute only convert the string attribute boundary
+// Direct JS assignments preserve the assigned type and identity
+// reflect:false = input attr only; attribute:false = no attr channel
+// deep:true = nested plain object/array/Map/Set writes via Proxy/Reflect
 // Boolean attrs: "false" string → false (non-standard)
-// No `reflect` option — attributes sync automatically
+
+@state(options?: { deep?, hasChanged? })
+// Reactive internal state; never observes/reflects an attribute
 
 @watch(...propertyNames: string[])
 // Callback: (oldVal, newVal, propertyName) => void
@@ -108,6 +126,8 @@ tsconfig.json:
 html`<button @click=${handler}>...`
 html`<input @keydown:Enter=${handler} />`
 html`<input @keydown.ctrl+s=${handler} />`
+html`<form @submit|prevent=${handler}>...`
+// Template | modifiers: prevent, stop, immediate, once, capture, passive, self
 
 // Decorator:
 @on(event, selector?, options?)
@@ -174,8 +194,8 @@ export const { page, navigate, initialize } = Router({
   layout: 'app-shell'
 });
 
-// Guards: synchronous only, no async, no redirects
-type Guard<T> = (context: T, params: RouteParams) => boolean
+// Guards may be sync/async; no string redirects
+type Guard<T> = (context: T, params: RouteParams) => boolean | Promise<boolean>
 ```
 
 ### Fetcher
@@ -211,16 +231,49 @@ attr="${val}"       // String attribute
 .prop=${val}        // Property (objects, arrays)
 ?attr=${bool}       // Boolean attribute (toggles presence)
 @event=${handler}   // Event listener (auto-bound)
+class:active=${bool} // One class toggle
+style:color=${value} // One CSS property
+...props=${object}   // Property spread
+...attrs=${object}   // Attribute spread
+...events=${object}  // Listener spread
 
-<if ${condition}>...</if>
+<if ${condition}>
+  primary
+  <else-if ${other}>other</else-if>
+  <else>fallback</else>
+</if>
 <case ${value}>
   <when value="x">...</when>
+  <when ${typedValue}>...</when>
   <default>...</default>
 </case>
 ${items.map(i => html`<li>${i}</li>`)}
+${repeat(items, { key: i => i.id, render: i => html`...`, empty: () => html`...` })}
+<component ${tag} ...attrs=${attributes}>...</component>
+
+createRef(); ref(target); use(action, value?)
+props(object); attrs(object); events(object)
+bind(target, key, { event?, fromView?, toView? })
+resource(source, { pending?, ready?, error? })
+portal(target, content)
+transition(content, options)
+// Promise/AsyncIterable work directly in node expressions
 ```
 
-**Pitfall**: Compound `<if>` expressions get stripped by minifiers — pre-compute as const.
+Virtual control-flow tags add no wrapper. Branches retain DOM identity. `repeat` requires unique keys. See `docs/ai/rendering.md` for full behavior.
+
+### SSR / Hydration
+
+```typescript
+renderToString(template, { hydratable? }): string
+renderToStringAsync(template, options): Promise<string>
+renderElementToString(tag, template, { renderRoot?, shadow?: 'open'|'closed'|false, attributes?, styles?, delegatesFocus?, hydratable? }): string
+renderElementToStringAsync(tag, template, options): Promise<string>
+hydrate(template, container, { onMismatch?: 'throw'|'replace' })
+hydrateElement(element, template, options)
+```
+
+DOM-free SSR; async SSR resolves promises/async iterables/directives. Element SSR outputs light or declarative shadow DOM and marks auto-hydration. Matching nodes retain identity; mismatch throws `HydrationError` by default.
 
 ---
 
@@ -229,8 +282,14 @@ ${items.map(i => html`<li>${i}</li>`)}
 ```typescript
 import {
   element, controller, layout,       // class decorators (page from Router)
-  property, watch, context,          // state
-  render, styles, html, css,         // rendering
+  SniceElement, property, state, watch, context,
+  render, styles, html, svg, css, nothing, unsafeHTML,
+  Directive, directive, directiveServerResult,
+  bind, createRef, ref, use, props, attrs, events,
+  repeat, resource, portal, transition,
+  renderToString, renderToStringAsync,
+  renderElementToString, renderElementToStringAsync,
+  hydrate, hydrateElement, HydrationError,
   query, queryAll,                   // DOM
   on, dispatch,                      // events
   request, respond,                  // communication
@@ -297,17 +356,18 @@ Core variables: `--snice-color-primary`, `-success`, `-warning`, `-danger`, `-ne
 ## Pitfalls
 
 - **Not Lit**: Don't import from `lit` or extend `LitElement`
-- **No `@state()`**: Use `@property()` for all reactive state
 - **No `@customElement()`**: Use `@element('tag-name')`
-- **No `reflect`**: Attributes sync automatically
+- **State channel**: `@property` is public; `@state` never uses attributes
+- **Reflection**: Defaults on; `reflect:false` is attribute-input-only
+- **JS source of truth**: Never expect `type` to coerce a direct property assignment
+- **Deep reactivity**: Native Proxy/Reflect; modern evergreen browsers, no IE
 - **Elements are visual only**: No fetch/API calls — use pages/controllers
 - **Boolean attrs**: `"false"` string → `false`
 - **Events**: kebab-case names, `e.detail.value` not `e.target.value`, `CustomEvent` not `Event`
 - **`page`**: Comes from `Router()`, not `'snice'` exports
 - **Router `type`**: Required — `'hash'` or `'pushstate'`
-- **Guards**: Sync only, boolean return, no async/redirects
-- **`<if>` expressions**: Compound expressions stripped by minifiers — pre-compute as const
-- **Testing**: `await el.ready` before assertions, `el.shadowRoot.querySelector()` for shadow DOM
+- **Guards**: Boolean or Promise<boolean>; no string redirects
+- **Testing**: `await el.ready`, then `await el.rendered` after writes; use `@query` for managed closed/light roots
 
 ---
 

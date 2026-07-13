@@ -399,7 +399,7 @@ ${header('decorators')}
 
     <div class="dec-section">
       <h3><code>@element</code></h3>
-      <p class="desc">Register a custom element. Extends HTMLElement with reactive properties and lifecycle.</p>
+      <p class="desc">Register a custom element with configurable open/closed shadow or light-DOM rendering.</p>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('my-card')
 class MyCard extends HTMLElement {
   @property() title = '';
@@ -410,6 +410,11 @@ class MyCard extends HTMLElement {
     return html\`&lt;h1&gt;\${this.title}&lt;/h1&gt;\`;
   }
 }</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@element('light-card', { renderRoot: 'light' })
+class LightCard extends SniceElement { /* ... */ }
+
+@element('closed-card', { shadow: 'closed', delegatesFocus: true })
+class ClosedCard extends SniceElement { /* ... */ }</snice-code-block>
       <p class="doc-link"><a href="docs.html#elements">Full documentation →</a></p>
     </div>
 
@@ -481,12 +486,19 @@ class HomePage extends HTMLElement { }</snice-code-block>
     </div>
 
     <div class="dec-section">
-      <h3><code>@property</code> & <code>@watch</code></h3>
-      <p class="desc">Reactive properties that trigger re-renders. Watch for changes.</p>
-      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @property: reactive props, re-render on change
+      <h3><code>@property</code>, <code>@state</code> & <code>@watch</code></h3>
+      <p class="desc">Separate public attribute/property input from internal state, optionally observe nested collections, and watch changes.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Public property: attribute input + reflection
 @property() name = '';
 @property({ type: Number }) count = 0;
-@property({ type: Boolean, reflect: true }) active = false;</snice-code-block>
+@property({ type: Boolean, reflect: false }) active = false;
+
+// Internal state: never an attribute
+@state() open = false;
+@state({ deep: true }) model = { rows: [], selected: new Set() };
+
+// Type conversion is only for string attributes.
+// Direct JS property assignments preserve type and identity.</snice-code-block>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @watch: fires once on init as (undefined, value), then on every change
 @watch('count')
 onCountChange(oldVal, newVal) {
@@ -515,6 +527,14 @@ template() {
       &lt;/if&gt;
     &lt;/div&gt;
   \`;
+}</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Optional convention-driven authoring
+class UserCard extends SniceElement {
+  static styles = css\`:host { display: block; }\`;
+
+  render() {
+    return html\`&lt;article class:selected=\${this.selected}&gt;...&lt;/article&gt;\`;
+  }
 }</snice-code-block>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// @styles: scoped CSS
 @styles()
@@ -1775,6 +1795,7 @@ const docsDir = join(root, 'docs');
 const docsManifest = [
   { group: 'Core', docs: [
     { id: 'elements', file: 'elements.md', title: 'Elements' },
+    { id: 'rendering', file: 'rendering.md', title: 'Declarative Rendering' },
     { id: 'routing', file: 'routing.md', title: 'Routing' },
     { id: 'events', file: 'events.md', title: 'Events' },
     { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
@@ -1789,6 +1810,9 @@ const docsManifest = [
     { id: 'code-block', file: 'code-block.md', title: 'Code Block' },
   ]},
 ];
+const docsByFile = new Map(
+  docsManifest.flatMap(group => group.docs.map(doc => [doc.file, doc]))
+);
 
 // Grammar map: code fence language → grammar file path
 const grammarMap = {
@@ -1860,6 +1884,11 @@ function mdToHtml(markdown, docId) {
   }
 
   function inlineFormat(text) {
+    // Markdown prose is text, not trusted HTML. Escape first so inline code
+    // such as `<component ${tag}>` cannot be parsed as a real element in the
+    // generated docs page; the formatting replacements below then add only
+    // the small, controlled HTML surface this renderer supports.
+    text = escapeHtml(text);
     // Bold + italic
     text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
     // Bold
@@ -1868,8 +1897,16 @@ function mdToHtml(markdown, docId) {
     text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
     // Inline code
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-    // Links
-    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    // Links. Cross-links to another Markdown file rendered on this same page
+    // become in-page anchors instead of dead .md requests.
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, rawHref) => {
+      const [path, fragment] = rawHref.split('#', 2);
+      const linkedDoc = docsByFile.get(path.replace(/^\.\//, ''));
+      const href = linkedDoc
+        ? `#${linkedDoc.id}${fragment ? `-${slugify(fragment)}` : ''}`
+        : rawHref;
+      return `<a href="${href}">${label}</a>`;
+    });
     return text;
   }
 
@@ -1901,6 +1938,10 @@ function mdToHtml(markdown, docId) {
       codeLines.push(line);
       continue;
     }
+
+    // Source-only routing comments are useful in Markdown but should not be
+    // exposed as prose after inline escaping.
+    if (/^<!--.*-->$/.test(line.trim())) continue;
 
     // Skip table of contents sections
     if (/^## Table of Contents$/i.test(line.trim())) {
@@ -2019,11 +2060,11 @@ for (const group of docsManifest) {
     const { html: docHtml, headings } = mdToHtml(md, doc.id);
 
     // Sidebar: doc title link
-    sidebarHtml += `<a href="#${doc.id}">${doc.title}</a>\n`;
+    sidebarHtml += `<a href="#${doc.id}">${escapeHtml(doc.title)}</a>\n`;
     // Sidebar: ## sub-headings
     for (const h of headings) {
       if (h.level === 2) {
-        sidebarHtml += `<a href="#${h.id}" class="sub">${h.text}</a>\n`;
+        sidebarHtml += `<a href="#${h.id}" class="sub">${escapeHtml(h.text.replace(/[*_`]/g, ''))}</a>\n`;
       }
     }
 

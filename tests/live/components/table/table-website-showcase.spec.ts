@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const websiteUrl = process.env.TABLE_WEBSITE_URL
-  || 'http://127.0.0.1:5566/components.html#comp-table';
+  || '/components.html#comp-table';
 
 test('public website table card opens the complete working showcase', async ({ page }) => {
   test.setTimeout(60_000);

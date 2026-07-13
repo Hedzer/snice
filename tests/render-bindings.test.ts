@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from './test-imports';
 
 describe('@render decorator - property and attribute bindings', () => {
   let container: HTMLDivElement;
@@ -84,6 +84,43 @@ describe('@render decorator - property and attribute bindings', () => {
       expect(warnSpy.mock.calls.some((c) => /single expression/i.test(String(c[0])))).toBe(false);
       warnSpy.mockRestore();
     });
+
+    it('keeps spread bindings aligned and warns when they contain extra interpolation', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      @element('test-multi-marker-spread-align')
+      class TestMultiMarkerSpreadAlign extends HTMLElement {
+        @render()
+        renderContent() {
+          return html`<input ...attrs="${{ title: 'kept' }}${{ hidden: true }}" .value=${'aligned'}>`;
+        }
+      }
+
+      const el = document.createElement('test-multi-marker-spread-align') as HTMLElement & { ready: Promise<void> };
+      container.appendChild(el);
+      await el.ready;
+      const input = el.shadowRoot!.querySelector('input') as HTMLInputElement;
+      expect(input.title).toBe('kept');
+      expect(input.value).toBe('aligned');
+      expect(warnSpy.mock.calls.some(call => /single expression/i.test(String(call[0])))).toBe(true);
+      warnSpy.mockRestore();
+    });
+  });
+
+  it('treats a literal less-than sign before an expression as text', async () => {
+    @element('test-less-than-text-expression')
+    class TestLessThanTextExpression extends HTMLElement {
+      @property({ attribute: false }) limit = 10;
+      @render() renderContent() { return html`<p>value < ${this.limit}; still text</p>`; }
+    }
+
+    const el = document.createElement('test-less-than-text-expression') as TestLessThanTextExpression;
+    container.appendChild(el);
+    await el.ready;
+    expect(el.shadowRoot!.querySelector('p')?.textContent).toBe('value < 10; still text');
+    el.limit = 20;
+    await el.rendered;
+    expect(el.shadowRoot!.querySelector('p')?.textContent).toBe('value < 20; still text');
   });
 
   it('should bind properties with .property syntax', async () => {

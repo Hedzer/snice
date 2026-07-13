@@ -1,77 +1,82 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Website Component Rendering', () => {
-  test.beforeAll(async () => {
-    // Server should already be running on port 8000
-  });
-
   test('components render in browser', async ({ page }) => {
-    await page.goto('http://localhost:52891');
+    await page.goto('http://localhost:52891/components.html');
 
-    // Wait for page to load
     await page.waitForLoadState('networkidle');
+    await page.waitForFunction(() => !!customElements.get('snice-input'));
 
-    // Check that snice-button components rendered (should have shadow DOM)
-    const buttons = await page.locator('snice-button').all();
-    expect(buttons.length).toBeGreaterThan(0);
+    for (const tag of ['snice-button', 'snice-badge', 'snice-alert', 'snice-spinner', 'snice-input']) {
+      const component = page.locator(tag).first();
+      await expect(component).toBeAttached();
+      const shadowContent = await component.evaluate((el) => el.shadowRoot?.innerHTML || '');
+      expect(shadowContent, `${tag} should render its shadow tree`).not.toBe('');
+    }
 
-    // Check first button has shadow root content
-    const firstButton = page.locator('snice-button').first();
-    const shadowContent = await firstButton.evaluate((el) => {
-      return el.shadowRoot?.innerHTML || '';
-    });
-    expect(shadowContent.length).toBeGreaterThan(0);
-    expect(shadowContent).toContain('button');
-
-    // Check badge rendered
-    const badge = page.locator('snice-badge').first();
-    const badgeShadow = await badge.evaluate((el) => el.shadowRoot?.innerHTML || '');
-    expect(badgeShadow.length).toBeGreaterThan(0);
-
-    // Check alert rendered
-    const alert = page.locator('snice-alert').first();
-    const alertShadow = await alert.evaluate((el) => el.shadowRoot?.innerHTML || '');
-    expect(alertShadow.length).toBeGreaterThan(0);
-
-    // Check spinner rendered
-    const spinner = page.locator('snice-spinner').first();
-    const spinnerShadow = await spinner.evaluate((el) => el.shadowRoot?.innerHTML || '');
-    expect(spinnerShadow.length).toBeGreaterThan(0);
-
-    // Check input rendered
-    const input = page.locator('snice-input').first();
-    const inputShadow = await input.evaluate((el) => el.shadowRoot?.innerHTML || '');
-    expect(inputShadow.length).toBeGreaterThan(0);
+    const buttonShadow = await page.locator('snice-button').first()
+      .evaluate((el) => el.shadowRoot?.innerHTML || '');
+    expect(buttonShadow).toContain('button');
   });
 
   test('theme toggle works', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('snice-theme', 'light'));
     await page.goto('http://localhost:52891');
     await page.waitForLoadState('networkidle');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
-    // Click theme toggle
-    await page.click('.theme-toggle');
+    await page.click('.theme-btn');
 
-    // Check theme changed
     const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
 
-    // Toggle back
-    await page.click('.theme-toggle');
+    await page.click('.theme-btn');
     const themeLight = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(themeLight).toBe('light');
   });
 
   test('modal opens', async ({ page }) => {
-    await page.goto('http://localhost:52891');
+    await page.goto('http://localhost:52891/components.html');
     await page.waitForLoadState('networkidle');
+    await page.waitForFunction(() => !!customElements.get('snice-modal'));
 
-    // Find and click the "Open Modal" button
-    const openModalBtn = page.locator('snice-button:has-text("Open Modal")');
+    const openModalBtn = page.locator('snice-button', { hasText: 'Open Modal' }).first();
     await openModalBtn.click();
 
-    // Check modal is open
     const modal = page.locator('snice-modal#demo-modal');
     const isOpen = await modal.evaluate((el: any) => el.open);
     expect(isOpen).toBe(true);
+  });
+
+  test('generated rendering guide and reference contain every major feature', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto('http://localhost:52891/guide.html');
+    await page.waitForLoadState('networkidle');
+    for (const id of ['state', 'roots', 'bindings', 'conditionals', 'lists', 'async', 'ssr']) {
+      await expect(page.locator(`#${id}`)).toBeVisible();
+    }
+    await expect(page.locator('a[href="docs.html#rendering"]')).toBeVisible();
+
+    await page.goto('http://localhost:52891/docs.html#rendering');
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('#rendering')).toBeVisible();
+    for (const id of [
+      'rendering-bindings',
+      'rendering-control-flow',
+      'rendering-async-content',
+      'rendering-reactive-authoring',
+      'rendering-render-roots',
+      'rendering-custom-directives',
+      'rendering-server-rendering-and-hydration'
+    ]) {
+      await expect(page.locator(`#${id}`)).toBeAttached();
+    }
+
+    // Inline examples such as <component> must remain escaped prose/code, not
+    // become accidental live DOM elements in the generated documentation.
+    await expect(page.locator('#rendering component')).toHaveCount(0);
+    expect(pageErrors).toEqual([]);
   });
 });

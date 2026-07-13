@@ -77,6 +77,8 @@
         <div class="nav-group">Elements</div>
         <a href="#minimum">Bare minimum</a>
         <a href="#properties">Properties</a>
+        <a href="#state">Internal &amp; deep state</a>
+        <a href="#roots">Render roots</a>
         <a href="#styles">Styles</a>
 
         <div class="nav-group">Events</div>
@@ -86,8 +88,13 @@
         <a href="#on">Event delegation</a>
 
         <div class="nav-group">Templates</div>
+        <a href="#bindings">Bindings &amp; actions</a>
         <a href="#conditionals">Conditionals</a>
-        <a href="#lists">Lists</a>
+        <a href="#lists">Keyed lists</a>
+        <a href="#async">Async, portals &amp; motion</a>
+
+        <div class="nav-group">Server</div>
+        <a href="#ssr">SSR &amp; hydration</a>
 
         <div class="nav-group">Lifecycle</div>
         <a href="#watch">Watch changes</a>
@@ -143,7 +150,7 @@ class MyCounter extends HTMLElement {
 &lt;script src="snice-button.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-input.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-modal.min.js?v=80938d7"&gt;&lt;/script&gt;</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">The runtime is ~22KB gzipped. Each component adds ~1&ndash;94KB. No duplication regardless of how many components you use.</p>
+          <p class="desc" style="margin-top:0.75rem">The runtime is ~41KB gzipped. Each component adds ~1&ndash;94KB. No duplication regardless of how many components you use.</p>
           <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
 
@@ -192,7 +199,7 @@ class TaskItem extends HTMLElement {
 
         <div class="dec-section" id="properties">
           <h3>Properties</h3>
-          <p class="desc">Properties sync with HTML attributes and trigger re-renders automatically.</p>
+          <p class="desc">Public properties accept HTML attributes, reflect writes by default, and trigger differential re-renders.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@element('task-item')
 class TaskItem extends HTMLElement {
   @property()
@@ -209,11 +216,43 @@ class TaskItem extends HTMLElement {
   }
 }</snice-code-block>
           <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
+          <p class="desc"><code>type</code> converts strings arriving from attributes. Direct JavaScript assignments keep their original type and object identity. Use <code>reflect: false</code> for attribute input without property-to-attribute output, or <code>attribute: false</code> for a JavaScript-only public property.</p>
+        </div>
+
+        <div class="dec-section" id="state">
+          <h3>Internal &amp; deep state</h3>
+          <p class="desc"><code>@state</code> is reactive internal data and never becomes an attribute. Add <code>deep: true</code> when nested collections should invalidate the view.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@state() editing = false;
+
+@state({ deep: true }) model = {
+  tasks: [],
+  selected: new Set(),
+  flags: new Map()
+};
+
+// Each write is observed and batched into one render.
+this.model.tasks.push(task);
+this.model.selected.add(task.id);</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Deep state uses native <code>Proxy</code> and <code>Reflect</code>, including cycles, arrays, <code>Map</code>, and <code>Set</code>. It targets modern browsers; ordinary state does not require deep proxies.</p>
+        </div>
+
+        <div class="dec-section" id="roots">
+          <h3>Render roots</h3>
+          <p class="desc">Open shadow DOM is the default. Choose closed shadow DOM, light DOM, focus delegation, or a custom root without changing template syntax.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@element('open-card')
+class OpenCard extends SniceElement { /* ... */ }
+
+@element('closed-card', { shadow: 'closed', delegatesFocus: true })
+class ClosedCard extends SniceElement { /* ... */ }
+
+@element('light-card', { renderRoot: 'light' })
+class LightCard extends SniceElement { /* ... */ }</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem"><code>SniceElement</code> is optional. It adds a conventional <code>render()</code>, static styles, kebab-case implicit attributes, <code>invalidate()</code>, and <code>renderNow()</code>.</p>
         </div>
 
         <div class="dec-section" id="styles">
           <h3>Styles</h3>
-          <p class="desc">Styles are scoped to the element via shadow DOM. They won't leak out.</p>
+          <p class="desc">Styles are applied once to the managed render root. Shadow-root styles are encapsulated; light-root styles follow normal CSS scoping.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@styles()
 css() {
   return css`
@@ -276,12 +315,12 @@ template() {
   return html`
     &lt;input
       placeholder="New task..."
-      @keydown:Enter=${this.addTask}
-      @keydown:Escape=${this.clear}
+      @keydown:Enter|prevent=${this.addTask}
+      @keydown:Escape|stop=${this.clear}
     /&gt;
   `;
 }</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Works on any element.</p>
+          <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Compose <code>|prevent</code>, <code>|stop</code>, <code>|immediate</code>, <code>|once</code>, <code>|capture</code>, <code>|passive</code>, and <code>|self</code>.</p>
         </div>
 
         <div class="dec-section" id="on">
@@ -304,30 +343,54 @@ handleSearch(e) {
         <!-- TEMPLATES                               -->
         <!-- ═══════════════════════════════════════ -->
 
+        <div class="dec-section" id="bindings">
+          <h3>Bindings &amp; element actions</h3>
+          <p class="desc">Choose the exact DOM channel, bind native form controls in both directions, and attach lifecycle-owned behavior directly in the opening tag.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">const input = createRef();
+
+return html`
+  &lt;input
+    ${ref(input)}
+    ${use(this.autofocus)}
+    .value=${bind(this, 'query')}
+    class:invalid=${this.invalid}
+    style:--field-accent=${this.accent}
+    ...attrs=${this.aria}
+    ...events=${this.listeners}
+  &gt;
+`;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem"><code>bind()</code> is IME-safe and infers native input/change events. <code>ref()</code> clears across branch teardown. <code>use()</code> owns attach, update, disconnect, and reconnect cleanup. Named <code>...props</code>, <code>...attrs</code>, and <code>...events</code> spreads remove stale keys.</p>
+        </div>
+
         <div class="dec-section" id="conditionals">
           <h3>Conditionals</h3>
-          <p class="desc">Show or hide parts of the template.</p>
+          <p class="desc">Virtual control-flow tags add no wrappers and preserve each branch's DOM identity while it is inactive.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@render()
 template() {
   return html`
-    &lt;input
-      type="checkbox"
-      .checked=${this.done}
-      @change=${this.toggle}
-    /&gt;
-    &lt;span&gt;${this.label}&lt;/span&gt;
-
-    &lt;if ${this.done}&gt;
-      &lt;small&gt;Completed!&lt;/small&gt;
+    &lt;if ${this.loading}&gt;
+      &lt;snice-spinner&gt;&lt;/snice-spinner&gt;
+      &lt;else-if ${this.error}&gt;
+        &lt;p role="alert"&gt;${this.error.message}&lt;/p&gt;
+      &lt;/else-if&gt;
+      &lt;else&gt;
+        &lt;task-list .items=${this.items}&gt;&lt;/task-list&gt;
+      &lt;/else&gt;
     &lt;/if&gt;
+
+    &lt;case ${this.status}&gt;
+      &lt;when value="idle"&gt;Idle&lt;/when&gt;
+      &lt;when ${OFFLINE_STATE}&gt;Offline&lt;/when&gt;
+      &lt;default&gt;Working&lt;/default&gt;
+    &lt;/case&gt;
   `;
 }</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem"><code>&lt;if&gt;</code> conditionally renders its children. For multi-branch, use <code>&lt;case&gt;</code> / <code>&lt;when&gt;</code>.</p>
+          <p class="desc" style="margin-top:0.75rem">Static <code>&lt;when value="..."&gt;</code> matches strings. A dynamic <code>&lt;when ${value}&gt;</code> uses <code>Object.is</code> for typed values and object identity.</p>
         </div>
 
         <div class="dec-section" id="lists">
-          <h3>Lists</h3>
-          <p class="desc">Render arrays with <code>.map()</code>. Use <code>key</code> for efficient updates.</p>
+          <h3>Keyed lists</h3>
+          <p class="desc"><code>repeat()</code> makes identity explicit, moves existing DOM on reorder, rejects duplicate keys, and renders an empty state without a wrapper.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@element('task-list')
 class TaskList extends HTMLElement {
   @property({ type: Array }) items = [];
@@ -335,18 +398,63 @@ class TaskList extends HTMLElement {
   @render()
   template() {
     return html`
-      ${this.items.map(item =&gt; html`
+      ${repeat(this.items, {
+        key: item =&gt; item.id,
+        render: (item, index) =&gt; html`
         &lt;task-item
-          key=${item.id}
           label=${item.label}
           ?done=${item.done}
           @status-changed=${(e) =&gt; this.update(e.detail)}
         &gt;
         &lt;/task-item&gt;
-      `)}
+        `,
+        empty: () =&gt; html`&lt;p&gt;No tasks&lt;/p&gt;`
+      })}
     `;
   }
 }</snice-code-block>
+        </div>
+
+        <div class="dec-section" id="async">
+          <h3>Async content, portals &amp; motion</h3>
+          <p class="desc">Keep loading state, overlay placement, and keyed transitions inside the declarative tree with lifecycle-aware cleanup.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">return html`
+  ${resource(
+    signal =&gt; fetch(this.url, { signal }).then(r =&gt; r.json()),
+    {
+      pending: () =&gt; html`&lt;snice-spinner&gt;&lt;/snice-spinner&gt;`,
+      ready: user =&gt; html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`,
+      error: error =&gt; html`&lt;p role="alert"&gt;${error.message}&lt;/p&gt;`
+    }
+  )}
+
+  ${portal('#overlay-root', html`&lt;dialog open&gt;...&lt;/dialog&gt;`)}
+
+  ${transition(this.view, {
+    key: this.route,
+    mode: 'simultaneous',
+    outDuration: 120,
+    inDuration: 160
+  })}
+`;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Promises and async iterables also work directly in node expressions. <code>resource()</code> adds pending/ready/error mapping and abort signals. <code>portal()</code> keeps event ownership. <code>transition()</code> is wrapper-free and respects reduced motion. Runtime-selected HTML/SVG tags use <code>&lt;component ${tag}&gt;</code>.</p>
+        </div>
+
+        <div class="dec-section" id="ssr">
+          <h3>SSR &amp; hydration</h3>
+          <p class="desc">Render without a DOM, emit light or declarative shadow DOM, then attach to matching server nodes without replacing their identity.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">const html = await renderElementToStringAsync(
+  'user-card',
+  template,
+  { attributes: { 'user-id': id }, styles: UserCard.styles }
+);
+
+// A marked custom-element host hydrates automatically on first render.
+// Manual attachment and explicit mismatch fallback are also available:
+hydrate(template, container);
+hydrate(template, container, { onMismatch: 'replace' });</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem"><code>renderToString()</code> is synchronous. <code>renderToStringAsync()</code> resolves promises, async iterables, async directives, attributes, control flow, and dynamic components. Hydration mismatches throw a path-bearing <code>HydrationError</code> unless replacement is explicitly requested.</p>
+          <p class="doc-link"><a href="docs.html#rendering">Complete declarative rendering reference →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -429,65 +537,51 @@ class WeatherController {
 
         <div class="dec-section" id="full">
           <h3>Full example</h3>
-          <p class="desc">Here's the complete task-item with everything wired together.</p>
-          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">import { element, property, watch, query, render, styles,
-         dispatch, ready, dispose, html, css } from 'snice';
+          <p class="desc">A convention-driven component with public input, internal deep state, two-way binding, declarative styling, control flow, events, and differential updates.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">import { SniceElement, bind, css, dispatch, element,
+         html, property, state, watch } from 'snice';
 
 @element('task-item')
-class TaskItem extends HTMLElement {
-  @property()
-  label = '';
+class TaskItem extends SniceElement {
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+    .done { text-decoration: line-through; opacity: 0.5; }
+    small { color: green; }
+  `;
 
-  @property({ type: Boolean })
-  done = false;
+  @property() label = '';
+  @property({ type: Boolean }) done = false;
 
-  @query('input')
-  checkbox!: HTMLInputElement;
+  @state({ deep: true }) meta = { edits: 0, tags: new Set() };
 
-  @render()
-  template() {
+  render() {
     return html`
       &lt;input
         type="checkbox"
-        .checked=${this.done}
-        @change=${this.toggle}
+        .checked=${bind(this, 'done')}
+        @change=${this.emitStatus}
       /&gt;
-      &lt;span&gt;${this.label}&lt;/span&gt;
+      &lt;span class:done=${this.done}&gt;${this.label}&lt;/span&gt;
       &lt;if ${this.done}&gt;
         &lt;small&gt;Done&lt;/small&gt;
+        &lt;else&gt;&lt;small&gt;Open&lt;/small&gt;&lt;/else&gt;
       &lt;/if&gt;
     `;
   }
 
-  @styles()
-  css() {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-      }
-
-      :host([done]) span {
-        text-decoration: line-through;
-        opacity: 0.5;
-      }
-
-      small {
-        color: green;
-      }
-    `;
-  }
-
   @dispatch('status-changed')
-  toggle() {
-    this.done = !this.done;
+  emitStatus() {
     return { label: this.label, done: this.done };
   }
 
   @watch('done')
   onDone(oldVal, newVal) {
+    this.meta.edits++;
     console.log(this.label, newVal ? 'completed' : 'reopened');
   }
 }</snice-code-block>

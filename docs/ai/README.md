@@ -10,6 +10,7 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 **Files:**
 - `api.md` - Complete API reference
+- `rendering.md` - Declarative syntax, reactivity, roots, directives, SSR/hydration
 - `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
 - `react-integration.md` - React router, hooks, guards, context
@@ -63,9 +64,8 @@ Runtime first, then one bundle per component (any order after runtime):
 ## Pitfalls
 
 **Decorators:**
-- No `@state()` decorator exists
 - No `@customElement()` - Use `@element('tag-name')`
-- `@property()` is for attributes from parent AND reactive state in pages
+- `@property()` is the public attribute/property channel; `@state()` is reactive internal state
 - Components re-render on any property change (decorated or not)
 
 **Architecture:**
@@ -79,13 +79,18 @@ Runtime first, then one bundle per component (any order after runtime):
 - Boolean attrs: `"false"` string → `false` (not standard HTML)
 - Type is inferred from the initializer: `@property() count = 0` parses attributes as Number. Explicit `@property({ type: Number })` is only needed when there is NO initializer (`@property() amount?: number` stays a string without it)
 - Union types use String: `@property() variant: 'a' | 'b' = 'a'` (type hint optional)
-- **No `reflect` option** - `@property({ reflect: true })` does NOT exist (Lit concept, not snice)
-- Attributes sync automatically for styling with `:host([attr])`
+- `reflect` defaults to true; use `reflect: false` for attribute input without property output
+- `attribute: false` disables the attribute channel; direct JS assignments preserve type and identity
+- `deep: true` tracks nested plain object/array/Map/Set mutations with native Proxy/Reflect
+- Plain `HTMLElement` uses legacy lowercase implicit attributes; `SniceElement` uses kebab-case
 
 **Templates:**
 - `.prop=${val}` for objects/arrays, `attr="${val}"` for strings
 - `?attr=${bool}` toggles attribute presence
 - `@event=${fn}` handlers are auto-bound to `this`
+- `class:name`, `style:name`, `...props`, `...attrs`, `...events`, `bind`, `ref`, and `use` are supported
+- Event `|` modifiers: prevent, stop, immediate, once, capture, passive, self
+- Use `repeat()` for explicit keyed identity; `<if>` supports else-if/else; `<case>` supports typed `<when ${value}>`
 
 **Events:**
 - kebab-case names: `count-changed` not `countChanged`
@@ -104,7 +109,8 @@ Runtime first, then one bundle per component (any order after runtime):
 
 **Testing:**
 - `await el.ready` before assertions
-- Use `el.shadowRoot.querySelector()` for shadow DOM
+- `await el.rendered` after reactive writes
+- Use `@query()` when the component may have a closed or light render root
 
 **Manual setup (no template):**
 - Requires bundler: Vite, esbuild, or Rollup (not tsc alone)
@@ -147,7 +153,7 @@ class MyCounter extends HTMLElement {
 - `page` decorator comes from `Router()`, NOT from 'snice' exports
 - Create router.ts: `export const { page, navigate, initialize } = Router({...})`
 - Pages import: `import { page } from './router'`
-- Use `@property()` for reactive state, plain fields for non-reactive
+- Use `@property()` for public reactive inputs, `@state()` for internal reactive state, and plain fields for non-reactive values
 - `@context()` receives Context on navigation
 
 **Guards:**

@@ -20,6 +20,8 @@ describe('Website Build', () => {
 
   it('should create all pages', () => {
     expect(existsSync(join(publicDir, 'index.html'))).toBe(true);
+    expect(existsSync(join(publicDir, 'guide.html'))).toBe(true);
+    expect(existsSync(join(publicDir, 'docs.html'))).toBe(true);
     expect(existsSync(join(publicDir, 'decorators.html'))).toBe(true);
     expect(existsSync(join(publicDir, 'components.html'))).toBe(true);
   });
@@ -82,7 +84,7 @@ describe('Website Build', () => {
 
     it('should include all decorator documentation', () => {
       const decorators = [
-        '@element', '@page', '@controller', '@property', '@watch',
+        '@element', '@page', '@controller', '@property', '@state', '@watch',
         '@render', '@styles', '@ready', '@dispose', '@query', '@queryAll',
         '@on', '@dispatch', '@context', '@request', '@respond'
       ];
@@ -93,6 +95,37 @@ describe('Website Build', () => {
 
     it('should include doc links', () => {
       expect(decoratorsHtml).toContain('gitlab.com/Hedzer/snice/-/blob/main/docs/');
+    });
+  });
+
+  describe('Declarative Rendering Documentation', () => {
+    it('publishes every major rendering capability in the guide', () => {
+      const guide = readFileSync(join(publicDir, 'guide.html'), 'utf-8');
+      const sectionIds = ['state', 'roots', 'bindings', 'conditionals', 'lists', 'async', 'ssr'];
+      for (const id of sectionIds) expect(guide).toContain(`id="${id}"`);
+
+      const APIs = [
+        '@state', 'Proxy', 'Reflect', 'SniceElement', 'bind(', 'ref(', 'use(',
+        'repeat(', 'resource(', 'portal(', 'transition(', 'renderToStringAsync(',
+        'hydrate('
+      ];
+      for (const api of APIs) expect(guide).toContain(api);
+    });
+
+    it('generates the complete reference and escapes virtual tags as text', () => {
+      const docs = readFileSync(join(publicDir, 'docs.html'), 'utf-8');
+      expect(docs).toContain('<section class="doc-file" id="rendering">');
+      expect(docs).toContain('href="#rendering"');
+      expect(docs).toContain('<code>&lt;component&gt;</code>');
+      expect(docs).not.toMatch(/<code>\s*<component(?:\s|>)/);
+      expect(docs).toContain('renderElementToStringAsync');
+      expect(docs).toContain('custom-elements.json');
+    });
+
+    it('surfaces the expanded declarative feature set on the homepage', () => {
+      const homepage = readFileSync(join(publicDir, 'index.html'), 'utf-8');
+      expect(homepage).toContain('@state &amp; directives');
+      expect(homepage).toContain('Deep state, bindings, keyed flow, async UI, and portals');
     });
   });
 

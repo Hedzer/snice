@@ -6,6 +6,7 @@ export interface RatingProps extends SniceBaseProps {
     value?: any;
     max?: any;
     icon?: any;
+    emptyIcon?: any;
     size?: any;
     readonly?: any;
     precision?: any;

@@ -16,14 +16,14 @@ describe('Code Quality - No Lit Framework Syntax', () => {
     for (const file of files) {
       const content = await fs.readFile(file, 'utf-8');
       const lines = content.split('\n');
+      const usesSniceElement = /\bextends\s+SniceElement\b/.test(content);
 
       lines.forEach((line, index) => {
-        // Check for Lit's static styles pattern
-        // WRONG: static styles = css`...`
-        // CORRECT: @styles() decorating styles() method
-        if (line.match(/^\s*static\s+styles\s*=/)) {
+        // Static styles are a supported SniceElement convention. Plain
+        // HTMLElement components still need the @styles() method decorator.
+        if (line.match(/^\s*static\s+styles\s*=/) && !usesSniceElement) {
           violations.push(
-            `${file}:${index + 1} - Found "static styles =" (Lit syntax) - Use @styles() styles() { return css/*css*/\`...\`; }`
+            `${file}:${index + 1} - Found "static styles =" on a plain HTMLElement component - extend SniceElement or use @styles() styles() { return css/*css*/\`...\`; }`
           );
         }
 
@@ -53,9 +53,9 @@ describe('Code Quality - No Lit Framework Syntax', () => {
         '',
         'This is the SNICE framework, NOT Lit. The syntax is different:',
         '',
-        'WRONG (Lit):',
+        'WRONG on a plain HTMLElement subclass:',
         '  static styles = css`...`',
-        '  render() { return html`...`; }',
+        '  render() { return html`...`; } // without @render()',
         '  this.requestUpdate();',
         '',
         'CORRECT (Snice):',
@@ -64,6 +64,12 @@ describe('Code Quality - No Lit Framework Syntax', () => {
         '  ',
         '  @render()',
         '  render() { return html`...`; }',
+        '  ',
+        '  // Or extend SniceElement for render()/static styles conventions',
+        '  class MyElement extends SniceElement {',
+        '    static styles = css`...`;',
+        '    render() { return html`...`; }',
+        '  }',
         '  ',
         '  // No requestUpdate() - framework handles it automatically',
         '',

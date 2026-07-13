@@ -4,17 +4,19 @@ import { setupResponseHandlers, cleanupResponseHandlers } from './request-respon
 import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
-import { requestRender, applyStyles, clearRenderTimers } from './render';
+import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
-import { PropertyOptions } from './types/property-options';
+import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
 import { ElementOptions } from './types/element-options';
 import { clearDebounceTimers, clearThrottleTimers } from './method-decorators';
 import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
+import { createDeepReactive } from './reactive';
+import { getRenderRoot } from './render-root';
 
 /**
  * Interface that layout components must implement to receive updates
@@ -181,6 +183,11 @@ export function applyElementFunctionality(constructor: any) {
 
       // Only run initialization logic once, but re-establish handlers on reconnection
       if (this[INITIALIZED]) {
+        try {
+          reconnectRenderTree(this);
+        } catch (error) {
+          console.error(`Error reconnecting render directives for ${this.tagName}:`, error);
+        }
         // Re-establish handlers that get cleaned up on disconnect
         setupEventHandlers(this, this);
         setupResponseHandlers(this, this);
@@ -359,6 +366,11 @@ export function applyElementFunctionality(constructor: any) {
     };
     
     constructor.prototype.disconnectedCallback = async function() {
+      try {
+        disconnectRenderTree(this);
+      } catch (error) {
+        console.error(`Error disconnecting render directives for ${this.tagName}:`, error);
+      }
       // Call @dispose handlers
       const disposeHandlers = constructor[DISPOSE_HANDLERS];
       if (disposeHandlers) {
@@ -419,14 +431,21 @@ export function applyElementFunctionality(constructor: any) {
         const attributeName = getAttrName(propOptions, propName);
         if (attributeName.toLowerCase() !== name.toLowerCase()) continue;
 
+        // A property-originated reflection already stored the authoritative
+        // JS value. Do not parse the serialized attribute back into a clone.
+        if (this[SETTING_FROM_PROPERTY]?.has(name.toLowerCase())) break;
+
         const currentValue = this[PROPERTY_VALUES]?.[propName];
         // A removed attribute reverts the property to its field default. Read it
         // back through the getter (attribute is already gone at this point) so the
         // watcher's newValue and PROPERTY_VALUES match what this[propName] now
         // returns — parseAttributeValue(null) would diverge to null for String/Number.
-        const parsedValue = newValue === null
-          ? this[propName]
-          : parseAttributeValue(newValue, propOptions, currentValue, undefined);
+        const defaultValue = this[PROPERTY_DEFAULTS]?.[propName];
+        let parsedValue = newValue === null
+          ? (propOptions.type === Boolean ? false : defaultValue)
+          : parseAttributeValue(newValue, propOptions, currentValue, defaultValue);
+        const wrap = this[PROPERTY_WRAPPERS]?.[propName];
+        if (wrap) parsedValue = wrap(parsedValue);
 
         const changed = propOptions?.hasChanged
           ? propOptions.hasChanged(parsedValue, currentValue)
@@ -436,17 +455,15 @@ export function applyElementFunctionality(constructor: any) {
         ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propName);
         ensureObj(this, PROPERTY_VALUES)[propName] = parsedValue;
 
-        if (!this[SETTING_FROM_PROPERTY]?.has(name.toLowerCase())) {
-          // Watchers react to changes only. During upgrade the initial value
-          // is not a change, so suppress until INITIALIZED; @watch immediate
-          // handlers get their one init call from invokeImmediateWatchers.
-          if (this[INITIALIZED]) {
-            invokeWatchers(this, constructor, propName, currentValue, parsedValue);
-          }
+        // Watchers react to changes only. During upgrade the initial value
+        // is not a change, so suppress until INITIALIZED; @watch immediate
+        // handlers get their one init call from invokeImmediateWatchers.
+        if (this[INITIALIZED]) {
+          invokeWatchers(this, constructor, propName, currentValue, parsedValue);
+        }
 
-          if (this[RENDER_METHOD] && this[INITIALIZED]) {
-            requestRender(this);
-          }
+        if (this[RENDER_METHOD] && this[INITIALIZED]) {
+          requestRender(this);
         }
         break;
       }
@@ -543,6 +560,33 @@ function defineElement(tagName: string, constructor: any, context: ClassDecorato
     }
   }
   if (options?.formAssociated) constructor.formAssociated = true;
+  const inheritedOptions = {
+    ...((Object.getPrototypeOf(constructor) as any)?.[ELEMENT_OPTIONS] || {})
+  } as ElementOptions;
+  const ownOptions = options || {};
+  if (
+    ownOptions.renderRoot === 'light' && typeof ownOptions.shadow === 'string' ||
+    ownOptions.renderRoot === 'shadow' && ownOptions.shadow === false
+  ) {
+    throw new TypeError('snice: @element renderRoot and shadow options select conflicting render roots.');
+  }
+  const mergedOptions: ElementOptions = { ...inheritedOptions, ...ownOptions };
+  if (Object.prototype.hasOwnProperty.call(ownOptions, 'shadow')) {
+    mergedOptions.renderRoot = ownOptions.shadow === false ? 'light' : 'shadow';
+  } else if (Object.prototype.hasOwnProperty.call(ownOptions, 'renderRoot')) {
+    if (ownOptions.renderRoot === 'light') mergedOptions.shadow = false;
+    else if (mergedOptions.shadow === false) mergedOptions.shadow = 'open';
+  }
+  constructor[ELEMENT_OPTIONS] = mergedOptions;
+  if (
+    (constructor.prototype as any)[SNICE_ELEMENT_BASE] === true &&
+    Object.prototype.hasOwnProperty.call(constructor.prototype, 'render') &&
+    !Object.prototype.hasOwnProperty.call(constructor.prototype, RENDER_METHOD) &&
+    typeof constructor.prototype.render === 'function'
+  ) {
+    (constructor.prototype as any)[RENDER_METHOD] = constructor.prototype.render;
+    (constructor.prototype as any)[RENDER_OPTIONS] = constructor.renderOptions || {};
+  }
   applyElementFunctionality(constructor);
   if (customElements.get(tagName)) {
     if ((globalThis as any).SNICE_DEBUG) console.warn(`[snice] "${tagName}" is already registered. Skipping.`);
@@ -553,6 +597,15 @@ function defineElement(tagName: string, constructor: any, context: ClassDecorato
 }
 
 export function element(tagName: string, options?: ElementOptions) {
+  if (options?.renderRoot !== undefined && options.renderRoot !== 'shadow' && options.renderRoot !== 'light') {
+    throw new TypeError('snice: @element renderRoot must be "shadow" or "light".');
+  }
+  if (
+    options?.shadow !== undefined && options.shadow !== false &&
+    options.shadow !== 'open' && options.shadow !== 'closed'
+  ) {
+    throw new TypeError('snice: @element shadow must be "open", "closed", or false.');
+  }
   return function (constructor: any, context: ClassDecoratorContext) {
     return defineElement(tagName, constructor, context, options);
   };
@@ -584,26 +637,55 @@ export function property(options?: PropertyOptions) {
     }
 
 
-    // Return a field initializer function for new decorators
     return function(this: any, initialValue: any) {
-      // Ensure constructor[PROPERTIES] exists
       const constructor = this.constructor as any;
-      if (!constructor[PROPERTIES]) {
-        constructor[PROPERTIES] = new Map();
-      }
+      if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
 
-      // Detect type from initial value if not explicitly provided
-      const finalOptions = { ...options };
-      if (!finalOptions.type && initialValue !== undefined) {
-        finalOptions.type = detectType(initialValue);
+      const finalOptions: PropertyOptions = { ...options };
+      if (!finalOptions.type && initialValue !== undefined) finalOptions.type = detectType(initialValue);
+      if (!finalOptions.attributeNaming && constructor.propertyAttributeNaming === 'kebab') {
+        finalOptions.attributeNaming = 'kebab';
       }
-
-      // Always store property options on constructor for runtime access
       constructor[PROPERTIES].set(propertyKey, finalOptions);
+      ensureObj(this, PROPERTY_DEFAULTS)[propertyKey] = initialValue;
 
-      // Set up the property descriptor — re-define if a subclass overrides
-      // the property with different options (different closure captures).
-      // Per-key options tracked on the prototype via a Symbol map.
+      const notifyDeepMutation = () => {
+        if (!this[PROPERTIES_INITIALIZED]) return;
+        const current = this[PROPERTY_VALUES]?.[propertyKey];
+
+        if (finalOptions.attribute !== false && finalOptions.reflect !== false) {
+          const attributeName = getAttrName(finalOptions, propertyKey);
+          const attributeValue = valueToAttribute(current, finalOptions, initialValue);
+          const attrKey = attributeName.toLowerCase();
+          ensureSet(this, SETTING_FROM_PROPERTY).add(attrKey);
+          try {
+            if (attributeValue === null) this.removeAttribute?.(attributeName);
+            else this.setAttribute?.(attributeName, attributeValue);
+          } finally {
+            this[SETTING_FROM_PROPERTY].delete(attrKey);
+          }
+        }
+
+        if (this[INITIALIZED]) {
+          invokeWatchers(this, this.constructor, propertyKey, current, current);
+          if (this[RENDER_METHOD]) requestRender(this);
+        }
+      };
+
+      const wrap = (value: any) => {
+        if (!finalOptions.deep) return value;
+        let wrapped: any;
+        wrapped = createDeepReactive(value, () => {
+          // A caller may retain an old proxied object after replacing the
+          // property. Mutating that detached graph must not invalidate the
+          // component or notify watchers for the current value.
+          if (this[PROPERTY_VALUES]?.[propertyKey] !== wrapped) return;
+          notifyDeepMutation();
+        });
+        return wrapped;
+      };
+      ensureObj(this, PROPERTY_WRAPPERS)[propertyKey] = wrap;
+
       const proto = this.constructor.prototype;
       let definers: Map<string, any> | undefined = proto[PROPERTY_DEFINERS];
       if (!definers || !Object.prototype.hasOwnProperty.call(proto, PROPERTY_DEFINERS)) {
@@ -613,107 +695,77 @@ export function property(options?: PropertyOptions) {
       const existingDefiner = definers.get(propertyKey);
       if (!existingDefiner || existingDefiner !== options) {
         definers.set(propertyKey, options);
-        const descriptor: PropertyDescriptor = {
+        Object.defineProperty(this.constructor.prototype, propertyKey, {
           get(this: any) {
-            // attribute: false — use internal storage only, no DOM sync
-            if (finalOptions?.attribute === false) {
-              if (this[PROPERTY_VALUES] && propertyKey in this[PROPERTY_VALUES]) {
-                return this[PROPERTY_VALUES][propertyKey];
-              }
-              if (this[PRE_INIT_PROPERTY_VALUES]?.has(propertyKey)) {
-                return this[PRE_INIT_PROPERTY_VALUES].get(propertyKey);
-              }
-              return initialValue;
-            }
-
-            // Always read from DOM attribute - no internal state
-            const attributeName = getAttrName(finalOptions || {}, propertyKey);
-            const attrValue = this.getAttribute?.(attributeName);
-
-            // If attribute exists, parse it
-            if (attrValue !== null) {
-              return parseAttributeValue(attrValue, finalOptions || {}, undefined, initialValue);
-            }
-
-            // For Boolean properties that have been explicitly set via attribute (and then removed),
-            // follow HTML boolean attribute semantics (absence = false)
-            const inferredType = finalOptions?.type || detectType(initialValue);
-            if (inferredType === Boolean && this[EXPLICITLY_SET_PROPERTIES]?.has(propertyKey)) {
-              return false;
-            }
-
-            // Check for pre-init property values (set before element was connected)
             if (this[PRE_INIT_PROPERTY_VALUES]?.has(propertyKey)) {
               return this[PRE_INIT_PROPERTY_VALUES].get(propertyKey);
             }
-
-            // Otherwise return initial value (respects default values like showRememberMe = true)
+            if (this[PROPERTY_VALUES] && propertyKey in this[PROPERTY_VALUES]) {
+              return this[PROPERTY_VALUES][propertyKey];
+            }
             return initialValue;
           },
-          set(this: any, newValue: any) {
+          set(this: any, incomingValue: any) {
             const oldValue = this[propertyKey];
-            // A custom hasChanged comparator overrides the default === check
-            // (e.g. deep-equal objects, or forcing an update on a mutated ref).
-            const changed = finalOptions?.hasChanged
-              ? finalOptions.hasChanged(newValue, oldValue)
-              : notEqual(newValue, oldValue);
+            const changed = finalOptions.hasChanged
+              ? finalOptions.hasChanged(incomingValue, oldValue)
+              : notEqual(incomingValue, oldValue);
             if (!changed) return;
 
-            // Pre-init: store for later, don't reflect to DOM yet
+            const instanceWrap = this[PROPERTY_WRAPPERS]?.[propertyKey] || ((value: any) => value);
+            // Property assignments are already typed JavaScript values and
+            // remain the source of truth. `type` and `converter.fromAttribute`
+            // apply only at the string attribute boundary; coercing here would
+            // destroy object identity and turn valid union values (for example
+            // `Date | ''` or `string | string[]`) into the wrong type.
+            const newValue = instanceWrap(incomingValue);
             if (!this[PROPERTIES_INITIALIZED]) {
               if (!this[PRE_INIT_PROPERTY_VALUES]) this[PRE_INIT_PROPERTY_VALUES] = new Map();
               this[PRE_INIT_PROPERTY_VALUES].set(propertyKey, newValue);
               return;
             }
 
-            // attribute: false — store internally, skip DOM reflection
-            if (finalOptions?.attribute === false) {
-              ensureObj(this, PROPERTY_VALUES)[propertyKey] = newValue;
-            } else {
-              const attributeName = getAttrName(finalOptions, propertyKey);
-              const attributeValue = valueToAttribute(newValue, finalOptions, initialValue);
+            ensureObj(this, PROPERTY_VALUES)[propertyKey] = newValue;
 
+            if (finalOptions.attribute !== false && finalOptions.reflect !== false) {
+              const attributeName = getAttrName(finalOptions, propertyKey);
+              const attributeValue = valueToAttribute(
+                newValue,
+                finalOptions,
+                this[PROPERTY_DEFAULTS]?.[propertyKey]
+              );
               ensureSet(this, EXPLICITLY_SET_PROPERTIES).add(propertyKey);
               const attrKey = attributeName.toLowerCase();
               ensureSet(this, SETTING_FROM_PROPERTY).add(attrKey);
-
-              // attributeChangedCallback runs synchronously inside setAttribute /
-              // removeAttribute (custom element reactions are synchronous), so the
-              // guard only needs to bracket this one reflection. Clear it right
-              // after — not on a microtask — otherwise an external attribute change
-              // in the same tick is mistaken for our own echo and silently dropped.
-              if (attributeValue === null) {
-                this.removeAttribute?.(attributeName);
-              } else {
-                this.setAttribute?.(attributeName, attributeValue);
+              try {
+                if (attributeValue === null) this.removeAttribute?.(attributeName);
+                else this.setAttribute?.(attributeName, attributeValue);
+              } finally {
+                this[SETTING_FROM_PROPERTY].delete(attrKey);
               }
-
-              this[SETTING_FROM_PROPERTY].delete(attrKey);
             }
 
-            // See attributeChangedCallback: the initial value is not a change,
-            // so suppress watchers until INITIALIZED. @watch immediate handlers
-            // get their one init call from invokeImmediateWatchers.
             if (this[INITIALIZED]) {
               invokeWatchers(this, this.constructor, propertyKey, oldValue, newValue);
-            }
-
-            if (this[RENDER_METHOD] && this[INITIALIZED]) {
-              requestRender(this);
+              if (this[RENDER_METHOD]) requestRender(this);
             }
           },
           configurable: true,
           enumerable: true
-        };
-
-        Object.defineProperty(this.constructor.prototype, propertyKey, descriptor);
+        });
       }
 
-      // Initialize the property value
-      ensureObj(this, PROPERTY_VALUES)[propertyKey] = initialValue;
-      return initialValue;
+      const wrappedInitialValue = wrap(initialValue);
+      ensureObj(this, PROPERTY_VALUES)[propertyKey] = wrappedInitialValue;
+      ensureObj(this, PROPERTY_DEFAULTS)[propertyKey] = wrappedInitialValue;
+      return wrappedInitialValue;
     };
   };
+}
+
+/** Internal reactive state: never reads from or reflects to an attribute. */
+export function state(options: StateOptions = {}) {
+  return property({ ...options, attribute: false, reflect: false });
 }
 
 
@@ -733,7 +785,9 @@ export function query(selector: string, options: QueryOptions = {}) {
           get() {
             const root = getQueryRoot(this);
             let result = null;
-            if (shadow && root.shadowRoot) result = root.shadowRoot.querySelector(selector);
+            const managedRoot = root instanceof HTMLElement ? getRenderRoot(root) : null;
+            if (shadow && managedRoot) result = managedRoot.querySelector(selector);
+            else if (shadow && root.shadowRoot) result = root.shadowRoot.querySelector(selector);
             if (!result && light) result = root.querySelector(selector);
             return result || null;
           },
@@ -757,10 +811,17 @@ export function queryAll(selector: string, options: QueryOptions = {}) {
         Object.defineProperty(this.constructor.prototype, propertyKey, {
           get() {
             const root = getQueryRoot(this);
-            const results: Element[] = [];
-            if (shadow && root.shadowRoot) results.push(...root.shadowRoot.querySelectorAll(selector));
-            if (light) results.push(...root.querySelectorAll(selector));
-            return results as any as NodeListOf<Element>;
+            const results = new Set<Element>();
+            const managedRoot = root instanceof HTMLElement ? getRenderRoot(root) : null;
+            if (shadow && managedRoot) {
+              for (const match of managedRoot.querySelectorAll(selector)) results.add(match);
+            } else if (shadow && root.shadowRoot) {
+              for (const match of root.shadowRoot.querySelectorAll(selector)) results.add(match);
+            }
+            if (light) {
+              for (const match of root.querySelectorAll(selector)) results.add(match);
+            }
+            return [...results] as any as NodeListOf<Element>;
           },
           set() {},
           configurable: true,

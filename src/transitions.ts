@@ -71,8 +71,8 @@ export async function performTransition(
    */
   isStale: () => boolean = () => false,
 ): Promise<void> {
-  const outDuration = transition.outDuration || 300;
-  const inDuration = transition.inDuration || 300;
+  const outDuration = transition.outDuration ?? 300;
+  const inDuration = transition.inDuration ?? 300;
   const mode = (transition.mode || 'sequential') as TransitionMode;
 
   const outStyles = transition.out ? parseStyles(transition.out) : { opacity: '0' };

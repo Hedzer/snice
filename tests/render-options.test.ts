@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from './test-imports';
 
 describe('@render decorator - render options', () => {
   let container: HTMLDivElement;
@@ -48,6 +48,32 @@ describe('@render decorator - render options', () => {
     // Should render once after debounce
     expect(renderCount).toBe(initialRenderCount + 1);
     expect(el.shadowRoot?.textContent).toBe('abc');
+  });
+
+  it('does not replay a completed debounce after disconnect and reconnect', async () => {
+    let renderCount = 0;
+
+    @element('test-completed-debounce-reconnect')
+    class TestCompletedDebounceReconnect extends HTMLElement {
+      @property() value = '';
+      @render({ debounce: 10 })
+      renderContent() {
+        renderCount++;
+        return html`<div>${this.value}</div>`;
+      }
+    }
+
+    const el = document.createElement('test-completed-debounce-reconnect') as TestCompletedDebounceReconnect;
+    container.appendChild(el);
+    await el.ready;
+    el.value = 'settled';
+    await new Promise(resolve => setTimeout(resolve, 30));
+    const settledRenderCount = renderCount;
+    el.remove();
+    container.appendChild(el);
+    await new Promise(resolve => setTimeout(resolve, 30));
+    expect(renderCount).toBe(settledRenderCount);
+    expect(el.shadowRoot?.textContent).toBe('settled');
   });
 
   it('should throttle renders with throttle option', async () => {
@@ -119,6 +145,52 @@ describe('@render decorator - render options', () => {
     (el as any).renderContent();
     await new Promise(resolve => queueMicrotask(resolve));
     expect(el.shadowRoot?.textContent).toBe('changed');
+  });
+
+  it('honors once and manual rendering for non-differential string templates', async () => {
+    let renders = 0;
+    @element('test-once-string-render')
+    class TestOnceStringRender extends HTMLElement {
+      @property() value = 'initial';
+
+      @render({ once: true, differential: false })
+      renderContent() {
+        renders++;
+        return `<p>${this.value}</p>`;
+      }
+    }
+
+    const el = document.createElement('test-once-string-render') as TestOnceStringRender;
+    container.appendChild(el);
+    await el.ready;
+    expect(renders).toBe(1);
+    el.value = 'changed';
+    await Promise.resolve();
+    expect(renders).toBe(1);
+    expect(el.shadowRoot?.textContent).toBe('initial');
+    el.renderContent();
+    expect(renders).toBe(2);
+    expect(el.shadowRoot?.textContent).toBe('changed');
+  });
+
+  it('does not invoke a manually called render method twice when it returns undefined', async () => {
+    let renders = 0;
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    @element('test-manual-undefined-render')
+    class TestManualUndefinedRender extends HTMLElement {
+      @render() renderContent() {
+        renders++;
+        return undefined;
+      }
+    }
+
+    const el = document.createElement('test-manual-undefined-render') as TestManualUndefinedRender;
+    container.appendChild(el);
+    await el.ready;
+    const initial = renders;
+    el.renderContent();
+    expect(renders).toBe(initial + 1);
+    warning.mockRestore();
   });
 
   it('should render synchronously with sync option', async () => {

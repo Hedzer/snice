@@ -8,6 +8,12 @@
 export const HTML_RESULT = Symbol.for('snice:html-result');
 export const CSS_RESULT = Symbol.for('snice:css-result');
 
+// Static css`` sites are the common stylesheet path and can be reused forever.
+// Interpolated sites are intentionally not retained: caching every distinct
+// primitive interpolation would turn a dynamic css`` call into an unbounded
+// per-callsite value history.
+const cssResultCache = new WeakMap<TemplateStringsArray, CSSResult>();
+
 /**
  * Result of html`` tagged template
  * Contains static strings and dynamic values for differential rendering
@@ -81,6 +87,9 @@ export function svg(strings: TemplateStringsArray, ...values: any[]): TemplateRe
  * ```
  */
 export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult {
+  const cached = values.length === 0 ? cssResultCache.get(strings) : undefined;
+  if (cached) return cached;
+
   // Combine strings and values into final CSS text
   let cssText = strings[0];
   for (let i = 0; i < values.length; i++) {
@@ -111,6 +120,8 @@ export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult 
       // Fall back to regular <style> tag if constructable stylesheets fail
     }
   }
+
+  if (values.length === 0) cssResultCache.set(strings, result);
 
   return result;
 }

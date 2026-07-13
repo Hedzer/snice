@@ -257,11 +257,25 @@ class DataLoader {
 
 ### Rendering
 
-**`@render(options?)`** - Define component template (auto re-renders on property changes)
+**`@render(options?)`** - Define a component template (auto re-renders on property changes)
 ```typescript
 @render()
 renderContent() {
   return html`<div>${this.data}</div>`;
+}
+```
+
+**`SniceElement`** - Optional convention-driven base class with `render()`, static styles, kebab-case attributes, and imperative invalidation
+```typescript
+@element('user-card')
+class UserCard extends SniceElement {
+  static styles = css`:host { display: block; }`;
+
+  @state() selected = false;
+
+  render() {
+    return html`<article class:selected=${this.selected}>...</article>`;
+  }
 }
 ```
 
@@ -291,7 +305,18 @@ name = 'default';
 
 @property({ type: Boolean })
 enabled = false;
+
+@property({ type: Number, reflect: false })
+page = 1; // accepts the attribute, does not reflect property writes
+
+@state()
+open = false; // reactive internal state, never an attribute
+
+@state({ deep: true })
+model = { rows: [] }; // nested object/array/Map/Set writes re-render
 ```
+
+Property `type` conversion applies at the string attribute boundary. Direct JavaScript assignments preserve the assigned type and object identity.
 
 **`@watch(...propertyNames)`** - React to property changes
 ```typescript
@@ -576,14 +601,17 @@ html`
   }
 `
 
-// <if> conditional element
+// Virtual if / else-if / else retains each branch's DOM
 html`
   <if ${this.isLoggedIn}>
     <span>Welcome, ${this.user.name}!</span>
     <button @click=${this.logout}>Logout</button>
-  </if>
-  <if ${!this.isLoggedIn}>
-    <a href="/login">Login</a>
+    <else-if ${this.sessionExpired}>
+      <button @click=${this.signIn}>Sign in again</button>
+    </else-if>
+    <else>
+      <a href="/login">Login</a>
+    </else>
   </if>
 `
 
@@ -595,6 +623,9 @@ html`
     </when>
     <when value="success">
       <span>Success!</span>
+    </when>
+    <when ${OFFLINE_STATE}>
+      <span>Offline</span>
     </when>
     <when value="error">
       <span>Error occurred</span>
@@ -623,6 +654,42 @@ Add a `key` binding when list items hold state (inputs, media, animations). Keye
 ```typescript
 ${this.items.map(item => html`<li key=${item.id}>${item.name}</li>`)}
 ```
+
+Use `repeat()` for an explicit wrapper-free keyed collection with duplicate-key validation and an empty state:
+
+```typescript
+${repeat(this.items, {
+  key: item => item.id,
+  render: item => html`<li>${item.name}</li>`,
+  empty: () => html`<li>No results</li>`
+})}
+```
+
+### Declarative Bindings and Directives
+
+```typescript
+const field = createRef<HTMLInputElement>();
+
+html`<input
+  ${ref(field)}
+  ${use(this.autofocus)}
+  .value=${bind(this, 'query')}
+  class:invalid=${this.invalid}
+  style:--field-accent=${this.accent}
+  @keydown.enter|prevent=${this.submit}
+  ...attrs=${this.aria}
+  ...events=${this.listeners}
+>`
+```
+
+- `bind()` provides IME-safe two-way native form binding with optional event and value converters.
+- `ref()` tracks an element across conditional branches; `use()` owns attach/update/cleanup behavior.
+- `...props`, `...attrs`, and `...events` update named channels and remove stale keys.
+- Event modifiers: `prevent`, `stop`, `immediate`, `once`, `capture`, `passive`, and `self`.
+
+Render a validated dynamic HTML or SVG element with `<component ${tag}>`. Use `resource()` for pending/ready/error async UI, `portal()` for owned overlay content, and `transition()` for keyed wrapper-free view changes.
+
+See [Declarative Rendering](./docs/rendering.md) for the complete syntax, custom directive protocol, deep reactivity, render roots, SSR, hydration, and metadata reference.
 
 ### Template Helpers
 
@@ -842,6 +909,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 
 ### User Documentation
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
+- [Declarative Rendering](./docs/rendering.md) - Bindings, directives, control flow, reactivity, render roots, async UI, SSR, and hydration
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery

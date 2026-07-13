@@ -306,13 +306,13 @@ class UserPage extends HTMLElement {
 html`
   <if ${isLoggedIn}>
     <span>Welcome, ${user.name}</span>
-  </if>
-  <if ${!isLoggedIn}>
-    <a href="/login">Login</a>
+    <else-if ${sessionExpired}><button>Sign in again</button></else-if>
+    <else><a href="/login">Login</a></else>
   </if>
 
   <case ${status}>
     <when value="loading"><spinner></spinner></when>
+    <when ${OFFLINE_STATE}><offline-view></offline-view></when>
     <when value="error"><error-msg></error-msg></when>
     <default><content></content></default>
   </case>
@@ -322,14 +322,16 @@ html`
 ## Lists + Keys
 ```typescript
 html`
-  <ul>
-    ${items.map(item => html`
-      <li key=${item.id}>
+  <ul>${repeat(items, {
+    key: item => item.id,
+    render: item => html`
+      <li>
         ${item.name}
         <button @click=${() => this.remove(item.id)}>×</button>
       </li>
-    `)}
-  </ul>
+    `,
+    empty: () => html`<li>No items</li>`
+  })}</ul>
 `
 ```
 
@@ -337,19 +339,16 @@ html`
 ```typescript
 @element('my-form')
 class MyForm extends HTMLElement {
-  @property() value = '';
+  @state() value = '';
   @property({ type: Boolean }) disabled = false;
 
   @render()
   renderContent() {
     return html`
       <input
-        .value=${this.value}
+        .value=${bind(this, 'value')}
         ?disabled=${this.disabled}
-        @input=${(e: Event) => {
-          this.value = (e.target as HTMLInputElement).value;
-          this.dispatchValueChange();
-        }}
+        @change=${this.dispatchValueChange}
       />
     `;
   }

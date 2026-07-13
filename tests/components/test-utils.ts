@@ -40,10 +40,20 @@ export async function createComponent<T extends HTMLElement>(
   for (const [key, value] of Object.entries(attributes)) {
     // Convert kebab-case to camelCase
     const propName = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    const isObservedAttribute = (el.constructor as any).observedAttributes
+      ?.some(attribute => attribute.toLowerCase() === key.toLowerCase()) ?? false;
+
+    // Values actually represented by an observed attribute have already
+    // crossed the component's declared converter above. Assigning the original
+    // string/number afterward would overwrite that typed result. Explicit
+    // boolean false is different: it removes the attribute, so it must still
+    // cross the property channel to override a component whose default is true.
+    const representedByAttribute = isObservedAttribute && (
+      typeof value === 'string' || typeof value === 'number' || value === true
+    );
+    if (representedByAttribute) continue;
     
-    // Always set the property directly to ensure framework picks up the value
-    // This handles cases where attribute -> property reflection may not work
-    // during initial setup or for complex property types
+    // Non-attribute and complex values must cross the property channel.
     if (typeof value === 'boolean' || typeof value === 'number') {
       (el as any)[propName] = value;
     } else if (typeof value === 'string') {

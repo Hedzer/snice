@@ -1,7 +1,7 @@
 # Decorators
 
 ## Class
-- `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?: boolean }`
+- `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?, renderRoot?: 'shadow'|'light', shadow?: 'open'|'closed'|false, delegatesFocus? }`
 - `@page({ tag, routes, guards?, placard? })` - Routable page
 - `@controller('name')` - Swappable behavior
 - `@layout('tag-name')` - Page wrapper for routing system
@@ -12,7 +12,9 @@
 - `@styles()` - Scoped CSS, returns `css\`...\``. Only one per element (last wins).
 
 ## Properties
-- `@property({ type?, attribute?: string|boolean, converter?, hasChanged? })` - Reactive, syncs attrs. Initial defaults NOT reflected to attrs.
+- `@property({ type?, attribute?: string|boolean, reflect?, deep?, converter?, hasChanged? })` - Reactive public property. `reflect` defaults true. Attribute conversion applies only at the string boundary; JS assignments preserve identity.
+- `@state({ deep?, hasChanged? })` - Reactive internal field; never observes or reflects an attribute.
+- `deep:true` - Observe nested plain object/array/Map/Set writes using native Proxy/Reflect.
 - `@watch('propName')` - Fires once on init as `(undefined, initialValue, propertyName)`, then on every change: `(oldVal, newVal, propertyName) => void`.
 - `@watch('propName', { immediate: false })` - Change-only; skips the init call (use for watchers that dispatch events). Options object is the last arg (works with multiple names).
 

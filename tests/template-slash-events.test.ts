@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, render, html } from '../src/index';
+import { element, render, html } from './test-imports';
 
 describe('Template syntax: event names with slashes', () => {
   it('should handle event names containing / character', async () => {
@@ -127,5 +127,24 @@ describe('Template syntax: event names with slashes', () => {
     expect(eventHandler).toHaveBeenCalledWith({ value: 'event-data' });
 
     container.remove();
+  });
+
+  it('preserves slash event names when the expression is quoted', async () => {
+    const handler = vi.fn();
+
+    @element('test-quoted-slash-event')
+    class TestQuotedSlashEvent extends HTMLElement {
+      @render()
+      render() {
+        return html`<button @@snice/quoted-event="${handler}">go</button>`;
+      }
+    }
+
+    const host = document.createElement('test-quoted-slash-event') as HTMLElement & { ready: Promise<void> };
+    document.body.append(host);
+    await host.ready;
+    host.shadowRoot!.querySelector('button')!.dispatchEvent(new CustomEvent('@snice/quoted-event'));
+    expect(handler).toHaveBeenCalledOnce();
+    host.remove();
   });
 });

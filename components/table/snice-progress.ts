@@ -1,7 +1,7 @@
 import { element, property, render, styles, html, css } from 'snice';
 
-@element('snice-progress')
-export class SniceProgress extends HTMLElement {
+@element('snice-table-progress')
+export class SniceTableProgress extends HTMLElement {
   @property({ type: Number })
   value = 0;
   

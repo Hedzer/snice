@@ -45,13 +45,27 @@
 <a href="#elements">Elements</a>
 <a href="#elements-basic-usage" class="sub">Basic Usage</a>
 <a href="#elements-lifecycle-methods" class="sub">Lifecycle Methods</a>
-<a href="#elements-shadow-dom" class="sub">Shadow DOM</a>
+<a href="#elements-render-roots-and-shadow-dom" class="sub">Render Roots and Shadow DOM</a>
 <a href="#elements-properties" class="sub">Properties</a>
 <a href="#elements-queries" class="sub">Queries</a>
 <a href="#elements-styling" class="sub">Styling</a>
 <a href="#elements-template-events" class="sub">Template Events</a>
 <a href="#elements-extending-elements" class="sub">Extending Elements</a>
 <a href="#elements-advanced-examples" class="sub">Advanced Examples</a>
+<a href="#rendering">Declarative Rendering</a>
+<a href="#rendering-template-values" class="sub">Template values</a>
+<a href="#rendering-bindings" class="sub">Bindings</a>
+<a href="#rendering-two-way-form-binding" class="sub">Two-way form binding</a>
+<a href="#rendering-element-directives" class="sub">Element directives</a>
+<a href="#rendering-control-flow" class="sub">Control flow</a>
+<a href="#rendering-async-content" class="sub">Async content</a>
+<a href="#rendering-portals" class="sub">Portals</a>
+<a href="#rendering-transitions" class="sub">Transitions</a>
+<a href="#rendering-reactive-authoring" class="sub">Reactive authoring</a>
+<a href="#rendering-render-roots" class="sub">Render roots</a>
+<a href="#rendering-custom-directives" class="sub">Custom directives</a>
+<a href="#rendering-server-rendering-and-hydration" class="sub">Server rendering and hydration</a>
+<a href="#rendering-editor-metadata" class="sub">Editor metadata</a>
 <a href="#routing">Routing</a>
 <a href="#routing-router-setup" class="sub">Router Setup</a>
 <a href="#routing-page-components" class="sub">Page Components</a>
@@ -139,7 +153,6 @@
       <p>Complete API reference for the Snice framework.</p>
     </div>
     <section class="doc-file" id="elements">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="elements-elements-api-documentation">Elements API Documentation</h1>
 <p>Elements are the core building blocks of Snice components. They define custom HTML elements with encapsulated styling and behavior using web components.</p>
 <h2 id="elements-basic-usage">Basic Usage</h2>
@@ -153,12 +166,28 @@ class MyButton extends HTMLElement {
     return html`&lt;button&gt;Click me&lt;/button&gt;`;
   }
 }</snice-code-block>
+<p>For convention-based authoring, extend the optional <code>SniceElement</code> base and implement <code>render()</code> directly:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { SniceElement, css, element, html, state } from 'snice';
+
+@element('my-counter')
+class MyCounter extends SniceElement {
+  static styles = css`:host { display: inline-block; }`;
+  @state() count = 0;
+
+  render() {
+    return html`&lt;button @click=${() =&gt; this.count++}&gt;${this.count}&lt;/button&gt;`;
+  }
+}</snice-code-block>
+<p>Plain <code>HTMLElement</code> subclasses and decorated render/style methods remain fully supported.</p>
 <h3 id="elements-element-decorator-options">Element Decorator Options</h3>
 <p>The <code>@element</code> decorator accepts:</p>
 <ul>
 <li><code>tagName: string</code> - The custom element tag name (must contain a hyphen)</li>
 <li><code>options?: ElementOptions</code> - Optional configuration</li>
 <li><code>formAssociated?: boolean</code> - Enable form association (default: false)</li>
+<li><code>renderRoot?: 'shadow' | 'light'</code> - Select shadow or light DOM rendering</li>
+<li><code>shadow?: 'open' | 'closed' | false</code> - Shadow mode, or light-DOM shorthand</li>
+<li><code>delegatesFocus?: boolean</code> - Forwarded to <code>attachShadow()</code></li>
 </ul>
 <h2 id="elements-lifecycle-methods">Lifecycle Methods</h2>
 <h3 id="elements-render-decorator">@render() Decorator</h3>
@@ -219,7 +248,7 @@ class SimpleList extends HTMLElement {
 <li>Avoiding differential rendering issues with dynamic attributes</li>
 <li>Simple components where full re-render is acceptable</li>
 </ul>
-<p><strong>Note:</strong> When <code>differential: false</code>, the render method must return a string (not <code>html\</code>...\`<code>). Conditional rendering (</code><if><code>, </code><switch>/<case>`) is NOT available — use ternary operators in the string template instead.</p>
+<p><strong>Note:</strong> When <code>differential: false</code>, the render method must return a string (not <code>html\</code>...\`<code>). Declarative directives and virtual control flow (</code>&lt;if&gt;<code>, </code>&lt;case&gt;`, and related tags) are not available in the raw-string mode.</p>
 <h3 id="elements-imperative-rendering">Imperative Rendering</h3>
 <p>Use <code>@render({ once: true })</code> with <code>@watch</code> and <code>@query</code> to render the template once, then update the DOM directly. Property changes fire watchers instead of triggering re-renders.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('user-card')
@@ -319,7 +348,7 @@ class AutoResizeTextarea extends HTMLElement {
     return html`&lt;textarea @input=${this.adjustHeight}&gt;&lt;/textarea&gt;`;
   }
 }</snice-code-block>
-<p><strong>@reconnect()</strong> - Called every time the element is connected AFTER the first connect. <code>@ready</code> only fires once; <code>@dispose</code> fires on every disconnect. The gap between is "what should run on a reconnect?" — for most components nothing extra is needed because framework-managed handlers (<code>@on</code>, <code>@observe</code>, <code>@respond</code>, <code>@context</code>) are re-established automatically. Use <code>@reconnect</code> only when the component wires its own long-lived global subscription in <code>@ready</code> (e.g. <code>document.addEventListener</code> for outside-click) and tears it down in <code>@dispose</code>:</p>
+<p><strong>@reconnect()</strong> - Called every time the element is connected AFTER the first connect. <code>@ready</code> only fires once; <code>@dispose</code> fires on every disconnect. The gap between is &quot;what should run on a reconnect?&quot; — for most components nothing extra is needed because framework-managed handlers (<code>@on</code>, <code>@observe</code>, <code>@respond</code>, <code>@context</code>) are re-established automatically. Use <code>@reconnect</code> only when the component wires its own long-lived global subscription in <code>@ready</code> (e.g. <code>document.addEventListener</code> for outside-click) and tears it down in <code>@dispose</code>:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('outside-click-listener')
 class OutsideClick extends HTMLElement {
   private handler = () =&gt; { /* ... */ };
@@ -370,8 +399,17 @@ class AnimatedElement extends HTMLElement {
 <snice-code-block language="typescript" grammar="grammars/typescript.json">const el = document.createElement('my-element') as MyElement;
 document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready</snice-code-block>
-<h2 id="elements-shadow-dom">Shadow DOM</h2>
-<p>All elements automatically use Shadow DOM for style encapsulation.</p>
+<h2 id="elements-render-roots-and-shadow-dom">Render Roots and Shadow DOM</h2>
+<p>Elements use an open shadow root by default. Open/closed shadow roots and light DOM share the same differential renderer, lifecycle, event binding, styles, and query decorators.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('closed-card', { shadow: 'closed' })
+class ClosedCard extends HTMLElement { /* ... */ }
+
+@element('light-card', { renderRoot: 'light' })
+class LightCard extends HTMLElement { /* ... */ }
+
+@element('focus-card', { delegatesFocus: true })
+class FocusCard extends HTMLElement { /* ... */ }</snice-code-block>
+<p><code>shadow: false</code> is shorthand for <code>renderRoot: 'light'</code>. Framework-managed queries continue to work with a closed root. A <code>createRenderRoot()</code> override may return the host element or a <code>ShadowRoot</code> for a custom policy.</p>
 <h3 id="elements-accessing-shadow-dom-elements">Accessing Shadow DOM Elements</h3>
 <p>Use <code>@query</code> instead of manual <code>shadowRoot.querySelector</code>:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('shadow-demo')
@@ -422,16 +460,30 @@ class UserProfile extends HTMLElement {
 <snice-code-block language="typescript" grammar="grammars/typescript.json">interface PropertyOptions {
   type?: String | Number | Boolean | Array | Object | Date | BigInt | SimpleArray;
   attribute?: string | boolean;  // Custom attribute name, or false to disable attribute sync
+  reflect?: boolean;             // Property → attribute; default true
+  deep?: boolean;                // Observe nested object/array/Map/Set writes
   converter?: PropertyConverter;  // Custom converter
+  hasChanged?: (value, oldValue) =&gt; boolean;
 }</snice-code-block>
 <h3 id="elements-property-behavior">Property Behavior</h3>
 <p>All properties automatically:</p>
 <ul>
 <li>Read from DOM attributes when present</li>
-<li>Reflect property setter changes to corresponding attributes</li>
+<li>Reflect property setter changes to corresponding attributes unless <code>reflect: false</code></li>
 <li>Convert between string attributes and typed properties</li>
 <li>Trigger re-renders when changed</li>
 </ul>
+<p>Attribute conversion is intentionally one-way at the HTML boundary. A direct JavaScript assignment is already typed and is stored exactly as assigned:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const rows = [{ id: 1 }];
+element.rows = rows;
+element.rows === rows; // true</snice-code-block>
+<p>This preserves dates, union values, services, objects, and collection identity. <code>type</code> and <code>converter.fromAttribute</code> process strings arriving from attributes; <code>converter.toAttribute</code> serializes reflection.</p>
+<p>Use <code>reflect: false</code> for input-only attributes, <code>attribute: false</code> for JavaScript-only public properties, and <code>@state()</code> for internal reactive fields:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@property({ type: Number, reflect: false }) page = 1;
+@property({ attribute: false }) service!: UserService;
+@state() open = false;
+@state({ deep: true }) model = { rows: [] as Row[] };</snice-code-block>
+<p><code>@state()</code> never observes or writes an attribute. <code>deep: true</code> tracks nested plain objects, arrays, <code>Map</code>, and <code>Set</code> using native <code>Proxy</code> and <code>Reflect</code>; class instances and DOM objects remain intact. Deep observation targets modern evergreen browsers and is not available in Internet Explorer.</p>
 <p><strong>Note:</strong> Initial field values (defaults like <code>name = 'Anonymous'</code>) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set <code>attribute: false</code> to disable attribute sync entirely.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('reflected-props')
 class ReflectedProps extends HTMLElement {
@@ -450,9 +502,9 @@ class ReflectedProps extends HTMLElement {
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@property({ type: Boolean })
 enabled = false;</snice-code-block>
 <ul>
-<li><code><element></code> or <code><element enabled=""></code> → <code>true</code></li>
-<li><code><element enabled="true"></code> → <code>true</code></li>
-<li><code><element enabled="false"></code> → <code>false</code></li>
+<li><code>&lt;element&gt;</code> or <code>&lt;element enabled=&quot;&quot;&gt;</code> → <code>true</code></li>
+<li><code>&lt;element enabled=&quot;true&quot;&gt;</code> → <code>true</code></li>
+<li><code>&lt;element enabled=&quot;false&quot;&gt;</code> → <code>false</code></li>
 <li>No attribute → <code>false</code></li>
 </ul>
 <h3 id="elements-custom-converters">Custom Converters</h3>
@@ -663,7 +715,7 @@ class HostStyled extends HTMLElement {
 }</snice-code-block>
 <h3 id="elements-icons">Icons</h3>
 <p>Many Snice components accept an <code>icon</code> property (or <code>prefix-icon</code> / <code>suffix-icon</code> for inputs). The icon value is auto-detected:</p>
-<div class="doc-table-wrap"><table><thead><tr><th>Value</th><th>Rendered As</th></tr></thead><tbody><tr><td><code>"search"</code>, <code>"check_circle"</code></td><td>Ligature icon with icon font</td></tr><tr><td><code>"🔍"</code>, <code>"$"</code></td><td>Text/emoji as-is</td></tr><tr><td><code>"https://example.com/icon.svg"</code></td><td><code><img></code> element</td></tr><tr><td><code>"logo.png"</code>, <code>"icon.svg"</code></td><td><code><img></code> element</td></tr><tr><td><code>"img://url"</code></td><td>Explicit <code><img></code></td></tr><tr><td><code>"text://content"</code></td><td>Explicit <code><span></code></td></tr></tbody></table></div>
+<div class="doc-table-wrap"><table><thead><tr><th>Value</th><th>Rendered As</th></tr></thead><tbody><tr><td><code>&quot;search&quot;</code>, <code>&quot;check_circle&quot;</code></td><td>Ligature icon with icon font</td></tr><tr><td><code>&quot;🔍&quot;</code>, <code>&quot;$&quot;</code></td><td>Text/emoji as-is</td></tr><tr><td><code>&quot;https://example.com/icon.svg&quot;</code></td><td><code>&lt;img&gt;</code> element</td></tr><tr><td><code>&quot;logo.png&quot;</code>, <code>&quot;icon.svg&quot;</code></td><td><code>&lt;img&gt;</code> element</td></tr><tr><td><code>&quot;img://url&quot;</code></td><td>Explicit <code>&lt;img&gt;</code></td></tr><tr><td><code>&quot;text://content&quot;</code></td><td>Explicit <code>&lt;span&gt;</code></td></tr></tbody></table></div>
 <h4 id="elements-changing-the-icon-font">Changing the Icon Font</h4>
 <p>By default, ligature icons (lowercase words like <code>search</code>, <code>home</code>, <code>check_circle</code>) use <strong>Material Symbols Outlined</strong>. To use a different icon font like Font Awesome, set the <code>--snice-icon-font</code> CSS custom property:</p>
 <snice-code-block language="css" grammar="grammars/css.json">:root {
@@ -926,7 +978,7 @@ class ReactiveComponent extends HTMLElement {
     `;
   }
 }</snice-code-block>
-<p><strong>Initial values.</strong> By default a watcher fires once during initialization with the element's starting value — from markup (<code><reactive-component user-name="Ada"></code>) or the field default — with <code>oldValue</code> undefined, then again on every later change:</p>
+<p><strong>Initial values.</strong> By default a watcher fires once during initialization with the element's starting value — from markup (<code>&lt;reactive-component user-name=&quot;Ada&quot;&gt;</code>) or the field default — with <code>oldValue</code> undefined, then again on every later change:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@watch('userName')
 onUserNameChange(oldVal: string | undefined, newVal: string) {
   // Init:   (undefined, 'Ada')
@@ -996,10 +1048,12 @@ class ConditionalContent extends HTMLElement {
       &lt;if ${this.isLoggedIn}&gt;
         &lt;div&gt;Welcome back!&lt;/div&gt;
         &lt;button @click=${this.logout}&gt;Logout&lt;/button&gt;
-      &lt;/if&gt;
-
-      &lt;if ${!this.isLoggedIn}&gt;
-        &lt;a href=&quot;/login&quot;&gt;Please login&lt;/a&gt;
+        &lt;else-if ${this.sessionExpired}&gt;
+          &lt;button @click=${this.login}&gt;Sign in again&lt;/button&gt;
+        &lt;/else-if&gt;
+        &lt;else&gt;
+          &lt;a href=&quot;/login&quot;&gt;Please login&lt;/a&gt;
+        &lt;/else&gt;
       &lt;/if&gt;
     `;
   }
@@ -1008,9 +1062,299 @@ class ConditionalContent extends HTMLElement {
     this.isLoggedIn = false;
   }
 }</snice-code-block>
+<p>The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See <a href="#rendering">Declarative Rendering</a> for typed <code>&lt;when&gt;</code> branches, <code>repeat()</code>, dynamic <code>&lt;component&gt;</code>, bindings, refs/actions, async resources, portals, transitions, SSR, and hydration.</p>
+</section>
+<section class="doc-file" id="rendering">
+<h1 id="rendering-declarative-rendering">Declarative Rendering</h1>
+<p>Snice templates are tagged template literals that update only the dynamic parts of the DOM. Template structure is parsed once, DOM nodes are retained across updates, and directives can own lifecycle-bound behavior without adding wrapper elements.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import {
+  SniceElement, css, element, html, property, state
+} from 'snice';
+
+@element('user-editor')
+class UserEditor extends SniceElement {
+  static styles = css`:host { display: block; }`;
+
+  @property() userId = '';
+  @state({ deep: true }) form = { name: '', roles: [] as string[] };
+
+  render() {
+    return html`&lt;h2&gt;${this.form.name || 'New user'}&lt;/h2&gt;`;
+  }
+}</snice-code-block>
+<p><code>SniceElement</code> is optional. Plain <code>HTMLElement</code> subclasses continue to support <code>@render()</code> and <code>@styles()</code>. The base class adds a conventional <code>render()</code> method, static <code>styles</code>, kebab-case implicit attribute names, and typed <code>invalidate()</code> / <code>renderNow()</code> methods.</p>
+<h2 id="rendering-template-values">Template values</h2>
+<p>Node expressions accept text, numbers, templates, iterables, DOM nodes, promises, async iterables, <code>nothing</code>, and directives.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;h2&gt;${title}&lt;/h2&gt;
+  ${items.map(item =&gt; html`&lt;span&gt;${item.label}&lt;/span&gt;`)}
+  ${visible ? html`&lt;section&gt;Visible&lt;/section&gt;` : nothing}
+`</snice-code-block>
+<p>Dynamic text is escaped. <code>unsafeHTML(value)</code> is the explicit opt-in for trusted raw HTML. Use <code>svg</code><code> for an SVG fragment that does not include its own outer </code>&lt;svg&gt;` element.</p>
+<h2 id="rendering-bindings">Bindings</h2>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input
+  title=${label}
+  data-label=&quot;prefix ${label}&quot;
+  .value=${value}
+  ?disabled=${disabled}
+  @input=${handler}
+&gt;`</snice-code-block>
+<div class="doc-table-wrap"><table><thead><tr><th>Syntax</th><th>Effect</th></tr></thead><tbody><tr><td><code>${value}</code></td><td>Node content</td></tr><tr><td><code>name=${value}</code></td><td>Attribute</td></tr><tr><td><code>.name=${value}</code></td><td>JavaScript property</td></tr><tr><td><code>?name=${value}</code></td><td>Boolean attribute presence</td></tr><tr><td><code>@event=${handler}</code></td><td>Event listener</td></tr></tbody></table></div>
+<p>Use property bindings for objects, arrays, functions, element state, and native form values. Property bindings preserve the JavaScript value and its identity.</p>
+<h3 id="rendering-class-and-style-toggles">Class and style toggles</h3>
+<p>Toggle one class or one CSS property without rebuilding a complete string:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;article
+  class=&quot;card&quot;
+  class:selected=${this.selected}
+  style:color=${this.color}
+  style:--card-accent=${this.color}
+&gt;&lt;/article&gt;`</snice-code-block>
+<p>Falsy <code>class:name</code> values remove the class. <code>nothing</code>, <code>null</code>, or <code>false</code> removes an individual <code>style:name</code> property. <code>classMap()</code> and <code>styleMap()</code> remain available when an object-to-string mapping is more convenient.</p>
+<h3 id="rendering-event-modifiers-and-keyboard-filters">Event modifiers and keyboard filters</h3>
+<p>Event modifiers compose after the event name with <code>|</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;form @submit|prevent=${this.save}&gt;&lt;/form&gt;
+  &lt;button @click|once|stop=${this.runOnce}&gt;Run&lt;/button&gt;
+  &lt;div @click|self=${this.selectContainer}&gt;...&lt;/div&gt;
+  &lt;input @keydown.ctrl+s|prevent=${this.save}&gt;
+  &lt;input @keyup.~enter=${this.acceptWithAnyModifiers}&gt;
+`</snice-code-block>
+<p>Supported modifiers are <code>prevent</code>, <code>stop</code>, <code>immediate</code>, <code>once</code>, <code>capture</code>, <code>passive</code>, and <code>self</code>. Long aliases such as <code>preventDefault</code>, <code>stopPropagation</code>, and <code>stopImmediatePropagation</code> are accepted. <code>passive</code> and <code>prevent</code> cannot be combined.</p>
+<p>Keyboard filters support dot or colon notation. Exact filters such as <code>@keydown.ctrl+s</code> reject extra modifiers; <code>~</code> allows any modifier combination, as in <code>@keydown.~enter</code>.</p>
+<p>Handlers can be functions or <code>EventListenerObject</code> values. Template functions run with <code>this</code> bound to the component that owns the render tree, including handlers rendered through a portal.</p>
+<h3 id="rendering-named-spreads">Named spreads</h3>
+<p>Named spreads make the target channel explicit and remove stale keys on later renders:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input
+  ...props=${{ value: this.query, selectionStart: 0 }}
+  ...attrs=${{ 'aria-label': this.label, hidden: this.hidden }}
+  ...events=${{ input: this.onInput, blur: this.onBlur }}
+&gt;`</snice-code-block>
+<ul>
+<li><code>...props</code> assigns JavaScript properties. A key removed during a live update is reset to <code>undefined</code>.</li>
+<li><code>...attrs</code> writes attributes. <code>nothing</code>, <code>null</code>, and <code>false</code> remove a key; <code>true</code> writes an empty attribute.</li>
+<li><code>...events</code> manages listeners. Names may be <code>click</code> or <code>@click</code>.</li>
+</ul>
+<p>Event-spread values may be functions, <code>EventListenerObject</code> values, or nullish/false to remove a listener. Empty or duplicate normalized names (for example both <code>click</code> and <code>@click</code>) are rejected. Listeners detach while a conditional branch is parked and reattach when it returns. Removing a host from the document retains the listeners on its retained render tree, matching native DOM behavior. Consumed <code>|once</code> and <code>EventListenerObject.once</code> listeners stay consumed in either lifecycle.</p>
+<p>The element directives <code>props(object)</code>, <code>attrs(object)</code>, and <code>events(object)</code> provide the same channels when composition in an opening-tag expression is preferable.</p>
+<h2 id="rendering-two-way-form-binding">Two-way form binding</h2>
+<p><code>bind(target, key)</code> synchronizes a model field and a DOM property:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@state() query = '';
+@state() accepted = false;
+
+render() {
+  return html`
+    &lt;input .value=${bind(this, 'query')}&gt;
+    &lt;input type=&quot;checkbox&quot; .checked=${bind(this, 'accepted')}&gt;
+  `;
+}</snice-code-block>
+<p><code>value</code> uses <code>input</code>, <code>checked</code> uses <code>input</code> and <code>change</code>, and <code>files</code> / <code>&lt;select&gt;</code> use <code>change</code>. Value bindings suppress intermediate IME composition values.</p>
+<p>Customize the event and transformations when the view and model use different representations:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input .value=${bind(this, 'amount', {
+  event: 'change',
+  toView: amount =&gt; String(amount * 100),
+  fromView: value =&gt; Number(value) / 100
+})}&gt;`</snice-code-block>
+<p><code>bind()</code> is valid only in a property binding such as <code>.value=${...}</code>.</p>
+<h2 id="rendering-element-directives">Element directives</h2>
+<h3 id="rendering-refs">Refs</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const input = createRef&lt;HTMLInputElement&gt;();
+
+html`&lt;input ${ref(input)}&gt;`;
+// input.value is the live element, or null while its branch is disconnected.</snice-code-block>
+<p><code>ref()</code> accepts a <code>createRef()</code> object or a callback. Callback refs receive the element and later receive <code>null</code> during teardown or retargeting.</p>
+<h3 id="rendering-actions">Actions</h3>
+<p><code>use(action, value?)</code> attaches behavior to a concrete element:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const tooltip = (element: Element, text: string) =&gt; {
+  element.setAttribute('aria-label', text);
+  return {
+    update(next: string) { element.setAttribute('aria-label', next); },
+    destroy() { element.removeAttribute('aria-label'); }
+  };
+};
+
+html`&lt;button ${use(tooltip, this.help)}&gt;Help&lt;/button&gt;`;</snice-code-block>
+<p>An action may return a cleanup function or an object with <code>update()</code> and <code>destroy()</code>. Cleanup is paired across branch changes, host disconnect/reconnect, action replacement, and dynamic-component retargeting.</p>
+<h2 id="rendering-control-flow">Control flow</h2>
+<p>Snice control-flow tags are virtual: they do not remain in the DOM.</p>
+<h3 id="rendering-if-else-if-else">If / else-if / else</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;if ${this.loading}&gt;
+    &lt;p&gt;Loading…&lt;/p&gt;
+    &lt;else-if ${this.error}&gt;
+      &lt;p role=&quot;alert&quot;&gt;${this.error.message}&lt;/p&gt;
+    &lt;/else-if&gt;
+    &lt;else&gt;
+      &lt;user-view .user=${this.user}&gt;&lt;/user-view&gt;
+    &lt;/else&gt;
+  &lt;/if&gt;
+`</snice-code-block>
+<p><code>&lt;else-if&gt;</code> and <code>&lt;else&gt;</code> must be direct children of <code>&lt;if&gt;</code>, and <code>&lt;else&gt;</code> must be last. Branch DOM is parked and restored, so input state and element identity survive branch switches.</p>
+<h3 id="rendering-case-when-default">Case / when / default</h3>
+<p>Static <code>value</code> matching compares string representations. A bare expression uses <code>Object.is</code>, so symbols, objects, numbers, and other typed values can be matched by identity.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;case ${this.status}&gt;
+    &lt;when value=&quot;loading&quot;&gt;Loading…&lt;/when&gt;
+    &lt;when ${READY_STATE}&gt;Ready&lt;/when&gt;
+    &lt;default&gt;Unknown&lt;/default&gt;
+  &lt;/case&gt;
+`</snice-code-block>
+<h3 id="rendering-keyed-repeat">Keyed repeat</h3>
+<p>Use <code>repeat()</code> when list identity matters:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;ul&gt;${repeat(this.items, {
+  key: item =&gt; item.id,
+  render: (item, index) =&gt; html`&lt;li&gt;${index + 1}. ${item.label}&lt;/li&gt;`,
+  empty: () =&gt; html`&lt;li&gt;No results&lt;/li&gt;`
+})}&lt;/ul&gt;`</snice-code-block>
+<p><code>repeat()</code> accepts any iterable, adds no wrapper, moves existing DOM when order changes, and rejects duplicate keys before reconciliation. A normal mapped array and <code>key=${value}</code> remain supported; <code>repeat()</code> is the explicit API when keyed identity and an empty state are required together.</p>
+<h3 id="rendering-dynamic-elements">Dynamic elements</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;component ${this.tag}
+  ...attrs=${this.attributes}
+  ...props=${this.properties}
+  ${use(this.action)}
+&gt;Content&lt;/component&gt;`</snice-code-block>
+<p><code>&lt;component&gt;</code> selects a validated concrete tag at runtime, preserves the surrounding HTML or SVG namespace, and retargets its bindings when the tag changes. <code>nothing</code>, <code>null</code>, or <code>false</code> renders no element.</p>
+<p>When an HTML void tag such as <code>input</code> or <code>img</code> is selected, authored children are parked rather than inserted into invalid markup; switching to a non-void tag restores those same child nodes.</p>
+<h2 id="rendering-async-content">Async content</h2>
+<p>A Promise or AsyncIterable can be rendered directly in a node expression. A promise replaces the pending empty range when it settles. An async iterable commits each emission. Changing the source ignores stale results, and disconnecting the owning tree stops active consumption.</p>
+<p>Use <code>resource()</code> when pending, ready, and error UI must be explicit:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`${resource(
+  signal =&gt; fetch(`/api/users/${this.userId}`, { signal }).then(r =&gt; r.json()),
+  {
+    pending: () =&gt; html`&lt;snice-spinner&gt;&lt;/snice-spinner&gt;`,
+    ready: user =&gt; html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`,
+    error: error =&gt; html`&lt;p role=&quot;alert&quot;&gt;${error.message}&lt;/p&gt;`
+  }
+)}`</snice-code-block>
+<p>The source may be a Promise, AsyncIterable, or <code>(signal: AbortSignal) =&gt; value</code>. Source functions are aborted when replaced or disconnected. An AsyncIterable can publish multiple ready values.</p>
+<h2 id="rendering-portals">Portals</h2>
+<p>Render wrapper-free content into another <code>ParentNode</code> while keeping it owned by the source component:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`${portal(
+  () =&gt; document.querySelector('#overlay-root'),
+  html`&lt;dialog open @click=${this.onDialogClick}&gt;...&lt;/dialog&gt;`
+)}`</snice-code-block>
+<p>The target can be a node, selector, or target function. Content moves without recreation if the target changes. It is removed on disconnect and restored on reconnect.</p>
+<h2 id="rendering-transitions">Transitions</h2>
+<p><code>transition(content, options)</code> animates a keyed content change without a permanent wrapper:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`${transition(this.view, {
+  key: this.route,
+  mode: 'simultaneous',
+  out: 'opacity: 0; transform: translateY(-4px)',
+  in: 'opacity: 1; transform: translateY(0)',
+  outDuration: 120,
+  inDuration: 160,
+  onComplete: this.focusHeading
+})}`</snice-code-block>
+<p>The default mode is <code>sequential</code>; <code>simultaneous</code> overlaps outgoing and incoming content. Reduced-motion preferences are respected by default. Set <code>respectReducedMotion: false</code> only when motion is essential. Rapid changes queue the latest key, and disconnect settles active work immediately.</p>
+<h2 id="rendering-reactive-authoring">Reactive authoring</h2>
+<h3 id="rendering-properties-and-state">Properties and state</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@property({ type: Number, reflect: false }) page = 1;
+@property({ attribute: 'user-id' }) userId = '';
+@property({ attribute: false }) service!: UserService;
+@state() open = false;
+@state({ deep: true }) filters = { tags: [] as string[] };</snice-code-block>
+<ul>
+<li><code>@property()</code> observes an attribute by default and reflects property writes back by default.</li>
+<li><code>reflect: false</code> keeps attribute-to-property input but stops property-to-attribute output.</li>
+<li><code>attribute: false</code> disables both attribute observation and reflection.</li>
+<li><code>@state()</code> is reactive internal state and never participates in attributes.</li>
+<li><code>type</code> and <code>converter.fromAttribute</code> convert only the string attribute boundary. Direct JavaScript property assignments preserve their exact value and identity.</li>
+<li><code>converter.toAttribute</code> controls reflection serialization.</li>
+<li><code>hasChanged(value, oldValue)</code> customizes assignment change detection.</li>
+</ul>
+<p>Plain <code>HTMLElement</code> subclasses retain legacy lowercase implicit attribute names. <code>SniceElement</code> converts implicit camelCase names to kebab-case. An explicit <code>attribute</code> name works the same on either base.</p>
+<h3 id="rendering-deep-state">Deep state</h3>
+<p><code>deep: true</code> observes nested writes in plain objects, arrays, <code>Map</code>, and <code>Set</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@state({ deep: true }) model = {
+  user: { name: 'Ada' },
+  rows: [] as Row[],
+  flags: new Map&lt;string, boolean&gt;(),
+  selected: new Set&lt;string&gt;()
+};
+
+this.model.user.name = 'Grace';
+this.model.rows.push(row);
+this.model.flags.set('ready', true);</snice-code-block>
+<p>Mutations are batched into the normal render scheduler. Cycles are supported, proxies are stable, collection iteration returns reactive nested values, and mutating an old graph after replacing the property does not invalidate the component.</p>
+<p>Deep observation uses native <code>Proxy</code> and <code>Reflect</code>. It is intended for modern evergreen browsers and is not available in Internet Explorer. Regular <code>@property()</code> / <code>@state()</code> fields do not require deep proxies. Class instances such as <code>Date</code>, DOM nodes, and application service objects are deliberately left intact.</p>
+<h3 id="rendering-sniceelement-conventions">SniceElement conventions</h3>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('user-panel')
+class UserPanel extends SniceElement {
+  static styles = [baseStyles, css`:host { display: block; }`];
+  static renderOptions = { debounce: 20 };
+
+  @state() user: User | null = null;
+
+  render() {
+    return html`...`;
+  }
+}</snice-code-block>
+<p><code>invalidate()</code> schedules the conventional render and returns the current <code>rendered</code> promise. <code>renderNow()</code> commits immediately. Decorated <code>@render()</code> / <code>@styles()</code> methods remain available and can be used on either base class.</p>
+<h2 id="rendering-render-roots">Render roots</h2>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('open-panel')                       // open shadow root
+@element('closed-panel', { shadow: 'closed' })
+@element('light-panel', { renderRoot: 'light' })
+@element('light-panel-short', { shadow: false })
+@element('focus-panel', { delegatesFocus: true })</snice-code-block>
+<p>Shadow DOM is the default. Light DOM, open/closed shadow roots, and <code>delegatesFocus</code> all use the same rendering, query, directive, style, and reconnect lifecycle. Framework <code>@query()</code> access continues to work with a closed root. Override <code>createRenderRoot()</code> for a custom host or shadow-root policy; it must return the host element or a <code>ShadowRoot</code>.</p>
+<p><code>renderRoot</code> and <code>shadow</code> may be written together only when they select the same root kind. An explicit child-class <code>shadow</code> option overrides an inherited light/shadow kind; an explicit child <code>renderRoot: 'shadow'</code> likewise escapes an inherited <code>shadow: false</code> setting.</p>
+<h2 id="rendering-custom-directives">Custom directives</h2>
+<p>Extend <code>Directive</code> when behavior needs retained per-expression state:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">class Uppercase extends Directive {
+  render(value: unknown) {
+    return String(value).toUpperCase();
+  }
+
+  update(part: DirectivePart, [value]: readonly [unknown]) {
+    return this.render(value);
+  }
+
+  disconnected(context?: DirectiveDisconnectContext) {
+    // context.reason is 'host', 'branch', or 'dispose'
+  }
+  reconnected() {}
+  adopted(nodeMap: ReadonlyMap&lt;Node, Node&gt;) {}
+}
+
+export const uppercase = directive&lt;Uppercase, readonly [unknown]&gt;(Uppercase);</snice-code-block>
+<p>Directives work in node, attribute, property, boolean-attribute, event, element, class, style, and spread positions. <code>PartInfo</code> identifies the position. <code>DirectivePart.setValue()</code> can publish a later value without replacing the directive. Instances are retained while the same directive class remains in the same expression slot and receive paired connection callbacks. The optional <code>DirectiveDisconnectContext</code> identifies whether the host was detached, a branch was parked, or the directive was permanently disposed.</p>
+<p>For SSR, add a static <code>renderToString(values, context)</code> method. It may return a value or, when <code>context.async</code> is true, a promise. <code>directiveServerResult(kind, value, name?)</code> lets an element directive emit attribute/property spreads or a named hydration boundary.</p>
+<h2 id="rendering-server-rendering-and-hydration">Server rendering and hydration</h2>
+<p>The server renderer has no DOM dependency:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const body = renderToString(html`&lt;main&gt;${content}&lt;/main&gt;`);
+
+const asyncBody = await renderToStringAsync(html`
+  &lt;main&gt;${fetchContent()}&lt;/main&gt;
+`);</snice-code-block>
+<p><code>renderToString()</code> emits hydration boundaries and renders the pending branch of <code>resource()</code>. <code>renderToStringAsync()</code> awaits promises, consumes async iterables to their latest value, and runs async directive rendering across node, attribute, property, spread, control-flow, and dynamic-component positions. Pass <code>{ hydratable: false }</code> when no client attachment is needed.</p>
+<p>Render a complete custom-element host with light DOM or declarative shadow DOM:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const markup = await renderElementToStringAsync(
+  'user-panel',
+  html`&lt;h2&gt;${loadName()}&lt;/h2&gt;`,
+  {
+    attributes: { 'user-id': id },
+    styles: UserPanel.styles,
+    shadow: 'closed',
+    delegatesFocus: true
+  }
+);</snice-code-block>
+<p>Use <code>renderRoot: 'light'</code> or its <code>shadow: false</code> shorthand for light-DOM output. <code>shadow: 'open'</code> is the default; <code>shadow: 'closed'</code> emits a closed declarative shadow root.</p>
+<p><code>renderElementToString()</code> and its async counterpart add <code>data-snice-hydrate</code> by default. When the component upgrades, its first render hydrates matching server DOM, preserves node identity, attaches events/directives, reuses matching server styles, and removes the marker.</p>
+<p>Manual hydration is also available:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">hydrate(template, container);
+hydrate(template, container, { onMismatch: 'replace' });
+hydrateElement(customElement, template);</snice-code-block>
+<p>The default mismatch policy throws <code>HydrationError</code> with a structural path. <code>replace</code> logs the mismatch and mounts a fresh tree.</p>
+<p>Declarative shadow DOM is an output format for shadow-root hosts; light-DOM SSR works without it. Browsers that do not parse declarative shadow DOM need a server or bootstrap polyfill before <code>hydrateElement()</code> can attach to that markup.</p>
+<h2 id="rendering-editor-metadata">Editor metadata</h2>
+<p>Published packages include:</p>
+<ul>
+<li><code>custom-elements.json</code> for the Custom Elements Manifest ecosystem.</li>
+<li><code>vscode.html-custom-data.json</code> for HTML tag, attribute, and event completion.</li>
+<li><code>snice/components/custom-elements</code> TypeScript declarations for tag-name maps and component element types.</li>
+</ul>
+<p>Regenerate metadata with <code>npm run generate:metadata</code>; CI or local checks can use <code>npm run check:metadata</code>.</p>
 </section>
 <section class="doc-file" id="routing">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="routing-routing-api-documentation">Routing API Documentation</h1>
 <p>Snice provides a powerful routing system for single-page applications with support for hash and pushstate routing, page transitions, route parameters, guards, and layouts.</p>
 <h2 id="routing-router-setup">Router Setup</h2>
@@ -1925,7 +2269,6 @@ class LoginPage extends HTMLElement {
 <p>Manually register a route without using the <code>@page</code> decorator.</p>
 </section>
 <section class="doc-file" id="events">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="events-events-api-documentation">Events API Documentation</h1>
 <p>Event handling in Snice provides two powerful approaches: <strong>template event syntax</strong> and the <strong><code>@on</code> decorator</strong>. The <code>@on</code> decorator works in <strong>both elements AND controllers</strong> with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the <code>@dispatch</code> decorator enables automatic custom event dispatching.</p>
 <h2 id="events-template-event-syntax-preferred-for-elements">Template Event Syntax (Preferred for Elements)</h2>
@@ -2098,6 +2441,25 @@ class KeyboardInput extends HTMLElement {
 <li><code>@keydown.~enter</code> - Enter with any modifiers</li>
 <li><code>@keydown.escape</code>, <code>@keydown.down</code>, etc. - Named keys</li>
 </ul>
+<h3 id="events-template-event-modifiers">Template Event Modifiers</h3>
+<p>Append DOM listener and propagation behavior with <code>|</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;form @submit|prevent=${this.submit}&gt;&lt;/form&gt;
+  &lt;button @click|once|stop=${this.runOnce}&gt;Run once&lt;/button&gt;
+  &lt;section @click|self=${this.selectSection}&gt;...&lt;/section&gt;
+  &lt;input @keydown.ctrl+s|prevent=${this.save}&gt;
+  &lt;div @pointermove|capture|passive=${this.track}&gt;&lt;/div&gt;
+`</snice-code-block>
+<p>Supported modifiers:</p>
+<ul>
+<li><code>prevent</code> calls <code>preventDefault()</code> (<code>preventDefault</code> alias).</li>
+<li><code>stop</code> calls <code>stopPropagation()</code> (<code>stopPropagation</code> alias).</li>
+<li><code>immediate</code> calls <code>stopImmediatePropagation()</code> (<code>stopImmediatePropagation</code> alias).</li>
+<li><code>once</code>, <code>capture</code>, and <code>passive</code> configure DOM listener behavior.</li>
+<li><code>self</code> invokes the handler only when <code>event.target</code> is the bound element.</li>
+</ul>
+<p><code>passive</code> and <code>prevent</code> are contradictory and produce a render error. Modifiers compose with dot or colon keyboard filters. Exact keyboard combinations reject extra modifiers; prefix the key filter with <code>~</code> to accept any modifier combination.</p>
+<p>Handlers may also be <code>EventListenerObject</code> values. Their <code>handleEvent()</code> method receives the object as <code>this</code>, and <code>capture</code>, <code>once</code>, or <code>passive</code> fields are honored. Function handlers receive the component that owns the render tree as <code>this</code>, including portal content rendered outside its shadow root.</p>
 <h3 id="events-arrow-functions-in-templates">Arrow Functions in Templates</h3>
 <p>Use arrow functions for inline event handling or passing parameters:</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('task-list')
@@ -2270,7 +2632,7 @@ class EditorController implements IController {
 <h4 id="events-scope-controlling-the-listener-target">scope — controlling the listener target</h4>
 <p>By default, <code>@on</code> attaches the listener to the host element. The <code>scope</code> option redirects</p>
 <p>that attachment to another target, which is how Snice expresses cross-cutting events.</p>
-<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Listener attaches to</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) => EventTarget \</td><td>null`</td><td>called at connect; <code>null</code> skips</td></tr></tbody></table></div>
+<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Listener attaches to</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) =&gt; EventTarget \</td><td>null`</td><td>called at connect; <code>null</code> skips</td></tr></tbody></table></div>
 <p>The resolver function is called with the host element as <code>this</code> and re-resolves each time</p>
 <p>the component reconnects to the DOM, so listeners follow the host when it moves.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">// Cross-cutting global event (document)
@@ -2419,7 +2781,7 @@ class StatusIndicator extends HTMLElement {
 <p>the host element. The <code>scope</code> option redirects the dispatch to another target so the</p>
 <p>event behaves as if it originated there. Use this with <code>@on({ scope })</code> to express</p>
 <p>cross-cutting events without going through bubbling.</p>
-<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Event dispatched on</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) => EventTarget \</td><td>null`</td><td>called per dispatch; <code>null</code> skips</td></tr></tbody></table></div>
+<div class="doc-table-wrap"><table><thead><tr><th><code>scope</code> value</th><th>Event dispatched on</th></tr></thead><tbody><tr><td>omitted</td><td>host element (default)</td></tr><tr><td><code>'global'</code></td><td><code>document</code></td></tr><tr><td>selector string</td><td><code>host.closest(selector)</code> — nearest matching ancestor</td></tr><tr><td><code>Element</code> / <code>EventTarget</code></td><td>that node directly</td></tr><tr><td>`(this) =&gt; EventTarget \</td><td>null`</td><td>called per dispatch; <code>null</code> skips</td></tr></tbody></table></div>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">// Global cart-add bus
 @element('add-to-cart-button')
 class AddToCartButton extends HTMLElement {
@@ -2663,7 +3025,6 @@ class KeyboardController implements IController {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="controllers">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="controllers-controllers-api-documentation">Controllers API Documentation</h1>
 <p>Controllers handle data fetching, business logic, and server communication separately from visual components. They can be attached to any HTML element, including native elements.</p>
 <h2 id="controllers-basic-usage">Basic Usage</h2>
@@ -3021,7 +3382,6 @@ class WebSocketController implements IController {
 <p>The framework automatically cleans up <code>@on</code> handlers, observers, and <code>@respond</code> handlers during detach. Manual cleanup in <code>detach()</code> is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).</p>
 </section>
 <section class="doc-file" id="observe">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="observe-observe-api-documentation">Observe API Documentation</h1>
 <p>The <code>@observe</code> decorator provides lifecycle-managed observation of external changes like viewport intersection, element resize, media queries, and DOM mutations.</p>
 <h2 id="observe-overview">Overview</h2>
@@ -3494,14 +3854,13 @@ class DynamicForm extends HTMLElement {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="request-response">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="request-response-request-response-api-documentation">Request/Response API Documentation</h1>
 <p>Request/Response provides request/response communication between elements and controllers using async generators.</p>
 <h2 id="request-response-why-request-response">Why Request/Response?</h2>
-<p>Components are <strong>generic</strong>. A <code><product-card></code> renders a card — it doesn't know or care whether its data comes from a REST API, a GraphQL endpoint, a WebSocket, or a test fixture. Controllers are <strong>specific</strong>. They wire a particular data source, API, or business rule to a generic component.</p>
+<p>Components are <strong>generic</strong>. A <code>&lt;product-card&gt;</code> renders a card — it doesn't know or care whether its data comes from a REST API, a GraphQL endpoint, a WebSocket, or a test fixture. Controllers are <strong>specific</strong>. They wire a particular data source, API, or business rule to a generic component.</p>
 <p>The <code>@request</code>/<code>@respond</code> pattern keeps this separation clean:</p>
 <ul>
-<li><strong>The element says <em>what</em> it needs</strong> (e.g., "I need product data for this ID") without knowing <em>how</em> to get it.</li>
+<li><strong>The element says <em>what</em> it needs</strong> (e.g., &quot;I need product data for this ID&quot;) without knowing <em>how</em> to get it.</li>
 <li><strong>The controller decides <em>how</strong></em> — makes the API call, applies business logic, caches results, whatever is needed.</li>
 <li><strong>Swapping controllers changes behavior without touching the component.</strong> Attach a mock controller for tests, a real API controller in production, or a WebSocket controller for live updates — the element is the same.</li>
 </ul>
@@ -3509,8 +3868,8 @@ class DynamicForm extends HTMLElement {
 <h2 id="request-response-basic-concept">Basic Concept</h2>
 <p>Request/Response enables a single request/response round-trip between elements and their controllers:</p>
 <ol>
-<li><strong>Element</strong> yields a request payload — "here's what I need"</li>
-<li><strong>Controller</strong> receives the payload and returns a response — "here's the data"</li>
+<li><strong>Element</strong> yields a request payload — &quot;here's what I need&quot;</li>
+<li><strong>Controller</strong> receives the payload and returns a response — &quot;here's the data&quot;</li>
 <li><strong>Element</strong> receives the response and updates its visual state</li>
 </ol>
 <p>This pattern is implemented using async generators and custom events. Each <code>@request</code> method supports <strong>one yield</strong> per invocation — the generator yields a request payload, the controller responds, and the generator receives the response.</p>
@@ -3812,7 +4171,6 @@ function Dashboard() {
 <p>Route callbacks are ref-stable — no <code>useCallback</code> needed. Listeners re-attach only when channel names change. Cleanup is automatic on unmount.</p>
 </section>
 <section class="doc-file" id="fetcher">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md --></p>
 <h1 id="fetcher-fetch-middleware">Fetch Middleware</h1>
 <p>Snice provides a context-aware fetch implementation with middleware support, allowing you to intercept and modify HTTP requests and responses globally across your application.</p>
 <h2 id="fetcher-overview">Overview</h2>
@@ -4174,7 +4532,6 @@ interface Fetcher {
 </ul>
 </section>
 <section class="doc-file" id="placards">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md --></p>
 <h1 id="placards-placards-api">Placards API</h1>
 <p>Placards provide rich metadata about pages that layouts can consume to dynamically build navigation, breadcrumbs, help systems, and other UI elements. This enables layouts to be populated with data instead of having hardcoded content.</p>
 <h2 id="placards-overview">Overview</h2>
@@ -4272,7 +4629,7 @@ class DashboardPage extends HTMLElement {
 <li>Visual icon representing the page</li>
 <li>Can be emoji, icon font class, or SVG path</li>
 </ul>
-<h3 id="placards-help-discovery">Help & Discovery</h3>
+<h3 id="placards-help-discovery">Help &amp; Discovery</h3>
 <p><strong><code>tooltip</code></strong> (optional)</p>
 <ul>
 <li>Brief help text shown on hover</li>
@@ -4321,7 +4678,7 @@ class DashboardPage extends HTMLElement {
 <p><strong><code>visibleOn</code></strong> (optional)</p>
 <ul>
 <li>Guard functions that determine if the placard appears in nav</li>
-<li>Can return <code>boolean</code> or <code>Promise<boolean></code></li>
+<li>Can return <code>boolean</code> or <code>Promise&lt;boolean&gt;</code></li>
 <li>Sync guards: evaluated on every render</li>
 <li>Async guards: placard is hidden until the promise resolves <code>true</code>; silently hidden on <code>false</code> or rejection</li>
 <li>Multiple guards must all pass (AND)</li>
@@ -4541,7 +4898,6 @@ class BreadcrumbLayout extends HTMLElement implements Layout {
 }</snice-code-block>
 </section>
 <section class="doc-file" id="code-block">
-<p><!-- AI: For the AI-optimized version of this doc, see docs/ai/components/code-block.md --></p>
 <h1 id="code-block-code-block-component-documentation">Code Block Component Documentation</h1>
 <p><code>snice-code-block</code> is a code display component with syntax highlighting, line numbers, and copy-to-clipboard support. It uses a JSON-driven grammar system inspired by Monaco/Monarch for tokenization.</p>
 <h2 id="code-block-basic-usage">Basic Usage</h2>
@@ -4598,7 +4954,7 @@ class GrammarController implements IController {
   }
 }</snice-code-block>
 <p><strong>When to use:</strong> When you need centralized control over grammar loading, such as caching grammars, loading from non-HTTP sources, or applying transformations before use.</p>
-<p><strong>Note:</strong> If using <code>@respond('snice/code-block/load-grammar')</code> handlers, add <code>fetch-mode="virtual"</code> to your code block elements. The default fetch mode is <code>native</code>.</p>
+<p><strong>Note:</strong> If using <code>@respond('snice/code-block/load-grammar')</code> handlers, add <code>fetch-mode=&quot;virtual&quot;</code> to your code block elements. The default fetch mode is <code>native</code>.</p>
 <h3 id="code-block-event-mode">Event Mode</h3>
 <snice-code-block language="html" grammar="grammars/html.json">&lt;snice-code-block id=&quot;cb&quot; grammar=&quot;grammars/typescript.json&quot; fetch-mode=&quot;event&quot; code=&quot;const x = 1&quot;&gt;&lt;/snice-code-block&gt;
 &lt;script&gt;
@@ -4625,11 +4981,11 @@ class GrammarController implements IController {
 <h3 id="code-block-choosing-a-fetch-mode">Choosing a Fetch Mode</h3>
 <div class="doc-table-wrap"><table><thead><tr><th>Mode</th><th>Setup Required</th><th>Dependencies</th><th>Best For</th></tr></thead><tbody><tr><td><code>native</code></td><td>None</td><td>Browser <code>fetch()</code></td><td>Standalone usage, CDN builds, simple setups</td></tr><tr><td><code>virtual</code></td><td><code>@respond</code> handler</td><td>Snice controller/page</td><td>Centralized grammar management, caching, non-HTTP sources</td></tr><tr><td><code>event</code></td><td>Event listener</td><td>None (plain DOM)</td><td>CDN builds without Snice runtime, non-Snice integrations</td></tr></tbody></table></div>
 <h2 id="code-block-methods">Methods</h2>
-<h3 id="code-block-copy-promise-void"><code>copy(): Promise<void></code></h3>
+<h3 id="code-block-copy-promise-void"><code>copy(): Promise&lt;void&gt;</code></h3>
 <p>Copies the current code content to the clipboard.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">const codeBlock = document.querySelector('snice-code-block');
 await codeBlock.copy();</snice-code-block>
-<h3 id="code-block-highlight-promise-void"><code>highlight(): Promise<void></code></h3>
+<h3 id="code-block-highlight-promise-void"><code>highlight(): Promise&lt;void&gt;</code></h3>
 <p>Manually triggers syntax highlighting. Normally highlighting runs automatically when <code>code</code>, <code>language</code>, or <code>grammar</code> changes, but you can force a re-highlight if needed.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">codeBlock.highlight();</snice-code-block>
 <h3 id="code-block-sethighlighter-fn-highlighterfunction-void"><code>setHighlighter(fn: HighlighterFunction): void</code></h3>
@@ -4639,7 +4995,7 @@ await codeBlock.copy();</snice-code-block>
   return myCustomHighlighter(code, language);
 });</snice-code-block>
 <h3 id="code-block-setgrammar-grammar-grammardefinition-void"><code>setGrammar(grammar: GrammarDefinition): void</code></h3>
-<p>Provides a grammar object directly, bypassing URL-based loading. This is the method called by event listeners in <code>fetch-mode="event"</code>, but it can be used at any time to set a grammar programmatically.</p>
+<p>Provides a grammar object directly, bypassing URL-based loading. This is the method called by event listeners in <code>fetch-mode=&quot;event&quot;</code>, but it can be used at any time to set a grammar programmatically.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">const grammar = await fetch('grammars/typescript.json').then(r =&gt; r.json());
 codeBlock.setGrammar(grammar);</snice-code-block>
 <h2 id="code-block-events">Events</h2>
@@ -4657,7 +5013,7 @@ codeBlock.setGrammar(grammar);</snice-code-block>
 <p>Dispatched after syntax highlighting completes.</p>
 <p><strong>Detail:</strong> <code>{ code: string, language: string, codeBlock: SniceCodeBlockElement }</code></p>
 <h3 id="code-block-grammar-request"><code>grammar-request</code></h3>
-<p>Dispatched only when <code>fetch-mode="event"</code>. See <a href="#event-mode">Event Mode</a> for details.</p>
+<p>Dispatched only when <code>fetch-mode=&quot;event&quot;</code>. See <a href="#event-mode">Event Mode</a> for details.</p>
 <p><strong>Detail:</strong> <code>{ url: string, language: CodeLanguage, codeBlock: SniceCodeBlockElement }</code></p>
 <h2 id="code-block-grammar-system">Grammar System</h2>
 <p>The code block uses a JSON-driven tokenizer with a Monarch-inspired state machine. Grammars are external JSON files, not bundled in the component. This keeps the component lightweight while supporting rich syntax highlighting.</p>
@@ -4669,10 +5025,10 @@ codeBlock.setGrammar(grammar);</snice-code-block>
 <ul>
 <li><strong><code>html\</code>`</strong> tagged templates switch to HTML mode with tag/attribute highlighting</li>
 <li><strong><code>css\</code>`</strong> tagged templates switch to CSS mode with property/selector highlighting</li>
-<li><strong><code><if></code>, <code><case></code>, <code><when></code>, <code><default></code></strong> are highlighted as keywords (not regular tags)</li>
-<li><strong><code>.prop=</code></strong> property bindings receive the "property" token</li>
-<li><strong><code>?attr=</code></strong> boolean bindings receive the "attr-name" token</li>
-<li><strong><code>@event=</code></strong> event bindings receive the "function" token (including <code>@event:modifier</code> and <code>@event.modifier</code> forms)</li>
+<li><strong><code>&lt;if&gt;</code>, <code>&lt;case&gt;</code>, <code>&lt;when&gt;</code>, <code>&lt;default&gt;</code></strong> are highlighted as keywords (not regular tags)</li>
+<li><strong><code>.prop=</code></strong> property bindings receive the &quot;property&quot; token</li>
+<li><strong><code>?attr=</code></strong> boolean bindings receive the &quot;attr-name&quot; token</li>
+<li><strong><code>@event=</code></strong> event bindings receive the &quot;function&quot; token (including <code>@event:modifier</code> and <code>@event.modifier</code> forms)</li>
 <li><strong><code>${...}</code></strong> interpolations switch back to TypeScript mode</li>
 <li>Handles the <code>html/<em>html</em>/\</code>` editor hint pattern</li>
 </ul>

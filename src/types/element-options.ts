@@ -23,4 +23,13 @@ export interface ElementOptions {
    * ```
    */
   formAssociated?: boolean;
+
+  /** Render into the host's light DOM instead of a shadow root. */
+  renderRoot?: 'shadow' | 'light';
+
+  /** Shadow-root mode, or false as shorthand for renderRoot: 'light'. */
+  shadow?: ShadowRootMode | false;
+
+  /** Forwarded to attachShadow when a shadow render root is created. */
+  delegatesFocus?: boolean;
 }

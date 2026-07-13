@@ -250,15 +250,6 @@ ${withStyles ? `
       const code = args.code;
       const issues = [];
 
-      // Check for @state() - doesn't exist
-      if (/@state\s*\(/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: '@state() does not exist in snice. Use @property() for all reactive state.',
-          fix: 'Replace @state() with @property()'
-        });
-      }
-
       // Check for camelCase event names in @dispatch
       const dispatchMatch = code.match(/@dispatch\s*\(\s*['"]([^'"]+)['"]\s*\)/g);
       if (dispatchMatch) {
@@ -383,38 +374,12 @@ ${withStyles ? `
         });
       }
 
-      // Check for async guards (not supported). Matches:
-      //  - `guards: [async ...]` or `guards: async ...`
-      //  - `async function FooGuard(...)`
-      //  - `async function foo(ctx)`    — functions taking `ctx` as first
-      //    arg look like guards by convention.
-      if (
-        /guards\s*:.*async/.test(code) ||
-        /async\s+function\s+\w+Guard/.test(code) ||
-        /async\s+function\s+\w+\s*\(\s*ctx\b/.test(code)
-      ) {
-        issues.push({
-          severity: 'error',
-          message: 'Async guards are NOT supported. Guards must be synchronous.',
-          fix: 'Remove async from guard function - return boolean, not Promise<boolean>'
-        });
-      }
-
       // Check for Context<T> generic usage (Context is not generic)
       if (/Context\s*</.test(code)) {
         issues.push({
           severity: 'error',
           message: 'Context class is NOT generic. Use type casting instead.',
           fix: 'Change Context<MyApp> to Context, then cast: ctx.application as MyApp'
-        });
-      }
-
-      // Check for @property({ reflect: true }) - doesn't exist
-      if (/@property\s*\(\s*\{[^}]*reflect\s*:/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: '@property() does not have a reflect option. This is a Lit concept.',
-          fix: 'Remove reflect option. Attributes sync automatically for :host([attr]) styling.'
         });
       }
 

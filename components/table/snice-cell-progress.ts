@@ -87,7 +87,7 @@ export class SniceCellProgress extends HTMLElement implements SniceCellElement {
     }
 
     // Create progress element
-    const progress = document.createElement('snice-progress') as any;
+    const progress = document.createElement('snice-table-progress') as any;
     progress.value = numValue;
 
     // Apply format from column

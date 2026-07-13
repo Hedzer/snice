@@ -6,6 +6,8 @@
 import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './template';
 import { TemplateInstance } from './parts';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
+import { ensureRenderRoot } from './render-root';
+import { hydrate } from './hydrate';
 
 /**
  * When true, render errors are rethrown instead of logged, so tests and dev
@@ -70,7 +72,7 @@ export interface RenderOptions {
   /**
    * Disable differential rendering
    * When false, clears shadow root and re-renders from scratch each time
-   * Still honors <if> and <switch>/<case> meta elements
+   * The render method must return a plain HTML string
    */
   differential?: boolean;
 }
@@ -133,6 +135,10 @@ class RenderScheduler {
 
 const renderScheduler = new RenderScheduler();
 
+function hasRendered(element: HTMLElement): boolean {
+  return Object.prototype.hasOwnProperty.call(element, RENDER_INSTANCE);
+}
+
 function flushRenderCallbacks(element: HTMLElement): void {
   const callbacks = (element as any)[RENDER_CALLBACKS];
   if (!callbacks || callbacks.length === 0) return;
@@ -158,7 +164,12 @@ const MAX_RENDER_DEPTH = 50;
 /**
  * Perform the actual render of an element
  */
-function performRender(element: HTMLElement, options: RenderOptions, precomputedResult?: any): void {
+function performRender(
+  element: HTMLElement,
+  options: RenderOptions,
+  precomputedResult?: any
+): void {
+  const hasPrecomputedResult = arguments.length >= 3;
   const renderMethod = (element as any)[RENDER_METHOD];
   if (!renderMethod) {
     resolveRendered(element);
@@ -166,7 +177,7 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
   }
 
   // If once is true and we've already rendered, skip
-  if (options.once && (element as any)[RENDER_INSTANCE]) {
+  if (options.once && hasRendered(element)) {
     resolveRendered(element);
     return;
   }
@@ -184,9 +195,11 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
 
   (element as any)[RENDER_DEPTH] = depth + 1;
   try {
-    const result = precomputedResult !== undefined ? precomputedResult : renderMethod.call(element);
+    const result = hasPrecomputedResult
+      ? precomputedResult
+      : renderMethod.call(element);
 
-    if (!element.shadowRoot) element.attachShadow({ mode: 'open' });
+    const renderRoot = ensureRenderRoot(element);
 
     // Non-differential rendering (string)
     if (options.differential === false) {
@@ -194,7 +207,20 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
         console.warn('Render method with differential: false must return a string');
         return;
       }
-      element.shadowRoot!.innerHTML = result;
+      const template = document.createElement('template');
+      template.innerHTML = result;
+      const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | null | undefined;
+      instance?.clear();
+      const removable = Array.from(renderRoot.childNodes).filter(node => !(
+        node.nodeType === Node.ELEMENT_NODE &&
+        (node as Element).tagName === 'STYLE' &&
+        (node as Element).hasAttribute('data-snice-style')
+      ));
+      for (const node of removable) node.remove();
+      renderRoot.appendChild(template.content);
+      // A present, null render instance records a successful string render so
+      // `once` works without pretending the string tree is a TemplateInstance.
+      (element as any)[RENDER_INSTANCE] = null;
       flushRenderCallbacks(element);
       return;
     }
@@ -207,36 +233,82 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
 
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
+    if (!instance && element.hasAttribute('data-snice-hydrate')) {
+      try {
+        instance = hydrate(result, renderRoot);
+        (element as any)[RENDER_INSTANCE] = instance;
+        element.removeAttribute('data-snice-hydrate');
+        flushRenderCallbacks(element);
+        return;
+      } catch (error) {
+        element.removeAttribute('data-snice-hydrate');
+        if (strictRenderErrors) throw error;
+        console.error('Error hydrating element; rendering a fresh tree:', error);
+      }
+    }
+
     if (instance && instance.isSameTemplate(result.strings)) {
       instance.update(result.values);
       flushRenderCallbacks(element);
       return;
     }
 
-    // Different template or first render. Keep only the framework's own
-    // fallback <style> tags (marked data-snice-style) so the @styles path
-    // (Safari <=16 / jsdom / SSR — no adoptedStyleSheets) survives a template
-    // switch; template-emitted <style> tags are removed and re-created by the
-    // new instance, so they don't accumulate.
-    if (instance) {
-      const root = element.shadowRoot!;
-      const toRemove: ChildNode[] = [];
-      for (const child of Array.from(root.childNodes)) {
+    const nextInstance = new TemplateInstance(result);
+    const nextFragment = nextInstance.renderFragment();
+
+    // Commit while detached first. A malformed binding or directive can then
+    // fail without exposing a half-updated tree. Connection-aware directives
+    // are paired with reconnected() immediately after the successful mount.
+    try {
+      nextInstance.update(result.values);
+    } catch (error) {
+      nextInstance.clear();
+      throw error;
+    }
+
+    // Park the previous tree without disposing it, mount the prepared tree,
+    // then run connection hooks. A ref/action/portal/custom directive can fail
+    // only once it is connected; in that case restore the still-live previous
+    // tree instead of leaving a partially mounted replacement behind.
+    const previousFragment = document.createDocumentFragment();
+    for (const child of Array.from(renderRoot.childNodes)) {
+      if (
+        child.nodeType === Node.ELEMENT_NODE &&
+        (child as Element).tagName === 'STYLE' &&
+        (child as Element).hasAttribute('data-snice-style')
+      ) continue;
+      previousFragment.appendChild(child);
+    }
+    renderRoot.appendChild(nextFragment);
+    try {
+      if (element.isConnected) nextInstance.reconnected();
+    } catch (error) {
+      try {
+        nextInstance.clear();
+      } catch (cleanupError) {
+        console.error('snice: failed to clean up a rejected render tree:', cleanupError);
+      }
+      for (const child of Array.from(renderRoot.childNodes)) {
         if (
-          child.nodeType === 1 &&
+          child.nodeType === Node.ELEMENT_NODE &&
           (child as Element).tagName === 'STYLE' &&
           (child as Element).hasAttribute('data-snice-style')
         ) continue;
-        toRemove.push(child);
+        child.remove();
       }
-      for (const node of toRemove) node.remove();
+      renderRoot.appendChild(previousFragment);
+      throw error;
     }
 
-    instance = new TemplateInstance(result);
-    (element as any)[RENDER_INSTANCE] = instance;
-    element.shadowRoot!.appendChild(instance.renderFragment());
-    instance.update(result.values);
+    (element as any)[RENDER_INSTANCE] = nextInstance;
+    let cleanupError: unknown;
+    try {
+      instance?.clear();
+    } catch (error) {
+      cleanupError = error;
+    }
     flushRenderCallbacks(element);
+    if (cleanupError) throw cleanupError;
   } catch (error) {
     if (strictRenderErrors) throw error;
     console.error('Error rendering element:', error);
@@ -244,6 +316,13 @@ function performRender(element: HTMLElement, options: RenderOptions, precomputed
     (element as any)[RENDER_DEPTH] = depth;
     resolveRendered(element);
   }
+}
+
+/** Commit immediately using the element's configured render options. */
+export function renderElementNow(element: HTMLElement): void {
+  ensureRenderedPromise(element);
+  const options = (element as any)[RENDER_OPTIONS] as RenderOptions || {};
+  performRender(element, { ...options, once: false });
 }
 
 /**
@@ -255,7 +334,8 @@ export function requestRender(element: HTMLElement, immediate = false): void {
   const options = (element as any)[RENDER_OPTIONS] as RenderOptions || {};
 
   // Handle once option
-  if (options.once && (element as any)[RENDER_INSTANCE]) {
+  if (options.once && hasRendered(element)) {
+    if (element.isConnected) reconnectRenderTree(element);
     return;
   }
 
@@ -278,6 +358,7 @@ export function requestRender(element: HTMLElement, immediate = false): void {
 
     clearTimeout((element as any)[RENDER_TIMERS].debounce);
     (element as any)[RENDER_TIMERS].debounce = setTimeout(() => {
+      (element as any)[RENDER_TIMERS].debounce = null;
       renderScheduler.schedule(element, options);
     }, options.debounce);
     return;
@@ -341,6 +422,23 @@ export function clearRenderTimers(element: HTMLElement): boolean {
   return hadPending;
 }
 
+/** Pause directive-owned resources while an element is detached. */
+export function disconnectRenderTree(element: HTMLElement): void {
+  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
+  // A host disconnection is not the same thing as parking a conditional
+  // branch. The shadow/light render tree still belongs to the host, so native
+  // event listeners remain usable on retained node references. Directive-owned
+  // resources are still paused, and parked branches continue to detach their
+  // listeners through the ordinary Part lifecycle.
+  instance?.disconnected(true);
+}
+
+/** Resume directive-owned resources when an existing render tree reconnects. */
+export function reconnectRenderTree(element: HTMLElement): void {
+  const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
+  instance?.reconnected();
+}
+
 /**
  * @render decorator for component rendering
  *
@@ -391,7 +489,8 @@ export function render(options: RenderOptions = {}) {
 
       // Always render when method is called manually (even if once: true)
       // Force immediate render to bypass all options, pass precomputed result to avoid calling method twice
-      performRender(this, {}, result);
+      const configured = (this as any)[RENDER_OPTIONS] || options;
+      performRender(this, { ...configured, once: false }, result);
 
       return result;
     };
@@ -435,7 +534,23 @@ export function styles() {
  */
 export function applyStyles(element: HTMLElement): void {
   const stylesMethod = (element as any)[STYLES_METHOD];
-  if (!stylesMethod) return;
+  const staticResults: CSSResult[] = [];
+  const constructors: any[] = [];
+  let constructor: any = element.constructor;
+  while (constructor && constructor !== HTMLElement && constructor !== Function.prototype) {
+    constructors.unshift(constructor);
+    constructor = Object.getPrototypeOf(constructor);
+  }
+  for (const current of constructors) {
+    if (!Object.prototype.hasOwnProperty.call(current, 'styles')) continue;
+    const value = current.styles;
+    const values = Array.isArray(value) ? value : [value];
+    for (const result of values) {
+      if (isCSSResult(result)) staticResults.push(result);
+      else console.warn('Static styles must be a css`` result or an array of css`` results');
+    }
+  }
+  if (!stylesMethod && staticResults.length === 0) return;
 
   // Only apply once
   if ((element as any)[STYLES_APPLIED]) return;
@@ -443,7 +558,7 @@ export function applyStyles(element: HTMLElement): void {
 
   try {
     // Collect all CSS results: parent styles first, then child styles
-    const allResults: CSSResult[] = [];
+    const allResults: CSSResult[] = [...staticResults];
     const parentMethods = (element as any)[PARENT_STYLES_METHODS] as Array<(...args: any[]) => any> | undefined;
     if (parentMethods) {
       for (const method of parentMethods) {
@@ -451,24 +566,42 @@ export function applyStyles(element: HTMLElement): void {
         if (isCSSResult(r)) allResults.push(r);
       }
     }
-    const result = stylesMethod.call(element);
-    if (!isCSSResult(result)) {
-      console.warn('Styles method must return css`` template result');
+    if (stylesMethod) {
+      const result = stylesMethod.call(element);
+      if (!isCSSResult(result)) {
+        console.warn('Styles method must return css`` template result');
+        return;
+      }
+      allResults.push(result);
+    }
+
+    const renderRoot = ensureRenderRoot(element);
+
+    // A declarative-shadow-DOM response may already contain exactly these
+    // framework styles. Retain them instead of adding a duplicate stylesheet
+    // before hydration begins.
+    const serverStyles = Array.from(renderRoot.childNodes).filter(node =>
+      node.nodeType === Node.ELEMENT_NODE &&
+      (node as Element).tagName === 'STYLE' &&
+      (node as Element).hasAttribute('data-snice-style')
+    ) as HTMLStyleElement[];
+    if (
+      serverStyles.length === allResults.length &&
+      serverStyles.every((style, index) => style.textContent === allResults[index].cssText)
+    ) {
       return;
     }
-    allResults.push(result);
-
-    // Ensure shadow root exists
-    if (!element.shadowRoot) {
-      element.attachShadow({ mode: 'open' });
-    }
-
-    if (!element.shadowRoot) return;
+    for (const style of serverStyles) style.remove();
 
     // Prefer constructable stylesheets
-    if (allResults.every(r => !!r.styleSheet) && 'adoptedStyleSheets' in element.shadowRoot) {
-      element.shadowRoot.adoptedStyleSheets = allResults.map(r => r.styleSheet!);
-      return;
+    if (renderRoot instanceof ShadowRoot && allResults.every(r => !!r.styleSheet) && 'adoptedStyleSheets' in renderRoot) {
+      try {
+        renderRoot.adoptedStyleSheets = allResults.map(r => r.styleSheet!);
+        return;
+      } catch {
+        // A stylesheet constructed in another Window/Document realm cannot be
+        // adopted here. Fall through to equivalent <style> elements.
+      }
     }
 
     // Fallback — one <style> tag per stylesheet, preserving cascade order.
@@ -478,7 +611,7 @@ export function applyStyles(element: HTMLElement): void {
       const style = document.createElement('style');
       style.setAttribute('data-snice-style', '');
       style.textContent = r.cssText;
-      element.shadowRoot.appendChild(style);
+      renderRoot.appendChild(style);
     }
   } catch (error) {
     console.error('Error applying styles:', error);

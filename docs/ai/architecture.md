@@ -31,8 +31,12 @@ Mock controller for tests, real API controller in production — same element.
 - PropertyPart: `.prop="${val}"`
 - BooleanAttributePart: `?attr="${bool}"`
 - EventPart: `@event="${handler}"`
-- IfPart: `<if>` conditional
-- CasePart: `<case>/<when>` branching
+- Class/Style parts: `class:name`, `style:name`
+- SpreadPart: `...props`, `...attrs`, `...events`
+- ElementPart: `ref`, `use`, element directives
+- Conditional parts: `<if>/<else-if>/<else>`, `<case>/<when>/<default>`
+- DynamicComponentPart: `<component ${tag}>`
+- Stateful directives: bind, repeat, resource, portal, transition, custom directives
 
 **Differential updates:**
 - Only changed Parts re-render
@@ -154,10 +158,11 @@ async handleFetch(payload: { id: string }) {
 
 ## Shadow DOM
 
-- All elements use shadow DOM (mode: 'open')
-- Styles scoped automatically
+- Open shadow DOM is the default; closed shadow and light DOM are configurable
+- `delegatesFocus` and custom `createRenderRoot()` are supported
+- Styles and lifecycle work across every managed render root
 - Events cross boundary with composed: true
-- Query selectors work within shadowRoot
+- Framework queries work with open, closed, and light render roots
 
 ## Performance
 

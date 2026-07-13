@@ -15,8 +15,38 @@ async function validateCode(code: string): Promise<{ issues: string[], text: str
     });
 
     let output = '';
+    let settled = false;
+    const finish = (error?: Error, response?: any) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(deadline);
+      mcp.kill();
+      if (error) {
+        reject(error);
+        return;
+      }
+      const text = response?.result?.content?.[0]?.text || '';
+      const issues = text.includes('No issues found') ? [] : text.split('\n').filter((l: string) => l.startsWith('['));
+      resolve({ issues, text });
+    };
+
+    const deadline = setTimeout(() => {
+      finish(new Error(`MCP validate_code did not respond. stdout: ${output}`));
+    }, 10_000);
+
     mcp.stdout.on('data', (data) => {
       output += data.toString();
+      const lines = output.split('\n');
+      output = lines.pop() || '';
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const response = JSON.parse(line);
+          if (response.id === 2) finish(undefined, response);
+        } catch (error) {
+          finish(error as Error);
+        }
+      }
     });
 
     // Initialize
@@ -27,43 +57,36 @@ async function validateCode(code: string): Promise<{ issues: string[], text: str
       params: {}
     }) + '\n');
 
-    // Call validate_code
-    setTimeout(() => {
-      mcp.stdin.write(JSON.stringify({
-        jsonrpc: '2.0',
-        id: 2,
-        method: 'tools/call',
-        params: {
-          name: 'validate_code',
-          arguments: { code }
-        }
-      }) + '\n');
+    // The stdio protocol is ordered, so this request can follow initialization
+    // immediately. Resolve from the response itself instead of a timing guess.
+    mcp.stdin.write(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 2,
+      method: 'tools/call',
+      params: {
+        name: 'validate_code',
+        arguments: { code }
+      }
+    }) + '\n');
 
-      setTimeout(() => {
-        mcp.kill();
-        const lines = output.trim().split('\n');
-        const lastResponse = JSON.parse(lines[lines.length - 1]);
-        const text = lastResponse.result?.content?.[0]?.text || '';
-        const issues = text.includes('No issues found') ? [] : text.split('\n').filter((l: string) => l.startsWith('['));
-        resolve({ issues, text });
-      }, 100);
-    }, 100);
-
-    mcp.on('error', reject);
+    mcp.on('error', error => finish(error));
+    mcp.on('exit', code => {
+      if (!settled && code !== null) finish(new Error(`MCP server exited with code ${code}`));
+    });
   });
 }
 
 describe('MCP validate_code tool', () => {
-  describe('@state() detection', () => {
-    it('should warn against @state() usage', async () => {
+  describe('@state() support', () => {
+    it('accepts @state() for reactive internal fields', async () => {
       const { text } = await validateCode(`
         @element('my-el')
         class MyEl extends HTMLElement {
           @state() count = 0;
         }
       `);
-      expect(text).toContain('@state() does not exist');
-      expect(text).toContain('@property()');
+      expect(text).not.toContain('@state() does not exist');
+      expect(text).toContain('No issues found');
     });
 
     it('should pass when using @property()', async () => {
@@ -239,24 +262,23 @@ describe('MCP validate_code tool', () => {
   });
 
   describe('async guards', () => {
-    it('should warn against async guards in Router config', async () => {
+    it('accepts async guards in Router config', async () => {
       const { text } = await validateCode(`
         Router({
           type: 'hash',
           guards: [async (ctx) => ctx.isLoggedIn]
         });
       `);
-      expect(text).toContain('Async guards');
-      expect(text).toContain('NOT supported');
+      expect(text).not.toContain('Async guards');
     });
 
-    it('should warn against async function guards', async () => {
+    it('accepts async function guards', async () => {
       const { text } = await validateCode(`
         async function isAuthenticated(ctx) {
           return ctx.isLoggedIn;
         }
       `);
-      expect(text).toContain('Async guards');
+      expect(text).not.toContain('Async guards');
     });
   });
 
@@ -270,12 +292,12 @@ describe('MCP validate_code tool', () => {
   });
 
   describe('property reflect option', () => {
-    it('should warn against reflect: true', async () => {
+    it('accepts reflect options', async () => {
       const { text } = await validateCode(`
         @property({ reflect: true }) active = false;
       `);
-      expect(text).toContain('reflect');
-      expect(text).toContain('Lit concept');
+      expect(text).not.toContain('does not have a reflect option');
+      expect(text).toContain('No issues found');
     });
   });
 

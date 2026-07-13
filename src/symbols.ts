@@ -21,6 +21,8 @@ export const PENDING_RECONNECT_RENDER = getSymbol('pending-reconnect-render');
 // Per-element synchronous render-nesting depth, used to cap runaway re-entry
 // without a shared global counter that one element could exhaust for others.
 export const RENDER_DEPTH = getSymbol('render-depth');
+export const RENDER_ROOT = getSymbol('render-root');
+export const ELEMENT_OPTIONS = getSymbol('element-options');
 export const CONTROLLER = getSymbol('controller');
 export const INITIALIZED = getSymbol('initialized');
 
@@ -40,6 +42,8 @@ export const CLEANUP = getSymbol('cleanup');
 // Property symbols
 export const PROPERTIES = getSymbol('properties');
 export const PROPERTY_VALUES = getSymbol('property-values');
+export const PROPERTY_DEFAULTS = getSymbol('property-defaults');
+export const PROPERTY_WRAPPERS = getSymbol('property-wrappers');
 export const PRE_INIT_PROPERTY_VALUES = getSymbol('pre-init-property-values');
 export const PROPERTIES_INITIALIZED = getSymbol('properties-initialized');
 export const PROPERTY_WATCHERS = getSymbol('property-watchers');
@@ -85,6 +89,7 @@ export const RENDER_CALLBACKS = getSymbol('render-callbacks');
 export const STYLES_METHOD = getSymbol('styles-method');
 export const STYLES_APPLIED = getSymbol('styles-applied');
 export const PARENT_STYLES_METHODS = getSymbol('parent-styles-methods');
+export const SNICE_ELEMENT_BASE = getSymbol('snice-element-base');
 
 // Navigation context symbols
 export const CONTEXT_HANDLER = getSymbol('context-handler');
