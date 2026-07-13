@@ -12,6 +12,7 @@ Elements are the core building blocks of Snice components. They define custom HT
 - [Styling](#styling)
 - [Template Events](#template-events)
 - [Declarative Rendering](./rendering.md)
+- [Binding Channels](./bindings.md)
 - [Extending Elements](#extending-elements)
 - [Advanced Examples](#advanced-examples) (Watch, Context, Conditionals)
 
@@ -1159,4 +1160,4 @@ class ConditionalContent extends HTMLElement {
 }
 ```
 
-The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, binding channels, explicit form events, and direct async values.
+The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, and direct async values. See [Binding Channels](./bindings.md) for exact property, attribute, event, spread, sentinel, and form semantics.

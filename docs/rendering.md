@@ -39,6 +39,8 @@ Dynamic text is escaped. `unsafeHTML(value)` is the explicit opt-in for trusted 
 
 ## Bindings
 
+This section is the quick syntax overview. See [Binding Channels](./bindings.md) for the complete value, cleanup, event, spread, sentinel, and form-control semantics.
+
 ```typescript
 html`<input
   title=${label}

@@ -257,6 +257,8 @@ Virtual control-flow tags add no wrapper. Branches retain DOM identity. `repeat`
 
 Prefer direct bindings for known keys. Named spreads are for dynamic or forwarded property, attribute, and listener bags; omitted keys are removed or reset.
 
+Binding values are channel-specific: attributes stringify, properties preserve JavaScript identity, boolean attributes/classes toggle presence, styles own one declaration, and events own native listeners. `nothing` removes or clears according to the channel; `noChange` preserves the previous commit; `live(value)` rechecks the current DOM property. See `docs/ai/bindings.md` or https://snice.dev/docs.html#bindings for the exact matrix.
+
 ---
 
 ## All Exports

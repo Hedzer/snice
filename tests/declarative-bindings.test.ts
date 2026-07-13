@@ -85,6 +85,39 @@ describe('declarative bindings', () => {
     expect(second).toHaveBeenCalledTimes(1);
   });
 
+  it('supports the documented properties and attributes spread aliases', async () => {
+    @element('test-long-named-spread-bindings')
+    class TestLongNamedSpreadBindings extends HTMLElement {
+      @property({ attribute: false }) alternate = false;
+
+      @render()
+      template() {
+        return html`
+          <input
+            ...properties=${this.alternate ? { value: 'two' } : { value: 'one', extra: 4 }}
+            ...attributes=${this.alternate ? { title: 'two' } : { title: 'one', 'data-ready': true }}
+          >
+        `;
+      }
+    }
+
+    const host = document.createElement('test-long-named-spread-bindings') as TestLongNamedSpreadBindings;
+    container.append(host);
+    await host.ready;
+    const input = host.shadowRoot!.querySelector('input') as HTMLInputElement & { extra?: number };
+    expect(input.value).toBe('one');
+    expect(input.extra).toBe(4);
+    expect(input.title).toBe('one');
+    expect(input.hasAttribute('data-ready')).toBe(true);
+
+    host.alternate = true;
+    await host.rendered;
+    expect(input.value).toBe('two');
+    expect(input.extra).toBeUndefined();
+    expect(input.title).toBe('two');
+    expect(input.hasAttribute('data-ready')).toBe(false);
+  });
+
   it('supports composable event options with keyboard filters', async () => {
     const calls = vi.fn();
 

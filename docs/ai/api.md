@@ -325,7 +325,7 @@ styleMap({ fontSize: '2rem', '--x': v }) // camelCase→kebab; --props pass thro
 svg`<circle r=${r}></circle>` // SVG-namespace fragment for use inside <svg>
 ```
 
-Full rendering reference: [rendering.md](rendering.md).
+Full references: [rendering.md](rendering.md) for renderer structure and [bindings.md](bindings.md) for exact binding-channel semantics.
 
 ## Types
 

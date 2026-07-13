@@ -115,6 +115,7 @@ describe('Website Build', () => {
         '@input=${this.updateQuery}', '@ready', '@dispose'
       ];
       for (const api of APIs) expect(guide).toContain(api);
+      expect(guide).toContain('href="docs.html#bindings"');
       for (const collapsed of [
         'Bindings &amp; element actions',
         'Async content, portals &amp; motion',
@@ -139,6 +140,25 @@ describe('Website Build', () => {
       expect(docs).toContain('<section class="doc-file" id="rendering">');
       expect(docs).toContain('href="#rendering"');
       expect(docs).toContain('id="rendering-form-controls"');
+      expect(docs).toContain('<section class="doc-file" id="bindings">');
+      expect(docs).toContain('href="#bindings"');
+      for (const id of [
+        'bindings-channel-chooser',
+        'bindings-node-content',
+        'bindings-attributes',
+        'bindings-properties',
+        'bindings-boolean-attributes',
+        'bindings-class-and-style',
+        'bindings-events',
+        'bindings-named-spreads',
+        'bindings-keyed-identity',
+        'bindings-comment-interpolation',
+        'bindings-sentinel-matrix',
+        'bindings-form-data-flow',
+        'bindings-invalid-placements-and-diagnostics'
+      ]) {
+        expect(docs).toContain(`id="${id}"`);
+      }
       expect(docs).toContain('custom-elements.json');
       for (const removed of [
         'renderToString', 'renderElementToString', 'hydrate(', 'HydrationError',

@@ -65,8 +65,27 @@ test.describe('Website Component Rendering', () => {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
     await expect(page.locator('a[href="docs.html#rendering"]')).toBeVisible();
+    const bindingReference = page.locator('a[href="docs.html#bindings"]');
+    await expect(bindingReference).toBeVisible();
     await expect(page.locator('#ssr')).toHaveCount(0);
     await expect(page.getByText('SSR & hydration', { exact: false })).toHaveCount(0);
+
+    await bindingReference.click();
+    await expect(page).toHaveURL(/\/docs\.html#bindings$/);
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('#bindings')).toBeVisible();
+    await expect(page.locator('.docs-sidebar a[href="#bindings"]')).toBeVisible();
+    for (const id of [
+      'bindings-channel-chooser',
+      'bindings-properties',
+      'bindings-events',
+      'bindings-named-spreads',
+      'bindings-sentinel-matrix',
+      'bindings-form-data-flow'
+    ]) {
+      await expect(page.locator(`#${id}`)).toBeAttached();
+    }
+    await expect(page.getByText('Binding Channels', { exact: true }).first()).toBeVisible();
 
     await page.goto(`${websiteBase}/docs.html#rendering`);
     await page.waitForLoadState('networkidle');

@@ -11,6 +11,7 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 **Files:**
 - `api.md` - Complete API reference
 - `rendering.md` - Declarative syntax, reactivity, roots, and async values
+- `bindings.md` - Exact node, attribute, property, event, class, style, spread, sentinel, and form semantics
 - `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
 - `react-integration.md` - React router, hooks, guards, context

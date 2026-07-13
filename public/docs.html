@@ -61,6 +61,21 @@
 <a href="#rendering-reactive-authoring" class="sub">Reactive authoring</a>
 <a href="#rendering-render-roots" class="sub">Render roots</a>
 <a href="#rendering-editor-metadata" class="sub">Editor metadata</a>
+<a href="#bindings">Binding Channels</a>
+<a href="#bindings-channel-chooser" class="sub">Channel chooser</a>
+<a href="#bindings-shared-rules" class="sub">Shared rules</a>
+<a href="#bindings-node-content" class="sub">Node content</a>
+<a href="#bindings-attributes" class="sub">Attributes</a>
+<a href="#bindings-properties" class="sub">Properties</a>
+<a href="#bindings-boolean-attributes" class="sub">Boolean attributes</a>
+<a href="#bindings-class-and-style" class="sub">Class and style</a>
+<a href="#bindings-events" class="sub">Events</a>
+<a href="#bindings-named-spreads" class="sub">Named spreads</a>
+<a href="#bindings-keyed-identity" class="sub">Keyed identity</a>
+<a href="#bindings-comment-interpolation" class="sub">Comment interpolation</a>
+<a href="#bindings-sentinel-matrix" class="sub">Sentinel matrix</a>
+<a href="#bindings-form-data-flow" class="sub">Form data flow</a>
+<a href="#bindings-invalid-placements-and-diagnostics" class="sub">Invalid placements and diagnostics</a>
 <a href="#routing">Routing</a>
 <a href="#routing-router-setup" class="sub">Router Setup</a>
 <a href="#routing-page-components" class="sub">Page Components</a>
@@ -1057,7 +1072,7 @@ class ConditionalContent extends HTMLElement {
     this.isLoggedIn = false;
   }
 }</snice-code-block>
-<p>The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See <a href="#rendering">Declarative Rendering</a> for typed <code>&lt;when&gt;</code> branches, <code>repeat()</code>, binding channels, explicit form events, and direct async values.</p>
+<p>The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See <a href="#rendering">Declarative Rendering</a> for typed <code>&lt;when&gt;</code> branches, <code>repeat()</code>, and direct async values. See <a href="#bindings">Binding Channels</a> for exact property, attribute, event, spread, sentinel, and form semantics.</p>
 </section>
 <section class="doc-file" id="rendering">
 <h1 id="rendering-declarative-rendering">Declarative Rendering</h1>
@@ -1087,6 +1102,7 @@ class UserEditor extends SniceElement {
 `</snice-code-block>
 <p>Dynamic text is escaped. <code>unsafeHTML(value)</code> is the explicit opt-in for trusted raw HTML. Use <code>svg</code><code> for an SVG fragment that does not include its own outer </code>&lt;svg&gt;` element.</p>
 <h2 id="rendering-bindings">Bindings</h2>
+<p>This section is the quick syntax overview. See <a href="#bindings">Binding Channels</a> for the complete value, cleanup, event, spread, sentinel, and form-control semantics.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input
   title=${label}
   data-label=&quot;prefix ${label}&quot;
@@ -1257,6 +1273,233 @@ class UserPanel extends SniceElement {
 <li><code>snice/components/custom-elements</code> TypeScript declarations for tag-name maps and component element types.</li>
 </ul>
 <p>Regenerate metadata with <code>npm run generate:metadata</code>; CI or local checks can use <code>npm run check:metadata</code>.</p>
+</section>
+<section class="doc-file" id="bindings">
+<h1 id="bindings-binding-channels">Binding Channels</h1>
+<p>Every expression in an <code>html</code> template writes through a specific browser channel. The channel decides whether a value becomes text, an attribute string, a JavaScript property, attribute presence, a listener, a class, or a CSS declaration. Choosing the channel is part of the component's public contract.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { html, live, noChange, nothing } from 'snice';</snice-code-block>
+<p>This reference covers every binding channel supported by the differential renderer. For control flow, keyed <code>repeat()</code>, async node values, render roots, and reactive authoring, see <a href="#rendering">Declarative Rendering</a>.</p>
+<h2 id="bindings-channel-chooser">Channel chooser</h2>
+<div class="doc-table-wrap"><table><thead><tr><th>Syntax</th><th>Writes to</th><th>Use it for</th></tr></thead><tbody><tr><td><code>${value}</code></td><td>A DOM range between marker comments</td><td>Text, nested templates, nodes, lists, and async content</td></tr><tr><td><code>name=${value}</code></td><td>An HTML attribute string</td><td>Labels, IDs, ARIA, URLs, and serialized data</td></tr><tr><td><code>name=&quot;a ${value} b&quot;</code></td><td>One interpolated attribute string</td><td>Attributes assembled from static and dynamic text</td></tr><tr><td><code>.name=${value}</code></td><td>A JavaScript property</td><td>Objects, arrays, functions, element APIs, and native form state</td></tr><tr><td><code>?name=${value}</code></td><td>Attribute presence</td><td>Native boolean attributes and presence-based selectors</td></tr><tr><td><code>@event=${handler}</code></td><td>An event listener</td><td>DOM and custom events</td></tr><tr><td><code>class:name=${value}</code></td><td>One class token</td><td>Independent conditional classes</td></tr><tr><td><code>style:name=${value}</code></td><td>One CSS declaration</td><td>Independent styles and CSS custom properties</td></tr><tr><td><code>...props=${bag}</code></td><td>Multiple JavaScript properties</td><td>Dynamic or forwarded property bags</td></tr><tr><td><code>...attrs=${bag}</code></td><td>Multiple attributes</td><td>Dynamic or forwarded attribute bags</td></tr><tr><td><code>...events=${bag}</code></td><td>Multiple event listeners</td><td>Dynamic or forwarded listener bags</td></tr><tr><td><code>key=${value}</code></td><td>An attribute and list identity</td><td>Identity for mapped template arrays</td></tr><tr><td><code>&lt;!-- ${value} --&gt;</code></td><td>HTML comment data</td><td>Inspectable diagnostics or generated metadata</td></tr></tbody></table></div>
+<p>Use direct bindings when names are known. Named spreads are deliberately explicit because property, attribute, and event bags have different value and cleanup rules.</p>
+<h2 id="bindings-shared-rules">Shared rules</h2>
+<p>Snice parses the static template structure once and updates only the expression-backed parts. A binding keeps its DOM node or listener when the same template is rendered again.</p>
+<p>All channels except ordinary attributes and HTML comments take exactly one expression. Static text or additional expressions in a property, boolean, event, class, style, or named-spread binding are ignored with a warning:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Wrong: a property is a value channel, not string interpolation.
+html`&lt;user-card .user=&quot;prefix ${user}&quot;&gt;&lt;/user-card&gt;`;
+
+// Choose one complete JavaScript value.
+html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`;
+
+// Or choose an attribute when the result is text.
+html`&lt;user-card data-user=&quot;prefix ${user.id}&quot;&gt;&lt;/user-card&gt;`;</snice-code-block>
+<p>Expressions cannot appear loose inside an opening tag. Use an explicit binding name:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// Throws: expressions directly in opening tags are ambiguous.
+html`&lt;input ${configuration}&gt;`;
+
+// The destination is explicit.
+html`&lt;input ...props=${configuration}&gt;`;</snice-code-block>
+<p>The bare expressions on <code>&lt;if&gt;</code>, <code>&lt;else-if&gt;</code>, <code>&lt;case&gt;</code>, and <code>&lt;when&gt;</code> are the only opening-tag exception; they belong to Snice's virtual control-flow grammar. Bindings are unavailable when <code>@render({ differential: false })</code> returns a raw string.</p>
+<h2 id="bindings-node-content">Node content</h2>
+<p>A node expression owns a range in the document. It accepts:</p>
+<ul>
+<li>Strings, numbers, booleans, bigints, and symbols as escaped text</li>
+<li>Nested <code>html</code> or <code>svg</code> template results</li>
+<li>DOM <code>Node</code> values</li>
+<li>Arrays and other synchronous iterables</li>
+<li><code>repeat()</code> results</li>
+<li>Promises and async iterables</li>
+<li><code>unsafeHTML()</code> for explicitly trusted markup</li>
+</ul>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;h2&gt;${title}&lt;/h2&gt;
+  ${items.map(item =&gt; html`&lt;span&gt;${item.label}&lt;/span&gt;`)}
+  ${ready ? html`&lt;user-view .user=${user}&gt;&lt;/user-view&gt;` : nothing}
+`;</snice-code-block>
+<p>Dynamic strings are text, not markup. <code>unsafeHTML()</code> is the explicit trusted-HTML boundary.</p>
+<p><code>nothing</code>, <code>null</code>, <code>undefined</code>, and the empty string clear the owned range. Other primitives are visible text, including <code>false</code>, <code>0</code>, and <code>NaN</code>. A plain object that is not a supported template, node, or iterable falls back to <code>String(value)</code>.</p>
+<p>Promises start with an empty range and commit their result when settled. Async iterables commit each emitted value. Replacing a source prevents stale results from winning; disconnecting its owning tree stops active iteration. Promise cancellation remains the caller's responsibility.</p>
+<h2 id="bindings-attributes">Attributes</h2>
+<p>An ordinary attribute binding writes text through <code>setAttribute()</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;button
+  title=${label}
+  aria-label=&quot;Open ${label}&quot;
+  data-position=&quot;${row}:${column}&quot;
+&gt;&lt;/button&gt;`;</snice-code-block>
+<p>Use attributes when the consumer is HTML, CSS, accessibility tooling, serialization, or a custom element's attribute API.</p>
+<p>For a single-expression attribute:</p>
+<ul>
+<li><code>nothing</code> removes the attribute.</li>
+<li><code>null</code> and <code>undefined</code> write an empty attribute value.</li>
+<li><code>true</code> and <code>false</code> become the strings <code>&quot;true&quot;</code> and <code>&quot;false&quot;</code>.</li>
+<li>Other values use <code>String(value)</code>.</li>
+</ul>
+<p>An interpolated attribute may contain any number of expressions. <code>null</code> and <code>undefined</code> contribute empty text. If any slot is <code>nothing</code>, Snice removes the whole attribute. <code>noChange</code> preserves only that slot's previous value.</p>
+<p>An attribute is always a string boundary. Do not use it to pass object identity to a child component; use a property binding.</p>
+<h2 id="bindings-properties">Properties</h2>
+<p>A leading dot assigns directly to the element's JavaScript property:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;data-grid
+  .rows=${rows}
+  .formatter=${formatter}
+  .selection=${selection}
+&gt;&lt;/data-grid&gt;`;</snice-code-block>
+<p>Property bindings preserve type and identity. They are the correct channel for arrays, objects, functions, class instances, custom-element APIs, and native state such as <code>input.value</code>, <code>input.checked</code>, or <code>select.value</code>.</p>
+<p><code>null</code>, <code>undefined</code>, and <code>false</code> are assigned unchanged. <code>nothing</code> assigns <code>undefined</code>. Re-rendering the same bound value skips the property write.</p>
+<h3 id="bindings-live-property-values">Live property values</h3>
+<p>Native controls can mutate their own properties after Snice writes them. Normally, if the bound value has not changed, a later render leaves that user-edited DOM value alone. Wrap a property value in <code>live()</code> when the component state must be reasserted even if the bound value itself is unchanged:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input .value=${live(this.canonicalValue)}&gt;`;</snice-code-block>
+<p><code>live()</code> compares against the element's current property rather than the last value Snice committed. It is only for property bindings. It is useful for controlled fields, normalization, and resetting DOM state after validation; omit it when in-progress browser state should survive unrelated renders.</p>
+<h2 id="bindings-boolean-attributes">Boolean attributes</h2>
+<p>A leading question mark controls presence, not a string value:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;button
+  ?disabled=${saving}
+  ?hidden=${collapsed}
+  ?data-selected=${selected}
+&gt;&lt;/button&gt;`;</snice-code-block>
+<p>A truthy value adds the attribute with an empty value. A falsy value or <code>nothing</code> removes it. This includes <code>false</code>, <code>0</code>, the empty string, <code>null</code>, <code>undefined</code>, and <code>NaN</code>.</p>
+<p>Use this channel only when presence has meaning. If a consumer expects the text <code>&quot;false&quot;</code>, use an ordinary attribute. If it expects a JavaScript boolean property, use <code>.name</code>.</p>
+<h2 id="bindings-class-and-style">Class and style</h2>
+<p><code>class:name</code> independently toggles one class without rebuilding the static <code>class</code> attribute:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;article
+  class=&quot;card&quot;
+  class:selected=${selected}
+  class:pending=${status === 'pending'}
+&gt;&lt;/article&gt;`;</snice-code-block>
+<p>A truthy value adds the class. A falsy value or <code>nothing</code> removes it. Static classes and other <code>class:name</code> bindings remain untouched.</p>
+<p><code>style:name</code> writes one declaration with <code>CSSStyleDeclaration.setProperty()</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;article
+  style:color=${foreground}
+  style:grid-column=${column}
+  style:--card-accent=${accent}
+&gt;&lt;/article&gt;`;</snice-code-block>
+<p>CSS property names are passed through as written, so use CSS spelling such as <code>background-color</code> and <code>--custom-token</code>. <code>nothing</code>, <code>null</code>, <code>undefined</code>, and <code>false</code> remove the declaration. Every other value is stringified, including <code>0</code> and the empty string. Static style declarations and other <code>style:name</code> bindings remain untouched.</p>
+<p>Use <code>classMap()</code> or <code>styleMap()</code> when producing a complete class or style attribute from an object is clearer. Use the channel bindings when each token has an independent condition or lifecycle.</p>
+<h2 id="bindings-events">Events</h2>
+<p>An event binding owns one native listener:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;button @click=${this.save}&gt;Save&lt;/button&gt;`;</snice-code-block>
+<p>A handler may be a function or an <code>EventListenerObject</code> with <code>handleEvent(event)</code>. <code>nothing</code>, <code>null</code>, <code>undefined</code>, or <code>false</code> removes the listener. Any other value throws a <code>TypeError</code>.</p>
+<p>Function handlers run with <code>this</code> set to the custom element that owns the render tree. Listener objects follow native DOM behavior: <code>this</code> inside <code>handleEvent</code> is the listener object itself. Replacing a handler updates the native listener; rendering the same handler leaves it attached.</p>
+<h3 id="bindings-event-modifiers">Event modifiers</h3>
+<p>Append modifiers with a vertical bar:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;form @submit|prevent=${this.save}&gt;&lt;/form&gt;
+  &lt;button @click|once|stop=${this.runOnce}&gt;Run once&lt;/button&gt;
+  &lt;div @click|self=${this.selectContainer}&gt;...&lt;/div&gt;
+`;</snice-code-block>
+<p>Supported modifiers:</p>
+<ul>
+<li><code>prevent</code> calls <code>preventDefault()</code> before the handler.</li>
+<li><code>stop</code> calls <code>stopPropagation()</code>.</li>
+<li><code>immediate</code> calls <code>stopImmediatePropagation()</code>.</li>
+<li><code>once</code> consumes the listener after its first matching event.</li>
+<li><code>capture</code> attaches in the capture phase.</li>
+<li><code>passive</code> requests a passive listener.</li>
+<li><code>self</code> runs only when <code>event.target</code> is the bound element.</li>
+</ul>
+<p>The long aliases <code>preventDefault</code>, <code>stopPropagation</code>, and <code>stopImmediatePropagation</code> are also accepted. <code>passive</code> cannot be combined with <code>prevent</code>.</p>
+<p>Modifiers use the vertical-bar form. A dot on a non-keyboard event is part of the actual event name, so <code>@app.ready</code> listens for the custom event <code>app.ready</code>; it does not apply a modifier.</p>
+<h3 id="bindings-keyboard-filters">Keyboard filters</h3>
+<p><code>keydown</code>, <code>keyup</code>, and <code>keypress</code> support a key filter after a dot or colon:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;input @keydown.enter=${this.accept}&gt;
+  &lt;input @keydown:escape=${this.cancel}&gt;
+  &lt;input @keydown.ctrl+s|prevent=${this.save}&gt;
+  &lt;input @keyup.~enter=${this.acceptWithAnyModifiers}&gt;
+`;</snice-code-block>
+<p>Filters are exact by default: unspecified Ctrl, Alt, Shift, and Meta keys must be up. Prefix the key specification with <code>~</code> to ignore modifier state. Combine required modifiers with <code>+</code>; accepted names include <code>ctrl</code> or <code>control</code>, <code>alt</code>, <code>shift</code>, and <code>meta</code>, <code>cmd</code>, or <code>command</code>.</p>
+<p>Common key aliases are normalized, including <code>esc</code>, <code>return</code>, <code>space</code>, arrow directions, <code>del</code>, <code>backspace</code>, <code>tab</code>, <code>home</code>, <code>end</code>, <code>pageup</code>, and <code>pagedown</code>.</p>
+<h3 id="bindings-custom-event-names">Custom event names</h3>
+<p>Slash, colon, and dot characters may be part of a custom event name. If the actual event name starts with <code>@</code>, escape the template prefix by doubling it:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;user-card @user/saved=${this.refresh}&gt;&lt;/user-card&gt;
+  &lt;user-card @app.ready=${this.ready}&gt;&lt;/user-card&gt;
+  &lt;user-card @@snice/updated=${this.refresh}&gt;&lt;/user-card&gt;
+`;</snice-code-block>
+<p>The last binding listens for the actual event name <code>@snice/updated</code>.</p>
+<h3 id="bindings-listener-objects-and-lifecycle">Listener objects and lifecycle</h3>
+<p>A listener object can carry native <code>capture</code>, <code>passive</code>, <code>once</code>, and <code>signal</code> options alongside <code>handleEvent</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">const listener = {
+  once: true,
+  signal: abortController.signal,
+  handleEvent(event: Event) {
+    consume(event);
+  }
+};
+
+html`&lt;button @click=${listener}&gt;Consume&lt;/button&gt;`;</snice-code-block>
+<p>Listeners inside an inactive <code>&lt;if&gt;</code> or <code>&lt;case&gt;</code> branch detach while the branch is parked and reattach when it returns. A listener already consumed with <code>once</code> stays consumed. Removing and reconnecting a host retains listeners on its retained render tree, matching native DOM behavior.</p>
+<h2 id="bindings-named-spreads">Named spreads</h2>
+<p>Named spreads are for forwarding a bag whose keys are only known at runtime. They do not guess a destination:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input
+  ...props=${forwardedProperties}
+  ...attrs=${accessibilityAttributes}
+  ...events=${forwardedListeners}
+&gt;`;</snice-code-block>
+<p>The spread value must be a non-array object. <code>nothing</code>, <code>null</code>, or <code>undefined</code> means an empty bag, which cleans up every previously committed key. <code>noChange</code> as the entire spread value preserves the current bag. <code>false</code>, primitives, and arrays throw. <code>noChange</code> is not an entry-level sentinel inside a bag. An omitted key is cleaned up according to its destination channel.</p>
+<h3 id="bindings-property-spreads">Property spreads</h3>
+<p><code>...props</code> assigns each entry as a JavaScript property and preserves the entry's type and identity. An entry equal to <code>nothing</code> assigns <code>undefined</code>. A key omitted from the next bag is reset to <code>undefined</code> during that live update.</p>
+<p><code>...properties</code> is an accepted long alias. Prefer the shorter <code>...props</code> spelling in new templates.</p>
+<h3 id="bindings-attribute-spreads">Attribute spreads</h3>
+<p><code>...attrs</code> writes each entry as an attribute. <code>nothing</code>, <code>null</code>, <code>undefined</code>, and <code>false</code> remove that key; <code>true</code> writes an empty attribute; every other value is stringified. A key omitted from the next bag is removed.</p>
+<p><code>...attributes</code> is an accepted long alias. Prefer the shorter <code>...attrs</code> spelling in new templates.</p>
+<h3 id="bindings-event-spreads">Event spreads</h3>
+<p><code>...events</code> manages a listener per entry. Keys may be written as <code>click</code> or <code>@click</code>; the optional leading <code>@</code> is removed. The two spellings cannot both appear for the same event in one bag, and empty names throw.</p>
+<p>Values may be functions, listener objects, <code>nothing</code>, <code>null</code>, <code>undefined</code>, or <code>false</code>. Removing a key removes its listener. Listener objects support native <code>capture</code>, <code>passive</code>, <code>once</code>, and <code>signal</code> options. Function handlers use the render host as <code>this</code>.</p>
+<p>Event-spread keys are literal event names. Direct-binding modifiers and keyboard-filter syntax are not parsed in spread keys; use a listener object for native options or a direct <code>@event</code> binding for filters and modifiers.</p>
+<h2 id="bindings-keyed-identity">Keyed identity</h2>
+<p>In a normal mapped array, put <code>key=${value}</code> on the root element of every item template when DOM identity must follow the item instead of its array position:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`${items.map(item =&gt; html`
+  &lt;user-row key=${item.id} .user=${item}&gt;&lt;/user-row&gt;
+`)}`;</snice-code-block>
+<p>Keys compare by JavaScript identity. Every item must be keyed and keys must be unique. Duplicate keys throw. Mixing keyed and unkeyed item templates warns and falls back to position-based reconciliation. The <code>key</code> binding is also an ordinary attribute on the rendered root.</p>
+<p>Prefer <code>repeat(items, { key, render, empty })</code> when keyed identity is intentional. It supplies keys directly to the reconciler, adds no wrapper, and does not require a <code>key</code> attribute in the rendered template.</p>
+<h2 id="bindings-comment-interpolation">Comment interpolation</h2>
+<p>Expressions inside an authored HTML comment update the comment's data:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">html`
+  &lt;!-- render revision: ${revision}; source: ${source} --&gt;
+  &lt;user-view .user=${user}&gt;&lt;/user-view&gt;
+`;</snice-code-block>
+<p><code>nothing</code>, <code>null</code>, and <code>undefined</code> contribute empty text. Other values are stringified. <code>noChange</code> preserves an individual slot. A result containing <code>--</code> or ending with <code>-</code> throws because it is not valid HTML comment data.</p>
+<p>Comments are invisible in the rendered page but visible to DOM inspection and serialized markup. Do not place secrets in them.</p>
+<h2 id="bindings-sentinel-matrix">Sentinel matrix</h2>
+<p>The same JavaScript value can mean something different in each channel:</p>
+<div class="doc-table-wrap"><table><thead><tr><th>Channel</th><th><code>null</code> or <code>undefined</code></th><th><code>false</code></th><th><code>nothing</code></th><th><code>noChange</code></th></tr></thead><tbody><tr><td>Node content</td><td>Clear the range</td><td>Render <code>false</code> text</td><td>Clear the range</td><td>Keep the current range</td></tr><tr><td>Attribute</td><td>Write an empty value</td><td>Write <code>&quot;false&quot;</code></td><td>Remove the attribute</td><td>Keep the current value</td></tr><tr><td>Property</td><td>Assign as-is</td><td>Assign <code>false</code></td><td>Assign <code>undefined</code></td><td>Keep the current value</td></tr><tr><td>Boolean attribute</td><td>Remove</td><td>Remove</td><td>Remove</td><td>Keep current presence</td></tr><tr><td>Class token</td><td>Remove</td><td>Remove</td><td>Remove</td><td>Keep current presence</td></tr><tr><td>Style property</td><td>Remove</td><td>Remove</td><td>Remove</td><td>Keep the current declaration</td></tr><tr><td>Event listener</td><td>Remove</td><td>Remove</td><td>Remove</td><td>Keep the current listener</td></tr><tr><td>Whole named spread</td><td>Clear the bag</td><td>Throw</td><td>Clear the bag</td><td>Keep the current bag</td></tr><tr><td>Comment slot</td><td>Write empty text</td><td>Write <code>false</code> text</td><td>Write empty text</td><td>Keep the current slot</td></tr></tbody></table></div>
+<p>For an interpolated attribute or comment, <code>noChange</code> preserves only its expression slot. On first render there is no earlier slot value, so it contributes empty text.</p>
+<p><code>nothing</code> is a public rendering value. <code>noChange</code> is an optimization and control signal: it means “do not commit this part during this render,” not “remove this part.”</p>
+<h2 id="bindings-form-data-flow">Form data flow</h2>
+<p>DOM-to-state updates remain explicit. Bind state to a native property, then handle the browser event that updates component state:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@state() query = '';
+@state() accepted = false;
+
+render() {
+  return html`
+    &lt;input .value=${this.query} @input=${this.updateQuery}&gt;
+    &lt;input type=&quot;checkbox&quot; .checked=${this.accepted} @change=${this.updateAccepted}&gt;
+  `;
+}
+
+updateQuery(event: InputEvent) {
+  this.query = (event.currentTarget as HTMLInputElement).value;
+}
+
+updateAccepted(event: Event) {
+  this.accepted = (event.currentTarget as HTMLInputElement).checked;
+}</snice-code-block>
+<p>This keeps parsing, validation, IME policy, and the event that changes state visible. Use <code>input</code> for text as it changes and <code>change</code> for committed choices such as checkboxes, selects, and files.</p>
+<p>Property-to-attribute reflection from <code>@property()</code> is a custom-element API concern; it does not replace a form control's browser-to-state event. See <a href="#elements">Elements</a> for property and reflection semantics.</p>
+<h2 id="bindings-invalid-placements-and-diagnostics">Invalid placements and diagnostics</h2>
+<p>Snice rejects or warns about ambiguous channel authoring:</p>
+<ul>
+<li>A loose expression in an opening tag throws. Choose a named binding or named spread.</li>
+<li>An empty property, boolean, event, class, or style name throws.</li>
+<li>An unknown named spread throws; supported destinations are properties, attributes, and events.</li>
+<li>Static text or multiple expressions on a single-expression channel warn and are ignored after the first expression.</li>
+<li>A non-callable event value throws instead of becoming an inert attribute.</li>
+<li>A non-object spread, duplicate normalized event name, or empty event name throws.</li>
+<li>Invalid event modifiers and the <code>passive</code> plus <code>prevent</code> combination throw.</li>
+<li>Invalid comment data throws.</li>
+</ul>
+<p>Enable <code>setStrictRenderErrors(true)</code> in tests and development when render failures should rethrow instead of being logged while the previous DOM remains in place.</p>
 </section>
 <section class="doc-file" id="routing">
 <h1 id="routing-routing-api-documentation">Routing API Documentation</h1>

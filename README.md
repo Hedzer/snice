@@ -689,7 +689,7 @@ html`<input
 
 Promises and async iterables render directly in node expressions. Use `repeat()` for explicit keyed identity and an empty state.
 
-See [Declarative Rendering](./docs/rendering.md) for the complete syntax, control flow, deep reactivity, render roots, and metadata reference.
+See [Declarative Rendering](./docs/rendering.md) for control flow, deep reactivity, render roots, and metadata. See [Binding Channels](./docs/bindings.md) for exact node, attribute, property, event, class, style, spread, sentinel, and form semantics.
 
 ### Template Helpers
 
@@ -910,6 +910,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 ### User Documentation
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
 - [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
+- [Binding Channels](./docs/bindings.md) - Detailed DOM destinations, value/removal rules, events, spreads, sentinels, and forms
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery

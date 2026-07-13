@@ -27,6 +27,8 @@ class MyView extends SniceElement {
 
 ## Bindings
 
+Exact per-channel value/removal rules, event grammar, spreads, sentinels, and form data flow: [bindings.md](bindings.md).
+
 ```typescript
 ${value}                       // node
 title=${value}                 // attribute

@@ -1796,6 +1796,7 @@ const docsManifest = [
   { group: 'Core', docs: [
     { id: 'elements', file: 'elements.md', title: 'Elements' },
     { id: 'rendering', file: 'rendering.md', title: 'Declarative Rendering' },
+    { id: 'bindings', file: 'bindings.md', title: 'Binding Channels' },
     { id: 'routing', file: 'routing.md', title: 'Routing' },
     { id: 'events', file: 'events.md', title: 'Events' },
     { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
