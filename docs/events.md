@@ -225,7 +225,7 @@ Supported modifiers:
 
 `passive` and `prevent` are contradictory and produce a render error. Modifiers compose with dot or colon keyboard filters. Exact keyboard combinations reject extra modifiers; prefix the key filter with `~` to accept any modifier combination.
 
-Handlers may also be `EventListenerObject` values. Their `handleEvent()` method receives the object as `this`, and `capture`, `once`, or `passive` fields are honored. Function handlers receive the component that owns the render tree as `this`, including portal content rendered outside its shadow root.
+Handlers may also be `EventListenerObject` values. Their `handleEvent()` method receives the object as `this`, and `capture`, `once`, or `passive` fields are honored. Function handlers receive the component that owns the render tree as `this`.
 
 ### Arrow Functions in Templates
 
@@ -913,4 +913,3 @@ class KeyboardController implements IController {
   }
 }
 ```
-

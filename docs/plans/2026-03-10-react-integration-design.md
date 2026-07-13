@@ -161,6 +161,5 @@ Guards, context shape, and page contracts are identical across both systems. A g
 ## What This Does NOT Include
 
 - Page transitions (React devs use framer-motion, etc.)
-- SSR support
 - Code splitting (React devs use lazy/Suspense as usual)
 - Controller decorator equivalent (covered by `useRequestHandler`)

@@ -101,31 +101,59 @@ describe('Website Build', () => {
   describe('Declarative Rendering Documentation', () => {
     it('publishes every major rendering capability in the guide', () => {
       const guide = readFileSync(join(publicDir, 'guide.html'), 'utf-8');
-      const sectionIds = ['state', 'roots', 'bindings', 'conditionals', 'lists', 'async', 'ssr'];
+      const sectionIds = [
+        'state', 'deep-state', 'roots',
+        'bindings', 'forms', 'spreads',
+        'conditionals', 'lists', 'async',
+        'ready', 'dispose'
+      ];
       for (const id of sectionIds) expect(guide).toContain(`id="${id}"`);
 
       const APIs = [
-        '@state', 'Proxy', 'Reflect', 'SniceElement', 'bind(', 'ref(', 'use(',
-        'repeat(', 'resource(', 'portal(', 'transition(', 'renderToStringAsync(',
-        'hydrate('
+        '@state', 'Proxy', 'Reflect', 'SniceElement',
+        '...props', '...attrs', '...events', 'repeat(',
+        '@input=${this.updateQuery}', '@ready', '@dispose'
       ];
       for (const api of APIs) expect(guide).toContain(api);
+      for (const collapsed of [
+        'Bindings &amp; element actions',
+        'Async content, portals &amp; motion',
+        'Ready &amp; Dispose',
+        'Internal &amp; deep state'
+      ]) {
+        expect(guide).not.toContain(collapsed);
+      }
+      for (const removed of [
+        'renderToString', 'renderElementToString', 'hydrate(', 'HydrationError',
+        'SSR &amp; hydration', 'data-snice-hydrate',
+        'bind(', 'createRef', 'ref(', '${use(', "import { use } from 'snice'", 'UseResult', 'UseContext', '&lt;component ${',
+        'resource(', 'portal(', 'transition(', 'props(object)', 'attrs(object)', 'events(object)',
+        'Element refs', 'Element actions', 'Dynamic elements', 'Portals', 'Transitions'
+      ]) {
+        expect(guide).not.toContain(removed);
+      }
     });
 
-    it('generates the complete reference and escapes virtual tags as text', () => {
+    it('generates the complete rendering reference', () => {
       const docs = readFileSync(join(publicDir, 'docs.html'), 'utf-8');
       expect(docs).toContain('<section class="doc-file" id="rendering">');
       expect(docs).toContain('href="#rendering"');
-      expect(docs).toContain('<code>&lt;component&gt;</code>');
-      expect(docs).not.toMatch(/<code>\s*<component(?:\s|>)/);
-      expect(docs).toContain('renderElementToStringAsync');
+      expect(docs).toContain('id="rendering-form-controls"');
       expect(docs).toContain('custom-elements.json');
+      for (const removed of [
+        'renderToString', 'renderElementToString', 'hydrate(', 'HydrationError',
+        'Server rendering and hydration', 'data-snice-hydrate',
+        'bind(', 'createRef', 'ref(', '${use(', "import { use } from 'snice'", 'UseResult', 'UseContext', '&lt;component ${',
+        'resource(', 'portal(', 'transition(', 'DirectivePart', 'Directive protocol'
+      ]) {
+        expect(docs).not.toContain(removed);
+      }
     });
 
     it('surfaces the expanded declarative feature set on the homepage', () => {
       const homepage = readFileSync(join(publicDir, 'index.html'), 'utf-8');
-      expect(homepage).toContain('@state &amp; directives');
-      expect(homepage).toContain('Deep state, bindings, keyed flow, async UI, and portals');
+      expect(homepage).toContain('@state &amp; templates');
+      expect(homepage).toContain('Deep state, explicit bindings, keyed flow, and async values');
     });
   });
 

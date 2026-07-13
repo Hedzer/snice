@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+const websiteBase = 'http://127.0.0.1:52891';
+
 test.describe('Website Component Rendering', () => {
   test('components render in browser', async ({ page }) => {
-    await page.goto('http://localhost:52891/components.html');
+    await page.goto(`${websiteBase}/components.html`);
 
     await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => !!customElements.get('snice-input'));
@@ -21,7 +23,7 @@ test.describe('Website Component Rendering', () => {
 
   test('theme toggle works', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('snice-theme', 'light'));
-    await page.goto('http://localhost:52891');
+    await page.goto(websiteBase);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
@@ -36,7 +38,7 @@ test.describe('Website Component Rendering', () => {
   });
 
   test('modal opens', async ({ page }) => {
-    await page.goto('http://localhost:52891/components.html');
+    await page.goto(`${websiteBase}/components.html`);
     await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => !!customElements.get('snice-modal'));
 
@@ -52,31 +54,71 @@ test.describe('Website Component Rendering', () => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
-    await page.goto('http://localhost:52891/guide.html');
+    await page.goto(`${websiteBase}/guide.html`);
     await page.waitForLoadState('networkidle');
-    for (const id of ['state', 'roots', 'bindings', 'conditionals', 'lists', 'async', 'ssr']) {
+    for (const id of [
+      'state', 'deep-state', 'roots',
+      'bindings', 'forms', 'spreads',
+      'conditionals', 'lists', 'async',
+      'ready', 'dispose'
+    ]) {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
     await expect(page.locator('a[href="docs.html#rendering"]')).toBeVisible();
+    await expect(page.locator('#ssr')).toHaveCount(0);
+    await expect(page.getByText('SSR & hydration', { exact: false })).toHaveCount(0);
 
-    await page.goto('http://localhost:52891/docs.html#rendering');
+    await page.goto(`${websiteBase}/docs.html#rendering`);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('#rendering')).toBeVisible();
     for (const id of [
       'rendering-bindings',
+      'rendering-form-controls',
       'rendering-control-flow',
       'rendering-async-content',
       'rendering-reactive-authoring',
-      'rendering-render-roots',
-      'rendering-custom-directives',
-      'rendering-server-rendering-and-hydration'
+      'rendering-render-roots'
     ]) {
       await expect(page.locator(`#${id}`)).toBeAttached();
     }
-
-    // Inline examples such as <component> must remain escaped prose/code, not
-    // become accidental live DOM elements in the generated documentation.
-    await expect(page.locator('#rendering component')).toHaveCount(0);
+    await expect(page.locator('#rendering-server-rendering-and-hydration')).toHaveCount(0);
+    await expect(page.getByText('HydrationError', { exact: false })).toHaveCount(0);
+    await expect(page.locator('#rendering-custom-directives')).toHaveCount(0);
     expect(pageErrors).toEqual([]);
+  });
+
+  test('guide hashes keep the sidebar and content synchronized', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 600 });
+    await page.goto(`${websiteBase}/guide.html#conditionals`);
+    await page.waitForFunction(() => {
+      const section = document.querySelector('#conditionals');
+      const active = document.querySelector('.guide-sidebar a.active');
+      return active?.getAttribute('href') === '#conditionals' &&
+        !!section && section.getBoundingClientRect().top < 130;
+    });
+
+    const state = await page.evaluate(() => {
+      const sidebar = document.querySelector('.guide-sidebar')!;
+      const link = sidebar.querySelector('a[href="#conditionals"]')!;
+      const section = document.querySelector('#conditionals')!;
+      const sidebarRect = sidebar.getBoundingClientRect();
+      const linkRect = link.getBoundingClientRect();
+      const navOrder = [...sidebar.querySelectorAll('a[href^="#"]')]
+        .map(item => item.getAttribute('href')!.slice(1));
+      const contentOrder = [...document.querySelectorAll('.dec-section[id]')]
+        .map(item => item.id);
+      return {
+        active: sidebar.querySelector('a.active')?.getAttribute('href'),
+        linkVisible: linkRect.top >= sidebarRect.top && linkRect.bottom <= sidebarRect.bottom,
+        sectionTop: section.getBoundingClientRect().top,
+        orderMatches: JSON.stringify(navOrder) === JSON.stringify(contentOrder)
+      };
+    });
+
+    expect(state.active).toBe('#conditionals');
+    expect(state.linkVisible).toBe(true);
+    expect(state.sectionTop).toBeGreaterThanOrEqual(75);
+    expect(state.sectionTop).toBeLessThanOrEqual(105);
+    expect(state.orderMatches).toBe(true);
   });
 });

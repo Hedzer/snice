@@ -1884,10 +1884,10 @@ function mdToHtml(markdown, docId) {
   }
 
   function inlineFormat(text) {
-    // Markdown prose is text, not trusted HTML. Escape first so inline code
-    // such as `<component ${tag}>` cannot be parsed as a real element in the
-    // generated docs page; the formatting replacements below then add only
-    // the small, controlled HTML surface this renderer supports.
+    // Markdown prose is text, not trusted HTML. Escape first so tag-shaped
+    // inline code cannot become a real element in the generated docs page;
+    // the formatting replacements below then add only the small, controlled
+    // HTML surface this renderer supports.
     text = escapeHtml(text);
     // Bold + italic
     text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');

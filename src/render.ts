@@ -7,7 +7,6 @@ import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './temp
 import { TemplateInstance } from './parts';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
 import { ensureRenderRoot } from './render-root';
-import { hydrate } from './hydrate';
 
 /**
  * When true, render errors are rethrown instead of logged, so tests and dev
@@ -233,20 +232,6 @@ function performRender(
 
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
-    if (!instance && element.hasAttribute('data-snice-hydrate')) {
-      try {
-        instance = hydrate(result, renderRoot);
-        (element as any)[RENDER_INSTANCE] = instance;
-        element.removeAttribute('data-snice-hydrate');
-        flushRenderCallbacks(element);
-        return;
-      } catch (error) {
-        element.removeAttribute('data-snice-hydrate');
-        if (strictRenderErrors) throw error;
-        console.error('Error hydrating element; rendering a fresh tree:', error);
-      }
-    }
-
     if (instance && instance.isSameTemplate(result.strings)) {
       instance.update(result.values);
       flushRenderCallbacks(element);
@@ -256,9 +241,9 @@ function performRender(
     const nextInstance = new TemplateInstance(result);
     const nextFragment = nextInstance.renderFragment();
 
-    // Commit while detached first. A malformed binding or directive can then
-    // fail without exposing a half-updated tree. Connection-aware directives
-    // are paired with reconnected() immediately after the successful mount.
+    // Commit while detached first. A malformed binding can then fail without
+    // exposing a half-updated tree. Connection-aware parts are paired with
+    // reconnected() immediately after the successful mount.
     try {
       nextInstance.update(result.values);
     } catch (error) {
@@ -267,9 +252,9 @@ function performRender(
     }
 
     // Park the previous tree without disposing it, mount the prepared tree,
-    // then run connection hooks. A ref/action/portal/custom directive can fail
-    // only once it is connected; in that case restore the still-live previous
-    // tree instead of leaving a partially mounted replacement behind.
+    // then run connection hooks. If reconnecting a listener or async part
+    // fails, restore the still-live previous tree instead of leaving a
+    // partially mounted replacement behind.
     const previousFragment = document.createDocumentFragment();
     for (const child of Array.from(renderRoot.childNodes)) {
       if (
@@ -422,18 +407,18 @@ export function clearRenderTimers(element: HTMLElement): boolean {
   return hadPending;
 }
 
-/** Pause directive-owned resources while an element is detached. */
+/** Pause connection-aware render parts while an element is detached. */
 export function disconnectRenderTree(element: HTMLElement): void {
   const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
   // A host disconnection is not the same thing as parking a conditional
   // branch. The shadow/light render tree still belongs to the host, so native
-  // event listeners remain usable on retained node references. Directive-owned
-  // resources are still paused, and parked branches continue to detach their
-  // listeners through the ordinary Part lifecycle.
+  // event listeners remain usable on retained node references. Async iteration
+  // is paused, and parked branches continue to detach their listeners through
+  // the ordinary Part lifecycle.
   instance?.disconnected(true);
 }
 
-/** Resume directive-owned resources when an existing render tree reconnects. */
+/** Resume connection-aware render parts when an existing tree reconnects. */
 export function reconnectRenderTree(element: HTMLElement): void {
   const instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
   instance?.reconnected();
@@ -577,21 +562,20 @@ export function applyStyles(element: HTMLElement): void {
 
     const renderRoot = ensureRenderRoot(element);
 
-    // A declarative-shadow-DOM response may already contain exactly these
-    // framework styles. Retain them instead of adding a duplicate stylesheet
-    // before hydration begins.
-    const serverStyles = Array.from(renderRoot.childNodes).filter(node =>
+    // Retain matching framework-owned style elements instead of adding a
+    // duplicate stylesheet during a repeated setup pass.
+    const existingStyles = Array.from(renderRoot.childNodes).filter(node =>
       node.nodeType === Node.ELEMENT_NODE &&
       (node as Element).tagName === 'STYLE' &&
       (node as Element).hasAttribute('data-snice-style')
     ) as HTMLStyleElement[];
     if (
-      serverStyles.length === allResults.length &&
-      serverStyles.every((style, index) => style.textContent === allResults[index].cssText)
+      existingStyles.length === allResults.length &&
+      existingStyles.every((style, index) => style.textContent === allResults[index].cssText)
     ) {
       return;
     }
-    for (const style of serverStyles) style.remove();
+    for (const style of existingStyles) style.remove();
 
     // Prefer constructable stylesheets
     if (renderRoot instanceof ShadowRoot && allResults.every(r => !!r.styleSheet) && 'adoptedStyleSheets' in renderRoot) {

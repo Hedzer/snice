@@ -46,6 +46,7 @@
     }
     .guide-sidebar a:hover { color: var(--snice-color-text); }
     .guide-sidebar a.active { color: var(--snice-color-primary); }
+    .dec-section { scroll-margin-top: 5.5rem; }
   </style>
 </head>
 <body>
@@ -77,7 +78,8 @@
         <div class="nav-group">Elements</div>
         <a href="#minimum">Bare minimum</a>
         <a href="#properties">Properties</a>
-        <a href="#state">Internal &amp; deep state</a>
+        <a href="#state">Internal state</a>
+        <a href="#deep-state">Deep state</a>
         <a href="#roots">Render roots</a>
         <a href="#styles">Styles</a>
 
@@ -88,23 +90,23 @@
         <a href="#on">Event delegation</a>
 
         <div class="nav-group">Templates</div>
-        <a href="#bindings">Bindings &amp; actions</a>
+        <a href="#bindings">Binding channels</a>
+        <a href="#forms">Form controls</a>
+        <a href="#spreads">Named spreads</a>
         <a href="#conditionals">Conditionals</a>
         <a href="#lists">Keyed lists</a>
-        <a href="#async">Async, portals &amp; motion</a>
-
-        <div class="nav-group">Server</div>
-        <a href="#ssr">SSR &amp; hydration</a>
+        <a href="#async">Async content</a>
 
         <div class="nav-group">Lifecycle</div>
         <a href="#watch">Watch changes</a>
         <a href="#query">Query the DOM</a>
-        <a href="#ready-dispose">Ready &amp; Dispose</a>
+        <a href="#ready">Ready</a>
+        <a href="#dispose">Dispose</a>
 
         <div class="nav-group">Architecture</div>
         <a href="#controllers">Controllers</a>
-        <a href="#extending">Extending</a>
         <a href="#full">Full example</a>
+        <a href="#extending">Extending</a>
       </nav>
 
       <div class="guide-content">
@@ -150,7 +152,7 @@ class MyCounter extends HTMLElement {
 &lt;script src="snice-button.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-input.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-modal.min.js?v=80938d7"&gt;&lt;/script&gt;</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">The runtime is ~41KB gzipped. Each component adds ~1&ndash;94KB. No duplication regardless of how many components you use.</p>
+          <p class="desc" style="margin-top:0.75rem">The runtime is ~28KB gzipped. Each component adds ~1&ndash;94KB. No duplication regardless of how many components you use.</p>
           <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
 
@@ -220,11 +222,20 @@ class TaskItem extends HTMLElement {
         </div>
 
         <div class="dec-section" id="state">
-          <h3>Internal &amp; deep state</h3>
-          <p class="desc"><code>@state</code> is reactive internal data and never becomes an attribute. Add <code>deep: true</code> when nested collections should invalidate the view.</p>
+          <h3>Internal state</h3>
+          <p class="desc"><code>@state()</code> declares reactive implementation data. It triggers rendering but never creates or reflects an HTML attribute.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@state() editing = false;
+@state() selectedId = null;
 
-@state({ deep: true }) model = {
+this.editing = true;
+this.selectedId = task.id;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Use <code>@property()</code> for public input and <code>@state()</code> for state owned entirely by the component. Multiple writes in one turn are batched into one render.</p>
+        </div>
+
+        <div class="dec-section" id="deep-state">
+          <h3>Deep state</h3>
+          <p class="desc">Add <code>deep: true</code> when nested object and collection mutations should invalidate the view without replacing the top-level field.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@state({ deep: true }) model = {
   tasks: [],
   selected: new Set(),
   flags: new Map()
@@ -344,22 +355,52 @@ handleSearch(e) {
         <!-- ═══════════════════════════════════════ -->
 
         <div class="dec-section" id="bindings">
-          <h3>Bindings &amp; element actions</h3>
-          <p class="desc">Choose the exact DOM channel, bind native form controls in both directions, and attach lifecycle-owned behavior directly in the opening tag.</p>
-          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">const input = createRef();
+          <h3>Binding channels</h3>
+          <p class="desc">Choose the channel that matches what the browser consumes: text, an attribute, a JavaScript property, boolean presence, a listener, one class, or one CSS property.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">return html`
+  &lt;button
+    title=${this.label}
+    data-label="task: ${this.label}"
+    .task=${this.task}
+    ?disabled=${this.saving}
+    @click=${this.save}
+    class:selected=${this.selected}
+    style:--task-accent=${this.accent}
+  &gt;
+    ${this.label}
+  &lt;/button&gt;
+`;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Use <code>.property</code> for objects, arrays, functions, native form state, and any value whose JavaScript type or identity matters. Use <code>?attribute</code> when only attribute presence matters.</p>
+        </div>
+
+        <div class="dec-section" id="forms">
+          <h3>Form controls</h3>
+          <p class="desc">Keep both directions explicit: bind state to the native property and handle the browser event that updates state.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@state() query = '';
+@state() accepted = false;
+
+return html`
+  &lt;input .value=${this.query} @input=${this.updateQuery}&gt;
+  &lt;input type="checkbox" .checked=${this.accepted} @change=${this.updateAccepted}&gt;
+`;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Use <code>input</code> for text as it changes and <code>change</code> for committed choices such as checkboxes, selects, and files. Parsing, validation, and IME behavior stay visible in the handler.</p>
+        </div>
+
+        <div class="dec-section" id="spreads">
+          <h3>Named spreads</h3>
+          <p class="desc">Prefer direct bindings when the keys are known. Use a named spread when a wrapper, plugin, or generated view receives a dynamic bag that must be forwarded through one explicit DOM channel.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@property({ attribute: false }) forwardedProps = {};
+@property({ attribute: false }) accessibility = {};
+@property({ attribute: false }) forwardedListeners = {};
 
 return html`
   &lt;input
-    ${ref(input)}
-    ${use(this.autofocus)}
-    .value=${bind(this, 'query')}
-    class:invalid=${this.invalid}
-    style:--field-accent=${this.accent}
-    ...attrs=${this.aria}
-    ...events=${this.listeners}
+    ...props=${this.forwardedProps}
+    ...attrs=${this.accessibility}
+    ...events=${this.forwardedListeners}
   &gt;
 `;</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem"><code>bind()</code> is IME-safe and infers native input/change events. <code>ref()</code> clears across branch teardown. <code>use()</code> owns attach, update, disconnect, and reconnect cleanup. Named <code>...props</code>, <code>...attrs</code>, and <code>...events</code> spreads remove stale keys.</p>
+          <p class="desc" style="margin-top:0.75rem"><code>...props</code> preserves JavaScript values, <code>...attrs</code> manages attributes, and <code>...events</code> manages listeners. Keys omitted from the next bag are removed or reset.</p>
         </div>
 
         <div class="dec-section" id="conditionals">
@@ -416,44 +457,15 @@ class TaskList extends HTMLElement {
         </div>
 
         <div class="dec-section" id="async">
-          <h3>Async content, portals &amp; motion</h3>
-          <p class="desc">Keep loading state, overlay placement, and keyed transitions inside the declarative tree with lifecycle-aware cleanup.</p>
-          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">return html`
-  ${resource(
-    signal =&gt; fetch(this.url, { signal }).then(r =&gt; r.json()),
-    {
-      pending: () =&gt; html`&lt;snice-spinner&gt;&lt;/snice-spinner&gt;`,
-      ready: user =&gt; html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`,
-      error: error =&gt; html`&lt;p role="alert"&gt;${error.message}&lt;/p&gt;`
-    }
-  )}
+          <h3>Async content</h3>
+          <p class="desc">Promises and async iterables render directly in node expressions. Replacing a source ignores stale results; disconnecting stops active iterator consumption.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">userView = fetch(this.url)
+  .then(response =&gt; response.json())
+  .then(user =&gt; html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`)
+  .catch(error =&gt; html`&lt;p role="alert"&gt;${error.message}&lt;/p&gt;`);
 
-  ${portal('#overlay-root', html`&lt;dialog open&gt;...&lt;/dialog&gt;`)}
-
-  ${transition(this.view, {
-    key: this.route,
-    mode: 'simultaneous',
-    outDuration: 120,
-    inDuration: 160
-  })}
-`;</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">Promises and async iterables also work directly in node expressions. <code>resource()</code> adds pending/ready/error mapping and abort signals. <code>portal()</code> keeps event ownership. <code>transition()</code> is wrapper-free and respects reduced motion. Runtime-selected HTML/SVG tags use <code>&lt;component ${tag}&gt;</code>.</p>
-        </div>
-
-        <div class="dec-section" id="ssr">
-          <h3>SSR &amp; hydration</h3>
-          <p class="desc">Render without a DOM, emit light or declarative shadow DOM, then attach to matching server nodes without replacing their identity.</p>
-          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">const html = await renderElementToStringAsync(
-  'user-card',
-  template,
-  { attributes: { 'user-id': id }, styles: UserCard.styles }
-);
-
-// A marked custom-element host hydrates automatically on first render.
-// Manual attachment and explicit mismatch fallback are also available:
-hydrate(template, container);
-hydrate(template, container, { onMismatch: 'replace' });</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem"><code>renderToString()</code> is synchronous. <code>renderToStringAsync()</code> resolves promises, async iterables, async directives, attributes, control flow, and dynamic components. Hydration mismatches throw a path-bearing <code>HydrationError</code> unless replacement is explicitly requested.</p>
+return html`${this.userView}`;</snice-code-block>
+          <p class="desc" style="margin-top:0.75rem">Promise cancellation remains explicit: own an <code>AbortController</code> in the component lifecycle when a fetch must be aborted.</p>
           <p class="doc-link"><a href="docs.html#rendering">Complete declarative rendering reference →</a></p>
         </div>
 
@@ -472,33 +484,36 @@ onDoneChanged(oldVal, newVal) {
 
         <div class="dec-section" id="query">
           <h3>Query the DOM</h3>
-          <p class="desc">Get references to elements inside your shadow DOM.</p>
+          <p class="desc">Declare typed access to one or every matching element in the managed render root.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@query('input') checkbox!: HTMLInputElement;
+@queryAll('[data-row]') rows!: HTMLElement[];
 
-@ready()
-init() {
+focusCheckbox() {
   this.checkbox.focus();
 }</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem"><code>@ready()</code> runs after the first render, so DOM refs are available.</p>
           <p class="desc">Snice components export their interfaces from <code>.types.ts</code>, so you can type queries:</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7" style="margin-top:0.5rem">import type { SniceInput } from 'snice/components/input';
 
 @query('snice-input') input!: SniceInput;</snice-code-block>
         </div>
 
-        <div class="dec-section" id="ready-dispose">
-          <h3>Ready &amp; Dispose</h3>
-          <p class="desc">Setup and teardown.</p>
+        <div class="dec-section" id="ready">
+          <h3>Ready</h3>
+          <p class="desc"><code>@ready()</code> runs after the element is connected and its first render has committed, so queries can access the rendered DOM.</p>
           <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@ready()
 onMount() {
-  // Element is rendered and in the DOM
-  this.interval = setInterval(() => this.tick(), 1000);
-}
+  this.checkbox.focus();
+  this.startMeasurement();
+}</snice-code-block>
+        </div>
 
-@dispose()
+        <div class="dec-section" id="dispose">
+          <h3>Dispose</h3>
+          <p class="desc"><code>@dispose()</code> runs when the element disconnects. Release resources that are not already managed by Snice lifecycle decorators.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">@dispose()
 onUnmount() {
-  // Element is being removed from the DOM
   clearInterval(this.interval);
+  this.subscription.unsubscribe();
 }</snice-code-block>
         </div>
 
@@ -537,8 +552,8 @@ class WeatherController {
 
         <div class="dec-section" id="full">
           <h3>Full example</h3>
-          <p class="desc">A convention-driven component with public input, internal deep state, two-way binding, declarative styling, control flow, events, and differential updates.</p>
-          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">import { SniceElement, bind, css, dispatch, element,
+          <p class="desc">A convention-driven component with public input, internal deep state, explicit form events, declarative styling, control flow, and differential updates.</p>
+          <snice-code-block language="snice" grammar="grammars/snice.json?v=80938d7">import { SniceElement, css, dispatch, element,
          html, property, state, watch } from 'snice';
 
 @element('task-item')
@@ -563,8 +578,8 @@ class TaskItem extends SniceElement {
     return html`
       &lt;input
         type="checkbox"
-        .checked=${bind(this, 'done')}
-        @change=${this.emitStatus}
+        .checked=${this.done}
+        @change=${this.updateStatus}
       /&gt;
       &lt;span class:done=${this.done}&gt;${this.label}&lt;/span&gt;
       &lt;if ${this.done}&gt;
@@ -572,6 +587,11 @@ class TaskItem extends SniceElement {
         &lt;else&gt;&lt;small&gt;Open&lt;/small&gt;&lt;/else&gt;
       &lt;/if&gt;
     `;
+  }
+
+  updateStatus(event) {
+    this.done = event.currentTarget.checked;
+    this.emitStatus();
   }
 
   @dispatch('status-changed')
@@ -637,17 +657,79 @@ class CurrencyInput extends SniceInput {
   </main>
 
   <script>
-    // Highlight active sidebar link on scroll
-    const sections = document.querySelectorAll('.dec-section[id]');
-    const navLinks = document.querySelectorAll('.guide-sidebar a');
-    const observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
-        }
+    const sidebar = document.querySelector('.guide-sidebar');
+    const sections = [...document.querySelectorAll('.dec-section[id]')];
+    const navLinks = [...document.querySelectorAll('.guide-sidebar a[href^="#"]')];
+
+    function revealSidebarLink(link) {
+      if (!sidebar || !link) return;
+      const padding = 12;
+      const top = link.offsetTop;
+      const bottom = top + link.offsetHeight;
+      const visibleTop = sidebar.scrollTop + padding;
+      const visibleBottom = sidebar.scrollTop + sidebar.clientHeight - padding;
+      if (top < visibleTop) sidebar.scrollTop = Math.max(0, top - padding);
+      else if (bottom > visibleBottom) sidebar.scrollTop = bottom - sidebar.clientHeight + padding;
+    }
+
+    function activateSection(id) {
+      let activeLink = null;
+      for (const link of navLinks) {
+        const active = link.getAttribute('href') === '#' + id;
+        link.classList.toggle('active', active);
+        if (active) activeLink = link;
       }
-    }, { rootMargin: '-80px 0px -70% 0px' });
-    sections.forEach(s => observer.observe(s));
+      revealSidebarLink(activeLink);
+    }
+
+    function updateActiveSection() {
+      const marker = window.scrollY + 100;
+      let active = sections[0] || null;
+      for (const section of sections) {
+        if (section.offsetTop > marker) break;
+        active = section;
+      }
+      if (active) activateSection(active.id);
+    }
+
+    let scrollTicking = false;
+    window.addEventListener('scroll', () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        scrollTicking = false;
+        updateActiveSection();
+      });
+    }, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    function syncHash() {
+      const id = decodeURIComponent(location.hash.slice(1));
+      const target = id ? document.getElementById(id) : null;
+      if (!target || !target.classList.contains('dec-section')) {
+        updateActiveSection();
+        return;
+      }
+      target.scrollIntoView({ block: 'start' });
+      activateSection(id);
+    }
+
+    window.addEventListener('hashchange', () => requestAnimationFrame(syncHash));
+
+    async function settleGuideLayout() {
+      await customElements.whenDefined('snice-code-block');
+      await Promise.all(
+        [...document.querySelectorAll('snice-code-block')].map(block => block.ready || Promise.resolve())
+      );
+      if (document.fonts?.ready) await document.fonts.ready;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (location.hash) syncHash();
+        else updateActiveSection();
+      }));
+    }
+
+    if (document.readyState === 'complete') settleGuideLayout();
+    else window.addEventListener('load', settleGuideLayout, { once: true });
   </script>
 </body>
 </html>

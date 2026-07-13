@@ -665,15 +665,16 @@ ${repeat(this.items, {
 })}
 ```
 
-### Declarative Bindings and Directives
+### Declarative Bindings
 
 ```typescript
-const field = createRef<HTMLInputElement>();
+updateQuery = (event: InputEvent) => {
+  this.query = (event.currentTarget as HTMLInputElement).value;
+};
 
 html`<input
-  ${ref(field)}
-  ${use(this.autofocus)}
-  .value=${bind(this, 'query')}
+  .value=${this.query}
+  @input=${this.updateQuery}
   class:invalid=${this.invalid}
   style:--field-accent=${this.accent}
   @keydown.enter|prevent=${this.submit}
@@ -682,14 +683,13 @@ html`<input
 >`
 ```
 
-- `bind()` provides IME-safe two-way native form binding with optional event and value converters.
-- `ref()` tracks an element across conditional branches; `use()` owns attach/update/cleanup behavior.
+- Property bindings and event handlers keep both form-data directions explicit.
 - `...props`, `...attrs`, and `...events` update named channels and remove stale keys.
 - Event modifiers: `prevent`, `stop`, `immediate`, `once`, `capture`, `passive`, and `self`.
 
-Render a validated dynamic HTML or SVG element with `<component ${tag}>`. Use `resource()` for pending/ready/error async UI, `portal()` for owned overlay content, and `transition()` for keyed wrapper-free view changes.
+Promises and async iterables render directly in node expressions. Use `repeat()` for explicit keyed identity and an empty state.
 
-See [Declarative Rendering](./docs/rendering.md) for the complete syntax, custom directive protocol, deep reactivity, render roots, SSR, hydration, and metadata reference.
+See [Declarative Rendering](./docs/rendering.md) for the complete syntax, control flow, deep reactivity, render roots, and metadata reference.
 
 ### Template Helpers
 
@@ -909,7 +909,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 
 ### User Documentation
 - [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
-- [Declarative Rendering](./docs/rendering.md) - Bindings, directives, control flow, reactivity, render roots, async UI, SSR, and hydration
+- [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
 - [Routing API](./docs/routing.md) - Single-page application routing with transitions
 - [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery

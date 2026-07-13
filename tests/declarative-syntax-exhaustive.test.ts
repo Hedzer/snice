@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { bind, element, events, html, property, render } from './test-imports';
+import { element, html, property, render } from './test-imports';
 
 describe('declarative syntax exhaustive behavior', () => {
   let container: HTMLDivElement;
@@ -84,11 +84,8 @@ describe('declarative syntax exhaustive behavior', () => {
   it('detaches direct and spread listeners while parked and preserves consumed once state', async () => {
     const direct = vi.fn();
     const spread = vi.fn();
-    const helper = vi.fn();
     const once = vi.fn();
     const spreadOnce = { handleEvent: vi.fn(), once: true };
-    const helperOnce = { handleEvent: vi.fn(), once: true };
-    const model = { value: 'initial' };
     @element('test-template-event-connection-lifecycle')
     class TestTemplateEventConnectionLifecycle extends HTMLElement {
       @property({ attribute: false }) visible = true;
@@ -96,11 +93,8 @@ describe('declarative syntax exhaustive behavior', () => {
         return html`<if ${this.visible}>
           <button class="direct" @click=${direct}>direct</button>
           <button class="spread" ...events=${{ click: spread }}>spread</button>
-          <button class="helper" ${events({ click: helper })}>helper</button>
           <button class="once" @click|once=${once}>once</button>
           <button class="spread-once" ...events=${{ click: spreadOnce }}>spread once</button>
-          <button class="helper-once" ${events({ click: helperOnce })}>helper once</button>
-          <input class="bound" .value=${bind(model, 'value')}>
         </if>`;
       }
     }
@@ -110,75 +104,50 @@ describe('declarative syntax exhaustive behavior', () => {
     await host.ready;
     const directButton = host.shadowRoot!.querySelector('.direct') as HTMLButtonElement;
     const spreadButton = host.shadowRoot!.querySelector('.spread') as HTMLButtonElement;
-    const helperButton = host.shadowRoot!.querySelector('.helper') as HTMLButtonElement;
     const onceButton = host.shadowRoot!.querySelector('.once') as HTMLButtonElement;
     const spreadOnceButton = host.shadowRoot!.querySelector('.spread-once') as HTMLButtonElement;
-    const helperOnceButton = host.shadowRoot!.querySelector('.helper-once') as HTMLButtonElement;
-    const boundInput = host.shadowRoot!.querySelector('.bound') as HTMLInputElement;
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
     expect(once).toHaveBeenCalledOnce();
     expect(spreadOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(helperOnce.handleEvent).toHaveBeenCalledOnce();
 
     host.visible = false;
     await host.rendered;
     directButton.click();
     spreadButton.click();
-    helperButton.click();
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
-    boundInput.value = 'parked';
-    boundInput.dispatchEvent(new Event('input'));
     expect(direct).not.toHaveBeenCalled();
     expect(spread).not.toHaveBeenCalled();
-    expect(helper).not.toHaveBeenCalled();
     expect(once).toHaveBeenCalledOnce();
     expect(spreadOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(helperOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(model.value).toBe('initial');
 
     host.visible = true;
     await host.rendered;
     expect(host.shadowRoot!.querySelector('.direct')).toBe(directButton);
     directButton.click();
     spreadButton.click();
-    helperButton.click();
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
-    boundInput.value = 'visible';
-    boundInput.dispatchEvent(new Event('input'));
     expect(direct).toHaveBeenCalledOnce();
     expect(spread).toHaveBeenCalledOnce();
-    expect(helper).toHaveBeenCalledOnce();
     expect(once).toHaveBeenCalledOnce();
     expect(spreadOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(helperOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(model.value).toBe('visible');
   });
 
   it('retains direct and spread listeners across host removal without reviving consumed once listeners', async () => {
     const direct = vi.fn();
     const spread = vi.fn();
-    const helper = vi.fn();
     const once = vi.fn();
     const spreadOnce = { handleEvent: vi.fn(), once: true };
-    const helperOnce = { handleEvent: vi.fn(), once: true };
-    const model = { value: 'initial' };
     @element('test-template-event-host-lifecycle')
     class TestTemplateEventHostLifecycle extends HTMLElement {
       @render() template() {
         return html`
           <button class="direct" @click=${direct}>direct</button>
           <button class="spread" ...events=${{ click: spread }}>spread</button>
-          <button class="helper" ${events({ click: helper })}>helper</button>
           <button class="once" @click|once=${once}>once</button>
           <button class="spread-once" ...events=${{ click: spreadOnce }}>spread once</button>
-          <button class="helper-once" ${events({ click: helperOnce })}>helper once</button>
-          <input class="bound" .value=${bind(model, 'value')}>
         `;
       }
     }
@@ -188,53 +157,36 @@ describe('declarative syntax exhaustive behavior', () => {
     await host.ready;
     const directButton = host.shadowRoot!.querySelector('.direct') as HTMLButtonElement;
     const spreadButton = host.shadowRoot!.querySelector('.spread') as HTMLButtonElement;
-    const helperButton = host.shadowRoot!.querySelector('.helper') as HTMLButtonElement;
     const onceButton = host.shadowRoot!.querySelector('.once') as HTMLButtonElement;
     const spreadOnceButton = host.shadowRoot!.querySelector('.spread-once') as HTMLButtonElement;
-    const helperOnceButton = host.shadowRoot!.querySelector('.helper-once') as HTMLButtonElement;
-    const boundInput = host.shadowRoot!.querySelector('.bound') as HTMLInputElement;
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
 
     host.remove();
     directButton.click();
     spreadButton.click();
-    helperButton.click();
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
-    boundInput.value = 'detached';
-    boundInput.dispatchEvent(new Event('input'));
     expect(direct).toHaveBeenCalledOnce();
     expect(spread).toHaveBeenCalledOnce();
-    expect(helper).toHaveBeenCalledOnce();
     expect(once).toHaveBeenCalledOnce();
     expect(spreadOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(helperOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(model.value).toBe('detached');
 
     container.append(host);
     expect(host.shadowRoot!.querySelector('.direct')).toBe(directButton);
     directButton.click();
     spreadButton.click();
-    helperButton.click();
     onceButton.click();
     spreadOnceButton.click();
-    helperOnceButton.click();
     expect(direct).toHaveBeenCalledTimes(2);
     expect(spread).toHaveBeenCalledTimes(2);
-    expect(helper).toHaveBeenCalledTimes(2);
     expect(once).toHaveBeenCalledOnce();
     expect(spreadOnce.handleEvent).toHaveBeenCalledOnce();
-    expect(helperOnce.handleEvent).toHaveBeenCalledOnce();
   });
 
   it('keeps spread once consumption across rerenders but resets it for a replacement listener', async () => {
     const namedFirst = { handleEvent: vi.fn(), once: true };
     const namedSecond = { handleEvent: vi.fn(), once: true };
-    const helperFirst = { handleEvent: vi.fn(), once: true };
-    const helperSecond = { handleEvent: vi.fn(), once: true };
     @element('test-spread-once-replacement')
     class TestSpreadOnceReplacement extends HTMLElement {
       @property({ attribute: false }) alternate = false;
@@ -244,9 +196,6 @@ describe('declarative syntax exhaustive behavior', () => {
           <button class="named" ...events=${{
             click: this.alternate ? namedSecond : namedFirst
           }}>${this.tick}</button>
-          <button class="helper" ${events({
-            click: this.alternate ? helperSecond : helperFirst
-          })}>${this.tick}</button>
         `;
       }
     }
@@ -255,24 +204,17 @@ describe('declarative syntax exhaustive behavior', () => {
     container.append(host);
     await host.ready;
     const named = host.shadowRoot!.querySelector('.named') as HTMLButtonElement;
-    const helper = host.shadowRoot!.querySelector('.helper') as HTMLButtonElement;
     named.click();
-    helper.click();
     host.tick++;
     await host.rendered;
     named.click();
-    helper.click();
     expect(namedFirst.handleEvent).toHaveBeenCalledOnce();
-    expect(helperFirst.handleEvent).toHaveBeenCalledOnce();
 
     host.alternate = true;
     await host.rendered;
     named.click();
-    helper.click();
     named.click();
-    helper.click();
     expect(namedSecond.handleEvent).toHaveBeenCalledOnce();
-    expect(helperSecond.handleEvent).toHaveBeenCalledOnce();
   });
 
   it('matches exact and any-modifier keyboard shortcuts', async () => {
@@ -353,61 +295,6 @@ describe('declarative syntax exhaustive behavior', () => {
     errors.mockRestore();
   });
 
-  it('supports custom bind events and bidirectional value transforms', async () => {
-    @element('test-custom-bind-options')
-    class TestCustomBindOptions extends HTMLElement {
-      @property({ attribute: false }) amount = 2;
-      @render() template() {
-        return html`<input .value=${bind(this, 'amount', {
-          event: 'change',
-          toView: value => String(value * 10),
-          fromView: value => Number(value) / 10
-        })}>`;
-      }
-    }
-    const host = document.createElement('test-custom-bind-options') as TestCustomBindOptions;
-    container.append(host);
-    await host.ready;
-    const input = host.shadowRoot!.querySelector('input') as HTMLInputElement;
-    expect(input.value).toBe('20');
-    input.value = '70';
-    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    expect(host.amount).toBe(2);
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-    await host.rendered;
-    expect(host.amount).toBe(7);
-    host.amount = 3;
-    await host.rendered;
-    expect(input.value).toBe('30');
-  });
-
-  it('infers select/change binding and reconfigures target/key listeners without duplicates', async () => {
-    const first = { choice: 'a' };
-    const second = { choice: 'b' };
-    @element('test-bind-reconfiguration')
-    class TestBindReconfiguration extends HTMLElement {
-      @property({ attribute: false }) alternate = false;
-      @render() template() {
-        return html`<select .value=${bind(this.alternate ? second : first, 'choice')}>
-          <option value="a">A</option><option value="b">B</option>
-        </select>`;
-      }
-    }
-    const host = document.createElement('test-bind-reconfiguration') as TestBindReconfiguration;
-    container.append(host);
-    await host.ready;
-    const select = host.shadowRoot!.querySelector('select') as HTMLSelectElement;
-    select.value = 'b';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(first.choice).toBe('b');
-    host.alternate = true;
-    await host.rendered;
-    select.value = 'a';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(first.choice).toBe('b');
-    expect(second.choice).toBe('a');
-  });
-
   it('removes false/null spread attributes, preserves zero, and validates spread inputs', async () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     @element('test-attribute-spread-values')
@@ -465,30 +352,18 @@ describe('declarative syntax exhaustive behavior', () => {
     expect(host.shadowRoot!.querySelector('textarea')).toBeNull();
   });
 
-  it('rejects bind outside a property part and empty class/style/property names', async () => {
+  it('rejects empty class/style names and invalid comment values', async () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
-    @element('test-bind-placement-error')
-    class TestBindPlacementError extends HTMLElement {
-      value = '';
-      @render() template() { return html`<input value=${bind(this, 'value')}>`; }
-    }
     @element('test-empty-declarative-names')
     class TestEmptyDeclarativeNames extends HTMLElement {
       @render() template() { return html`<div class:=${true} style:=${'x'}></div>`; }
-    }
-    @element('test-invalid-bind-key')
-    class TestInvalidBindKey extends HTMLElement {
-      model = { value: '' };
-      @render() template() { return html`<input .value=${bind(this.model, null as any)}>`; }
     }
     @element('test-invalid-comment-value')
     class TestInvalidCommentValue extends HTMLElement {
       @render() template() { return html`<!-- ${'bad--comment'} -->`; }
     }
     for (const tag of [
-      'test-bind-placement-error',
       'test-empty-declarative-names',
-      'test-invalid-bind-key',
       'test-invalid-comment-value'
     ]) {
       const host = document.createElement(tag) as HTMLElement & { ready: Promise<void> };
@@ -497,10 +372,36 @@ describe('declarative syntax exhaustive behavior', () => {
       expect(host.shadowRoot?.childElementCount).toBe(0);
     }
     const messages = errors.mock.calls.map(call => String(call[1]));
-    expect(messages.some(message => message.includes('bind() must be used in a property binding'))).toBe(true);
-    expect(messages.some(message => message.includes('string, number, or symbol property key'))).toBe(true);
     expect(messages.some(message => message.includes('binding requires a class name'))).toBe(true);
     expect(messages.some(message => message.includes('comment expressions cannot produce'))).toBe(true);
+    errors.mockRestore();
+  });
+
+  it('rejects bare opening-tag expressions with an actionable error', async () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    @element('test-bare-opening-tag-expression')
+    class TestBareOpeningTagExpression extends HTMLElement {
+      @render() template() { return html`<div ${'unsupported'}>bad</div>`; }
+    }
+    @element('test-removed-dynamic-component-expression')
+    class TestRemovedDynamicComponentExpression extends HTMLElement {
+      @property({ attribute: false }) tag = 'button';
+      @render() template() { return html`<component ${this.tag}>bad</component>`; }
+    }
+
+    for (const tag of [
+      'test-bare-opening-tag-expression',
+      'test-removed-dynamic-component-expression'
+    ]) {
+      const host = document.createElement(tag) as HTMLElement & { ready: Promise<void> };
+      container.append(host);
+      await host.ready;
+      expect(host.shadowRoot?.childElementCount).toBe(0);
+    }
+    const openingTagErrors = errors.mock.calls.filter(call => String(call[1]).includes(
+      'expressions directly in opening tags are not supported'
+    ));
+    expect(openingTagErrors).toHaveLength(2);
     errors.mockRestore();
   });
 });

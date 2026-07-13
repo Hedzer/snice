@@ -23,7 +23,7 @@
 // Supports differential updates by default
 // differential: false - disables differential rendering, expects string return
 //   Clears the managed render root and re-renders from scratch each time
-//   Template directives and virtual control flow are unavailable in string mode
+//   Template bindings and virtual control flow are unavailable in string mode
 // once: true - IMPERATIVE RENDERING MODE
 //   Renders template once on first connect, blocks all subsequent auto-renders
 //   Use with @watch + @query to update DOM manually
@@ -297,9 +297,6 @@ ${items.map(i => html`<li>${i}</li>`)}
 ${items.map(i => html`<li key=${i.id}>${i.name}</li>`)}
 repeat(items, { key: i => i.id, render: i => html`...`, empty: () => html`...` })
 
-// Runtime-selected element (HTML/SVG namespace preserved)
-<component ${tag} ...attrs=${attributes}>...</component>
-
 // Bindings
 attr="${val}" // Attribute
 .prop="${val}" // Property
@@ -309,6 +306,7 @@ attr="${val}" // Attribute
 .value=${live(v)} // Compare against live DOM value (resets user-typed drift)
 class:active=${condition} // Single-class toggle
 style:color=${color} // Single CSS property
+// Prefer direct bindings for known keys; spreads are for dynamic/forwarded bags.
 ...props=${object} // Named property spread
 ...attrs=${object} // Named attribute spread
 ...events=${object} // Named listener spread
@@ -319,17 +317,7 @@ style:color=${color} // Single CSS property
 @click|self=${handler}
 // prevent, stop, immediate, once, capture, passive, self
 
-// Element/form/lifecycle directives
-createRef<T>(); ref(refObjectOrCallback)
-use(action, value?) // cleanup function or { update?, destroy? }
-props(object); attrs(object); events(object)
-bind(target, key, { event?, fromView?, toView? }) // property binding only, IME-safe
-
-// Async and movement
-resource(source, { pending?, ready?, error? })
-portal(targetNodeOrSelectorOrFunction, content)
-transition(content, { key?, mode?, out?, in?, outDuration?, inDuration?, respectReducedMotion? })
-// Promise and AsyncIterable also render directly in node expressions
+// Promise and AsyncIterable render directly in node expressions
 
 // Helpers
 classMap({ box: true, active: cond }) // → 'box active' (truthy keys)
@@ -338,26 +326,6 @@ svg`<circle r=${r}></circle>` // SVG-namespace fragment for use inside <svg>
 ```
 
 Full rendering reference: [rendering.md](rendering.md).
-
-## SSR and Hydration
-
-```typescript
-renderToString(template, { hydratable?: boolean }): string
-renderToStringAsync(template, options): Promise<string>
-renderElementToString(tag, template, {
-  renderRoot?: 'shadow' | 'light', shadow?: 'open' | 'closed' | false,
-  attributes?, styles?, delegatesFocus?, hydratable?
-}): string
-renderElementToStringAsync(tag, template, options): Promise<string>
-
-hydrate(template, container, { onMismatch?: 'throw' | 'replace' }): TemplateInstance
-hydrateElement(element, template, options): TemplateInstance
-class HydrationError extends Error { code: 'SNICE_HYDRATION_MISMATCH'; path: string }
-```
-
-- Server renderer is DOM-free; async variant resolves Promise/AsyncIterable/directives.
-- Element SSR emits light DOM or declarative shadow DOM and marks auto-hydration by default.
-- Matching server nodes/styles retain identity; mismatch throws by default or replaces explicitly.
 
 ## Types
 
@@ -387,12 +355,7 @@ import {
   SniceElement, property, state, watch, context,
   render, styles, html, svg, css,
   nothing, unsafeHTML, live, classMap, styleMap, setStrictRenderErrors,
-  Directive, directive, directiveServerResult,
-  bind, createRef, ref, use, props, attrs, events,
-  repeat, resource, portal, transition,
-  renderToString, renderToStringAsync,
-  renderElementToString, renderElementToStringAsync,
-  hydrate, hydrateElement, HydrationError,
+  repeat,
   query, queryAll,
   on, dispatch,
   request, respond,

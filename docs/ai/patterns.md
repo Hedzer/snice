@@ -346,11 +346,16 @@ class MyForm extends HTMLElement {
   renderContent() {
     return html`
       <input
-        .value=${bind(this, 'value')}
+        .value=${this.value}
         ?disabled=${this.disabled}
+        @input=${this.updateValue}
         @change=${this.dispatchValueChange}
       />
     `;
+  }
+
+  updateValue(event: InputEvent) {
+    this.value = (event.currentTarget as HTMLInputElement).value;
   }
 
   @dispatch('value-changed')

@@ -33,10 +33,8 @@ Mock controller for tests, real API controller in production — same element.
 - EventPart: `@event="${handler}"`
 - Class/Style parts: `class:name`, `style:name`
 - SpreadPart: `...props`, `...attrs`, `...events`
-- ElementPart: `ref`, `use`, element directives
 - Conditional parts: `<if>/<else-if>/<else>`, `<case>/<when>/<default>`
-- DynamicComponentPart: `<component ${tag}>`
-- Stateful directives: bind, repeat, resource, portal, transition, custom directives
+- NodePart also handles nested templates, keyed repeats, Promises, and async iterables
 
 **Differential updates:**
 - Only changed Parts re-render

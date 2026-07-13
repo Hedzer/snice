@@ -2,13 +2,6 @@ import { requestRender, renderElementNow } from './render';
 import { ELEMENT_OPTIONS, SNICE_ELEMENT_BASE } from './symbols';
 import type { ElementOptions } from './types/element-options';
 
-// Keep the package root importable in DOM-free runtimes for SSR. The fallback
-// is never used for browser instances; it only prevents evaluating an absent
-// global HTMLElement while loading renderToString() in Node.
-const HTMLElementBase: typeof HTMLElement = typeof globalThis.HTMLElement === 'undefined'
-  ? class {} as unknown as typeof HTMLElement
-  : globalThis.HTMLElement;
-
 /**
  * Optional authoring base for convention-driven Snice components.
  *
@@ -16,7 +9,7 @@ const HTMLElementBase: typeof HTMLElement = typeof globalThis.HTMLElement === 'u
  * this class adds typed lifecycle promises, imperative invalidation, modern
  * kebab-case implicit attributes, and `render()` / static `styles` conventions.
  */
-export class SniceElement extends HTMLElementBase {
+export class SniceElement extends HTMLElement {
   static propertyAttributeNaming: 'kebab' = 'kebab';
 
   protected createRenderRoot(): HTMLElement | ShadowRoot {

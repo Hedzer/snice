@@ -95,6 +95,7 @@ import { SniceButton } from 'snice/adapters/react';
 - Use `@property()` for public attribute/property input and `@state()` for internal reactive state
 - Direct JavaScript property writes preserve type and identity; conversion happens at the string attribute boundary
 - `@state({ deep: true })` uses native Proxy/Reflect for nested objects, arrays, Map, and Set (modern browsers; no IE)
-- Full declarative syntax, directives, SSR, and hydration: https://snice.dev/docs.html#rendering
+- Prefer direct bindings for known keys. Named spreads are for dynamic or forwarded bags.
+- Full declarative rendering syntax: https://snice.dev/docs.html#rendering
 - `page` decorator comes from `Router()`, not from `'snice'` exports
 - Elements are visual only — no fetch/API calls (use pages/controllers)

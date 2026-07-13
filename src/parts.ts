@@ -1,13 +1,5 @@
 
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
-import {
-  Directive,
-  DirectivePart,
-  DirectiveResult,
-  PartInfo,
-  PartType,
-  isDirectiveResult
-} from './directive';
 import { isRepeatResult } from './repeat';
 import { findRenderHost } from './render-root';
 
@@ -29,7 +21,7 @@ const templateCache = new WeakMap<TemplateStringsArray, Template>();
 // Sentinel for "not yet set" - distinct from undefined/null
 const NOT_COMMITTED = Symbol('not-committed');
 
-// noChange sentinel - signals a directive handled the value
+// noChange sentinel - preserves the currently committed value
 export const noChange = Symbol.for('snice:no-change');
 export type NoChange = typeof noChange;
 
@@ -203,20 +195,6 @@ class Template {
           continue;
         }
 
-        if (tagName === 'component') {
-          const valueAttr = element.getAttribute('value');
-          if (valueAttr && valueAttr.includes(marker)) {
-            element.removeAttribute('value');
-            this.parts.push({
-              type: 'dynamic-component',
-              index: partIndex++,
-              element
-            });
-          } else {
-            throw new Error('snice: <component> requires a tag expression.');
-          }
-        }
-
         if (element.hasAttributes()) {
           const attributes = element.attributes;
           const attrsToRemove: Attr[] = [];
@@ -259,14 +237,7 @@ class Template {
                 }
               }
 
-              if (originalName === '$element') {
-                this.parts.push({
-                  type: 'element',
-                  index: partIndex,
-                  element
-                });
-                partIndex += expressionCount;
-              } else if (originalName.startsWith('...')) {
+              if (originalName.startsWith('...')) {
                 const spreadName = originalName.slice(3).toLowerCase();
                 if (!['props', 'properties', 'attrs', 'attributes', 'events'].includes(spreadName)) {
                   throw new Error(
@@ -441,7 +412,7 @@ class Template {
 }
 
 interface TemplatePart {
-  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'element' | 'class' | 'style' | 'spread' | 'dynamic-component' | 'conditional-if' | 'conditional-else-if' | 'conditional-case' | 'conditional-when' | 'comment';
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'class' | 'style' | 'spread' | 'conditional-if' | 'conditional-else-if' | 'conditional-case' | 'conditional-when' | 'comment';
   index: number;
   name?: string;
   element?: Element;
@@ -555,18 +526,16 @@ function prepareTemplate(result: TemplateResult): Template {
           htmlParts.push(marker);
         } else {
           // Check if this is a meta element (<if> or <case>)
-          const metaElementMatch = str.match(/<(if|else-if|case|when|component)\s*$/);
+          const metaElementMatch = str.match(/<(if|else-if|case|when)\s*$/);
           if (metaElementMatch) {
             currentAttrName = 'value';
             attrNamesForParts.push('value');
             htmlParts.push(`value="${marker}"`);
           } else {
-            // Element-position directive: <div ${ref(...)} ${use(...)}>
-            // Use a real temporary attribute so the HTML parser retains each
-            // expression independently (duplicate bare marker attributes would
-            // otherwise collapse into one).
-            attrNamesForParts.push('$element');
-            htmlParts.push(` data-snice-element-${i}="${marker}"`);
+            throw new Error(
+              'snice: expressions directly in opening tags are not supported; ' +
+              'use an explicit attribute, property, event, class, style, or named spread binding.'
+            );
           }
         }
       } else {
@@ -618,7 +587,6 @@ export class TemplateInstance {
   parts: Part[] = [];
   fragment: DocumentFragment | null = null;
   private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
-  private dynamicParts: Array<{part: DynamicComponentPart; index: number}> = [];
   private regularParts: Array<{part: Part; index: number}> = []; // all other parts with their indices
 
   constructor(result: TemplateResult) {
@@ -666,8 +634,6 @@ export class TemplateInstance {
         }
       }
 
-      const partRecords: Array<{ definition: TemplatePart; part: Part }> = [];
-
       for (let i = 0; i < this.template.parts.length; i++) {
         const partDef = this.template.parts[i];
         let part: Part;
@@ -694,10 +660,6 @@ export class TemplateInstance {
             const eventElement = nodeMap.get(partDef.element!) as Element;
             part = new EventPart(eventElement, partDef.name!);
             break;
-          case 'element':
-            const directiveElement = nodeMap.get(partDef.element!) as Element;
-            part = new ElementPart(directiveElement);
-            break;
           case 'class':
             const classElement = nodeMap.get(partDef.element!) as Element;
             part = new ClassPart(classElement, partDef.name!);
@@ -709,10 +671,6 @@ export class TemplateInstance {
           case 'spread':
             const spreadElement = nodeMap.get(partDef.element!) as Element;
             part = new SpreadPart(spreadElement, partDef.name!);
-            break;
-          case 'dynamic-component':
-            const componentElement = nodeMap.get(partDef.element!) as Element;
-            part = new DynamicComponentPart(componentElement);
             break;
           case 'conditional-if':
             const conditionalIfElement = nodeMap.get(partDef.element!) as Element;
@@ -739,13 +697,10 @@ export class TemplateInstance {
         }
 
         this.parts.push(part);
-        partRecords.push({ definition: partDef, part });
 
         // Separate conditional parts from regular parts for optimized update
         // Use partDef.index (the VALUE index) not i (the part array index)
-        if (part instanceof DynamicComponentPart) {
-          this.dynamicParts.push({ part, index: partDef.index });
-        } else if (
+        if (
           part instanceof ConditionalIfPart ||
           part instanceof ConditionalElseIfPart ||
           part instanceof ConditionalCasePart ||
@@ -757,20 +712,6 @@ export class TemplateInstance {
         }
       }
 
-      const dynamicByTemplateElement = new Map<Element, DynamicComponentPart>();
-      for (const record of partRecords) {
-        if (record.part instanceof DynamicComponentPart && record.definition.element) {
-          dynamicByTemplateElement.set(record.definition.element, record.part);
-        }
-      }
-      for (const record of partRecords) {
-        const dynamic = record.definition.element
-          ? dynamicByTemplateElement.get(record.definition.element)
-          : undefined;
-        if (dynamic && record.part !== dynamic && 'retarget' in record.part) {
-          dynamic.addDependent(record.part as RetargetablePart);
-        }
-      }
     }
 
     return this.fragment;
@@ -786,12 +727,6 @@ export class TemplateInstance {
   update(values: readonly any[]): void {
     // Optimized: Process conditional parts first (if any), then regular parts
     // Using pre-separated arrays with cached indices avoids instanceof and indexOf calls
-
-    // Dynamic components choose their concrete element before bindings on that
-    // element commit.
-    for (const {part, index} of this.dynamicParts) {
-      part.commit(values[index]);
-    }
 
     // Process conditional parts first (they control visibility)
     for (const {part, index} of this.conditionalParts) {
@@ -832,9 +767,9 @@ export class TemplateInstance {
       }
     }
 
-    // Branch switches can move directive-bearing nodes between the live DOM
-    // and parked fragments. Reconcile directive lifecycle after every update
-    // so refs/actions/resources see paired disconnect/reconnect callbacks.
+    // Branch switches can move event-bearing nodes between the live DOM and
+    // parked fragments. Reconcile connection state after every update so
+    // listeners detach while parked and reattach when their branch returns.
     let lifecycleError: unknown;
     for (const part of this.parts) {
       try {
@@ -883,181 +818,21 @@ export class TemplateInstance {
     if (lifecycleError) throw lifecycleError;
   }
 
-  /**
-   * Retarget a fully prepared instance from its detached client clone onto
-   * structurally equivalent server-rendered nodes. Used by hydrate() to keep
-   * the server DOM rather than replacing it.
-   */
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    let adoptionError: unknown;
-    for (const part of this.parts) {
-      try {
-        if ('element' in part && 'retarget' in part) {
-          const current = (part as any).element as Element;
-          const adopted = nodeMap.get(current);
-          if (adopted instanceof Element) {
-            (part as any as RetargetablePart).retarget(adopted, true);
-          }
-        }
-        part.adoptNodes(nodeMap);
-      } catch (error) {
-        adoptionError ??= error;
-      }
-    }
-    if (adoptionError) throw adoptionError;
-  }
 }
 
 /**
  * Base class for all parts
  */
 export abstract class Part {
-  abstract readonly type: PartType;
-
-  private directiveStates = new Map<number, {
-    instance: Directive;
-    constructor: DirectiveResult['directive'];
-    connected: boolean;
-    part: DirectivePart;
-  }>();
-  private committingDirectiveSlots = new Set<number>();
-
-  protected resolveDirective(value: unknown, slot = 0): unknown {
-    if (this.committingDirectiveSlots.has(slot)) return value;
-
-    if (!isDirectiveResult(value)) {
-      try {
-        this.disposeDirective(slot);
-      } catch (error) {
-        console.error('snice: directive cleanup failed while releasing a template slot:', error);
-      }
-      return value;
-    }
-
-    let state = this.directiveStates.get(slot);
-    if (!state || state.constructor !== value.directive) {
-      try {
-        this.disposeDirective(slot);
-      } catch (error) {
-        console.error('snice: directive cleanup failed while replacing a template slot:', error);
-      }
-      const info: PartInfo = {
-        type: this.type,
-        element: (this as any).element,
-        name: (this as any).name,
-        strings: (this as any).strings
-      };
-      const owner = this;
-      // Give every retained directive its own live view of the concrete Part.
-      // The prototype preserves built-in access to NodePart boundaries while
-      // the guarded setValue prevents a disposed async directive from writing
-      // into a slot now owned by another directive.
-      const directivePart = Object.create(owner) as DirectivePart;
-      Object.defineProperty(directivePart, 'setValue', {
-        value(next: unknown) {
-          if (owner.directiveStates.get(slot) === state) {
-            owner.setDirectiveValue(slot, next);
-          }
-        }
-      });
-      state = {
-        instance: new value.directive(info),
-        constructor: value.directive,
-        connected: this.isConnected,
-        part: directivePart
-      };
-      this.directiveStates.set(slot, state);
-    }
-
-    return state.instance.update(state.part, value.values);
-  }
-
-  /** Commit a directive-produced value without replacing that directive. */
-  setValue(value: unknown): void {
-    this.setDirectiveValue(0, value);
-  }
-
-  private setDirectiveValue(slot: number, value: unknown): void {
-    this.committingDirectiveSlots.add(slot);
-    try {
-      this.commitDirectiveValue(slot, value);
-    } finally {
-      this.committingDirectiveSlots.delete(slot);
-    }
-  }
-
-  protected commitDirectiveValue(_slot: number, value: unknown): void {
-    this.commit(value);
-  }
+  abstract readonly type: string;
 
   get isConnected(): boolean {
     return (this as any).element?.isConnected ?? false;
   }
 
-  disconnected(_preserveEventListeners = false): void {
-    let lifecycleError: unknown;
-    for (const state of this.directiveStates.values()) {
-      if (!state.connected) continue;
-      state.connected = false;
-      try {
-        state.instance.disconnected({ reason: _preserveEventListeners ? 'host' : 'branch' });
-      } catch (error) {
-        lifecycleError ??= error;
-      }
-    }
-    if (lifecycleError) throw lifecycleError;
-  }
+  disconnected(_preserveEventListeners = false): void {}
 
-  reconnected(): void {
-    let lifecycleError: unknown;
-    for (const state of this.directiveStates.values()) {
-      if (state.connected) continue;
-      state.connected = true;
-      try {
-        state.instance.reconnected();
-      } catch (error) {
-        lifecycleError ??= error;
-      }
-    }
-    if (lifecycleError) throw lifecycleError;
-  }
-
-  protected disposeDirective(slot?: number): void {
-    const entries = slot === undefined
-      ? [...this.directiveStates.entries()]
-      : this.directiveStates.has(slot) ? [[slot, this.directiveStates.get(slot)!] as const] : [];
-    let lifecycleError: unknown;
-    for (const [index, state] of entries) {
-      // Invalidate the async publication channel before user teardown runs.
-      this.directiveStates.delete(index);
-      try {
-        if (state.connected) {
-          state.connected = false;
-          state.instance.disconnected({ reason: 'dispose' });
-        }
-      } catch (error) {
-        lifecycleError ??= error;
-      }
-    }
-    if (lifecycleError) throw lifecycleError;
-  }
-
-  protected adoptDirectiveNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    let lifecycleError: unknown;
-    for (const state of this.directiveStates.values()) {
-      try {
-        state.instance.adopted(nodeMap);
-      } catch (error) {
-        lifecycleError ??= error;
-      }
-    }
-    if (lifecycleError) throw lifecycleError;
-  }
-
-  /** Retarget directive-owned state while adopting server-rendered DOM. */
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    this.adoptDirectiveNodes(nodeMap);
-  }
+  reconnected(): void {}
 
   destroy(): void {
     let lifecycleError: unknown;
@@ -1066,26 +841,12 @@ export abstract class Part {
     } catch (error) {
       lifecycleError = error;
     }
-    try {
-      this.disposeDirective();
-    } catch (error) {
-      lifecycleError ??= error;
-    }
     if (lifecycleError) throw lifecycleError;
   }
 
   abstract commit(value: any): void;
   abstract clear(): void;
 }
-
-interface RetargetablePart {
-  retarget(element: Element, preserveDirectives?: boolean): void;
-}
-
-const htmlVoidElements = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
-  'meta', 'param', 'source', 'track', 'wbr'
-]);
 
 /**
  * NodePart handles text content and nested templates
@@ -1113,51 +874,7 @@ export class NodePart extends Part {
     this.endNode = endNode;
   }
 
-  /** Boundary access for lifecycle-aware built-in directives. */
-  get startMarker(): Comment {
-    return this.startNode;
-  }
-
-  get endMarker(): Comment {
-    return this.endNode;
-  }
-
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    const start = nodeMap.get(this.startNode);
-    const end = nodeMap.get(this.endNode);
-    if (start instanceof Comment) this.startNode = start;
-    if (end instanceof Comment) this.endNode = end;
-
-    let adoptionError: unknown;
-    try {
-      if (this._committedValue instanceof TemplateInstance) {
-        this._committedValue.adoptNodes(nodeMap);
-      } else if (Array.isArray(this._committedValue)) {
-        for (const part of this._committedValue) {
-          if (!(part instanceof NodePart)) continue;
-          try {
-            part.adoptNodes(nodeMap);
-          } catch (error) {
-            adoptionError ??= error;
-          }
-        }
-      } else if (this._committedValue instanceof Node) {
-        this._committedValue = nodeMap.get(this._committedValue) || this._committedValue;
-      }
-    } catch (error) {
-      adoptionError ??= error;
-    }
-    try {
-      this.adoptDirectiveNodes(nodeMap);
-    } catch (error) {
-      adoptionError ??= error;
-    }
-    if (adoptionError) throw adoptionError;
-  }
-
   commit(value: any): void {
-    value = this.resolveDirective(value);
-
     // Handle noChange sentinel
     if (value === noChange) {
       return;
@@ -1274,7 +991,7 @@ export class NodePart extends Part {
     }
 
     // Different template or first render: prepare and validate the replacement
-    // while it is detached. If a binding/directive throws, the currently
+    // while it is detached. If a binding throws, the currently
     // committed range remains intact and its lifecycle stays connected.
     const instance = new TemplateInstance(result);
     const fragment = instance.renderFragment();
@@ -1403,8 +1120,8 @@ export class NodePart extends Part {
       // Clear DOM for removed items
       for (let i = partIndex; i < itemParts.length; i++) {
         const part = itemParts[i];
-        // Dispose directive/async state as well as removing the content. These
-        // item parts are leaving the list permanently, not merely being moved.
+        // Dispose async state as well as removing the content. These item parts
+        // are leaving the list permanently, not merely being moved.
         try {
           part.destroy();
         } catch (error) {
@@ -1689,11 +1406,6 @@ export class NodePart extends Part {
 
   disconnected(preserveEventListeners = false): void {
     let lifecycleError: unknown;
-    try {
-      super.disconnected(preserveEventListeners);
-    } catch (error) {
-      lifecycleError = error;
-    }
     if (this._committedValue instanceof TemplateInstance) {
       try {
         this._committedValue.disconnected(preserveEventListeners);
@@ -1716,11 +1428,6 @@ export class NodePart extends Part {
 
   reconnected(): void {
     let lifecycleError: unknown;
-    try {
-      super.reconnected();
-    } catch (error) {
-      lifecycleError = error;
-    }
     if (this._committedValue instanceof TemplateInstance) {
       try {
         this._committedValue.reconnected();
@@ -1786,7 +1493,6 @@ export class AttributePart extends Part {
 
     // === SINGLE-VALUE BINDING ===
     if (this.strings === undefined) {
-      value = this.resolveDirective(value);
       if (value === noChange) return;
 
       change = !isPrimitive(value) ||
@@ -1808,10 +1514,7 @@ export class AttributePart extends Part {
       finalValue = this.strings[0];
 
       for (let i = 0; i < this.strings.length - 1; i++) {
-        // Multi-interpolation attributes host one independent directive per
-        // expression. Slots start at 1 so slot 0 remains the ordinary
-        // single-expression DirectivePart whose setValue() calls commit().
-        let v = this.resolveDirective(values[valueIndex + i], i + 1);
+        let v = values[valueIndex + i];
 
         // Handle noChange sentinel
         if (v === noChange) {
@@ -1860,23 +1563,6 @@ export class AttributePart extends Part {
     this.element.removeAttribute(this.name);
   }
 
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    if (!this.strings || slot === 0) {
-      super.commitDirectiveValue(slot, value);
-      return;
-    }
-    if (!this.lastValues) return;
-    this.lastValues[this.lastValueIndex + slot - 1] = value;
-    this.commit(this.lastValues, this.lastValueIndex);
-  }
-
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-    this._committedValue = this.strings
-      ? new Array(this.strings.length - 1).fill(NOT_COMMITTED)
-      : NOT_COMMITTED;
-  }
 }
 
 /**
@@ -1913,7 +1599,7 @@ export class CommentPart extends Part {
     let text = this.strings[0];
 
     for (let i = 0; i < this.strings.length - 1; i++) {
-      let v = this.resolveDirective(vals[startIndex + i], i + 1);
+      let v = vals[startIndex + i];
 
       if (v === noChange) {
         v = this._committedValues[i];
@@ -1936,192 +1622,6 @@ export class CommentPart extends Part {
 
   clear(): void {}
 
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    if (slot === 0 || !this.lastValues) return;
-    this.lastValues[this.lastValueIndex + slot - 1] = value;
-    this.commit(this.lastValues, this.lastValueIndex);
-  }
-
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    const adopted = nodeMap.get(this.node);
-    if (adopted instanceof Comment) this.node = adopted;
-    this.adoptDirectiveNodes(nodeMap);
-  }
-}
-
-/**
- * ElementPart is the host position for directives written directly in an
- * opening tag: `<button ${ref(buttonRef)}>`.
- *
- * Plain values have no meaningful DOM representation here and are rejected
- * with an actionable error instead of being silently ignored.
- */
-export class ElementPart extends Part {
-  readonly type = 'element' as const;
-  element: Element;
-
-  constructor(element: Element) {
-    super();
-    this.element = element;
-  }
-
-  commit(value: unknown): void {
-    const wasDirective = isDirectiveResult(value);
-    const resolved = this.resolveDirective(value);
-    if (!wasDirective) {
-      throw new TypeError(
-        'snice: an expression in an opening tag must be an element directive ' +
-        '(for example ref(), use(), props(), attrs(), or events()).'
-      );
-    }
-    if (resolved === noChange || resolved === nothing || resolved == null) return;
-    throw new TypeError('snice: an element directive must return noChange, nothing, null, or undefined.');
-  }
-
-  clear(): void {}
-
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-  }
-}
-
-/** Runtime target for the virtual `<component ${tag}>` element. */
-export class DynamicComponentPart extends Part {
-  readonly type = 'node' as const;
-  private readonly startNode: Comment;
-  private readonly endNode: Comment;
-  private readonly virtualElement: Element;
-  private readonly staticAttributes: Array<[string, string]>;
-  private readonly children = document.createDocumentFragment();
-  private readonly dependents: RetargetablePart[] = [];
-  private currentElement: Element | null = null;
-  private currentTag: string | null = null;
-
-  constructor(element: Element) {
-    super();
-    this.virtualElement = element;
-    this.staticAttributes = Array.from(element.attributes).map(attribute => [attribute.name, attribute.value]);
-    while (element.firstChild) this.children.appendChild(element.firstChild);
-
-    const parent = element.parentNode!;
-    this.startNode = document.createComment('component');
-    this.endNode = document.createComment('/component');
-    parent.insertBefore(this.startNode, element);
-    parent.insertBefore(this.endNode, element.nextSibling);
-    element.remove();
-  }
-
-  addDependent(part: RetargetablePart): void {
-    this.dependents.push(part);
-  }
-
-  commit(value: unknown): void {
-    value = this.resolveDirective(value);
-    if (value === noChange) return;
-    if (value === nothing || value == null || value === false) {
-      this.unmount();
-      return;
-    }
-    if (typeof value !== 'string' || !/^[a-z][a-z0-9._-]*$/i.test(value)) {
-      throw new TypeError('snice: <component> expects a valid element tag name string.');
-    }
-
-    if (value.toLowerCase() === 'component') {
-      throw new TypeError('snice: <component> cannot recursively target the virtual "component" tag.');
-    }
-
-    const parent = this.startNode.parentElement;
-    let namespace: string | null = this.virtualElement.namespaceURI ||
-      parent?.namespaceURI ||
-      'http://www.w3.org/1999/xhtml';
-    // Some lightweight DOMs do not implement HTML parser integration points.
-    // Derive those boundaries explicitly; real browsers arrive at the same
-    // namespace through parsing.
-    if (
-      parent?.namespaceURI === 'http://www.w3.org/2000/svg' &&
-      ['foreignobject', 'desc', 'title'].includes(parent.localName.toLowerCase())
-    ) {
-      namespace = 'http://www.w3.org/1999/xhtml';
-    } else if (parent?.namespaceURI === 'http://www.w3.org/1998/Math/MathML') {
-      const parentTag = parent.localName.toLowerCase();
-      const childTag = value.toLowerCase();
-      if (
-        ['mi', 'mo', 'mn', 'ms', 'mtext'].includes(parentTag) &&
-        !['mglyph', 'malignmark'].includes(childTag)
-      ) {
-        namespace = 'http://www.w3.org/1999/xhtml';
-      } else if (parentTag === 'annotation-xml') {
-        const encoding = parent.getAttribute('encoding')?.toLowerCase();
-        if (encoding === 'text/html' || encoding === 'application/xhtml+xml') {
-          namespace = 'http://www.w3.org/1999/xhtml';
-        }
-      }
-    }
-    const foreignNamespace = !!namespace && namespace !== 'http://www.w3.org/1999/xhtml';
-    // HTML names are ASCII-case-insensitive; SVG/MathML names are not
-    // (`linearGradient`, `clipPath`, and `foreignObject` must retain case).
-    const tag = foreignNamespace ? value : value.toLowerCase();
-    if (tag === this.currentTag && this.currentElement) return;
-    const next = foreignNamespace
-      ? document.createElementNS(namespace, tag)
-      : document.createElement(tag);
-    const isVoid = !foreignNamespace && htmlVoidElements.has(tag);
-    for (const [name, staticValue] of this.staticAttributes) next.setAttribute(name, staticValue);
-
-    if (this.currentElement) {
-      while (this.currentElement.firstChild) {
-        const child = this.currentElement.firstChild;
-        if (isVoid) this.children.appendChild(child);
-        else next.appendChild(child);
-      }
-      if (!isVoid) {
-        while (this.children.firstChild) next.appendChild(this.children.firstChild);
-      }
-      this.currentElement.replaceWith(next);
-    } else {
-      if (!isVoid) {
-        while (this.children.firstChild) next.appendChild(this.children.firstChild);
-      }
-      this.endNode.parentNode?.insertBefore(next, this.endNode);
-    }
-
-    this.currentElement = next;
-    this.currentTag = tag;
-    for (const dependent of this.dependents) dependent.retarget(next);
-  }
-
-  private unmount(): void {
-    if (!this.currentElement) return;
-    while (this.currentElement.firstChild) this.children.appendChild(this.currentElement.firstChild);
-    this.currentElement.remove();
-    this.currentElement = null;
-    this.currentTag = null;
-    for (const dependent of this.dependents) dependent.retarget(this.virtualElement);
-  }
-
-  clear(): void {
-    this.unmount();
-  }
-
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    const start = nodeMap.get(this.startNode);
-    const end = nodeMap.get(this.endNode);
-    if (start instanceof Comment) (this as any).startNode = start;
-    if (end instanceof Comment) (this as any).endNode = end;
-    if (this.currentElement) {
-      const element = nodeMap.get(this.currentElement);
-      if (element instanceof Element) {
-        this.currentElement = element;
-        for (const dependent of this.dependents) dependent.retarget(element, true);
-      }
-    }
-    this.adoptDirectiveNodes(nodeMap);
-  }
-
-  get isConnected(): boolean {
-    return this.startNode.isConnected;
-  }
 }
 
 /** Toggle one class without rebuilding the element's full class string. */
@@ -2138,7 +1638,6 @@ export class ClassPart extends Part {
   }
 
   commit(value: unknown): void {
-    value = this.resolveDirective(value);
     if (value === noChange) return;
     const enabled = value !== nothing && Boolean(value);
     if (enabled === this.committed) return;
@@ -2151,11 +1650,6 @@ export class ClassPart extends Part {
     this.committed = NOT_COMMITTED;
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-    this.committed = NOT_COMMITTED;
-  }
 }
 
 /** Set one CSS property, including custom properties, declaratively. */
@@ -2172,7 +1666,6 @@ export class StylePart extends Part {
   }
 
   commit(value: unknown): void {
-    value = this.resolveDirective(value);
     if (value === noChange || Object.is(value, this.committed)) return;
     this.committed = value;
     const style = (this.element as HTMLElement).style;
@@ -2188,11 +1681,6 @@ export class StylePart extends Part {
     this.committed = NOT_COMMITTED;
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-    this.committed = NOT_COMMITTED;
-  }
 }
 
 type SpreadListener = {
@@ -2237,7 +1725,6 @@ export class SpreadPart extends Part {
   }
 
   commit(value: unknown): void {
-    value = this.resolveDirective(value);
     if (value === noChange) return;
     if (value === nothing || value == null) value = {};
     if (typeof value !== 'object' || Array.isArray(value)) {
@@ -2329,29 +1816,11 @@ export class SpreadPart extends Part {
   }
 
   disconnected(preserveEventListeners = false): void {
-    let lifecycleError: unknown;
-    try {
-      super.disconnected(preserveEventListeners);
-    } catch (error) {
-      lifecycleError = error;
-    }
     if (this.name === 'events' && !preserveEventListeners) this.detachListeners();
-    if (lifecycleError) throw lifecycleError;
   }
 
   reconnected(): void {
-    let lifecycleError: unknown;
-    try {
-      super.reconnected();
-    } catch (error) {
-      lifecycleError = error;
-    }
-    try {
-      if (this.name === 'events' && this.listeners.size === 0) this.commitEvents(this.committed);
-    } catch (error) {
-      lifecycleError ??= error;
-    }
-    if (lifecycleError) throw lifecycleError;
+    if (this.name === 'events' && this.listeners.size === 0) this.commitEvents(this.committed);
   }
 
   private detachListeners(): void {
@@ -2361,15 +1830,6 @@ export class SpreadPart extends Part {
     this.listeners.clear();
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    if (this.name === 'events') {
-      this.detachListeners();
-      this.consumedOnce.clear();
-    }
-    this.element = element;
-    this.committed = {};
-  }
 }
 
 /**
@@ -2388,7 +1848,6 @@ export class PropertyPart extends Part {
   }
 
   commit(value: unknown): void {
-    value = this.resolveDirective(value);
     if (value === noChange) return;
 
     // live(): compare against the element's actual DOM property, so state
@@ -2418,11 +1877,6 @@ export class PropertyPart extends Part {
     this._committedValue = NOT_COMMITTED;
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-    this._committedValue = NOT_COMMITTED;
-  }
 }
 
 /**
@@ -2441,7 +1895,6 @@ export class BooleanAttributePart extends Part {
   }
 
   commit(value: unknown): void {
-    value = this.resolveDirective(value);
     if (value === noChange) return;
 
     // Coerce to boolean
@@ -2464,11 +1917,6 @@ export class BooleanAttributePart extends Part {
     this._committedValue = NOT_COMMITTED;
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.element = element;
-    this._committedValue = NOT_COMMITTED;
-  }
 }
 
 /**
@@ -2538,7 +1986,6 @@ export class EventPart extends Part {
   }
 
   commit(value: any): void {
-    value = this.resolveDirective(value);
     // Handle noChange sentinel
     if (value === noChange) return;
 
@@ -2648,42 +2095,17 @@ export class EventPart extends Part {
   }
 
   disconnected(preserveEventListeners = false): void {
-    let lifecycleError: unknown;
-    try {
-      super.disconnected(preserveEventListeners);
-    } catch (error) {
-      lifecycleError = error;
-    }
     if (!preserveEventListeners) this.detachListener();
     this.host = null;
-    if (lifecycleError) throw lifecycleError;
   }
 
   reconnected(): void {
-    let lifecycleError: unknown;
-    try {
-      super.reconnected();
-    } catch (error) {
-      lifecycleError = error;
+    if (!this.listener && !this.onceConsumed && this.value != null && this.value !== false) {
+      const isListenerObject = typeof this.value === 'object';
+      this.attachListener(this.value, isListenerObject);
     }
-    try {
-      if (!this.listener && !this.onceConsumed && this.value != null && this.value !== false) {
-        const isListenerObject = typeof this.value === 'object';
-        this.attachListener(this.value, isListenerObject);
-      }
-    } catch (error) {
-      lifecycleError ??= error;
-    }
-    if (lifecycleError) throw lifecycleError;
   }
 
-  retarget(element: Element, preserveDirectives = false): void {
-    if (!preserveDirectives) this.disposeDirective();
-    this.clear();
-    this.element = element;
-    this.value = undefined;
-    this.host = null;
-  }
 }
 
 /**
@@ -2894,13 +2316,7 @@ export class ConditionalIfPart extends Part {
   }
 
   commit(value: any): void {
-    value = this.resolveDirective(value);
     if (value !== noChange) this.conditions[0] = value;
-  }
-
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    super.commitDirectiveValue(slot, value);
-    this.flush();
   }
 
   setAlternative(index: number, value: unknown): void {
@@ -2945,14 +2361,6 @@ export class ConditionalIfPart extends Part {
     this.currentBranch = -1;
   }
 
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    const start = nodeMap.get(this.startNode);
-    const end = nodeMap.get(this.endNode);
-    if (start instanceof Comment) this.startNode = start;
-    if (end instanceof Comment) this.endNode = end;
-    this.adoptDirectiveNodes(nodeMap);
-  }
-
   get isConnected(): boolean {
     return this.startNode.isConnected;
   }
@@ -2977,16 +2385,7 @@ export class ConditionalElseIfPart extends Part {
   }
 
   commit(value: unknown): void {
-    this.coordinator.setAlternative(this.index, this.resolveDirective(value));
-  }
-
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    super.commitDirectiveValue(slot, value);
-    this.coordinator.flush();
-  }
-
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    this.adoptDirectiveNodes(nodeMap);
+    this.coordinator.setAlternative(this.index, value);
   }
 
   clear(): void {}
@@ -3061,13 +2460,7 @@ export class ConditionalCasePart extends Part {
   }
 
   commit(value: any): void {
-    value = this.resolveDirective(value);
     if (value !== noChange) this.value = value;
-  }
-
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    super.commitDirectiveValue(slot, value);
-    this.flush();
   }
 
   setExpected(index: number, value: unknown): void {
@@ -3108,14 +2501,6 @@ export class ConditionalCasePart extends Part {
     this.currentBranch = -1;
   }
 
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    const start = nodeMap.get(this.startNode);
-    const end = nodeMap.get(this.endNode);
-    if (start instanceof Comment) this.startNode = start;
-    if (end instanceof Comment) this.endNode = end;
-    this.adoptDirectiveNodes(nodeMap);
-  }
-
   get isConnected(): boolean {
     return this.startNode.isConnected;
   }
@@ -3140,16 +2525,7 @@ export class ConditionalWhenPart extends Part {
   }
 
   commit(value: unknown): void {
-    this.coordinator.setExpected(this.index, this.resolveDirective(value));
-  }
-
-  protected commitDirectiveValue(slot: number, value: unknown): void {
-    super.commitDirectiveValue(slot, value);
-    this.coordinator.flush();
-  }
-
-  adoptNodes(nodeMap: ReadonlyMap<Node, Node>): void {
-    this.adoptDirectiveNodes(nodeMap);
+    this.coordinator.setExpected(this.index, value);
   }
 
   clear(): void {}

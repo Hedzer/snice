@@ -4,7 +4,6 @@ import type { ElementOptions } from './types/element-options';
 export type SniceRenderRoot = HTMLElement | ShadowRoot;
 
 const renderHosts = new WeakSet<HTMLElement>();
-const explicitRenderHosts = new WeakMap<Node, HTMLElement>();
 
 export function getRenderRoot(element: HTMLElement): SniceRenderRoot | null {
   return (element as any)[RENDER_ROOT] || element.shadowRoot || null;
@@ -40,23 +39,8 @@ export function findRenderHost(node: Node): HTMLElement | null {
 
   let current: Node | null = node;
   while (current) {
-    const explicit = explicitRenderHosts.get(current);
-    if (explicit) return explicit;
     if (current instanceof HTMLElement && renderHosts.has(current)) return current;
     current = current.parentNode;
   }
   return null;
-}
-
-/**
- * Associate wrapper-free DOM moved outside a render root (for example portal
- * content) with the component that owns its template event handlers.
- */
-export function setRangeRenderHost(start: Node, end: Node, host: HTMLElement | null): void {
-  let node = start.nextSibling;
-  while (node && node !== end) {
-    if (host) explicitRenderHosts.set(node, host);
-    else explicitRenderHosts.delete(node);
-    node = node.nextSibling;
-  }
 }

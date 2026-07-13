@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: '.',
+  // Keep Playwright discovery out of the Vitest *.test.ts suite while still
+  // including the dedicated website browser test.
+  testMatch: ['**/*.spec.ts', 'website-render.test.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

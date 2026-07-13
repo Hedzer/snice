@@ -186,7 +186,7 @@ export function applyElementFunctionality(constructor: any) {
         try {
           reconnectRenderTree(this);
         } catch (error) {
-          console.error(`Error reconnecting render directives for ${this.tagName}:`, error);
+          console.error(`Error reconnecting the render tree for ${this.tagName}:`, error);
         }
         // Re-establish handlers that get cleaned up on disconnect
         setupEventHandlers(this, this);
@@ -369,7 +369,7 @@ export function applyElementFunctionality(constructor: any) {
       try {
         disconnectRenderTree(this);
       } catch (error) {
-        console.error(`Error disconnecting render directives for ${this.tagName}:`, error);
+        console.error(`Error disconnecting the render tree for ${this.tagName}:`, error);
       }
       // Call @dispose handlers
       const disposeHandlers = constructor[DISPOSE_HANDLERS];

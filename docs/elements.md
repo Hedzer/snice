@@ -132,7 +132,7 @@ class SimpleList extends HTMLElement {
 - Avoiding differential rendering issues with dynamic attributes
 - Simple components where full re-render is acceptable
 
-**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Declarative directives and virtual control flow (`<if>`, `<case>`, and related tags) are not available in the raw-string mode.
+**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Declarative bindings and virtual control flow (`<if>`, `<case>`, and related tags) are not available in the raw-string mode.
 
 ### Imperative Rendering
 
@@ -1159,5 +1159,4 @@ class ConditionalContent extends HTMLElement {
 }
 ```
 
-The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, dynamic `<component>`, bindings, refs/actions, async resources, portals, transitions, SSR, and hydration.
-
+The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, binding channels, explicit form events, and direct async values.

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { bind, element, html, property, render } from './test-imports';
+import { element, html, property, render } from './test-imports';
 
 describe('declarative bindings', () => {
   let container: HTMLDivElement;
@@ -112,69 +112,4 @@ describe('declarative bindings', () => {
     expect(calls).toHaveBeenCalledWith(el, true);
   });
 
-  it('binds model and native form properties in both directions', async () => {
-    @element('test-form-bindings')
-    class TestFormBindings extends HTMLElement {
-      @property({ attribute: false }) query = 'initial';
-      @property({ attribute: false }) accepted = false;
-
-      @render()
-      template() {
-        return html`
-          <input class="query" .value=${bind(this, 'query')}>
-          <input class="accepted" type="checkbox" .checked=${bind(this, 'accepted')}>
-        `;
-      }
-    }
-
-    const el = document.createElement('test-form-bindings') as TestFormBindings;
-    container.appendChild(el);
-    await el.ready;
-    const query = el.shadowRoot?.querySelector('.query') as HTMLInputElement;
-    const accepted = el.shadowRoot?.querySelector('.accepted') as HTMLInputElement;
-    expect(query.value).toBe('initial');
-
-    query.value = 'typed';
-    query.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    await el.rendered;
-    expect(el.query).toBe('typed');
-
-    accepted.checked = true;
-    accepted.dispatchEvent(new Event('change', { bubbles: true }));
-    await el.rendered;
-    expect(el.accepted).toBe(true);
-
-    el.query = 'model';
-    el.accepted = false;
-    await el.rendered;
-    expect(query.value).toBe('model');
-    expect(accepted.checked).toBe(false);
-  });
-
-  it('does not publish partial IME composition values', async () => {
-    @element('test-composition-binding')
-    class TestCompositionBinding extends HTMLElement {
-      @property({ attribute: false }) value = '';
-
-      @render()
-      template() {
-        return html`<input .value=${bind(this, 'value')}>`;
-      }
-    }
-
-    const el = document.createElement('test-composition-binding') as TestCompositionBinding;
-    container.appendChild(el);
-    await el.ready;
-    const input = el.shadowRoot?.querySelector('input') as HTMLInputElement;
-
-    input.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
-    input.value = 'partial';
-    input.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    expect(el.value).toBe('');
-
-    input.value = '完成';
-    input.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true }));
-    await el.rendered;
-    expect(el.value).toBe('完成');
-  });
 });

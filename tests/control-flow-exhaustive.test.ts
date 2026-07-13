@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { element, html, property, render, repeat, resource, use } from './test-imports';
+import { element, html, property, render, repeat } from './test-imports';
 
-describe('control flow and dynamic component exhaustive behavior', () => {
+describe('control flow exhaustive behavior', () => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
@@ -99,35 +99,6 @@ describe('control flow and dynamic component exhaustive behavior', () => {
     errors.mockRestore();
   });
 
-  it('flushes async directive results used by if and else-if conditions', async () => {
-    let resolvePrimary!: (value: boolean) => void;
-    let resolveAlternative!: (value: boolean) => void;
-    const primary = new Promise<boolean>(resolve => { resolvePrimary = resolve; });
-    const alternative = new Promise<boolean>(resolve => { resolveAlternative = resolve; });
-
-    @element('test-async-conditional-directives')
-    class TestAsyncConditionalDirectives extends HTMLElement {
-      @render() template() {
-        return html`<if ${resource(primary, { pending: false })}>
-          <p>primary</p>
-          <else-if ${resource(alternative, { pending: false })}><p>alternative</p></else-if>
-          <else><p>fallback</p></else>
-        </if>`;
-      }
-    }
-
-    const host = document.createElement('test-async-conditional-directives') as TestAsyncConditionalDirectives;
-    container.append(host);
-    await host.ready;
-    expect(host.shadowRoot!.textContent).toContain('fallback');
-    resolveAlternative(true);
-    await Promise.resolve();
-    expect(host.shadowRoot!.textContent).toContain('alternative');
-    resolvePrimary(true);
-    await Promise.resolve();
-    expect(host.shadowRoot!.textContent).toContain('primary');
-  });
-
   it('rejects duplicate defaults and orphan dynamic when branches', async () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     @element('test-duplicate-case-default')
@@ -175,66 +146,4 @@ describe('control flow and dynamic component exhaustive behavior', () => {
     errors.mockRestore();
   });
 
-  it('creates dynamic SVG children in the surrounding namespace and retargets them', async () => {
-    @element('test-dynamic-svg-namespace')
-    class TestDynamicSvgNamespace extends HTMLElement {
-      @property({ attribute: false }) tag = 'circle';
-      @render() template() {
-        return html`<svg><component ${this.tag} ...attrs=${{ cx: 5, cy: 6, r: 2 }}></component></svg>`;
-      }
-    }
-    const host = document.createElement('test-dynamic-svg-namespace') as TestDynamicSvgNamespace;
-    container.append(host);
-    await host.ready;
-    const circle = host.shadowRoot!.querySelector('circle')!;
-    expect(circle.namespaceURI).toBe('http://www.w3.org/2000/svg');
-    expect(circle.getAttribute('cx')).toBe('5');
-    host.tag = 'rect';
-    await host.rendered;
-    const rect = host.shadowRoot!.querySelector('rect')!;
-    expect(rect.namespaceURI).toBe('http://www.w3.org/2000/svg');
-    expect(rect.getAttribute('cy')).toBe('6');
-  });
-
-  it('retargets named spreads and use actions when a dynamic tag changes', async () => {
-    const destroy = vi.fn();
-    const action = vi.fn((target: Element) => {
-      target.setAttribute('data-action', target.localName);
-      return destroy;
-    });
-    const first = vi.fn();
-    const second = vi.fn();
-    @element('test-dynamic-spread-action')
-    class TestDynamicSpreadAction extends HTMLElement {
-      @property({ attribute: false }) tag = 'button';
-      @property({ attribute: false }) alternate = false;
-      @render() template() {
-        return html`<component ${this.tag}
-          ${use(action)}
-          ...props=${{ custom: this.alternate ? 2 : 1 }}
-          ...attrs=${this.alternate ? { title: 'second' } : { title: 'first', hidden: true }}
-          ...events=${{ click: this.alternate ? second : first }}
-        >body</component>`;
-      }
-    }
-    const host = document.createElement('test-dynamic-spread-action') as TestDynamicSpreadAction;
-    container.append(host);
-    await host.ready;
-    const button = host.shadowRoot!.querySelector('button') as HTMLElement & { custom: number };
-    expect(button.custom).toBe(1);
-    expect(button.hidden).toBe(true);
-    button.click();
-    expect(first).toHaveBeenCalledOnce();
-    host.tag = 'a';
-    host.alternate = true;
-    await host.rendered;
-    const anchor = host.shadowRoot!.querySelector('a') as HTMLElement & { custom: number };
-    expect(destroy).toHaveBeenCalledOnce();
-    expect(action).toHaveBeenLastCalledWith(anchor, undefined);
-    expect(anchor.dataset.action).toBe('a');
-    expect(anchor.custom).toBe(2);
-    expect(anchor.hidden).toBe(false);
-    anchor.click();
-    expect(second).toHaveBeenCalledOnce();
-  });
 });

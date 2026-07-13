@@ -72,7 +72,7 @@ export function renderIcon(icon: string, className = 'icon'): TemplateResult {
 
 /**
  * Fallback accent hues (muted/business tones). Used when CSS vars haven't
- * been applied (test environments, SSR) or when the 8 accent tokens have
+ * been applied (test and non-browser environments) or when the 8 accent tokens have
  * been stripped. Keep in lockstep with `theme.css` --snice-color-accent-1..8.
  */
 export const FALLBACK_ACCENTS = [

@@ -56,30 +56,13 @@ export const {
   noChange,
   live,
   SniceElement,
-  Directive,
-  directive,
-  directiveServerResult,
-  bind,
-  createRef,
-  ref,
-  use,
-  props,
-  attrs,
-  events,
   repeat,
-  portal,
-  resource,
-  transition,
-  hydrate,
-  hydrateElement,
-  HydrationError,
-  renderToString,
-  renderToStringAsync,
-  renderElementToString,
-  renderElementToStringAsync,
   classMap,
   styleMap
 } = modules.main;
+
+/** Complete module namespace for assertions about the supported public API. */
+export const frameworkExports = modules.main;
 
 // Handle controller functions that were removed from main exports
 export const attachController = USE_BUILT ? modules.main.attachController : modules.controller.attachController;

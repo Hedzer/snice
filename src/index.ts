@@ -26,34 +26,8 @@ export type { TemplateResult, CSSResult, Nothing, UnsafeHTML } from './template'
 export { render, styles, setStrictRenderErrors } from './render';
 export { noChange, live } from './parts';
 export type { NoChange } from './parts';
-export { Directive, directive, directiveServerResult } from './directive';
-export type {
-  DirectiveConstructor,
-  DirectiveDisconnectContext,
-  DirectivePart,
-  DirectiveResult,
-  DirectiveServerContext,
-  DirectiveServerResult,
-  PartInfo,
-  PartType
-} from './directive';
-export { bind, createRef, ref, use, props, attrs, events } from './directives';
-export type { BindOptions, Ref, RefCallback, RefTarget, UseAction, UseCleanup, UseHandle } from './directives';
 export { repeat } from './repeat';
 export type { RepeatOptions, RepeatResult } from './repeat';
-export { portal, resource } from './async-directives';
-export type { PortalTarget, ResourceOptions, ResourceSource } from './async-directives';
-export { transition } from './transition-directive';
-export type { TransitionDirectiveOptions } from './transition-directive';
-export { hydrate, hydrateElement, HydrationError } from './hydrate';
-export type { HydrateOptions } from './hydrate';
-export {
-  renderToString,
-  renderToStringAsync,
-  renderElementToString,
-  renderElementToStringAsync
-} from './server';
-export type { ServerRenderOptions, ServerElementOptions } from './server';
 export type { RenderOptions } from './render';
 export { classMap, styleMap } from './template-helpers';
 

@@ -10,7 +10,7 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 **Files:**
 - `api.md` - Complete API reference
-- `rendering.md` - Declarative syntax, reactivity, roots, directives, SSR/hydration
+- `rendering.md` - Declarative syntax, reactivity, roots, and async values
 - `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
 - `react-integration.md` - React router, hooks, guards, context
@@ -88,7 +88,7 @@ Runtime first, then one bundle per component (any order after runtime):
 - `.prop=${val}` for objects/arrays, `attr="${val}"` for strings
 - `?attr=${bool}` toggles attribute presence
 - `@event=${fn}` handlers are auto-bound to `this`
-- `class:name`, `style:name`, `...props`, `...attrs`, `...events`, `bind`, `ref`, and `use` are supported
+- `class:name`, `style:name`, `...props`, `...attrs`, and `...events` are supported
 - Event `|` modifiers: prevent, stop, immediate, once, capture, passive, self
 - Use `repeat()` for explicit keyed identity; `<if>` supports else-if/else; `<case>` supports typed `<when ${value}>`
 

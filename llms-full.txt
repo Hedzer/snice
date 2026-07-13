@@ -249,31 +249,13 @@ style:color=${value} // One CSS property
 </case>
 ${items.map(i => html`<li>${i}</li>`)}
 ${repeat(items, { key: i => i.id, render: i => html`...`, empty: () => html`...` })}
-<component ${tag} ...attrs=${attributes}>...</component>
 
-createRef(); ref(target); use(action, value?)
-props(object); attrs(object); events(object)
-bind(target, key, { event?, fromView?, toView? })
-resource(source, { pending?, ready?, error? })
-portal(target, content)
-transition(content, options)
 // Promise/AsyncIterable work directly in node expressions
 ```
 
 Virtual control-flow tags add no wrapper. Branches retain DOM identity. `repeat` requires unique keys. See `docs/ai/rendering.md` for full behavior.
 
-### SSR / Hydration
-
-```typescript
-renderToString(template, { hydratable? }): string
-renderToStringAsync(template, options): Promise<string>
-renderElementToString(tag, template, { renderRoot?, shadow?: 'open'|'closed'|false, attributes?, styles?, delegatesFocus?, hydratable? }): string
-renderElementToStringAsync(tag, template, options): Promise<string>
-hydrate(template, container, { onMismatch?: 'throw'|'replace' })
-hydrateElement(element, template, options)
-```
-
-DOM-free SSR; async SSR resolves promises/async iterables/directives. Element SSR outputs light or declarative shadow DOM and marks auto-hydration. Matching nodes retain identity; mismatch throws `HydrationError` by default.
+Prefer direct bindings for known keys. Named spreads are for dynamic or forwarded property, attribute, and listener bags; omitted keys are removed or reset.
 
 ---
 
@@ -284,12 +266,7 @@ import {
   element, controller, layout,       // class decorators (page from Router)
   SniceElement, property, state, watch, context,
   render, styles, html, svg, css, nothing, unsafeHTML,
-  Directive, directive, directiveServerResult,
-  bind, createRef, ref, use, props, attrs, events,
-  repeat, resource, portal, transition,
-  renderToString, renderToStringAsync,
-  renderElementToString, renderElementToStringAsync,
-  hydrate, hydrateElement, HydrationError,
+  repeat,
   query, queryAll,                   // DOM
   on, dispatch,                      // events
   request, respond,                  // communication

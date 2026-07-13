@@ -106,7 +106,7 @@ export function css(strings: TemplateStringsArray, ...values: any[]): CSSResult 
 
   // Try to create constructable stylesheet for better performance
   // This will be cached and reused across instances. Guard against envs
-  // without a Document global (SSR, workers).
+  // without a Document global (for example, workers).
   if (
     typeof CSSStyleSheet !== 'undefined' &&
     typeof Document !== 'undefined' &&

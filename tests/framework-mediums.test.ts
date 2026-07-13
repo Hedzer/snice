@@ -40,7 +40,7 @@ describe('RenderScheduler skips elements that disconnect before flush', () => {
   });
 });
 
-// ─── 2. css`…`: works when adoptedStyleSheets is absent (SSR/old Safari/jsdom) ──
+// ─── 2. css`…`: works when adoptedStyleSheets is absent (older Safari/DOM shims) ──
 
 describe('css`` is safe when constructable stylesheets are unavailable', () => {
   it('falls back to plain CSSResult when adoptedStyleSheets is missing', () => {

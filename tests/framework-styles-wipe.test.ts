@@ -3,7 +3,7 @@ import { element, render, styles, html, css, property } from '../src/index';
 
 afterEach(() => { document.body.innerHTML = ''; });
 
-// In envs without adoptedStyleSheets (Safari ≤16, jsdom, SSR), @styles falls
+// In environments without adoptedStyleSheets (older Safari and DOM shims), @styles falls
 // back to appending <style> tags. On a template identity change, performRender
 // does `shadowRoot.innerHTML = ''` which wipes those <style> tags → component
 // loses its styles. Verify styles survive template switch.

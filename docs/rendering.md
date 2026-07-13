@@ -1,7 +1,7 @@
 <!-- AI: For the AI-optimized version of this doc, see docs/ai/rendering.md -->
 # Declarative Rendering
 
-Snice templates are tagged template literals that update only the dynamic parts of the DOM. Template structure is parsed once, DOM nodes are retained across updates, and directives can own lifecycle-bound behavior without adding wrapper elements.
+Snice templates are tagged template literals that update only the dynamic parts of the DOM. Template structure is parsed once and DOM nodes are retained across updates.
 
 ```typescript
 import {
@@ -25,7 +25,7 @@ class UserEditor extends SniceElement {
 
 ## Template values
 
-Node expressions accept text, numbers, templates, iterables, DOM nodes, promises, async iterables, `nothing`, and directives.
+Node expressions accept text, numbers, templates, iterables, DOM nodes, promises, async iterables, and `nothing`.
 
 ```typescript
 html`
@@ -92,17 +92,21 @@ Supported modifiers are `prevent`, `stop`, `immediate`, `once`, `capture`, `pass
 
 Keyboard filters support dot or colon notation. Exact filters such as `@keydown.ctrl+s` reject extra modifiers; `~` allows any modifier combination, as in `@keydown.~enter`.
 
-Handlers can be functions or `EventListenerObject` values. Template functions run with `this` bound to the component that owns the render tree, including handlers rendered through a portal.
+Handlers can be functions or `EventListenerObject` values. Template functions run with `this` bound to the component that owns the render tree.
 
 ### Named spreads
 
-Named spreads make the target channel explicit and remove stale keys on later renders:
+Prefer direct bindings when the set of keys is known; they are easier to read. Named spreads are for dynamic or forwarded bags from wrappers, plugins, and generated views. They make the target channel explicit and remove stale keys on later renders:
 
 ```typescript
+@property({ attribute: false }) forwardedProps = {};
+@property({ attribute: false }) accessibility = {};
+@property({ attribute: false }) forwardedListeners = {};
+
 html`<input
-  ...props=${{ value: this.query, selectionStart: 0 }}
-  ...attrs=${{ 'aria-label': this.label, hidden: this.hidden }}
-  ...events=${{ input: this.onInput, blur: this.onBlur }}
+  ...props=${this.forwardedProps}
+  ...attrs=${this.accessibility}
+  ...events=${this.forwardedListeners}
 >`
 ```
 
@@ -112,11 +116,9 @@ html`<input
 
 Event-spread values may be functions, `EventListenerObject` values, or nullish/false to remove a listener. Empty or duplicate normalized names (for example both `click` and `@click`) are rejected. Listeners detach while a conditional branch is parked and reattach when it returns. Removing a host from the document retains the listeners on its retained render tree, matching native DOM behavior. Consumed `|once` and `EventListenerObject.once` listeners stay consumed in either lifecycle.
 
-The element directives `props(object)`, `attrs(object)`, and `events(object)` provide the same channels when composition in an opening-tag expression is preferable.
+## Form controls
 
-## Two-way form binding
-
-`bind(target, key)` synchronizes a model field and a DOM property:
+Keep both directions visible: bind component state to the native property, then handle the browser event that updates component state.
 
 ```typescript
 @state() query = '';
@@ -124,56 +126,21 @@ The element directives `props(object)`, `attrs(object)`, and `events(object)` pr
 
 render() {
   return html`
-    <input .value=${bind(this, 'query')}>
-    <input type="checkbox" .checked=${bind(this, 'accepted')}>
+    <input .value=${this.query} @input=${this.updateQuery}>
+    <input type="checkbox" .checked=${this.accepted} @change=${this.updateAccepted}>
   `;
+}
+
+updateQuery(event: InputEvent) {
+  this.query = (event.currentTarget as HTMLInputElement).value;
+}
+
+updateAccepted(event: Event) {
+  this.accepted = (event.currentTarget as HTMLInputElement).checked;
 }
 ```
 
-`value` uses `input`, `checked` uses `input` and `change`, and `files` / `<select>` use `change`. Value bindings suppress intermediate IME composition values.
-
-Customize the event and transformations when the view and model use different representations:
-
-```typescript
-html`<input .value=${bind(this, 'amount', {
-  event: 'change',
-  toView: amount => String(amount * 100),
-  fromView: value => Number(value) / 100
-})}>`
-```
-
-`bind()` is valid only in a property binding such as `.value=${...}`.
-
-## Element directives
-
-### Refs
-
-```typescript
-const input = createRef<HTMLInputElement>();
-
-html`<input ${ref(input)}>`;
-// input.value is the live element, or null while its branch is disconnected.
-```
-
-`ref()` accepts a `createRef()` object or a callback. Callback refs receive the element and later receive `null` during teardown or retargeting.
-
-### Actions
-
-`use(action, value?)` attaches behavior to a concrete element:
-
-```typescript
-const tooltip = (element: Element, text: string) => {
-  element.setAttribute('aria-label', text);
-  return {
-    update(next: string) { element.setAttribute('aria-label', next); },
-    destroy() { element.removeAttribute('aria-label'); }
-  };
-};
-
-html`<button ${use(tooltip, this.help)}>Help</button>`;
-```
-
-An action may return a cleanup function or an object with `update()` and `destroy()`. Cleanup is paired across branch changes, host disconnect/reconnect, action replacement, and dynamic-component retargeting.
+Use `input` for text as it changes and `change` for committed choices such as checkboxes, selects, and files. Explicit handlers also make parsing, validation, and IME policy visible at the point where the view updates the model.
 
 ## Control flow
 
@@ -225,68 +192,22 @@ html`<ul>${repeat(this.items, {
 
 `repeat()` accepts any iterable, adds no wrapper, moves existing DOM when order changes, and rejects duplicate keys before reconciliation. A normal mapped array and `key=${value}` remain supported; `repeat()` is the explicit API when keyed identity and an empty state are required together.
 
-### Dynamic elements
-
-```typescript
-html`<component ${this.tag}
-  ...attrs=${this.attributes}
-  ...props=${this.properties}
-  ${use(this.action)}
->Content</component>`
-```
-
-`<component>` selects a validated concrete tag at runtime, preserves the surrounding HTML or SVG namespace, and retargets its bindings when the tag changes. `nothing`, `null`, or `false` renders no element.
-When an HTML void tag such as `input` or `img` is selected, authored children are parked rather than inserted into invalid markup; switching to a non-void tag restores those same child nodes.
-
 ## Async content
 
 A Promise or AsyncIterable can be rendered directly in a node expression. A promise replaces the pending empty range when it settles. An async iterable commits each emission. Changing the source ignores stale results, and disconnecting the owning tree stops active consumption.
 
-Use `resource()` when pending, ready, and error UI must be explicit:
-
 ```typescript
-html`${resource(
-  signal => fetch(`/api/users/${this.userId}`, { signal }).then(r => r.json()),
-  {
-    pending: () => html`<snice-spinner></snice-spinner>`,
-    ready: user => html`<user-card .user=${user}></user-card>`,
-    error: error => html`<p role="alert">${error.message}</p>`
-  }
-)}`
+userView = fetch(`/api/users/${this.userId}`)
+  .then(response => response.json())
+  .then(user => html`<user-card .user=${user}></user-card>`)
+  .catch(error => html`<p role="alert">${error.message}</p>`);
+
+render() {
+  return html`${this.userView}`;
+}
 ```
 
-The source may be a Promise, AsyncIterable, or `(signal: AbortSignal) => value`. Source functions are aborted when replaced or disconnected. An AsyncIterable can publish multiple ready values.
-
-## Portals
-
-Render wrapper-free content into another `ParentNode` while keeping it owned by the source component:
-
-```typescript
-html`${portal(
-  () => document.querySelector('#overlay-root'),
-  html`<dialog open @click=${this.onDialogClick}>...</dialog>`
-)}`
-```
-
-The target can be a node, selector, or target function. Content moves without recreation if the target changes. It is removed on disconnect and restored on reconnect.
-
-## Transitions
-
-`transition(content, options)` animates a keyed content change without a permanent wrapper:
-
-```typescript
-html`${transition(this.view, {
-  key: this.route,
-  mode: 'simultaneous',
-  out: 'opacity: 0; transform: translateY(-4px)',
-  in: 'opacity: 1; transform: translateY(0)',
-  outDuration: 120,
-  inDuration: 160,
-  onComplete: this.focusHeading
-})}`
-```
-
-The default mode is `sequential`; `simultaneous` overlaps outgoing and incoming content. Reduced-motion preferences are respected by default. Set `respectReducedMotion: false` only when motion is essential. Rapid changes queue the latest key, and disconnect settles active work immediately.
+Promise cancellation remains the caller's responsibility; use `AbortController` in the component lifecycle when a fetch must be aborted. Async iterators receive a best-effort `return()` call when replaced or disconnected.
 
 ## Reactive authoring
 
@@ -359,82 +280,9 @@ class UserPanel extends SniceElement {
 @element('focus-panel', { delegatesFocus: true })
 ```
 
-Shadow DOM is the default. Light DOM, open/closed shadow roots, and `delegatesFocus` all use the same rendering, query, directive, style, and reconnect lifecycle. Framework `@query()` access continues to work with a closed root. Override `createRenderRoot()` for a custom host or shadow-root policy; it must return the host element or a `ShadowRoot`.
+Shadow DOM is the default. Light DOM, open/closed shadow roots, and `delegatesFocus` all use the same rendering, query, style, event, and reconnect lifecycle. Framework `@query()` access continues to work with a closed root. Override `createRenderRoot()` for a custom host or shadow-root policy; it must return the host element or a `ShadowRoot`.
 
 `renderRoot` and `shadow` may be written together only when they select the same root kind. An explicit child-class `shadow` option overrides an inherited light/shadow kind; an explicit child `renderRoot: 'shadow'` likewise escapes an inherited `shadow: false` setting.
-
-## Custom directives
-
-Extend `Directive` when behavior needs retained per-expression state:
-
-```typescript
-class Uppercase extends Directive {
-  render(value: unknown) {
-    return String(value).toUpperCase();
-  }
-
-  update(part: DirectivePart, [value]: readonly [unknown]) {
-    return this.render(value);
-  }
-
-  disconnected(context?: DirectiveDisconnectContext) {
-    // context.reason is 'host', 'branch', or 'dispose'
-  }
-  reconnected() {}
-  adopted(nodeMap: ReadonlyMap<Node, Node>) {}
-}
-
-export const uppercase = directive<Uppercase, readonly [unknown]>(Uppercase);
-```
-
-Directives work in node, attribute, property, boolean-attribute, event, element, class, style, and spread positions. `PartInfo` identifies the position. `DirectivePart.setValue()` can publish a later value without replacing the directive. Instances are retained while the same directive class remains in the same expression slot and receive paired connection callbacks. The optional `DirectiveDisconnectContext` identifies whether the host was detached, a branch was parked, or the directive was permanently disposed.
-
-For SSR, add a static `renderToString(values, context)` method. It may return a value or, when `context.async` is true, a promise. `directiveServerResult(kind, value, name?)` lets an element directive emit attribute/property spreads or a named hydration boundary.
-
-## Server rendering and hydration
-
-The server renderer has no DOM dependency:
-
-```typescript
-const body = renderToString(html`<main>${content}</main>`);
-
-const asyncBody = await renderToStringAsync(html`
-  <main>${fetchContent()}</main>
-`);
-```
-
-`renderToString()` emits hydration boundaries and renders the pending branch of `resource()`. `renderToStringAsync()` awaits promises, consumes async iterables to their latest value, and runs async directive rendering across node, attribute, property, spread, control-flow, and dynamic-component positions. Pass `{ hydratable: false }` when no client attachment is needed.
-
-Render a complete custom-element host with light DOM or declarative shadow DOM:
-
-```typescript
-const markup = await renderElementToStringAsync(
-  'user-panel',
-  html`<h2>${loadName()}</h2>`,
-  {
-    attributes: { 'user-id': id },
-    styles: UserPanel.styles,
-    shadow: 'closed',
-    delegatesFocus: true
-  }
-);
-```
-
-Use `renderRoot: 'light'` or its `shadow: false` shorthand for light-DOM output. `shadow: 'open'` is the default; `shadow: 'closed'` emits a closed declarative shadow root.
-
-`renderElementToString()` and its async counterpart add `data-snice-hydrate` by default. When the component upgrades, its first render hydrates matching server DOM, preserves node identity, attaches events/directives, reuses matching server styles, and removes the marker.
-
-Manual hydration is also available:
-
-```typescript
-hydrate(template, container);
-hydrate(template, container, { onMismatch: 'replace' });
-hydrateElement(customElement, template);
-```
-
-The default mismatch policy throws `HydrationError` with a structural path. `replace` logs the mismatch and mounts a fresh tree.
-
-Declarative shadow DOM is an output format for shadow-root hosts; light-DOM SSR works without it. Browsers that do not parse declarative shadow DOM need a server or bootstrap polyfill before `hydrateElement()` can attach to that markup.
 
 ## Editor metadata
 
