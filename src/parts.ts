@@ -866,6 +866,9 @@ export class NodePart extends Part {
   private _asyncVersion = 0;
   private _asyncIterator: AsyncIterator<unknown> | null = null;
   private _asyncRunning = false;
+  private _asyncStarted = false;
+  private _asyncCompleted = false;
+  private _asyncPaused = false;
   private _committingAsyncValue = false;
 
   constructor(startNode: Comment, endNode: Comment) {
@@ -1264,6 +1267,9 @@ export class NodePart extends Part {
     if (source === this._asyncSource) return;
     this._cancelAsync(false);
     this._asyncSource = source;
+    this._asyncStarted = false;
+    this._asyncCompleted = false;
+    this._asyncPaused = false;
     const cleanupError = this._clear();
     this._committedValue = nothing;
     this._startAsyncSource();
@@ -1272,8 +1278,13 @@ export class NodePart extends Part {
 
   private _startAsyncSource(forceConnected = false): void {
     const source = this._asyncSource;
-    if (!source || this._asyncRunning || (!forceConnected && !this.isConnected)) return;
+    if (
+      !source || this._asyncRunning || this._asyncCompleted ||
+      (!forceConnected && !this.isConnected)
+    ) return;
     this._asyncRunning = true;
+    this._asyncStarted = true;
+    this._asyncPaused = false;
     const version = ++this._asyncVersion;
 
     if (isAsyncIterable(source)) {
@@ -1281,6 +1292,7 @@ export class NodePart extends Part {
         this._asyncIterator = source[Symbol.asyncIterator]();
       } catch (error) {
         this._asyncRunning = false;
+        this._asyncCompleted = true;
         console.error('snice: async iterable template value failed:', error);
         return;
       }
@@ -1297,6 +1309,7 @@ export class NodePart extends Part {
           if (version === this._asyncVersion) {
             this._asyncIterator = null;
             this._asyncRunning = false;
+            this._asyncCompleted = true;
           }
         }
       })();
@@ -1307,6 +1320,7 @@ export class NodePart extends Part {
       value => {
         if (version !== this._asyncVersion) return;
         this._asyncRunning = false;
+        this._asyncCompleted = true;
         try {
           this._commitAsyncValue(value);
         } catch (error) {
@@ -1316,6 +1330,7 @@ export class NodePart extends Part {
       error => {
         if (version !== this._asyncVersion) return;
         this._asyncRunning = false;
+        this._asyncCompleted = true;
         console.error('snice: promise template value failed:', error);
       }
     );
@@ -1335,7 +1350,12 @@ export class NodePart extends Part {
     const iterator = this._asyncIterator;
     this._asyncIterator = null;
     this._asyncRunning = false;
-    if (clearSource) this._asyncSource = null;
+    if (clearSource) {
+      this._asyncSource = null;
+      this._asyncStarted = false;
+      this._asyncCompleted = false;
+      this._asyncPaused = false;
+    }
     if (iterator?.return) {
       try {
         void Promise.resolve(iterator.return()).catch(() => {});
@@ -1422,7 +1442,10 @@ export class NodePart extends Part {
         }
       }
     }
-    if (this._asyncSource) this._cancelAsync(false);
+    if (this._asyncSource && this._asyncRunning) {
+      this._cancelAsync(false);
+      this._asyncPaused = true;
+    }
     if (lifecycleError) throw lifecycleError;
   }
 
@@ -1444,7 +1467,9 @@ export class NodePart extends Part {
         }
       }
     }
-    this._startAsyncSource(true);
+    if (this._asyncSource && (!this._asyncStarted || this._asyncPaused)) {
+      this._startAsyncSource(true);
+    }
     if (lifecycleError) throw lifecycleError;
   }
 }

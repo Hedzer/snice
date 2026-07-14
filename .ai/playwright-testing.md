@@ -39,10 +39,12 @@ import { test, expect } from '@playwright/test';
 
 test('component functionality', async ({ page }) => {
   // Navigate to component demo
-  await page.goto('http://localhost:5566/components/component-name/demo.html');
+  await page.goto('http://localhost:5566/components/component-name/demo.html', {
+    waitUntil: 'domcontentloaded'
+  });
 
-  // Wait for component to load
-  await page.waitForLoadState('networkidle');
+  // Wait for the exact readiness condition the test needs
+  await page.waitForFunction(() => !!customElements.get('snice-component-name'));
 
   // Test interactions - NO SCREENSHOTS
   const button = page.locator('button');
@@ -60,9 +62,30 @@ test('component functionality', async ({ page }) => {
 
 ### 3. Running Tests
 ```bash
-# Always headless, no screenshots
-npx playwright test .debug/test-file.spec.js --project=chromium
+# One-off debugging in a single engine
+npx playwright test .debug/test-file.spec.js --config=tests/playwright.config.ts --project=chromium
+
+# Install the complete supported matrix once
+npm run test:browsers:install
+
+# Managed-server live tests in Chromium, Firefox, and WebKit
+npm run test:live
+
+# Required built-customer/rendering/table browser gate in all three engines
+npm run test:browser:core
+
+# Build the deployment artifact and test the public site in all three engines
+npm run website:test:render
 ```
+
+`tests/playwright.config.ts` defines the supported desktop browser matrix:
+Chromium, Firefox, and WebKit. Permanent tests must pass in all three. The npm
+runners start and stop the required servers; do not require a developer to have
+an existing server or stale build running.
+
+Prefer deterministic readiness checks (`customElements.whenDefined()`, a known
+DOM state, or a visible locator) over `networkidle`. The generated website loads
+many independent assets, so network quiet is neither necessary nor sufficient.
 
 ### 4. Debugging Techniques
 
@@ -174,10 +197,8 @@ npx playwright test .debug/temp-test.spec.js
 rm .debug/temp-test.spec.js
 ```
 
-### Persistent Debug Files
-- Only keep debug files that are reusable
-- Name them descriptively: `debug-drawer-opening.spec.js`
-- Add comments explaining what they test
+Reusable cases are permanent tests and belong under `tests/live/`, never under
+`.debug/`.
 
 ## Example: Debugging Drawer Issue
 
@@ -192,7 +213,7 @@ test('debug drawer opening issue', async ({ page }) => {
 
   // Navigate to demo
   await page.goto('http://localhost:5566/components/drawer/demo.html');
-  await page.waitForLoadState('networkidle');
+  await page.waitForFunction(() => !!customElements.get('snice-drawer'));
 
   // Check if custom element is defined
   const isCustomElementDefined = await page.evaluate(() =>

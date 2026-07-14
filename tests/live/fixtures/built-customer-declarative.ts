@@ -1,4 +1,4 @@
-import { SniceElement, element, html, repeat, state } from '../../../dist/index.esm.js';
+import { SniceElement, element, html, repeat, state, svg } from '../../../dist/index.esm.js';
 
 @element('test-built-customer-declarative')
 class BuiltCustomerDeclarative extends SniceElement {
@@ -135,5 +135,161 @@ export async function exerciseBuiltCustomerScenario() {
     afterParkingOnceCalls,
     detached,
     identityAfterHostReconnect
+  };
+}
+
+type ContextItem = { id: number; label: string };
+
+@element('test-built-repeat-contexts')
+class BuiltRepeatContexts extends SniceElement {
+  @state() items: ContextItem[] = [
+    { id: 1, label: 'one' },
+    { id: 2, label: 'two' }
+  ];
+
+  render() {
+    return html`
+      <table><tbody>${repeat(this.items, {
+        key: item => item.id,
+        render: item => html`<tr data-id=${item.id}><td>${item.label}</td></tr>`
+      })}</tbody></table>
+      <select>${repeat(this.items, {
+        key: item => item.id,
+        render: item => html`<option value=${item.id}>${item.label}</option>`
+      })}</select>
+      <svg viewBox="0 0 10 10">${repeat(this.items, {
+        key: item => item.id,
+        render: (item, index) => svg`<circle data-id=${item.id} cx=${index + 1} cy="2" r="1"></circle>`
+      })}</svg>
+    `;
+  }
+}
+
+export async function exerciseBuiltRepeatContextsScenario() {
+  const host = document.createElement('test-built-repeat-contexts') as BuiltRepeatContexts;
+  document.body.append(host);
+  await host.ready;
+  const root = host.shadowRoot!;
+  const row = root.querySelector('tr[data-id="1"]');
+  const option = root.querySelector('option[value="1"]');
+  const circle = root.querySelector('circle[data-id="1"]');
+
+  host.items = [
+    { id: 2, label: 'two updated' },
+    { id: 1, label: 'one updated' },
+    { id: 3, label: 'three' }
+  ];
+  await host.rendered;
+
+  const result = {
+    parents: [row?.parentElement?.tagName, option?.parentElement?.tagName],
+    svgNamespace: circle?.namespaceURI,
+    identities: [
+      root.querySelector('tr[data-id="1"]') === row,
+      root.querySelector('option[value="1"]') === option,
+      root.querySelector('circle[data-id="1"]') === circle
+    ],
+    rows: [...root.querySelectorAll('tbody tr')].map(node => node.textContent),
+    options: [...root.querySelectorAll('select option')].map(node => node.textContent),
+    circlePositions: [...root.querySelectorAll('svg circle')].map(node => node.getAttribute('cx'))
+  };
+  host.remove();
+  return result;
+}
+
+function browserDeferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>(yes => { resolve = yes; });
+  return { promise, resolve };
+}
+
+function browserStream<T>() {
+  const pending: Array<ReturnType<typeof browserDeferred<IteratorResult<T>>>> = [];
+  let opened = 0;
+  let returned = 0;
+  const iterable: AsyncIterable<T> = {
+    [Symbol.asyncIterator]() {
+      opened++;
+      return {
+        next() {
+          const next = browserDeferred<IteratorResult<T>>();
+          pending.push(next);
+          return next.promise;
+        },
+        return() {
+          returned++;
+          return Promise.resolve({ done: true, value: undefined });
+        }
+      };
+    }
+  };
+  return {
+    iterable,
+    get opened() { return opened; },
+    get returned() { return returned; },
+    emit(value: T) { pending.shift()!.resolve({ done: false, value }); },
+    finish() { pending.shift()!.resolve({ done: true, value: undefined }); }
+  };
+}
+
+const initialAsyncValue = browserDeferred<string>();
+
+@element('test-built-async-lifecycle')
+class BuiltAsyncLifecycle extends SniceElement {
+  @state() source: unknown = initialAsyncValue.promise;
+  @state() revision = 0;
+
+  render() {
+    return html`<main>${this.source}</main><aside>${this.revision}</aside>`;
+  }
+}
+
+export async function exerciseBuiltAsyncLifecycleScenario() {
+  const host = document.createElement('test-built-async-lifecycle') as BuiltAsyncLifecycle;
+  document.body.append(host);
+  await host.ready;
+  const root = host.shadowRoot!;
+  const current = browserDeferred<string>();
+  host.source = current.promise;
+  await host.rendered;
+  initialAsyncValue.resolve('stale');
+  await Promise.resolve();
+  const staleIgnored = !root.textContent?.includes('stale');
+  current.resolve('current');
+  await Promise.resolve();
+  const currentRendered = root.querySelector('main')?.textContent === 'current';
+
+  const completed = browserStream<unknown>();
+  host.source = completed.iterable;
+  await host.rendered;
+  completed.emit(html`<strong>streamed</strong>`);
+  await Promise.resolve();
+  completed.finish();
+  await Promise.resolve();
+  host.revision++;
+  await host.rendered;
+  host.remove();
+  document.body.append(host);
+  await Promise.resolve();
+  const streamedTemplate = root.querySelector('strong')?.textContent === 'streamed';
+  const completedOpenCount = completed.opened;
+
+  const pending = browserStream<string>();
+  host.source = pending.iterable;
+  await host.rendered;
+  host.remove();
+  const cancellation = pending.returned;
+  document.body.append(host);
+  await Promise.resolve();
+  const restarted = pending.opened;
+  host.remove();
+
+  return {
+    staleIgnored,
+    currentRendered,
+    streamedTemplate,
+    completedOpenCount,
+    cancellation,
+    restarted
   };
 }

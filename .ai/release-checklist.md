@@ -12,7 +12,8 @@ These happen automatically during `npm run release`:
 - [ ] Git tag + commit
 
 ## Manual Review Before Release
-- [ ] All tests pass: `npm test`
+- [ ] Complete gate passes: `npm test` (source + built distribution, CDN, React,
+      >90% core-engine coverage, Chromium/Firefox/WebKit, generated deployment)
 - [ ] Build succeeds: `npm run build`
 - [ ] New components: removed from `components/.wip`
 - [ ] New components: docs, showcases, React adapters all complete (see `component-checklist.md`)

@@ -1,12 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-const websiteBase = 'http://127.0.0.1:52891';
+const websiteBase = process.env.WEBSITE_BASE_URL || 'http://127.0.0.1:52891';
 
 test.describe('Website Component Rendering', () => {
   test('components render in browser', async ({ page }) => {
-    await page.goto(`${websiteBase}/components.html`);
-
-    await page.waitForLoadState('networkidle');
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => !!customElements.get('snice-input'));
 
     for (const tag of ['snice-button', 'snice-badge', 'snice-alert', 'snice-spinner', 'snice-input']) {
@@ -23,8 +21,7 @@ test.describe('Website Component Rendering', () => {
 
   test('theme toggle works', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('snice-theme', 'light'));
-    await page.goto(websiteBase);
-    await page.waitForLoadState('networkidle');
+    await page.goto(websiteBase, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
     await page.click('.theme-btn');
@@ -38,8 +35,7 @@ test.describe('Website Component Rendering', () => {
   });
 
   test('modal opens', async ({ page }) => {
-    await page.goto(`${websiteBase}/components.html`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => !!customElements.get('snice-modal'));
 
     const openModalBtn = page.locator('snice-button', { hasText: 'Open Modal' }).first();
@@ -54,8 +50,7 @@ test.describe('Website Component Rendering', () => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
-    await page.goto(`${websiteBase}/guide.html`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`${websiteBase}/guide.html`, { waitUntil: 'domcontentloaded' });
     for (const id of [
       'state', 'deep-state', 'roots',
       'bindings', 'forms', 'spreads',
@@ -72,7 +67,6 @@ test.describe('Website Component Rendering', () => {
 
     await bindingReference.click();
     await expect(page).toHaveURL(/\/docs\.html#bindings$/);
-    await page.waitForLoadState('networkidle');
     await expect(page.locator('#bindings')).toBeVisible();
     await expect(page.locator('.docs-sidebar a[href="#bindings"]')).toBeVisible();
     for (const id of [
@@ -87,8 +81,7 @@ test.describe('Website Component Rendering', () => {
     }
     await expect(page.getByText('Binding Channels', { exact: true }).first()).toBeVisible();
 
-    await page.goto(`${websiteBase}/docs.html#rendering`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`${websiteBase}/docs.html#rendering`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#rendering')).toBeVisible();
     for (const id of [
       'rendering-bindings',

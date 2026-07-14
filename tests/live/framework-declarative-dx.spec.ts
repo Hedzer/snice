@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('declarative rendering framework in a real browser', () => {
-  test('deep reactivity uses native Proxy and Reflect semantics in Chromium', async ({ page }) => {
+  test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {
       const { createDeepReactive } = await import('/src/reactive.ts');
@@ -75,5 +75,39 @@ test.describe('declarative rendering framework in a real browser', () => {
       once: 1
     });
     expect(result.identityAfterHostReconnect).toBe(true);
+  });
+
+  test('reconciles the built repeat implementation in table, select, and SVG contexts', async ({ page }) => {
+    await page.goto('/guide.html');
+    const result = await page.evaluate(async () => {
+      const fixture = await import('/tests/live/fixtures/built-customer-declarative.ts');
+      return fixture.exerciseBuiltRepeatContextsScenario();
+    });
+
+    expect(result).toEqual({
+      parents: ['TBODY', 'SELECT'],
+      svgNamespace: 'http://www.w3.org/2000/svg',
+      identities: [true, true, true],
+      rows: ['two updated', 'one updated', 'three'],
+      options: ['two updated', 'one updated', 'three'],
+      circlePositions: ['1', '2', '3']
+    });
+  });
+
+  test('handles stale, completed, cancelled, and restarted async values through the built ESM distribution', async ({ page }) => {
+    await page.goto('/guide.html');
+    const result = await page.evaluate(async () => {
+      const fixture = await import('/tests/live/fixtures/built-customer-declarative.ts');
+      return fixture.exerciseBuiltAsyncLifecycleScenario();
+    });
+
+    expect(result).toEqual({
+      staleIgnored: true,
+      currentRendered: true,
+      streamedTemplate: true,
+      completedOpenCount: 1,
+      cancellation: 1,
+      restarted: 2
+    });
   });
 });

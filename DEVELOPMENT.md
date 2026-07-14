@@ -600,15 +600,27 @@ testComponent({
 ### Test Commands
 
 ```bash
-npm test                       # All tests
+npm test                       # Complete required gate (source+built+browser+site)
 npm run test:src               # Test source files
 npm run test:built             # Test dist/ output
 npm run test:cdn               # Test CDN bundles
 npm run test:react-adapters    # Test React wrappers
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
-npm run test:coverage          # Generate coverage report
+npm run test:coverage          # Generate a general coverage report
+npm run test:coverage:core     # Enforce >90% for every core-engine metric
+npm run test:browsers:install  # Install Chromium, Firefox, and WebKit
+npm run test:browser:core      # Built renderer/table E2E in all three engines
+npm run website:test:render    # Generated deployment E2E in all three engines
 ```
+
+`npm test` runs source and built-distribution suites, CDN and React checks, the
+strict core-engine coverage gate, the built customer scenarios, and the
+generated public website in Chromium, Firefox, and WebKit. The browser runners
+manage their own local servers. The coverage scope is the rendering engine:
+`element.ts`, `parts.ts`, `reactive.ts`, `render-root.ts`, `render.ts`,
+`repeat.ts`, `snice-element.ts`, and `template.ts`; aggregate statements,
+branches, functions, and lines must each be strictly greater than 90%.
 
 ---
 
@@ -826,14 +838,18 @@ npm run build:test             # Build test utilities
 ### Test Scripts
 
 ```bash
-npm test                       # Run all test suites
+npm test                       # Complete source+built+coverage+browser+site gate
 npm run test:src               # Test source files
 npm run test:built             # Test dist/ output
 npm run test:cdn               # Test CDN bundles
 npm run test:react-adapters    # Test React wrappers
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
-npm run test:coverage          # Coverage report
+npm run test:coverage          # General coverage report
+npm run test:coverage:core     # Enforced core-engine coverage
+npm run test:browsers:install  # Install Chromium, Firefox, and WebKit
+npm run test:browser:core      # Required built browser scenarios
+npm run website:test:render    # Required generated-site scenarios
 ```
 
 ### Generator Scripts
@@ -996,10 +1012,8 @@ npm run test:watch       # Watch mode with auto-rerun
 
 **Playwright Debugging:**
 ```bash
-# Run with UI (see .ai/PLAYWRIGHT_TESTING_GUIDE.md)
-npx playwright test --ui
-npx playwright test --headed
-npx playwright test --debug
+# Keep project debugging headless; use logs, locators, and page errors.
+npx playwright test path/to/test.spec.ts --config=tests/playwright.config.ts --project=chromium
 ```
 
 **Build Debugging:**

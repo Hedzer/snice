@@ -39,6 +39,99 @@ describe('deep reactivity and authoring exhaustive behavior', () => {
     expect(host.data.set.constructor).toBe(Set);
   });
 
+  it('preserves every Map and Set iteration form, callback receiver, and native fallback', async () => {
+    const mapKey = { id: 1 };
+    const setValue = { id: 2 };
+    @element('test-reactive-collection-iteration-surface')
+    class TestReactiveCollectionIterationSurface extends SniceElement {
+      @state({ deep: true }) data = {
+        map: new Map([[mapKey, { count: 1 }]]),
+        set: new Set([setValue])
+      };
+      render() { return html`<p>${this.data.map.size}|${this.data.set.size}</p>`; }
+    }
+    const host = document.createElement('test-reactive-collection-iteration-surface') as TestReactiveCollectionIterationSurface;
+    container.append(host);
+    await host.ready;
+    const proxyKey = [...host.data.map.keys()][0];
+    const proxyValue = [...host.data.set.values()][0];
+    const receiver = {};
+    const mapCalls: unknown[][] = [];
+    const setCalls: unknown[][] = [];
+
+    host.data.map.forEach(function (this: unknown, value, key, map) {
+      mapCalls.push([this, value, key, map]);
+    }, receiver);
+    host.data.set.forEach(function (this: unknown, value, key, set) {
+      setCalls.push([this, value, key, set]);
+    }, receiver);
+
+    expect([...host.data.map.values()][0]).toBe(host.data.map.get(mapKey));
+    expect([...host.data.map.entries()]).toEqual([[proxyKey, host.data.map.get(mapKey)]]);
+    expect([...host.data.map]).toEqual([[proxyKey, host.data.map.get(mapKey)]]);
+    expect([...host.data.set.keys()]).toEqual([proxyValue]);
+    expect([...host.data.set.entries()]).toEqual([[proxyValue, proxyValue]]);
+    expect([...host.data.set]).toEqual([proxyValue]);
+    expect(mapCalls).toEqual([[receiver, host.data.map.get(mapKey), proxyKey, host.data.map]]);
+    expect(setCalls).toEqual([[receiver, proxyValue, proxyValue, host.data.set]]);
+    expect(host.data.map.toString()).toBe('[object Map]');
+    expect(host.data.set.toString()).toBe('[object Set]');
+  });
+
+  it('honors locked collection properties and failed reflective mutations without false notifications', async () => {
+    const watcher = vi.fn();
+    const lockedMap = new Map<string, number>();
+    const lockedSet = new Set<string>();
+    const lockedValue = { raw: true };
+    Object.defineProperty(lockedMap, 'locked', {
+      configurable: false,
+      writable: false,
+      value: lockedValue
+    });
+    Object.defineProperty(lockedSet, 'absent', {
+      configurable: false,
+      get: undefined
+    });
+    const frozen = Object.freeze({ value: 1 });
+
+    @element('test-reactive-reflective-failures')
+    class TestReactiveReflectiveFailures extends SniceElement {
+      @state({ deep: true }) data: any = { lockedMap, lockedSet, frozen };
+      @watch('data') changed() { watcher(); }
+      render() { return html`<p>${this.data.frozen.value}</p>`; }
+    }
+    const host = document.createElement('test-reactive-reflective-failures') as TestReactiveReflectiveFailures;
+    container.append(host);
+    await host.ready;
+    watcher.mockClear();
+
+    expect(host.data.lockedMap.locked).toBe(lockedValue);
+    expect(host.data.lockedSet.absent).toBeUndefined();
+    expect(Reflect.set(host.data.frozen, 'value', 2)).toBe(false);
+    expect(Reflect.deleteProperty(host.data.frozen, 'value')).toBe(false);
+    expect(Reflect.defineProperty(host.data.frozen, 'extra', { value: true })).toBe(false);
+    expect(watcher).not.toHaveBeenCalled();
+  });
+
+  it('observes null-prototype records and unwraps assigned proxies back to raw identity', async () => {
+    const child = { value: 1 };
+    const record = Object.create(null) as { child?: { value: number } };
+    record.child = child;
+    @element('test-reactive-null-prototype')
+    class TestReactiveNullPrototype extends SniceElement {
+      @state({ deep: true }) data = { first: { child }, second: record };
+      render() { return html`<p>${this.data.second.child?.value}</p>`; }
+    }
+    const host = document.createElement('test-reactive-null-prototype') as TestReactiveNullPrototype;
+    container.append(host);
+    await host.ready;
+    host.data.second.child = host.data.first.child;
+    host.data.second.child.value = 3;
+    await host.rendered;
+    expect(host.shadowRoot!.textContent).toContain('3');
+    expect(record.child).toBe(child);
+  });
+
   it('notifies exactly once for an ordinary nested assignment and ignores no-op collection writes', async () => {
     const watcher = vi.fn();
     @element('test-reactive-mutation-count')

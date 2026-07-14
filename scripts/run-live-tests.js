@@ -71,9 +71,18 @@ async function main() {
   process.on('SIGINT', () => { cleanup(); process.exit(130); });
   process.on('SIGTERM', () => { cleanup(); process.exit(143); });
 
-  const args = ['playwright', 'test', 'tests/live', '--config=tests/playwright.config.ts'];
   const passthrough = process.argv.slice(2);
-  const playwright = spawn('npx', [...args, ...passthrough], { stdio: 'inherit' });
+  const targeted = passthrough.includes('--targeted');
+  const forwarded = passthrough.filter(arg => arg !== '--targeted');
+  const targets = targeted ? [] : ['tests/live'];
+  const args = [
+    'playwright',
+    'test',
+    ...targets,
+    '--config=tests/playwright.config.ts',
+    ...forwarded
+  ];
+  const playwright = spawn('npx', args, { stdio: 'inherit' });
 
   playwright.on('exit', (code) => {
     cleanup();

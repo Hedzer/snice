@@ -31,13 +31,22 @@ npm run generate:react-tests     # Generate test files
 ## Test Commands
 
 ```bash
-npm test                        # All tests
+npm test                        # Required complete gate (source+built+browser+site)
 npm run test:src                # Source tests
 npm run test:built              # Dist tests
 npm run test:cdn                # CDN tests
 npm run test:react-adapters     # React tests
 npm run test:watch              # Watch mode
+npm run test:coverage:core      # Enforce >90% statements/branches/functions/lines
+npm run test:browsers:install   # Install Chromium + Firefox + WebKit
+npm run test:browser:core       # Built renderer/table E2E in all 3 engines
+npm run website:test:render     # Generated deployment E2E in all 3 engines
 ```
+
+`npm test` is intentionally comprehensive. Core coverage is measured across
+`element.ts`, `parts.ts`, `reactive.ts`, `render-root.ts`, `render.ts`,
+`repeat.ts`, `snice-element.ts`, and `template.ts`; every aggregate metric must
+be strictly greater than 90%. Browser commands manage their own local servers.
 
 ## File Structure
 
@@ -266,7 +275,8 @@ Format for AI docs:
 ```bash
 npm run test:watch           # Watch mode
 npm run test:ui              # Vitest UI
-npm run test:coverage        # Coverage report
+npm run test:coverage        # General coverage report
+npm run test:coverage:core   # Enforced core-engine report
 ```
 
 **Add build format:**
