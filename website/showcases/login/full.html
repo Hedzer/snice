@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    snice-login { max-width: 400px; display: block; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: default</h2>
+<snice-login variant="default"></snice-login>
+
+<h2>Variant: card</h2>
+<snice-login variant="card"></snice-login>
+
+<h2>Variant: minimal</h2>
+<snice-login variant="minimal"></snice-login>
+
+<h2>All variants side-by-side</h2>
+<div class="row">
+  <snice-login variant="default" title="Default"></snice-login>
+  <snice-login variant="card" title="Card"></snice-login>
+  <snice-login variant="minimal" title="Minimal"></snice-login>
+</div>
+
+<h2>Size: small</h2>
+<snice-login size="small" title="Small Login"></snice-login>
+
+<h2>Size: medium (default)</h2>
+<snice-login size="medium" title="Medium Login"></snice-login>
+
+<h2>Size: large</h2>
+<snice-login size="large" title="Large Login"></snice-login>
+
+<h2>Variant x Size: card + small</h2>
+<snice-login variant="card" size="small" title="Card Small"></snice-login>
+
+<h2>Variant x Size: card + large</h2>
+<snice-login variant="card" size="large" title="Card Large"></snice-login>
+
+<h2>Variant x Size: minimal + small</h2>
+<snice-login variant="minimal" size="small" title="Minimal Small"></snice-login>
+
+<h2>Variant x Size: minimal + large</h2>
+<snice-login variant="minimal" size="large" title="Minimal Large"></snice-login>
+
+<h2>Custom title</h2>
+<snice-login title="Welcome Back"></snice-login>
+
+<h2>Custom action text</h2>
+<snice-login action-text="Log In"></snice-login>
+
+<h2>Custom title + action text</h2>
+<snice-login title="Create Account" action-text="Register"></snice-login>
+
+<h2>Disabled</h2>
+<snice-login disabled title="Disabled"></snice-login>
+
+<h2>Loading</h2>
+<snice-login loading title="Loading"></snice-login>
+
+<h2>Show remember me: true (default)</h2>
+<snice-login show-remember-me title="Remember Me Shown"></snice-login>
+
+<h2>Show remember me: false</h2>
+<snice-login show-remember-me="false" title="No Remember Me"></snice-login>
+
+<h2>Show forgot password: true (default)</h2>
+<snice-login show-forgot-password title="Forgot Password Shown"></snice-login>
+
+<h2>Show forgot password: false</h2>
+<snice-login show-forgot-password="false" title="No Forgot Password"></snice-login>
+
+<h2>Both options hidden</h2>
+<snice-login show-remember-me="false" show-forgot-password="false" title="No Options"></snice-login>
+
+<h2>Disabled + Loading</h2>
+<snice-login disabled loading title="Disabled + Loading"></snice-login>
+
+<h2>Slot: subtitle</h2>
+<snice-login title="Welcome">
+  <p slot="subtitle" style="margin:0;color:var(--snice-color-text-secondary,#666);">Please sign in to your account</p>
+</snice-login>
+
+<h2>Slot: before-header</h2>
+<snice-login title="Sign In">
+  <div slot="before-header" style="text-align:center;margin-bottom:1rem;font-size:2rem;">&#x1F512;</div>
+</snice-login>
+
+<h2>Slot: after-header</h2>
+<snice-login title="Sign In">
+  <div slot="after-header" style="padding:0.5rem 0;text-align:center;font-size:0.875rem;color:var(--snice-color-text-secondary,#666);">Or sign in with social</div>
+</snice-login>
+
+<h2>Slot: before-form</h2>
+<snice-login title="Sign In">
+  <div slot="before-form" style="padding:0.5rem;background:var(--snice-color-surface-container-high,#f5f5f5);border-radius:4px;text-align:center;font-size:0.875rem;">New here? Create an account first.</div>
+</snice-login>
+
+<h2>Slot: after-form</h2>
+<snice-login title="Sign In">
+  <div slot="after-form" style="margin-top:1rem;text-align:center;font-size:0.875rem;color:var(--snice-color-text-secondary,#666);">By continuing, you agree to our Terms.</div>
+</snice-login>
+
+<h2>Slot: form-top</h2>
+<snice-login title="Sign In">
+  <div slot="form-top" style="padding:0.5rem;background:var(--snice-color-surface-container-high,#f5f5f5);border-radius:4px;margin-bottom:0.5rem;font-size:0.875rem;">Session expired. Please sign in again.</div>
+</snice-login>
+
+<h2>Slot: between-fields</h2>
+<snice-login title="Sign In">
+  <div slot="between-fields" style="padding:0.25rem 0;font-size:0.75rem;color:var(--snice-color-text-tertiary,#888);">Must be at least 8 characters</div>
+</snice-login>
+
+<h2>Slot: before-submit</h2>
+<snice-login title="Sign In">
+  <div slot="before-submit" style="padding:0.25rem 0;">
+    <label style="font-size:0.875rem;display:flex;align-items:center;gap:0.5rem;"><input type="checkbox"> I accept the Terms of Service</label>
+  </div>
+</snice-login>
+
+<h2>Slot: after-submit</h2>
+<snice-login title="Sign In">
+  <div slot="after-submit" style="text-align:center;margin-top:0.5rem;font-size:0.875rem;">
+    <a href="#" style="color:var(--snice-color-primary,#2563eb);">Sign in with SSO</a>
+  </div>
+</snice-login>
+
+<h2>Slot: footer</h2>
+<snice-login title="Sign In">
+  <div slot="footer" style="text-align:center;font-size:0.875rem;">
+    Don't have an account? <a href="#" style="color:var(--snice-color-primary,#2563eb);">Create one</a>
+  </div>
+</snice-login>
+
+<h2>Multiple slots combined</h2>
+<snice-login variant="card" title="Full Customization">
+  <div slot="before-header" style="text-align:center;font-size:2rem;">&#x1F510;</div>
+  <p slot="subtitle" style="margin:0;color:var(--snice-color-text-secondary,#666);">Secure access to your dashboard</p>
+  <div slot="after-submit" style="text-align:center;margin-top:0.75rem;font-size:0.875rem;">
+    <a href="#" style="color:var(--snice-color-primary,#2563eb);">Use Single Sign-On</a>
+  </div>
+  <div slot="footer" style="text-align:center;font-size:0.875rem;">
+    Need help? <a href="#" style="color:var(--snice-color-primary,#2563eb);">Contact support</a>
+  </div>
+</snice-login>
+
+<script type="module">import '../../../components/login/snice-login.ts';</script>
+</body>
+</html>

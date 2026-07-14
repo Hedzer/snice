@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Order</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 1.5rem; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<h2>Priority: all values</h2>
+<div class="grid">
+  <snice-work-order id="wo-low" wo-number="WO-001" date="2024-03-01" priority="low" status="open" description="Low priority task"></snice-work-order>
+  <snice-work-order id="wo-med" wo-number="WO-002" date="2024-03-01" priority="medium" status="open" description="Medium priority task"></snice-work-order>
+  <snice-work-order id="wo-high" wo-number="WO-003" date="2024-03-01" priority="high" status="open" description="High priority task"></snice-work-order>
+  <snice-work-order id="wo-urgent" wo-number="WO-004" date="2024-03-01" priority="urgent" status="open" description="Urgent priority task"></snice-work-order>
+</div>
+
+<h2>Status: all values</h2>
+<div class="grid">
+  <snice-work-order wo-number="WO-010" date="2024-03-01" priority="medium" status="open" description="Open status"></snice-work-order>
+  <snice-work-order wo-number="WO-011" date="2024-03-01" priority="medium" status="in-progress" description="In progress status"></snice-work-order>
+  <snice-work-order wo-number="WO-012" date="2024-03-01" priority="medium" status="completed" description="Completed status"></snice-work-order>
+  <snice-work-order wo-number="WO-013" date="2024-03-01" priority="medium" status="cancelled" description="Cancelled status"></snice-work-order>
+</div>
+
+<h2>Variant: standard (default)</h2>
+<snice-work-order id="wo-standard" variant="standard"></snice-work-order>
+
+<h2>Variant: compact</h2>
+<snice-work-order id="wo-compact" variant="compact"></snice-work-order>
+
+<h2>Variant: field-service</h2>
+<snice-work-order id="wo-field" variant="field-service"></snice-work-order>
+
+<h2>Variant: maintenance</h2>
+<snice-work-order id="wo-maint" variant="maintenance"></snice-work-order>
+
+<h2>Variant: detailed</h2>
+<snice-work-order id="wo-detailed" variant="detailed"></snice-work-order>
+
+<h2>With Customer</h2>
+<snice-work-order id="wo-customer" wo-number="WO-020" date="2024-03-10" priority="high" status="open" description="HVAC repair needed"></snice-work-order>
+
+<h2>With Asset</h2>
+<snice-work-order id="wo-asset" wo-number="WO-021" date="2024-03-10" priority="medium" status="in-progress" description="Annual maintenance"></snice-work-order>
+
+<h2>With Tasks</h2>
+<snice-work-order id="wo-tasks" wo-number="WO-022" date="2024-03-12" priority="high" status="in-progress" description="Replace air handler unit"></snice-work-order>
+
+<h2>With Parts</h2>
+<snice-work-order id="wo-parts" wo-number="WO-023" date="2024-03-12" priority="medium" status="open" description="Electrical panel upgrade"></snice-work-order>
+
+<h2>With Labor Rate + Tasks (cost calculation)</h2>
+<snice-work-order id="wo-labor" wo-number="WO-024" date="2024-03-15" priority="medium" status="in-progress" description="Plumbing repair"></snice-work-order>
+
+<h2>With Notes</h2>
+<snice-work-order wo-number="WO-025" date="2024-03-15" priority="low" status="open" description="General inspection" notes="Customer prefers morning appointments. Access code: 1234. Park in visitor lot."></snice-work-order>
+
+<h2>With Due Date</h2>
+<snice-work-order wo-number="WO-026" date="2024-03-15" due-date="2024-03-20" priority="urgent" status="open" description="Emergency boiler repair"></snice-work-order>
+
+<h2>QR Code: show-qr with positions</h2>
+<div class="grid">
+  <div>
+    <div class="label">qr-position=top-right</div>
+    <snice-work-order wo-number="WO-030" date="2024-03-15" priority="medium" status="open" show-qr qr-position="top-right" qr-data="https://app.example.com/wo/030" description="QR at top-right">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+  <div>
+    <div class="label">qr-position=header</div>
+    <snice-work-order wo-number="WO-031" date="2024-03-15" priority="medium" status="open" show-qr qr-position="header" description="QR at header">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+  <div>
+    <div class="label">qr-position=footer</div>
+    <snice-work-order wo-number="WO-032" date="2024-03-15" priority="medium" status="open" show-qr qr-position="footer" description="QR at footer">
+      <div slot="qr" style="width: 4rem; height: 4rem; background: var(--snice-color-border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border-radius: 4px;">QR</div>
+    </snice-work-order>
+  </div>
+</div>
+
+<h2>Slots: signature and footer</h2>
+<snice-work-order wo-number="WO-040" date="2024-03-18" priority="medium" status="completed" description="Completed work with signature">
+  <div slot="signature" style="padding: 0.5rem; font-style: italic; color: var(--snice-color-text-secondary);">Digital signature placeholder</div>
+  <div slot="footer" style="font-size: 0.75rem; color: var(--snice-color-text-tertiary); text-align: center; padding: 0.5rem;">Generated by WorkOrder System v2.0</div>
+</snice-work-order>
+
+<h2>Default Slot (additional content)</h2>
+<snice-work-order wo-number="WO-041" date="2024-03-18" priority="low" status="open" description="Work order with extra content">
+  <div style="padding: 1rem; border-top: 1px solid var(--snice-color-border); font-size: 0.8rem; color: var(--snice-color-text-secondary);">
+    Custom slotted content appears at the bottom of the work order.
+  </div>
+</snice-work-order>
+
+<h2>Full Work Order (all sections populated)</h2>
+<snice-work-order id="wo-full" variant="standard"></snice-work-order>
+
+<h2>Minimal (just WO number)</h2>
+<snice-work-order wo-number="WO-099"></snice-work-order>
+
+<h2>No WO Number</h2>
+<snice-work-order status="open" priority="medium" description="Work order without a number"></snice-work-order>
+
+<h2>Priority x Status Matrix</h2>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-size: 0.7rem;">
+  <snice-work-order wo-number="L-Open" priority="low" status="open"></snice-work-order>
+  <snice-work-order wo-number="L-InProg" priority="low" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="L-Done" priority="low" status="completed"></snice-work-order>
+  <snice-work-order wo-number="L-Cancel" priority="low" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="M-Open" priority="medium" status="open"></snice-work-order>
+  <snice-work-order wo-number="M-InProg" priority="medium" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="M-Done" priority="medium" status="completed"></snice-work-order>
+  <snice-work-order wo-number="M-Cancel" priority="medium" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="H-Open" priority="high" status="open"></snice-work-order>
+  <snice-work-order wo-number="H-InProg" priority="high" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="H-Done" priority="high" status="completed"></snice-work-order>
+  <snice-work-order wo-number="H-Cancel" priority="high" status="cancelled"></snice-work-order>
+  <snice-work-order wo-number="U-Open" priority="urgent" status="open"></snice-work-order>
+  <snice-work-order wo-number="U-InProg" priority="urgent" status="in-progress"></snice-work-order>
+  <snice-work-order wo-number="U-Done" priority="urgent" status="completed"></snice-work-order>
+  <snice-work-order wo-number="U-Cancel" priority="urgent" status="cancelled"></snice-work-order>
+</div>
+
+<script type="module">
+  import '../../../components/work-order/snice-work-order.ts';
+
+  const customer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };
+  const asset = { id: 'HVAC-301', name: 'Rooftop Unit #3', location: '3rd Floor', serial: 'SN-2019-4521', lastService: '2024-01-15' };
+  const tasks = [
+    { description: 'Inspect unit', assignee: 'John', completed: true, hours: 1 },
+    { description: 'Replace filters', assignee: 'John', completed: true, hours: 0.5 },
+    { description: 'Test operation', assignee: 'Jane', completed: false, hours: 1 },
+    { description: 'Document findings', assignee: 'Jane', completed: false, hours: 0.5 },
+  ];
+  const parts = [
+    { name: 'Air Filter (20x20)', partNumber: 'AF-2020', quantity: 4, unitCost: 12.50 },
+    { name: 'Belt (V-type)', partNumber: 'BLT-V42', quantity: 1, unitCost: 28.00 },
+    { name: 'Refrigerant R-410A', partNumber: 'REF-410', quantity: 2, unitCost: 75.00 },
+  ];
+
+  // Variants
+  for (const v of ['standard', 'compact', 'field', 'maint', 'detailed']) {
+    const variant = v === 'field' ? 'field-service' : v === 'maint' ? 'maintenance' : v;
+    const el = document.getElementById(`wo-${v}`);
+    el.woNumber = `WO-V-${v.toUpperCase()}`;
+    el.date = '2024-03-15';
+    el.dueDate = '2024-03-20';
+    el.priority = 'high';
+    el.status = 'in-progress';
+    el.customer = customer;
+    el.description = 'Annual HVAC maintenance and filter replacement';
+    el.tasks = JSON.parse(JSON.stringify(tasks));
+    el.parts = JSON.parse(JSON.stringify(parts));
+    el.asset = asset;
+    el.laborRate = 75;
+    el.notes = 'Customer prefers morning appointments';
+  }
+
+  // Customer
+  document.getElementById('wo-customer').customer = customer;
+
+  // Asset
+  document.getElementById('wo-asset').asset = asset;
+
+  // Tasks
+  document.getElementById('wo-tasks').tasks = JSON.parse(JSON.stringify(tasks));
+
+  // Parts
+  const woParts = document.getElementById('wo-parts');
+  woParts.parts = JSON.parse(JSON.stringify(parts));
+
+  // Labor
+  const woLabor = document.getElementById('wo-labor');
+  woLabor.tasks = JSON.parse(JSON.stringify(tasks));
+  woLabor.laborRate = 85;
+
+  // Full
+  const woFull = document.getElementById('wo-full');
+  woFull.woNumber = 'WO-2024-FULL';
+  woFull.date = '2024-03-15';
+  woFull.dueDate = '2024-03-22';
+  woFull.priority = 'high';
+  woFull.status = 'in-progress';
+  woFull.customer = customer;
+  woFull.description = 'Complete HVAC system overhaul including compressor replacement, duct cleaning, and thermostat upgrade for the third floor office suite.';
+  woFull.tasks = JSON.parse(JSON.stringify(tasks));
+  woFull.parts = JSON.parse(JSON.stringify(parts));
+  woFull.asset = asset;
+  woFull.laborRate = 95;
+  woFull.notes = 'Access through loading dock. Security escort required after 6 PM. Customer has approved overtime if needed.';
+</script>
+</body>
+</html>

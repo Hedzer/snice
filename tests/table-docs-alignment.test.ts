@@ -9,10 +9,10 @@ const read = (path: string) => readFileSync(join(root, path), 'utf8');
 const human = read('docs/components/table.md');
 const ai = read('docs/ai/components/table.md');
 const standards = read('.ai/coding-standards.md');
-const publicShowcase = read('public/showcases/table.html');
-const fullShowcase = read('components/table/full-showcase.html');
+const publicShowcase = read('website/showcases/table/card.html');
+const fullShowcase = read('website/showcases/table/full.html');
 const stories = read('components/table/snice-table.stories.ts');
-const showcaseFooter = read('public/showcases/_footer.html');
+const showcaseFooter = read('website/showcases/shared/_footer.html');
 
 const consumerMethods = [
   'getTableConfig',

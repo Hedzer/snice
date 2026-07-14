@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Scroller</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+    snice-virtual-scroller { border: 1px solid var(--snice-color-border); border-radius: 8px; display: block; }
+    .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+    button { padding: 0.375rem 0.75rem; border: 1px solid var(--snice-color-border); border-radius: 6px; background: var(--snice-color-surface); color: var(--snice-color-text); cursor: pointer; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<h2>Default (10,000 items, item-height=50)</h2>
+<snice-virtual-scroller id="vs-default" style="height: 400px;" item-height="50"></snice-virtual-scroller>
+
+<h2>Item Height Values</h2>
+<div class="grid">
+  <div>
+    <div class="label">item-height=30</div>
+    <snice-virtual-scroller id="vs-h30" style="height: 300px;" item-height="30"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">item-height=60</div>
+    <snice-virtual-scroller id="vs-h60" style="height: 300px;" item-height="60"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">item-height=80</div>
+    <snice-virtual-scroller id="vs-h80" style="height: 300px;" item-height="80"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">item-height=120</div>
+    <snice-virtual-scroller id="vs-h120" style="height: 300px;" item-height="120"></snice-virtual-scroller>
+  </div>
+</div>
+
+<h2>Buffer Size Values</h2>
+<div class="grid">
+  <div>
+    <div class="label">buffer-size=0</div>
+    <snice-virtual-scroller id="vs-b0" style="height: 300px;" item-height="50" buffer-size="0"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">buffer-size=5 (default)</div>
+    <snice-virtual-scroller id="vs-b5" style="height: 300px;" item-height="50" buffer-size="5"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">buffer-size=20</div>
+    <snice-virtual-scroller id="vs-b20" style="height: 300px;" item-height="50" buffer-size="20"></snice-virtual-scroller>
+  </div>
+</div>
+
+<h2>Custom Render Function</h2>
+<snice-virtual-scroller id="vs-custom" style="height: 350px;" item-height="60"></snice-virtual-scroller>
+
+<h2>Large Dataset (100,000 items)</h2>
+<snice-virtual-scroller id="vs-large" style="height: 400px;" item-height="40"></snice-virtual-scroller>
+
+<h2>Small Dataset (10 items)</h2>
+<snice-virtual-scroller id="vs-small" style="height: 300px;" item-height="50"></snice-virtual-scroller>
+
+<h2>Programmatic Scroll</h2>
+<div class="row" style="margin-bottom: 0.5rem;">
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(0)">Scroll to #0</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(250)">Scroll to #250</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(500)">Scroll to #500</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToIndex(999)">Scroll to #999</button>
+  <button onclick="document.getElementById('vs-scroll').scrollToItem('item-42')">scrollToItem('item-42')</button>
+</div>
+<snice-virtual-scroller id="vs-scroll" style="height: 300px;" item-height="50"></snice-virtual-scroller>
+
+<h2>Estimated Item Height</h2>
+<snice-virtual-scroller id="vs-estimated" style="height: 300px;" item-height="50" estimated-item-height="50"></snice-virtual-scroller>
+
+<h2>Container Heights</h2>
+<div class="grid">
+  <div>
+    <div class="label">200px height</div>
+    <snice-virtual-scroller id="vs-200" style="height: 200px;" item-height="40"></snice-virtual-scroller>
+  </div>
+  <div>
+    <div class="label">500px height</div>
+    <snice-virtual-scroller id="vs-500" style="height: 500px;" item-height="40"></snice-virtual-scroller>
+  </div>
+</div>
+
+<h2>Empty List</h2>
+<snice-virtual-scroller id="vs-empty" style="height: 200px;" item-height="50"></snice-virtual-scroller>
+
+<script type="module">
+  import '../../../components/virtual-scroller/snice-virtual-scroller.ts';
+
+  function makeItems(count, prefix = 'Item') {
+    return Array.from({ length: count }, (_, i) => ({
+      id: `item-${i}`,
+      data: { name: `${prefix} ${i + 1}`, index: i }
+    }));
+  }
+
+  function defaultRender(item) {
+    return `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">${item.data.name}</div>`;
+  }
+
+  // Default
+  const vsDefault = document.getElementById('vs-default');
+  vsDefault.items = makeItems(10000);
+  vsDefault.renderItem = defaultRender;
+
+  // Item heights
+  for (const h of [30, 60, 80, 120]) {
+    const el = document.getElementById(`vs-h${h}`);
+    el.items = makeItems(1000);
+    el.renderItem = (item) => `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">${item.data.name} (height: ${h}px)</div>`;
+  }
+
+  // Buffer sizes
+  for (const b of [0, 5, 20]) {
+    const el = document.getElementById(`vs-b${b}`);
+    el.items = makeItems(1000);
+    el.renderItem = defaultRender;
+  }
+
+  // Custom render
+  const vsCustom = document.getElementById('vs-custom');
+  vsCustom.items = makeItems(5000).map((item, i) => ({
+    ...item,
+    data: { ...item.data, avatar: `https://i.pravatar.cc/40?img=${(i % 70) + 1}`, role: ['Engineer', 'Designer', 'Manager', 'Analyst'][i % 4] }
+  }));
+  vsCustom.renderItem = (item) => `
+    <div style="padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.75rem; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee);">
+      <img src="${item.data.avatar}" style="width: 36px; height: 36px; border-radius: 50%;" loading="lazy">
+      <div>
+        <div style="font-size: 0.875rem; font-weight: 500;">${item.data.name}</div>
+        <div style="font-size: 0.75rem; color: var(--snice-color-text-tertiary, #888);">${item.data.role}</div>
+      </div>
+    </div>`;
+
+  // Large
+  const vsLarge = document.getElementById('vs-large');
+  vsLarge.items = makeItems(100000, 'Record');
+  vsLarge.renderItem = defaultRender;
+
+  // Small
+  const vsSmall = document.getElementById('vs-small');
+  vsSmall.items = makeItems(10);
+  vsSmall.renderItem = defaultRender;
+
+  // Scroll
+  const vsScroll = document.getElementById('vs-scroll');
+  vsScroll.items = makeItems(1000);
+  vsScroll.renderItem = (item) => `<div style="padding: 0 1rem; display: flex; align-items: center; height: 100%; border-bottom: 1px solid var(--snice-color-border, #eee); font-size: 0.875rem;">#${item.data.index} - ${item.data.name}</div>`;
+
+  // Estimated
+  const vsEstimated = document.getElementById('vs-estimated');
+  vsEstimated.items = makeItems(500);
+  vsEstimated.renderItem = defaultRender;
+
+  // Heights
+  for (const h of [200, 500]) {
+    const el = document.getElementById(`vs-${h}`);
+    el.items = makeItems(1000);
+    el.renderItem = defaultRender;
+  }
+
+  // Empty
+  document.getElementById('vs-empty').items = [];
+</script>
+</body>
+</html>

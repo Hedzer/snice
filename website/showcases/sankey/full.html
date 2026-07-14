@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sankey</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-sankey { display: block; width: 100%; height: 350px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<h2>Default (justify alignment, labels + values)</h2>
+<section><snice-sankey id="s-default"></snice-sankey></section>
+
+<h2>Alignment: left</h2>
+<section><snice-sankey id="s-left" alignment="left"></snice-sankey></section>
+
+<h2>Alignment: right</h2>
+<section><snice-sankey id="s-right" alignment="right"></snice-sankey></section>
+
+<h2>Alignment: center</h2>
+<section><snice-sankey id="s-center" alignment="center"></snice-sankey></section>
+
+<h2>Alignment: justify (default)</h2>
+<section><snice-sankey id="s-justify" alignment="justify"></snice-sankey></section>
+
+<h2>show-labels="false"</h2>
+<section><snice-sankey id="s-no-labels" show-labels="false"></snice-sankey></section>
+
+<h2>show-values="false"</h2>
+<section><snice-sankey id="s-no-values" show-values="false"></snice-sankey></section>
+
+<h2>show-labels="false" show-values="false"</h2>
+<section><snice-sankey id="s-no-both" show-labels="false" show-values="false"></snice-sankey></section>
+
+<h2>Animation: true</h2>
+<section><snice-sankey id="s-anim" animation></snice-sankey></section>
+
+<h2>Custom node-width="30"</h2>
+<section><snice-sankey id="s-wide-node" node-width="30"></snice-sankey></section>
+
+<h2>Custom node-padding="20"</h2>
+<section><snice-sankey id="s-pad" node-padding="20"></snice-sankey></section>
+
+<h2>Custom node colors</h2>
+<section><snice-sankey id="s-colors"></snice-sankey></section>
+
+<h2>Custom link colors</h2>
+<section><snice-sankey id="s-link-colors"></snice-sankey></section>
+
+<h2>Many nodes (complex flow)</h2>
+<section><snice-sankey id="s-complex" style="height:500px"></snice-sankey></section>
+
+<h2>Minimal (2 nodes, 1 link)</h2>
+<section><snice-sankey id="s-minimal" style="height:200px"></snice-sankey></section>
+
+<h2>No data</h2>
+<section><snice-sankey id="s-empty"></snice-sankey></section>
+
+<script type="module">
+  import '../../../components/sankey/snice-sankey.ts';
+
+  const basicData = {
+    nodes: [
+      { id: 'source1', label: 'Organic Search' },
+      { id: 'source2', label: 'Paid Ads' },
+      { id: 'source3', label: 'Social Media' },
+      { id: 'mid1', label: 'Landing Page' },
+      { id: 'mid2', label: 'Product Page' },
+      { id: 'end1', label: 'Purchase' },
+      { id: 'end2', label: 'Bounce' }
+    ],
+    links: [
+      { source: 'source1', target: 'mid1', value: 500 },
+      { source: 'source1', target: 'mid2', value: 300 },
+      { source: 'source2', target: 'mid1', value: 400 },
+      { source: 'source3', target: 'mid2', value: 200 },
+      { source: 'mid1', target: 'end1', value: 600 },
+      { source: 'mid1', target: 'end2', value: 300 },
+      { source: 'mid2', target: 'end1', value: 350 },
+      { source: 'mid2', target: 'end2', value: 150 }
+    ]
+  };
+
+  const ids = ['s-default','s-left','s-right','s-center','s-justify','s-no-labels','s-no-values','s-no-both','s-anim','s-wide-node','s-pad'];
+  ids.forEach(id => { document.getElementById(id).data = basicData; });
+
+  // Custom node colors
+  document.getElementById('s-colors').data = {
+    nodes: [
+      { id: 'a', label: 'Revenue', color: '#4caf50' },
+      { id: 'b', label: 'Expenses', color: '#f44336' },
+      { id: 'c', label: 'Profit', color: '#2196f3' },
+      { id: 'd', label: 'Tax', color: '#ff9800' }
+    ],
+    links: [
+      { source: 'a', target: 'c', value: 700 },
+      { source: 'a', target: 'b', value: 300 },
+      { source: 'c', target: 'd', value: 200 }
+    ]
+  };
+
+  // Custom link colors
+  document.getElementById('s-link-colors').data = {
+    nodes: [
+      { id: 'x', label: 'Input A' },
+      { id: 'y', label: 'Input B' },
+      { id: 'z', label: 'Output' }
+    ],
+    links: [
+      { source: 'x', target: 'z', value: 400, color: '#e91e63' },
+      { source: 'y', target: 'z', value: 600, color: '#00bcd4' }
+    ]
+  };
+
+  // Complex flow
+  document.getElementById('s-complex').data = {
+    nodes: [
+      { id: 'budget', label: 'Budget' },
+      { id: 'eng', label: 'Engineering' },
+      { id: 'mkt', label: 'Marketing' },
+      { id: 'ops', label: 'Operations' },
+      { id: 'hr', label: 'HR' },
+      { id: 'sal', label: 'Salaries' },
+      { id: 'tools', label: 'Tools' },
+      { id: 'ads', label: 'Advertising' },
+      { id: 'events', label: 'Events' },
+      { id: 'infra', label: 'Infrastructure' },
+      { id: 'benefits', label: 'Benefits' }
+    ],
+    links: [
+      { source: 'budget', target: 'eng', value: 500 },
+      { source: 'budget', target: 'mkt', value: 300 },
+      { source: 'budget', target: 'ops', value: 200 },
+      { source: 'budget', target: 'hr', value: 150 },
+      { source: 'eng', target: 'sal', value: 350 },
+      { source: 'eng', target: 'tools', value: 150 },
+      { source: 'mkt', target: 'ads', value: 200 },
+      { source: 'mkt', target: 'events', value: 100 },
+      { source: 'ops', target: 'infra', value: 150 },
+      { source: 'ops', target: 'tools', value: 50 },
+      { source: 'hr', target: 'sal', value: 50 },
+      { source: 'hr', target: 'benefits', value: 100 }
+    ]
+  };
+
+  // Minimal
+  document.getElementById('s-minimal').data = {
+    nodes: [{ id: 'a', label: 'Source' }, { id: 'b', label: 'Target' }],
+    links: [{ source: 'a', target: 'b', value: 100 }]
+  };
+
+  // Empty: s-empty left with default empty data
+</script>
+</body>
+</html>

@@ -11,14 +11,14 @@ const config: StorybookConfig = {
   staticDirs: [
     { from: '../dist/components', to: '/snice-components' },
     { from: '../components/theme', to: '/snice-components/theme' },
-    { from: '../public', to: '/public' },
+    { from: '../website/public', to: '/public' },
   ],
   async viteFinal(cfg) {
     cfg.plugins = cfg.plugins || [];
     // Drop Snice dev-only plugins that aren't relevant in Storybook:
     // - component-rebuilder watches components/**/*.ts and runs `npm run build:core`,
     //   which would recompile Storybook story files via rollup and fail on `import type`.
-    // - showcase-rebuilder rebuilds public/components.html from fragments (not needed here).
+    // - showcase-rebuilder rebuilds website/public/components.html (not needed here).
     // - serve-public-index / cache-headers are for the main dev server's root page.
     const dropNames = new Set([
       'component-rebuilder',

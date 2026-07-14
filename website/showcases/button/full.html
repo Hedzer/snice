@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(6, auto);
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>All variants</h2>
+    <div class="row">
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All sizes</h2>
+    <div class="row">
+      <snice-button size="small">Small</snice-button>
+      <snice-button size="medium">Medium</snice-button>
+      <snice-button size="large">Large</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Size matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">small</div>
+      <snice-button variant="default" size="small">Default</snice-button>
+      <snice-button variant="primary" size="small">Primary</snice-button>
+      <snice-button variant="success" size="small">Success</snice-button>
+      <snice-button variant="warning" size="small">Warning</snice-button>
+      <snice-button variant="danger" size="small">Danger</snice-button>
+      <snice-button variant="text" size="small">Text</snice-button>
+
+      <div class="matrix-label">medium</div>
+      <snice-button variant="default" size="medium">Default</snice-button>
+      <snice-button variant="primary" size="medium">Primary</snice-button>
+      <snice-button variant="success" size="medium">Success</snice-button>
+      <snice-button variant="warning" size="medium">Warning</snice-button>
+      <snice-button variant="danger" size="medium">Danger</snice-button>
+      <snice-button variant="text" size="medium">Text</snice-button>
+
+      <div class="matrix-label">large</div>
+      <snice-button variant="default" size="large">Default</snice-button>
+      <snice-button variant="primary" size="large">Primary</snice-button>
+      <snice-button variant="success" size="large">Success</snice-button>
+      <snice-button variant="warning" size="large">Warning</snice-button>
+      <snice-button variant="danger" size="large">Danger</snice-button>
+      <snice-button variant="text" size="large">Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Outline variants</h2>
+    <div class="row">
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Variant x Outline matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">filled</div>
+      <snice-button variant="default">Default</snice-button>
+      <snice-button variant="primary">Primary</snice-button>
+      <snice-button variant="success">Success</snice-button>
+      <snice-button variant="warning">Warning</snice-button>
+      <snice-button variant="danger">Danger</snice-button>
+      <snice-button variant="text">Text</snice-button>
+
+      <div class="matrix-label">outline</div>
+      <snice-button variant="default" outline>Default</snice-button>
+      <snice-button variant="primary" outline>Primary</snice-button>
+      <snice-button variant="success" outline>Success</snice-button>
+      <snice-button variant="warning" outline>Warning</snice-button>
+      <snice-button variant="danger" outline>Danger</snice-button>
+      <snice-button variant="text" outline>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pill shape</h2>
+    <div class="row">
+      <snice-button variant="primary" pill>Pill Button</snice-button>
+      <snice-button variant="success" pill outline>Pill Outline</snice-button>
+      <snice-button variant="danger" pill size="small">Small Pill</snice-button>
+      <snice-button variant="warning" pill size="large">Large Pill</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Circle shape</h2>
+    <div class="row">
+      <snice-button variant="primary" circle size="small">+</snice-button>
+      <snice-button variant="primary" circle size="medium">+</snice-button>
+      <snice-button variant="primary" circle size="large">+</snice-button>
+      <snice-button variant="danger" circle>X</snice-button>
+      <snice-button variant="success" circle outline>V</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Disabled</h2>
+    <div class="row">
+      <snice-button variant="default" disabled>Default</snice-button>
+      <snice-button variant="primary" disabled>Primary</snice-button>
+      <snice-button variant="success" disabled>Success</snice-button>
+      <snice-button variant="danger" disabled outline>Outline</snice-button>
+      <snice-button variant="text" disabled>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Loading</h2>
+    <div class="row">
+      <snice-button variant="default" loading>Default</snice-button>
+      <snice-button variant="primary" loading>Primary</snice-button>
+      <snice-button variant="success" loading>Success</snice-button>
+      <snice-button variant="danger" loading outline>Outline</snice-button>
+      <snice-button variant="text" loading>Text</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (emoji)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="⭐">Star</snice-button>
+      <snice-button variant="success" icon="✔️">Done</snice-button>
+      <snice-button variant="danger" icon="🗑️">Delete</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon property (Material Symbols ligature)</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="home">Home</snice-button>
+      <snice-button variant="success" icon="check">Confirm</snice-button>
+      <snice-button variant="danger" icon="delete">Remove</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Icon slot (Material Symbols)</h2>
+    <div class="row">
+      <snice-button variant="primary" size="small">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="medium">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+      <snice-button variant="primary" size="large">
+        <span class="material-symbols-outlined" slot="icon">home</span>
+        Home
+      </snice-button>
+    </div>
+    <div class="row">
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">check</span>
+        Confirm
+      </snice-button>
+      <snice-button variant="danger">
+        <span class="material-symbols-outlined" slot="icon">delete</span>
+        Remove
+      </snice-button>
+      <snice-button variant="primary">
+        <span class="material-symbols-outlined" slot="icon">search</span>
+        Search
+      </snice-button>
+      <snice-button variant="success">
+        <span class="material-symbols-outlined" slot="icon">add</span>
+        Add
+      </snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>icon-placement: start (default) vs end</h2>
+    <div class="row">
+      <snice-button variant="primary" icon="➡️" icon-placement="start">Start</snice-button>
+      <snice-button variant="primary" icon="➡️" icon-placement="end">End</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All button types</h2>
+    <div class="row">
+      <snice-button type="button">type=button</snice-button>
+      <snice-button type="submit" variant="primary">type=submit</snice-button>
+      <snice-button type="reset" variant="default">type=reset</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Link buttons (href)</h2>
+    <div class="row">
+      <snice-button variant="primary" href="#link1">href link</snice-button>
+      <snice-button variant="primary" href="#link2" target="_blank">target=_blank</snice-button>
+      <snice-button variant="primary" href="#download" download="file.txt">download</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: empty button</h2>
+    <div class="row">
+      <snice-button variant="primary"></snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: very long text</h2>
+    <div class="row">
+      <snice-button variant="primary">This is a very long button label that should demonstrate text overflow handling in buttons</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: single character</h2>
+    <div class="row">
+      <snice-button variant="primary" size="small">A</snice-button>
+      <snice-button variant="primary" size="medium">B</snice-button>
+      <snice-button variant="primary" size="large">C</snice-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>All boolean states combined</h2>
+    <div class="row">
+      <snice-button variant="primary" pill outline>Pill + Outline</snice-button>
+      <snice-button variant="primary" pill loading>Pill + Loading</snice-button>
+      <snice-button variant="primary" outline disabled>Outline + Disabled</snice-button>
+      <snice-button variant="primary" pill outline disabled>Pill + Outline + Disabled</snice-button>
+      <snice-button variant="primary" circle loading>L</snice-button>
+    </div>
+  </section>
+
+  <script type="module">
+    import '../../../components/button/snice-button.ts';
+  </script>
+</body>
+</html>

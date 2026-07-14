@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { computeContentHash, stampHtml } from '../scripts/stamp-assets.js';
+import { computeContentHash, stampHtml } from '../tooling/website/stamp-assets.js';
 
 const temporaryDirectories: string[] = [];
 

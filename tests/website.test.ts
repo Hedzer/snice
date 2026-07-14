@@ -5,7 +5,7 @@ import { join } from 'path';
 import { getWipComponents } from '../scripts/wip-components.js';
 
 const root = process.cwd();
-const publicDir = join(root, 'public');
+const publicDir = join(root, 'website/public');
 const cdnDir = join(root, 'dist/cdn');
 const wip = getWipComponents();
 
@@ -14,7 +14,7 @@ describe('Website Build', () => {
     execSync('npm run website:build', { cwd: root, stdio: 'pipe' });
   });
 
-  it('should create public directory', () => {
+  it('should create the website public directory', () => {
     expect(existsSync(publicDir)).toBe(true);
   });
 

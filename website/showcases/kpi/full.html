@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>KPI</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    snice-kpi { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; }
+  </style>
+  <script type="module">
+    import '../../../components/kpi/snice-kpi.ts';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const trendUp = [10, 12, 15, 14, 18, 22, 25, 28, 30, 35];
+      const trendDown = [50, 48, 45, 42, 38, 35, 30, 28, 25, 20];
+      const trendFlat = [20, 21, 19, 20, 22, 20, 21, 19, 20, 21];
+
+      document.querySelectorAll('[data-trend-up]').forEach(el => { el.trendData = trendUp; });
+      document.querySelectorAll('[data-trend-down]').forEach(el => { el.trendData = trendDown; });
+      document.querySelectorAll('[data-trend-flat]').forEach(el => { el.trendData = trendFlat; });
+    });
+  </script>
+</head>
+<body>
+
+<!-- Size: small -->
+<h2>Size: small</h2>
+<div class="row">
+  <snice-kpi size="small" label="Revenue" value="$12,340" sentiment="up" trend-value="+8.2%"></snice-kpi>
+</div>
+
+<!-- Size: medium (default) -->
+<h2>Size: medium (default)</h2>
+<div class="row">
+  <snice-kpi size="medium" label="Revenue" value="$12,340" sentiment="up" trend-value="+8.2%"></snice-kpi>
+</div>
+
+<!-- Size: large -->
+<h2>Size: large</h2>
+<div class="row">
+  <snice-kpi size="large" label="Revenue" value="$12,340" sentiment="up" trend-value="+8.2%"></snice-kpi>
+</div>
+
+<!-- All sizes compared -->
+<h2>All Sizes Compared</h2>
+<div class="row">
+  <snice-kpi size="small" label="Small" value="$5K" sentiment="up" trend-value="+3%"></snice-kpi>
+  <snice-kpi size="medium" label="Medium" value="$12K" sentiment="up" trend-value="+8%"></snice-kpi>
+  <snice-kpi size="large" label="Large" value="$45K" sentiment="up" trend-value="+15%"></snice-kpi>
+</div>
+
+<!-- Sentiment: up -->
+<h2>Sentiment: up</h2>
+<div class="row">
+  <snice-kpi label="Users" value="14,532" sentiment="up" trend-value="+12.5%"></snice-kpi>
+</div>
+
+<!-- Sentiment: down -->
+<h2>Sentiment: down</h2>
+<div class="row">
+  <snice-kpi label="Churn Rate" value="3.2%" sentiment="down" trend-value="-0.8%"></snice-kpi>
+</div>
+
+<!-- Sentiment: neutral -->
+<h2>Sentiment: neutral</h2>
+<div class="row">
+  <snice-kpi label="Avg Session" value="4m 32s" sentiment="neutral" trend-value="0%"></snice-kpi>
+</div>
+
+<!-- No sentiment -->
+<h2>No Sentiment</h2>
+<div class="row">
+  <snice-kpi label="Total Orders" value="1,247"></snice-kpi>
+</div>
+
+<!-- All sentiments compared -->
+<h2>All Sentiments Compared</h2>
+<div class="grid">
+  <snice-kpi label="Revenue" value="$89K" sentiment="up" trend-value="+12%"></snice-kpi>
+  <snice-kpi label="Bounce Rate" value="42%" sentiment="down" trend-value="-5%"></snice-kpi>
+  <snice-kpi label="DAU" value="2,340" sentiment="neutral" trend-value="0%"></snice-kpi>
+  <snice-kpi label="Signups" value="567"></snice-kpi>
+</div>
+
+<!-- colorValue: true -->
+<h2>colorValue: true</h2>
+<div class="grid">
+  <snice-kpi label="Growth" value="+24%" sentiment="up" trend-value="+24%" color-value></snice-kpi>
+  <snice-kpi label="Decline" value="-8%" sentiment="down" trend-value="-8%" color-value></snice-kpi>
+  <snice-kpi label="Stable" value="0%" sentiment="neutral" trend-value="0%" color-value></snice-kpi>
+</div>
+
+<!-- colorValue: false (default) -->
+<h2>colorValue: false (default)</h2>
+<div class="grid">
+  <snice-kpi label="Growth" value="+24%" sentiment="up" trend-value="+24%"></snice-kpi>
+  <snice-kpi label="Decline" value="-8%" sentiment="down" trend-value="-8%"></snice-kpi>
+</div>
+
+<!-- Sparkline: shown (default) -->
+<h2>Sparkline (showSparkline: true, default)</h2>
+<div class="grid">
+  <snice-kpi data-trend-up label="Revenue" value="$89K" sentiment="up" trend-value="+12%"></snice-kpi>
+  <snice-kpi data-trend-down label="Support Tickets" value="342" sentiment="down" trend-value="-18%"></snice-kpi>
+  <snice-kpi data-trend-flat label="DAU" value="2,340" sentiment="neutral" trend-value="0%"></snice-kpi>
+</div>
+
+<!-- Sparkline: hidden -->
+<h2>showSparkline: false</h2>
+<div class="grid">
+  <snice-kpi data-trend-up label="Revenue" value="$89K" sentiment="up" trend-value="+12%" show-sparkline="false"></snice-kpi>
+  <snice-kpi data-trend-down label="Tickets" value="342" sentiment="down" trend-value="-18%" show-sparkline="false"></snice-kpi>
+</div>
+
+<!-- Trend value only (no sentiment icon) -->
+<h2>Trend Value Only (no sentiment)</h2>
+<div class="row">
+  <snice-kpi label="Conversion" value="3.4%" trend-value="vs 2.8% last month"></snice-kpi>
+</div>
+
+<!-- Slots -->
+<h2>Slot: before</h2>
+<div class="row">
+  <snice-kpi label="Active Users" value="12,450" sentiment="up" trend-value="+5%">
+    <span slot="before" style="font-size: 1.5rem;">&#x1F465;</span>
+  </snice-kpi>
+</div>
+
+<h2>Slot: after</h2>
+<div class="row">
+  <snice-kpi label="Server Load" value="67%" sentiment="neutral">
+    <div slot="after" style="font-size: 0.7rem; color: var(--snice-color-text-tertiary); padding: 0 0.75rem 0.75rem;">Last updated: 2 min ago</div>
+  </snice-kpi>
+</div>
+
+<!-- Numeric value -->
+<h2>Numeric Value (number type)</h2>
+<div class="row">
+  <snice-kpi label="Count" value="42"></snice-kpi>
+</div>
+
+<!-- Size x Sentiment matrix -->
+<h2>Size x Sentiment Matrix</h2>
+<div class="grid">
+  <snice-kpi size="small" label="S/Up" value="$5K" sentiment="up" trend-value="+3%"></snice-kpi>
+  <snice-kpi size="small" label="S/Down" value="28" sentiment="down" trend-value="-2"></snice-kpi>
+  <snice-kpi size="small" label="S/Neutral" value="99%" sentiment="neutral" trend-value="0%"></snice-kpi>
+  <snice-kpi size="medium" label="M/Up" value="$12K" sentiment="up" trend-value="+8%"></snice-kpi>
+  <snice-kpi size="medium" label="M/Down" value="142" sentiment="down" trend-value="-12"></snice-kpi>
+  <snice-kpi size="medium" label="M/Neutral" value="4.2s" sentiment="neutral" trend-value="0%"></snice-kpi>
+  <snice-kpi size="large" label="L/Up" value="$89K" sentiment="up" trend-value="+24%"></snice-kpi>
+  <snice-kpi size="large" label="L/Down" value="3.8%" sentiment="down" trend-value="-0.5%"></snice-kpi>
+  <snice-kpi size="large" label="L/Neutral" value="2,340" sentiment="neutral" trend-value="0%"></snice-kpi>
+</div>
+
+<!-- Edge: very long values -->
+<h2>Edge: Long Value and Label</h2>
+<div class="row">
+  <snice-kpi label="Average Revenue Per User Per Quarter" value="$1,234,567.89" sentiment="up" trend-value="+123.45%"></snice-kpi>
+</div>
+
+<!-- Edge: minimal -->
+<h2>Edge: Minimal (label + value only)</h2>
+<div class="row">
+  <snice-kpi label="Total" value="42"></snice-kpi>
+</div>
+
+<!-- Combination: everything -->
+<h2>Full Combination: sparkline + sentiment + colorValue + slots</h2>
+<div class="row">
+  <snice-kpi data-trend-up label="MRR" value="$45,200" sentiment="up" trend-value="+18.3%" color-value>
+    <span slot="before" style="font-size: 1.5rem;">&#x1F4B0;</span>
+    <div slot="after" style="font-size: 0.7rem; color: var(--snice-color-text-tertiary); padding: 0 0.75rem 0.75rem;">Target: $50,000</div>
+  </snice-kpi>
+</div>
+
+</body>
+</html>

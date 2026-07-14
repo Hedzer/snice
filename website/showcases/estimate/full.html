@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Estimate</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    snice-estimate { max-width: 700px; display: block; margin-bottom: 1rem; }
+  </style>
+  <script type="module">
+    import '../../../components/estimate/snice-estimate.ts';
+
+    const from = { name: 'Acme Corp', address: '123 Business Ave, Suite 100', email: 'billing@acme.com', phone: '(555) 123-4567' };
+    const to = { name: 'Client LLC', address: '456 Oak St', email: 'finance@client.com', phone: '(555) 987-6543' };
+    const items = [
+      { description: 'Website Design', quantity: 1, unitPrice: 5000 },
+      { description: 'Development (per hour)', quantity: 40, unitPrice: 150 },
+      { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+    ];
+    const optionalItems = [
+      { description: 'Website Design', quantity: 1, unitPrice: 5000 },
+      { description: 'SEO Optimization', quantity: 1, unitPrice: 2000, optional: true, included: true },
+      { description: 'Monthly Maintenance', quantity: 12, unitPrice: 200, optional: true, included: false },
+    ];
+    const compItems = [
+      { description: 'Basic Package', quantity: 1, unitPrice: 5000 },
+      { description: 'Professional Package', quantity: 1, unitPrice: 12000 },
+      { description: 'Enterprise Package', quantity: 1, unitPrice: 25000 },
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Status variants
+      document.querySelectorAll('[data-status]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+
+      // Variant demos
+      document.querySelectorAll('[data-variant]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+
+      // Comparison variant
+      document.getElementById('est-comparison').from = from;
+      document.getElementById('est-comparison').to = to;
+      document.getElementById('est-comparison').items = compItems;
+
+      // Tax + discount
+      document.getElementById('est-tax').from = from;
+      document.getElementById('est-tax').to = to;
+      document.getElementById('est-tax').items = items;
+
+      // Optional items
+      document.getElementById('est-optional').from = from;
+      document.getElementById('est-optional').to = to;
+      document.getElementById('est-optional').items = optionalItems;
+
+      // Notes + terms
+      document.getElementById('est-notes').from = from;
+      document.getElementById('est-notes').to = to;
+      document.getElementById('est-notes').items = items;
+
+      // QR positions
+      document.querySelectorAll('[data-qr]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+
+      // No parties
+      document.getElementById('est-noparty').items = items;
+
+      // Empty items
+      document.getElementById('est-empty').from = from;
+      document.getElementById('est-empty').to = to;
+
+      // Currency
+      document.getElementById('est-eur').from = from;
+      document.getElementById('est-eur').to = to;
+      document.getElementById('est-eur').items = items;
+    });
+  </script>
+</head>
+<body>
+
+<!-- Status variants -->
+<h2>Status: draft</h2>
+<snice-estimate data-status estimate-number="EST-001" date="2026-03-01" status="draft"></snice-estimate>
+
+<h2>Status: sent</h2>
+<snice-estimate data-status estimate-number="EST-002" date="2026-03-01" status="sent" expiry-date="2026-04-01"></snice-estimate>
+
+<h2>Status: accepted</h2>
+<snice-estimate data-status estimate-number="EST-003" date="2026-03-01" status="accepted"></snice-estimate>
+
+<h2>Status: declined</h2>
+<snice-estimate data-status estimate-number="EST-004" date="2026-03-01" status="declined"></snice-estimate>
+
+<h2>Status: expired</h2>
+<snice-estimate data-status estimate-number="EST-005" date="2026-01-01" status="expired" expiry-date="2026-02-01"></snice-estimate>
+
+<!-- Variant: standard -->
+<h2>Variant: standard (default)</h2>
+<snice-estimate data-variant estimate-number="EST-010" date="2026-03-06" variant="standard"></snice-estimate>
+
+<!-- Variant: professional -->
+<h2>Variant: professional</h2>
+<snice-estimate data-variant estimate-number="EST-011" date="2026-03-06" variant="professional"></snice-estimate>
+
+<!-- Variant: creative -->
+<h2>Variant: creative</h2>
+<snice-estimate data-variant estimate-number="EST-012" date="2026-03-06" variant="creative"></snice-estimate>
+
+<!-- Variant: minimal -->
+<h2>Variant: minimal</h2>
+<snice-estimate data-variant estimate-number="EST-013" date="2026-03-06" variant="minimal"></snice-estimate>
+
+<!-- Variant: comparison -->
+<h2>Variant: comparison</h2>
+<snice-estimate id="est-comparison" estimate-number="EST-014" date="2026-03-06" variant="comparison" status="sent"></snice-estimate>
+
+<!-- Tax and Discount -->
+<h2>Tax Rate (10%) + Discount (5%)</h2>
+<snice-estimate id="est-tax" estimate-number="EST-020" date="2026-03-06" tax-rate="10" discount="5" status="sent"></snice-estimate>
+
+<!-- Optional Items -->
+<h2>Optional Items (toggleable)</h2>
+<snice-estimate id="est-optional" estimate-number="EST-021" date="2026-03-06" status="sent"></snice-estimate>
+
+<!-- Notes and Terms -->
+<h2>Notes + Terms</h2>
+<snice-estimate id="est-notes" estimate-number="EST-022" date="2026-03-06" notes="Payment is due within 30 days of acceptance." terms="All work is subject to our standard terms of service. Changes to scope may affect pricing."></snice-estimate>
+
+<!-- QR: top-right -->
+<h2>QR Position: top-right</h2>
+<snice-estimate data-qr estimate-number="EST-030" date="2026-03-06" show-qr qr-position="top-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR Code</div>
+</snice-estimate>
+
+<!-- QR: bottom-right -->
+<h2>QR Position: bottom-right</h2>
+<snice-estimate data-qr estimate-number="EST-031" date="2026-03-06" show-qr qr-position="bottom-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR Code</div>
+</snice-estimate>
+
+<!-- QR: footer -->
+<h2>QR Position: footer</h2>
+<snice-estimate data-qr estimate-number="EST-032" date="2026-03-06" show-qr qr-position="footer">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR Code</div>
+</snice-estimate>
+
+<!-- Expiry date -->
+<h2>Expiry Date</h2>
+<snice-estimate data-status estimate-number="EST-040" date="2026-03-01" expiry-date="2026-04-15" status="sent"></snice-estimate>
+
+<!-- Currency -->
+<h2>Currency: EUR</h2>
+<snice-estimate id="est-eur" estimate-number="EST-050" date="2026-03-06" currency="EUR"></snice-estimate>
+
+<!-- Footer slot -->
+<h2>Slot: footer</h2>
+<snice-estimate data-status estimate-number="EST-060" date="2026-03-06">
+  <div slot="footer" style="text-align: center; font-size: 0.75rem; color: var(--snice-color-text-tertiary);">
+    Thank you for your business. Questions? Contact us at support@acme.com
+  </div>
+</snice-estimate>
+
+<!-- Edge: no parties -->
+<h2>Edge: No Parties (from/to not set)</h2>
+<snice-estimate id="est-noparty" estimate-number="EST-070" date="2026-03-06"></snice-estimate>
+
+<!-- Edge: empty items -->
+<h2>Edge: No Items</h2>
+<snice-estimate id="est-empty" estimate-number="EST-071" date="2026-03-06"></snice-estimate>
+
+</body>
+</html>

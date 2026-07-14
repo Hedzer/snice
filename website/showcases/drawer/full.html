@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Drawer</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 1.5rem 0 0.5rem; }
+    h2:first-child { margin-top: 0; }
+    .box { position: relative; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; background: color-mix(in srgb, var(--snice-color-surface, #fff) 90%, var(--snice-color-text, #000) 10%); }
+    .box-h { height: 200px; }
+    .box-tall { height: 280px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .label { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); z-index: 9999; background: color-mix(in srgb, var(--snice-color-surface, #fff) 90%, var(--snice-color-text, #000) 10%); padding: 0.15rem 0.4rem; border-radius: 4px; pointer-events: none; }
+    .menu { display: flex; flex-direction: column; padding: 0.5rem; }
+    .menu a { display: block; padding: 0.4rem 0.75rem; font-size: 0.8rem; color: var(--snice-color-text-secondary, #666); text-decoration: none; border-radius: 4px; }
+    .menu a:hover { background: var(--snice-color-surface-hover, #f3f4f6); }
+    .menu a.active { color: var(--snice-color-primary, #2563eb); background: color-mix(in srgb, var(--snice-color-primary, #2563eb) 10%, transparent); }
+  </style>
+  <script type="module">import '../../../components/drawer/snice-drawer.ts'; import '../../../components/drawer/snice-drawer-target.ts';</script>
+</head>
+<body>
+
+<!-- Positions -->
+<h2>Positions</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">left</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Settings</a>
+        <a href="#">Profile</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">right</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#">Details</a>
+        <a href="#" class="active">Activity</a>
+        <a href="#">Comments</a>
+        <a href="#">History</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">top</span>
+    <snice-drawer position="top" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">
+        <span>Home</span><span>Products</span><span>Pricing</span><span>About</span>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">bottom</span>
+    <snice-drawer position="bottom" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">
+        <span>Save</span><span>Share</span><span>Export</span><span>Delete</span>
+      </div>
+    </snice-drawer>
+  </div>
+</div>
+
+<!-- Sizes (left position) -->
+<h2>Sizes</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">small</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">medium</span>
+    <snice-drawer position="left" size="medium" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">large</span>
+    <snice-drawer position="left" size="large" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">full</span>
+    <snice-drawer position="left" size="full" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Saved</a>
+      </nav>
+    </snice-drawer>
+  </div>
+</div>
+
+<!-- Features -->
+<h2>Features</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">with header</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-footer>
+      <span slot="title">Navigation</span>
+      <nav class="menu">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Settings</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">persistent</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss persistent no-footer>
+      <span slot="title">Persistent</span>
+      <nav class="menu">
+        <a href="#" class="active">Home</a>
+        <a href="#">Browse</a>
+        <a href="#">Help</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">with footer</span>
+    <snice-drawer position="left" size="small" contained open no-backdrop no-escape-dismiss no-header>
+      <nav class="menu">
+        <a href="#">General</a>
+        <a href="#" class="active">Account</a>
+      </nav>
+      <div slot="footer" style="display:flex;gap:0.5rem;justify-content:flex-end">
+        <button style="padding:0.25rem 0.75rem;border:1px solid var(--snice-color-border);border-radius:4px;background:var(--snice-color-surface);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Cancel</button>
+        <button style="padding:0.25rem 0.75rem;border:none;border-radius:4px;background:var(--snice-color-primary,#2563eb);color:white;cursor:pointer;font-size:0.8rem">Save</button>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">no-backdrop</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Info</a>
+        <a href="#">Files</a>
+        <a href="#">Tags</a>
+      </nav>
+    </snice-drawer>
+    <div style="padding:1rem;font-size:0.8rem;color:var(--snice-color-text-secondary)">Content visible behind</div>
+  </div>
+</div>
+
+<!-- Push Content -->
+<h2>Push Content</h2>
+<div class="box box-tall">
+  <snice-drawer id="d-push" push-content contained position="left" size="small" open no-backdrop no-escape-dismiss no-footer>
+    <span slot="title">Navigation</span>
+    <nav class="menu">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Projects</a>
+      <a href="#">Team</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+    </nav>
+  </snice-drawer>
+  <snice-drawer-target for="d-push" style="padding:1rem">
+    <p style="font-size:0.85rem;color:var(--snice-color-text-secondary);margin:0 0 0.75rem">This content shifts when the drawer opens.</p>
+    <button onclick="document.getElementById('d-push').toggle()" style="padding:0.4rem 0.85rem;border:1px solid var(--snice-color-border);border-radius:6px;background:var(--snice-color-surface-container-high);color:var(--snice-color-text);cursor:pointer;font-size:0.8rem">Toggle Push Drawer</button>
+  </snice-drawer-target>
+</div>
+
+<!-- Inline Mode -->
+<h2>Inline Mode</h2>
+<div class="box box-tall" style="display:flex">
+  <snice-drawer inline open contained position="left" size="small" no-footer>
+    <span slot="title">Sidebar</span>
+    <nav class="menu">
+      <a href="#" class="active">Home</a>
+      <a href="#">Explore</a>
+      <a href="#">Notifications</a>
+      <a href="#">Messages</a>
+      <a href="#">Settings</a>
+    </nav>
+  </snice-drawer>
+  <div style="flex:1;padding:1rem;font-size:0.85rem;color:var(--snice-color-text-secondary)">
+    Main content beside inline drawer. No backdrop, no focus trap.
+  </div>
+</div>
+
+<!-- Position x Size combos -->
+<h2>Position + Size Combos</h2>
+<div class="grid">
+  <div class="box box-h">
+    <span class="label">right + small</span>
+    <snice-drawer position="right" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">Filters</a>
+        <a href="#">Sort</a>
+        <a href="#">Group</a>
+      </nav>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">top + small</span>
+    <snice-drawer position="top" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1.5rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem">
+        <a href="#" style="color:var(--snice-color-primary);text-decoration:none">Overview</a>
+        <a href="#" style="color:var(--snice-color-text-secondary);text-decoration:none">Analytics</a>
+        <a href="#" style="color:var(--snice-color-text-secondary);text-decoration:none">Reports</a>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">bottom + small</span>
+    <snice-drawer position="bottom" size="small" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <div style="display:flex;gap:1.5rem;justify-content:center;align-items:center;padding:0.75rem;font-size:0.8rem">
+        <span style="color:var(--snice-color-text-secondary)">Share</span>
+        <span style="color:var(--snice-color-text-secondary)">Copy Link</span>
+        <span style="color:var(--snice-color-primary)">Download</span>
+      </div>
+    </snice-drawer>
+  </div>
+  <div class="box box-h">
+    <span class="label">left + large</span>
+    <snice-drawer position="left" size="large" contained open no-backdrop no-escape-dismiss no-header no-footer>
+      <nav class="menu">
+        <a href="#" class="active">All Files</a>
+        <a href="#">Shared</a>
+        <a href="#">Recent</a>
+        <a href="#">Trash</a>
+      </nav>
+    </snice-drawer>
+  </div>
+</div>
+
+</body>
+</html>

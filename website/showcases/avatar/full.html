@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avatar</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .grid-item span {
+      font-size: 0.65rem;
+      color: var(--snice-color-text-tertiary, #888);
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: auto repeat(6, 1fr);
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .matrix-label {
+      font-size: 0.7rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      text-align: right;
+      padding-right: 0.5rem;
+    }
+    .colors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(3.5rem, 1fr));
+      gap: 0.75rem;
+    }
+    .colors-grid .grid-item span { font-size: 0.6rem; }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>All Sizes — Initials</h2>
+    <div class="row">
+      <snice-avatar size="xs" name="Ada Lovelace"></snice-avatar>
+      <snice-avatar size="small" name="Ada Lovelace"></snice-avatar>
+      <snice-avatar size="medium" name="Ada Lovelace"></snice-avatar>
+      <snice-avatar size="large" name="Ada Lovelace"></snice-avatar>
+      <snice-avatar size="xl" name="Ada Lovelace"></snice-avatar>
+      <snice-avatar size="xxl" name="Ada Lovelace"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>All Sizes — Image</h2>
+    <div class="row">
+      <snice-avatar size="xs" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+      <snice-avatar size="small" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+      <snice-avatar size="medium" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+      <snice-avatar size="large" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+      <snice-avatar size="xl" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+      <snice-avatar size="xxl" src="https://i.pravatar.cc/200?img=1" name="User"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>All Sizes — No Name (Default Icon)</h2>
+    <div class="row">
+      <snice-avatar size="xs"></snice-avatar>
+      <snice-avatar size="small"></snice-avatar>
+      <snice-avatar size="medium"></snice-avatar>
+      <snice-avatar size="large"></snice-avatar>
+      <snice-avatar size="xl"></snice-avatar>
+      <snice-avatar size="xxl"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shape × Size Matrix</h2>
+    <div class="matrix">
+      <div class="matrix-label">circle</div>
+      <snice-avatar shape="circle" size="xs" name="AL"></snice-avatar>
+      <snice-avatar shape="circle" size="small" name="AL"></snice-avatar>
+      <snice-avatar shape="circle" size="medium" name="AL"></snice-avatar>
+      <snice-avatar shape="circle" size="large" name="AL"></snice-avatar>
+      <snice-avatar shape="circle" size="xl" name="AL"></snice-avatar>
+      <snice-avatar shape="circle" size="xxl" name="AL"></snice-avatar>
+
+      <div class="matrix-label">square</div>
+      <snice-avatar shape="square" size="xs" name="AL"></snice-avatar>
+      <snice-avatar shape="square" size="small" name="AL"></snice-avatar>
+      <snice-avatar shape="square" size="medium" name="AL"></snice-avatar>
+      <snice-avatar shape="square" size="large" name="AL"></snice-avatar>
+      <snice-avatar shape="square" size="xl" name="AL"></snice-avatar>
+      <snice-avatar shape="square" size="xxl" name="AL"></snice-avatar>
+
+      <div class="matrix-label">rounded</div>
+      <snice-avatar shape="rounded" size="xs" name="AL"></snice-avatar>
+      <snice-avatar shape="rounded" size="small" name="AL"></snice-avatar>
+      <snice-avatar shape="rounded" size="medium" name="AL"></snice-avatar>
+      <snice-avatar shape="rounded" size="large" name="AL"></snice-avatar>
+      <snice-avatar shape="rounded" size="xl" name="AL"></snice-avatar>
+      <snice-avatar shape="rounded" size="xxl" name="AL"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shape × Image</h2>
+    <div class="row">
+      <snice-avatar shape="circle" size="xl" src="https://i.pravatar.cc/200?img=3" name="User"></snice-avatar>
+      <snice-avatar shape="square" size="xl" src="https://i.pravatar.cc/200?img=3" name="User"></snice-avatar>
+      <snice-avatar shape="rounded" size="xl" src="https://i.pravatar.cc/200?img=3" name="User"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Image Fallback — Broken URL</h2>
+    <div class="row">
+      <snice-avatar src="https://broken.invalid/404.jpg" name="Fallback Test"></snice-avatar>
+      <snice-avatar src="https://broken.invalid/404.jpg" name="No Image"></snice-avatar>
+      <snice-avatar src="https://broken.invalid/404.jpg"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Auto-Generated Colors — 20 Names</h2>
+    <div class="colors-grid">
+      <div class="grid-item"><snice-avatar name="Alice"></snice-avatar><span>Alice</span></div>
+      <div class="grid-item"><snice-avatar name="Bob"></snice-avatar><span>Bob</span></div>
+      <div class="grid-item"><snice-avatar name="Carol"></snice-avatar><span>Carol</span></div>
+      <div class="grid-item"><snice-avatar name="David"></snice-avatar><span>David</span></div>
+      <div class="grid-item"><snice-avatar name="Eve"></snice-avatar><span>Eve</span></div>
+      <div class="grid-item"><snice-avatar name="Frank"></snice-avatar><span>Frank</span></div>
+      <div class="grid-item"><snice-avatar name="Grace"></snice-avatar><span>Grace</span></div>
+      <div class="grid-item"><snice-avatar name="Henry"></snice-avatar><span>Henry</span></div>
+      <div class="grid-item"><snice-avatar name="Iris"></snice-avatar><span>Iris</span></div>
+      <div class="grid-item"><snice-avatar name="Jack"></snice-avatar><span>Jack</span></div>
+      <div class="grid-item"><snice-avatar name="Karen"></snice-avatar><span>Karen</span></div>
+      <div class="grid-item"><snice-avatar name="Leo"></snice-avatar><span>Leo</span></div>
+      <div class="grid-item"><snice-avatar name="Mia"></snice-avatar><span>Mia</span></div>
+      <div class="grid-item"><snice-avatar name="Nina"></snice-avatar><span>Nina</span></div>
+      <div class="grid-item"><snice-avatar name="Oscar"></snice-avatar><span>Oscar</span></div>
+      <div class="grid-item"><snice-avatar name="Pia"></snice-avatar><span>Pia</span></div>
+      <div class="grid-item"><snice-avatar name="Quinn"></snice-avatar><span>Quinn</span></div>
+      <div class="grid-item"><snice-avatar name="Ray"></snice-avatar><span>Ray</span></div>
+      <div class="grid-item"><snice-avatar name="Sara"></snice-avatar><span>Sara</span></div>
+      <div class="grid-item"><snice-avatar name="Tom"></snice-avatar><span>Tom</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom Fallback Colors</h2>
+    <div class="row">
+      <snice-avatar name="Red" fallback-background="#dc2626" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Blue" fallback-background="#2563eb" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Green" fallback-background="#16a34a" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Purple" fallback-background="#7c3aed" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Pink" fallback-background="#db2777" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Amber" fallback-background="#d97706" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Teal" fallback-background="#0d9488" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Dark" fallback-background="#1e293b" fallback-color="#94a3b8" size="large"></snice-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Initials Extraction</h2>
+    <div class="grid">
+      <div class="grid-item"><snice-avatar name="A"></snice-avatar><span>A</span></div>
+      <div class="grid-item"><snice-avatar name="AB"></snice-avatar><span>AB</span></div>
+      <div class="grid-item"><snice-avatar name="Ada Lovelace"></snice-avatar><span>Ada Lovelace</span></div>
+      <div class="grid-item"><snice-avatar name="Jean-Paul Sartre"></snice-avatar><span>Jean-Paul Sartre</span></div>
+      <div class="grid-item"><snice-avatar name="Mary Jane Watson-Parker"></snice-avatar><span>M.J. Watson-Parker</span></div>
+      <div class="grid-item"><snice-avatar name="中文名"></snice-avatar><span>中文名</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mixed Content Row</h2>
+    <div class="row">
+      <snice-avatar src="https://i.pravatar.cc/200?img=5" name="Image" size="large"></snice-avatar>
+      <snice-avatar name="Initials" size="large"></snice-avatar>
+      <snice-avatar size="large"></snice-avatar>
+      <snice-avatar src="https://broken.invalid/x.jpg" name="Broken" size="large"></snice-avatar>
+      <snice-avatar name="Custom" fallback-background="#7c3aed" fallback-color="#fff" size="large"></snice-avatar>
+      <snice-avatar name="Square" shape="square" size="large"></snice-avatar>
+      <snice-avatar name="Rounded" shape="rounded" size="large"></snice-avatar>
+    </div>
+  </section>
+
+  <script type="module">
+    import '../../../components/avatar/snice-avatar.ts';
+  </script>
+</body>
+</html>

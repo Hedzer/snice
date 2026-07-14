@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Chat</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    section { margin-bottom: 2rem; max-width: 600px; }
+    snice-chat { --snice-chat-height: 400px; }
+  </style>
+  <script type="module">
+    import '../../../components/chat/snice-chat.ts';
+    await customElements.whenDefined('snice-chat');
+
+    const now = Date.now();
+
+    // Empty
+    // (no messages set)
+
+    // Default with messages
+    const chat1 = document.getElementById('chat-default');
+    chat1.addMessage({ type: 'system', content: 'Chat started', author: 'System', timestamp: new Date(now - 3600000) });
+    chat1.addMessage({ type: 'text', content: 'Hello everyone!', author: 'Alice', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', timestamp: new Date(now - 300000) });
+    chat1.addMessage({ type: 'text', content: 'Hi Alice, how are you?', author: 'Bob', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', timestamp: new Date(now - 200000), reactions: [{ emoji: '👋', count: 2, users: ['Alice','Charlie'] }] });
+    chat1.addMessage({ type: 'text', content: 'Doing great, thanks!', author: 'You', timestamp: new Date(now - 100000) });
+
+    // With file attachment
+    const chat2 = document.getElementById('chat-files');
+    chat2.addMessage({ type: 'text', content: 'Check this out', author: 'Diana', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana', timestamp: new Date(now - 500000) });
+    chat2.addMessage({ type: 'image', content: '', author: 'Diana', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Diana', timestamp: new Date(now - 400000), attachment: { type: 'image', url: 'https://picsum.photos/400/200', name: 'mockup.png' } });
+    chat2.addMessage({ type: 'file', content: '', author: 'Eve', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eve', timestamp: new Date(now - 300000), attachment: { type: 'file', url: '#', name: 'report.pdf', size: 245760 } });
+
+    // Edited message
+    const chat3 = document.getElementById('chat-edited');
+    chat3.addMessage({ type: 'text', content: 'This message was edited', author: 'You', timestamp: new Date(now - 60000), edited: true });
+    chat3.addMessage({ type: 'text', content: 'Original message', author: 'Alice', timestamp: new Date(now - 30000) });
+
+    // No avatars
+    // (show-avatars="false" set in HTML)
+    const chat4 = document.getElementById('chat-no-avatars');
+    chat4.addMessage({ type: 'text', content: 'Message without avatar', author: 'User', timestamp: new Date() });
+    chat4.addMessage({ type: 'text', content: 'Another message', author: 'Other', timestamp: new Date() });
+
+    // No timestamps
+    const chat5 = document.getElementById('chat-no-timestamps');
+    chat5.addMessage({ type: 'text', content: 'Timestamps are hidden', author: 'Alice', timestamp: new Date() });
+
+    // No file uploads
+    const chat6 = document.getElementById('chat-no-files');
+    chat6.addMessage({ type: 'text', content: 'File upload button is hidden', author: 'Alice', timestamp: new Date() });
+
+    // Custom placeholder
+    const chat7 = document.getElementById('chat-placeholder');
+    chat7.addMessage({ type: 'text', content: 'Custom placeholder below', author: 'Alice', timestamp: new Date() });
+
+    // Custom current-user
+    const chat8 = document.getElementById('chat-current-user');
+    chat8.addMessage({ type: 'text', content: 'I am the current user', author: 'Admin', timestamp: new Date() });
+    chat8.addMessage({ type: 'text', content: 'This is from someone else', author: 'Guest', timestamp: new Date() });
+
+    // All features disabled
+    const chat9 = document.getElementById('chat-minimal');
+    chat9.addMessage({ type: 'text', content: 'Minimal chat: no avatars, no timestamps, no files, no typing', author: 'User', timestamp: new Date() });
+
+    // With reactions
+    const chatR = document.getElementById('chat-reactions');
+    chatR.addMessage({ type: 'text', content: 'Reactions showcase', author: 'You', timestamp: new Date(), reactions: [
+      { emoji: '👍', count: 3, users: ['Alice','Bob','You'] },
+      { emoji: '❤️', count: 1, users: ['Charlie'] },
+      { emoji: '😂', count: 5, users: ['Alice','Bob','Charlie','Diana','Eve'] }
+    ]});
+
+    // Per-user name colors (auto)
+    const chatColors = document.getElementById('chat-colors');
+    chatColors.addMessage({ type: 'text', content: 'deploy is green', author: 'Alice', timestamp: new Date(now - 240000) });
+    chatColors.addMessage({ type: 'text', content: 'merging now', author: 'Bob', timestamp: new Date(now - 180000) });
+    chatColors.addMessage({ type: 'text', content: 'nice', author: 'Carol', timestamp: new Date(now - 120000) });
+    chatColors.addMessage({ type: 'text', content: 'ship it 🚀', author: 'You', timestamp: new Date(now - 60000) });
+
+    // Explicit author colors (authorColors map)
+    const chatColorsMap = document.getElementById('chat-colors-map');
+    chatColorsMap.authorColors = { Alice: '#e11d48', Bob: '#2563eb' };
+    chatColorsMap.addMessage({ type: 'text', content: 'my name is red', author: 'Alice', timestamp: new Date(now - 120000) });
+    chatColorsMap.addMessage({ type: 'text', content: 'mine is blue', author: 'Bob', timestamp: new Date(now - 60000) });
+
+    // Markdown bodies
+    const chatMd = document.getElementById('chat-markdown');
+    chatMd.addMessage({ type: 'text', format: 'markdown', author: 'Alice', timestamp: new Date(now - 120000),
+      content: '**Release 5.3** is out 🎉\n\n- per-user name colors\n- `layout="bubbles"`\n- markdown bodies\n\nRun `npm i snice@latest` — see the [changelog](#).' });
+    chatMd.addMessage({ type: 'text', format: 'markdown', author: 'You', timestamp: new Date(now - 60000),
+      content: 'on it — `git pull && npm test` ✅' });
+
+    // Per-message format=text opts out when component markdown is on
+    chatMd.addMessage({ type: 'text', format: 'text', author: 'Bob', timestamp: new Date(now - 30000),
+      content: 'literal **stars** stay (format="text")' });
+
+    // Bubble layout
+    const chatBubbles = document.getElementById('chat-bubbles');
+    chatBubbles.addMessage({ type: 'text', content: 'hey, you around?', author: 'Alice', timestamp: new Date(now - 180000) });
+    chatBubbles.addMessage({ type: 'text', content: 'yep, one sec', author: 'You', timestamp: new Date(now - 120000) });
+    chatBubbles.addMessage({ type: 'text', content: 'cool — calling now', author: 'Alice', timestamp: new Date(now - 60000) });
+  </script>
+</head>
+<body>
+
+<section>
+  <h2>Empty (no messages)</h2>
+  <snice-chat id="chat-empty" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>Default: system + text messages, avatars, timestamps, reactions</h2>
+  <snice-chat id="chat-default" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>Image and file attachments</h2>
+  <snice-chat id="chat-files" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>Edited message</h2>
+  <snice-chat id="chat-edited" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>show-avatars="false"</h2>
+  <snice-chat id="chat-no-avatars" current-user="You" show-avatars="false"></snice-chat>
+</section>
+
+<section>
+  <h2>show-timestamps="false"</h2>
+  <snice-chat id="chat-no-timestamps" current-user="You" show-timestamps="false"></snice-chat>
+</section>
+
+<section>
+  <h2>allow-files="false"</h2>
+  <snice-chat id="chat-no-files" current-user="You" allow-files="false"></snice-chat>
+</section>
+
+<section>
+  <h2>placeholder="Ask a question..."</h2>
+  <snice-chat id="chat-placeholder" current-user="You" placeholder="Ask a question..."></snice-chat>
+</section>
+
+<section>
+  <h2>current-user="Admin"</h2>
+  <snice-chat id="chat-current-user" current-user="Admin"></snice-chat>
+</section>
+
+<section>
+  <h2>All features off: show-avatars="false" show-timestamps="false" allow-files="false" show-typing="false"</h2>
+  <snice-chat id="chat-minimal" current-user="You" show-avatars="false" show-timestamps="false" allow-files="false" show-typing="false"></snice-chat>
+</section>
+
+<section>
+  <h2>Multiple reactions on a message</h2>
+  <snice-chat id="chat-reactions" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>color-authors (auto per-user name colors)</h2>
+  <snice-chat id="chat-colors" current-user="You" color-authors></snice-chat>
+</section>
+
+<section>
+  <h2>authorColors map (explicit per-user colors)</h2>
+  <snice-chat id="chat-colors-map" current-user="You"></snice-chat>
+</section>
+
+<section>
+  <h2>markdown (message bodies rendered as markdown; format="text" opts out)</h2>
+  <snice-chat id="chat-markdown" current-user="You" markdown></snice-chat>
+</section>
+
+<section>
+  <h2>layout="bubbles" (own messages right, others left)</h2>
+  <snice-chat id="chat-bubbles" current-user="You" layout="bubbles"></snice-chat>
+</section>
+
+<section>
+  <h2>Declarative &lt;snice-chat-message&gt; children</h2>
+  <snice-chat current-user="Me" color-authors>
+    <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:24:00Z">Hey, you around?</snice-chat-message>
+    <snice-chat-message slot="messages" author="Me" timestamp="2026-05-26T09:25:00Z">yep, one sec</snice-chat-message>
+    <snice-chat-message slot="messages" author="Alice" timestamp="2026-05-26T09:26:00Z" format="markdown">check the **PR** then</snice-chat-message>
+  </snice-chat>
+</section>
+
+</body>
+</html>

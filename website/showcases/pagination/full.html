@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagination</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: default</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="default"></snice-pagination></section>
+
+<h2>Variant: rounded</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="rounded"></snice-pagination></section>
+
+<h2>Variant: text</h2>
+<section class="row"><snice-pagination current="5" total="10" variant="text"></snice-pagination></section>
+
+<h2>Size: small</h2>
+<section class="row"><snice-pagination current="3" total="10" size="small"></snice-pagination></section>
+
+<h2>Size: medium (default)</h2>
+<section class="row"><snice-pagination current="3" total="10" size="medium"></snice-pagination></section>
+
+<h2>Size: large</h2>
+<section class="row"><snice-pagination current="3" total="10" size="large"></snice-pagination></section>
+
+<h2>Size x Variant matrix</h2>
+<section>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="default"></snice-pagination><span style="font-size:0.7rem">small / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="rounded"></snice-pagination><span style="font-size:0.7rem">small / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="small" variant="text"></snice-pagination><span style="font-size:0.7rem">small / text</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="default"></snice-pagination><span style="font-size:0.7rem">medium / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="rounded"></snice-pagination><span style="font-size:0.7rem">medium / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="medium" variant="text"></snice-pagination><span style="font-size:0.7rem">medium / text</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="default"></snice-pagination><span style="font-size:0.7rem">large / default</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="rounded"></snice-pagination><span style="font-size:0.7rem">large / rounded</span></div>
+  <div class="row" style="margin-bottom:0.5rem"><snice-pagination current="5" total="20" size="large" variant="text"></snice-pagination><span style="font-size:0.7rem">large / text</span></div>
+</section>
+
+<h2>Siblings: 1 (default)</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="1"></snice-pagination></section>
+
+<h2>Siblings: 2</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="2"></snice-pagination></section>
+
+<h2>Siblings: 3</h2>
+<section class="row"><snice-pagination current="10" total="20" siblings="3"></snice-pagination></section>
+
+<h2>show-first="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-first="false"></snice-pagination></section>
+
+<h2>show-last="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-last="false"></snice-pagination></section>
+
+<h2>show-prev="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-prev="false"></snice-pagination></section>
+
+<h2>show-next="false"</h2>
+<section class="row"><snice-pagination current="5" total="10" show-next="false"></snice-pagination></section>
+
+<h2>All nav buttons hidden</h2>
+<section class="row"><snice-pagination current="5" total="10" show-first="false" show-last="false" show-prev="false" show-next="false"></snice-pagination></section>
+
+<h2>First page (prev/first disabled)</h2>
+<section class="row"><snice-pagination current="1" total="10"></snice-pagination></section>
+
+<h2>Last page (next/last disabled)</h2>
+<section class="row"><snice-pagination current="10" total="10"></snice-pagination></section>
+
+<h2>Single page</h2>
+<section class="row"><snice-pagination current="1" total="1"></snice-pagination></section>
+
+<h2>Few pages (no ellipsis)</h2>
+<section class="row"><snice-pagination current="2" total="3"></snice-pagination></section>
+
+<h2>Many pages (total=100)</h2>
+<section class="row"><snice-pagination current="50" total="100"></snice-pagination></section>
+
+<script type="module">
+  import '../../../components/pagination/snice-pagination.ts';
+</script>
+</body>
+</html>

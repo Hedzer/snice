@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Color Picker</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+  </style>
+  <script type="module">import '../../../components/color-picker/snice-color-picker.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>Default</h2>
+  <snice-color-picker label="Default"></snice-color-picker>
+</section>
+
+<section>
+  <h2>With value</h2>
+  <snice-color-picker label="Blue" value="#3b82f6"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Formats</h2>
+  <div class="row">
+    <snice-color-picker format="hex" label="Hex" value="#ff0000"></snice-color-picker>
+    <snice-color-picker format="rgb" label="RGB" value="#00ff00"></snice-color-picker>
+    <snice-color-picker format="hsl" label="HSL" value="#0000ff"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes</h2>
+  <div class="row">
+    <snice-color-picker size="small" label="Small" value="#f87171"></snice-color-picker>
+    <snice-color-picker size="medium" label="Medium" value="#fb923c"></snice-color-picker>
+    <snice-color-picker size="large" label="Large" value="#fbbf24"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Sizes x Formats</h2>
+  <div class="row">
+    <snice-color-picker size="small" format="hex" label="Small Hex" value="#8b5cf6"></snice-color-picker>
+    <snice-color-picker size="medium" format="rgb" label="Medium RGB" value="#8b5cf6"></snice-color-picker>
+    <snice-color-picker size="large" format="hsl" label="Large HSL" value="#8b5cf6"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>show-presets</h2>
+  <snice-color-picker label="With presets" show-presets value="#60a5fa"></snice-color-picker>
+</section>
+
+<section>
+  <h2>show-input="false"</h2>
+  <snice-color-picker label="No input" show-input="false" value="#10b981"></snice-color-picker>
+</section>
+
+<section>
+  <h2>show-input="false" + show-presets</h2>
+  <snice-color-picker label="Presets only" show-input="false" show-presets value="#f59e0b"></snice-color-picker>
+</section>
+
+<section>
+  <h2>helper-text</h2>
+  <snice-color-picker label="Theme Color" helper-text="Choose your primary brand color"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Disabled</h2>
+  <snice-color-picker label="Disabled" disabled value="#9ca3af"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Required</h2>
+  <snice-color-picker label="Required" required></snice-color-picker>
+</section>
+
+<section>
+  <h2>Invalid + error-text</h2>
+  <snice-color-picker label="Invalid" invalid error-text="Please select a valid color"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Loading</h2>
+  <div class="row">
+    <snice-color-picker label="Loading" loading value="#3b82f6"></snice-color-picker>
+    <snice-color-picker label="Loading small" loading size="small" value="#ef4444"></snice-color-picker>
+    <snice-color-picker label="Loading large" loading size="large" value="#10b981"></snice-color-picker>
+  </div>
+</section>
+
+<section>
+  <h2>Form: name</h2>
+  <snice-color-picker label="Brand Color" name="brand_color" value="#6366f1"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Disabled + presets</h2>
+  <snice-color-picker label="Disabled with presets" disabled show-presets value="#f472b6"></snice-color-picker>
+</section>
+
+<section>
+  <h2>Required + invalid + error-text</h2>
+  <snice-color-picker label="All validation states" required invalid error-text="Color is required"></snice-color-picker>
+</section>
+
+</body>
+</html>

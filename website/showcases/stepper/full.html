@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stepper</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Orientation: Horizontal (default)</h2>
+<snice-stepper id="horizontal" orientation="horizontal"></snice-stepper>
+
+<h2>Orientation: Vertical</h2>
+<snice-stepper id="vertical" orientation="vertical"></snice-stepper>
+
+<h2>Current Step: 0 (First)</h2>
+<snice-stepper id="step0" current-step="0"></snice-stepper>
+
+<h2>Current Step: 1 (Middle)</h2>
+<snice-stepper id="step1" current-step="1"></snice-stepper>
+
+<h2>Current Step: 2 (Last)</h2>
+<snice-stepper id="step2" current-step="2"></snice-stepper>
+
+<h2>Clickable Steps</h2>
+<snice-stepper id="clickable" clickable current-step="1"></snice-stepper>
+
+<h2>With Descriptions</h2>
+<snice-stepper id="with-desc"></snice-stepper>
+
+<h2>Explicit Statuses (pending, active, completed, error)</h2>
+<snice-stepper id="statuses"></snice-stepper>
+
+<h2>All Completed</h2>
+<snice-stepper id="all-done" current-step="3"></snice-stepper>
+
+<h2>Two Steps</h2>
+<snice-stepper id="two-steps" current-step="0"></snice-stepper>
+
+<h2>Many Steps</h2>
+<snice-stepper id="many-steps" current-step="3"></snice-stepper>
+
+<h2>Single Step</h2>
+<snice-stepper id="single-step" current-step="0"></snice-stepper>
+
+<h2>Vertical + Clickable</h2>
+<snice-stepper id="vertical-click" orientation="vertical" clickable current-step="1"></snice-stepper>
+
+<h2>Vertical + Descriptions</h2>
+<snice-stepper id="vertical-desc" orientation="vertical"></snice-stepper>
+
+<h2>With Error Status</h2>
+<snice-stepper id="with-error"></snice-stepper>
+
+<h2>With Panels</h2>
+<snice-stepper id="with-panels" current-step="0">
+  <snice-stepper-panel>Panel 1: Enter your personal information.</snice-stepper-panel>
+  <snice-stepper-panel>Panel 2: Set up your account details.</snice-stepper-panel>
+  <snice-stepper-panel>Panel 3: Review and confirm.</snice-stepper-panel>
+</snice-stepper>
+
+<script type="module">
+  import '../../../components/stepper/snice-stepper.ts';
+  import '../../../components/stepper/snice-stepper-panel.ts';
+
+  const steps3 = [
+    { label: 'Account' },
+    { label: 'Profile' },
+    { label: 'Complete' },
+  ];
+
+  const stepsWithDesc = [
+    { label: 'Account', description: 'Create your account' },
+    { label: 'Profile', description: 'Set up your profile' },
+    { label: 'Complete', description: 'Review and finish' },
+  ];
+
+  // Horizontal
+  document.getElementById('horizontal').steps = steps3;
+
+  // Vertical
+  document.getElementById('vertical').steps = steps3;
+
+  // Current step variants
+  document.getElementById('step0').steps = steps3;
+  document.getElementById('step1').steps = steps3;
+  document.getElementById('step2').steps = steps3;
+
+  // Clickable
+  document.getElementById('clickable').steps = steps3;
+
+  // With descriptions
+  document.getElementById('with-desc').steps = stepsWithDesc;
+
+  // Explicit statuses
+  document.getElementById('statuses').steps = [
+    { label: 'Completed', status: 'completed' },
+    { label: 'Active', status: 'active' },
+    { label: 'Error', status: 'error' },
+    { label: 'Pending', status: 'pending' },
+  ];
+
+  // All done
+  document.getElementById('all-done').steps = steps3;
+
+  // Two steps
+  document.getElementById('two-steps').steps = [
+    { label: 'Start' },
+    { label: 'Finish' },
+  ];
+
+  // Many steps
+  document.getElementById('many-steps').steps = [
+    { label: 'Step 1' },
+    { label: 'Step 2' },
+    { label: 'Step 3' },
+    { label: 'Step 4' },
+    { label: 'Step 5' },
+    { label: 'Step 6' },
+  ];
+
+  // Single step
+  document.getElementById('single-step').steps = [
+    { label: 'Only Step' },
+  ];
+
+  // Vertical + clickable
+  document.getElementById('vertical-click').steps = steps3;
+
+  // Vertical + descriptions
+  document.getElementById('vertical-desc').steps = stepsWithDesc;
+
+  // With error
+  document.getElementById('with-error').steps = [
+    { label: 'Info', status: 'completed' },
+    { label: 'Payment', status: 'error', description: 'Payment failed' },
+    { label: 'Confirm', status: 'pending' },
+  ];
+
+  // With panels
+  document.getElementById('with-panels').steps = steps3;
+</script>
+</body>
+</html>

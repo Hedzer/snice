@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podcast Player</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-podcast-player { display: block; max-width: 480px; }
+  </style>
+</head>
+<body>
+
+<h2>Direct src with metadata</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="Episode 1: Getting Started"
+    show="Tech Talks"
+    description="An introduction to web components and modern development."
+  ></snice-podcast-player>
+</section>
+
+<h2>With artwork</h2>
+<section>
+  <snice-podcast-player
+    id="player-artwork"
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="Episode 2: Deep Dive"
+    show="Tech Talks"
+    artwork="https://picsum.photos/seed/podcast/300/300"
+    description="A deep dive into component architecture."
+  ></snice-podcast-player>
+</section>
+
+<h2>Custom skip intervals (skip-back="10" skip-forward="60")</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    title="Custom Skip Intervals"
+    show="Demo Show"
+    skip-back="10"
+    skip-forward="60"
+  ></snice-podcast-player>
+</section>
+
+<h2>Custom playback-rate="1.5"</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="1.5x Speed"
+    show="Speed Test"
+    playback-rate="1.5"
+  ></snice-podcast-player>
+</section>
+
+<h2>volume="0.5"</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="Half Volume"
+    show="Volume Test"
+    volume="0.5"
+  ></snice-podcast-player>
+</section>
+
+<h2>muted</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    title="Muted Player"
+    show="Mute Test"
+    muted
+  ></snice-podcast-player>
+</section>
+
+<h2>With episodes list</h2>
+<section>
+  <snice-podcast-player id="player-episodes" show="Multi-Episode Show"></snice-podcast-player>
+</section>
+
+<h2>With chapters</h2>
+<section>
+  <snice-podcast-player id="player-chapters" show="Chapter Demo"></snice-podcast-player>
+</section>
+
+<h2>No src (empty state)</h2>
+<section>
+  <snice-podcast-player title="" show=""></snice-podcast-player>
+</section>
+
+<h2>Title only, no show name</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    title="Standalone Episode"
+  ></snice-podcast-player>
+</section>
+
+<h2>Long title and description</h2>
+<section>
+  <snice-podcast-player
+    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    title="This Is a Very Long Episode Title That Should Test How the Component Handles Overflow and Text Wrapping in Limited Space"
+    show="The Verbosity Podcast"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  ></snice-podcast-player>
+</section>
+
+<script type="module">
+  import '../../../components/podcast-player/snice-podcast-player.ts';
+
+  // Episodes list
+  const playerEp = document.getElementById('player-episodes');
+  playerEp.episodes = [
+    { title: 'Ep 1: Introduction', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', duration: 375, pubDate: 'Jan 15, 2026' },
+    { title: 'Ep 2: Deep Dive', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', duration: 420, pubDate: 'Jan 22, 2026', artwork: 'https://picsum.photos/seed/ep2/100/100' },
+    { title: 'Ep 3: Advanced Topics', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', duration: 510, pubDate: 'Jan 29, 2026' },
+    { title: 'Ep 4: Q&A Session', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', duration: 280, pubDate: 'Feb 5, 2026' }
+  ];
+
+  // Chapters
+  const playerCh = document.getElementById('player-chapters');
+  playerCh.episodes = [
+    {
+      title: 'Chaptered Episode',
+      src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      duration: 375,
+      chapters: [
+        { title: 'Intro', startTime: 0 },
+        { title: 'Main Topic', startTime: 60 },
+        { title: 'Deep Dive', startTime: 180 },
+        { title: 'Wrap Up', startTime: 300 }
+      ]
+    }
+  ];
+  playerCh.loadEpisode(0);
+</script>
+</body>
+</html>

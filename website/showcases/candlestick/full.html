@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candlestick</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    snice-candlestick {
+      width: 100%;
+      height: 350px;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Default (showGrid=true, showCrosshair=true, zoomEnabled=true, animation=true)</h2>
+    <snice-candlestick id="cs-default"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>showVolume: true</h2>
+    <snice-candlestick id="cs-volume" show-volume></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>showGrid: false</h2>
+    <snice-candlestick id="cs-nogrid" show-grid="false"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>showCrosshair: false</h2>
+    <snice-candlestick id="cs-nocrosshair" show-crosshair="false"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>zoomEnabled: false</h2>
+    <snice-candlestick id="cs-nozoom" zoom-enabled="false"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>animation: false</h2>
+    <snice-candlestick id="cs-noanim" animation="false"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>Custom colors (bullishColor, bearishColor)</h2>
+    <snice-candlestick id="cs-colors" bullish-color="#22c55e" bearish-color="#ef4444"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>All timeFormat values</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>timeFormat: auto (default)</h2>
+        <snice-candlestick id="cs-tf-auto" time-format="auto"></snice-candlestick>
+      </div>
+      <div>
+        <h2>timeFormat: date</h2>
+        <snice-candlestick id="cs-tf-date" time-format="date"></snice-candlestick>
+      </div>
+    </div>
+    <div class="side-by-side" style="margin-top:1rem;">
+      <div>
+        <h2>timeFormat: datetime</h2>
+        <snice-candlestick id="cs-tf-datetime" time-format="datetime"></snice-candlestick>
+      </div>
+      <div>
+        <h2>timeFormat: month</h2>
+        <snice-candlestick id="cs-tf-month" time-format="month"></snice-candlestick>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All yAxisFormat values</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>yAxisFormat: number (default)</h2>
+        <snice-candlestick id="cs-yf-number" y-axis-format="number"></snice-candlestick>
+      </div>
+      <div>
+        <h2>yAxisFormat: currency</h2>
+        <snice-candlestick id="cs-yf-currency" y-axis-format="currency"></snice-candlestick>
+      </div>
+    </div>
+    <div style="margin-top:1rem;">
+      <h2>yAxisFormat: percent</h2>
+      <snice-candlestick id="cs-yf-percent" y-axis-format="percent" style="height:250px;"></snice-candlestick>
+    </div>
+  </section>
+
+  <section>
+    <h2>Volume + Custom colors + Grid</h2>
+    <snice-candlestick id="cs-combo" show-volume bullish-color="#3b82f6" bearish-color="#f97316"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>Small dataset (5 candles)</h2>
+    <snice-candlestick id="cs-small" style="height:250px;"></snice-candlestick>
+  </section>
+
+  <section>
+    <h2>Large dataset (200 candles)</h2>
+    <snice-candlestick id="cs-large" show-volume></snice-candlestick>
+  </section>
+
+  <script type="module">
+    import '../../../components/candlestick/snice-candlestick.ts';
+
+    function generateCandles(count, startDate, startPrice) {
+      const data = [];
+      let price = startPrice;
+      const d = new Date(startDate);
+      for (let i = 0; i < count; i++) {
+        const open = price + (Math.random() - 0.5) * 5;
+        const close = open + (Math.random() - 0.5) * 8;
+        const high = Math.max(open, close) + Math.random() * 3;
+        const low = Math.min(open, close) - Math.random() * 3;
+        const volume = Math.floor(Math.random() * 1000000) + 100000;
+        data.push({ date: new Date(d).toISOString(), open, high, low, close, volume });
+        d.setDate(d.getDate() + 1);
+        price = close;
+      }
+      return data;
+    }
+
+    const data60 = generateCandles(60, '2024-01-01', 150);
+    const data5 = generateCandles(5, '2024-06-01', 100);
+    const data200 = generateCandles(200, '2023-06-01', 50);
+
+    document.getElementById('cs-default').data = data60;
+    document.getElementById('cs-volume').data = data60;
+    document.getElementById('cs-nogrid').data = data60;
+    document.getElementById('cs-nocrosshair').data = data60;
+    document.getElementById('cs-nozoom').data = data60;
+    document.getElementById('cs-noanim').data = data60;
+    document.getElementById('cs-colors').data = data60;
+
+    document.getElementById('cs-tf-auto').data = data60;
+    document.getElementById('cs-tf-date').data = data60;
+    document.getElementById('cs-tf-datetime').data = data60;
+    document.getElementById('cs-tf-month').data = data200.filter((_, i) => i % 5 === 0);
+
+    document.getElementById('cs-yf-number').data = data60;
+    document.getElementById('cs-yf-currency').data = data60;
+    // Percent data
+    const percentData = generateCandles(40, '2024-01-01', 5).map(c => ({
+      ...c,
+      open: c.open / 30,
+      high: c.high / 30,
+      low: c.low / 30,
+      close: c.close / 30,
+    }));
+    document.getElementById('cs-yf-percent').data = percentData;
+
+    document.getElementById('cs-combo').data = data60;
+    document.getElementById('cs-small').data = data5;
+    document.getElementById('cs-large').data = data200;
+  </script>
+</body>
+</html>

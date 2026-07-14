@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Org Chart</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .chart-box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: auto; min-height: 200px; padding: 1.5rem; }
+    .chart-box snice-org-chart { display: block; }
+  </style>
+</head>
+<body>
+
+<h2>Direction: top-down (default)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-td"></snice-org-chart>
+</div>
+
+<h2>Direction: left-right</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-lr" direction="left-right"></snice-org-chart>
+</div>
+
+<h2>Compact: false (default)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-normal"></snice-org-chart>
+</div>
+
+<h2>Compact: true</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-compact" compact></snice-org-chart>
+</div>
+
+<h2>Compact + left-right</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-compact-lr" direction="left-right" compact></snice-org-chart>
+</div>
+
+<h2>With avatars</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-avatars"></snice-org-chart>
+</div>
+
+<h2>Without avatars (initials)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-initials"></snice-org-chart>
+</div>
+
+<h2>Nodes with title</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-titles"></snice-org-chart>
+</div>
+
+<h2>Nodes without title</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-no-titles"></snice-org-chart>
+</div>
+
+<h2>Single node (no children)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-single"></snice-org-chart>
+</div>
+
+<h2>Deep hierarchy (4 levels)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-deep"></snice-org-chart>
+</div>
+
+<h2>Wide hierarchy (many siblings)</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-wide"></snice-org-chart>
+</div>
+
+<h2>No data</h2>
+<div class="chart-box">
+  <snice-org-chart id="chart-empty"></snice-org-chart>
+</div>
+
+<script type="module">
+  import '../../../components/org-chart/snice-org-chart.ts';
+
+  const fullData = {
+    id: 'ceo', name: 'Sarah Johnson', title: 'CEO',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    children: [
+      {
+        id: 'cto', name: 'Michael Chen', title: 'CTO',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+        children: [
+          { id: 'dev1', name: 'Emily Davis', title: 'Dev Lead', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+            children: [
+              { id: 'd1', name: 'Alex Smith', title: 'Engineer' },
+              { id: 'd2', name: 'Jordan Lee', title: 'Engineer' }
+            ]
+          },
+          { id: 'qa1', name: 'Riley Wilson', title: 'QA Lead' }
+        ]
+      },
+      {
+        id: 'cfo', name: 'David Martinez', title: 'CFO',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+        children: [
+          { id: 'acc1', name: 'Lisa Anderson', title: 'Accountant' }
+        ]
+      },
+      { id: 'cmo', name: 'Jessica White', title: 'CMO' }
+    ]
+  };
+
+  // Top-down
+  document.getElementById('chart-td').data = fullData;
+
+  // Left-right
+  document.getElementById('chart-lr').data = fullData;
+
+  // Normal vs compact
+  document.getElementById('chart-normal').data = fullData;
+  document.getElementById('chart-compact').data = fullData;
+  document.getElementById('chart-compact-lr').data = fullData;
+
+  // With avatars
+  document.getElementById('chart-avatars').data = fullData;
+
+  // Without avatars (initials only)
+  const noAvatarData = {
+    id: 'r', name: 'Root Node', title: 'Director',
+    children: [
+      { id: 'a', name: 'Alice', title: 'Manager', children: [
+        { id: 'a1', name: 'Bob', title: 'Engineer' },
+        { id: 'a2', name: 'Carol', title: 'Designer' }
+      ]},
+      { id: 'b', name: 'Dan', title: 'Manager' }
+    ]
+  };
+  document.getElementById('chart-initials').data = noAvatarData;
+
+  // Titles
+  document.getElementById('chart-titles').data = {
+    id: '1', name: 'Jane Doe', title: 'VP of Engineering',
+    children: [
+      { id: '2', name: 'John Smith', title: 'Staff Engineer' },
+      { id: '3', name: 'Mary Jones', title: 'Senior Engineer' }
+    ]
+  };
+
+  // No titles
+  document.getElementById('chart-no-titles').data = {
+    id: '1', name: 'Team Alpha',
+    children: [
+      { id: '2', name: 'Squad 1' },
+      { id: '3', name: 'Squad 2' },
+      { id: '4', name: 'Squad 3' }
+    ]
+  };
+
+  // Single node
+  document.getElementById('chart-single').data = {
+    id: 'solo', name: 'Standalone Node', title: 'Only member'
+  };
+
+  // Deep hierarchy
+  document.getElementById('chart-deep').data = {
+    id: 'l0', name: 'Level 0', title: 'Root',
+    children: [{
+      id: 'l1', name: 'Level 1', title: 'Child',
+      children: [{
+        id: 'l2', name: 'Level 2', title: 'Grandchild',
+        children: [{
+          id: 'l3', name: 'Level 3', title: 'Great-grandchild',
+          children: [
+            { id: 'l4a', name: 'Level 4a', title: 'Leaf' },
+            { id: 'l4b', name: 'Level 4b', title: 'Leaf' }
+          ]
+        }]
+      }]
+    }]
+  };
+
+  // Wide hierarchy
+  document.getElementById('chart-wide').data = {
+    id: 'boss', name: 'Manager', title: 'Team Lead',
+    children: Array.from({ length: 8 }, (_, i) => ({
+      id: `w${i}`, name: `Employee ${i + 1}`, title: `Role ${i + 1}`
+    }))
+  };
+
+  // Empty: chart-empty left with no data
+</script>
+</body>
+</html>

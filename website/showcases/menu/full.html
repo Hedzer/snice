@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    .trigger-btn { padding: 0.5rem 1rem; border: 1px solid var(--snice-color-border, #ddd); border-radius: 6px; background: var(--snice-color-surface-container-high, #f9f9f9); cursor: pointer; font-size: 0.875rem; }
+    .spacer { height: 14rem; }
+  </style>
+</head>
+<body>
+
+<h2>Trigger: click (default)</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">Click Menu</button>
+    <snice-menu-item value="new">New File</snice-menu-item>
+    <snice-menu-item value="open">Open</snice-menu-item>
+    <snice-menu-item value="save">Save</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Trigger: hover</h2>
+<div class="row">
+  <snice-menu trigger="hover">
+    <button slot="trigger" class="trigger-btn">Hover Menu</button>
+    <snice-menu-item value="cut">Cut</snice-menu-item>
+    <snice-menu-item value="copy">Copy</snice-menu-item>
+    <snice-menu-item value="paste">Paste</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Trigger: manual</h2>
+<div class="row">
+  <snice-menu trigger="manual" id="menu-manual">
+    <button slot="trigger" class="trigger-btn" onclick="document.getElementById('menu-manual').toggleMenu()">Manual Toggle</button>
+    <snice-menu-item value="a">Action A</snice-menu-item>
+    <snice-menu-item value="b">Action B</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: bottom-start (default)</h2>
+<div class="row">
+  <snice-menu placement="bottom-start">
+    <button slot="trigger" class="trigger-btn">bottom-start</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: bottom-end</h2>
+<div class="row" style="justify-content: flex-end;">
+  <snice-menu placement="bottom-end">
+    <button slot="trigger" class="trigger-btn">bottom-end</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: top-start</h2>
+<div style="margin-top: 12rem;">
+  <snice-menu placement="top-start">
+    <button slot="trigger" class="trigger-btn">top-start</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+
+<h2>Placement: top-end</h2>
+<div style="margin-top: 12rem; display:flex; justify-content:flex-end;">
+  <snice-menu placement="top-end">
+    <button slot="trigger" class="trigger-btn">top-end</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+
+<h2>Placement: right-start</h2>
+<div class="row">
+  <snice-menu placement="right-start">
+    <button slot="trigger" class="trigger-btn">right-start</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: right-end</h2>
+<div class="row">
+  <snice-menu placement="right-end">
+    <button slot="trigger" class="trigger-btn">right-end</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: left-start</h2>
+<div style="padding-left: 15rem;">
+  <snice-menu placement="left-start">
+    <button slot="trigger" class="trigger-btn">left-start</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Placement: left-end</h2>
+<div style="padding-left: 15rem;">
+  <snice-menu placement="left-end">
+    <button slot="trigger" class="trigger-btn">left-end</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+    <snice-menu-item value="2">Item 2</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Close on select: true (default)</h2>
+<div class="row">
+  <snice-menu close-on-select>
+    <button slot="trigger" class="trigger-btn">Auto-close</button>
+    <snice-menu-item value="a">Click me (closes)</snice-menu-item>
+    <snice-menu-item value="b">Click me too</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Close on select: false</h2>
+<div class="row">
+  <snice-menu close-on-select="false">
+    <button slot="trigger" class="trigger-btn">Stays open</button>
+    <snice-menu-item value="a">Click me (stays open)</snice-menu-item>
+    <snice-menu-item value="b">Click me too</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Custom distance</h2>
+<div class="row">
+  <snice-menu distance="0">
+    <button slot="trigger" class="trigger-btn">Distance: 0</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+  </snice-menu>
+  <snice-menu distance="4">
+    <button slot="trigger" class="trigger-btn">Distance: 4</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+  </snice-menu>
+  <snice-menu distance="12">
+    <button slot="trigger" class="trigger-btn">Distance: 12</button>
+    <snice-menu-item value="1">Item 1</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Menu item: disabled</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">With Disabled</button>
+    <snice-menu-item value="a">Enabled</snice-menu-item>
+    <snice-menu-item value="b" disabled>Disabled</snice-menu-item>
+    <snice-menu-item value="c">Enabled</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Menu item: selected</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">With Selected</button>
+    <snice-menu-item value="a">Normal</snice-menu-item>
+    <snice-menu-item value="b" selected>Selected</snice-menu-item>
+    <snice-menu-item value="c">Normal</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Menu item: icon slot</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">With Icons</button>
+    <snice-menu-item value="new"><span slot="icon">&#x1F4C4;</span>New File</snice-menu-item>
+    <snice-menu-item value="save"><span slot="icon">&#x1F4BE;</span>Save</snice-menu-item>
+    <snice-menu-item value="delete"><span slot="icon">&#x1F5D1;&#xFE0F;</span>Delete</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Menu item: shortcut slot</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">With Shortcuts</button>
+    <snice-menu-item value="save"><span slot="icon">&#x1F4BE;</span>Save<span slot="shortcut">&#x2318;S</span></snice-menu-item>
+    <snice-menu-item value="copy">Copy<span slot="shortcut">&#x2318;C</span></snice-menu-item>
+    <snice-menu-item value="paste">Paste<span slot="shortcut">&#x2318;V</span></snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Menu divider</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">With Dividers</button>
+    <snice-menu-item value="new">New</snice-menu-item>
+    <snice-menu-item value="open">Open</snice-menu-item>
+    <snice-menu-divider></snice-menu-divider>
+    <snice-menu-item value="save">Save</snice-menu-item>
+    <snice-menu-item value="saveas">Save As</snice-menu-item>
+    <snice-menu-divider></snice-menu-divider>
+    <snice-menu-item value="exit">Exit</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Image-left and image-right slots</h2>
+<div class="row">
+  <snice-menu>
+    <span slot="image-left" style="font-size:1.25rem;">&#x1F4C1;</span>
+    <button slot="trigger" class="trigger-btn">With Images</button>
+    <span slot="image-right" style="font-size:0.75rem;">&#x25BC;</span>
+    <snice-menu-item value="a">Item A</snice-menu-item>
+    <snice-menu-item value="b">Item B</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Initially open</h2>
+<snice-menu open>
+  <button slot="trigger" class="trigger-btn">Pre-opened</button>
+  <snice-menu-item value="a">Item A</snice-menu-item>
+  <snice-menu-item value="b">Item B</snice-menu-item>
+</snice-menu>
+<div class="spacer"></div>
+
+<h2>Full example: file menu</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">File</button>
+    <snice-menu-item value="new"><span slot="icon">&#x1F4C4;</span>New<span slot="shortcut">&#x2318;N</span></snice-menu-item>
+    <snice-menu-item value="open"><span slot="icon">&#x1F4C2;</span>Open<span slot="shortcut">&#x2318;O</span></snice-menu-item>
+    <snice-menu-divider></snice-menu-divider>
+    <snice-menu-item value="save"><span slot="icon">&#x1F4BE;</span>Save<span slot="shortcut">&#x2318;S</span></snice-menu-item>
+    <snice-menu-item value="saveas">Save As<span slot="shortcut">&#x21E7;&#x2318;S</span></snice-menu-item>
+    <snice-menu-divider></snice-menu-divider>
+    <snice-menu-item value="print">Print<span slot="shortcut">&#x2318;P</span></snice-menu-item>
+    <snice-menu-item value="export" disabled>Export (disabled)</snice-menu-item>
+    <snice-menu-divider></snice-menu-divider>
+    <snice-menu-item value="exit"><span slot="icon">&#x1F6AA;</span>Exit</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<h2>Disabled + selected item states combined</h2>
+<div class="row">
+  <snice-menu>
+    <button slot="trigger" class="trigger-btn">States</button>
+    <snice-menu-item value="a">Normal</snice-menu-item>
+    <snice-menu-item value="b" selected>Selected</snice-menu-item>
+    <snice-menu-item value="c" disabled>Disabled</snice-menu-item>
+    <snice-menu-item value="d" selected disabled>Selected + Disabled</snice-menu-item>
+  </snice-menu>
+</div>
+<div class="spacer"></div>
+
+<script type="module">
+  import '../../../components/menu/snice-menu.ts';
+  import '../../../components/menu/snice-menu-item.ts';
+  import '../../../components/menu/snice-menu-divider.ts';
+</script>
+</body>
+</html>

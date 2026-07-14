@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Invoice</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    snice-invoice { display: block; max-width: 700px; margin-bottom: 1.5rem; }
+  </style>
+  <script type="module">
+    import '../../../components/invoice/snice-invoice.ts';
+
+    const from = { name: 'Acme Corp', address: '123 Business Ave, Suite 100, New York, NY 10001', email: 'billing@acme.com', phone: '(555) 123-4567' };
+    const to = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL 60601', email: 'ap@client.com', phone: '(555) 987-6543' };
+    const items = [
+      { description: 'Web Development', quantity: 40, unitPrice: 150 },
+      { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+      { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-inv]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+      document.querySelectorAll('[data-qr]').forEach(el => {
+        el.from = from; el.to = to; el.items = items;
+      });
+
+      // Tax + discount
+      document.getElementById('inv-tax').from = from;
+      document.getElementById('inv-tax').to = to;
+      document.getElementById('inv-tax').items = items;
+
+      // Notes
+      document.getElementById('inv-notes').from = from;
+      document.getElementById('inv-notes').to = to;
+      document.getElementById('inv-notes').items = items;
+
+      // No parties
+      document.getElementById('inv-noparty').items = items;
+
+      // Empty
+      document.getElementById('inv-empty').from = from;
+      document.getElementById('inv-empty').to = to;
+
+      // Currency
+      document.getElementById('inv-gbp').from = from;
+      document.getElementById('inv-gbp').to = to;
+      document.getElementById('inv-gbp').items = items;
+    });
+  </script>
+</head>
+<body>
+
+<!-- Status variants -->
+<h2>Status: draft</h2>
+<snice-invoice data-inv invoice-number="INV-001" date="2026-03-01" status="draft"></snice-invoice>
+
+<h2>Status: sent</h2>
+<snice-invoice data-inv invoice-number="INV-002" date="2026-03-01" due-date="2026-04-01" status="sent"></snice-invoice>
+
+<h2>Status: paid</h2>
+<snice-invoice data-inv invoice-number="INV-003" date="2026-02-01" status="paid"></snice-invoice>
+
+<h2>Status: overdue</h2>
+<snice-invoice data-inv invoice-number="INV-004" date="2026-01-01" due-date="2026-02-01" status="overdue"></snice-invoice>
+
+<h2>Status: cancelled</h2>
+<snice-invoice data-inv invoice-number="INV-005" date="2026-01-15" status="cancelled"></snice-invoice>
+
+<!-- Variant: standard (default) -->
+<h2>Variant: standard (default)</h2>
+<snice-invoice data-inv invoice-number="INV-010" date="2026-03-06" variant="standard"></snice-invoice>
+
+<!-- Variant: modern -->
+<h2>Variant: modern</h2>
+<snice-invoice data-inv invoice-number="INV-011" date="2026-03-06" variant="modern"></snice-invoice>
+
+<!-- Variant: classic -->
+<h2>Variant: classic</h2>
+<snice-invoice data-inv invoice-number="INV-012" date="2026-03-06" variant="classic"></snice-invoice>
+
+<!-- Variant: minimal -->
+<h2>Variant: minimal</h2>
+<snice-invoice data-inv invoice-number="INV-013" date="2026-03-06" variant="minimal"></snice-invoice>
+
+<!-- Variant: detailed -->
+<h2>Variant: detailed</h2>
+<snice-invoice data-inv invoice-number="INV-014" date="2026-03-06" variant="detailed"></snice-invoice>
+
+<!-- Tax + Discount -->
+<h2>Tax Rate (8%) + Discount (10%)</h2>
+<snice-invoice id="inv-tax" invoice-number="INV-020" date="2026-03-06" tax-rate="8" discount="10"></snice-invoice>
+
+<!-- Notes -->
+<h2>Notes</h2>
+<snice-invoice id="inv-notes" invoice-number="INV-021" date="2026-03-06" notes="Payment is due within 30 days. Late payments incur a 1.5% monthly fee."></snice-invoice>
+
+<!-- QR positions -->
+<h2>QR Position: top-right</h2>
+<snice-invoice data-qr invoice-number="INV-030" date="2026-03-06" show-qr qr-position="top-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: bottom-right</h2>
+<snice-invoice data-qr invoice-number="INV-031" date="2026-03-06" show-qr qr-position="bottom-right">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: bottom-left</h2>
+<snice-invoice data-qr invoice-number="INV-032" date="2026-03-06" show-qr qr-position="bottom-left">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<h2>QR Position: footer</h2>
+<snice-invoice data-qr invoice-number="INV-033" date="2026-03-06" show-qr qr-position="footer">
+  <div slot="qr" style="width:80px;height:80px;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:0.7rem;border-radius:4px;">QR</div>
+</snice-invoice>
+
+<!-- Currency -->
+<h2>Currency: GBP</h2>
+<snice-invoice id="inv-gbp" invoice-number="INV-040" date="2026-03-06" currency="GBP"></snice-invoice>
+
+<!-- Due date -->
+<h2>Due Date</h2>
+<snice-invoice data-inv invoice-number="INV-050" date="2026-03-01" due-date="2026-04-15" status="sent"></snice-invoice>
+
+<!-- Footer slot -->
+<h2>Slot: Default (footer content)</h2>
+<snice-invoice data-inv invoice-number="INV-060" date="2026-03-06">
+  <div style="text-align: center; font-size: 0.75rem; color: var(--snice-color-text-tertiary); padding: 1rem 0;">
+    Thank you for your business! Contact billing@acme.com for questions.
+  </div>
+</snice-invoice>
+
+<!-- Edge: no parties -->
+<h2>Edge: No Parties</h2>
+<snice-invoice id="inv-noparty" invoice-number="INV-070" date="2026-03-06"></snice-invoice>
+
+<!-- Edge: no items -->
+<h2>Edge: No Items</h2>
+<snice-invoice id="inv-empty" invoice-number="INV-071" date="2026-03-06"></snice-invoice>
+
+</body>
+</html>

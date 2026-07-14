@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approval Flow</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <section>
+    <h2>Orientation: horizontal (default)</h2>
+    <snice-approval-flow id="flow-h"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>Orientation: vertical</h2>
+    <snice-approval-flow id="flow-v" orientation="vertical"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>All statuses: pending, approved, rejected, skipped</h2>
+    <snice-approval-flow id="flow-statuses"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>With current-step (shows approve/reject buttons on pending step)</h2>
+    <snice-approval-flow id="flow-current" current-step="step-2"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>With roles</h2>
+    <snice-approval-flow id="flow-roles"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>With comments</h2>
+    <snice-approval-flow id="flow-comments"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>With timestamps</h2>
+    <snice-approval-flow id="flow-timestamps"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>With avatars</h2>
+    <snice-approval-flow id="flow-avatars"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>Single step</h2>
+    <snice-approval-flow id="flow-single"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>Many steps (6)</h2>
+    <snice-approval-flow id="flow-many"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>All approved</h2>
+    <snice-approval-flow id="flow-all-approved"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>All rejected</h2>
+    <snice-approval-flow id="flow-all-rejected"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>All pending</h2>
+    <snice-approval-flow id="flow-all-pending"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>Side by side: horizontal vs vertical</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>horizontal</h2>
+        <snice-approval-flow id="flow-cmp-h"></snice-approval-flow>
+      </div>
+      <div>
+        <h2>vertical</h2>
+        <snice-approval-flow id="flow-cmp-v" orientation="vertical"></snice-approval-flow>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Edge case: very long approver name and role</h2>
+    <snice-approval-flow id="flow-long"></snice-approval-flow>
+  </section>
+
+  <section>
+    <h2>Full details: avatar + role + comment + timestamp</h2>
+    <snice-approval-flow id="flow-full" orientation="vertical"></snice-approval-flow>
+  </section>
+
+  <script type="module">
+    import '../../../components/approval-flow/snice-approval-flow.ts';
+
+    const basic = [
+      { id: 'step-1', approver: 'Alice Chen', status: 'approved' },
+      { id: 'step-2', approver: 'Bob Smith', status: 'pending' },
+      { id: 'step-3', approver: 'Carol Davis', status: 'pending' },
+    ];
+
+    document.getElementById('flow-h').steps = basic;
+    document.getElementById('flow-v').steps = basic;
+
+    document.getElementById('flow-statuses').steps = [
+      { id: 's1', approver: 'Pending User', status: 'pending' },
+      { id: 's2', approver: 'Approved User', status: 'approved' },
+      { id: 's3', approver: 'Rejected User', status: 'rejected' },
+      { id: 's4', approver: 'Skipped User', status: 'skipped' },
+    ];
+
+    document.getElementById('flow-current').steps = [
+      { id: 'step-1', approver: 'Alice', status: 'approved' },
+      { id: 'step-2', approver: 'Bob', status: 'pending' },
+      { id: 'step-3', approver: 'Carol', status: 'pending' },
+    ];
+
+    document.getElementById('flow-roles').steps = [
+      { id: 'r1', approver: 'Alice Chen', role: 'Manager', status: 'approved' },
+      { id: 'r2', approver: 'Bob Smith', role: 'Director', status: 'pending' },
+      { id: 'r3', approver: 'Carol Davis', role: 'VP Finance', status: 'pending' },
+    ];
+
+    document.getElementById('flow-comments').steps = [
+      { id: 'c1', approver: 'Alice', status: 'approved', comment: 'Looks good to me!' },
+      { id: 'c2', approver: 'Bob', status: 'rejected', comment: 'Budget exceeds limit, please revise.' },
+      { id: 'c3', approver: 'Carol', status: 'skipped', comment: 'Skipped per policy.' },
+    ];
+
+    document.getElementById('flow-timestamps').steps = [
+      { id: 't1', approver: 'Alice', status: 'approved', timestamp: '2024-01-15 09:30 AM' },
+      { id: 't2', approver: 'Bob', status: 'approved', timestamp: '2024-01-15 02:15 PM' },
+      { id: 't3', approver: 'Carol', status: 'pending' },
+    ];
+
+    document.getElementById('flow-avatars').steps = [
+      { id: 'a1', approver: 'Alice Chen', avatar: 'https://i.pravatar.cc/40?img=1', status: 'approved' },
+      { id: 'a2', approver: 'Bob Smith', avatar: 'https://i.pravatar.cc/40?img=2', status: 'pending' },
+      { id: 'a3', approver: 'Carol Davis', avatar: 'https://i.pravatar.cc/40?img=3', status: 'pending' },
+    ];
+
+    document.getElementById('flow-single').steps = [
+      { id: 'solo', approver: 'Sole Approver', status: 'pending' },
+    ];
+
+    document.getElementById('flow-many').steps = [
+      { id: 'm1', approver: 'Step 1', status: 'approved' },
+      { id: 'm2', approver: 'Step 2', status: 'approved' },
+      { id: 'm3', approver: 'Step 3', status: 'approved' },
+      { id: 'm4', approver: 'Step 4', status: 'rejected' },
+      { id: 'm5', approver: 'Step 5', status: 'pending' },
+      { id: 'm6', approver: 'Step 6', status: 'pending' },
+    ];
+
+    document.getElementById('flow-all-approved').steps = [
+      { id: 'aa1', approver: 'Alice', status: 'approved' },
+      { id: 'aa2', approver: 'Bob', status: 'approved' },
+      { id: 'aa3', approver: 'Carol', status: 'approved' },
+    ];
+
+    document.getElementById('flow-all-rejected').steps = [
+      { id: 'ar1', approver: 'Alice', status: 'rejected' },
+      { id: 'ar2', approver: 'Bob', status: 'rejected' },
+      { id: 'ar3', approver: 'Carol', status: 'rejected' },
+    ];
+
+    document.getElementById('flow-all-pending').steps = [
+      { id: 'ap1', approver: 'Alice', status: 'pending' },
+      { id: 'ap2', approver: 'Bob', status: 'pending' },
+      { id: 'ap3', approver: 'Carol', status: 'pending' },
+    ];
+
+    const cmpSteps = [
+      { id: 'x1', approver: 'Alice', status: 'approved', role: 'Manager' },
+      { id: 'x2', approver: 'Bob', status: 'pending', role: 'Director' },
+      { id: 'x3', approver: 'Carol', status: 'pending', role: 'VP' },
+    ];
+    document.getElementById('flow-cmp-h').steps = cmpSteps;
+    document.getElementById('flow-cmp-v').steps = cmpSteps;
+
+    document.getElementById('flow-long').steps = [
+      { id: 'l1', approver: 'Bartholomew Christopherson-Williamson III', role: 'Senior Vice President of International Operations and Strategic Development', status: 'approved', comment: 'Approved after thorough review of all documentation and compliance requirements.' },
+    ];
+
+    document.getElementById('flow-full').steps = [
+      { id: 'f1', approver: 'Alice Chen', role: 'Manager', avatar: 'https://i.pravatar.cc/40?img=1', status: 'approved', comment: 'LGTM', timestamp: 'Jan 15, 9:30 AM' },
+      { id: 'f2', approver: 'Bob Smith', role: 'Director', avatar: 'https://i.pravatar.cc/40?img=2', status: 'approved', comment: 'Approved with minor notes.', timestamp: 'Jan 15, 2:15 PM' },
+      { id: 'f3', approver: 'Carol Davis', role: 'VP Finance', avatar: 'https://i.pravatar.cc/40?img=3', status: 'pending' },
+      { id: 'f4', approver: 'David Lee', role: 'CFO', avatar: 'https://i.pravatar.cc/40?img=4', status: 'pending' },
+    ];
+  </script>
+</body>
+</html>

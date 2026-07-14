@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.5rem;
+      background: var(--snice-color-surface);
+      color: var(--snice-color-text);
+    }
+    section { margin-bottom: 2rem; }
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--snice-color-text-tertiary, #888);
+      margin: 0 0 0.75rem;
+    }
+    .row {
+      display: flex;
+      align-items: start;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .note {
+      font-size: 0.75rem;
+      color: var(--snice-color-text-tertiary, #888);
+      margin-bottom: 0.5rem;
+    }
+    snice-camera {
+      width: 320px;
+      height: 240px;
+    }
+    button.open-cam {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--snice-color-border, #ccc);
+      border-radius: 0.25rem;
+      background: var(--snice-color-surface-container-high, #f5f5f5);
+      color: var(--snice-color-text, #333);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="note">Camera components require user activation. Click a button below to create each camera instance (never auto-request on page load).</p>
+
+  <section>
+    <h2>Default (auto-start, facing-mode=user, mirror=true, show-controls=true)</h2>
+    <button class="open-cam" onclick="createCamera('cam-default', {})">Open Camera</button>
+    <div id="cam-default"></div>
+  </section>
+
+  <section>
+    <h2>auto-start: false</h2>
+    <button class="open-cam" onclick="createCamera('cam-noauto', { autoStart: false })">Open Camera (manual start)</button>
+    <div id="cam-noauto"></div>
+  </section>
+
+  <section>
+    <h2>facing-mode: user vs environment</h2>
+    <div class="row">
+      <div>
+        <h2>user (default)</h2>
+        <button class="open-cam" onclick="createCamera('cam-user', { facingMode: 'user' })">Open</button>
+        <div id="cam-user"></div>
+      </div>
+      <div>
+        <h2>environment</h2>
+        <button class="open-cam" onclick="createCamera('cam-env', { facingMode: 'environment' })">Open</button>
+        <div id="cam-env"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>mirror: true vs false</h2>
+    <div class="row">
+      <div>
+        <h2>mirror=true (default)</h2>
+        <button class="open-cam" onclick="createCamera('cam-mirror', { mirror: true })">Open</button>
+        <div id="cam-mirror"></div>
+      </div>
+      <div>
+        <h2>mirror=false</h2>
+        <button class="open-cam" onclick="createCamera('cam-nomirror', { mirror: false })">Open</button>
+        <div id="cam-nomirror"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>show-controls: true vs false</h2>
+    <div class="row">
+      <div>
+        <h2>show-controls=true</h2>
+        <button class="open-cam" onclick="createCamera('cam-controls', { showControls: true })">Open</button>
+        <div id="cam-controls"></div>
+      </div>
+      <div>
+        <h2>show-controls=false</h2>
+        <button class="open-cam" onclick="createCamera('cam-nocontrols', { showControls: false })">Open</button>
+        <div id="cam-nocontrols"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All controls-position values</h2>
+    <p class="note">auto, bottom, right, left, top, bottom-left, bottom-right, top-left, top-right</p>
+    <div class="row">
+      <div>
+        <button class="open-cam" onclick="createCamera('cam-pos-auto', { controlsPosition: 'auto' })">auto</button>
+        <div id="cam-pos-auto"></div>
+      </div>
+      <div>
+        <button class="open-cam" onclick="createCamera('cam-pos-bottom', { controlsPosition: 'bottom' })">bottom</button>
+        <div id="cam-pos-bottom"></div>
+      </div>
+      <div>
+        <button class="open-cam" onclick="createCamera('cam-pos-right', { controlsPosition: 'right' })">right</button>
+        <div id="cam-pos-right"></div>
+      </div>
+      <div>
+        <button class="open-cam" onclick="createCamera('cam-pos-top', { controlsPosition: 'top' })">top</button>
+        <div id="cam-pos-top"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>object-fit: cover vs contain</h2>
+    <div class="row">
+      <div>
+        <h2>cover (default)</h2>
+        <button class="open-cam" onclick="createCamera('cam-cover', { objectFit: 'cover' })">Open</button>
+        <div id="cam-cover"></div>
+      </div>
+      <div>
+        <h2>contain</h2>
+        <button class="open-cam" onclick="createCamera('cam-contain', { objectFit: 'contain' })">Open</button>
+        <div id="cam-contain"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom resolution: width/height</h2>
+    <div class="row">
+      <div>
+        <h2>640x480</h2>
+        <button class="open-cam" onclick="createCamera('cam-640', { width: 640, height: 480 })">Open</button>
+        <div id="cam-640"></div>
+      </div>
+      <div>
+        <h2>1920x1080</h2>
+        <button class="open-cam" onclick="createCamera('cam-1080', { width: 1920, height: 1080 })">Open</button>
+        <div id="cam-1080"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Custom controls slot</h2>
+    <button class="open-cam" onclick="createCameraWithSlot()">Open</button>
+    <div id="cam-slot"></div>
+  </section>
+
+  <script type="module">
+    import '../../../components/camera/snice-camera.ts';
+
+    window.createCamera = function(containerId, props) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const cam = document.createElement('snice-camera');
+      cam.autoStart = props.autoStart !== false;
+      if (props.facingMode) cam.setAttribute('facing-mode', props.facingMode);
+      if (props.mirror === false) cam.mirror = false;
+      if (props.showControls === false) cam.setAttribute('show-controls', 'false');
+      if (props.controlsPosition) cam.setAttribute('controls-position', props.controlsPosition);
+      if (props.objectFit) cam.setAttribute('object-fit', props.objectFit);
+      if (props.width) cam.width = props.width;
+      if (props.height) cam.height = props.height;
+      cam.style.width = '320px';
+      cam.style.height = '240px';
+      container.appendChild(cam);
+    };
+
+    window.createCameraWithSlot = function() {
+      const container = document.getElementById('cam-slot');
+      container.innerHTML = '';
+      const cam = document.createElement('snice-camera');
+      cam.setAttribute('show-controls', 'false');
+      cam.style.width = '320px';
+      cam.style.height = '240px';
+      const btn = document.createElement('button');
+      btn.slot = 'controls';
+      btn.textContent = 'Custom Capture';
+      btn.style.cssText = 'position:absolute;bottom:8px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:4px;border:none;background:white;cursor:pointer;';
+      btn.onclick = () => cam.capture();
+      cam.appendChild(btn);
+      container.appendChild(cam);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Viewer</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    snice-pdf-viewer { display: block; height: 500px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<h2>Fit: width (default)</h2>
+<section>
+  <snice-pdf-viewer id="viewer-width" fit="width"></snice-pdf-viewer>
+</section>
+
+<h2>Fit: height</h2>
+<section>
+  <snice-pdf-viewer id="viewer-height" fit="height"></snice-pdf-viewer>
+</section>
+
+<h2>Fit: page</h2>
+<section>
+  <snice-pdf-viewer id="viewer-page" fit="page"></snice-pdf-viewer>
+</section>
+
+<h2>Zoom: 0.5</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-half" zoom="0.5" fit="width"></snice-pdf-viewer>
+</section>
+
+<h2>Zoom: 1.5</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-150" zoom="1.5" fit="width"></snice-pdf-viewer>
+</section>
+
+<h2>Zoom: 2</h2>
+<section>
+  <snice-pdf-viewer id="viewer-zoom-200" zoom="2" fit="width"></snice-pdf-viewer>
+</section>
+
+<h2>Page: 1 (default)</h2>
+<section>
+  <snice-pdf-viewer id="viewer-p1" page="1"></snice-pdf-viewer>
+</section>
+
+<h2>No src (empty state)</h2>
+<section>
+  <snice-pdf-viewer></snice-pdf-viewer>
+</section>
+
+<h2>Invalid src (error state)</h2>
+<section>
+  <snice-pdf-viewer src="/nonexistent.pdf"></snice-pdf-viewer>
+</section>
+
+<script type="module">
+  import '../../../components/pdf-viewer/snice-pdf-viewer.ts';
+
+  // Use a sample PDF - adjust path as needed
+  const samplePdf = 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+
+  document.getElementById('viewer-width').src = samplePdf;
+  document.getElementById('viewer-height').src = samplePdf;
+  document.getElementById('viewer-page').src = samplePdf;
+  document.getElementById('viewer-zoom-half').src = samplePdf;
+  document.getElementById('viewer-zoom-150').src = samplePdf;
+  document.getElementById('viewer-zoom-200').src = samplePdf;
+  document.getElementById('viewer-p1').src = samplePdf;
+</script>
+</body>
+</html>

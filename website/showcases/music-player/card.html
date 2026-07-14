@@ -1,0 +1,40 @@
+    <div class="comp-section">
+      <h3>Music Player</h3>
+      <p class="comp-desc">Audio playback with playlist. Tracks: <a href="https://open.spotify.com/artist/1qWHsnGYWrbZow625eJ6AT?si=E9Q8g-E0RgyQYv_6k7_3BA" target="_blank" rel="noopener"><em>Piñaita</em></a> — used with permission.</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="min-height:120px">
+          <snice-music-player id="demo-music" show-playlist show-controls show-volume show-artwork show-track-info style="width:100%"></snice-music-player>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-music-player
+  show-playlist
+  show-controls
+  show-volume
+  show-artwork
+  show-track-info
+&gt;&lt;/snice-music-player&gt;
+
+&lt;script&gt;
+  player.tracks = [
+    { id: '1', title: 'Track',
+      artist: 'Artist', src: 'url' }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+    customElements.whenDefined('snice-music-player').then(() => {
+      const player = document.getElementById('demo-music');
+      if (player) {
+        const artistUrl = 'https://open.spotify.com/artist/1qWHsnGYWrbZow625eJ6AT?si=E9Q8g-E0RgyQYv_6k7_3BA';
+        player.tracks = [
+          { id: '1', title: 'The Colors of the Market', artist: 'Piñaita', album: 'Confetti',  src: 'audio/piniata/colors-of-the-market.mp3', artwork: 'audio/piniata/confetti.png',  artistUrl },
+          { id: '2', title: 'Why',                        artist: 'Piñaita', album: 'Fireworks', src: 'audio/piniata/why.mp3',                    artwork: 'audio/piniata/fireworks.png', artistUrl },
+          { id: '3', title: 'Estas Muy Loco',             artist: 'Piñaita', album: 'Fireworks', src: 'audio/piniata/estas-muy-loco.mp3',        artwork: 'audio/piniata/fireworks.png', artistUrl },
+        ];
+      }
+    });
+</script>

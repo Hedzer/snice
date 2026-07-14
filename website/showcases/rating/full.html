@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rating</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+
+<h2>Values: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5</h2>
+<section>
+  <div style="display:flex;flex-direction:column;gap:0.5rem">
+    <snice-rating value="0"></snice-rating>
+    <snice-rating value="0.5"></snice-rating>
+    <snice-rating value="1"></snice-rating>
+    <snice-rating value="1.5"></snice-rating>
+    <snice-rating value="2"></snice-rating>
+    <snice-rating value="2.5"></snice-rating>
+    <snice-rating value="3"></snice-rating>
+    <snice-rating value="3.5"></snice-rating>
+    <snice-rating value="4"></snice-rating>
+    <snice-rating value="4.5"></snice-rating>
+    <snice-rating value="5"></snice-rating>
+  </div>
+</section>
+
+<h2>Size: small</h2>
+<section class="row"><snice-rating value="3" size="small"></snice-rating></section>
+
+<h2>Size: medium (default)</h2>
+<section class="row"><snice-rating value="3" size="medium"></snice-rating></section>
+
+<h2>Size: large</h2>
+<section class="row"><snice-rating value="3" size="large"></snice-rating></section>
+
+<h2>All sizes</h2>
+<section class="row">
+  <snice-rating value="4" size="small"></snice-rating>
+  <snice-rating value="4" size="medium"></snice-rating>
+  <snice-rating value="4" size="large"></snice-rating>
+</section>
+
+<h2>Precision: full (default)</h2>
+<section class="row"><snice-rating value="3" precision="full"></snice-rating></section>
+
+<h2>Precision: half</h2>
+<section class="row"><snice-rating value="3.5" precision="half"></snice-rating></section>
+
+<h2>Readonly: false (interactive)</h2>
+<section class="row"><snice-rating value="2"></snice-rating></section>
+
+<h2>Readonly: true</h2>
+<section class="row"><snice-rating value="4" readonly></snice-rating></section>
+
+<h2>Max: 5 (default)</h2>
+<section class="row"><snice-rating value="3" max="5"></snice-rating></section>
+
+<h2>Max: 3</h2>
+<section class="row"><snice-rating value="2" max="3"></snice-rating></section>
+
+<h2>Max: 7</h2>
+<section class="row"><snice-rating value="5" max="7"></snice-rating></section>
+
+<h2>Max: 10</h2>
+<section class="row"><snice-rating value="7" max="10"></snice-rating></section>
+
+<h2>Custom icon: heart</h2>
+<section class="row"><snice-rating value="3" icon="&#x2764;" size="large"></snice-rating></section>
+
+<h2>Custom icon: thumbs up</h2>
+<section class="row"><snice-rating value="4" icon="&#x1F44D;" size="large"></snice-rating></section>
+
+<h2>Custom icon: fire</h2>
+<section class="row"><snice-rating value="3.5" icon="&#x1F525;" precision="half" size="large"></snice-rating></section>
+
+<h2>Custom icon: circle</h2>
+<section class="row"><snice-rating value="2" icon="&#x25CF;" size="large"></snice-rating></section>
+
+<h2>Size x Precision matrix</h2>
+<section>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="small" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">small / full</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="small" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">small / half</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="medium" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">medium / full</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="medium" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">medium / half</span>
+  </div>
+  <div class="row" style="margin-bottom:0.5rem">
+    <snice-rating value="3.5" size="large" precision="full"></snice-rating>
+    <span style="font-size:0.7rem">large / full</span>
+  </div>
+  <div class="row">
+    <snice-rating value="3.5" size="large" precision="half"></snice-rating>
+    <span style="font-size:0.7rem">large / half</span>
+  </div>
+</section>
+
+<h2>Readonly x Size</h2>
+<section class="row">
+  <snice-rating value="4" size="small" readonly></snice-rating>
+  <snice-rating value="4" size="medium" readonly></snice-rating>
+  <snice-rating value="4" size="large" readonly></snice-rating>
+</section>
+
+<h2>Empty (value=0)</h2>
+<section class="row"><snice-rating value="0" size="large"></snice-rating></section>
+
+<h2>Full (value=max)</h2>
+<section class="row"><snice-rating value="5" max="5" size="large"></snice-rating></section>
+
+<script type="module">
+  import '../../../components/rating/snice-rating.ts';
+</script>
+</body>
+</html>

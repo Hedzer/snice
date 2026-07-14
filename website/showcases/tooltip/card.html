@@ -1,0 +1,56 @@
+    <!-- ── 18. Tooltip ── -->
+    <div class="comp-section">
+      <h3>Tooltip</h3>
+      <p class="comp-desc">Contextual information on hover or click</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem">
+          <snice-tooltip content="Tooltip on top" position="top"><snice-button variant="default">Top</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on right" position="right"><snice-button variant="default">Right</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on bottom" position="bottom"><snice-button variant="default">Bottom</snice-button></snice-tooltip>
+          <snice-tooltip content="Tooltip on left" position="left"><snice-button variant="default">Left</snice-button></snice-tooltip>
+          <snice-tooltip content="Click me to see this!" trigger="click"><snice-button variant="primary">Click Trigger</snice-button></snice-tooltip>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-tooltip content="Tooltip on top" position="top"&gt;
+  &lt;snice-button&gt;Top&lt;/snice-button&gt;
+&lt;/snice-tooltip&gt;
+
+&lt;snice-tooltip content="Click me!" trigger="click"&gt;
+  &lt;snice-button variant="primary"&gt;
+    Click Trigger
+  &lt;/snice-button&gt;
+&lt;/snice-tooltip&gt;</snice-code-block>
+        </div>
+      </div>
+
+      <h4 style="margin-top:2rem;margin-bottom:0.25rem;font-size:1rem;opacity:0.85">Intrinsic Tooltips</h4>
+      <p class="comp-desc">Attribute-based — no wrapper element needed</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem">
+          <snice-button variant="default" tooltip="Tooltip on top">Top</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on right" style="--tooltip-position:right">Right</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on bottom" style="--tooltip-position:bottom">Bottom</snice-button>
+          <snice-button variant="default" tooltip="Tooltip on left" style="--tooltip-position:left">Left</snice-button>
+          <snice-button variant="primary" tooltip="Click me to see this!" style="--tooltip-trigger:click">Click Trigger</snice-button>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;button tooltip="Tooltip on top"&gt;Top&lt;/button&gt;
+
+&lt;button tooltip="Tooltip on right"
+  style="--tooltip-position: right"&gt;
+  Right
+&lt;/button&gt;
+
+&lt;button tooltip="Click me!"
+  style="--tooltip-trigger: click"&gt;
+  Click Trigger
+&lt;/button&gt;
+
+&lt;!-- Tooltip observer activates automatically when tooltip component loads --&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+

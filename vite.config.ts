@@ -1,7 +1,7 @@
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import swc from 'unplugin-swc';
 
@@ -13,7 +13,7 @@ function componentRebuilder() {
     configureServer(server: any) {
       server.watcher.on('change', (changedPath: string) => {
         if (!(changedPath.includes('/components/') || changedPath.includes('/src/')) ||
-            changedPath.includes('node_modules') || changedPath.includes('/dist/') || changedPath.includes('/public/')) return;
+            changedPath.includes('node_modules') || changedPath.includes('/dist/') || changedPath.includes('/website/public/')) return;
         if (!changedPath.match(/\.(ts|css)$/)) return;
         if (changedPath.endsWith('.stories.ts')) return;
 
@@ -40,7 +40,7 @@ function componentRebuilder() {
             // src/ or theme change — full rebuild
             console.log(`\n  ${file} changed — full rebuild...`);
             try {
-              execSync('npm run build:core && npm run build:cdn && node scripts/build-website.js', { stdio: 'inherit' });
+              execSync('npm run build:core && npm run build:cdn && node tooling/website/build-website.js', { stdio: 'inherit' });
               console.log('  ✓ Full rebuild complete');
             } catch (e) {
               console.error('  ✗ Full rebuild failed');
@@ -72,7 +72,7 @@ function servePublicIndex() {
       server.middlewares.use((req: any, res: any, next: any) => {
         if (req.url === '/' || req.url === '/index.html') {
           try {
-            const html = readFileSync(join(server.config.root, 'public', 'index.html'), 'utf-8');
+            const html = readFileSync(join(server.config.root, 'website', 'public', 'index.html'), 'utf-8');
             server.transformIndexHtml(req.url, html).then((transformed: string) => {
               res.setHeader('Content-Type', 'text/html');
               res.end(transformed);
@@ -91,6 +91,26 @@ function servePublicIndex() {
   };
 }
 
+/** Keep long-standing component demo URLs working after moving their sources. */
+function legacyShowcaseRoutes() {
+  return {
+    name: 'legacy-showcase-routes',
+    configureServer(server: any) {
+      server.middlewares.use((req: any, _res: any, next: any) => {
+        const url = req.url?.split('?', 1)[0] ?? '';
+        const match = url.match(/^\/components\/([^/]+)\/([^/]+\.html)$/);
+        if (!match) return next();
+
+        const [, component, requestedFile] = match;
+        const file = requestedFile === 'full-showcase.html' ? 'full.html' : requestedFile;
+        const source = join(server.config.root, 'website', 'showcases', component, file);
+        if (existsSync(source)) req.url = `/website/showcases/${component}/${file}`;
+        next();
+      });
+    },
+  };
+}
+
 function showcaseRebuilder() {
   return {
     name: 'showcase-rebuilder',
@@ -99,20 +119,21 @@ function showcaseRebuilder() {
         if (path.includes('showcases/') && !path.endsWith('components.html')) {
           console.log(`\n  Showcase fragment changed: ${path.split('/').pop()}`);
           try {
-            execSync('node public/build-showcases.js', { stdio: 'inherit' });
+            execSync('node tooling/website/build-showcases.js', { stdio: 'inherit' });
           } catch {}
         }
       });
     },
     buildStart() {
       try {
-        execSync('node public/build-showcases.js', { stdio: 'inherit' });
+        execSync('node tooling/website/build-showcases.js', { stdio: 'inherit' });
       } catch {}
     },
   };
 }
 
 export default defineConfig({
+  publicDir: 'website/public',
   plugins: [
     swc.vite({
       jsc: {
@@ -128,6 +149,7 @@ export default defineConfig({
         },
       },
     }),
+    legacyShowcaseRoutes(),
     servePublicIndex(),
     cacheHeaders(),
     showcaseRebuilder(),
@@ -139,6 +161,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['snice', 'snice/router'],
-    entries: ['public/**/*.html'],
+    entries: ['website/public/**/*.html', 'website/showcases/**/*.html'],
   },
 });

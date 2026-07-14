@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Gauge</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.5rem; }
+  </style>
+  <script type="module">import '../../../components/gauge/snice-gauge.ts';</script>
+</head>
+<body>
+
+<!-- Variant: default -->
+<h2>Variant: default</h2>
+<div class="row"><snice-gauge variant="default" value="65" label="Default"></snice-gauge></div>
+
+<!-- All variants -->
+<h2>All Variants</h2>
+<div class="grid">
+  <snice-gauge variant="default" value="65" label="Default"></snice-gauge>
+  <snice-gauge variant="primary" value="65" label="Primary"></snice-gauge>
+  <snice-gauge variant="success" value="65" label="Success"></snice-gauge>
+  <snice-gauge variant="warning" value="65" label="Warning"></snice-gauge>
+  <snice-gauge variant="error" value="65" label="Error"></snice-gauge>
+  <snice-gauge variant="info" value="65" label="Info"></snice-gauge>
+</div>
+
+<!-- Size: small -->
+<h2>Size: small</h2>
+<div class="row"><snice-gauge size="small" value="75" label="Small"></snice-gauge></div>
+
+<!-- Size: medium (default) -->
+<h2>Size: medium (default)</h2>
+<div class="row"><snice-gauge size="medium" value="75" label="Medium"></snice-gauge></div>
+
+<!-- Size: large -->
+<h2>Size: large</h2>
+<div class="row"><snice-gauge size="large" value="75" label="Large"></snice-gauge></div>
+
+<!-- All sizes compared -->
+<h2>All Sizes Compared</h2>
+<div class="row">
+  <snice-gauge size="small" value="50" label="Small"></snice-gauge>
+  <snice-gauge size="medium" value="50" label="Medium"></snice-gauge>
+  <snice-gauge size="large" value="50" label="Large"></snice-gauge>
+</div>
+
+<!-- Value range -->
+<h2>Value Range (0 to 100)</h2>
+<div class="grid">
+  <snice-gauge value="0" label="0%"></snice-gauge>
+  <snice-gauge value="10" label="10%"></snice-gauge>
+  <snice-gauge value="25" label="25%"></snice-gauge>
+  <snice-gauge value="50" label="50%"></snice-gauge>
+  <snice-gauge value="75" label="75%"></snice-gauge>
+  <snice-gauge value="90" label="90%"></snice-gauge>
+  <snice-gauge value="100" label="100%"></snice-gauge>
+</div>
+
+<!-- Custom min/max -->
+<h2>Custom Min/Max (0-200)</h2>
+<div class="row">
+  <snice-gauge value="50" min="0" max="200" label="50/200"></snice-gauge>
+  <snice-gauge value="100" min="0" max="200" label="100/200"></snice-gauge>
+  <snice-gauge value="175" min="0" max="200" label="175/200"></snice-gauge>
+</div>
+
+<h2>Custom Min/Max (negative range: -50 to 50)</h2>
+<div class="row">
+  <snice-gauge value="-30" min="-50" max="50" label="-30"></snice-gauge>
+  <snice-gauge value="0" min="-50" max="50" label="0"></snice-gauge>
+  <snice-gauge value="40" min="-50" max="50" label="40"></snice-gauge>
+</div>
+
+<!-- showValue: false -->
+<h2>showValue: false</h2>
+<div class="row">
+  <snice-gauge value="72" show-value="false" label="Hidden Value"></snice-gauge>
+</div>
+
+<!-- Thickness -->
+<h2>Thickness: 4</h2>
+<div class="row"><snice-gauge value="60" thickness="4" label="Thin"></snice-gauge></div>
+
+<h2>Thickness: 8 (default)</h2>
+<div class="row"><snice-gauge value="60" thickness="8" label="Default"></snice-gauge></div>
+
+<h2>Thickness: 16</h2>
+<div class="row"><snice-gauge value="60" thickness="16" label="Thick"></snice-gauge></div>
+
+<h2>Thickness: 24</h2>
+<div class="row"><snice-gauge value="60" thickness="24" label="Extra Thick"></snice-gauge></div>
+
+<!-- Thickness comparison -->
+<h2>Thickness Comparison</h2>
+<div class="row">
+  <snice-gauge value="70" thickness="2" label="2px"></snice-gauge>
+  <snice-gauge value="70" thickness="6" label="6px"></snice-gauge>
+  <snice-gauge value="70" thickness="12" label="12px"></snice-gauge>
+  <snice-gauge value="70" thickness="20" label="20px"></snice-gauge>
+</div>
+
+<!-- No label -->
+<h2>No Label</h2>
+<div class="row"><snice-gauge value="80"></snice-gauge></div>
+
+<!-- Variant x Size matrix -->
+<h2>Variant x Size Matrix</h2>
+<div class="grid">
+  <snice-gauge variant="primary" size="small" value="30" label="P/S"></snice-gauge>
+  <snice-gauge variant="success" size="small" value="60" label="S/S"></snice-gauge>
+  <snice-gauge variant="warning" size="small" value="45" label="W/S"></snice-gauge>
+  <snice-gauge variant="error" size="small" value="85" label="E/S"></snice-gauge>
+  <snice-gauge variant="primary" size="medium" value="30" label="P/M"></snice-gauge>
+  <snice-gauge variant="success" size="medium" value="60" label="S/M"></snice-gauge>
+  <snice-gauge variant="warning" size="medium" value="45" label="W/M"></snice-gauge>
+  <snice-gauge variant="error" size="medium" value="85" label="E/M"></snice-gauge>
+  <snice-gauge variant="primary" size="large" value="30" label="P/L"></snice-gauge>
+  <snice-gauge variant="success" size="large" value="60" label="S/L"></snice-gauge>
+  <snice-gauge variant="warning" size="large" value="45" label="W/L"></snice-gauge>
+  <snice-gauge variant="error" size="large" value="85" label="E/L"></snice-gauge>
+</div>
+
+<!-- Edge: value exceeds max (clamped) -->
+<h2>Edge: Value Exceeds Max (clamped to 100)</h2>
+<div class="row"><snice-gauge value="150" max="100" label="Clamped"></snice-gauge></div>
+
+<!-- Edge: value below min (clamped) -->
+<h2>Edge: Value Below Min (clamped to 0)</h2>
+<div class="row"><snice-gauge value="-20" min="0" max="100" label="Clamped"></snice-gauge></div>
+
+</body>
+</html>

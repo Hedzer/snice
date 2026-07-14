@@ -10,7 +10,7 @@ const showcaseDir = join(root, 'dist/site/showcase');
 
 describe('deployed full showcases', () => {
   beforeAll(() => {
-    execFileSync(process.execPath, ['scripts/build-deploy.js'], { cwd: root, stdio: 'pipe' });
+    execFileSync(process.execPath, ['tooling/website/build-deploy.js'], { cwd: root, stdio: 'pipe' });
   });
 
   it('keeps template interpolation and JavaScript property names intact', () => {

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 1.5rem; }
+    snice-progress[variant="linear"] { display: block; width: 100%; max-width: 400px; }
+  </style>
+</head>
+<body>
+
+<h2>Variant: linear (default)</h2>
+<section><snice-progress variant="linear" value="50"></snice-progress></section>
+
+<h2>Variant: circular</h2>
+<section class="row"><snice-progress variant="circular" value="50"></snice-progress></section>
+
+<h2>Linear - Values: 0, 25, 50, 75, 100</h2>
+<section>
+  <div style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+    <snice-progress value="0"></snice-progress>
+    <snice-progress value="25"></snice-progress>
+    <snice-progress value="50"></snice-progress>
+    <snice-progress value="75"></snice-progress>
+    <snice-progress value="100"></snice-progress>
+  </div>
+</section>
+
+<h2>Circular - Values: 0, 25, 50, 75, 100</h2>
+<section class="row">
+  <snice-progress variant="circular" value="0" show-label></snice-progress>
+  <snice-progress variant="circular" value="25" show-label></snice-progress>
+  <snice-progress variant="circular" value="50" show-label></snice-progress>
+  <snice-progress variant="circular" value="75" show-label></snice-progress>
+  <snice-progress variant="circular" value="100" show-label></snice-progress>
+</section>
+
+<h2>Color: primary (default)</h2>
+<section><snice-progress value="60" color="primary"></snice-progress></section>
+
+<h2>Color: success</h2>
+<section><snice-progress value="60" color="success"></snice-progress></section>
+
+<h2>Color: warning</h2>
+<section><snice-progress value="60" color="warning"></snice-progress></section>
+
+<h2>Color: error</h2>
+<section><snice-progress value="60" color="error"></snice-progress></section>
+
+<h2>Color: info</h2>
+<section><snice-progress value="60" color="info"></snice-progress></section>
+
+<h2>Color: custom hex (#8b5cf6)</h2>
+<section><snice-progress value="60" color="#8b5cf6"></snice-progress></section>
+
+<h2>Size: small (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="small"></snice-progress></section>
+
+<h2>Size: medium (circular, default)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="medium"></snice-progress></section>
+
+<h2>Size: large (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="large"></snice-progress></section>
+
+<h2>Size: xl (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="xl" show-label></snice-progress></section>
+
+<h2>Size: xxl (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="xxl" show-label></snice-progress></section>
+
+<h2>Size: xxxl (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="xxxl" show-label></snice-progress></section>
+
+<h2>All circular sizes at once</h2>
+<section class="row">
+  <snice-progress variant="circular" value="70" size="small"></snice-progress>
+  <snice-progress variant="circular" value="70" size="medium"></snice-progress>
+  <snice-progress variant="circular" value="70" size="large"></snice-progress>
+  <snice-progress variant="circular" value="70" size="xl" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="xxl" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="xxxl" show-label></snice-progress>
+</section>
+
+<h2>show-label (linear)</h2>
+<section><snice-progress value="42" show-label></snice-progress></section>
+
+<h2>show-label (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="42" size="xl" show-label></snice-progress></section>
+
+<h2>Custom label text</h2>
+<section><snice-progress value="60" show-label label="Uploading..."></snice-progress></section>
+
+<h2>Custom label (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="80" size="xl" show-label label="80%"></snice-progress></section>
+
+<h2>Indeterminate (linear)</h2>
+<section><snice-progress indeterminate></snice-progress></section>
+
+<h2>Indeterminate (circular)</h2>
+<section class="row"><snice-progress variant="circular" indeterminate size="large"></snice-progress></section>
+
+<h2>Striped</h2>
+<section><snice-progress value="70" striped></snice-progress></section>
+
+<h2>Striped + animated</h2>
+<section><snice-progress value="70" striped animated></snice-progress></section>
+
+<h2>Animated without striped</h2>
+<section><snice-progress value="70" animated></snice-progress></section>
+
+<h2>Custom max (value=3, max=10)</h2>
+<section><snice-progress value="3" max="10" show-label></snice-progress></section>
+
+<h2>Thickness: 2 (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="xl" thickness="2" show-label></snice-progress></section>
+
+<h2>Thickness: 8 (circular)</h2>
+<section class="row"><snice-progress variant="circular" value="65" size="xl" thickness="8" show-label></snice-progress></section>
+
+<h2>Color x Variant matrix (circular)</h2>
+<section class="row">
+  <snice-progress variant="circular" value="70" size="large" color="primary" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="large" color="success" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="large" color="warning" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="large" color="error" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="large" color="info" show-label></snice-progress>
+  <snice-progress variant="circular" value="70" size="large" color="#8b5cf6" show-label></snice-progress>
+</section>
+
+<h2>Color x Striped (linear)</h2>
+<section style="display:flex;flex-direction:column;gap:0.5rem;max-width:400px">
+  <snice-progress value="70" color="primary" striped animated></snice-progress>
+  <snice-progress value="70" color="success" striped animated></snice-progress>
+  <snice-progress value="70" color="warning" striped animated></snice-progress>
+  <snice-progress value="70" color="error" striped animated></snice-progress>
+  <snice-progress value="70" color="info" striped animated></snice-progress>
+</section>
+
+<script type="module">
+  import '../../../components/progress/snice-progress.ts';
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>File Upload</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  </style>
+  <script type="module">import '../../../components/file-upload/snice-file-upload.ts';</script>
+</head>
+<body>
+
+<!-- Size variants -->
+<h2>Size: small</h2>
+<snice-file-upload size="small" label="Small Upload"></snice-file-upload>
+
+<h2>Size: medium (default)</h2>
+<snice-file-upload size="medium" label="Medium Upload"></snice-file-upload>
+
+<h2>Size: large</h2>
+<snice-file-upload size="large" label="Large Upload"></snice-file-upload>
+
+<!-- All sizes compared -->
+<h2>All Sizes Compared</h2>
+<div class="grid">
+  <snice-file-upload size="small" label="Small"></snice-file-upload>
+  <snice-file-upload size="medium" label="Medium"></snice-file-upload>
+  <snice-file-upload size="large" label="Large"></snice-file-upload>
+</div>
+
+<!-- Variant: outlined (default) -->
+<h2>Variant: outlined (default)</h2>
+<snice-file-upload variant="outlined" label="Outlined Variant"></snice-file-upload>
+
+<!-- Variant: filled -->
+<h2>Variant: filled</h2>
+<snice-file-upload variant="filled" label="Filled Variant"></snice-file-upload>
+
+<!-- Size x Variant matrix -->
+<h2>Size x Variant Matrix</h2>
+<div class="grid">
+  <snice-file-upload size="small" variant="outlined" label="Small Outlined"></snice-file-upload>
+  <snice-file-upload size="small" variant="filled" label="Small Filled"></snice-file-upload>
+  <snice-file-upload size="medium" variant="outlined" label="Medium Outlined"></snice-file-upload>
+  <snice-file-upload size="medium" variant="filled" label="Medium Filled"></snice-file-upload>
+  <snice-file-upload size="large" variant="outlined" label="Large Outlined"></snice-file-upload>
+  <snice-file-upload size="large" variant="filled" label="Large Filled"></snice-file-upload>
+</div>
+
+<!-- Multiple -->
+<h2>Multiple: true</h2>
+<snice-file-upload multiple label="Multiple Files"></snice-file-upload>
+
+<h2>Multiple: false (default, single file)</h2>
+<snice-file-upload label="Single File"></snice-file-upload>
+
+<!-- Accept filter -->
+<h2>Accept: image/*</h2>
+<snice-file-upload accept="image/*" label="Images Only"></snice-file-upload>
+
+<h2>Accept: .pdf,.doc,.docx</h2>
+<snice-file-upload accept=".pdf,.doc,.docx" label="Documents Only"></snice-file-upload>
+
+<!-- Disabled -->
+<h2>Disabled</h2>
+<snice-file-upload disabled label="Disabled Upload"></snice-file-upload>
+
+<!-- Required -->
+<h2>Required</h2>
+<snice-file-upload required label="Required Upload"></snice-file-upload>
+
+<!-- Invalid -->
+<h2>Invalid</h2>
+<snice-file-upload invalid label="Invalid Upload" error-text="Please select a valid file."></snice-file-upload>
+
+<!-- Helper text -->
+<h2>Helper Text</h2>
+<snice-file-upload label="Profile Photo" helper-text="Upload a photo in JPG or PNG format."></snice-file-upload>
+
+<!-- Error text -->
+<h2>Error Text</h2>
+<snice-file-upload label="Document" error-text="File size exceeds the limit."></snice-file-upload>
+
+<!-- Max size -->
+<h2>Max Size: 5MB</h2>
+<snice-file-upload label="Max 5MB" max-size="5242880" helper-text="Maximum file size: 5MB"></snice-file-upload>
+
+<!-- Max files -->
+<h2>Max Files: 3</h2>
+<snice-file-upload label="Max 3 Files" multiple max-files="3" helper-text="Upload up to 3 files."></snice-file-upload>
+
+<!-- Drag-drop: false -->
+<h2>drag-drop: false</h2>
+<snice-file-upload label="No Drag and Drop" drag-drop="false"></snice-file-upload>
+
+<!-- show-preview: false -->
+<h2>show-preview: false</h2>
+<snice-file-upload label="No Preview" show-preview="false" accept="image/*"></snice-file-upload>
+
+<!-- Label -->
+<h2>No Label</h2>
+<snice-file-upload></snice-file-upload>
+
+<!-- Name -->
+<h2>With Name (form integration)</h2>
+<snice-file-upload name="avatar" label="Avatar"></snice-file-upload>
+
+<!-- Combinations -->
+<h2>Required + Invalid + Error Text</h2>
+<snice-file-upload required invalid label="Contract" error-text="A signed contract is required."></snice-file-upload>
+
+<h2>Multiple + Accept + Max Size + Max Files</h2>
+<snice-file-upload multiple accept="image/*" max-size="2097152" max-files="5" label="Photo Gallery" helper-text="Up to 5 images, max 2MB each."></snice-file-upload>
+
+<h2>Disabled + Filled + Large</h2>
+<snice-file-upload disabled variant="filled" size="large" label="Disabled Large Filled"></snice-file-upload>
+
+</body>
+</html>

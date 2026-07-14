@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Draw</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .canvas-wrap { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; overflow: hidden; display: inline-block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.5rem; }
+  </style>
+  <script type="module">import '../../../components/draw/snice-draw.ts';</script>
+</head>
+<body>
+
+<h2>Tool: pen (default)</h2>
+<div class="canvas-wrap">
+  <snice-draw tool="pen" width="400" height="200" color="#000000" stroke-width="2"></snice-draw>
+</div>
+
+<h2>Tool: eraser</h2>
+<div class="canvas-wrap">
+  <snice-draw tool="eraser" width="400" height="200" color="#000000" stroke-width="8"></snice-draw>
+</div>
+
+<h2>Stroke Colors</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#e53e3e" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#2563eb" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#16a34a" stroke-width="3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" color="#9333ea" stroke-width="3"></snice-draw></div>
+</div>
+
+<h2>Stroke Widths</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="4"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="10"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" stroke-width="20"></snice-draw></div>
+</div>
+
+<h2>Background Colors</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#ffffff"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#1a1a2e" color="#ffffff"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#fef3c7" color="#92400e"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" background-color="#ecfdf5" color="#065f46"></snice-draw></div>
+</div>
+
+<h2>Lazy Brush: Enabled</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="30" friction="0.1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="60" friction="0.1"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="150" lazy lazy-radius="120" friction="0.1"></snice-draw></div>
+</div>
+
+<h2>Friction Values</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.05"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.3"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.6"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" lazy friction="0.9"></snice-draw></div>
+</div>
+
+<h2>Smoothing Values</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="0"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="0.5"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="200" height="120" smoothing="1"></snice-draw></div>
+</div>
+
+<h2>Auto Polygon</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="5"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="10"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-polygon polygon-curve-points="25"></snice-draw></div>
+</div>
+
+<h2>Auto Circle</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="20"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="50"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="300" height="200" auto-circle circle-points="100"></snice-draw></div>
+</div>
+
+<h2>Disabled</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="150" disabled></snice-draw>
+</div>
+
+<h2>Custom Dimensions</h2>
+<div class="row">
+  <div class="canvas-wrap"><snice-draw width="150" height="150"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="400" height="100"></snice-draw></div>
+  <div class="canvas-wrap"><snice-draw width="100" height="300"></snice-draw></div>
+</div>
+
+<h2>Lazy + Auto Polygon Combined</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="250" lazy lazy-radius="40" friction="0.15" auto-polygon polygon-curve-points="15" color="#2563eb" stroke-width="3"></snice-draw>
+</div>
+
+<h2>Lazy + Auto Circle Combined</h2>
+<div class="canvas-wrap">
+  <snice-draw width="400" height="250" lazy lazy-radius="40" friction="0.15" auto-circle circle-points="60" color="#16a34a" stroke-width="3"></snice-draw>
+</div>
+
+</body>
+</html>

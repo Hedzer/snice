@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Color Display</title>
+  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+  </style>
+  <script type="module">import '../../../components/color-display/snice-color-display.ts';</script>
+</head>
+<body>
+
+<section>
+  <h2>format="hex" (default)</h2>
+  <div class="grid">
+    <snice-color-display value="#ff0000"></snice-color-display>
+    <snice-color-display value="#00ff00"></snice-color-display>
+    <snice-color-display value="#0000ff"></snice-color-display>
+    <snice-color-display value="#000000"></snice-color-display>
+    <snice-color-display value="#ffffff"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>format="rgb"</h2>
+  <div class="grid">
+    <snice-color-display value="#ff0000" format="rgb"></snice-color-display>
+    <snice-color-display value="#00ff00" format="rgb"></snice-color-display>
+    <snice-color-display value="#0000ff" format="rgb"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>format="hsl"</h2>
+  <div class="grid">
+    <snice-color-display value="#ff0000" format="hsl"></snice-color-display>
+    <snice-color-display value="#00ff00" format="hsl"></snice-color-display>
+    <snice-color-display value="#0000ff" format="hsl"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>Same color in all formats</h2>
+  <div class="grid">
+    <snice-color-display value="#3b82f6" format="hex"></snice-color-display>
+    <snice-color-display value="#3b82f6" format="rgb"></snice-color-display>
+    <snice-color-display value="#3b82f6" format="hsl"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>swatch-size="small"</h2>
+  <div class="grid">
+    <snice-color-display value="#ef4444" swatch-size="small"></snice-color-display>
+    <snice-color-display value="#10b981" swatch-size="small"></snice-color-display>
+    <snice-color-display value="#6366f1" swatch-size="small"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>swatch-size="medium" (default)</h2>
+  <div class="grid">
+    <snice-color-display value="#ef4444" swatch-size="medium"></snice-color-display>
+    <snice-color-display value="#10b981" swatch-size="medium"></snice-color-display>
+    <snice-color-display value="#6366f1" swatch-size="medium"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>swatch-size="large"</h2>
+  <div class="grid">
+    <snice-color-display value="#ef4444" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#10b981" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#6366f1" swatch-size="large"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>Custom labels</h2>
+  <div class="grid">
+    <snice-color-display value="#ef4444" label="Error Red"></snice-color-display>
+    <snice-color-display value="#10b981" label="Success Green"></snice-color-display>
+    <snice-color-display value="#f59e0b" label="Warning Amber"></snice-color-display>
+    <snice-color-display value="#3b82f6" label="Info Blue"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>show-label="false" (swatch only)</h2>
+  <div class="row">
+    <snice-color-display value="#ef4444" show-label="false" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#f59e0b" show-label="false" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#10b981" show-label="false" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#3b82f6" show-label="false" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#8b5cf6" show-label="false" swatch-size="large"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>show-swatch="false" (label only)</h2>
+  <div class="grid">
+    <snice-color-display value="#ef4444" show-swatch="false" format="hex"></snice-color-display>
+    <snice-color-display value="#10b981" show-swatch="false" format="rgb"></snice-color-display>
+    <snice-color-display value="#3b82f6" show-swatch="false" format="hsl"></snice-color-display>
+  </div>
+</section>
+
+<section>
+  <h2>Edge: empty value</h2>
+  <snice-color-display value=""></snice-color-display>
+</section>
+
+<section>
+  <h2>Palette (swatch-size x format combinations)</h2>
+  <div class="grid">
+    <snice-color-display value="#f8fafc" label="Gray 50" swatch-size="small"></snice-color-display>
+    <snice-color-display value="#e2e8f0" label="Gray 200" swatch-size="medium"></snice-color-display>
+    <snice-color-display value="#64748b" label="Gray 500" swatch-size="large"></snice-color-display>
+    <snice-color-display value="#1e293b" label="Gray 800" swatch-size="small" format="rgb"></snice-color-display>
+    <snice-color-display value="#0f172a" label="Gray 900" swatch-size="large" format="hsl"></snice-color-display>
+  </div>
+</section>
+
+</body>
+</html>

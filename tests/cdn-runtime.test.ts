@@ -114,8 +114,8 @@ describe('CDN Runtime Builds', () => {
 
     it('should ship current table grouping code in both public component formats', () => {
       const artifacts = [
-        'public/components/snice-table.min.js',
-        'public/components/snice-table.esm.min.js',
+        'website/public/components/snice-table.min.js',
+        'website/public/components/snice-table.esm.min.js',
       ];
 
       for (const artifact of artifacts) {
@@ -126,7 +126,7 @@ describe('CDN Runtime Builds', () => {
       }
 
       const esm = fs.readFileSync(
-        path.join(process.cwd(), 'public/components/snice-table.esm.min.js'),
+        path.join(process.cwd(), 'website/public/components/snice-table.esm.min.js'),
         'utf8',
       );
       expect(esm).toMatch(/^import\{/);
