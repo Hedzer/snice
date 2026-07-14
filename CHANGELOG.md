@@ -1,3 +1,37 @@
+# [6.1.0](https://github.com/Hedzer/snice/compare/v6.0.0...v6.1.0) (2026-07-14)
+
+
+### Bug Fixes
+
+* **engine:** part-index alignment, keyed lists, attribute and listener semantics ([ad87633](https://github.com/Hedzer/snice/commit/ad876333dd86c633be65c676246d6324de35cde1))
+* **icons:** resolve named icons from the built-in SVG registry before ligature fallback ([ec603f2](https://github.com/Hedzer/snice/commit/ec603f2e9b7dead65e031413457dcefc687aa382))
+* **table:** cell/row editing actually renders editors ([efa068e](https://github.com/Hedzer/snice/commit/efa068e3742210fbaba9ec18cac1b0a061c81eec))
+* **table:** complete public feature behavior ([891b2fb](https://github.com/Hedzer/snice/commit/891b2fb207fd12ecaf513b780e29d53a0eccd859))
+* **table:** hover wash, composed row-clicked, visible load errors, sticky header ([02425c1](https://github.com/Hedzer/snice/commit/02425c134be2319149b95cf20103bab2b3f5315a))
+* **table:** keyboard binds at the shadow root, surviving table rebuilds ([28cf547](https://github.com/Hedzer/snice/commit/28cf5477d4f7b031f1a6bc95f2f0fc14e2039c04))
+* **table:** live keyboard bounds and virtualized navigation ([cfac80a](https://github.com/Hedzer/snice/commit/cfac80aac8217d20766e921577ca062b43f77bf3))
+* **table:** no focus indicator at rest; page-size select shows the active size ([4f53b0b](https://github.com/Hedzer/snice/commit/4f53b0b2636df1b49402ece5f522af21ebc39b0e))
+* **table:** self-heal virtualizer enablement; scroll listeners on the real scroll container ([c1c9654](https://github.com/Hedzer/snice/commit/c1c965465025318be922ac706178b7ffa7002626))
+* **table:** virtualization renders master-detail, tree data, and pinned rows ([af54b9c](https://github.com/Hedzer/snice/commit/af54b9c41995b75a5d3570c044e301279ad9d8d2))
+
+
+### Features
+
+* **engine:** optional requests, dead-watch warnings, quiet attach aborts ([90656f0](https://github.com/Hedzer/snice/commit/90656f02af3eb78da1b719d0a6ca666bc6e6ab51))
+* **engine:** rendered promise, live(), classMap/styleMap, svg fragments, strict render errors ([3292ff9](https://github.com/Hedzer/snice/commit/3292ff9012f99598a270349eda95a070a52f6861))
+* **rendering:** complete declarative authoring and table showcase ([a96a452](https://github.com/Hedzer/snice/commit/a96a452cd01b85b0fa5260a00d9e81beb02582ce))
+* **table:** complete row grouping and aggregation ([78c9582](https://github.com/Hedzer/snice/commit/78c958221e05a36dfda069c5ef8337f34438f081))
+* **table:** honest public types, typed event map, complete docs ([7280f01](https://github.com/Hedzer/snice/commit/7280f0140d633f07ed6d129019e5f7dbd3eec6e3))
+* **table:** reactive columns/data assignment and live controlled-state props ([1a2595f](https://github.com/Hedzer/snice/commit/1a2595f39c4bef619cb78241910daa5037d9c465))
+* **table:** rebuild public showcase and fix interactions ([59d41f5](https://github.com/Hedzer/snice/commit/59d41f5b94838731d02c64897263950658fda4ab))
+* **table:** selection modes with unified event; custom cell and editor renderers ([d7a4262](https://github.com/Hedzer/snice/commit/d7a42621033298c403ad04fcbd1d7cbf6fb1ac69))
+
+
+### Performance Improvements
+
+* **table:** keyed row recycling replaces full tbody rebuilds ([f9705ae](https://github.com/Hedzer/snice/commit/f9705ae8b29393415725ac1550e74abbdcd2ec66))
+* **table:** O(1) row indexing, delta selection updates, filter debounce+cache, ordered remote responses ([0c7f970](https://github.com/Hedzer/snice/commit/0c7f97097322dd4b7896d6c18db0195cd526d700))
+
 # [6.0.0](https://github.com/Hedzer/snice/compare/v5.2.3...v6.0.0) (2026-07-09)
 
 
