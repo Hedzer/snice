@@ -52,10 +52,11 @@ Snice uses **Stage 3 decorators** (not experimental decorators):
 ```
 
 **Multiple tsconfig files:**
-- `tsconfig.json` - Root config for src/, examples/, tests/
-- `tsconfig.src.json` - Src-specific config for core builds
-- `components/tsconfig.json` - Component builds
-- `adapters/react/tsconfig.json` - React adapter builds
+- `tsconfig.json` - Shared root config for packages, examples, and tests
+- `packages/core/tsconfig.json` - Framework distribution build
+- `packages/components/tsconfig.json` - Component build
+- `packages/react/tsconfig.json` - React integration build
+- `adapters/react/tsconfig.json` - Published React adapter build
 
 ---
 
@@ -64,21 +65,20 @@ Snice uses **Stage 3 decorators** (not experimental decorators):
 ### Core Structure
 
 ```
-src/                    # Framework core
-├── element.ts          # @element, @layout decorators, element lifecycle
-├── controller.ts       # @controller decorator, behavior modules
-├── render.ts           # Differential rendering engine
-├── template.ts         # Template compilation (html``, css``)
-├── parts.ts            # DOM part system for updates
-├── router.ts           # SPA routing
-├── symbols.ts          # Metadata storage via symbols
-└── ...
+packages/
+├── core/src/           # Framework engine, decorators, router, renderer
+├── components/src/     # Component implementations and stories
+└── react/src/          # React provider/router integration
 
-components/             # Component implementations
-adapters/react/         # React adapter system
-tests/                  # Test suites
-scripts/                # Build automation
-bin/                    # CLI tools
+website/
+├── public/             # Public website pages and assembled output
+└── showcases/          # Card and full-showcase sources
+
+examples/               # Standalone customer-readable applications
+adapters/react/         # Published React adapter surface
+bin/                    # Published CLI and create-app templates
+tests/                  # Source, built, adapter, CDN, and browser suites
+tooling/                # Build, generator, test, release, and website tools
 ```
 
 ### Decorator System
@@ -123,7 +123,7 @@ class MyElement {
 
 ### CSS Custom Properties
 
-**Location:** `components/theme/theme.css` (223 CSS variables)
+**Location:** `packages/components/src/theme/theme.css` (223 CSS variables)
 
 **Format:** HSL values without `hsl()` wrapper
 
@@ -260,11 +260,15 @@ padding: 16px;
 ### File Structure
 
 ```
-components/my-component/
+packages/components/src/my-component/
 ├── snice-my-component.ts       # Component implementation
 ├── snice-my-component.css      # Scoped styles
 ├── snice-my-component.types.ts # TypeScript interfaces (optional)
-└── demo.html                   # Visual demo/documentation
+└── snice-my-component.stories.ts # Storybook scenarios
+
+website/showcases/my-component/
+├── card.html                   # Compact components-page example
+└── full.html                   # Complete public feature showcase
 ```
 
 ### Component Template
@@ -540,7 +544,7 @@ tests/
 
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { SniceButton } from '../components/button/snice-button';
+import SniceButton from '../../packages/components/src/button/snice-button';
 import { trackRenders } from 'snice';
 
 describe('snice-button', () => {
@@ -601,17 +605,18 @@ testComponent({
 
 ```bash
 npm test                       # Complete required gate (source+built+browser+site)
-npm run test:src               # Test source files
-npm run test:built             # Test dist/ output
-npm run test:cdn               # Test CDN bundles
-npm run test:react-adapters    # Test React wrappers
+npm run test:source            # Test package source files
+npm run test:distribution      # Fresh build, then test dist/ output
+npm run test:cdn               # Fresh CDN build + artifact/runtime tests
+npm run test:react             # Fresh adapters + React tests
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
 npm run test:coverage          # Generate a general coverage report
 npm run test:coverage:core     # Enforce >90% for every core-engine metric
 npm run test:browsers:install  # Install Chromium, Firefox, and WebKit
-npm run test:browser:core      # Built renderer/table E2E in all three engines
-npm run website:test:render    # Generated deployment E2E in all three engines
+npm run test:browser:framework # Required framework/table E2E in all three engines
+npm run test:browser:website   # Generated deployment E2E in all three engines
+npm run test:browser           # Both browser gates
 ```
 
 `npm test` runs source and built-distribution suites, CDN and React checks, the
@@ -695,7 +700,7 @@ export function createCdnBuild(componentName, options) {
 
 ### Generation System
 
-**Generator:** `scripts/generate-react-adapters.js`
+**Generator:** `tooling/generators/generate-react-adapters.js`
 
 Scans components, extracts metadata, generates React wrappers:
 
@@ -826,30 +831,33 @@ npm run build
 ### Build Scripts
 
 ```bash
-npm run sync-versions          # Sync template package.json versions
+npm run sync:versions          # Sync template and website versions
 npm run build                  # Build everything
-npm run build:core             # Build dist/ (core + components)
+npm run build:distribution     # Build dist/ (core + components + React runtime)
 npm run build:types            # Generate .d.ts files
 npm run build:cdn              # Build all CDN bundles
 npm run build:react            # Generate + build React adapters
-npm run build:test             # Build test utilities
+npm run build:testing          # Build the source/built test bridge
+npm run build:website          # Assemble public website and showcases
+npm run build:website:full     # Build CDN assets and website
 ```
 
 ### Test Scripts
 
 ```bash
 npm test                       # Complete source+built+coverage+browser+site gate
-npm run test:src               # Test source files
-npm run test:built             # Test dist/ output
+npm run test:source            # Test package source files
+npm run test:distribution      # Build and test dist/ output
 npm run test:cdn               # Test CDN bundles
-npm run test:react-adapters    # Test React wrappers
+npm run test:react             # Test React wrappers
 npm run test:watch             # Watch mode
 npm run test:ui                # Vitest UI
 npm run test:coverage          # General coverage report
 npm run test:coverage:core     # Enforced core-engine coverage
 npm run test:browsers:install  # Install Chromium, Firefox, and WebKit
-npm run test:browser:core      # Required built browser scenarios
-npm run website:test:render    # Required generated-site scenarios
+npm run test:browser:framework # Required framework/table browser scenarios
+npm run test:browser:website   # Generated-site browser scenarios
+npm run test:browser           # Both browser gates
 ```
 
 ### Generator Scripts
@@ -863,6 +871,9 @@ npm run generate:react-tests     # Generate React test files
 
 ```bash
 npm run dev                    # Dev orchestration (framework: 5566, website: 52891)
+npm run dev:framework          # Framework/showcase Vite server only
+npm run dev:website            # Generated public website Vite server only
+npm run dev:storybook          # Storybook
 npm run preview                # Preview production build
 ```
 
@@ -870,7 +881,7 @@ npm run preview                # Preview production build
 
 ```bash
 npm run release                # Create release (semantic-release)
-npm run release:dry            # Dry run
+npm run release:dry-run        # Dry run
 ```
 
 ---
@@ -882,7 +893,7 @@ npm run release:dry            # Dry run
 ```
 snice/
 ├── .ai/                       # AI development guides
-├── adapters/                  # Framework adapters
+├── adapters/                  # Published adapter surface
 │   └── react/                 # React wrappers
 │       ├── wrapper.tsx        # Core adapter logic
 │       ├── types.ts           # TypeScript definitions
@@ -892,36 +903,23 @@ snice/
 ├── bin/                       # CLI tools
 │   ├── snice.js               # CLI entry point
 │   └── templates/             # create-app templates
-├── components/                # Component library
-│   ├── button/
-│   │   ├── snice-button.ts
-│   │   ├── snice-button.css
-│   │   └── demo.html
-│   └── theme/
-│       └── theme.css          # Design tokens
 ├── dist/                      # Build output (gitignored)
 ├── docs/                      # User documentation
 │   ├── ai/                    # Token-efficient AI docs
 │   └── components/            # Component docs
-├── examples/                  # Example apps
-│   └── app/                   # Todo app example
-├── scripts/                   # Build automation
-│   ├── generate-react-adapters.js
-│   ├── generate-react-tests.js
-│   └── sync-template-versions.js
-├── src/                       # Framework core
-│   ├── element.ts             # Element & layout system
-│   ├── controller.ts          # Controller system
-│   ├── render.ts              # Rendering engine
-│   ├── template.ts            # Template compiler
-│   ├── parts.ts               # Part system
-│   ├── router.ts              # Router
-│   ├── symbols.ts             # Metadata symbols
-│   └── ...
+├── examples/                  # Standalone example applications
+├── packages/
+│   ├── core/src/              # Framework engine
+│   ├── components/src/        # Component library and stories
+│   └── react/src/             # React provider/router integration
 ├── tests/                     # Test suites
 │   ├── components/            # Component tests
 │   ├── react-adapters/        # React adapter tests
 │   └── *.test.ts              # Core tests
+├── tooling/                   # Build/generator/test/website/release tools
+├── website/
+│   ├── public/                # Public website
+│   └── showcases/             # Card and full-showcase sources
 ├── CLAUDE.md                  # AI assistant instructions
 ├── DEVELOPMENT.md             # This file
 └── README.md                  # User-facing docs
@@ -1084,7 +1082,7 @@ git push origin main
 npm run release
 
 # Or dry run to preview
-npm run release:dry
+npm run release:dry-run
 ```
 
 ### What Happens During Release
@@ -1142,10 +1140,11 @@ npm run release:dry
 
 1. **Create Component Files**
    ```
-   components/my-component/
+   packages/components/src/my-component/
    ├── snice-my-component.ts
    ├── snice-my-component.css
-   └── demo.html
+   ├── snice-my-component.types.ts
+   └── snice-my-component.stories.ts
    ```
 
 2. **Implement Component**
@@ -1153,15 +1152,9 @@ npm run release:dry
    - Follow theme system
    - Add proper types
 
-3. **Export from Core**
-   ```typescript
-   // src/index.ts
-   export { SniceMyComponent } from '../components/my-component/snice-my-component';
-   ```
-
-4. **Add Adapter Metadata**
+3. **Add Adapter Metadata When Needed**
    ```javascript
-   // scripts/generate-react-adapters.js
+   // tooling/generators/generate-react-adapters.js
    const componentMetadata = {
      'my-component': {
        properties: ['prop1', 'prop2'],
@@ -1170,9 +1163,9 @@ npm run release:dry
    };
    ```
 
-5. **Add Test Config**
+4. **Add Test Config**
    ```javascript
-   // scripts/generate-react-tests.js
+   // tooling/generators/generate-react-tests.js
    const componentTestConfig = {
      'my-component': {
        properties: ['prop1', 'prop2'],
@@ -1180,6 +1173,11 @@ npm run release:dry
      }
    };
    ```
+
+5. **Create Public Showcases**
+   - `website/showcases/my-component/card.html`
+   - `website/showcases/my-component/full.html`
+   - Add the card to `website/showcases/shared/manifest.json`
 
 6. **Generate & Build**
    ```bash
@@ -1233,7 +1231,7 @@ grep -r "experimentalDecorators" tsconfig*.json
 **Standalone build fails:**
 ```bash
 # Check component exists
-ls components/my-component/snice-my-component.ts
+ls packages/components/src/my-component/snice-my-component.ts
 
 # Test config directly
 node rollup.config.cdn.js
@@ -1254,10 +1252,10 @@ npm run build:react
 **Component tests fail:**
 ```bash
 # Check environment
-npm run test:src -- --reporter=verbose
+npm run test:source -- --reporter=verbose
 
 # Debug single test
-npm run test:watch -- components/button.test.ts
+npm run test:watch -- tests/components/button.test.ts
 ```
 
 ### Runtime Issues
@@ -1268,7 +1266,7 @@ npm run test:watch -- components/button.test.ts
 console.log(customElements.get('snice-button'));
 
 // Force registration
-import { SniceButton } from './components/button/snice-button';
+import './packages/components/src/button/snice-button';
 ```
 
 **Styles not applied:**

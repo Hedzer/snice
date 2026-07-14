@@ -9,7 +9,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { parseWipFile } from '../scripts/wip-components.js';
+import { parseWipFile } from '../tooling/shared/wip-components.js';
 
 const WIP_FILE = path.resolve(process.cwd(), 'packages/components/.wip');
 

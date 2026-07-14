@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Incrementally rebuild a component (distribution + CDN + website copy).
- * Usage: node scripts/rebuild-single-component.mjs <component-name>
+ * Usage: node tooling/build/rebuild-single-component.mjs <component-name>
  */
 import { rollup } from 'rollup';
 import resolve from '@rollup/plugin-node-resolve';
@@ -9,11 +9,11 @@ import typescript from '@rollup/plugin-typescript';
 import fs from 'fs';
 import path from 'path';
 import CleanCSS from 'clean-css';
-import { createCdnBuild } from '../rollup.config.cdn.js';
+import { createCdnBuild } from '../../rollup.config.cdn.js';
 
 const componentName = process.argv[2];
 if (!componentName) {
-  console.error('Usage: node scripts/rebuild-single-component.mjs <component-name>');
+  console.error('Usage: node tooling/build/rebuild-single-component.mjs <component-name>');
   process.exit(1);
 }
 
@@ -103,7 +103,11 @@ await coreBundle.write({
   dir: 'dist/components',
   format: 'es',
   sourcemap: true,
-  sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/components\/src/g, 'components'),
+  // The package-local tsconfig can prefix TypeScript sources with an extra
+  // `packages/` segment. Normalize that artifact while retaining canonical,
+  // resolvable paths into packages/components/src/.
+  sourcemapPathTransform: (sourcePath) => sourcePath
+    .replace(/packages\/packages\/components\/src/g, 'packages/components/src'),
   entryFileNames: '[name].js',
   preserveModules: false,
 });

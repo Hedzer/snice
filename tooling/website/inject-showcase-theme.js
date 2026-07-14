@@ -7,7 +7,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const showcasesDir = join(__dirname, '..', 'website', 'showcases');
+const showcasesDir = join(__dirname, '..', '..', 'website', 'showcases');
 
 const THEME_SCRIPT = `<script>
 document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');

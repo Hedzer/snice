@@ -8,17 +8,19 @@ All components MUST:
 1. Support CDN builds (bundle with runtime)
 2. Have React adapter (React 17+)
 3. Be tested (CDN + React)
-4. Have Storybook stories at `components/<name>/snice-<name>.stories.ts` — one story per `<h2>` section in `full-showcase.html`, using `@storybook/html-vite` and `document.createElement` (see `docs/ai/STORYBOOK.md`)
+4. Have Storybook stories at `packages/components/src/<name>/snice-<name>.stories.ts` — one story per `<h2>` section in `website/showcases/<name>/full.html`, using `@storybook/html-vite` and `document.createElement` (see `docs/ai/STORYBOOK.md`)
 
 ## Build Commands
 
 ```bash
-# Core
-npm run build:core              # dist/ output
+# Distribution
+npm run build:distribution      # Core, React runtime, components, declarations
 npm run build:types             # .d.ts generation
 npm run build:cdn               # All CDN bundles
 npm run build:react             # React adapters
 npm run build                   # Everything
+npm run build:website           # Public website + assembled showcases
+npm run build:website:full      # CDN assets + website
 
 # CDN component
 snice build-component <name> [--output=dir] [--format=iife] [--with-theme]
@@ -32,15 +34,16 @@ npm run generate:react-tests     # Generate test files
 
 ```bash
 npm test                        # Required complete gate (source+built+browser+site)
-npm run test:src                # Source tests
-npm run test:built              # Dist tests
-npm run test:cdn                # CDN tests
-npm run test:react-adapters     # React tests
+npm run test:source             # Tests importing package sources
+npm run test:distribution       # Fresh build, then same tests against dist/
+npm run test:cdn                # Fresh CDN build + artifact/runtime tests
+npm run test:react              # Fresh adapters + React tests
 npm run test:watch              # Watch mode
 npm run test:coverage:core      # Enforce >90% statements/branches/functions/lines
 npm run test:browsers:install   # Install Chromium + Firefox + WebKit
-npm run test:browser:core       # Built renderer/table E2E in all 3 engines
-npm run website:test:render     # Generated deployment E2E in all 3 engines
+npm run test:browser:framework  # Required framework/table E2E in all 3 engines
+npm run test:browser:website    # Generated deployment E2E in all 3 engines
+npm run test:browser            # Both browser gates
 ```
 
 `npm test` is intentionally comprehensive. Core coverage is measured across
@@ -51,11 +54,24 @@ be strictly greater than 90%. Browser commands manage their own local servers.
 ## File Structure
 
 ```
-components/my-comp/
-  snice-my-comp.ts              # Component class
-  snice-my-comp.types.ts        # Interfaces & types (importable by controllers)
-  snice-my-comp.css             # Styles
-components/.wip                 # WIP exclude list (see "WIP Components")
+packages/
+  core/src/                     # Framework engine
+  components/
+    .wip                        # WIP exclude list
+    src/my-comp/
+      snice-my-comp.ts          # Component class
+      snice-my-comp.types.ts    # Interfaces & types
+      snice-my-comp.css         # Styles
+  react/src/                    # React router/provider integration
+
+website/
+  public/                       # Public website sources/generated pages
+  showcases/my-comp/
+    card.html                   # Components-page card
+    full.html                   # Complete feature showcase
+  showcases/shared/             # Assembly manifest/head/footer
+
+examples/                       # Standalone customer-readable applications
 
 adapters/react/
   wrapper.tsx                   # Adapter core
@@ -69,32 +85,34 @@ tests/
   react-adapters/              # React tests
   cdn-builds.test.ts           # CDN tests
 
-scripts/
-  generate-react-adapters.js   # Adapter generator
-  generate-react-tests.js      # Test generator
-  wip-components.js            # Shared .wip parser
+tooling/
+  build/                        # Incremental and size tooling
+  generators/                   # Metadata/React/version generators
+  shared/wip-components.js     # Shared .wip parser
+  testing/                      # Managed browser-test runners
+  website/                      # Website/showcase build tools
 ```
+
+`adapters/` and `bin/` remain at the root because they are published package
+surfaces. Their npm paths and CLI template layout are compatibility contracts.
 
 ## WIP Components
 
-`components/.wip` — one dir name per line, `#` comments. Excludes from: core build, CDN, React adapters, website. Parsed by `scripts/wip-components.js`. Remove line to un-WIP.
+`packages/components/.wip` — one directory name per line, `#` comments. Excludes components from the distribution, CDN, React adapters, and website. Parsed by `tooling/shared/wip-components.js`. Remove the line to publish the component.
 
 ## Adding Components
 
-1. Create `components/my-comp/snice-my-comp.ts`
-2. Export from `src/index.ts`
-3. Add metadata to `scripts/generate-react-adapters.js`
-4. Add test config to `scripts/generate-react-tests.js`
-5. Run generators:
+1. Create `packages/components/src/my-comp/snice-my-comp.ts`, its types, CSS, and Storybook stories.
+2. Add any component-specific adapter overrides to `tooling/generators/generate-react-adapters.js`.
+3. Add test config to `tooling/generators/generate-react-tests.js`.
+4. Run generators:
    ```bash
    npm run generate:react-adapters
    npm run generate:react-tests
    ```
-6. Create docs: `docs/components/my-comp.md` + `docs/ai/components/my-comp.md`
-7. Create `components/my-comp/full-showcase.html` — demo ALL features (sizes, variants, states, clearable, loading, etc.)
-8. Create `public/showcases/my-comp.html` — showcase fragment, add to `public/showcases/manifest.json`
-9. Build and test: `npm run build && npm test`
-10. Rebuild showcases: `node public/build-showcases.js`
+5. Create docs: `docs/components/my-comp.md` + `docs/ai/components/my-comp.md`.
+6. Create `website/showcases/my-comp/card.html` and `full.html`; add the card to `website/showcases/shared/manifest.json`.
+7. Run `npm run build && npm test`.
 
 ## CDN Builds
 
@@ -123,7 +141,7 @@ snice build-component button
 
 ## React Adapters
 
-**Generator:** `scripts/generate-react-adapters.js`
+**Generator:** `tooling/generators/generate-react-adapters.js`
 
 **Core Files:**
 - `adapters/react/wrapper.tsx` - `createReactAdapter()`
@@ -154,7 +172,7 @@ snice build-component button
 
 ## Test Generation
 
-**Generator:** `scripts/generate-react-tests.js`
+**Generator:** `tooling/generators/generate-react-tests.js`
 
 **Metadata Format:**
 ```javascript
@@ -240,7 +258,7 @@ export interface SniceMyCompEventMap {
 
 ```bash
 npm run release       # Semantic release
-npm run release:dry   # Dry run
+npm run release:dry-run # Dry run
 ```
 
 Conventional commits:
@@ -265,11 +283,11 @@ Format for AI docs:
 **Update component:**
 1. Modify source
 2. Update docs (both)
-3. Update `components/<name>/full-showcase.html` to demo new features
-4. Update `public/showcases/<name>.html` showcase fragment
+3. Update `website/showcases/<name>/full.html` to demo new features
+4. Update `website/showcases/<name>/card.html` showcase fragment
 5. Regenerate if API changed
 6. Run tests
-7. Rebuild showcases: `node public/build-showcases.js`
+7. Rebuild showcases: `npm run build:website`
 
 **Debug tests:**
 ```bash

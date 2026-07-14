@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { gzipSync } from 'zlib';
 import CleanCSS from 'clean-css';
-import { getWipComponents } from './scripts/wip-components.js';
+import { getWipComponents } from './tooling/shared/wip-components.js';
 
 // Shared terser options for all minified CDN outputs. Defaults leave a lot on
 // the table: multiple compress passes, modern-syntax output, and getter-pure
@@ -76,7 +76,7 @@ export function createCdnBuild(componentName, options = {}) {
   const componentPath = `dist/components/${componentName}/snice-${componentName}.js`;
 
   if (!fs.existsSync(componentPath)) {
-    throw new Error(`Component not found: ${componentPath}. Run build:core first.`);
+    throw new Error(`Component not found: ${componentPath}. Run build:distribution first.`);
   }
 
   const outputDir = `dist/cdn/${componentName}`;

@@ -34,7 +34,7 @@ Breaking changes:
 To see what would be released without actually publishing:
 
 ```bash
-npm run release:dry
+npm run release:dry-run
 ```
 
 ### Actual Release

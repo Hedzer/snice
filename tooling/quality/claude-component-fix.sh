@@ -4,7 +4,7 @@ set -euo pipefail
 # Runs Claude per component to verify and fix standards, ARIA, and theming.
 # Requires: claude CLI.
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CHECKER="claude"
 MODEL="${MODEL:-sonnet}"
 
@@ -40,15 +40,15 @@ COMPONENTS=()
 while IFS= read -r -d '' f; do
   comp_dir="$(basename "$(dirname "$f")")"
   COMPONENTS+=("$comp_dir")
-done < <(find "$ROOT/components" -maxdepth 2 -name "snice-*.ts" -print0)
+done < <(find "$ROOT/packages/components/src" -maxdepth 2 -name "snice-*.ts" -print0)
 
 IFS=$'\n' COMPONENTS=($(printf '%s\n' "${COMPONENTS[@]}" | sort -u))
 unset IFS
 
 for comp in "${COMPONENTS[@]}"; do
-  SRC="$ROOT/components/$comp/snice-${comp}.ts"
-  TYPES="$ROOT/components/$comp/snice-${comp}.types.ts"
-  CSS="$ROOT/components/$comp/snice-${comp}.css"
+  SRC="$ROOT/packages/components/src/$comp/snice-${comp}.ts"
+  TYPES="$ROOT/packages/components/src/$comp/snice-${comp}.types.ts"
+  CSS="$ROOT/packages/components/src/$comp/snice-${comp}.css"
   AI_DOC="$ROOT/docs/ai/components/${comp}.md"
   HUMAN_DOC="$ROOT/docs/components/${comp}.md"
 

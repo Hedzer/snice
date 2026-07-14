@@ -72,10 +72,10 @@ npm run test:browsers:install
 npm run test:live
 
 # Required built-customer/rendering/table browser gate in all three engines
-npm run test:browser:core
+npm run test:browser:framework
 
 # Build the deployment artifact and test the public site in all three engines
-npm run website:test:render
+npm run test:browser:website
 ```
 
 `tests/playwright.config.ts` defines the supported desktop browser matrix:

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const HTML = `<!DOCTYPE html>
 <html><head>
-  <link rel="stylesheet" href="/components/theme/theme.css" />
+  <link rel="stylesheet" href="/packages/components/src/theme/theme.css" />
   <style>
     body { margin: 0; padding: 1rem; font-family: sans-serif; }
     .box { border: 2px dashed #888; margin-bottom: 1rem; box-sizing: border-box; }
@@ -18,10 +18,10 @@ const HTML = `<!DOCTYPE html>
   <div class="box" id="flex-row"><snice-table id="t-flex"></snice-table></div>
   <div class="box" id="grid-cell"><snice-table id="t-grid"></snice-table></div>
   <script type="module">
-    import '/components/table/snice-column.ts';
-    import '/components/table/snice-row.ts';
-    import '/components/table/snice-header.ts';
-    import '/components/table/snice-table.ts';
+    import '/packages/components/src/table/snice-column.ts';
+    import '/packages/components/src/table/snice-row.ts';
+    import '/packages/components/src/table/snice-header.ts';
+    import '/packages/components/src/table/snice-table.ts';
 
     const cols = [
       { field: 'id', header: 'ID' },

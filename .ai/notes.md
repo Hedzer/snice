@@ -5,12 +5,13 @@
 **Customer-facing** = things a user of Snice sees, reads, or interacts with:
 - `docs/components/` — Component docs users read to learn the API
 - `docs/ai/components/` — Same docs, token-efficient format for AI consumers
-- `public/` — The website users browse
+- `website/public/` — The website users browse
+- `website/showcases/` — Components-page cards and complete public showcases
 
 **Internal** = things that guide development of Snice itself:
 - `.ai/` — Instructions for how WE build, write, and maintain Snice
 
-**The rule:** If a user of Snice would never read it, it's internal → `.ai/`. The output goes in `docs/` or `public/`.
+**The rule:** If a user of Snice would never read it, it's internal → `.ai/`. The output goes in `docs/` or `website/`.
 
 ## File Naming
 
@@ -32,7 +33,7 @@
 
 ## Scroll Spy (components.html sidebar)
 
-- Lives in `public/showcases/_footer.html`
+- Lives in `website/showcases/shared/_footer.html`
 - Uses `IntersectionObserver` with `rootMargin: '-80px 0px -70% 0px'` as a trigger
 - Active section is determined by finding the last section (in DOM order) whose `getBoundingClientRect().top <= 100` — i.e., the last section whose heading has scrolled past the header
 - Previous bug: picking the "first intersecting" section caused misalignment when tall sections had their tail end still in the observation zone (e.g., Chart & Sparkline highlighted when Chat was visible)

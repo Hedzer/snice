@@ -4,7 +4,7 @@
  * Updates llms.txt and llms-full.txt with current version and component count.
  * Run automatically during release via semantic-release exec plugin.
  *
- * Usage: node scripts/update-llms.js [version]
+ * Usage: node tooling/generators/update-llms.js [version]
  * If version is omitted, reads from package.json.
  */
 
@@ -13,7 +13,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, '..');
+const root = join(__dirname, '..', '..');
 
 // Get version
 const version = process.argv[2] || JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
@@ -21,7 +21,7 @@ const versionMajorMinor = version.replace(/\.\d+$/, '.x');
 
 // Count published components (total dirs minus .wip entries)
 const componentsDir = join(root, 'packages', 'components', 'src');
-const wipFile = join(componentsDir, '.wip');
+const wipFile = join(root, 'packages', 'components', '.wip');
 const wipEntries = new Set(
   readFileSync(wipFile, 'utf8')
     .split('\n')

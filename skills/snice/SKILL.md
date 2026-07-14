@@ -3,7 +3,7 @@ name: snice
 description: >
   Use when writing or modifying Snice web components, pages, controllers, layouts, or apps using
   the `snice` package. Triggers on: imports from `'snice'`, `@element`/`@page`/`@controller`/`@layout`
-  decorators, `snice-*` custom elements, files under `components/`, and questions about Snice
+  decorators, `snice-*` custom elements, files under `packages/components/src/`, and questions about Snice
   decorators, routing, context, fetch, or component patterns.
 ---
 
@@ -155,11 +155,15 @@ Rule: treat `@property` arrays/objects as immutable. Always reassign with a new 
 ## File layout
 
 ```
-components/<name>/
+packages/components/src/<name>/
   snice-<name>.ts           # @element class
   snice-<name>.types.ts     # interfaces, event maps (no logic)
   snice-<name>.css          # scoped styles
-  full-showcase.html        # demo every feature
+  snice-<name>.stories.ts   # Storybook scenarios
+
+website/showcases/<name>/
+  card.html                 # compact components-page example
+  full.html                 # demo every feature
 ```
 
 Component:

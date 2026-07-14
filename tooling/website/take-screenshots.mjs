@@ -3,7 +3,7 @@
  * Screenshots every component demo and creates a bin-packed composite.
  *
  * Usage:
- *   node scripts/take-screenshots.mjs [--url=https://snice.dev/components.html]
+ *   node tooling/website/take-screenshots.mjs [--url=https://snice.dev/components.html]
  *
  * Output:
  *   marketing/screenshots/<component>.png  — individual demos
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const BASE_URL = process.argv.find(a => a.startsWith('--url='))?.split('=')[1]
   || 'https://snice.dev/components.html';
-const OUT_DIR = resolve(__dirname, '..', 'marketing', 'screenshots');
+const OUT_DIR = resolve(__dirname, '..', '..', 'marketing', 'screenshots');
 
 function slugify(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

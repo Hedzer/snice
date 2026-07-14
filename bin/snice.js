@@ -211,12 +211,14 @@ async function buildComponent(componentName, options) {
   console.log(`\n🔨 Building CDN component: ${componentName}\n`);
 
   // Verify component exists
-  const componentPath = join(process.cwd(), 'components', componentName, `snice-${componentName}.ts`);
+  const packageComponentsDir = join(process.cwd(), 'packages', 'components', 'src');
+  const legacyComponentsDir = join(process.cwd(), 'components');
+  const componentsDir = existsSync(packageComponentsDir) ? packageComponentsDir : legacyComponentsDir;
+  const componentPath = join(componentsDir, componentName, `snice-${componentName}.ts`);
   if (!existsSync(componentPath)) {
     console.error(`❌ Component not found: ${componentPath}`);
     console.error('Available components:');
 
-    const componentsDir = join(process.cwd(), 'components');
     if (existsSync(componentsDir)) {
       const items = readdirSync(componentsDir);
       for (const item of items) {
@@ -263,8 +265,11 @@ export default createCdnBuild('${componentName}', {
 
   const outputPath = join(process.cwd(), outputDir, componentName);
 
-  // Copy .min.js files to public/components/
-  const publicDir = join(process.cwd(), 'public', 'components');
+  // Copy .min.js files into the repository website when present. Retain the
+  // legacy public/components fallback for older source checkouts.
+  const websiteComponentsDir = join(process.cwd(), 'website', 'public', 'components');
+  const legacyPublicDir = join(process.cwd(), 'public', 'components');
+  const publicDir = existsSync(websiteComponentsDir) ? websiteComponentsDir : legacyPublicDir;
   if (existsSync(publicDir) && existsSync(outputPath)) {
     const minFiles = readdirSync(outputPath).filter(f => f.endsWith('.min.js'));
     for (const file of minFiles) {
@@ -274,7 +279,7 @@ export default createCdnBuild('${componentName}', {
       copyFileSync(src, dest);
     }
     if (minFiles.length > 0) {
-      console.log(`📋 Copied ${minFiles.length} file(s) to public/components/`);
+      console.log(`📋 Copied ${minFiles.length} file(s) to ${publicDir}`);
     }
   }
 

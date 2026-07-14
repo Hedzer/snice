@@ -10,8 +10,8 @@ from pathlib import Path
 from threading import Thread, Lock
 
 
-ROOT = Path(__file__).resolve().parent.parent
-COMPONENTS_DIR = ROOT / "components"
+ROOT = Path(__file__).resolve().parents[2]
+COMPONENTS_DIR = ROOT / "packages/components/src"
 
 MODEL = os.environ.get("MODEL", "claude-opus-4-6")
 BATCH = int(os.environ.get("BATCH", "10"))

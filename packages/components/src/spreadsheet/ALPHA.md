@@ -1,8 +1,8 @@
 # snice-spreadsheet — ALPHA
 
 This component is **alpha**. It is intentionally **not** included in the showcase
-(`public/showcases/manifest.json`, `public/showcases/_head.html`,
-`public/index.html` prefetch, `public/showcases/_footer.html` search synonyms),
+(`website/showcases/shared/manifest.json`, `website/showcases/shared/_head.html`,
+`website/public/index.html` prefetch, `website/showcases/shared/_footer.html` search synonyms),
 and the constructor logs a one-time `console.warn` to make accidental adoption
 loud.
 
@@ -76,10 +76,10 @@ Do not promote to beta until every bug below has a passing live e2e test in
 
 1. Resolve every unchecked box above with a passing live e2e test.
 2. Add the component back to:
-   - `public/showcases/manifest.json` (between `table.html` and `list.html`)
-   - `public/showcases/_head.html` (script tag near `snice-spotlight`)
-   - `public/index.html` (prefetch link near `snice-spotlight`)
-   - `public/showcases/_footer.html` (`'grid'` and `'data'` search synonyms)
+   - `website/showcases/shared/manifest.json` (between `table.html` and `list.html`)
+   - `website/showcases/shared/_head.html` (script tag near `snice-spotlight`)
+   - `website/public/index.html` (prefetch link near `snice-spotlight`)
+   - `website/showcases/shared/_footer.html` (`'grid'` and `'data'` search synonyms)
 3. Remove the `STABILITY = 'alpha'` field, the `alphaWarned` console warning,
    and this file.
 4. Bump major (breaking) if any consumer is relying on the alpha shape.

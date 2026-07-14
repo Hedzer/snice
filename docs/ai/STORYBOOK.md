@@ -2,14 +2,14 @@
 
 ## Commands
 ```bash
-npm run storybook          # Dev server on :6006
-npm run build-storybook    # Static build → storybook-static/
+npm run dev:storybook      # Dev server on :6006
+npm run build:storybook    # Static build → storybook-static/
 ```
 
-`prestorybook` runs `npm run build:core` if `dist/index.esm.js` is missing.
+`predev:storybook` runs `npm run build:distribution` if `dist/index.esm.js` is missing.
 
 ## Story locations
-`components/<name>/snice-<name>.stories.ts`
+`packages/components/src/<name>/snice-<name>.stories.ts`
 
 ## Story template
 ```ts

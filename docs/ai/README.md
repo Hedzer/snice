@@ -20,7 +20,7 @@ Token-efficient reference docs for AI assistants. Same content as human docs, mi
 
 Read these instead of `/docs/*.md` for faster context loading.
 
-**WIP Components:** Some component folders exist but are not available in builds or MCP output. The source of truth is `components/.wip` (one directory name per line).
+**WIP Components:** Some component folders exist but are not available in builds or MCP output. The source of truth is `packages/components/.wip` (one directory name per line).
 
 ## CLI
 
@@ -197,7 +197,7 @@ class MyCounter extends HTMLElement {
 
 **IMPORTANT:** Do NOT read all component docs. Only read a component's doc when you need to use or reference it.
 
-**Implemented Components** (top-level directories under `components/`, alphabetical):
+**Implemented Components** (top-level directories under `packages/components/src/`, alphabetical):
 
 accordion, action-bar, activity-feed, alert, approval-flow, app-tiles, audio-recorder, availability, avatar, avatar-group, badge, banner, binpack, book, booking, breadcrumbs, button, calendar, camera, camera-annotate, candlestick, card, carousel, cart, chart, chat, checkbox, chip, code-block, color-display, color-picker, command-palette, comments, countdown, cropper, data-card, date-picker, date-range-picker, date-time-picker, diff, divider, doc, draw, drawer, empty-state, estimate, file-gallery, file-upload, flip-card, flow, form-layout, funnel, gantt, gauge, grid, heatmap, image, input, invoice, kanban, key-value, kpi, layout, leaderboard, link, link-preview, list, location, login, map, markdown, masonry, menu, message-strip, metric-table, modal, music-player, nav, network-graph, notification-center, order-tracker, org-chart, pagination, paint, pdf-viewer, permission-matrix, podcast-player, pricing-table, product-card, progress, progress-ring, qr-code, qr-reader, radio, range-slider, rating, receipt, recipe, sankey, segmented-control, select, skeleton, slider, sortable, sparkline, spinner, split-button, split-pane, spotlight, stat-group, step-input, stepper, switch, table, tabs, tag, tag-input, terminal, testimonial, textarea, timeline, time-picker, timer, time-range-picker, toast, tooltip, tree, treemap, user-card, video-player, virtual-scroller, waterfall, weather, work-order
 
@@ -218,7 +218,7 @@ accordion, action-bar, activity-feed, alert, approval-flow, app-tiles, audio-rec
 - `drawer-target` lives inside `drawer/`
 - `toast-container` lives inside `toast/`
 
-**Excluded from builds:** components listed in `components/.wip` (currently: `spreadsheet`).
+**Excluded from builds:** components listed in `packages/components/.wip` (currently: `spreadsheet`).
 
 **To use a component:** Read `docs/ai/components/{component-name}.md` only when needed.
 

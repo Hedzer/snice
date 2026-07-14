@@ -42,7 +42,7 @@ async function main() {
   let server = null;
   if (!alreadyUp) {
     server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', HOST], {
-      cwd: new URL('../dist/site/', import.meta.url),
+      cwd: new URL('../../dist/site/', import.meta.url),
       stdio: 'ignore',
       detached: true
     });

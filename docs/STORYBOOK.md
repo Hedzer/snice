@@ -7,14 +7,14 @@ Storybook provides an interactive component explorer for Snice components. Each 
 
 ```bash
 # Start the development server
-npm run storybook
+npm run dev:storybook
 # Open http://localhost:6006
 
 # Build a static version
-npm run build-storybook
+npm run build:storybook
 ```
 
-The `prestorybook` script ensures `dist/index.esm.js` exists (runs `npm run build:core` if not).
+The `predev:storybook` script ensures `dist/index.esm.js` exists (runs `npm run build:distribution` if not).
 
 ## How It Works
 
@@ -29,19 +29,19 @@ The Snice theme CSS is loaded from `dist/components/theme/theme.css` (served at 
 ## Where Stories Live
 
 ```
-components/<name>/snice-<name>.stories.ts
+packages/components/src/<name>/snice-<name>.stories.ts
 ```
 
 For example:
-- `components/button/snice-button.stories.ts`
-- `components/input/snice-input.stories.ts`
+- `packages/components/src/button/snice-button.stories.ts`
+- `packages/components/src/input/snice-input.stories.ts`
 
 ## Adding a Story
 
 ### 1. Create the story file
 
 ```ts
-// components/my-comp/snice-my-comp.stories.ts
+// packages/components/src/my-comp/snice-my-comp.stories.ts
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import './snice-my-comp';
 import type { MyCompVariant, MyCompSize } from './snice-my-comp.types';
@@ -166,7 +166,7 @@ This matches `vite.config.ts` and `vitest.config.ts`. Never set `experimentalDec
   preview.ts       # Global decorators, theme, backgrounds
   tsconfig.json    # Extends root tsconfig, includes stories
 
-components/
+packages/components/src/
   button/
     snice-button.ts
     snice-button.types.ts

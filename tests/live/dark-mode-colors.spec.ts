@@ -1,7 +1,7 @@
 /**
  * Theme color regression guard.
  *
- * Loads the unified components showcase (public/components.html) in BOTH
+ * Loads the unified components showcase (website/public/components.html) in BOTH
  * light and dark themes and walks EVERY element that has meaningful text
  * content inside every component. For each, it asserts:
  *
@@ -16,7 +16,7 @@
  * just on a hand-picked list.
  *
  * Runnable:
- *   npm run test:dark-mode-colors          (serves public/ + runs spec)
+ *   npm run test:dark-mode-colors          (serves website/public/ + runs spec)
  *   SNICE_AUDIT_URL=http://… npx playwright test tests/dark-mode-colors.spec.ts
  */
 

@@ -4,7 +4,7 @@ test.describe('declarative rendering framework in a real browser', () => {
   test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {
-      const { createDeepReactive } = await import('/src/reactive.ts');
+      const { createDeepReactive } = await import('/packages/core/src/reactive.ts');
       let changes = 0;
       const key = { id: 1 };
       const source: any = {

@@ -8,7 +8,7 @@ import {
   createHtmlCustomData,
   createTagNameDeclarations,
   generateComponentMetadata
-} from '../scripts/generate-component-metadata.js';
+} from '../tooling/generators/generate-component-metadata.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

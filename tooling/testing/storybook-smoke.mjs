@@ -4,9 +4,9 @@
  * error, unhandled exception, or render failure. Catches runtime bugs that
  * `build-storybook` misses (e.g. classList.add('') throwing at mount time).
  *
- * Assumes `npm run build-storybook` has been run and `storybook-static/` exists.
+ * Assumes `npm run build:storybook` has been run and `storybook-static/` exists.
  *
- * Usage: node scripts/storybook-smoke.mjs [--concurrency N] [--filter substring]
+ * Usage: node tooling/testing/storybook-smoke.mjs [--concurrency N] [--filter substring]
  */
 import { readFileSync } from 'fs';
 import { chromium } from 'playwright';

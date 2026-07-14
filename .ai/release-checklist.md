@@ -5,8 +5,8 @@ These happen automatically during `npm run release`:
 - [ ] Version bump in package.json
 - [ ] CHANGELOG.md updated
 - [ ] Template package.json versions synced
-- [ ] llms.txt + llms-full.txt version and component count updated (`scripts/update-llms.js`)
-- [ ] Website rebuilt (`npm run website:build:full`)
+- [ ] llms.txt + llms-full.txt version and component count updated (`tooling/generators/update-llms.js`)
+- [ ] Website rebuilt (`npm run build:website:full`)
 - [ ] React adapters committed
 - [ ] npm publish
 - [ ] Git tag + commit
@@ -15,7 +15,7 @@ These happen automatically during `npm run release`:
 - [ ] Complete gate passes: `npm test` (source + built distribution, CDN, React,
       >90% core-engine coverage, Chromium/Firefox/WebKit, generated deployment)
 - [ ] Build succeeds: `npm run build`
-- [ ] New components: removed from `components/.wip`
+- [ ] New components: removed from `packages/components/.wip`
 - [ ] New components: docs, showcases, React adapters all complete (see `component-checklist.md`)
 
 ## Manual Review After Release

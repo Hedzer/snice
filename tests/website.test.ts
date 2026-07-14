@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'child_process';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { getWipComponents } from '../scripts/wip-components.js';
+import { getWipComponents } from '../tooling/shared/wip-components.js';
 
 const root = process.cwd();
 const publicDir = join(root, 'website/public');
@@ -11,7 +11,7 @@ const wip = getWipComponents();
 
 describe('Website Build', () => {
   beforeAll(() => {
-    execSync('npm run website:build', { cwd: root, stdio: 'pipe' });
+    execSync('npm run build:website', { cwd: root, stdio: 'pipe' });
   });
 
   it('should create the website public directory', () => {

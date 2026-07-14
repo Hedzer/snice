@@ -12,6 +12,14 @@ const banner = `/*!
  * Released under the ${packageJson.license} License.
  */`;
 
+// Rollup resolves these paths relative to the package-local tsconfig before
+// applying the transform. Preserve the historical published map paths even
+// though the source now lives under packages/core/.
+const legacySourceMapPath = (sourcePath) => sourcePath
+  .replace(/packages\/core\/packages\/core\/src/g, 'src')
+  .replace(/packages\/core\/src/g, 'src')
+  .replace(/^(\.\.\/node_modules\/)/, '../../$1');
+
 export default {
   input: 'packages/core/src/testing.ts',
   external: [],
@@ -20,7 +28,7 @@ export default {
     format: 'es',
     banner,
     sourcemap: true,
-    sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/core\/src/g, 'src')
+    sourcemapPathTransform: legacySourceMapPath
   },
   plugins: [
     resolve(),

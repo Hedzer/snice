@@ -7,16 +7,16 @@
  * not a hand-maintained component list:
  *   - custom-elements.json (Custom Elements Manifest)
  *   - vscode.html-custom-data.json (HTML editor completion)
- *   - components/custom-elements.d.ts (HTMLElementTagNameMap)
+ *   - packages/components/custom-elements.d.ts (HTMLElementTagNameMap)
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
-import { getWipComponents } from './wip-components.js';
+import { getWipComponents } from '../shared/wip-components.js';
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const componentsRoot = path.join(projectRoot, 'packages', 'components', 'src');
 const componentsPackage = path.join(projectRoot, 'packages', 'components');
 

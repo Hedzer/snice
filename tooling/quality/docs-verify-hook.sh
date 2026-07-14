@@ -6,7 +6,7 @@
 
 CHECKER="${SNICE_CHECKER:-codex}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$SCRIPT_DIR/.."
+ROOT="$SCRIPT_DIR/../.."
 
 unset CLAUDECODE
 
@@ -18,18 +18,18 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 # Only trigger for component source files
 case "$FILE_PATH" in
-  */components/*/snice-*.ts) ;;
+  */packages/components/src/*/snice-*.ts) ;;
   *) exit 0 ;;
 esac
 
-# Extract component name from path: components/<name>/snice-<name>.ts
-COMP_DIR=$(echo "$FILE_PATH" | sed -n 's|.*/components/\([^/]*\)/.*|\1|p')
+# Extract component name from packages/components/src/<name>/snice-<name>.ts.
+COMP_DIR=$(echo "$FILE_PATH" | sed -n 's|.*/packages/components/src/\([^/]*\)/.*|\1|p')
 [ -z "$COMP_DIR" ] && exit 0
 
 # Derive file paths
-SRC="$ROOT/components/$COMP_DIR/snice-${COMP_DIR}.ts"
-TYPES="$ROOT/components/$COMP_DIR/snice-${COMP_DIR}.types.ts"
-CSS="$ROOT/components/$COMP_DIR/snice-${COMP_DIR}.css"
+SRC="$ROOT/packages/components/src/$COMP_DIR/snice-${COMP_DIR}.ts"
+TYPES="$ROOT/packages/components/src/$COMP_DIR/snice-${COMP_DIR}.types.ts"
+CSS="$ROOT/packages/components/src/$COMP_DIR/snice-${COMP_DIR}.css"
 AI_DOC="$ROOT/docs/ai/components/${COMP_DIR}.md"
 HUMAN_DOC="$ROOT/docs/components/${COMP_DIR}.md"
 GUIDE="$ROOT/.ai/component-docs-guide.md"

@@ -5,7 +5,7 @@ import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
 import CleanCSS from 'clean-css';
-import { getWipComponents } from './scripts/wip-components.js';
+import { getWipComponents } from './tooling/shared/wip-components.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
@@ -211,7 +211,7 @@ export default [
     ]
   },
 
-  // React integration (source in src/react/, built to dist/react/, copied to adapters/react/)
+  // React integration (source in packages/react/src/, built to dist/react/)
   {
     input: {
       'index': 'packages/react/src/index.ts',
@@ -246,7 +246,7 @@ export default [
               // Never copy index.* — the barrel is owned by adapters/react/index.ts
               // (re-exports the hooks AND every component adapter via `export * from
               // './components'`) and is compiled by `build:react`'s tsc. dist/react/index.*
-              // is the bundle of src/react/index.ts, which only has the router/provider
+              // is the bundle of packages/react/src/index.ts, which only has the router/provider
               // hooks; copying it would strip all component adapters from the barrel.
               if (file.startsWith('index.')) continue;
               if (file.endsWith('.js') || file.endsWith('.d.ts') || file.endsWith('.js.map') || file.endsWith('.d.ts.map')) {

@@ -25,8 +25,8 @@ Helper functions for component testing:
 ```typescript
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, waitForRender } from './test-utils';
-import '../../components/badge/snice-badge';
-import type { SniceBadgeElement } from '../../components/badge/snice-badge.types';
+import '../../packages/components/src/badge/snice-badge';
+import type { SniceBadgeElement } from '../../packages/components/src/badge/snice-badge.types';
 
 describe('snice-badge', () => {
   let badge: SniceBadgeElement;

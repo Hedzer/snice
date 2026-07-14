@@ -14,8 +14,8 @@
  * Output: .playwright-mcp/hover-audit.json + stdout table grouped by severity.
  *
  * Usage:
- *   node scripts/audit-hover-colors.mjs        # serves public/, runs both themes
- *   node scripts/audit-hover-colors.mjs --url=http://localhost:52891/components.html
+ *   node tooling/website/audit-hover-colors.mjs
+ *   node tooling/website/audit-hover-colors.mjs --url=http://localhost:52891/components.html
  */
 
 import { chromium } from 'playwright';
@@ -25,7 +25,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, '..', '..');
 
 const URL_DEFAULT = 'http://127.0.0.1:52899/components.html';
 const argUrl = process.argv.find(a => a.startsWith('--url='))?.slice(6);
@@ -212,7 +212,7 @@ async function main() {
   let server;
   if (SERVE) {
     server = spawn('python3', ['-m', 'http.server', '52899'], {
-      cwd: join(ROOT, 'public'),
+      cwd: join(ROOT, 'website', 'public'),
       stdio: 'ignore',
     });
     await new Promise(r => setTimeout(r, 800));

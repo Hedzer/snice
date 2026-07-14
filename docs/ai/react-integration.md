@@ -1,6 +1,6 @@
 # React Integration
 
-Source: `src/react/` → Build: `dist/react/` → Published: `adapters/react/`
+Source: `packages/react/src/` → Build: `dist/react/` → Published: `adapters/react/`
 Import: `import { SniceRouter, Route, useSniceContext } from 'snice/react'`
 Deep import: `import { useRequestHandler } from 'snice/react/useRequestHandler'`
 

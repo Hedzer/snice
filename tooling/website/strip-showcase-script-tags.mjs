@@ -3,13 +3,24 @@
 // Keeps the inner JS and dedents it so it sits flush with the surrounding HTML.
 // Skips <script src="..."> (single-line CDN examples).
 
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dir = join(__dirname, '..', 'public', 'showcases');
-const files = readdirSync(dir).filter(f => f.endsWith('.html'));
+const dir = join(__dirname, '..', '..', 'website', 'showcases');
+const files = [];
+for (const entry of readdirSync(dir, { withFileTypes: true })) {
+  if (!entry.isDirectory()) continue;
+  if (entry.name === 'shared') {
+    for (const file of readdirSync(join(dir, entry.name))) {
+      if (file.endsWith('.html')) files.push(join(entry.name, file));
+    }
+    continue;
+  }
+  const card = join(entry.name, 'card.html');
+  if (existsSync(join(dir, card))) files.push(card);
+}
 
 // Matches a multi-line <script>...</script> block in entity-encoded form.
 // Handles cases where `&lt;/script&gt;` is followed on the same line by

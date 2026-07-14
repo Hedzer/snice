@@ -10,11 +10,11 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getWipComponents } from './wip-components.js';
+import { getWipComponents } from '../shared/wip-components.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '..', '..');
 
 // Component metadata - maps component names to their interfaces
 const componentMetadata = {

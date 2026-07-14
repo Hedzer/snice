@@ -31,7 +31,7 @@ function componentRebuilder() {
             const compName = compMatch[1];
             console.log(`\n  ${file} changed — rebuilding ${compName}...`);
             try {
-              execSync(`node scripts/rebuild-single-component.mjs ${compName}`, { stdio: 'inherit' });
+              execSync(`node tooling/build/rebuild-single-component.mjs ${compName}`, { stdio: 'inherit' });
               console.log(`  ✓ ${compName} rebuilt`);
             } catch (e) {
               console.error(`  ✗ ${compName} rebuild failed`);
@@ -40,7 +40,7 @@ function componentRebuilder() {
             // Core, React, or theme change — full rebuild
             console.log(`\n  ${file} changed — full rebuild...`);
             try {
-              execSync('npm run build:core && npm run build:cdn && node tooling/website/build-website.js', { stdio: 'inherit' });
+              execSync('npm run build:distribution && npm run build:cdn && npm run build:website', { stdio: 'inherit' });
               console.log('  ✓ Full rebuild complete');
             } catch (e) {
               console.error('  ✗ Full rebuild failed');
@@ -102,7 +102,11 @@ function legacyShowcaseRoutes() {
         if (!match) return next();
 
         const [, component, requestedFile] = match;
-        const file = requestedFile === 'full-showcase.html' ? 'full.html' : requestedFile;
+        // The long-standing live-test/customer URLs use both demo.html and
+        // full-showcase.html for the same standalone showcase document.
+        const file = requestedFile === 'demo.html' || requestedFile === 'full-showcase.html'
+          ? 'full.html'
+          : requestedFile;
         const source = join(server.config.root, 'website', 'showcases', component, file);
         if (existsSync(source)) req.url = `/website/showcases/${component}/${file}`;
         next();
@@ -115,13 +119,17 @@ function showcaseRebuilder() {
   return {
     name: 'showcase-rebuilder',
     configureServer(server) {
-      server.watcher.on('change', (path) => {
-        if (path.includes('showcases/') && !path.endsWith('components.html')) {
-          console.log(`\n  Showcase fragment changed: ${path.split('/').pop()}`);
-          try {
-            execSync('node tooling/website/build-showcases.js', { stdio: 'inherit' });
-          } catch {}
-        }
+      server.watcher.on('change', (changedPath) => {
+        const normalizedPath = changedPath.replaceAll('\\', '/');
+        // Only source showcase edits trigger regeneration. The generated
+        // website/public/showcases compatibility tree is also watched by Vite;
+        // reacting to it recursively launches competing rebuilds.
+        if (!normalizedPath.includes('/website/showcases/')) return;
+
+        console.log(`\n  Showcase source changed: ${normalizedPath.split('/').pop()}`);
+        try {
+          execSync('node tooling/website/build-showcases.js', { stdio: 'inherit' });
+        } catch {}
       });
     },
     buildStart() {

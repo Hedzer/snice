@@ -20,7 +20,7 @@ tests/react-adapters/
 
 ```bash
 # Run all React adapter tests
-npm run test:react-adapters
+npm run test:react
 
 # Run specific component test
 npm test tests/react-adapters/components/button.test.tsx
@@ -111,7 +111,7 @@ testComponent({
 
 ## Adding Tests for New Components
 
-1. Add component metadata to `scripts/generate-react-tests.js`:
+1. Add component metadata to `tooling/generators/generate-react-tests.js`:
 
 ```javascript
 const componentTestConfig = {
@@ -174,7 +174,7 @@ Run the build command before testing:
 
 ```bash
 npm run build:react
-npm run test:react-adapters
+npm run test:react
 ```
 
 ### Type errors
@@ -203,5 +203,5 @@ test:
   script:
     - npm install
     - npm run build:react
-    - npm run test:react-adapters
+    - npm run test:react
 ```

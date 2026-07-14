@@ -3,13 +3,13 @@
  * Convert all <pre><code class="language-xxx"> blocks to <snice-code-block> with text slot.
  * Also converts bare <pre><code> blocks used in decorators/guide pages.
  */
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, '..');
-const publicDir = join(root, 'public');
+const root = join(__dirname, '..', '..');
+const publicDir = join(root, 'website', 'public');
 
 const GRAMMAR_MAP = {
   'html': 'grammars/html.json',
@@ -55,11 +55,17 @@ function convertFile(filePath) {
   return count;
 }
 
-// Process showcase fragments
-const showcaseDir = join(publicDir, 'showcases');
-for (const entry of readdirSync(showcaseDir)) {
-  if (!entry.endsWith('.html') || entry.startsWith('_')) continue;
-  convertFile(join(showcaseDir, entry));
+// Process source showcase cards. Full showcases are standalone applications and
+// intentionally retain their own code presentation.
+const showcaseDir = join(root, 'website', 'showcases');
+for (const entry of readdirSync(showcaseDir, { withFileTypes: true })) {
+  if (!entry.isDirectory() || entry.name === 'shared') continue;
+  const card = join(showcaseDir, entry.name, 'card.html');
+  if (existsSync(card)) convertFile(card);
+}
+const sharedDir = join(showcaseDir, 'shared');
+for (const file of readdirSync(sharedDir)) {
+  if (file.endsWith('.html') && !file.startsWith('_')) convertFile(join(sharedDir, file));
 }
 
 // Process standalone pages

@@ -3,7 +3,7 @@
  *
  * The value of this file is almost entirely COMPILE-TIME. `vitest run` uses
  * esbuild to strip types, so it does NOT catch interface drift — that is only
- * caught by `npx tsc --project components/tsconfig.json --noEmit` (see
+ * caught by `npx tsc --project packages/components/tsconfig.json --noEmit` (see
  * snice-table.ts's `implements SniceTableElement` on the class declaration).
  * Before the D1 fix, snice-table.types.ts:234-262 declared a fabricated
  * `SniceTableElement` (phantom `size`/`variant`/`bordered`/`stickyHeader`/

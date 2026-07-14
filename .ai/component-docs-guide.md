@@ -256,10 +256,10 @@ loading: boolean = false;
 
 When documenting a component, read these files:
 
-1. `components/<name>/snice-<name>.ts` — Properties (`@property`), methods, events (`@dispatch`), slots
-2. `components/<name>/snice-<name>.types.ts` — TypeScript interfaces and type definitions
-3. `components/<name>/snice-<name>.css` — CSS custom properties, parts
-4. `components/<name>/demo.html` — Working examples showing real usage
+1. `packages/components/src/<name>/snice-<name>.ts` — Properties (`@property`), methods, events (`@dispatch`), slots
+2. `packages/components/src/<name>/snice-<name>.types.ts` — TypeScript interfaces and type definitions
+3. `packages/components/src/<name>/snice-<name>.css` — CSS custom properties, parts
+4. `website/showcases/<name>/full.html` — Working examples showing real usage
 
 Extract:
 - Every `@property()` decorator → Properties section

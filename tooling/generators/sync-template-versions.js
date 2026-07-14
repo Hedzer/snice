@@ -8,7 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Use CLI argument if provided, otherwise read from package.json
-const mainPackageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
+const root = join(__dirname, '..', '..');
+const mainPackageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const currentVersion = process.argv[2] || mainPackageJson.version;
 const majorVersion = currentVersion.split('.')[0];
 const versionRange = `^${majorVersion}.0.0`;
@@ -16,7 +17,7 @@ const versionRange = `^${majorVersion}.0.0`;
 console.log(`\nSyncing template versions to snice@${versionRange} (current: ${currentVersion})...\n`);
 
 // Get all template directories
-const templatesDir = join(__dirname, '../bin/templates');
+const templatesDir = join(root, 'bin/templates');
 const templates = readdirSync(templatesDir, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name);
@@ -49,7 +50,7 @@ for (const template of templates) {
 console.log(`\n${updated} template(s) updated.\n`);
 
 // Also sync version in public HTML files
-const publicDir = join(__dirname, '../website/public');
+const publicDir = join(root, 'website/public');
 const htmlFiles = ['index.html', 'components.html', 'decorators.html'];
 const versionPattern = /Snice v[\d.]+/g;
 const newVersionString = `Snice v${currentVersion}`;

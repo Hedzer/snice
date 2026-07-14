@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
  * Replace external image URLs with local assets in showcase HTML files.
- * Usage: node scripts/localize-assets.js          (dry run)
- *        node scripts/localize-assets.js --apply   (write changes)
+ * Usage: node tooling/website/localize-assets.js          (dry run)
+ *        node tooling/website/localize-assets.js --apply   (write changes)
  */
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, '..');
+const root = join(__dirname, '..', '..');
 const apply = process.argv.includes('--apply');
 
 // Map of external URL patterns → local paths
@@ -121,14 +121,20 @@ const REPLACEMENTS = [
 // Scan files: showcases + build-website.js
 const targets = [];
 
-// Showcase fragments
-const showcaseDir = join(root, 'public', 'showcases');
-for (const f of readdirSync(showcaseDir)) {
-  if (f.endsWith('.html')) targets.push(join(showcaseDir, f));
+// Source showcase cards (the inputs that produce public/showcases/*.html).
+const showcaseDir = join(root, 'website', 'showcases');
+for (const entry of readdirSync(showcaseDir, { withFileTypes: true })) {
+  if (!entry.isDirectory() || entry.name === 'shared') continue;
+  const card = join(showcaseDir, entry.name, 'card.html');
+  if (existsSync(card)) targets.push(card);
+}
+const sharedDir = join(showcaseDir, 'shared');
+for (const file of readdirSync(sharedDir)) {
+  if (file.endsWith('.html')) targets.push(join(sharedDir, file));
 }
 
 // build-website.js
-targets.push(join(root, 'scripts', 'build-website.js'));
+targets.push(join(root, 'tooling', 'website', 'build-website.js'));
 
 console.log(apply ? '=== APPLYING CHANGES ===' : '=== DRY RUN (use --apply to write) ===');
 console.log();

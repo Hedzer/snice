@@ -230,17 +230,17 @@ var(--snice-focus-ring-offset, 2px)
 ```bash
 npm test                   # Complete required gate (source, built, CDN, React,
                            # core coverage, browser, generated website)
-npm run test:src           # Source tests
-npm run test:built         # Dist tests
+npm run test:source        # Source tests
+npm run test:distribution  # Fresh dist build + built tests
 npm run test:cdn           # CDN tests
-npm run test:react-adapters # React tests
+npm run test:react         # React tests
 npm run test:watch         # Watch mode
 npm run test:ui            # Vitest UI
 npm run test:coverage      # General coverage report
 npm run test:coverage:core # Enforced rendering-engine coverage (>90% every metric)
 npm run test:browsers:install # Install Chromium, Firefox, and WebKit
-npm run test:browser:core  # Built customer/rendering/showcase tests in all 3 engines
-npm run website:test:render # Build and test the generated deployment in all 3 engines
+npm run test:browser:framework # Built customer/rendering/showcase tests in all 3 engines
+npm run test:browser:website # Build and test the generated deployment in all 3 engines
 ```
 
 - `await el.ready` before assertions

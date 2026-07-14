@@ -1,6 +1,6 @@
 # Binding Channels Reference
 
-Source renderer: `src/parts.ts`. Public human reference: `docs/bindings.md`. Every expression must use the channel matching its DOM destination.
+Source renderer: `packages/core/src/parts.ts`. Public human reference: `docs/bindings.md`. Every expression must use the channel matching its DOM destination.
 
 ## Syntax matrix
 

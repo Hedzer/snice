@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+const ROOT = join(__dirname, '..', '..');
 const children = [];
 
 function cleanup() {
@@ -50,13 +50,13 @@ function spawnChild(label, color, command, args) {
   return child;
 }
 
-// Run website:build first
-console.log('\x1b[36m[dev]\x1b[0m Running website:build...');
+// Build the public website first.
+console.log('\x1b[36m[dev]\x1b[0m Running build:website...');
 try {
-  execSync('npm run website:build', { stdio: 'inherit', cwd: ROOT, env: { ...process.env, FORCE_COLOR: '1' } });
-  console.log('\x1b[36m[dev]\x1b[0m website:build complete\n');
+  execSync('npm run build:website', { stdio: 'inherit', cwd: ROOT, env: { ...process.env, FORCE_COLOR: '1' } });
+  console.log('\x1b[36m[dev]\x1b[0m build:website complete\n');
 } catch {
-  console.error('\x1b[36m[dev]\x1b[0m website:build failed');
+  console.error('\x1b[36m[dev]\x1b[0m build:website failed');
   process.exit(1);
 }
 

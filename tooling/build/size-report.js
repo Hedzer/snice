@@ -2,8 +2,8 @@
 /**
  * CDN bundle size report.
  *
- *   node scripts/size-report.js --baseline   # snapshot current sizes to .size-baseline.json
- *   node scripts/size-report.js              # markdown table: baseline vs current, with deltas
+ *   node tooling/build/size-report.js --baseline   # snapshot current sizes
+ *   node tooling/build/size-report.js              # compare against baseline
  *
  * Measures raw and gzip bytes of every dist/cdn <name>/snice-<name>.min.js
  * (IIFE, the file served from cdn.snice.dev) plus the shared runtime.
@@ -13,7 +13,7 @@ import path from 'path';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const CDN_DIR = path.join(ROOT, 'dist', 'cdn');
 const BASELINE_FILE = path.join(ROOT, '.size-baseline.json');
 

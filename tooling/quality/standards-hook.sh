@@ -5,7 +5,7 @@
 
 CHECKER="${SNICE_CHECKER:-codex}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$SCRIPT_DIR/.."
+ROOT="$SCRIPT_DIR/../.."
 
 # Allow claude CLI to run inside Claude Code session
 unset CLAUDECODE

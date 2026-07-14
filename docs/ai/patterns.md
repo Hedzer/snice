@@ -222,7 +222,7 @@ cleanup();
 
 ### React: useRequestHandler
 
-React hook equivalent. Lives in `src/react/`, built to `adapters/react/`.
+React hook equivalent. Lives in `packages/react/src/`, builds to `dist/react/`, and is published through `adapters/react/`.
 
 ```tsx
 import { useRequestHandler } from 'snice/react/useRequestHandler';
