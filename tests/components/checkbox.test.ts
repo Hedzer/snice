@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
-import '../../components/checkbox/snice-checkbox';
-import type { SniceCheckboxElement } from '../../components/checkbox/snice-checkbox.types';
+import '../../packages/components/src/checkbox/snice-checkbox';
+import type { SniceCheckboxElement } from '../../packages/components/src/checkbox/snice-checkbox.types';
 
 describe('snice-checkbox', () => {
   let checkbox: SniceCheckboxElement;

@@ -16,7 +16,7 @@ afterEach(() => {
 
 describe('terminal: writeLines escapes HTML', () => {
   it('an HTML tag passed to writeLines is rendered as text, not an element', async () => {
-    await import('../../components/terminal/snice-terminal');
+    await import('../../packages/components/src/terminal/snice-terminal');
     const el = document.createElement('snice-terminal') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -35,7 +35,7 @@ describe('terminal: writeLines escapes HTML', () => {
 
 describe('table cell-json: JSON keys and values are escaped', () => {
   it('renderExpanded output does not contain raw HTML-bearing keys or values', async () => {
-    await import('../../components/table/snice-cell-json');
+    await import('../../packages/components/src/table/snice-cell-json');
     const el = document.createElement('snice-cell-json') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -56,7 +56,7 @@ describe('table cell-json: JSON keys and values are escaped', () => {
 
 describe('treemap: node labels are escaped into SVG text', () => {
   it('a node label containing </text><script> does not inject a script', async () => {
-    await import('../../components/treemap/snice-treemap');
+    await import('../../packages/components/src/treemap/snice-treemap');
     const el = document.createElement('snice-treemap') as any;
     el.data = {
       label: 'Root',
@@ -78,7 +78,7 @@ describe('treemap: node labels are escaped into SVG text', () => {
 
 describe('virtual-scroller: default renderer escapes data', () => {
   it('default renderer does not render an <img> tag from item data', async () => {
-    await import('../../components/virtual-scroller/snice-virtual-scroller');
+    await import('../../packages/components/src/virtual-scroller/snice-virtual-scroller');
     const el = document.createElement('snice-virtual-scroller') as any;
     el.items = [{ id: 1, data: '<img src=x onerror="window.__xss=1">' }];
     el.itemHeight = 30;
@@ -98,7 +98,7 @@ describe('virtual-scroller: default renderer escapes data', () => {
 
 describe('flow: node labels are escaped into SVG', () => {
   it('a node with HTML label does not inject elements', async () => {
-    await import('../../components/flow/snice-flow');
+    await import('../../packages/components/src/flow/snice-flow');
     const el = document.createElement('snice-flow') as any;
     el.nodes = [{ id: 'a', type: 'default', label: '<img src=x onerror="window.__xss=1">', x: 10, y: 10 }];
     el.edges = [];
@@ -117,7 +117,7 @@ describe('flow: node labels are escaped into SVG', () => {
 
 describe('markdown: link href is escaped (sanitize=false path)', () => {
   it('a link payload that breaks out of the href quote does not inject attributes', async () => {
-    await import('../../components/markdown/snice-markdown');
+    await import('../../packages/components/src/markdown/snice-markdown');
     const el = document.createElement('snice-markdown') as any;
     el.sanitize = false;
     // Payload closes the href quote, injects onmouseover

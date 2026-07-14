@@ -11,7 +11,7 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 describe('modal: body scroll restored on disconnect', () => {
   it('removing open modal from DOM restores body overflow', async () => {
-    await import('../../components/modal/snice-modal');
+    await import('../../packages/components/src/modal/snice-modal');
     const el = document.createElement('snice-modal') as any;
     el.open = true;
     document.body.appendChild(el);
@@ -38,7 +38,7 @@ describe('modal: body scroll restored on disconnect', () => {
 // ---------------------------------------------------------------------------
 describe('split-pane: touch listeners removed on dispose', () => {
   it('disconnect removes touchmove/touchend listeners registered during drag', async () => {
-    await import('../../components/split-pane/snice-split-pane');
+    await import('../../packages/components/src/split-pane/snice-split-pane');
     const el = document.createElement('snice-split-pane') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -86,7 +86,7 @@ describe('split-pane: touch listeners removed on dispose', () => {
 // ---------------------------------------------------------------------------
 describe('recipe: timer intervals cleared on disconnect', () => {
   it('active timers are cleared when element disconnects', async () => {
-    await import('../../components/recipe/snice-recipe');
+    await import('../../packages/components/src/recipe/snice-recipe');
     const el = document.createElement('snice-recipe') as any;
     el.title = 'Test';
     el.steps = [{ text: 'Boil', timerMinutes: 1 }];

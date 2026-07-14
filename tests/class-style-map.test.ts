@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, classMap, styleMap } from '../src/index';
+import { element, property, render, html, classMap, styleMap } from '../packages/core/src/index';
 
 describe('classMap / styleMap helpers', () => {
   let container: HTMLDivElement;

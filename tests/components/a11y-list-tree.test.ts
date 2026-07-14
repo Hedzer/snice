@@ -5,8 +5,8 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('list-item: role=listitem', () => {
   it('every list item has role=listitem', async () => {
-    await import('../../components/list/snice-list');
-    await import('../../components/list/snice-list-item');
+    await import('../../packages/components/src/list/snice-list');
+    await import('../../packages/components/src/list/snice-list-item');
 
     const el = document.createElement('snice-list') as any;
     const a = document.createElement('snice-list-item') as any;
@@ -28,8 +28,8 @@ describe('list-item: role=listitem', () => {
 
 describe('tree-item: aria-level, aria-setsize, aria-posinset', () => {
   it('root-level items expose the right aria positional attributes', async () => {
-    await import('../../components/tree/snice-tree');
-    await import('../../components/tree/snice-tree-item');
+    await import('../../packages/components/src/tree/snice-tree');
+    await import('../../packages/components/src/tree/snice-tree-item');
 
     const el = document.createElement('snice-tree') as any;
     el.nodes = [

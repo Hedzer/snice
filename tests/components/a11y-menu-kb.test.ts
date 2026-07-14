@@ -5,8 +5,8 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('menu: trigger semantics + keyboard navigation', () => {
   it('trigger has aria-haspopup=menu and aria-expanded updates', async () => {
-    await import('../../components/menu/snice-menu');
-    await import('../../components/menu/snice-menu-item');
+    await import('../../packages/components/src/menu/snice-menu');
+    await import('../../packages/components/src/menu/snice-menu-item');
 
     const el = document.createElement('snice-menu') as any;
     el.innerHTML = `
@@ -28,7 +28,7 @@ describe('menu: trigger semantics + keyboard navigation', () => {
   });
 
   it('Escape closes menu', async () => {
-    await import('../../components/menu/snice-menu');
+    await import('../../packages/components/src/menu/snice-menu');
 
     const el = document.createElement('snice-menu') as any;
     el.innerHTML = `<button slot="trigger">Open</button><snice-menu-item>One</snice-menu-item>`;

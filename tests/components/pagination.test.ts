@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/pagination/snice-pagination';
-import type { SnicePaginationElement } from '../../components/pagination/snice-pagination.types';
+import '../../packages/components/src/pagination/snice-pagination';
+import type { SnicePaginationElement } from '../../packages/components/src/pagination/snice-pagination.types';
 
 describe('snice-pagination', () => {
   let pagination: SnicePaginationElement;

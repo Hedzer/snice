@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/stat-group/snice-stat-group';
-import type { SniceStatGroupElement, StatItem } from '../../components/stat-group/snice-stat-group.types';
+import '../../packages/components/src/stat-group/snice-stat-group';
+import type { SniceStatGroupElement, StatItem } from '../../packages/components/src/stat-group/snice-stat-group.types';
 
 const sampleStats: StatItem[] = [
   { label: 'Revenue', value: '$45,231', trend: 'up', trendValue: '+12.5%', icon: '$', color: 'rgb(22 163 74)' },

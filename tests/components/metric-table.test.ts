@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/metric-table/snice-metric-table';
-import type { SniceMetricTableElement, MetricColumn } from '../../components/metric-table/snice-metric-table.types';
+import '../../packages/components/src/metric-table/snice-metric-table';
+import type { SniceMetricTableElement, MetricColumn } from '../../packages/components/src/metric-table/snice-metric-table.types';
 
 const sampleColumns: MetricColumn[] = [
   { key: 'name', label: 'Metric', type: 'text' },

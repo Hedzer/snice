@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, ready, dispose, watch, moved, property, render, html } from '../src/index';
-import { getSymbol } from '../src/symbols';
+import { element, ready, dispose, watch, moved, property, render, html } from '../packages/core/src/index';
+import { getSymbol } from '../packages/core/src/symbols';
 
 const READY_HANDLERS = getSymbol('ready-handlers');
 const DISPOSE_HANDLERS = getSymbol('dispose-handlers');

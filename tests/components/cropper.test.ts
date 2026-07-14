@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi, beforeAll } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
-import '../../components/cropper/snice-cropper';
-import type { SniceCropperElement, CropRect } from '../../components/cropper/snice-cropper.types';
+import '../../packages/components/src/cropper/snice-cropper';
+import type { SniceCropperElement, CropRect } from '../../packages/components/src/cropper/snice-cropper.types';
 
 // Mock canvas 2d context for happy-dom environment
 beforeAll(() => {

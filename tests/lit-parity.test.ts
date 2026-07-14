@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, nothing, noChange, dispatch } from '../src/index';
+import { element, property, render, html, nothing, noChange, dispatch } from '../packages/core/src/index';
 
 /**
  * Tests verifying interpolation and reactivity parity with lit-html

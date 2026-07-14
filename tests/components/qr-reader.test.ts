@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, waitFor } from './test-utils';
-import '../../components/qr-reader/snice-qr-reader';
-import type { SniceQRReaderElement } from '../../components/qr-reader/snice-qr-reader.types';
+import '../../packages/components/src/qr-reader/snice-qr-reader';
+import type { SniceQRReaderElement } from '../../packages/components/src/qr-reader/snice-qr-reader.types';
 
 describe('snice-qr-reader', () => {
   let reader: SniceQRReaderElement;

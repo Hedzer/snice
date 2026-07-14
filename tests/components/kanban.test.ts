@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/kanban/snice-kanban';
-import type { SniceKanbanElement, KanbanColumn, KanbanCard } from '../../components/kanban/snice-kanban.types';
+import '../../packages/components/src/kanban/snice-kanban';
+import type { SniceKanbanElement, KanbanColumn, KanbanCard } from '../../packages/components/src/kanban/snice-kanban.types';
 
 describe('snice-kanban', () => {
   let kanban: SniceKanbanElement;

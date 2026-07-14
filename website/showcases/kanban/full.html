@@ -14,14 +14,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 })();
 </script>
   <title>Kanban</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     snice-kanban { display: block; min-height: 300px; border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; margin-bottom: 1.5rem; }
   </style>
   <script type="module">
-    import '../../../components/kanban/snice-kanban.ts';
+    import '../../../packages/components/src/kanban/snice-kanban.ts';
 
     const basicColumns = [
       { id: 'todo', title: 'To Do', cards: [

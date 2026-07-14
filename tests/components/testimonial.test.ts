@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/testimonial/snice-testimonial';
-import type { SniceTestimonialElement } from '../../components/testimonial/snice-testimonial.types';
+import '../../packages/components/src/testimonial/snice-testimonial';
+import type { SniceTestimonialElement } from '../../packages/components/src/testimonial/snice-testimonial.types';
 
 describe('snice-testimonial', () => {
   let testimonial: SniceTestimonialElement;

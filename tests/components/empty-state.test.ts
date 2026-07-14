@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/empty-state/snice-empty-state';
-import type { SniceEmptyStateElement } from '../../components/empty-state/snice-empty-state.types';
+import '../../packages/components/src/empty-state/snice-empty-state';
+import type { SniceEmptyStateElement } from '../../packages/components/src/empty-state/snice-empty-state.types';
 
 describe('snice-empty-state', () => {
   let emptyState: SniceEmptyStateElement;

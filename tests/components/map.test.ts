@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/map/snice-map';
-import type { SniceMapElement } from '../../components/map/snice-map.types';
+import '../../packages/components/src/map/snice-map';
+import type { SniceMapElement } from '../../packages/components/src/map/snice-map.types';
 
 describe('snice-map', () => {
   let map: SniceMapElement;

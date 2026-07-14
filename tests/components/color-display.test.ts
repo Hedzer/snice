@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/color-display/snice-color-display';
-import type { SniceColorDisplayElement } from '../../components/color-display/snice-color-display.types';
+import '../../packages/components/src/color-display/snice-color-display';
+import type { SniceColorDisplayElement } from '../../packages/components/src/color-display/snice-color-display.types';
 
 describe('snice-color-display', () => {
   let colorDisplay: SniceColorDisplayElement;

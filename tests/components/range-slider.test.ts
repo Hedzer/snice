@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders, wait } from './test-utils';
-import '../../components/range-slider/snice-range-slider';
-import type { SniceRangeSliderElement } from '../../components/range-slider/snice-range-slider.types';
+import '../../packages/components/src/range-slider/snice-range-slider';
+import type { SniceRangeSliderElement } from '../../packages/components/src/range-slider/snice-range-slider.types';
 
 describe('snice-range-slider', () => {
   let el: SniceRangeSliderElement;

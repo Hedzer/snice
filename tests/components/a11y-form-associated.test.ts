@@ -9,13 +9,13 @@ afterEach(() => { document.body.innerHTML = ''; });
 // attachInternals() so setFormValue works.
 
 const COMPONENTS = [
-  { tag: 'snice-range-slider', path: '../../components/range-slider/snice-range-slider', resetField: 'valueLow', resetTo: 0, initial: { min: 0, max: 100, valueLow: 30, valueHigh: 70 } },
-  { tag: 'snice-radio',        path: '../../components/radio/snice-radio',                resetField: 'checked',  resetTo: false, initial: { checked: true, value: 'a' } },
-  { tag: 'snice-checkbox',     path: '../../components/checkbox/snice-checkbox',          resetField: 'checked',  resetTo: false, initial: { checked: true } },
-  { tag: 'snice-color-picker', path: '../../components/color-picker/snice-color-picker',  resetField: null,        resetTo: null,  initial: { value: '#ff0000' } },
-  { tag: 'snice-step-input',   path: '../../components/step-input/snice-step-input',      resetField: 'value',    resetTo: 0,     initial: { value: 5 } },
-  { tag: 'snice-tag-input',    path: '../../components/tag-input/snice-tag-input',        resetField: 'value',    resetTo: [],    initial: { value: ['a', 'b'] } },
-  { tag: 'snice-file-upload',  path: '../../components/file-upload/snice-file-upload',    resetField: null, resetTo: null, initial: {} }, // has its own reset path
+  { tag: 'snice-range-slider', path: '../../packages/components/src/range-slider/snice-range-slider', resetField: 'valueLow', resetTo: 0, initial: { min: 0, max: 100, valueLow: 30, valueHigh: 70 } },
+  { tag: 'snice-radio',        path: '../../packages/components/src/radio/snice-radio',                resetField: 'checked',  resetTo: false, initial: { checked: true, value: 'a' } },
+  { tag: 'snice-checkbox',     path: '../../packages/components/src/checkbox/snice-checkbox',          resetField: 'checked',  resetTo: false, initial: { checked: true } },
+  { tag: 'snice-color-picker', path: '../../packages/components/src/color-picker/snice-color-picker',  resetField: null,        resetTo: null,  initial: { value: '#ff0000' } },
+  { tag: 'snice-step-input',   path: '../../packages/components/src/step-input/snice-step-input',      resetField: 'value',    resetTo: 0,     initial: { value: 5 } },
+  { tag: 'snice-tag-input',    path: '../../packages/components/src/tag-input/snice-tag-input',        resetField: 'value',    resetTo: [],    initial: { value: ['a', 'b'] } },
+  { tag: 'snice-file-upload',  path: '../../packages/components/src/file-upload/snice-file-upload',    resetField: null, resetTo: null, initial: {} }, // has its own reset path
 ];
 
 for (const spec of COMPONENTS) {

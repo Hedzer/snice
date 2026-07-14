@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/date-range-picker/snice-date-range-picker';
-import type { SniceDateRangePickerElement } from '../../components/date-range-picker/snice-date-range-picker.types';
+import '../../packages/components/src/date-range-picker/snice-date-range-picker';
+import type { SniceDateRangePickerElement } from '../../packages/components/src/date-range-picker/snice-date-range-picker.types';
 
 describe('snice-date-range-picker', () => {
   let picker: SniceDateRangePickerElement;

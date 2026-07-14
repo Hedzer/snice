@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, render, html, on, dispatch } from '../src/index';
+import { element, render, html, on, dispatch } from '../packages/core/src/index';
 
 describe('@dispatch scope option', () => {
   let container: HTMLDivElement;

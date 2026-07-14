@@ -1,9 +1,9 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "../dist/components",
-    "rootDir": ".",
+    "outDir": "../../dist/components",
+    "rootDir": "src",
     "declaration": true,
     "emitDeclarationOnly": false,
     "sourceMap": true,
@@ -11,9 +11,9 @@
     "noUnusedParameters": false,
     "importHelpers": true,
     "paths": {
-      "snice": ["../dist/index.d.ts"]
+      "snice": ["../../dist/index.d.ts"]
     }
   },
-  "include": ["."],
+  "include": ["src"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/*.html", "**/demo*", "**/*.md", "**/*.stories.ts"]
 }

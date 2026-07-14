@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html, unsafeHTML } from '../src/index';
+import { element, property, render, html, unsafeHTML } from '../packages/core/src/index';
 
 // unsafeHTML can't diff arbitrary markup, but when the HTML STRING is unchanged
 // it must not clear + re-parse the subtree — doing so destroys live DOM state

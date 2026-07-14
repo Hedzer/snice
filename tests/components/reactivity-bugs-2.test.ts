@@ -13,7 +13,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('video-player: setting `playing` updates the play/pause icon', () => {
   it('toggling playing flips visual state of the center play button', async () => {
-    await import('../../components/video-player/snice-video-player');
+    await import('../../packages/components/src/video-player/snice-video-player');
     const el = document.createElement('snice-video-player') as any;
     el.src = 'about:blank';
     document.body.appendChild(el);
@@ -34,7 +34,7 @@ describe('video-player: setting `playing` updates the play/pause icon', () => {
 
 describe('command-palette: searchQuery/activeIndex are reactive', () => {
   it('typing a query filters the rendered commands', async () => {
-    await import('../../components/command-palette/snice-command-palette');
+    await import('../../packages/components/src/command-palette/snice-command-palette');
     const el = document.createElement('snice-command-palette') as any;
     el.commands = [
       { id: 'a', label: 'Alpha' },
@@ -78,7 +78,7 @@ describe('camera-annotate: activeColor is reactive', () => {
     // expected in this environment and unrelated to what's under test here.
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      await import('../../components/camera-annotate/snice-camera-annotate');
+      await import('../../packages/components/src/camera-annotate/snice-camera-annotate');
       const el = document.createElement('snice-camera-annotate') as any;
       document.body.appendChild(el);
       await el.ready;
@@ -104,7 +104,7 @@ describe('camera-annotate: activeColor is reactive', () => {
 
 describe('comments: replyingTo is reactive', () => {
   it('setting replyingTo renders the reply textarea', async () => {
-    await import('../../components/comments/snice-comments');
+    await import('../../packages/components/src/comments/snice-comments');
     const el = document.createElement('snice-comments') as any;
     el.comments = [{ id: 'c1', author: 'a', content: 'hi' }];
     el.allowReplies = true;
@@ -128,7 +128,7 @@ describe('comments: replyingTo is reactive', () => {
 
 describe('chip: hasIconSlot is reactive for async slot assignment', () => {
   it('adding an icon via <slot name="icon"> after mount shows the icon wrapper', async () => {
-    await import('../../components/chip/snice-chip');
+    await import('../../packages/components/src/chip/snice-chip');
     const el = document.createElement('snice-chip') as any;
     el.label = 'Hi';
     document.body.appendChild(el);
@@ -154,7 +154,7 @@ describe('chip: hasIconSlot is reactive for async slot assignment', () => {
 
 describe('file-upload: selectedFiles is reactive', () => {
   it('setting selectedFiles renders the file list in the shadow', async () => {
-    await import('../../components/file-upload/snice-file-upload');
+    await import('../../packages/components/src/file-upload/snice-file-upload');
     const el = document.createElement('snice-file-upload') as any;
     document.body.appendChild(el);
     await el.ready;

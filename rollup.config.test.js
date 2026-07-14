@@ -13,21 +13,21 @@ const banner = `/*!
  */`;
 
 export default {
-  input: 'src/testing.ts',
+  input: 'packages/core/src/testing.ts',
   external: [],
   output: {
     file: 'dist/testing.esm.js',
     format: 'es',
     banner,
-    sourcemap: true
+    sourcemap: true,
+    sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/core\/src/g, 'src')
   },
   plugins: [
     resolve(),
     typescript({
-      tsconfig: './tsconfig.src.json',
+      tsconfig: './packages/core/tsconfig.json',
       declaration: true,
-      declarationDir: './dist/types',
-      rootDir: './src'
+      declarationDir: './dist/types'
     })
   ]
 };

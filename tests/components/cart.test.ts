@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/cart/snice-cart';
-import type { SniceCartElement, CartItem } from '../../components/cart/snice-cart.types';
+import '../../packages/components/src/cart/snice-cart';
+import type { SniceCartElement, CartItem } from '../../packages/components/src/cart/snice-cart.types';
 
 const sampleItems: CartItem[] = [
   { id: '1', name: 'Running Shoes', price: 89.99, quantity: 1, variant: 'Size: M' },

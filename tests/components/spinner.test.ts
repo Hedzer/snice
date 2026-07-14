@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/spinner/snice-spinner';
-import type { SniceSpinnerElement } from '../../components/spinner/snice-spinner.types';
+import '../../packages/components/src/spinner/snice-spinner';
+import type { SniceSpinnerElement } from '../../packages/components/src/spinner/snice-spinner.types';
 
 describe('snice-spinner', () => {
   let spinner: SniceSpinnerElement;

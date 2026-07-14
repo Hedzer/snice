@@ -1,10 +1,10 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/menu/snice-menu';
-import '../../components/menu/snice-menu-item';
-import '../../components/menu/snice-menu-divider';
-import type { SniceMenuElement } from '../../components/menu/snice-menu.types';
-import type { SniceMenuItemElement } from '../../components/menu/snice-menu-item.types';
+import '../../packages/components/src/menu/snice-menu';
+import '../../packages/components/src/menu/snice-menu-item';
+import '../../packages/components/src/menu/snice-menu-divider';
+import type { SniceMenuElement } from '../../packages/components/src/menu/snice-menu.types';
+import type { SniceMenuItemElement } from '../../packages/components/src/menu/snice-menu-item.types';
 
 describe('snice-menu', () => {
   let menu: SniceMenuElement;

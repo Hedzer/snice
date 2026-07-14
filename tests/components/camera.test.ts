@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import '../../components/camera/snice-camera';
+import '../../packages/components/src/camera/snice-camera';
 
 describe('snice-camera', () => {
   it('should be defined', () => {

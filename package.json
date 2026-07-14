@@ -111,7 +111,7 @@
     "prebuild": "[ -z \"$NEXT_VERSION\" ] && npm run sync-versions || true",
     "build": "npm run build:core && npm run build:cdn && npm run build:react",
     "build:core": "rm -rf dist && npm run generate:metadata && rollup -c && npm run build:types",
-    "build:types": "tsc --project components/tsconfig.json --emitDeclarationOnly && cp components/custom-elements.d.ts dist/components/custom-elements.d.ts",
+    "build:types": "tsc --project packages/components/tsconfig.json --emitDeclarationOnly && cp packages/components/custom-elements.d.ts dist/components/custom-elements.d.ts",
     "build:cdn": "rollup -c rollup.config.cdn.js && cp dist/cdn/*/snice-*.min.js website/public/components/ && node scripts/update-cdn-sizes.js",
     "build:showcases": "node tooling/website/build-showcases.js",
     "build:react": "npm run generate:react-adapters && tsc --project adapters/react/tsconfig.json",

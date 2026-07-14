@@ -1,11 +1,11 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { wait } from './components/test-utils';
-import '../components/menu/snice-menu';
-import '../components/tag-input/snice-tag-input';
-import '../components/command-palette/snice-command-palette';
-import '../components/banner/snice-banner';
-import '../components/action-bar/snice-action-bar';
-import '../components/invoice/snice-invoice';
+import '../packages/components/src/menu/snice-menu';
+import '../packages/components/src/tag-input/snice-tag-input';
+import '../packages/components/src/command-palette/snice-command-palette';
+import '../packages/components/src/banner/snice-banner';
+import '../packages/components/src/action-bar/snice-action-bar';
+import '../packages/components/src/invoice/snice-invoice';
 
 // A watcher that dispatches an event must not fire on mount (it would emit a
 // phantom open/close/change for an element that never changed). Those watchers

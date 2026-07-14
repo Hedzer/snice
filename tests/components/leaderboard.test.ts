@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/leaderboard/snice-leaderboard';
-import '../../components/leaderboard/snice-leaderboard-entry';
-import type { SniceLeaderboardElement, SniceLeaderboardEntryElement } from '../../components/leaderboard/snice-leaderboard.types';
+import '../../packages/components/src/leaderboard/snice-leaderboard';
+import '../../packages/components/src/leaderboard/snice-leaderboard-entry';
+import type { SniceLeaderboardElement, SniceLeaderboardEntryElement } from '../../packages/components/src/leaderboard/snice-leaderboard.types';
 
 describe('snice-leaderboard', () => {
   let leaderboard: SniceLeaderboardElement;

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/weather/snice-weather';
-import type { SniceWeatherElement, WeatherData } from '../../components/weather/snice-weather.types';
+import '../../packages/components/src/weather/snice-weather';
+import type { SniceWeatherElement, WeatherData } from '../../packages/components/src/weather/snice-weather.types';
 
 describe('snice-weather', () => {
   let weather: SniceWeatherElement;

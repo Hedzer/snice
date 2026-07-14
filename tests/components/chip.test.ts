@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/chip/snice-chip';
-import type { SniceChipElement } from '../../components/chip/snice-chip.types';
+import '../../packages/components/src/chip/snice-chip';
+import type { SniceChipElement } from '../../packages/components/src/chip/snice-chip.types';
 
 describe('snice-chip', () => {
   let chip: SniceChipElement;
@@ -126,7 +126,7 @@ describe('snice-chip', () => {
       const { readFileSync } = await import('fs');
       const { join } = await import('path');
       const cssContent = readFileSync(
-        join(__dirname, '../../components/chip/snice-chip.css'),
+        join(__dirname, '../../packages/components/src/chip/snice-chip.css'),
         'utf8'
       );
       expect(cssContent).toMatch(/:host\(\[shape="pill"\]\)/);

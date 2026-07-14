@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/time-range-picker/snice-time-range-picker';
-import type { SniceTimeRangePickerElement } from '../../components/time-range-picker/snice-time-range-picker.types';
+import '../../packages/components/src/time-range-picker/snice-time-range-picker';
+import type { SniceTimeRangePickerElement } from '../../packages/components/src/time-range-picker/snice-time-range-picker.types';
 
 describe('snice-time-range-picker', () => {
   let picker: SniceTimeRangePickerElement;

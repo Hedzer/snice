@@ -1,9 +1,9 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/tabs/snice-tabs';
-import '../../components/tabs/snice-tab';
-import '../../components/tabs/snice-tab-panel';
-import type { SniceTabElement } from '../../components/tabs/snice-tabs.types';
+import '../../packages/components/src/tabs/snice-tabs';
+import '../../packages/components/src/tabs/snice-tab';
+import '../../packages/components/src/tabs/snice-tab-panel';
+import type { SniceTabElement } from '../../packages/components/src/tabs/snice-tabs.types';
 
 describe('snice-tabs', () => {
   let container: HTMLElement;

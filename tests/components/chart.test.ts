@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/chart/snice-chart';
-import type { SniceChartElement, ChartDataset } from '../../components/chart/snice-chart.types';
+import '../../packages/components/src/chart/snice-chart';
+import type { SniceChartElement, ChartDataset } from '../../packages/components/src/chart/snice-chart.types';
 
 describe('snice-chart', () => {
   let chart: SniceChartElement;

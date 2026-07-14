@@ -19,7 +19,7 @@ afterEach(() => {
 
 describe('app-tiles: javascript: URLs are not executed', () => {
   it('clicking a tile with href="javascript:..." does not invoke window.open with it', async () => {
-    await import('../../components/app-tiles/snice-app-tiles');
+    await import('../../packages/components/src/app-tiles/snice-app-tiles');
 
     const opens: string[] = [];
     const origOpen = window.open;
@@ -55,7 +55,7 @@ describe('app-tiles: javascript: URLs are not executed', () => {
 
 describe('network-graph: node labels are escaped', () => {
   it('a node label containing HTML is rendered as text, not elements', async () => {
-    await import('../../components/network-graph/snice-network-graph');
+    await import('../../packages/components/src/network-graph/snice-network-graph');
     const el = document.createElement('snice-network-graph') as any;
     el.data = {
       nodes: [{ id: 'a', label: '<img src=x onerror="window.__pwn=1">' }],
@@ -77,7 +77,7 @@ describe('network-graph: node labels are escaped', () => {
 
 describe('checkbox: click does not fire change twice', () => {
   it('clicking the host toggles state exactly once', async () => {
-    await import('../../components/checkbox/snice-checkbox');
+    await import('../../packages/components/src/checkbox/snice-checkbox');
     const el = document.createElement('snice-checkbox') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -99,7 +99,7 @@ describe('checkbox: click does not fire change twice', () => {
 
 describe('modal: focus trap includes slotted elements', () => {
   it('Tab on the last focusable wraps back to the first across shadow + light DOM', async () => {
-    await import('../../components/modal/snice-modal');
+    await import('../../packages/components/src/modal/snice-modal');
     const el = document.createElement('snice-modal') as any;
     el.open = true;
     el.innerHTML = `<input class="slotted-input" /><button class="slotted-btn">Save</button>`;
@@ -134,7 +134,7 @@ describe('modal: focus trap includes slotted elements', () => {
 
 describe('input: form.reset() clears the value', () => {
   it('resetting the parent form empties snice-input value', async () => {
-    await import('../../components/input/snice-input');
+    await import('../../packages/components/src/input/snice-input');
     const form = document.createElement('form');
     const el = document.createElement('snice-input') as any;
     form.appendChild(el);
@@ -161,7 +161,7 @@ describe('input: form.reset() clears the value', () => {
 
 describe('countdown: invalid target does not render NaN', () => {
   it('setting target to an unparseable string does not produce NaN in the DOM', async () => {
-    await import('../../components/countdown/snice-countdown');
+    await import('../../packages/components/src/countdown/snice-countdown');
     const el = document.createElement('snice-countdown') as any;
     el.target = 'tomorrow'; // unparseable
     document.body.appendChild(el);
@@ -179,7 +179,7 @@ describe('countdown: invalid target does not render NaN', () => {
 
 describe('image: changing src resets loaded state', () => {
   it('changing src hides the previous loaded image until the new one loads', async () => {
-    await import('../../components/image/snice-image');
+    await import('../../packages/components/src/image/snice-image');
     const el = document.createElement('snice-image') as any;
     el.src = 'about:blank';
     el.placeholder = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
@@ -204,7 +204,7 @@ describe('image: changing src resets loaded state', () => {
 
 describe('drawer: body scroll lock is released on disconnect', () => {
   it('removing an open drawer restores document.body overflow', async () => {
-    await import('../../components/drawer/snice-drawer');
+    await import('../../packages/components/src/drawer/snice-drawer');
     // Render the drawer already-open by setting the attribute BEFORE attach.
     // @ready's init() reads `this.open` and calls handleOpen() when true, which
     // is the same real-world flow as an initially-open drawer in markup.
@@ -230,7 +230,7 @@ describe('drawer: body scroll lock is released on disconnect', () => {
 
 describe('grid: transition-duration parsing handles ms and s units', () => {
   it('"200ms" parses to 200 (not 200000) via parseDuration', async () => {
-    const { parseDuration } = await import('../../src/index');
+    const { parseDuration } = await import('../../packages/core/src/index');
     expect(parseDuration('200ms').milliseconds()).toBe(200);
     expect(parseDuration('0.4s').milliseconds()).toBe(400);
   });

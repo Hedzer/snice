@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/segmented-control/snice-segmented-control';
-import type { SniceSegmentedControlElement, SegmentedControlOption } from '../../components/segmented-control/snice-segmented-control.types';
+import '../../packages/components/src/segmented-control/snice-segmented-control';
+import type { SniceSegmentedControlElement, SegmentedControlOption } from '../../packages/components/src/segmented-control/snice-segmented-control.types';
 
 describe('snice-segmented-control', () => {
   let el: SniceSegmentedControlElement;

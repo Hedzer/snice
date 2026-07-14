@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/stepper/snice-stepper';
-import type { SniceStepperElement, Step } from '../../components/stepper/snice-stepper.types';
+import '../../packages/components/src/stepper/snice-stepper';
+import type { SniceStepperElement, Step } from '../../packages/components/src/stepper/snice-stepper.types';
 
 describe('snice-stepper', () => {
   let stepper: SniceStepperElement;

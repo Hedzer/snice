@@ -9,6 +9,18 @@ import { getWipComponents } from './scripts/wip-components.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
+const coreSource = 'packages/core/src';
+const componentSource = 'packages/components/src';
+
+// Source files moved internally, but published maps retain their established
+// logical paths so downstream tooling sees no artifact-level change.
+const legacySourceMapPath = (sourcePath) => sourcePath
+  .replace(/packages\/core\/packages\/core\/src/g, 'src')
+  .replace(/packages\/packages\/components\/src/g, '../components')
+  .replace(/packages\/packages\/react\/src/g, 'src/react')
+  .replace(/packages\/core\/src/g, 'src')
+  .replace(/packages\/components\/src/g, 'components')
+  .replace(/packages\/react\/src/g, 'src/react');
 
 const banner = `/*!
  * ${packageJson.name} v${packageJson.version}
@@ -21,29 +33,25 @@ const banner = `/*!
 
 
 const baseConfig = {
-  input: 'src/index.ts',
+  input: `${coreSource}/index.ts`,
   external: [],
   plugins: [
     resolve(),
     typescript({
-      tsconfig: './tsconfig.src.json',
-      declaration: true,
-      declarationDir: './dist',
-      rootDir: './src'
+      tsconfig: './packages/core/tsconfig.json',
+      declaration: true
     })
   ]
 };
 
 const createSubmoduleConfig = (name) => ({
-  input: `src/${name}.ts`,
+  input: `${coreSource}/${name}.ts`,
   external: [],
   plugins: [
     resolve(),
     typescript({
-      tsconfig: './tsconfig.src.json',
-      declaration: true,
-      declarationDir: './dist',
-      rootDir: './src'
+      tsconfig: './packages/core/tsconfig.json',
+      declaration: true
     })
   ]
 });
@@ -76,7 +84,7 @@ function findComponentFiles(dir, isRoot = true) {
 
 
 // Get all component files
-const componentFiles = findComponentFiles('components');
+const componentFiles = findComponentFiles(componentSource);
 
 export default [
   // ESM build
@@ -86,7 +94,8 @@ export default [
       file: 'dist/index.esm.js',
       format: 'es',
       banner,
-      sourcemap: true
+      sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath
     },
     plugins: [
       ...baseConfig.plugins
@@ -103,12 +112,13 @@ export default [
       format: 'cjs',
       banner,
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       exports: 'named'
     },
     plugins: [
       resolve(),
       typescript({
-        tsconfig: './tsconfig.src.json',
+        tsconfig: './packages/core/tsconfig.json',
         declaration: false
       })
     ]
@@ -124,12 +134,13 @@ export default [
       name: 'Snice',
       banner,
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       exports: 'named'
     },
     plugins: [
       resolve(),
       typescript({
-        tsconfig: './tsconfig.src.json',
+        tsconfig: './packages/core/tsconfig.json',
         declaration: false
       })
     ]
@@ -143,7 +154,8 @@ export default [
       file: 'dist/symbols.esm.js',
       format: 'es',
       banner,
-      sourcemap: true
+      sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath
     }
   },
 
@@ -155,12 +167,13 @@ export default [
       format: 'cjs',
       banner,
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       exports: 'named'
     },
     plugins: [
       resolve(),
       typescript({
-        tsconfig: './tsconfig.src.json',
+        tsconfig: './packages/core/tsconfig.json',
         declaration: false
       })
     ]
@@ -173,7 +186,8 @@ export default [
       file: 'dist/transitions.esm.js',
       format: 'es',
       banner,
-      sourcemap: true
+      sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath
     }
   },
 
@@ -185,12 +199,13 @@ export default [
       format: 'cjs',
       banner,
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       exports: 'named'
     },
     plugins: [
       resolve(),
       typescript({
-        tsconfig: './tsconfig.src.json',
+        tsconfig: './packages/core/tsconfig.json',
         declaration: false
       })
     ]
@@ -199,11 +214,11 @@ export default [
   // React integration (source in src/react/, built to dist/react/, copied to adapters/react/)
   {
     input: {
-      'index': 'src/react/index.ts',
-      'SniceProvider': 'src/react/SniceProvider.tsx',
-      'SniceRouter': 'src/react/SniceRouter.tsx',
-      'matchRoute': 'src/react/matchRoute.ts',
-      'useRequestHandler': 'src/react/useRequestHandler.ts',
+      'index': 'packages/react/src/index.ts',
+      'SniceProvider': 'packages/react/src/SniceProvider.tsx',
+      'SniceRouter': 'packages/react/src/SniceRouter.tsx',
+      'matchRoute': 'packages/react/src/matchRoute.ts',
+      'useRequestHandler': 'packages/react/src/useRequestHandler.ts',
     },
     external: ['react', 'react/jsx-runtime', 'pica-route'],
     output: {
@@ -211,16 +226,14 @@ export default [
       format: 'es',
       banner,
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       entryFileNames: '[name].js',
     },
     plugins: [
       resolve(),
       typescript({
-        tsconfig: './tsconfig.src.json',
+        tsconfig: './packages/react/tsconfig.json',
         declaration: true,
-        declarationDir: './dist/react',
-        outDir: './dist/react',
-        rootDir: './src/react',
         jsx: 'react-jsx',
       }),
       {
@@ -249,7 +262,7 @@ export default [
   // Component builds - single config with multiple inputs preserving folder structure
   {
     input: componentFiles.reduce((acc, file) => {
-      const relativePath = path.relative('components', file);
+      const relativePath = path.relative(componentSource, file);
       const entryName = relativePath.replace('.ts', '');
       acc[entryName] = file;
       return acc;
@@ -259,6 +272,7 @@ export default [
       dir: 'dist/components',
       format: 'es',
       sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
       entryFileNames: '[name].js',
       preserveModules: false
     },
@@ -307,7 +321,7 @@ export default [
       {
         name: 'copy-theme',
         generateBundle() {
-          const themeSrc = 'components/theme/theme.css';
+          const themeSrc = `${componentSource}/theme/theme.css`;
           const themeDest = 'dist/components/theme';
 
           if (fs.existsSync(themeSrc)) {
@@ -322,7 +336,7 @@ export default [
       {
         name: 'copy-grammars',
         generateBundle() {
-          const grammarSrc = 'components/code-block/grammars';
+          const grammarSrc = `${componentSource}/code-block/grammars`;
           const grammarDest = 'dist/components/code-block/grammars';
 
           if (fs.existsSync(grammarSrc)) {
@@ -345,7 +359,7 @@ export default [
       {
         name: 'copy-qr-reader-assets',
         generateBundle() {
-          const qrReaderSrc = 'components/qr-reader';
+          const qrReaderSrc = `${componentSource}/qr-reader`;
           const qrReaderDest = 'dist/components/qr-reader';
 
           if (!fs.existsSync(qrReaderSrc)) {
@@ -372,7 +386,7 @@ export default [
       {
         name: 'copy-pdf-viewer-assets',
         generateBundle() {
-          const pdfViewerSrc = 'components/pdf-viewer';
+          const pdfViewerSrc = `${componentSource}/pdf-viewer`;
           const pdfViewerDest = 'dist/components/pdf-viewer';
 
           if (!fs.existsSync(pdfViewerSrc)) {
@@ -396,7 +410,7 @@ export default [
         }
       },
       typescript({
-        tsconfig: './components/tsconfig.json',
+        tsconfig: './packages/components/tsconfig.json',
         declaration: false,
         declarationMap: false
       })

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow } from './test-utils';
-import '../../components/link/snice-link';
-import type { SniceLinkElement } from '../../components/link/snice-link.types';
+import '../../packages/components/src/link/snice-link';
+import type { SniceLinkElement } from '../../packages/components/src/link/snice-link.types';
 
 describe('snice-link', () => {
   let link: SniceLinkElement;

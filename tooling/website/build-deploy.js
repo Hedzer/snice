@@ -14,11 +14,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..', '..');
 const publicDir = join(root, 'website', 'public');
 const fullShowcasesDir = join(root, 'website', 'showcases');
-const componentsDir = join(root, 'components');
+const componentsDir = join(root, 'packages', 'components', 'src');
 const siteDir = join(root, 'dist', 'site');
 
 // Read .wip exclusions
-const wipPath = join(componentsDir, '.wip');
+const wipPath = join(root, 'packages', 'components', '.wip');
 const wipList = existsSync(wipPath)
   ? readFileSync(wipPath, 'utf-8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'))
   : [];

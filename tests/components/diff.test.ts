@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/diff/snice-diff';
-import type { SniceDiffElement, DiffMode } from '../../components/diff/snice-diff.types';
+import '../../packages/components/src/diff/snice-diff';
+import type { SniceDiffElement, DiffMode } from '../../packages/components/src/diff/snice-diff.types';
 
 describe('snice-diff', () => {
   let diff: SniceDiffElement;

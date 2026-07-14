@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, render, html, property } from '../src/index';
+import { element, render, html, property } from '../packages/core/src/index';
 
 describe('Virtual Elements', () => {
   let container: HTMLDivElement;

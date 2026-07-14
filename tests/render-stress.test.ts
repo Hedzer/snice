@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html, controller, css, styles } from '../src/index';
+import { element, property, render, html, controller, css, styles } from '../packages/core/src/index';
 
 describe('@render decorator - stress tests', () => {
   let container: HTMLDivElement;

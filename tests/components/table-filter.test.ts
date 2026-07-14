@@ -11,8 +11,8 @@
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
-import { TableFilterEngine } from '../../components/table/table-filter-engine';
+import '../../packages/components/src/table/snice-table';
+import { TableFilterEngine } from '../../packages/components/src/table/table-filter-engine';
 
 // ── Helpers ──
 

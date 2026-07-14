@@ -4,8 +4,8 @@ import swc from 'unplugin-swc';
 export default defineConfig({
   resolve: {
     alias: {
-      'snice/transitions': new URL('./src/transitions.ts', import.meta.url).pathname,
-      'snice': new URL('./src/index.ts', import.meta.url).pathname,
+      'snice/transitions': new URL('./packages/core/src/transitions.ts', import.meta.url).pathname,
+      'snice': new URL('./packages/core/src/index.ts', import.meta.url).pathname,
     },
   },
   plugins: [

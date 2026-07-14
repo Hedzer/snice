@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/pricing-table/snice-pricing-table';
-import type { SnicePricingTableElement, PricingPlan } from '../../components/pricing-table/snice-pricing-table.types';
+import '../../packages/components/src/pricing-table/snice-pricing-table';
+import type { SnicePricingTableElement, PricingPlan } from '../../packages/components/src/pricing-table/snice-pricing-table.types';
 
 const samplePlans: PricingPlan[] = [
   {

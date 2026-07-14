@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders, wait } from './test-utils';
-import '../../components/timeline/snice-timeline';
-import type { SniceTimelineElement } from '../../components/timeline/snice-timeline.types';
+import '../../packages/components/src/timeline/snice-timeline';
+import type { SniceTimelineElement } from '../../packages/components/src/timeline/snice-timeline.types';
 
 describe('snice-timeline', () => {
   let timeline: SniceTimelineElement;

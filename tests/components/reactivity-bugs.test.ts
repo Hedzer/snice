@@ -14,7 +14,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 // ---------------------------------------------------------------------------
 
 describe('reactivity bug: kanban filter/search does not re-render', () => {
-  beforeEach(async () => { await import('../../components/kanban/snice-kanban'); });
+  beforeEach(async () => { await import('../../packages/components/src/kanban/snice-kanban'); });
 
   it('search("...") updates rendered cards', async () => {
     const el = document.createElement('snice-kanban') as any;
@@ -63,7 +63,7 @@ describe('reactivity bug: kanban filter/search does not re-render', () => {
 // ---------------------------------------------------------------------------
 
 describe('reactivity bug: key-value copy feedback does not render', () => {
-  beforeEach(async () => { await import('../../components/key-value/snice-key-value'); });
+  beforeEach(async () => { await import('../../packages/components/src/key-value/snice-key-value'); });
 
   it('clicking copy shows the copied checkmark', async () => {
     // Stub clipboard for happy-dom (read-only in some envs)
@@ -103,7 +103,7 @@ describe('reactivity bug: paint eraser button highlight does not toggle', () => 
       set strokeStyle(_v: any) {}, set fillStyle(_v: any) {}, set lineWidth(_v: any) {},
       set lineCap(_v: any) {}, set lineJoin(_v: any) {}, set globalCompositeOperation(_v: any) {},
     });
-    await import('../../components/paint/snice-paint');
+    await import('../../packages/components/src/paint/snice-paint');
   });
 
   it('clicking eraser toolbar button adds .active class', async () => {
@@ -127,7 +127,7 @@ describe('reactivity bug: paint eraser button highlight does not toggle', () => 
 // ---------------------------------------------------------------------------
 
 describe('reactivity bug: tag-input suggestion dropdown does not appear', () => {
-  beforeEach(async () => { await import('../../components/tag-input/snice-tag-input'); });
+  beforeEach(async () => { await import('../../packages/components/src/tag-input/snice-tag-input'); });
 
   it('typing a matching string shows the suggestions dropdown', async () => {
     const el = document.createElement('snice-tag-input') as any;
@@ -154,7 +154,7 @@ describe('reactivity bug: tag-input suggestion dropdown does not appear', () => 
 // ---------------------------------------------------------------------------
 
 describe('reactivity bug: music-player clock does not update', () => {
-  beforeEach(async () => { await import('../../components/music-player/snice-music-player'); });
+  beforeEach(async () => { await import('../../packages/components/src/music-player/snice-music-player'); });
 
   it('setting currentTime updates the rendered "current time" label', async () => {
     const el = document.createElement('snice-music-player') as any;
@@ -177,7 +177,7 @@ describe('reactivity bug: music-player clock does not update', () => {
 // ---------------------------------------------------------------------------
 
 describe('reactivity bug: podcast-player state does not update UI', () => {
-  beforeEach(async () => { await import('../../components/podcast-player/snice-podcast-player'); });
+  beforeEach(async () => { await import('../../packages/components/src/podcast-player/snice-podcast-player'); });
 
   it('setting state flips isPlaying-dependent UI', async () => {
     const el = document.createElement('snice-podcast-player') as any;

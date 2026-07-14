@@ -39,7 +39,7 @@ describe('heatmap: :host does not use contain: paint', () => {
     const { readFileSync } = await import('fs');
     const { join } = await import('path');
     const raw = readFileSync(
-      join(__dirname, '../../components/heatmap/snice-heatmap.css'),
+      join(__dirname, '../../packages/components/src/heatmap/snice-heatmap.css'),
       'utf8',
     );
     // Strip block comments so we only inspect actual CSS declarations
@@ -56,7 +56,7 @@ describe('heatmap: :host does not use contain: paint', () => {
 
 describe('split-pane: touch input initiates a drag', () => {
   it('touchstart on the divider sets isDragging', async () => {
-    await import('../../components/split-pane/snice-split-pane');
+    await import('../../packages/components/src/split-pane/snice-split-pane');
     const el = document.createElement('snice-split-pane') as any;
     el.innerHTML = '<div slot="primary">A</div><div slot="secondary">B</div>';
     document.body.appendChild(el);

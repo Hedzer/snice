@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, trackRenders } from './test-utils';
-import '../../components/drawer/snice-drawer';
-import '../../components/drawer/snice-drawer-target';
-import type { SniceDrawerElement, SniceDrawerTargetElement } from '../../components/drawer/snice-drawer.types';
+import '../../packages/components/src/drawer/snice-drawer';
+import '../../packages/components/src/drawer/snice-drawer-target';
+import type { SniceDrawerElement, SniceDrawerTargetElement } from '../../packages/components/src/drawer/snice-drawer.types';
 
 describe('drawer-target push property', () => {
   const elements: HTMLElement[] = [];

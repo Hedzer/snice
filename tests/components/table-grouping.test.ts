@@ -14,14 +14,14 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 import {
   TableGrouping,
   computeAggregate,
   type DisplayItem,
   type GroupRow,
   type AggregateRow,
-} from '../../components/table/table-grouping';
+} from '../../packages/components/src/table/table-grouping';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 const PEOPLE = [

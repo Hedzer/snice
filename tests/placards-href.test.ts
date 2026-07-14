@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import type { Placard } from '../src/types/placard';
+import type { Placard } from '../packages/core/src/types/placard';
 
 describe('placard.href — type', () => {
   it('Placard type accepts optional href', () => {
@@ -37,7 +37,7 @@ describe('placard.href — templates and examples', () => {
     'examples/task-manager/src/pages/board.ts',
     'examples/task-manager/src/pages/login.ts',
     'examples/task-manager/src/pages/settings.ts',
-    'components/layout/placard-demo.html',
+    'website/showcases/layout/placard-demo.html',
   ];
 
   for (const rel of placardFiles) {

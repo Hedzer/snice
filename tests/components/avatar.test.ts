@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/avatar/snice-avatar';
-import type { SniceAvatarElement } from '../../components/avatar/snice-avatar.types';
+import '../../packages/components/src/avatar/snice-avatar';
+import type { SniceAvatarElement } from '../../packages/components/src/avatar/snice-avatar.types';
 
 describe('snice-avatar', () => {
   let avatar: SniceAvatarElement;

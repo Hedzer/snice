@@ -1,12 +1,12 @@
 /**
- * Reads components/.wip and returns a Set of component names to exclude from builds.
+ * Reads packages/components/.wip and returns component names excluded from builds.
  */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const WIP_FILE = path.resolve(__dirname, '..', 'components', '.wip');
+const WIP_FILE = path.resolve(__dirname, '..', 'packages', 'components', '.wip');
 
 let _cached;
 

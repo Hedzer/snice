@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { SniceRouter, Route } from '../../src/react/SniceRouter';
-import { SniceProvider, useSniceContext, useNavigate, useParams, useRoute } from '../../src/react/SniceProvider';
-import { useRequestHandler } from '../../src/react/useRequestHandler';
-import { matchRoutes } from '../../src/react/matchRoute';
+import { SniceRouter, Route } from '../../packages/react/src/SniceRouter';
+import { SniceProvider, useSniceContext, useNavigate, useParams, useRoute } from '../../packages/react/src/SniceProvider';
+import { useRequestHandler } from '../../packages/react/src/useRequestHandler';
+import { matchRoutes } from '../../packages/react/src/matchRoute';
 
 describe('React integration - full API', () => {
   it('should export all router components', () => {
@@ -49,7 +49,7 @@ describe('React integration - full API', () => {
 
 describe('Barrel export', () => {
   it('should re-export everything from index', async () => {
-    const barrel = await import('../../src/react/index');
+    const barrel = await import('../../packages/react/src/index');
 
     // Router
     expect(typeof barrel.SniceRouter).toBe('function');

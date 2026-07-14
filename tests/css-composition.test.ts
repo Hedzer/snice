@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { css } from '../src/index';
+import { css } from '../packages/core/src/index';
 
 // A css`` result interpolated inside another css`` must inline its cssText, not
 // stringify to "[object Object]". This is how shared style fragments compose.

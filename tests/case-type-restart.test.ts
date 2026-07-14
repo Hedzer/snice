@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 // A <case> value whose TYPE changes but stringifies the same (number 1 vs
 // string '1' — e.g. a default number replaced by a router param, which is

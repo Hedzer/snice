@@ -219,7 +219,7 @@ describe('React Adapters', () => {
  * ```tsx
  * import { render, fireEvent } from '@testing-library/react';
  * import { Button } from '../adapters/react';
- * import '../components/button/snice-button';
+ * import '../packages/components/src/button/snice-button';
  *
  * test('Button click handler works', () => {
  *   const handleClick = vi.fn();

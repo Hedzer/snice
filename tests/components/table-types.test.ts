@@ -21,15 +21,15 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
-import type { SniceTable } from '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
+import type { SniceTable } from '../../packages/components/src/table/snice-table';
 import type {
   Aggregator,
   ColumnDefinition,
   SniceColumnElement,
   SniceTableElement,
   SniceTableEventMap,
-} from '../../components/table/snice-table.types';
+} from '../../packages/components/src/table/snice-table.types';
 
 describe('snice-table types (D1/D2)', () => {
   // ── D1: compile-time — SniceTable must structurally satisfy the honest

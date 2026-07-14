@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/binpack/snice-binpack';
-import type { SniceBinpackElement } from '../../components/binpack/snice-binpack.types';
+import '../../packages/components/src/binpack/snice-binpack';
+import type { SniceBinpackElement } from '../../packages/components/src/binpack/snice-binpack.types';
 
 describe('snice-binpack', () => {
   let el: SniceBinpackElement;

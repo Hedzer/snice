@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/estimate/snice-estimate';
-import type { SniceEstimateElement, EstimateItem, EstimateParty } from '../../components/estimate/snice-estimate.types';
+import '../../packages/components/src/estimate/snice-estimate';
+import type { SniceEstimateElement, EstimateItem, EstimateParty } from '../../packages/components/src/estimate/snice-estimate.types';
 
 describe('snice-estimate', () => {
   let est: SniceEstimateElement;

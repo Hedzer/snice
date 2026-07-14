@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/sparkline/snice-sparkline';
-import type { SniceSparklineElement } from '../../components/sparkline/snice-sparkline.types';
+import '../../packages/components/src/sparkline/snice-sparkline';
+import type { SniceSparklineElement } from '../../packages/components/src/sparkline/snice-sparkline.types';
 
 describe('snice-sparkline', () => {
   let sparkline: SniceSparklineElement;

@@ -48,7 +48,7 @@ describe('audio-recorder: cancel() does not fire recorder-stop', () => {
   beforeEach(stubMediaRecorder);
 
   it('cancel() after start() emits only recorder-cancel, not recorder-stop', async () => {
-    await import('../../components/audio-recorder/snice-audio-recorder');
+    await import('../../packages/components/src/audio-recorder/snice-audio-recorder');
     const el = document.createElement('snice-audio-recorder') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -72,7 +72,7 @@ describe('audio-recorder: object URL is revoked on new recording', () => {
   beforeEach(stubMediaRecorder);
 
   it('starting a new recording revokes the previous recordedUrl', async () => {
-    await import('../../components/audio-recorder/snice-audio-recorder');
+    await import('../../packages/components/src/audio-recorder/snice-audio-recorder');
 
     const revoked: string[] = [];
     const origRevoke = URL.revokeObjectURL;
@@ -98,7 +98,7 @@ describe('audio-recorder: duration resets when a new recording starts', () => {
   beforeEach(stubMediaRecorder);
 
   it('calling start() resets duration to 0', async () => {
-    await import('../../components/audio-recorder/snice-audio-recorder');
+    await import('../../packages/components/src/audio-recorder/snice-audio-recorder');
     const el = document.createElement('snice-audio-recorder') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -117,7 +117,7 @@ describe('audio-recorder: duration resets when a new recording starts', () => {
 
 describe('file-upload: image preview object URLs are revoked', () => {
   it('removing an uploaded image file revokes its preview URL', async () => {
-    await import('../../components/file-upload/snice-file-upload');
+    await import('../../packages/components/src/file-upload/snice-file-upload');
 
     const created: string[] = [];
     const revoked: string[] = [];
@@ -177,7 +177,7 @@ describe('tabs: ResizeObserver is disconnected on @dispose', () => {
     (globalThis as any).ResizeObserver = SpyRO as any;
 
     try {
-      await import('../../components/tabs/snice-tabs');
+      await import('../../packages/components/src/tabs/snice-tabs');
       const el = document.createElement('snice-tabs') as any;
       el.innerHTML = '<snice-tab label="One" active></snice-tab>';
       document.body.appendChild(el);
@@ -211,7 +211,7 @@ describe('draw: rAF loop does not run forever when idle', () => {
     }) as any;
 
     try {
-      await import('../../components/draw/snice-draw');
+      await import('../../packages/components/src/draw/snice-draw');
       // happy-dom lacks getContext; stub it
       (HTMLCanvasElement.prototype as any).getContext = () => ({
         clearRect: () => {}, fillRect: () => {}, beginPath: () => {}, moveTo: () => {},

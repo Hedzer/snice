@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, property, query, render, html, css, styles } from '../src';
+import { element, property, query, render, html, css, styles } from '../packages/core/src';
 import { controller, attachController } from './test-imports';
 import { Router } from './test-imports';
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/time-picker/snice-time-picker';
-import type { SniceTimePickerElement } from '../../components/time-picker/snice-time-picker.types';
+import '../../packages/components/src/time-picker/snice-time-picker';
+import type { SniceTimePickerElement } from '../../packages/components/src/time-picker/snice-time-picker.types';
 
 describe('snice-time-picker', () => {
   let picker: SniceTimePickerElement;

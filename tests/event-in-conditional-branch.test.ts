@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 // An event handler bound inside a conditional branch that is HIDDEN on first
 // render is committed while its element is off-DOM (in the branch's parked

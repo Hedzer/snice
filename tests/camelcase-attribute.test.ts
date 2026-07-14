@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { element, property, watch, render, html } from '../src/index';
+import { element, property, watch, render, html } from '../packages/core/src/index';
 
 // A camelCase explicit `attribute:` name must still be observed. The DOM
 // lowercases attribute names, so observedAttributes has to carry the lowercase

@@ -6,7 +6,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 // chat: previously returned `new CustomEvent` from @dispatch methods → detail.detail
 describe('chat: dispatch detail is flat (not double-wrapped)', () => {
   it('message-send event detail has { message, attachments } directly', async () => {
-    await import('../../components/chat/snice-chat');
+    await import('../../packages/components/src/chat/snice-chat');
     const el = document.createElement('snice-chat') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -29,7 +29,7 @@ describe('chat: dispatch detail is flat (not double-wrapped)', () => {
 // each click to fire twice (native bubble + synthetic re-dispatch)
 describe('link: click fires exactly once', () => {
   it('clicking the anchor fires a single click event on the host', async () => {
-    await import('../../components/link/snice-link');
+    await import('../../packages/components/src/link/snice-link');
     const el = document.createElement('snice-link') as any;
     el.href = '#x';
     document.body.appendChild(el);

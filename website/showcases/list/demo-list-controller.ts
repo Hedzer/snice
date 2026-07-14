@@ -1,4 +1,4 @@
-import { controller, respond, IController } from '../../src/index.ts';
+import { controller, respond, IController } from '../../../packages/core/src/index.ts';
 
 @controller('demo-list-controller')
 export class DemoListController implements IController {

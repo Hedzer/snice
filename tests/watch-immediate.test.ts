@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, property, watch } from '../src/index';
+import { element, property, watch } from '../packages/core/src/index';
 
 // Mount an element the way author markup does: the attribute (if any) is present
 // at connect time, so connectedCallback initializes the property from it.

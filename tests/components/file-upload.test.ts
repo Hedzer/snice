@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/file-upload/snice-file-upload';
-import type { SniceFileUploadElement } from '../../components/file-upload/snice-file-upload.types';
+import '../../packages/components/src/file-upload/snice-file-upload';
+import type { SniceFileUploadElement } from '../../packages/components/src/file-upload/snice-file-upload.types';
 
 describe('snice-file-upload', () => {
   let fileUpload: SniceFileUploadElement;

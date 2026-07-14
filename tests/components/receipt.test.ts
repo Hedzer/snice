@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/receipt/snice-receipt';
-import type { SniceReceiptElement } from '../../components/receipt/snice-receipt.types';
+import '../../packages/components/src/receipt/snice-receipt';
+import type { SniceReceiptElement } from '../../packages/components/src/receipt/snice-receipt.types';
 
 describe('snice-receipt', () => {
   let receipt: SniceReceiptElement;

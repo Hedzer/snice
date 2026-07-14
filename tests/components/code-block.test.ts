@@ -1,22 +1,22 @@
 import { describe, it, expect, afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/code-block/snice-code-block';
-import type { SniceCodeBlockElement, FormatterFunction } from '../../components/code-block/snice-code-block.types';
-import { highlightCode, tokenize, registerGrammar, unregisterGrammar, getGrammar } from '../../components/code-block/highlighter';
-import type { GrammarDefinition } from '../../components/code-block/highlighter';
-import { createJsonFormatter } from '../../components/code-block/formatters/json';
-import { createIndentFormatter } from '../../components/code-block/formatters/indent';
-import { formatCode } from '../../components/code-block/formatter';
-import type { FormatRules } from '../../components/code-block/formatter';
+import '../../packages/components/src/code-block/snice-code-block';
+import type { SniceCodeBlockElement, FormatterFunction } from '../../packages/components/src/code-block/snice-code-block.types';
+import { highlightCode, tokenize, registerGrammar, unregisterGrammar, getGrammar } from '../../packages/components/src/code-block/highlighter';
+import type { GrammarDefinition } from '../../packages/components/src/code-block/highlighter';
+import { createJsonFormatter } from '../../packages/components/src/code-block/formatters/json';
+import { createIndentFormatter } from '../../packages/components/src/code-block/formatters/indent';
+import { formatCode } from '../../packages/components/src/code-block/formatter';
+import type { FormatRules } from '../../packages/components/src/code-block/formatter';
 
 // Import grammar JSON files for engine tests
-import typescriptGrammar from '../../components/code-block/grammars/typescript.json';
-import htmlGrammar from '../../components/code-block/grammars/html.json';
-import cssGrammar from '../../components/code-block/grammars/css.json';
-import jsonGrammar from '../../components/code-block/grammars/json.json';
-import pythonGrammar from '../../components/code-block/grammars/python.json';
-import bashGrammar from '../../components/code-block/grammars/bash.json';
-import sniceGrammar from '../../components/code-block/grammars/snice.json';
+import typescriptGrammar from '../../packages/components/src/code-block/grammars/typescript.json';
+import htmlGrammar from '../../packages/components/src/code-block/grammars/html.json';
+import cssGrammar from '../../packages/components/src/code-block/grammars/css.json';
+import jsonGrammar from '../../packages/components/src/code-block/grammars/json.json';
+import pythonGrammar from '../../packages/components/src/code-block/grammars/python.json';
+import bashGrammar from '../../packages/components/src/code-block/grammars/bash.json';
+import sniceGrammar from '../../packages/components/src/code-block/grammars/snice.json';
 
 describe('snice-code-block', () => {
   let codeBlock: SniceCodeBlockElement;

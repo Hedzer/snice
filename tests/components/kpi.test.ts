@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/kpi/snice-kpi';
-import type { SniceKpiElement } from '../../components/kpi/snice-kpi.types';
+import '../../packages/components/src/kpi/snice-kpi';
+import type { SniceKpiElement } from '../../packages/components/src/kpi/snice-kpi.types';
 
 describe('snice-kpi', () => {
   let kpi: SniceKpiElement;

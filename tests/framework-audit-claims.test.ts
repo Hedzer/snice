@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, render, styles, html, css, property, ready, controller } from '../src/index';
-import { attachController, detachController } from '../src/controller';
+import { element, render, styles, html, css, property, ready, controller } from '../packages/core/src/index';
+import { attachController, detachController } from '../packages/core/src/controller';
 
 afterEach(() => { document.body.innerHTML = ''; });
 
@@ -183,7 +183,7 @@ describe('audit: router spinner orphan', () => {
 // ---------------------------------------------------------------------------
 describe('audit: @on with once:true fires only once across host and shadow', () => {
   it('once:true handler fires at most once total', async () => {
-    const { on } = await import('../src/index');
+    const { on } = await import('../packages/core/src/index');
 
     let calls = 0;
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/image/snice-image';
-import type { SniceImageElement } from '../../components/image/snice-image.types';
+import '../../packages/components/src/image/snice-image';
+import type { SniceImageElement } from '../../packages/components/src/image/snice-image.types';
 
 describe('snice-image', () => {
   let image: SniceImageElement;

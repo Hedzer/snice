@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/split-pane/snice-split-pane';
-import type { SniceResizeElement } from '../../components/split-pane/snice-split-pane.types';
+import '../../packages/components/src/split-pane/snice-split-pane';
+import type { SniceResizeElement } from '../../packages/components/src/split-pane/snice-split-pane.types';
 
 describe('snice-split-pane', () => {
   let splitPane: SniceResizeElement;

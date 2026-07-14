@@ -264,7 +264,7 @@ export function createCdnBuild(componentName, options = {}) {
       config.plugins.push({
         name: 'copy-theme',
         generateBundle() {
-          const themeSrc = 'components/theme/theme.css';
+          const themeSrc = 'packages/components/src/theme/theme.css';
           const themeDest = `${outputDir}/theme.css`;
 
           if (fs.existsSync(themeSrc)) {
@@ -343,7 +343,7 @@ ${packageJson.license}
  * @returns {string[]} Array of component names
  */
 function discoverComponents() {
-  const componentsDir = 'components';
+  const componentsDir = 'packages/components/src';
   const components = [];
   const wip = getWipComponents();
 

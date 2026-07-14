@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/key-value/snice-key-value';
-import '../../components/key-value/snice-kv-pair';
-import type { SniceKeyValueElement, SniceKvPairElement } from '../../components/key-value/snice-key-value.types';
+import '../../packages/components/src/key-value/snice-key-value';
+import '../../packages/components/src/key-value/snice-kv-pair';
+import type { SniceKeyValueElement, SniceKvPairElement } from '../../packages/components/src/key-value/snice-key-value.types';
 
 describe('snice-key-value', () => {
   let kv: SniceKeyValueElement;

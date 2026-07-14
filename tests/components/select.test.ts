@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/select/snice-select';
-import '../../components/select/snice-option';
-import type { SniceSelectElement, SelectOption } from '../../components/select/snice-select.types';
+import '../../packages/components/src/select/snice-select';
+import '../../packages/components/src/select/snice-option';
+import type { SniceSelectElement, SelectOption } from '../../packages/components/src/select/snice-select.types';
 
 describe('snice-select', () => {
   let container: HTMLElement;

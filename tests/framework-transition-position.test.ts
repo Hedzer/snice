@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { performTransition } from '../src/transitions';
+import { performTransition } from '../packages/core/src/transitions';
 
 afterEach(() => { document.body.innerHTML = ''; });
 

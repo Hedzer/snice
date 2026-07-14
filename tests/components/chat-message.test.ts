@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import type { SniceChatMessage } from '../../components/chat/snice-chat-message';
-import '../../components/chat/snice-chat-message';
+import type { SniceChatMessage } from '../../packages/components/src/chat/snice-chat-message';
+import '../../packages/components/src/chat/snice-chat-message';
 
 describe('snice-chat-message', () => {
   let msg: SniceChatMessage;

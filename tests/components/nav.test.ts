@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent } from './test-utils';
-import '../../components/nav/snice-nav';
-import type { SniceNavElement } from '../../components/nav/snice-nav.types';
-import type { Placard } from '../../src/types';
+import '../../packages/components/src/nav/snice-nav';
+import type { SniceNavElement } from '../../packages/components/src/nav/snice-nav.types';
+import type { Placard } from '../../packages/core/src/types';
 
 describe('snice-nav', () => {
   let nav: SniceNavElement;

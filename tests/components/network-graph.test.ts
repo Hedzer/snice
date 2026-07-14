@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/network-graph/snice-network-graph';
-import type { SniceNetworkGraphElement, NetworkGraphData } from '../../components/network-graph/snice-network-graph.types';
+import '../../packages/components/src/network-graph/snice-network-graph';
+import type { SniceNetworkGraphElement, NetworkGraphData } from '../../packages/components/src/network-graph/snice-network-graph.types';
 
 const SAMPLE_DATA: NetworkGraphData = {
   nodes: [

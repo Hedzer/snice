@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, controller, on, render, html, IController } from '../src/index';
+import { element, controller, on, render, html, IController } from '../packages/core/src/index';
 
 describe('@on decorator', () => {
   let container: HTMLDivElement;

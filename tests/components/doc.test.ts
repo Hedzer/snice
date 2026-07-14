@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/doc/snice-doc';
-import type { SniceDocElement } from '../../components/doc/snice-doc.types';
+import '../../packages/components/src/doc/snice-doc';
+import type { SniceDocElement } from '../../packages/components/src/doc/snice-doc.types';
 
 describe('snice-doc', () => {
   let doc: SniceDocElement;

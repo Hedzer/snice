@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, svg } from '../src/index';
+import { element, property, render, html, svg } from '../packages/core/src/index';
 
 describe('svg`` template fragments', () => {
   let container: HTMLDivElement;

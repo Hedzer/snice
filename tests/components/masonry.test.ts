@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow } from './test-utils';
-import '../../components/masonry/snice-masonry';
-import type { SniceMasonryElement } from '../../components/masonry/snice-masonry.types';
+import '../../packages/components/src/masonry/snice-masonry';
+import type { SniceMasonryElement } from '../../packages/components/src/masonry/snice-masonry.types';
 
 describe('snice-masonry', () => {
   let masonry: SniceMasonryElement;

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, render, on, html } from '../src/index';
+import { element, render, on, html } from '../packages/core/src/index';
 
 describe('@on decorator - Multiple handlers on same event', () => {
   it('should fire all handlers when multiple @on decorators listen to the same event', async () => {

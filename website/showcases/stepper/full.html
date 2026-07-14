@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stepper</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -78,8 +78,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-stepper>
 
 <script type="module">
-  import '../../../components/stepper/snice-stepper.ts';
-  import '../../../components/stepper/snice-stepper-panel.ts';
+  import '../../../packages/components/src/stepper/snice-stepper.ts';
+  import '../../../packages/components/src/stepper/snice-stepper-panel.ts';
 
   const steps3 = [
     { label: 'Account' },

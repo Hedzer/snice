@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SniceProvider, useSniceContext, useNavigate, useParams, useRoute } from '../../src/react/SniceProvider';
+import { SniceProvider, useSniceContext, useNavigate, useParams, useRoute } from '../../packages/react/src/SniceProvider';
 
 describe('SniceProvider exports', () => {
   it('should export SniceProvider component', () => {

@@ -4,5 +4,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": [".", "../components/**/*.stories.ts"]
+  "include": [".", "../packages/components/src/**/*.stories.ts"]
 }

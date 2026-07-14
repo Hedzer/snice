@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('receipt: print() includes slotted content', () => {
   it('slotted QR code / barcode child appears in print output', async () => {
-    await import('../../components/receipt/snice-receipt');
+    await import('../../packages/components/src/receipt/snice-receipt');
 
     let captured = '';
     const origOpen = window.open;

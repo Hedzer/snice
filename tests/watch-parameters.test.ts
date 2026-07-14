@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, property, watch } from '../src';
+import { element, property, watch } from '../packages/core/src';
 
 describe('@watch parameter signature', () => {
   it('should pass oldValue, newValue, and propertyName to single property watcher', () => {

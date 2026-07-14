@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html, query, watch } from '../src/index';
+import { element, property, render, html, query, watch } from '../packages/core/src/index';
 
 describe('Home page examples', () => {
   let container: HTMLElement;

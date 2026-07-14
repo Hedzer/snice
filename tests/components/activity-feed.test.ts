@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/activity-feed/snice-activity-feed';
-import type { SniceActivityFeedElement, Activity } from '../../components/activity-feed/snice-activity-feed.types';
+import '../../packages/components/src/activity-feed/snice-activity-feed';
+import type { SniceActivityFeedElement, Activity } from '../../packages/components/src/activity-feed/snice-activity-feed.types';
 
 const sampleActivities: Activity[] = [
   {

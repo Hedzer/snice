@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Incrementally rebuild a single component (core + CDN + copy to public).
+ * Incrementally rebuild a component (distribution + CDN + website copy).
  * Usage: node scripts/rebuild-single-component.mjs <component-name>
  */
 import { rollup } from 'rollup';
@@ -17,7 +17,8 @@ if (!componentName) {
   process.exit(1);
 }
 
-const componentDir = `components/${componentName}`;
+const componentRoot = 'packages/components/src';
+const componentDir = `${componentRoot}/${componentName}`;
 if (!fs.existsSync(componentDir)) {
   console.error(`Component not found: ${componentDir}`);
   process.exit(1);
@@ -52,7 +53,7 @@ if (tsFiles.length === 0) {
 
 const inputs = {};
 for (const file of tsFiles) {
-  const rel = path.relative('components', file);
+  const rel = path.relative(componentRoot, file);
   inputs[rel.replace('.ts', '')] = file;
 }
 
@@ -91,7 +92,7 @@ const coreBundle = await rollup({
     resolve(),
     cssLoader,
     typescript({
-      tsconfig: './components/tsconfig.json',
+      tsconfig: './packages/components/tsconfig.json',
       declaration: false,
       declarationMap: false,
     }),
@@ -102,6 +103,7 @@ await coreBundle.write({
   dir: 'dist/components',
   format: 'es',
   sourcemap: true,
+  sourcemapPathTransform: (sourcePath) => sourcePath.replace(/packages\/components\/src/g, 'components'),
   entryFileNames: '[name].js',
   preserveModules: false,
 });
@@ -121,13 +123,13 @@ for (const config of cdnConfigs) {
 
 // Step 3: Copy every minified output produced by this build. Some published
 // components (currently table) intentionally ship both IIFE and ESM formats.
-if (fs.existsSync('public/components')) {
+if (fs.existsSync('website/public/components')) {
   const minifiedOutputs = cdnConfigs
     .map((config) => config.output.file)
     .filter((file) => typeof file === 'string' && file.endsWith('.min.js'));
   for (const src of minifiedOutputs) {
     if (!fs.existsSync(src)) continue;
-    const dest = path.join('public/components', path.basename(src));
+    const dest = path.join('website/public/components', path.basename(src));
     fs.copyFileSync(src, dest);
   }
 }
@@ -138,9 +140,9 @@ const companionFiles = {
 };
 const companions = companionFiles[componentName] || [];
 for (const file of companions) {
-  const companionSrc = `components/${componentName}/${file}`;
-  const companionDest = `public/components/${file}`;
-  if (fs.existsSync(companionSrc) && fs.existsSync('public/components')) {
+  const companionSrc = `${componentRoot}/${componentName}/${file}`;
+  const companionDest = `website/public/components/${file}`;
+  if (fs.existsSync(companionSrc) && fs.existsSync('website/public/components')) {
     fs.copyFileSync(companionSrc, companionDest);
   }
 }

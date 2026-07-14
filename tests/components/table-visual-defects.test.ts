@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 
 /**
  * Visual defect ledger fixes (browser audit 2026-07-10):

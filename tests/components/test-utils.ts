@@ -2,7 +2,7 @@
  * Test utilities for component testing
  */
 
-import { trackRenders } from '../../src/render-debug';
+import { trackRenders } from '../../packages/core/src/render-debug';
 
 /**
  * Create a component element and append it to the document

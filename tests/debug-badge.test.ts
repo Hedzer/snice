@@ -1,8 +1,8 @@
 import { describe, it } from 'vitest';
 import { createComponent, introspect } from './components/test-utils';
-import '../components/badge/snice-badge';
-import type { SniceBadgeElement } from '../components/badge/snice-badge.types';
-import { INITIALIZED, PROPERTIES_INITIALIZED, RENDER_METHOD } from '../src/symbols';
+import '../packages/components/src/badge/snice-badge';
+import type { SniceBadgeElement } from '../packages/components/src/badge/snice-badge.types';
+import { INITIALIZED, PROPERTIES_INITIALIZED, RENDER_METHOD } from '../packages/core/src/symbols';
 
 describe('debug badge', () => {
   it('should check oldValue vs newValue', async () => {

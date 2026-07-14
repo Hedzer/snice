@@ -1,5 +1,5 @@
 import { controller, respond } from 'snice';
-import type { TerminalCommandRequest, TerminalCommandResponse } from './snice-terminal.types';
+import type { TerminalCommandRequest, TerminalCommandResponse } from '../../../packages/components/src/terminal/snice-terminal.types';
 
 @controller('demo-terminal-controller')
 export class DemoTerminalController {

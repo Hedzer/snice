@@ -10,7 +10,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('select: click on internal shadow element keeps dropdown open', () => {
   it('click whose composedPath includes the host does not close', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     el.options = [{ value: 'a', label: 'Alpha' }];
     document.body.appendChild(el);
@@ -38,7 +38,7 @@ describe('select: click on internal shadow element keeps dropdown open', () => {
   });
 
   it('click truly outside closes dropdown', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     el.options = [{ value: 'a', label: 'Alpha' }];
     document.body.appendChild(el);

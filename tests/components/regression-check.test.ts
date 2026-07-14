@@ -18,7 +18,7 @@ afterEach(() => {
 
 describe('carousel: CSS-variable-based sizing matches old single-value math', () => {
   it('default slidesPerView=1, spaceBetween=0 produces --carousel-slide-width=100%', async () => {
-    await import('../../components/carousel/snice-carousel');
+    await import('../../packages/components/src/carousel/snice-carousel');
     const el = document.createElement('snice-carousel') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -36,7 +36,7 @@ describe('carousel: CSS-variable-based sizing matches old single-value math', ()
 
 describe('split-pane: mouse drag still works', () => {
   it('mousedown on divider sets isDragging', async () => {
-    await import('../../components/split-pane/snice-split-pane');
+    await import('../../packages/components/src/split-pane/snice-split-pane');
     const el = document.createElement('snice-split-pane') as any;
     el.innerHTML = '<div slot="primary">A</div><div slot="secondary">B</div>';
     document.body.appendChild(el);
@@ -57,7 +57,7 @@ describe('split-pane: mouse drag still works', () => {
 
 describe('calendar: default render still has 7 weekday headers', () => {
   it('initial render contains a weekday header row', async () => {
-    await import('../../components/calendar/snice-calendar');
+    await import('../../packages/components/src/calendar/snice-calendar');
     const el = document.createElement('snice-calendar') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -74,7 +74,7 @@ describe('calendar: default render still has 7 weekday headers', () => {
 
 describe('spotlight: valid target does NOT emit spotlight-target-missing', () => {
   it('start() with an existing target does not fire the missing event', async () => {
-    await import('../../components/spotlight/snice-spotlight');
+    await import('../../packages/components/src/spotlight/snice-spotlight');
     const target = document.createElement('div');
     target.id = 'sp-target';
     target.textContent = 'target';
@@ -99,7 +99,7 @@ describe('spotlight: valid target does NOT emit spotlight-target-missing', () =>
 
 describe('segmented-control: initial ready still updates indicator once', () => {
   it('has a default value selected after options are set', async () => {
-    await import('../../components/segmented-control/snice-segmented-control');
+    await import('../../packages/components/src/segmented-control/snice-segmented-control');
     const el = document.createElement('snice-segmented-control') as any;
     el.options = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }];
     document.body.appendChild(el);
@@ -136,7 +136,7 @@ describe('CLI: --minify=true and default both produce minify=true', () => {
 
 describe('radio: light-DOM grouping still works', () => {
   it('two radios with same name in document body coordinate', async () => {
-    await import('../../components/radio/snice-radio');
+    await import('../../packages/components/src/radio/snice-radio');
     const a = document.createElement('snice-radio') as any;
     const b = document.createElement('snice-radio') as any;
     a.setAttribute('name', 'lg'); a.setAttribute('value', 'a');
@@ -159,7 +159,7 @@ describe('radio: light-DOM grouping still works', () => {
 describe('pdf-viewer: single page render completes normally', () => {
   it('calling renderPage once resolves and leaves rendering=false', async () => {
     (HTMLCanvasElement.prototype as any).getContext = () => ({});
-    await import('../../components/pdf-viewer/snice-pdf-viewer');
+    await import('../../packages/components/src/pdf-viewer/snice-pdf-viewer');
     const el = document.createElement('snice-pdf-viewer') as any;
     document.body.appendChild(el);
     await el.ready;

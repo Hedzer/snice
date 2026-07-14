@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/terminal/snice-terminal';
-import type { SniceTerminalElement } from '../../components/terminal/snice-terminal.types';
+import '../../packages/components/src/terminal/snice-terminal';
+import type { SniceTerminalElement } from '../../packages/components/src/terminal/snice-terminal.types';
 
 describe('snice-terminal', () => {
   let terminal: SniceTerminalElement;

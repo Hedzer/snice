@@ -14,14 +14,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 })();
 </script>
   <title>Invoice</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     snice-invoice { display: block; max-width: 700px; margin-bottom: 1.5rem; }
   </style>
   <script type="module">
-    import '../../../components/invoice/snice-invoice.ts';
+    import '../../../packages/components/src/invoice/snice-invoice.ts';
 
     const from = { name: 'Acme Corp', address: '123 Business Ave, Suite 100, New York, NY 10001', email: 'billing@acme.com', phone: '(555) 123-4567' };
     const to = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL 60601', email: 'ap@client.com', phone: '(555) 987-6543' };

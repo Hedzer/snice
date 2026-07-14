@@ -361,7 +361,7 @@ describe('MCP validate_code tool', () => {
   describe('controller imports from .types.ts', () => {
     it('should warn when controller imports from component file', async () => {
       const { text } = await validateCode(`
-        import { SniceButton } from '../components/button/snice-button';
+        import { SniceButton } from '../packages/components/src/button/snice-button';
 
         @controller('my-ctrl')
         class MyController {}
@@ -372,7 +372,7 @@ describe('MCP validate_code tool', () => {
 
     it('should pass when importing from .types.ts', async () => {
       const { text } = await validateCode(`
-        import type { SniceButtonElement } from '../components/button/snice-button.types';
+        import type { SniceButtonElement } from '../packages/components/src/button/snice-button.types';
 
         @controller('my-ctrl')
         class MyController {}
@@ -382,7 +382,7 @@ describe('MCP validate_code tool', () => {
 
     it('should warn for Controller class pattern', async () => {
       const { text } = await validateCode(`
-        import { SniceInput } from '../components/input/snice-input';
+        import { SniceInput } from '../packages/components/src/input/snice-input';
 
         class FormController {
           validate() {}

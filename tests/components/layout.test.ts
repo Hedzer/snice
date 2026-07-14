@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/layout/snice-layout';
-import type { SniceLayout } from '../../components/layout/snice-layout';
+import '../../packages/components/src/layout/snice-layout';
+import type { SniceLayout } from '../../packages/components/src/layout/snice-layout';
 
 describe('snice-layout', () => {
   let layout: SniceLayout;

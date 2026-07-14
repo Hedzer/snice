@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
-import '../../components/flip-card/snice-flip-card';
-import type { SniceFlipCardElement } from '../../components/flip-card/snice-flip-card.types';
+import '../../packages/components/src/flip-card/snice-flip-card';
+import type { SniceFlipCardElement } from '../../packages/components/src/flip-card/snice-flip-card.types';
 
 describe('snice-flip-card', () => {
   let card: SniceFlipCardElement;

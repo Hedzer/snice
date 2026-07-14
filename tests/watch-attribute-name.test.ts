@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, property, watch } from '../src/index';
+import { element, property, watch } from '../packages/core/src/index';
 
 // @watch should match both:
 //   1. the JS property name (always)

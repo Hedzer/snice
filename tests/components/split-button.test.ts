@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/split-button/snice-split-button';
-import type { SniceSplitButtonElement, SplitButtonAction } from '../../components/split-button/snice-split-button.types';
+import '../../packages/components/src/split-button/snice-split-button';
+import type { SniceSplitButtonElement, SplitButtonAction } from '../../packages/components/src/split-button/snice-split-button.types';
 
 describe('snice-split-button', () => {
   let el: SniceSplitButtonElement;

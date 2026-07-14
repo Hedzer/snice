@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/approval-flow/snice-approval-flow';
-import type { SniceApprovalFlowElement, ApprovalStep } from '../../components/approval-flow/snice-approval-flow.types';
+import '../../packages/components/src/approval-flow/snice-approval-flow';
+import type { SniceApprovalFlowElement, ApprovalStep } from '../../packages/components/src/approval-flow/snice-approval-flow.types';
 
 describe('snice-approval-flow', () => {
   let flow: SniceApprovalFlowElement;

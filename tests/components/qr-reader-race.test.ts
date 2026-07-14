@@ -40,7 +40,7 @@ describe('qr-reader: rapid start/switchCamera does not leak orphan streams', () 
       return f.stream;
     });
 
-    await import('../../components/qr-reader/snice-qr-reader');
+    await import('../../packages/components/src/qr-reader/snice-qr-reader');
     const el = document.createElement('snice-qr-reader') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -70,7 +70,7 @@ describe('qr-reader: autoStart is opt-in', () => {
   it('default snice-qr-reader does not call getUserMedia on connect', async () => {
     let gumCalls = 0;
     stubMedia(async () => { gumCalls++; return fakeStream().stream; });
-    await import('../../components/qr-reader/snice-qr-reader');
+    await import('../../packages/components/src/qr-reader/snice-qr-reader');
     const el = document.createElement('snice-qr-reader') as any;
     document.body.appendChild(el);
     await el.ready;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { matchRoutes, type RouteConfig } from '../../src/react/matchRoute';
+import { matchRoutes, type RouteConfig } from '../../packages/react/src/matchRoute';
 
 describe('matchRoutes', () => {
   const routes: RouteConfig[] = [

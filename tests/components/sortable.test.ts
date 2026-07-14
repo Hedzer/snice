@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/sortable/snice-sortable';
-import type { SniceSortableElement } from '../../components/sortable/snice-sortable.types';
+import '../../packages/components/src/sortable/snice-sortable';
+import type { SniceSortableElement } from '../../packages/components/src/sortable/snice-sortable.types';
 
 describe('snice-sortable', () => {
   let sortable: SniceSortableElement;

@@ -15,8 +15,8 @@ describe('currency-input (extending snice-input)', () => {
 
   async function setup() {
     const { element, property, watch, on, styles, css } = await import('snice');
-    await import('../components/input/snice-input');
-    const { SniceInput } = await import('../components/input/snice-input');
+    await import('../packages/components/src/input/snice-input');
+    const { SniceInput } = await import('../packages/components/src/input/snice-input');
 
 
     const t = tag();

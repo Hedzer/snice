@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/comments/snice-comments';
-import type { SniceCommentsElement, Comment } from '../../components/comments/snice-comments.types';
+import '../../packages/components/src/comments/snice-comments';
+import type { SniceCommentsElement, Comment } from '../../packages/components/src/comments/snice-comments.types';
 
 const sampleComments: Comment[] = [
   {

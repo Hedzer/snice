@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, dispatch, render, html } from '../src/index';
+import { element, dispatch, render, html } from '../packages/core/src/index';
 
 // Helper to generate unique names to avoid state conflicts  
 function uniqueName(prefix: string): string {

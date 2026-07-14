@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { element, property, render, dispatch, html } from '../src/index';
-import { RENDER_TIMERS, PENDING_RECONNECT_RENDER } from '../src/symbols';
+import { element, property, render, dispatch, html } from '../packages/core/src/index';
+import { RENDER_TIMERS, PENDING_RECONNECT_RENDER } from '../packages/core/src/symbols';
 
 // A render() or @dispatch() scheduled with debounce/throttle arms a setTimeout
 // stored on the element. On disconnect those timers must be cleared so they

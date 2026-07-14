@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait , queryShadowAll} from './test-utils';
-import '../../components/countdown/snice-countdown';
-import type { SniceCountdownElement, CountdownValues } from '../../components/countdown/snice-countdown.types';
+import '../../packages/components/src/countdown/snice-countdown';
+import type { SniceCountdownElement, CountdownValues } from '../../packages/components/src/countdown/snice-countdown.types';
 
 describe('snice-countdown', () => {
   let countdown: SniceCountdownElement;

@@ -9,7 +9,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('slider: no spurious change event on disconnect when not dragging', () => {
   it('removing a never-dragged slider should not fire range-change / change event', async () => {
-    await import('../../components/slider/snice-slider');
+    await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     el.min = 0;
     el.max = 100;
@@ -32,7 +32,7 @@ describe('slider: no spurious change event on disconnect when not dragging', () 
 
 describe('range-slider: no spurious change event on disconnect when not dragging', () => {
   it('removing a never-dragged range-slider should not fire range-change', async () => {
-    await import('../../components/range-slider/snice-range-slider');
+    await import('../../packages/components/src/range-slider/snice-range-slider');
     const el = document.createElement('snice-range-slider') as any;
     el.min = 0;
     el.max = 100;

@@ -1,7 +1,7 @@
 import React, { act, createRef } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 import { Table } from '../../adapters/react/table';
 
 // React 18 only flushes passive effects through act() when the environment

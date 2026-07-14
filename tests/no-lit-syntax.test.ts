@@ -8,7 +8,7 @@ describe('Code Quality - No Lit Framework Syntax', () => {
     // This framework uses its own patterns that are different from Lit.
     // Using Lit syntax will cause TypeScript compilation errors and broken components.
 
-    const componentsDir = path.join(process.cwd(), 'components');
+    const componentsDir = path.join(process.cwd(), 'packages/components/src');
     const files = await getAllComponentFiles(componentsDir);
 
     const violations: string[] = [];

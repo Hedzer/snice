@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getSymbol } from '../src/global';
+import { getSymbol } from '../packages/core/src/global';
 import {
   IS_CONTROLLER_CLASS,
   IS_CONTROLLER_INSTANCE,
@@ -7,9 +7,9 @@ import {
   CONTROLLER_KEY,
   CONTROLLER_NAME_KEY,
   CHANNEL_HANDLERS
-} from '../src/symbols';
-import { HTML_RESULT, CSS_RESULT, nothing } from '../src/template';
-import { RENDER_TRACKER, TRACK_RENDERS } from '../src/render-tracker';
+} from '../packages/core/src/symbols';
+import { HTML_RESULT, CSS_RESULT, nothing } from '../packages/core/src/template';
+import { RENDER_TRACKER, TRACK_RENDERS } from '../packages/core/src/render-tracker';
 
 describe('Symbol sharing across instances', () => {
   it('should use the same symbols when getSymbol is called multiple times', () => {

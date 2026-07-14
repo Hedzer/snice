@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, property, watch } from '../src/index';
+import { element, property, watch } from '../packages/core/src/index';
 
 describe('@watch decorator', () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/carousel/snice-carousel';
-import type { SniceCarouselElement } from '../../components/carousel/snice-carousel.types';
+import '../../packages/components/src/carousel/snice-carousel';
+import type { SniceCarouselElement } from '../../packages/components/src/carousel/snice-carousel.types';
 
 describe('snice-carousel', () => {
   let carousel: SniceCarouselElement;

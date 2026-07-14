@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, trackRenders } from './test-utils';
-import '../../components/tree/snice-tree';
-import '../../components/tree/snice-tree-item';
-import type { SniceTreeElement, TreeNode } from '../../components/tree/snice-tree.types';
+import '../../packages/components/src/tree/snice-tree';
+import '../../packages/components/src/tree/snice-tree-item';
+import type { SniceTreeElement, TreeNode } from '../../packages/components/src/tree/snice-tree.types';
 
 describe('snice-tree', () => {
   let tree: SniceTreeElement;

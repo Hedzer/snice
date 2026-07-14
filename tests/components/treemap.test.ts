@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/treemap/snice-treemap';
-import type { SniceTreemapElement, TreemapNode } from '../../components/treemap/snice-treemap.types';
+import '../../packages/components/src/treemap/snice-treemap';
+import type { SniceTreemapElement, TreemapNode } from '../../packages/components/src/treemap/snice-treemap.types';
 
 const sampleData: TreemapNode = {
   label: 'Root',

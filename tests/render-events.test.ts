@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 describe('@render decorator - template events', () => {
   let container: HTMLDivElement;

@@ -22,7 +22,7 @@ import {
   context,
   ready,
   watch,
-} from '../src';
+} from '../packages/core/src';
 
 const originalFetch = global.fetch;
 
@@ -940,7 +940,7 @@ describe('real-page declarative rendering with context + fetch + lists', () => {
   it('passes fetched list down to a nested element via .prop binding', async () => {
     mockFetch.mockReturnValue(jsonResponse(makeItems(5, 'Nested'), 25));
 
-    const { element } = await import('../src/index');
+    const { element } = await import('../packages/core/src/index');
 
     @element('rp-child-list')
     class ChildList extends HTMLElement {

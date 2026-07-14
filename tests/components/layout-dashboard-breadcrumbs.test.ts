@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/layout/snice-layout-dashboard';
-import type { SniceLayoutDashboard } from '../../components/layout/snice-layout-dashboard';
-import type { Placard } from '../../src/types/placard';
+import '../../packages/components/src/layout/snice-layout-dashboard';
+import type { SniceLayoutDashboard } from '../../packages/components/src/layout/snice-layout-dashboard';
+import type { Placard } from '../../packages/core/src/types/placard';
 
 describe('snice-layout-dashboard breadcrumbs', () => {
   let layout: SniceLayoutDashboard;

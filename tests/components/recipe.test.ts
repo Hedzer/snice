@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders, wait } from './test-utils';
-import '../../components/recipe/snice-recipe';
-import type { SniceRecipe } from '../../components/recipe/snice-recipe';
+import '../../packages/components/src/recipe/snice-recipe';
+import type { SniceRecipe } from '../../packages/components/src/recipe/snice-recipe';
 
 describe('SniceRecipe', () => {
   let recipe: SniceRecipe;

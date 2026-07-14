@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, context } from '../src/index';
-import { setupContextHandler } from '../src/context';
-import { Context } from '../src/types/context';
-import { CONTEXT_HANDLER, CONTEXT_UPDATE } from '../src/symbols';
+import { element, context } from '../packages/core/src/index';
+import { setupContextHandler } from '../packages/core/src/context';
+import { Context } from '../packages/core/src/types/context';
+import { CONTEXT_HANDLER, CONTEXT_UPDATE } from '../packages/core/src/symbols';
 
 /**
  * Regression test for the critical `@context` WeakMap collision:

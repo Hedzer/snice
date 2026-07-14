@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/org-chart/snice-org-chart';
-import type { SniceOrgChartElement } from '../../components/org-chart/snice-org-chart.types';
+import '../../packages/components/src/org-chart/snice-org-chart';
+import type { SniceOrgChartElement } from '../../packages/components/src/org-chart/snice-org-chart.types';
 
 describe('snice-org-chart', () => {
   let chart: SniceOrgChartElement;

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, observe, render, html } from '../src/index';
+import { element, observe, render, html } from '../packages/core/src/index';
 
 describe('@observe decorator', () => {
   let container: HTMLElement;

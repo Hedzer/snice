@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/permission-matrix/snice-permission-matrix';
-import type { SnicePermissionMatrixElement } from '../../components/permission-matrix/snice-permission-matrix.types';
+import '../../packages/components/src/permission-matrix/snice-permission-matrix';
+import type { SnicePermissionMatrixElement } from '../../packages/components/src/permission-matrix/snice-permission-matrix.types';
 
 describe('snice-permission-matrix', () => {
   let matrix: SnicePermissionMatrixElement;

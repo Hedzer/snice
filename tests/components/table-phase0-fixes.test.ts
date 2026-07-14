@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,7 +40,7 @@ function ruleBlock(css: string, selector: string): string {
 
 /** Extract the body of the @styles() css`...` template literal in snice-table.ts. */
 function getTableStylesTemplate(): string {
-  const src = readSource('../../components/table/snice-table.ts');
+  const src = readSource('../../packages/components/src/table/snice-table.ts');
   const start = src.indexOf('css/*css*/`');
   if (start < 0) throw new Error('css template literal not found');
   const open = src.indexOf('`', start);
@@ -95,13 +95,13 @@ describe('table phase 0 — task 4 polish fixes', () => {
 
   describe('a. action-button hover color', () => {
     it('does not paint the hover background with the text-color token', () => {
-      const css = readSource('../../components/table/snice-cell-actions.css');
+      const css = readSource('../../packages/components/src/table/snice-cell-actions.css');
       const rule = ruleBlock(css, '.action-button:hover');
       expect(rule).not.toMatch(/background:\s*var\(--snice-color-text\b/);
     });
 
     it('uses a real hover-wash token with the exact theme.css-default fallback', () => {
-      const css = readSource('../../components/table/snice-cell-actions.css');
+      const css = readSource('../../packages/components/src/table/snice-cell-actions.css');
       const rule = ruleBlock(css, '.action-button:hover');
       // Matches the fallback already used for this exact token elsewhere in
       // the table component (e.g. th.sortable:hover, tbody row hover).

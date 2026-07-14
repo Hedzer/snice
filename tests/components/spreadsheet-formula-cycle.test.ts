@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('spreadsheet: formula cycle guard', () => {
   it('does not stack-overflow when A1 refs A2 and A2 refs A1', async () => {
-    await import('../../components/spreadsheet/snice-spreadsheet');
+    await import('../../packages/components/src/spreadsheet/snice-spreadsheet');
     const el = document.createElement('snice-spreadsheet') as any;
     el.columns = [{ key: 'a' }, { key: 'b' }];
     el.data = [

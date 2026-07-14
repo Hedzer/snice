@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 
-const componentsDir = path.join(process.cwd(), 'components');
+const componentsDir = path.join(process.cwd(), 'packages/components/src');
 const humanDocsDir = path.join(process.cwd(), 'docs', 'components');
 const aiDocsDir = path.join(process.cwd(), 'docs', 'ai', 'components');
 

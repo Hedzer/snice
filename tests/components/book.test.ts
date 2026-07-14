@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow } from './test-utils';
-import '../../components/book/snice-book';
-import type { SniceBookElement } from '../../components/book/snice-book.types';
+import '../../packages/components/src/book/snice-book';
+import type { SniceBookElement } from '../../packages/components/src/book/snice-book.types';
 
 describe('snice-book', () => {
   let book: SniceBookElement;

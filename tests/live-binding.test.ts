@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, live } from '../src/index';
+import { element, property, render, html, live } from '../packages/core/src/index';
 
 describe('live() property binding', () => {
   let container: HTMLDivElement;

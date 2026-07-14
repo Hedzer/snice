@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/music-player/snice-music-player';
-import type { SniceMusicPlayerElement, Track } from '../../components/music-player/snice-music-player.types';
+import '../../packages/components/src/music-player/snice-music-player';
+import type { SniceMusicPlayerElement, Track } from '../../packages/components/src/music-player/snice-music-player.types';
 
 describe('snice-music-player', () => {
   let player: SniceMusicPlayerElement;

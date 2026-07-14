@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const TS_PATH = resolve(__dirname, '../../components/table/snice-table.ts');
+const TS_PATH = resolve(__dirname, '../../packages/components/src/table/snice-table.ts');
 const SRC = readFileSync(TS_PATH, 'utf8');
 
 /** Extract the body of the @styles() css`...` template literal. */

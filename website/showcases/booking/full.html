@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -90,7 +90,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <script type="module">
-    import '../../../components/booking/snice-booking.ts';
+    import '../../../packages/components/src/booking/snice-booking.ts';
 
     const today = new Date();
     const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

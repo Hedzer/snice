@@ -1,7 +1,7 @@
 /**
  * Tests for the WIP component exclusion mechanism.
  *
- * components/.wip lists component directory names to exclude from all builds:
+ * packages/components/.wip lists component directory names to exclude from all builds:
  * core (rollup.config.js), CDN (rollup.config.cdn.js), React adapters.
  */
 
@@ -11,7 +11,7 @@ import path from 'path';
 import os from 'os';
 import { parseWipFile } from '../scripts/wip-components.js';
 
-const WIP_FILE = path.resolve(process.cwd(), 'components/.wip');
+const WIP_FILE = path.resolve(process.cwd(), 'packages/components/.wip');
 
 function writeTmp(content: string): string {
   const tmp = path.join(os.tmpdir(), `wip-test-${Date.now()}.txt`);
@@ -68,15 +68,15 @@ describe('WIP Components', () => {
   });
 
   describe('.wip file integrity', () => {
-    it('should exist at components/.wip', () => {
+    it('should exist at packages/components/.wip', () => {
       expect(fs.existsSync(WIP_FILE)).toBe(true);
     });
 
     it('should reference existing component directories', () => {
       const names = parseWipFile(WIP_FILE);
       for (const name of names) {
-        const dir = path.join(process.cwd(), 'components', name);
-        expect(fs.existsSync(dir), `"${name}" in .wip has no components/${name}/ directory`).toBe(true);
+        const dir = path.join(process.cwd(), 'packages/components/src', name);
+        expect(fs.existsSync(dir), `"${name}" in .wip has no packages/components/src/${name}/ directory`).toBe(true);
       }
     });
   });

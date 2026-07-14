@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, property, watch } from '../src/index';
+import { element, property, watch } from '../packages/core/src/index';
 
 function mount(tag: string, Ctor: CustomElementConstructor) {
   if (!customElements.get(tag)) customElements.define(tag, Ctor);

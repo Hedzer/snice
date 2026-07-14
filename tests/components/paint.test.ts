@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import '../../components/paint/snice-paint';
+import '../../packages/components/src/paint/snice-paint';
 
 describe('snice-paint', () => {
   it('should be defined', () => {

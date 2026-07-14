@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/layout/snice-layout-sidebar';
-import type { SniceLayoutSidebar } from '../../components/layout/snice-layout-sidebar';
+import '../../packages/components/src/layout/snice-layout-sidebar';
+import type { SniceLayoutSidebar } from '../../packages/components/src/layout/snice-layout-sidebar';
 
 describe('snice-layout-sidebar', () => {
   let layout: SniceLayoutSidebar;

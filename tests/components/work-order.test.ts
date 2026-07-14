@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/work-order/snice-work-order';
-import type { SniceWorkOrderElement, WorkOrderTask, WorkOrderPart, WorkOrderCustomer, WorkOrderAsset } from '../../components/work-order/snice-work-order.types';
+import '../../packages/components/src/work-order/snice-work-order';
+import type { SniceWorkOrderElement, WorkOrderTask, WorkOrderPart, WorkOrderCustomer, WorkOrderAsset } from '../../packages/components/src/work-order/snice-work-order.types';
 
 describe('snice-work-order', () => {
   let wo: SniceWorkOrderElement;

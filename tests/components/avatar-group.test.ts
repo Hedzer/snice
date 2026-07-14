@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/avatar-group/snice-avatar-group';
-import type { SniceAvatarGroupElement, AvatarGroupItem } from '../../components/avatar-group/snice-avatar-group.types';
+import '../../packages/components/src/avatar-group/snice-avatar-group';
+import type { SniceAvatarGroupElement, AvatarGroupItem } from '../../packages/components/src/avatar-group/snice-avatar-group.types';
 
 describe('snice-avatar-group', () => {
   let group: SniceAvatarGroupElement;

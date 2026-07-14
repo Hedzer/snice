@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/switch/snice-switch';
-import type { SniceSwitchElement } from '../../components/switch/snice-switch.types';
+import '../../packages/components/src/switch/snice-switch';
+import type { SniceSwitchElement } from '../../packages/components/src/switch/snice-switch.types';
 
 describe('snice-switch', () => {
   let switchEl: SniceSwitchElement;

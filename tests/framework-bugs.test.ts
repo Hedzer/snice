@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
-import { element, on, render, html } from '../src/index';
+import { element, on, render, html } from '../packages/core/src/index';
 
 // Framework-level bugs carried over from the audit backlog.
 
@@ -81,7 +81,7 @@ describe('document listeners are removed on disconnect', () => {
   }
 
   it('cropper: document mousemove/mouseup listeners are removed on disconnect', async () => {
-    await import('../components/cropper/snice-cropper');
+    await import('../packages/components/src/cropper/snice-cropper');
     const el = document.createElement('snice-cropper') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -94,7 +94,7 @@ describe('document listeners are removed on disconnect', () => {
   });
 
   it('date-picker: document click listener is removed on disconnect', async () => {
-    await import('../components/date-picker/snice-date-picker');
+    await import('../packages/components/src/date-picker/snice-date-picker');
     const el = document.createElement('snice-date-picker') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -106,7 +106,7 @@ describe('document listeners are removed on disconnect', () => {
   });
 
   it('tag-input: document click listener is removed on disconnect', async () => {
-    await import('../components/tag-input/snice-tag-input');
+    await import('../packages/components/src/tag-input/snice-tag-input');
     const el = document.createElement('snice-tag-input') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -124,7 +124,7 @@ describe('document listeners are removed on disconnect', () => {
 
 describe('terminal: user input is not rendered as raw HTML', () => {
   it('typing an HTML tag at the prompt renders it as text, not an element', async () => {
-    await import('../components/terminal/snice-terminal');
+    await import('../packages/components/src/terminal/snice-terminal');
     const el = document.createElement('snice-terminal') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -171,7 +171,7 @@ describe('camera: does not auto-request getUserMedia on default mount', () => {
   });
 
   it('default <snice-camera> does not call getUserMedia on connect', async () => {
-    await import('../components/camera/snice-camera');
+    await import('../packages/components/src/camera/snice-camera');
     const el = document.createElement('snice-camera') as any;
     document.body.appendChild(el);
     await el.ready;

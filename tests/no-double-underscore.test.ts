@@ -3,14 +3,17 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 
 describe('Code Quality - No Double Underscore Properties', () => {
-  it('should not use __ properties in src/ directory - ONLY USE SYMBOLS', async () => {
+  it('should not use __ properties in package source directories - ONLY USE SYMBOLS', async () => {
     // IMPORTANT: Never use .__property pattern in our codebase!
     // Always use symbols instead for internal properties.
     // This pattern is error-prone and can lead to property name collisions.
     // Symbols provide a much cleaner and safer way to store internal state.
     
-    const srcDir = path.join(process.cwd(), 'src');
-    const files = await getAllTypeScriptFiles(srcDir);
+    const sourceDirs = [
+      path.join(process.cwd(), 'packages/core/src'),
+      path.join(process.cwd(), 'packages/react/src'),
+    ];
+    const files = (await Promise.all(sourceDirs.map(getAllTypeScriptFiles))).flat();
     
     const violations: string[] = [];
     

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow } from './test-utils';
-import '../../components/qr-code/snice-qr-code';
-import type { SniceQRCodeElement } from '../../components/qr-code/snice-qr-code.types';
+import '../../packages/components/src/qr-code/snice-qr-code';
+import type { SniceQRCodeElement } from '../../packages/components/src/qr-code/snice-qr-code.types';
 
 describe('snice-qr-code', () => {
   let qrCode: SniceQRCodeElement;

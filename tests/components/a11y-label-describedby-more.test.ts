@@ -7,7 +7,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('slider: label, aria-describedby, aria-valuetext', () => {
   it('label for= links to the thumb via labelledby', async () => {
-    await import('../../components/slider/snice-slider');
+    await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     el.label = 'Volume';
     el.value = 50;
@@ -22,7 +22,7 @@ describe('slider: label, aria-describedby, aria-valuetext', () => {
   });
 
   it('aria-describedby points to helper/error text', async () => {
-    await import('../../components/slider/snice-slider');
+    await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     el.label = 'Volume';
     el.helperText = '0 to 100';
@@ -40,7 +40,7 @@ describe('slider: label, aria-describedby, aria-valuetext', () => {
 
 describe('switch: label association + aria-describedby', () => {
   it('label for= links to inner input', async () => {
-    await import('../../components/switch/snice-switch');
+    await import('../../packages/components/src/switch/snice-switch');
     const el = document.createElement('snice-switch') as any;
     el.label = 'Dark mode';
     document.body.appendChild(el);
@@ -59,7 +59,7 @@ describe('switch: label association + aria-describedby', () => {
 
 describe('select: trigger exposes combobox semantics', () => {
   it('trigger has aria-haspopup and aria-expanded that updates', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     el.options = [{ value: '1', label: 'One' }];
     document.body.appendChild(el);
@@ -77,7 +77,7 @@ describe('select: trigger exposes combobox semantics', () => {
   });
 
   it('aria-describedby points to error/helper text', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     el.options = [{ value: '1', label: 'One' }];
     el.errorText = 'Please pick one';

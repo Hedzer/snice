@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders, wait } from './test-utils';
-import '../../components/progress-ring/snice-progress-ring';
-import type { SniceProgressRingElement } from '../../components/progress-ring/snice-progress-ring.types';
+import '../../packages/components/src/progress-ring/snice-progress-ring';
+import type { SniceProgressRingElement } from '../../packages/components/src/progress-ring/snice-progress-ring.types';
 
 describe('snice-progress-ring', () => {
   let el: SniceProgressRingElement;

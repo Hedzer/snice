@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, unsafeHTML } from '../src/index';
+import { element, property, render, html, unsafeHTML } from '../packages/core/src/index';
 
 describe('unsafeHTML - raw HTML rendering', () => {
   let container: HTMLDivElement;

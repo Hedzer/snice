@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/tag-input/snice-tag-input';
-import type { SniceTagInputElement } from '../../components/tag-input/snice-tag-input.types';
+import '../../packages/components/src/tag-input/snice-tag-input';
+import type { SniceTagInputElement } from '../../packages/components/src/tag-input/snice-tag-input.types';
 
 describe('snice-tag-input', () => {
   let tagInput: SniceTagInputElement;

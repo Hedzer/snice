@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('tree: selection does not mutate caller-supplied node objects', () => {
   it('selectNode updates internal state only, not input.selected', async () => {
-    await import('../../components/tree/snice-tree');
+    await import('../../packages/components/src/tree/snice-tree');
 
     const input = [
       { id: 'a', label: 'A' },
@@ -32,7 +32,7 @@ describe('tree: selection does not mutate caller-supplied node objects', () => {
   });
 
   it('checkedNodes change does not mutate caller objects', async () => {
-    await import('../../components/tree/snice-tree');
+    await import('../../packages/components/src/tree/snice-tree');
 
     const input = [
       { id: 'x', label: 'X' },

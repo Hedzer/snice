@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { element, property, watch, render, html } from '../src/index';
+import { element, property, watch, render, html } from '../packages/core/src/index';
 
 // The documented `hasChanged` @property option must replace the default `===`
 // dirty-check: return false to suppress an update (e.g. deep-equal objects),

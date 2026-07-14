@@ -1,5 +1,5 @@
 import { controller, respond } from 'snice';
-import type { LoginCredentials, LoginResult } from './snice-login.types';
+import type { LoginCredentials, LoginResult } from '../../../packages/components/src/login/snice-login.types';
 
 interface AuthUser {
   id: string;

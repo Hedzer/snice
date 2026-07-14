@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
-import '../../components/heatmap/snice-heatmap';
-import type { SniceHeatmapElement } from '../../components/heatmap/snice-heatmap.types';
+import '../../packages/components/src/heatmap/snice-heatmap';
+import type { SniceHeatmapElement } from '../../packages/components/src/heatmap/snice-heatmap.types';
 
 function generateData(days: number, maxValue = 10): { date: string; value: number }[] {
   const data = [];

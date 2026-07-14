@@ -18,7 +18,7 @@ import { element, request, render, html } from './test-imports';
 
 // Import the hook source to test its types exist and the module loads.
 // The actual integration is tested via the event protocol which is identical.
-import { useRequestHandler } from '../src/react/useRequestHandler';
+import { useRequestHandler } from '../packages/react/src/useRequestHandler';
 
 function uniqueName(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

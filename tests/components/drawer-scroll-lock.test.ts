@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent } from './test-utils';
-import '../../components/drawer/snice-drawer';
-import type { SniceDrawerElement } from '../../components/drawer/snice-drawer.types';
+import '../../packages/components/src/drawer/snice-drawer';
+import type { SniceDrawerElement } from '../../packages/components/src/drawer/snice-drawer.types';
 
 /**
  * AUDIT FINDING (`.research/bug-audit-2026-04-29.md`):

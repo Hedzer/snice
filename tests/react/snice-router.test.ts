@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SniceRouter, Route } from '../../src/react/SniceRouter';
+import { SniceRouter, Route } from '../../packages/react/src/SniceRouter';
 
 describe('SniceRouter exports', () => {
   it('should export SniceRouter component', () => {

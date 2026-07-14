@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App Tiles</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <style>
     body {
@@ -183,8 +183,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <script type="module">
-    import '../../../components/app-tiles/snice-app-tiles.ts';
-    import '../../../components/badge/snice-badge.ts';
+    import '../../../packages/components/src/app-tiles/snice-app-tiles.ts';
+    import '../../../packages/components/src/badge/snice-badge.ts';
 
     const basic = [
       { id: '1', name: 'Mail', icon: '✉️' },

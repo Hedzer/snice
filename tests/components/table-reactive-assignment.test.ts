@@ -17,7 +17,7 @@
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 
 const COLS = [
   { key: 'id', label: 'ID', type: 'text' as const },

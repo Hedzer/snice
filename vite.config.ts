@@ -12,7 +12,7 @@ function componentRebuilder() {
     name: 'component-rebuilder',
     configureServer(server: any) {
       server.watcher.on('change', (changedPath: string) => {
-        if (!(changedPath.includes('/components/') || changedPath.includes('/src/')) ||
+        if (!(changedPath.includes('/packages/components/src/') || changedPath.includes('/packages/core/src/') || changedPath.includes('/packages/react/src/')) ||
             changedPath.includes('node_modules') || changedPath.includes('/dist/') || changedPath.includes('/website/public/')) return;
         if (!changedPath.match(/\.(ts|css)$/)) return;
         if (changedPath.endsWith('.stories.ts')) return;
@@ -23,8 +23,8 @@ function componentRebuilder() {
           building = true;
           const file = changedPath.split('/').pop();
 
-          // Extract component name from path like .../components/<name>/...
-          const compMatch = changedPath.match(/\/components\/([^/]+)\//);
+          // Extract component name from .../packages/components/src/<name>/...
+          const compMatch = changedPath.match(/\/packages\/components\/src\/([^/]+)\//);
 
           if (compMatch && compMatch[1] !== 'theme') {
             // Single component change — incremental rebuild
@@ -37,7 +37,7 @@ function componentRebuilder() {
               console.error(`  ✗ ${compName} rebuild failed`);
             }
           } else {
-            // src/ or theme change — full rebuild
+            // Core, React, or theme change — full rebuild
             console.log(`\n  ${file} changed — full rebuild...`);
             try {
               execSync('npm run build:core && npm run build:cdn && node tooling/website/build-website.js', { stdio: 'inherit' });

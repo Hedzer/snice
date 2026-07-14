@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, triggerMouseEvent, triggerKeyboardEvent } from './test-utils';
-import '../../components/accordion/snice-accordion-item';
-import type { SniceAccordionItemElement } from '../../components/accordion/snice-accordion.types';
+import '../../packages/components/src/accordion/snice-accordion-item';
+import type { SniceAccordionItemElement } from '../../packages/components/src/accordion/snice-accordion.types';
 
 describe('snice-accordion-item', () => {
   let accordionItem: SniceAccordionItemElement;

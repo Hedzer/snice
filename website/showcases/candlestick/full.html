@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Candlestick</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -139,7 +139,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <script type="module">
-    import '../../../components/candlestick/snice-candlestick.ts';
+    import '../../../packages/components/src/candlestick/snice-candlestick.ts';
 
     function generateCandles(count, startDate, startPrice) {
       const data = [];

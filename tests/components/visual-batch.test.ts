@@ -17,7 +17,7 @@ afterEach(() => {
 
 describe('spotlight: missing step target emits a recoverable event', () => {
   it('dispatches spotlight-target-missing when the step.target selector has no match', async () => {
-    await import('../../components/spotlight/snice-spotlight');
+    await import('../../packages/components/src/spotlight/snice-spotlight');
     const el = document.createElement('snice-spotlight') as any;
     el.steps = [{ target: '#does-not-exist', title: 'Step 1', description: 'x' }];
     document.body.appendChild(el);
@@ -40,7 +40,7 @@ describe('spotlight: missing step target emits a recoverable event', () => {
 
 describe('calendar: weekday headers rebuild on locale change', () => {
   it('changing firstDayOfWeek reorders the rendered weekday row', async () => {
-    await import('../../components/calendar/snice-calendar');
+    await import('../../packages/components/src/calendar/snice-calendar');
     const el = document.createElement('snice-calendar') as any;
     el.locale = 'en-US';
     el.firstDayOfWeek = 0; // Sunday first
@@ -79,7 +79,7 @@ describe('segmented-control: installs a ResizeObserver for indicator reposition'
     (globalThis as any).ResizeObserver = SpyRO as any;
 
     try {
-      await import('../../components/segmented-control/snice-segmented-control');
+      await import('../../packages/components/src/segmented-control/snice-segmented-control');
       const el = document.createElement('snice-segmented-control') as any;
       el.options = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }];
       document.body.appendChild(el);
@@ -98,7 +98,7 @@ describe('segmented-control: installs a ResizeObserver for indicator reposition'
 
 describe('carousel: slidesPerView change updates slide width', () => {
   it('changing slidesPerView updates --carousel-slide-width', async () => {
-    await import('../../components/carousel/snice-carousel');
+    await import('../../packages/components/src/carousel/snice-carousel');
     const el = document.createElement('snice-carousel') as any;
     el.slidesPerView = 1;
     el.spaceBetween = 0;

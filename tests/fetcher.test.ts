@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ContextAwareFetcher, Router, Context } from '../src';
-import type { Fetcher, RequestMiddleware, ResponseMiddleware } from '../src';
+import { ContextAwareFetcher, Router, Context } from '../packages/core/src';
+import type { Fetcher, RequestMiddleware, ResponseMiddleware } from '../packages/core/src';
 
 // Mock global fetch for testing
 const originalFetch = global.fetch;

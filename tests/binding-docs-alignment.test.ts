@@ -8,7 +8,7 @@ const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
 const human = read('docs/bindings.md');
 const ai = read('docs/ai/bindings.md');
-const renderer = read('src/parts.ts');
+const renderer = read('packages/core/src/parts.ts');
 const websiteBuilder = read('tooling/website/build-website.js');
 const guide = read('website/public/guide.html');
 const readme = read('README.md');

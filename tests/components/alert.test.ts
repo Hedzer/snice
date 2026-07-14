@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/alert/snice-alert';
-import type { SniceAlertElement } from '../../components/alert/snice-alert.types';
+import '../../packages/components/src/alert/snice-alert';
+import type { SniceAlertElement } from '../../packages/components/src/alert/snice-alert.types';
 
 describe('snice-alert', () => {
   let alert: SniceAlertElement;

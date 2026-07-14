@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/candlestick/snice-candlestick';
-import type { SniceCandlestickElement, CandleData } from '../../components/candlestick/snice-candlestick.types';
+import '../../packages/components/src/candlestick/snice-candlestick';
+import type { SniceCandlestickElement, CandleData } from '../../packages/components/src/candlestick/snice-candlestick.types';
 
 function generateSampleData(count: number): CandleData[] {
   const data: CandleData[] = [];

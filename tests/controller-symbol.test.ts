@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, controller, query, queryAll, render, html } from '../src/index';
+import { element, controller, query, queryAll, render, html } from '../packages/core/src/index';
 import { IS_CONTROLLER_INSTANCE, CONTROLLER_KEY } from './test-imports';
 
 describe('Controller Symbol Detection', () => {

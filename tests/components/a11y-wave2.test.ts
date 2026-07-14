@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('flip-card: aria-pressed reflects flipped state', () => {
   it('default shows aria-pressed=false; flipping toggles to true', async () => {
-    await import('../../components/flip-card/snice-flip-card');
+    await import('../../packages/components/src/flip-card/snice-flip-card');
     const el = document.createElement('snice-flip-card') as any;
     el.clickToFlip = true;
     document.body.appendChild(el);
@@ -23,7 +23,7 @@ describe('flip-card: aria-pressed reflects flipped state', () => {
 
 describe('carousel: announces as a region with carousel role-description', () => {
   it('container has role=region and aria-roledescription', async () => {
-    await import('../../components/carousel/snice-carousel');
+    await import('../../packages/components/src/carousel/snice-carousel');
     const el = document.createElement('snice-carousel') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -37,7 +37,7 @@ describe('carousel: announces as a region with carousel role-description', () =>
 
 describe('split-pane: divider has separator role + aria-valuenow + keyboard', () => {
   it('divider exposes orientation, valuenow, and is focusable', async () => {
-    await import('../../components/split-pane/snice-split-pane');
+    await import('../../packages/components/src/split-pane/snice-split-pane');
     const el = document.createElement('snice-split-pane') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -53,7 +53,7 @@ describe('split-pane: divider has separator role + aria-valuenow + keyboard', ()
 
 describe('cropper: crop-area is keyboard-focusable region', () => {
   it('crop-area has role=region, aria-label, tabindex=0', async () => {
-    await import('../../components/cropper/snice-cropper');
+    await import('../../packages/components/src/cropper/snice-cropper');
     const el = document.createElement('snice-cropper') as any;
     el.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48L3N2Zz4=';
     document.body.appendChild(el);
@@ -69,7 +69,7 @@ describe('cropper: crop-area is keyboard-focusable region', () => {
 
 describe('action-bar: roving tabindex applied to focusable children', () => {
   it('first focusable gets tabindex=0, the rest -1', async () => {
-    await import('../../components/action-bar/snice-action-bar');
+    await import('../../packages/components/src/action-bar/snice-action-bar');
     const el = document.createElement('snice-action-bar') as any;
     el.innerHTML = '<button id="a">A</button><button id="b">B</button><button id="c">C</button>';
     document.body.appendChild(el);
@@ -87,7 +87,7 @@ describe('action-bar: roving tabindex applied to focusable children', () => {
 
 describe('availability: grid roles + rowindex/colindex on cells', () => {
   it('grid is role=grid with rowheader/columnheader/gridcell descendants', async () => {
-    await import('../../components/availability/snice-availability');
+    await import('../../packages/components/src/availability/snice-availability');
     const el = document.createElement('snice-availability') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -107,7 +107,7 @@ describe('availability: grid roles + rowindex/colindex on cells', () => {
 
 describe('gantt: zoom toggles announce as toggle buttons', () => {
   it('each zoom button has aria-pressed reflecting current zoom', async () => {
-    await import('../../components/gantt/snice-gantt');
+    await import('../../packages/components/src/gantt/snice-gantt');
     const el = document.createElement('snice-gantt') as any;
     el.zoom = 'week';
     el.tasks = [];
@@ -124,7 +124,7 @@ describe('gantt: zoom toggles announce as toggle buttons', () => {
 
 describe('org-chart: tree role + treeitem nodes with aria-expanded', () => {
   it('tree container is role=tree and nodes are role=treeitem', async () => {
-    await import('../../components/org-chart/snice-org-chart');
+    await import('../../packages/components/src/org-chart/snice-org-chart');
     const el = document.createElement('snice-org-chart') as any;
     el.data = { id: '1', name: 'CEO', children: [{ id: '2', name: 'CTO' }] };
     document.body.appendChild(el);
@@ -142,7 +142,7 @@ describe('org-chart: tree role + treeitem nodes with aria-expanded', () => {
 
 describe('flow: editor surface announces as application', () => {
   it('flow container is role=application + tabindex=0', async () => {
-    await import('../../components/flow/snice-flow');
+    await import('../../packages/components/src/flow/snice-flow');
     const el = document.createElement('snice-flow') as any;
     el.nodes = [];
     el.edges = [];
@@ -158,7 +158,7 @@ describe('flow: editor surface announces as application', () => {
 
 describe('map: container announces as application + keyboard pannable', () => {
   it('map-container is role=application + tabindex=0', async () => {
-    await import('../../components/map/snice-map');
+    await import('../../packages/components/src/map/snice-map');
     const el = document.createElement('snice-map') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -172,7 +172,7 @@ describe('map: container announces as application + keyboard pannable', () => {
 
 describe('virtual-scroller: PageDown/Home/End keyboard nav', () => {
   it('Home key sets scrollTop to 0', async () => {
-    await import('../../components/virtual-scroller/snice-virtual-scroller');
+    await import('../../packages/components/src/virtual-scroller/snice-virtual-scroller');
     const el = document.createElement('snice-virtual-scroller') as any;
     el.items = Array.from({ length: 100 }, (_, i) => ({ value: i }));
     el.itemHeight = 30;

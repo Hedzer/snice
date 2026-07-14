@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('kanban: keyboard DnD', () => {
   async function makeBoard() {
-    await import('../../components/kanban/snice-kanban');
+    await import('../../packages/components/src/kanban/snice-kanban');
     const el = document.createElement('snice-kanban') as any;
     el.columns = [
       { id: 'todo', title: 'To Do', cards: [

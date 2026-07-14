@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 /**
  * Tests for Stage 3 decorator compatibility

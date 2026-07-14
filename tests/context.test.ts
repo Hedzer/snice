@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Router, context, Context } from '../src';
-import { CONTEXT_UPDATE } from '../src/symbols';
+import { Router, context, Context } from '../packages/core/src';
+import { CONTEXT_UPDATE } from '../packages/core/src/symbols';
 
 async function waitFor(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

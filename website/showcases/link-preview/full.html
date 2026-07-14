@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Link Preview</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -163,6 +163,6 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-link-preview variant="horizontal" size="large" url="https://example.com" title="H+L" description="Horizontal large" image="https://picsum.photos/seed/m6/600/300"></snice-link-preview>
 </div>
 
-<script type="module">import '../../../components/link-preview/snice-link-preview.ts';</script>
+<script type="module">import '../../../packages/components/src/link-preview/snice-link-preview.ts';</script>
 </body>
 </html>

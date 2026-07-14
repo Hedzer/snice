@@ -7,10 +7,10 @@ afterEach(() => { document.body.innerHTML = ''; });
 // aria-label, not just a tooltip-triggering `title`, so SRs announce them.
 
 const PLAYERS = [
-  { tag: 'snice-video-player',   path: '../../components/video-player/snice-video-player',   setup: (el: any) => { el.src = 'about:blank'; } },
-  { tag: 'snice-music-player',   path: '../../components/music-player/snice-music-player',   setup: () => {} },
-  { tag: 'snice-podcast-player', path: '../../components/podcast-player/snice-podcast-player', setup: () => {} },
-  { tag: 'snice-audio-recorder', path: '../../components/audio-recorder/snice-audio-recorder', setup: () => {} },
+  { tag: 'snice-video-player',   path: '../../packages/components/src/video-player/snice-video-player',   setup: (el: any) => { el.src = 'about:blank'; } },
+  { tag: 'snice-music-player',   path: '../../packages/components/src/music-player/snice-music-player',   setup: () => {} },
+  { tag: 'snice-podcast-player', path: '../../packages/components/src/podcast-player/snice-podcast-player', setup: () => {} },
+  { tag: 'snice-audio-recorder', path: '../../packages/components/src/audio-recorder/snice-audio-recorder', setup: () => {} },
 ];
 
 for (const spec of PLAYERS) {

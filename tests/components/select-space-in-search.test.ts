@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { queryShadow, removeComponent } from './test-utils';
-import '../../components/select/snice-select';
-import '../../components/select/snice-option';
-import type { SniceSelectElement } from '../../components/select/snice-select.types';
+import '../../packages/components/src/select/snice-select';
+import '../../packages/components/src/select/snice-option';
+import type { SniceSelectElement } from '../../packages/components/src/select/snice-select.types';
 
 /**
  * AUDIT FINDING (`.research/bug-audit-2026-04-29.md`):

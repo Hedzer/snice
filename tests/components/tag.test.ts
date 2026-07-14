@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/tag/snice-tag';
-import type { SniceTagElement } from '../../components/tag/snice-tag.types';
+import '../../packages/components/src/tag/snice-tag';
+import type { SniceTagElement } from '../../packages/components/src/tag/snice-tag.types';
 
 describe('snice-tag', () => {
   let tag: SniceTagElement;

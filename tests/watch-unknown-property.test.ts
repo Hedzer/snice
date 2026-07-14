@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, watch, render, html } from '../src/index';
+import { element, property, watch, render, html } from '../packages/core/src/index';
 
 /**
  * @watch('typo') matches no @property and silently never fires — the framework

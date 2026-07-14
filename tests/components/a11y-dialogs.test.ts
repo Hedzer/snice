@@ -11,7 +11,7 @@ afterEach(() => {
 
 describe('modal: dialog role + aria-labelledby', () => {
   it('dialog has role=dialog and aria-modal=true when open', async () => {
-    await import('../../components/modal/snice-modal');
+    await import('../../packages/components/src/modal/snice-modal');
     const el = document.createElement('snice-modal') as any;
     el.open = true;
     el.innerHTML = `<h2 slot="header">My Title</h2>`;
@@ -25,7 +25,7 @@ describe('modal: dialog role + aria-labelledby', () => {
   });
 
   it('aria-labelledby points to the slotted header when no explicit label', async () => {
-    await import('../../components/modal/snice-modal');
+    await import('../../packages/components/src/modal/snice-modal');
     const el = document.createElement('snice-modal') as any;
     el.open = true;
     el.innerHTML = `<h2 slot="header">My Title</h2>`;
@@ -41,7 +41,7 @@ describe('modal: dialog role + aria-labelledby', () => {
   });
 
   it('does NOT emit empty aria-label when label is blank', async () => {
-    await import('../../components/modal/snice-modal');
+    await import('../../packages/components/src/modal/snice-modal');
     const el = document.createElement('snice-modal') as any;
     el.open = true;
     document.body.appendChild(el);
@@ -56,7 +56,7 @@ describe('modal: dialog role + aria-labelledby', () => {
 
 describe('drawer: dialog role + accessible name', () => {
   it('has aria-label or aria-labelledby on role=dialog', async () => {
-    await import('../../components/drawer/snice-drawer');
+    await import('../../packages/components/src/drawer/snice-drawer');
     const el = document.createElement('snice-drawer') as any;
     el.label = 'Settings';
     el.open = true;
@@ -73,7 +73,7 @@ describe('drawer: dialog role + accessible name', () => {
 
 describe('command-palette: has role=dialog and aria-modal when open', () => {
   it('when open, exposes dialog role', async () => {
-    await import('../../components/command-palette/snice-command-palette');
+    await import('../../packages/components/src/command-palette/snice-command-palette');
     const el = document.createElement('snice-command-palette') as any;
     el.open = true;
     document.body.appendChild(el);
@@ -86,7 +86,7 @@ describe('command-palette: has role=dialog and aria-modal when open', () => {
   });
 
   it('input has role=combobox with aria-expanded and aria-controls', async () => {
-    await import('../../components/command-palette/snice-command-palette');
+    await import('../../packages/components/src/command-palette/snice-command-palette');
     const el = document.createElement('snice-command-palette') as any;
     el.open = true;
     el.commands = [{ id: 'a', label: 'Alpha' }];

@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('terminal: output is a live log region', () => {
   it('terminal-output has role=log and aria-live=polite', async () => {
-    await import('../../components/terminal/snice-terminal');
+    await import('../../packages/components/src/terminal/snice-terminal');
     const el = document.createElement('snice-terminal') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -19,7 +19,7 @@ describe('terminal: output is a live log region', () => {
 
 describe('draw: canvas has role=img and aria-label', () => {
   it('canvas exposes role and label for screen readers', async () => {
-    await import('../../components/draw/snice-draw');
+    await import('../../packages/components/src/draw/snice-draw');
     const el = document.createElement('snice-draw') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -33,7 +33,7 @@ describe('draw: canvas has role=img and aria-label', () => {
 
 describe('paint: canvas has role=img and aria-label', () => {
   it('canvas exposes role and label for screen readers', async () => {
-    await import('../../components/paint/snice-paint');
+    await import('../../packages/components/src/paint/snice-paint');
     const el = document.createElement('snice-paint') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -47,7 +47,7 @@ describe('paint: canvas has role=img and aria-label', () => {
 
 describe('audio-recorder: status region is live', () => {
   it('recorder-status has role=status and aria-live=polite', async () => {
-    await import('../../components/audio-recorder/snice-audio-recorder');
+    await import('../../packages/components/src/audio-recorder/snice-audio-recorder');
     const el = document.createElement('snice-audio-recorder') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -61,7 +61,7 @@ describe('audio-recorder: status region is live', () => {
 
 describe('qr-code: container has role=img and aria-label with encoded value', () => {
   it('container exposes role and value-bearing label', async () => {
-    await import('../../components/qr-code/snice-qr-code');
+    await import('../../packages/components/src/qr-code/snice-qr-code');
     const el = document.createElement('snice-qr-code') as any;
     el.value = 'hello-world';
     document.body.appendChild(el);
@@ -76,7 +76,7 @@ describe('qr-code: container has role=img and aria-label with encoded value', ()
 
 describe('heatmap: container has role=img and aria-label', () => {
   it('heatmap exposes role and accessible name', async () => {
-    await import('../../components/heatmap/snice-heatmap');
+    await import('../../packages/components/src/heatmap/snice-heatmap');
     const el = document.createElement('snice-heatmap') as any;
     el.data = [{ date: '2024-01-01', value: 1 }];
     document.body.appendChild(el);

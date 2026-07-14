@@ -159,7 +159,7 @@ export const ${componentClassName} = createReactAdapter<${componentClassName}Pro
  * Scan components directory and generate adapters
  */
 function generateAdapters() {
-  const componentsDir = path.join(projectRoot, 'components');
+  const componentsDir = path.join(projectRoot, 'packages', 'components', 'src');
   const reactDir = path.join(projectRoot, 'adapters', 'react');
   const componentsFile = path.join(reactDir, 'components.ts');
 

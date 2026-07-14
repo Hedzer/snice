@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/markdown/snice-markdown';
-import type { SniceMarkdownElement } from '../../components/markdown/snice-markdown.types';
+import '../../packages/components/src/markdown/snice-markdown';
+import type { SniceMarkdownElement } from '../../packages/components/src/markdown/snice-markdown.types';
 
 describe('snice-markdown', () => {
   let markdown: SniceMarkdownElement;

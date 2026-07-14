@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/login/snice-login';
-import type { SniceLoginElement } from '../../components/login/snice-login.types';
+import '../../packages/components/src/login/snice-login';
+import type { SniceLoginElement } from '../../packages/components/src/login/snice-login.types';
 
 describe('snice-login', () => {
   let login: SniceLoginElement;

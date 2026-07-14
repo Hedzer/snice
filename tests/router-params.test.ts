@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, property, render, html } from '../src';
+import { Router, property, render, html } from '../packages/core/src';
 
 describe('Router URL Parameters', () => {
   let container: HTMLElement;

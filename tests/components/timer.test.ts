@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import '../../components/timer/snice-timer';
-import type { SniceTimer } from '../../components/timer/snice-timer';
+import '../../packages/components/src/timer/snice-timer';
+import type { SniceTimer } from '../../packages/components/src/timer/snice-timer';
 
 describe('SniceTimer', () => {
   let timer: SniceTimer;

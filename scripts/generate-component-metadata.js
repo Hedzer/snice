@@ -17,7 +17,8 @@ import ts from 'typescript';
 import { getWipComponents } from './wip-components.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const componentsRoot = path.join(projectRoot, 'components');
+const componentsRoot = path.join(projectRoot, 'packages', 'components', 'src');
+const componentsPackage = path.join(projectRoot, 'packages', 'components');
 
 function posix(value) {
   return value.split(path.sep).join('/');
@@ -404,7 +405,7 @@ export function generateComponentMetadata({ check = false } = {}) {
   const outputs = new Map([
     [path.join(projectRoot, 'custom-elements.json'), JSON.stringify(createCustomElementsManifest(declarations), null, 2) + '\n'],
     [path.join(projectRoot, 'vscode.html-custom-data.json'), JSON.stringify(createHtmlCustomData(declarations), null, 2) + '\n'],
-    [path.join(componentsRoot, 'custom-elements.d.ts'), createTagNameDeclarations(declarations)]
+    [path.join(componentsPackage, 'custom-elements.d.ts'), createTagNameDeclarations(declarations)]
   ]);
   const stale = [];
   for (const [file, content] of outputs) {

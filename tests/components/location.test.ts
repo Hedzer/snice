@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/location/snice-location';
-import type { SniceLocationElement } from '../../components/location/snice-location.types';
+import '../../packages/components/src/location/snice-location';
+import type { SniceLocationElement } from '../../packages/components/src/location/snice-location.types';
 
 describe('snice-location', () => {
   let location: SniceLocationElement;

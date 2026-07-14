@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/funnel/snice-funnel';
-import type { SniceFunnelElement, FunnelStage } from '../../components/funnel/snice-funnel.types';
+import '../../packages/components/src/funnel/snice-funnel';
+import type { SniceFunnelElement, FunnelStage } from '../../packages/components/src/funnel/snice-funnel.types';
 
 const SAMPLE_DATA: FunnelStage[] = [
   { label: 'Visitors', value: 10000 },

@@ -11,7 +11,7 @@ describe('@ready focus', () => {
 
   it('focus on nested snice-input from parent @ready works', async () => {
     const { element, query, ready, render, styles, html, css } = await import('snice');
-    await import('../components/input/snice-input');
+    await import('../packages/components/src/input/snice-input');
     const t = tag('page');
 
     @element(t)

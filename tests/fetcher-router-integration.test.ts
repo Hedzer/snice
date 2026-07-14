@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Router, ContextAwareFetcher, context, Context } from '../src';
+import { Router, ContextAwareFetcher, context, Context } from '../packages/core/src';
 
 const originalFetch = global.fetch;
 

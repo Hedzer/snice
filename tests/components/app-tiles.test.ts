@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/app-tiles/snice-app-tiles';
-import type { SniceAppTilesElement, AppTile } from '../../components/app-tiles/snice-app-tiles.types';
+import '../../packages/components/src/app-tiles/snice-app-tiles';
+import type { SniceAppTilesElement, AppTile } from '../../packages/components/src/app-tiles/snice-app-tiles.types';
 
 const SAMPLE_TILES: AppTile[] = [
   { id: 'mail', name: 'Gmail', icon: '📧' },

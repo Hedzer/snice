@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/form-layout/snice-form-layout';
-import type { SniceFormLayoutElement } from '../../components/form-layout/snice-form-layout.types';
+import '../../packages/components/src/form-layout/snice-form-layout';
+import type { SniceFormLayoutElement } from '../../packages/components/src/form-layout/snice-form-layout.types';
 
 describe('snice-form-layout', () => {
   let layout: SniceFormLayoutElement;

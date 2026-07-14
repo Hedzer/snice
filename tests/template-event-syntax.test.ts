@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { element, render, html } from '../src/index';
+import { element, render, html } from '../packages/core/src/index';
 
 describe('Template event syntax with @ and / in event names', () => {
   it('warns when a non-keyboard event uses a modifier-like dotted suffix (@click.once)', async () => {

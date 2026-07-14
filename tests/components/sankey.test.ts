@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/sankey/snice-sankey';
-import type { SniceSankeyElement } from '../../components/sankey/snice-sankey.types';
+import '../../packages/components/src/sankey/snice-sankey';
+import type { SniceSankeyElement } from '../../packages/components/src/sankey/snice-sankey.types';
 
 const SAMPLE_DATA = {
   nodes: [

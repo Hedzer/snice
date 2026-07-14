@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/command-palette/snice-command-palette';
-import type { SniceCommandPaletteElement, CommandItem } from '../../components/command-palette/snice-command-palette.types';
+import '../../packages/components/src/command-palette/snice-command-palette';
+import type { SniceCommandPaletteElement, CommandItem } from '../../packages/components/src/command-palette/snice-command-palette.types';
 
 describe('snice-command-palette', () => {
   let palette: SniceCommandPaletteElement;

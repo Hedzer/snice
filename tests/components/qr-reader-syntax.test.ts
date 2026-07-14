@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, render, html } from '../../src/index';
-import '../../components/qr-reader/snice-qr-reader';
+import { element, render, html } from '../../packages/core/src/index';
+import '../../packages/components/src/qr-reader/snice-qr-reader';
 
 describe('snice-qr-reader template syntax', () => {
   let container: HTMLElement;

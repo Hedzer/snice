@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 // A child inside an <if> that is FALSE on first render must never be connected.
 // Previously the children were placed in the live template fragment, so they

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, dispatch, query, property, request, respond, observe, render, html } from '../src/index';
+import { element, dispatch, query, property, request, respond, observe, render, html } from '../packages/core/src/index';
 
 describe('Decorator stacking and this context preservation', () => {
   beforeEach(() => {

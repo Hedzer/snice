@@ -299,7 +299,7 @@ describe('React Adapter: ${className}', () => {
  * Generate test files for all components
  */
 function generateTests() {
-  const componentsDir = path.join(projectRoot, 'components');
+  const componentsDir = path.join(projectRoot, 'packages', 'components', 'src');
   const testsDir = path.join(projectRoot, 'tests', 'react-adapters', 'components');
 
   if (!fs.existsSync(componentsDir)) {

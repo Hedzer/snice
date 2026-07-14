@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/gauge/snice-gauge';
-import type { SniceGaugeElement } from '../../components/gauge/snice-gauge.types';
+import '../../packages/components/src/gauge/snice-gauge';
+import type { SniceGaugeElement } from '../../packages/components/src/gauge/snice-gauge.types';
 
 describe('snice-gauge', () => {
   let gauge: SniceGaugeElement;

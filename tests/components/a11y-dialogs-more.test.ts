@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('spotlight: popover has dialog role + labelledby', () => {
   it('popover role=dialog and aria-labelledby points to title', async () => {
-    await import('../../components/spotlight/snice-spotlight');
+    await import('../../packages/components/src/spotlight/snice-spotlight');
     const el = document.createElement('snice-spotlight') as any;
     el.steps = [{ title: 'Hi', description: 'Welcome', target: 'body' }];
     document.body.appendChild(el);
@@ -26,7 +26,7 @@ describe('spotlight: popover has dialog role + labelledby', () => {
 
 describe('notification-center: trigger and panel a11y', () => {
   it('trigger has aria-expanded that updates with open state', async () => {
-    await import('../../components/notification-center/snice-notification-center');
+    await import('../../packages/components/src/notification-center/snice-notification-center');
     const el = document.createElement('snice-notification-center') as any;
     el.notifications = [{ id: '1', title: 't', message: 'm', read: false }];
     document.body.appendChild(el);
@@ -43,7 +43,7 @@ describe('notification-center: trigger and panel a11y', () => {
   });
 
   it('panel has role=dialog and aria-labelledby', async () => {
-    await import('../../components/notification-center/snice-notification-center');
+    await import('../../packages/components/src/notification-center/snice-notification-center');
     const el = document.createElement('snice-notification-center') as any;
     el.notifications = [{ id: '1', title: 't', message: 'm', read: false }];
     el.open = true;

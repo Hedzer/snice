@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, element, render, html } from '../src/index';
+import { Router, element, render, html } from '../packages/core/src/index';
 
 /**
  * When a second navigate() fires while the first's transition is still running,

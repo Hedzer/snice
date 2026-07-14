@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait, waitFor } from './test-utils';
-import '../../components/grid/snice-grid';
-import type { SniceGridElement } from '../../components/grid/snice-grid.types';
+import '../../packages/components/src/grid/snice-grid';
+import type { SniceGridElement } from '../../packages/components/src/grid/snice-grid.types';
 
 describe('snice-grid', () => {
   let el: SniceGridElement;

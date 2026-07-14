@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html, setStrictRenderErrors } from '../src/index';
+import { element, property, render, html, setStrictRenderErrors } from '../packages/core/src/index';
 
 describe('strict render error mode', () => {
   let container: HTMLDivElement;

@@ -1,10 +1,10 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/toast/snice-toast-container';
-import '../../components/toast/snice-toast';
-import type { SniceToastElement } from '../../components/toast/snice-toast.types';
-import type { SniceToastContainerElement } from '../../components/toast/snice-toast.types';
-import Toast from '../../components/toast/snice-toast-container';
+import '../../packages/components/src/toast/snice-toast-container';
+import '../../packages/components/src/toast/snice-toast';
+import type { SniceToastElement } from '../../packages/components/src/toast/snice-toast.types';
+import type { SniceToastContainerElement } from '../../packages/components/src/toast/snice-toast.types';
+import Toast from '../../packages/components/src/toast/snice-toast-container';
 
 describe('snice-toast', () => {
   let toast: SniceToastElement;

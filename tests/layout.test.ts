@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Router, layout, render, html } from '../src/index';
+import { Router, layout, render, html } from '../packages/core/src/index';
 import { ROUTER_CONTEXT } from './test-imports';
 
 describe('Layout System', () => {

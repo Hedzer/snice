@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/slider/snice-slider';
-import type { SniceSliderElement } from '../../components/slider/snice-slider.types';
+import '../../packages/components/src/slider/snice-slider';
+import type { SniceSliderElement } from '../../packages/components/src/slider/snice-slider.types';
 
 describe('snice-slider', () => {
   let slider: SniceSliderElement;

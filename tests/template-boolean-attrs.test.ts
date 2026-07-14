@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { element, render, html } from '../src/index';
+import { element, render, html } from '../packages/core/src/index';
 
 describe('Template Boolean Attributes', () => {
   beforeEach(() => {

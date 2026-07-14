@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/link-preview/snice-link-preview';
-import type { SniceLinkPreviewElement } from '../../components/link-preview/snice-link-preview.types';
+import '../../packages/components/src/link-preview/snice-link-preview';
+import type { SniceLinkPreviewElement } from '../../packages/components/src/link-preview/snice-link-preview.types';
 
 describe('snice-link-preview', () => {
   let el: SniceLinkPreviewElement;

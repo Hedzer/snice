@@ -20,7 +20,7 @@ const version = process.argv[2] || JSON.parse(readFileSync(join(root, 'package.j
 const versionMajorMinor = version.replace(/\.\d+$/, '.x');
 
 // Count published components (total dirs minus .wip entries)
-const componentsDir = join(root, 'components');
+const componentsDir = join(root, 'packages', 'components', 'src');
 const wipFile = join(componentsDir, '.wip');
 const wipEntries = new Set(
   readFileSync(wipFile, 'utf8')

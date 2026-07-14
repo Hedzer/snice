@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/divider/snice-divider';
-import type { SniceDividerElement } from '../../components/divider/snice-divider.types';
+import '../../packages/components/src/divider/snice-divider';
+import type { SniceDividerElement } from '../../packages/components/src/divider/snice-divider.types';
 
 describe('snice-divider', () => {
   let divider: SniceDividerElement;

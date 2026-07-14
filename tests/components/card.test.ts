@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, triggerMouseEvent, triggerKeyboardEvent, trackRenders } from './test-utils';
-import '../../components/card/snice-card';
-import type { SniceCardElement } from '../../components/card/snice-card.types';
+import '../../packages/components/src/card/snice-card';
+import type { SniceCardElement } from '../../packages/components/src/card/snice-card.types';
 
 describe('snice-card', () => {
   let card: SniceCardElement;

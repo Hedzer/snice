@@ -13,7 +13,7 @@
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 
 const COLS = [{ key: 'name', label: 'Name', type: 'text' }];
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, on, render, html } from '../src/index';
-import { getSymbol } from '../src/symbols';
+import { element, on, render, html } from '../packages/core/src/index';
+import { getSymbol } from '../packages/core/src/symbols';
 
 const ON_HANDLERS = getSymbol('on-handlers');
 

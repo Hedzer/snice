@@ -41,11 +41,11 @@ function keydown(el: Element, key: string) {
 
 async function loadAll() {
   await Promise.all([
-    import('../../components/date-range-picker/snice-date-range-picker'),
-    import('../../components/date-picker/snice-date-picker'),
-    import('../../components/split-button/snice-split-button'),
-    import('../../components/tag-input/snice-tag-input'),
-    import('../../components/time-picker/snice-time-picker'),
+    import('../../packages/components/src/date-range-picker/snice-date-range-picker'),
+    import('../../packages/components/src/date-picker/snice-date-picker'),
+    import('../../packages/components/src/split-button/snice-split-button'),
+    import('../../packages/components/src/tag-input/snice-tag-input'),
+    import('../../packages/components/src/time-picker/snice-time-picker'),
   ]);
 }
 

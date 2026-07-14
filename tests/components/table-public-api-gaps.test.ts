@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/table/snice-table';
-import '../../components/table/snice-row';
-import '../../components/table/snice-cell-color';
-import '../../components/table/snice-cell-image';
-import '../../components/table/snice-cell-json';
-import '../../components/table/snice-cell-location';
-import '../../components/table/snice-cell-percentage';
-import '../../components/table/snice-cell-rating';
-import '../../components/table/snice-cell-sparkline';
+import '../../packages/components/src/table/snice-table';
+import '../../packages/components/src/table/snice-row';
+import '../../packages/components/src/table/snice-cell-color';
+import '../../packages/components/src/table/snice-cell-image';
+import '../../packages/components/src/table/snice-cell-json';
+import '../../packages/components/src/table/snice-cell-location';
+import '../../packages/components/src/table/snice-cell-percentage';
+import '../../packages/components/src/table/snice-cell-rating';
+import '../../packages/components/src/table/snice-cell-sparkline';
 
 const columns = [
   { key: 'name', label: 'Name', type: 'text' as const },

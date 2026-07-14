@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/video-player/snice-video-player';
-import type { SniceVideoPlayerElement } from '../../components/video-player/snice-video-player.types';
+import '../../packages/components/src/video-player/snice-video-player';
+import type { SniceVideoPlayerElement } from '../../packages/components/src/video-player/snice-video-player.types';
 
 describe('snice-video-player', () => {
   let player: SniceVideoPlayerElement;

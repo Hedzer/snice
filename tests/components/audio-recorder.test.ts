@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import '../../components/audio-recorder/snice-audio-recorder';
+import '../../packages/components/src/audio-recorder/snice-audio-recorder';
 
 describe('snice-audio-recorder', () => {
   it('should be defined', () => {

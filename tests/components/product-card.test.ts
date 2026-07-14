@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/product-card/snice-product-card';
-import type { SniceProductCardElement, ProductVariant } from '../../components/product-card/snice-product-card.types';
+import '../../packages/components/src/product-card/snice-product-card';
+import type { SniceProductCardElement, ProductVariant } from '../../packages/components/src/product-card/snice-product-card.types';
 
 describe('snice-product-card', () => {
   let el: SniceProductCardElement;

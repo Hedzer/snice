@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { element, request, render, html } from './test-imports';
-import { createRequestHandler } from '../src/create-request-handler';
+import { createRequestHandler } from '../packages/core/src/create-request-handler';
 
 function uniqueName(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

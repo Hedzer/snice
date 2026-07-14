@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/data-card/snice-data-card';
-import type { SniceDataCardElement, DataCardField } from '../../components/data-card/snice-data-card.types';
+import '../../packages/components/src/data-card/snice-data-card';
+import type { SniceDataCardElement, DataCardField } from '../../packages/components/src/data-card/snice-data-card.types';
 
 describe('snice-data-card', () => {
   let card: SniceDataCardElement;

@@ -49,7 +49,7 @@ for (const template of templates) {
 console.log(`\n${updated} template(s) updated.\n`);
 
 // Also sync version in public HTML files
-const publicDir = join(__dirname, '../public');
+const publicDir = join(__dirname, '../website/public');
 const htmlFiles = ['index.html', 'components.html', 'decorators.html'];
 const versionPattern = /Snice v[\d.]+/g;
 const newVersionString = `Snice v${currentVersion}`;

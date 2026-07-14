@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/booking/snice-booking';
-import type { SniceBookingElement, BookingSlot, BookingField } from '../../components/booking/snice-booking.types';
+import '../../packages/components/src/booking/snice-booking';
+import type { SniceBookingElement, BookingSlot, BookingField } from '../../packages/components/src/booking/snice-booking.types';
 
 describe('snice-booking', () => {
   let booking: SniceBookingElement;

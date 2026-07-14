@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/skeleton/snice-skeleton';
-import type { SniceSkeletonElement } from '../../components/skeleton/snice-skeleton.types';
+import '../../packages/components/src/skeleton/snice-skeleton';
+import type { SniceSkeletonElement } from '../../packages/components/src/skeleton/snice-skeleton.types';
 
 describe('snice-skeleton', () => {
   let skeleton: SniceSkeletonElement;

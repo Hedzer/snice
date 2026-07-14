@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, controller, IController, render, html } from '../src';
+import { element, controller, IController, render, html } from '../packages/core/src';
 
 describe('Angular Migration Examples', () => {
   let container: HTMLElement;

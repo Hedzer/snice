@@ -10,7 +10,7 @@ const out = join(root, 'website', 'public');
 try { mkdirSync(out, { recursive: true }); } catch {}
 
 mkdirSync(join(out, 'theme'), { recursive: true });
-cpSync(join(root, 'components/theme/theme.css'), join(out, 'theme/theme.css'));
+cpSync(join(root, 'packages/components/src/theme/theme.css'), join(out, 'theme/theme.css'));
 
 const cdnDir = join(root, 'dist/cdn');
 const componentsOut = join(out, 'components');

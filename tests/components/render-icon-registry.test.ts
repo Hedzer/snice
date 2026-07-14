@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { renderIcon } from '../../components/utils';
+import { renderIcon } from '../../packages/components/src/utils';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/input/snice-input';
+import '../../packages/components/src/input/snice-input';
 
 /**
  * Named icons resolve from the built-in SVG registry (components/icons)

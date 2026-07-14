@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('table: column headers have scope="col" and aria-sort', () => {
   async function buildTable(columns: any[], data: any[], sortable = true): Promise<any> {
-    await import('../../components/table/snice-table');
+    await import('../../packages/components/src/table/snice-table');
     const el = document.createElement('snice-table') as any;
     el.sortable = sortable;
     document.body.appendChild(el);

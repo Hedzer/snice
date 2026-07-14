@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Injects theme bootstrap into all full-showcase.html files
+// Injects theme bootstrap into all website full-showcase source files
 // so they pick up the user's theme when loaded in the More panel iframe.
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
@@ -7,7 +7,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const componentsDir = join(__dirname, '..', 'components');
+const showcasesDir = join(__dirname, '..', 'website', 'showcases');
 
 const THEME_SCRIPT = `<script>
 document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
@@ -24,9 +24,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 let count = 0;
 
-for (const entry of readdirSync(componentsDir)) {
+for (const entry of readdirSync(showcasesDir)) {
   if (entry.startsWith('.') || entry.includes('.')) continue;
-  const file = join(componentsDir, entry, 'full-showcase.html');
+  const file = join(showcasesDir, entry, 'full.html');
   if (!existsSync(file)) continue;
 
   let html = readFileSync(file, 'utf-8');

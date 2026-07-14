@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/color-picker/snice-color-picker';
-import type { SniceColorPickerElement } from '../../components/color-picker/snice-color-picker.types';
+import '../../packages/components/src/color-picker/snice-color-picker';
+import type { SniceColorPickerElement } from '../../packages/components/src/color-picker/snice-color-picker.types';
 
 describe('snice-color-picker', () => {
   let colorPicker: SniceColorPickerElement;

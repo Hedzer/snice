@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/modal/snice-modal';
-import type { SniceModalElement } from '../../components/modal/snice-modal.types';
+import '../../packages/components/src/modal/snice-modal';
+import type { SniceModalElement } from '../../packages/components/src/modal/snice-modal.types';
 
 describe('snice-modal', () => {
   let modal: SniceModalElement;

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/tooltip/snice-tooltip';
-import type { SniceTooltipElement } from '../../components/tooltip/snice-tooltip.types';
+import '../../packages/components/src/tooltip/snice-tooltip';
+import type { SniceTooltipElement } from '../../packages/components/src/tooltip/snice-tooltip.types';
 
 describe('snice-tooltip', () => {
   let tooltip: SniceTooltipElement;

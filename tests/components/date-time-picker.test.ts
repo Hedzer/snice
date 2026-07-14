@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/date-time-picker/snice-date-time-picker';
-import type { SniceDateTimePickerElement } from '../../components/date-time-picker/snice-date-time-picker.types';
+import '../../packages/components/src/date-time-picker/snice-date-time-picker';
+import type { SniceDateTimePickerElement } from '../../packages/components/src/date-time-picker/snice-date-time-picker.types';
 
 describe('snice-date-time-picker', () => {
   let picker: SniceDateTimePickerElement;

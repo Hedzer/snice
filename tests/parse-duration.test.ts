@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseDuration } from '../src/index';
+import { parseDuration } from '../packages/core/src/index';
 
 describe('parseDuration', () => {
   it('parses ms values', () => {

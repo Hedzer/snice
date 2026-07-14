@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 // Framework-level bug audit: batch 2. Each test is expected to FAIL today
 // (`.fails`) and will flip to red once someone fixes the bug, signalling it's
@@ -15,8 +15,8 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('@request throttle must not resolve to undefined', () => {
   it('throttled @request returns the handler result even on coalesced calls', async () => {
-    const { request, respond, controller } = await import('../src/index');
-    const { attachController } = await import('../src/controller');
+    const { request, respond, controller } = await import('../packages/core/src/index');
+    const { attachController } = await import('../packages/core/src/controller');
 
     const ctrlName = `tctrl-${Math.random().toString(36).slice(2, 8)}`;
     const elName = `telem-${Math.random().toString(36).slice(2, 8)}`;
@@ -64,7 +64,7 @@ describe('@request throttle must not resolve to undefined', () => {
 
 describe('@debounce timer does not fire after disconnect', () => {
   it('disconnected element does not run its debounced method', async () => {
-    const { debounce } = await import('../src/method-decorators');
+    const { debounce } = await import('../packages/core/src/method-decorators');
     const calls: string[] = [];
 
     @element('debounce-leak')
@@ -92,7 +92,7 @@ describe('@debounce timer does not fire after disconnect', () => {
 
 describe('router aborts stale in-flight navigations', () => {
   it('rapid navigate(a) then navigate(b) ends on b, not a', async () => {
-    const { Router } = await import('../src/index');
+    const { Router } = await import('../packages/core/src/index');
     const container = document.createElement('div');
     container.id = 'router-abort-test';
     document.body.appendChild(container);
@@ -126,7 +126,7 @@ describe('transitions.parseStyles handles values containing `:`', () => {
     // parseStyles isn't exported; exercise it via the transition machinery
     // by inspecting its observable effect. For a direct test we import the
     // function through a side channel.
-    const mod: any = await import('../src/transitions');
+    const mod: any = await import('../packages/core/src/transitions');
 
     // If the function is exported — direct test.
     if (typeof mod.parseStyles === 'function') {
@@ -149,9 +149,9 @@ describe('transitions.parseStyles handles values containing `:`', () => {
 
 describe('@context debounce and throttle do not corrupt each other', () => {
   it('throttled handler still fires when a debounced handler is also present', async () => {
-    const { context } = await import('../src/index');
-    const { setupContextHandler } = await import('../src/context');
-    const { CONTEXT_HANDLER, CONTEXT_REGISTER } = await import('../src/symbols');
+    const { context } = await import('../packages/core/src/index');
+    const { setupContextHandler } = await import('../packages/core/src/context');
+    const { CONTEXT_HANDLER, CONTEXT_REGISTER } = await import('../packages/core/src/symbols');
     const fired: string[] = [];
 
     @element('context-timer-collision')
@@ -193,7 +193,7 @@ describe('@context debounce and throttle do not corrupt each other', () => {
 
 describe('native element controllers ignore class-name hyphens', () => {
   it('controller attaches to a DESCENDANT native element with hyphenated class', async () => {
-    const { controller, useNativeElementControllers } = await import('../src/index');
+    const { controller, useNativeElementControllers } = await import('../packages/core/src/index');
     const calls: string[] = [];
 
     @controller('hyphen-class-ctrl')

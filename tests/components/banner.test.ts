@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/banner/snice-banner';
-import type { SniceBannerElement } from '../../components/banner/snice-banner.types';
+import '../../packages/components/src/banner/snice-banner';
+import type { SniceBannerElement } from '../../packages/components/src/banner/snice-banner.types';
 
 describe('snice-banner', () => {
   let banner: SniceBannerElement;

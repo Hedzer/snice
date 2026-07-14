@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, triggerMouseEvent, trackRenders } from './test-utils';
-import '../../components/breadcrumbs/snice-breadcrumbs';
-import type { SniceBreadcrumbsElement, BreadcrumbItem } from '../../components/breadcrumbs/snice-breadcrumbs.types';
+import '../../packages/components/src/breadcrumbs/snice-breadcrumbs';
+import type { SniceBreadcrumbsElement, BreadcrumbItem } from '../../packages/components/src/breadcrumbs/snice-breadcrumbs.types';
 
 describe('snice-breadcrumbs', () => {
   let breadcrumbs: SniceBreadcrumbsElement;

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/textarea/snice-textarea';
-import type { SniceTextareaElement } from '../../components/textarea/snice-textarea.types';
+import '../../packages/components/src/textarea/snice-textarea';
+import type { SniceTextareaElement } from '../../packages/components/src/textarea/snice-textarea.types';
 
 describe('snice-textarea', () => {
   let textarea: SniceTextareaElement;

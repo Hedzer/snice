@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { element, render, html, property } from '../src/index';
+import { element, render, html, property } from '../packages/core/src/index';
 
 describe('Conditional Static Attributes', () => {
   beforeEach(() => {

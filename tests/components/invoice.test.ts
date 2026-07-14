@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/invoice/snice-invoice';
-import type { SniceInvoiceElement, InvoiceItem } from '../../components/invoice/snice-invoice.types';
+import '../../packages/components/src/invoice/snice-invoice';
+import type { SniceInvoiceElement, InvoiceItem } from '../../packages/components/src/invoice/snice-invoice.types';
 
 describe('snice-invoice', () => {
   let invoice: SniceInvoiceElement;

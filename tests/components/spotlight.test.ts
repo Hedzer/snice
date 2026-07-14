@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import '../../components/spotlight/snice-spotlight';
-import type { SniceSpotlight } from '../../components/spotlight/snice-spotlight';
+import '../../packages/components/src/spotlight/snice-spotlight';
+import type { SniceSpotlight } from '../../packages/components/src/spotlight/snice-spotlight';
 
 // JSDOM doesn't implement scrollIntoView
 Element.prototype.scrollIntoView = Element.prototype.scrollIntoView || function () {};

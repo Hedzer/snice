@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { element, property } from '../src/index';
+import { element, property } from '../packages/core/src/index';
 
 describe('Boolean property reflection', () => {
   it('should reflect boolean properties as "true" in DOM', async () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerKeyboardEvent } from './test-utils';
-import '../../components/action-bar/snice-action-bar';
-import type { SniceActionBarElement } from '../../components/action-bar/snice-action-bar.types';
+import '../../packages/components/src/action-bar/snice-action-bar';
+import type { SniceActionBarElement } from '../../packages/components/src/action-bar/snice-action-bar.types';
 
 describe('snice-action-bar', () => {
   let el: SniceActionBarElement;

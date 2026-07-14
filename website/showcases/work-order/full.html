@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work Order</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
@@ -144,7 +144,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <script type="module">
-  import '../../../components/work-order/snice-work-order.ts';
+  import '../../../packages/components/src/work-order/snice-work-order.ts';
 
   const customer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };
   const asset = { id: 'HVAC-301', name: 'Rooftop Unit #3', location: '3rd Floor', serial: 'SN-2019-4521', lastService: '2024-01-15' };

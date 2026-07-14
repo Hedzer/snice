@@ -8,8 +8,8 @@ afterEach(() => { document.body.innerHTML = ''; });
 // be referenced via aria-describedby.
 
 const SPECS = [
-  { tag: 'snice-input',    path: '../../components/input/snice-input' },
-  { tag: 'snice-textarea', path: '../../components/textarea/snice-textarea' },
+  { tag: 'snice-input',    path: '../../packages/components/src/input/snice-input' },
+  { tag: 'snice-textarea', path: '../../packages/components/src/textarea/snice-textarea' },
 ];
 
 for (const { tag, path } of SPECS) {

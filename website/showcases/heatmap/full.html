@@ -14,7 +14,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 })();
 </script>
   <title>Heatmap</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -22,7 +22,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; overflow-x: auto; }
   </style>
   <script type="module">
-    import '../../../components/heatmap/snice-heatmap.ts';
+    import '../../../packages/components/src/heatmap/snice-heatmap.ts';
 
     function generateData(weeks) {
       const data = [];

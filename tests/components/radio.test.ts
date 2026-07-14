@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
-import '../../components/radio/snice-radio';
-import type { SniceRadioElement } from '../../components/radio/snice-radio.types';
+import '../../packages/components/src/radio/snice-radio';
+import type { SniceRadioElement } from '../../packages/components/src/radio/snice-radio.types';
 
 describe('snice-radio', () => {
   let radio: SniceRadioElement;

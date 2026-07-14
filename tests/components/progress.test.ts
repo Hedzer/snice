@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/progress/snice-progress';
-import type { SniceProgressElement } from '../../components/progress/snice-progress.types';
+import '../../packages/components/src/progress/snice-progress';
+import type { SniceProgressElement } from '../../packages/components/src/progress/snice-progress.types';
 
 describe('snice-progress', () => {
   let progress: SniceProgressElement;

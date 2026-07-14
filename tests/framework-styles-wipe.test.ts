@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, render, styles, html, css, property } from '../src/index';
+import { element, render, styles, html, css, property } from '../packages/core/src/index';
 
 afterEach(() => { document.body.innerHTML = ''; });
 

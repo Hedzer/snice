@@ -35,17 +35,17 @@ describe('removed declarative rendering APIs', () => {
 
   it('does not retain the removed implementation modules', () => {
     for (const file of [
-      'src/server.ts',
-      'src/hydrate.ts',
-      'src/directive.ts',
-      'src/directives.ts',
-      'src/async-directives.ts',
-      'src/transition-directive.ts'
+      'packages/core/src/server.ts',
+      'packages/core/src/hydrate.ts',
+      'packages/core/src/directive.ts',
+      'packages/core/src/directives.ts',
+      'packages/core/src/async-directives.ts',
+      'packages/core/src/transition-directive.ts'
     ]) {
       expect(existsSync(resolve(file)), file).toBe(false);
     }
 
-    const parts = readFileSync(resolve('src/parts.ts'), 'utf8');
+    const parts = readFileSync(resolve('packages/core/src/parts.ts'), 'utf8');
     expect(parts).not.toContain('DynamicComponentPart');
     expect(parts).not.toContain("'dynamic-component'");
     expect(parts).not.toContain('resolveDirective');

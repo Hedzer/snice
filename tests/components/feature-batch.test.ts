@@ -11,7 +11,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('radio: group coordinates radios inside a shadow root', () => {
   it('findGroupRadios finds siblings within the enclosing shadow root', async () => {
-    await import('../../components/radio/snice-radio');
+    await import('../../packages/components/src/radio/snice-radio');
 
     const wrapper = document.createElement('div');
     const sr = wrapper.attachShadow({ mode: 'open' });
@@ -33,7 +33,7 @@ describe('radio: group coordinates radios inside a shadow root', () => {
   });
 
   it('radios in two separate <form> elements do not cross-contaminate', async () => {
-    await import('../../components/radio/snice-radio');
+    await import('../../packages/components/src/radio/snice-radio');
     const form1 = document.createElement('form');
     const form2 = document.createElement('form');
     form1.innerHTML = `<snice-radio name="g" value="a" checked></snice-radio>`;
@@ -59,7 +59,7 @@ describe('radio: group coordinates radios inside a shadow root', () => {
 
 describe('list: infinite scroll attaches its IntersectionObserver', () => {
   it('creates an observer after @ready even when sentinel renders after @ready fires', async () => {
-    await import('../../components/list/snice-list');
+    await import('../../packages/components/src/list/snice-list');
 
     let observerCreated = false;
     let observedSentinel = false;
@@ -100,7 +100,7 @@ describe('pdf-viewer: rapid page changes eventually render the latest page', () 
   it('requesting page 3 while page 2 is rendering ends on page 3', async () => {
     // happy-dom needs a canvas context stub
     (HTMLCanvasElement.prototype as any).getContext = () => ({});
-    await import('../../components/pdf-viewer/snice-pdf-viewer');
+    await import('../../packages/components/src/pdf-viewer/snice-pdf-viewer');
     const el = document.createElement('snice-pdf-viewer') as any;
     document.body.appendChild(el);
     await el.ready;

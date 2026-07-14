@@ -4,7 +4,7 @@
  * passing means the fix is in place. Failure here = real regression.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, render, property, html, css } from '../src/index';
+import { element, render, property, html, css } from '../packages/core/src/index';
 
 afterEach(() => { document.body.innerHTML = ''; });
 
@@ -92,7 +92,7 @@ describe('css`` is safe when constructable stylesheets are unavailable', () => {
 
 describe('performTransition: overlapping transitions restore position correctly', () => {
   it('back-to-back transitions on the same container leave position as it started', async () => {
-    const { performTransition, TransitionMode } = await import('../src/transitions');
+    const { performTransition, TransitionMode } = await import('../packages/core/src/transitions');
 
     const container = document.createElement('div');
     container.style.position = 'static';

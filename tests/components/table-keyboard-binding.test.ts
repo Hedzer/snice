@@ -16,7 +16,7 @@ import {
   getShadowRoot,
   wait,
 } from './test-utils';
-import '../../components/table/snice-table';
+import '../../packages/components/src/table/snice-table';
 
 function makeCols(n: number) {
   return Array.from({ length: n }, (_, i) => ({

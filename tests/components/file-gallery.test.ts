@@ -1,10 +1,10 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import type { SniceFileGalleryElement } from '../../components/file-gallery/snice-file-gallery.types';
-import type { GalleryFile, UploadResponse } from '../../components/file-gallery/snice-file-gallery.types';
+import type { SniceFileGalleryElement } from '../../packages/components/src/file-gallery/snice-file-gallery.types';
+import type { GalleryFile, UploadResponse } from '../../packages/components/src/file-gallery/snice-file-gallery.types';
 
 // Import component to register it
-import '../../components/file-gallery/snice-file-gallery';
+import '../../packages/components/src/file-gallery/snice-file-gallery';
 
 function createMockFile(name: string, size: number, type: string): File {
   const blob = new Blob(['x'.repeat(size)], { type });

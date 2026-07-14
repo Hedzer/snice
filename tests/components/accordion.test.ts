@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/accordion/snice-accordion';
-import '../../components/accordion/snice-accordion-item';
-import type { SniceAccordionElement } from '../../components/accordion/snice-accordion.types';
+import '../../packages/components/src/accordion/snice-accordion';
+import '../../packages/components/src/accordion/snice-accordion-item';
+import type { SniceAccordionElement } from '../../packages/components/src/accordion/snice-accordion.types';
 
 describe('snice-accordion', () => {
   let accordion: SniceAccordionElement;

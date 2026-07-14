@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { Router } from '../src/router';
-import { Placard } from '../src/types/placard';
+import { Router } from '../packages/core/src/router';
+import { Placard } from '../packages/core/src/types/placard';
 
 describe('Placards', () => {
   let container: HTMLElement;

@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Toast</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
@@ -106,8 +106,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <script type="module">
-  import '../../../components/toast/snice-toast.ts';
-  import { Toast } from '../../../components/toast/snice-toast-container.ts';
+  import '../../../packages/components/src/toast/snice-toast.ts';
+  import { Toast } from '../../../packages/components/src/toast/snice-toast-container.ts';
 
   let lastId = null;
 

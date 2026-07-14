@@ -7,14 +7,14 @@ import baseConfig from './vitest.config';
  * outside this gate and retain their existing suites.
  */
 const coreEngine = [
-  'src/element.ts',
-  'src/parts.ts',
-  'src/reactive.ts',
-  'src/render-root.ts',
-  'src/render.ts',
-  'src/repeat.ts',
-  'src/snice-element.ts',
-  'src/template.ts'
+  'packages/core/src/element.ts',
+  'packages/core/src/parts.ts',
+  'packages/core/src/reactive.ts',
+  'packages/core/src/render-root.ts',
+  'packages/core/src/render.ts',
+  'packages/core/src/repeat.ts',
+  'packages/core/src/snice-element.ts',
+  'packages/core/src/template.ts'
 ];
 
 export default mergeConfig(baseConfig, defineConfig({

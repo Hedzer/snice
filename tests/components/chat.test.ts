@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { SniceChat } from '../../components/chat/snice-chat';
-import type { ChatMessage } from '../../components/chat/snice-chat.types';
-import { PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../../components/icons';
-import '../../components/chat/snice-chat';
-import '../../components/chat/snice-chat-message';
+import type { SniceChat } from '../../packages/components/src/chat/snice-chat';
+import type { ChatMessage } from '../../packages/components/src/chat/snice-chat.types';
+import { PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../../packages/components/src/icons';
+import '../../packages/components/src/chat/snice-chat';
+import '../../packages/components/src/chat/snice-chat-message';
 
 /** Extract the path data from an icon constant for containment assertions. */
 function iconPathData(icon: string): string {

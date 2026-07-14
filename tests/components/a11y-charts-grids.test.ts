@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('chart: canvas/svg is announced to screen readers', () => {
   it('line chart canvas has role=img and aria-label summary', async () => {
-    await import('../../components/chart/snice-chart');
+    await import('../../packages/components/src/chart/snice-chart');
     const el = document.createElement('snice-chart') as any;
     el.type = 'line';
     el.datasets = [{ label: 'Sales', data: [1, 2, 3] }];
@@ -22,7 +22,7 @@ describe('chart: canvas/svg is announced to screen readers', () => {
 
 describe('sparkline: SVG has role=img + aria-label', () => {
   it('svg with data has role=img and a summary label', async () => {
-    await import('../../components/sparkline/snice-sparkline');
+    await import('../../packages/components/src/sparkline/snice-sparkline');
     const el = document.createElement('snice-sparkline') as any;
     el.data = [1, 2, 3, 4, 5];
     document.body.appendChild(el);
@@ -39,7 +39,7 @@ describe('sparkline: SVG has role=img + aria-label', () => {
 
 describe('spreadsheet: role=grid with rowindex/colindex/aria-sort', () => {
   it('table uses role=grid and cells carry aria-rowindex/aria-colindex', async () => {
-    await import('../../components/spreadsheet/snice-spreadsheet');
+    await import('../../packages/components/src/spreadsheet/snice-spreadsheet');
     const el = document.createElement('snice-spreadsheet') as any;
     el.columns = [{ key: 'a' }, { key: 'b' }];
     el.data = [['1', '2'], ['3', '4']];
@@ -59,7 +59,7 @@ describe('spreadsheet: role=grid with rowindex/colindex/aria-sort', () => {
   });
 
   it('column headers have scope="col" and aria-sort', async () => {
-    await import('../../components/spreadsheet/snice-spreadsheet');
+    await import('../../packages/components/src/spreadsheet/snice-spreadsheet');
     const el = document.createElement('snice-spreadsheet') as any;
     el.columns = [{ key: 'a' }];
     el.data = [['1']];
@@ -76,7 +76,7 @@ describe('spreadsheet: role=grid with rowindex/colindex/aria-sort', () => {
 
 describe('calendar: role=grid + roving tabindex + arrow keys', () => {
   it('grid has role=grid, exactly one cell has tabindex=0, ArrowRight advances focus', async () => {
-    await import('../../components/calendar/snice-calendar');
+    await import('../../packages/components/src/calendar/snice-calendar');
     const el = document.createElement('snice-calendar') as any;
     document.body.appendChild(el);
     await el.ready;

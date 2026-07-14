@@ -13,11 +13,11 @@ const modules = USE_BUILT ? {
   types: null, // Types come from main module in built version
   controller: null // Controller functions are in main module in built version
 } : {
-  main: await import('../src/index.js'),
-  symbols: await import('../src/symbols.js'),
-  transitions: await import('../src/transitions.js'),
-  types: await import('../src/types/index.js'),
-  controller: await import('../src/controller.js')
+  main: await import('../packages/core/src/index.js'),
+  symbols: await import('../packages/core/src/symbols.js'),
+  transitions: await import('../packages/core/src/transitions.js'),
+  types: await import('../packages/core/src/types/index.js'),
+  controller: await import('../packages/core/src/controller.js')
 };
 
 // Re-export main APIs that are available in both source and built versions
@@ -81,8 +81,8 @@ const internalApis = USE_BUILT ? {
   // In source version, internal APIs come from separate modules
   registerControllerCleanup: modules.controller.registerControllerCleanup,
   getControllerScope: modules.controller.getControllerScope,
-  parseAttributeValue: (await import('../src/utils.js')).parseAttributeValue,
-  detectType: (await import('../src/utils.js')).detectType
+  parseAttributeValue: (await import('../packages/core/src/utils.js')).parseAttributeValue,
+  detectType: (await import('../packages/core/src/utils.js')).detectType
 };
 
 export const registerControllerCleanup = internalApis.registerControllerCleanup;
@@ -163,6 +163,6 @@ export type {
   RequestOptions,
   RespondOptions,
   SniceGlobal
-} from '../src/types/index.js';
+} from '../packages/core/src/types/index.js';
 
 console.log(`🧪 Testing against: ${USE_BUILT ? 'built distribution files' : 'source files'}`);

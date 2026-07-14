@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
-import '../../components/button/snice-button';
-import type { SniceButtonElement } from '../../components/button/snice-button.types';
+import '../../packages/components/src/button/snice-button';
+import type { SniceButtonElement } from '../../packages/components/src/button/snice-button.types';
 
 describe('snice-button', () => {
   let button: SniceButtonElement;

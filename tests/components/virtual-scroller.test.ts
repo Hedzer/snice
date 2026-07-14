@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/virtual-scroller/snice-virtual-scroller';
-import type { SniceVirtualScrollerElement, VirtualScrollerItem } from '../../components/virtual-scroller/snice-virtual-scroller.types';
+import '../../packages/components/src/virtual-scroller/snice-virtual-scroller';
+import type { SniceVirtualScrollerElement, VirtualScrollerItem } from '../../packages/components/src/virtual-scroller/snice-virtual-scroller.types';
 
 describe('snice-virtual-scroller', () => {
   let scroller: SniceVirtualScrollerElement;

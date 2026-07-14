@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow } from './test-utils';
-import '../../components/notification-center/snice-notification-center';
-import type { SniceNotificationCenterElement } from '../../components/notification-center/snice-notification-center.types';
+import '../../packages/components/src/notification-center/snice-notification-center';
+import type { SniceNotificationCenterElement } from '../../packages/components/src/notification-center/snice-notification-center.types';
 
 describe('snice-notification-center', () => {
   let el: SniceNotificationCenterElement;
@@ -80,7 +80,7 @@ describe('snice-notification-center', () => {
     const { readFileSync } = await import('fs');
     const { resolve } = await import('path');
     const cssText = readFileSync(
-      resolve(process.cwd(), 'components/notification-center/snice-notification-center.css'),
+      resolve(process.cwd(), 'packages/components/src/notification-center/snice-notification-center.css'),
       'utf-8'
     );
     expect(cssText).not.toContain('rgb(229 236 255)');

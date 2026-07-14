@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/availability/snice-availability';
-import type { SniceAvailabilityElement, AvailabilityRange } from '../../components/availability/snice-availability.types';
+import '../../packages/components/src/availability/snice-availability';
+import type { SniceAvailabilityElement, AvailabilityRange } from '../../packages/components/src/availability/snice-availability.types';
 
 describe('snice-availability', () => {
   let availability: SniceAvailabilityElement;

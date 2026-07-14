@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, css, styles } from '../src/index';
+import { element, property, render, html, css, styles } from '../packages/core/src/index';
 
 /**
  * Performance Benchmark Test Suite

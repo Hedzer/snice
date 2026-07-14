@@ -9,7 +9,7 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('form-associated callbacks: switch', () => {
   it('formResetCallback resets checked', async () => {
-    await import('../../components/switch/snice-switch');
+    await import('../../packages/components/src/switch/snice-switch');
     const el = document.createElement('snice-switch') as any;
     el.checked = true;
     document.body.appendChild(el);
@@ -20,7 +20,7 @@ describe('form-associated callbacks: switch', () => {
   });
 
   it('formDisabledCallback disables element', async () => {
-    await import('../../components/switch/snice-switch');
+    await import('../../packages/components/src/switch/snice-switch');
     const el = document.createElement('snice-switch') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -31,7 +31,7 @@ describe('form-associated callbacks: switch', () => {
 
 describe('form-associated callbacks: slider', () => {
   it('formResetCallback resets to min', async () => {
-    await import('../../components/slider/snice-slider');
+    await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     el.min = 10;
     el.max = 90;
@@ -44,7 +44,7 @@ describe('form-associated callbacks: slider', () => {
   });
 
   it('formDisabledCallback disables element', async () => {
-    await import('../../components/slider/snice-slider');
+    await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -55,7 +55,7 @@ describe('form-associated callbacks: slider', () => {
 
 describe('form-associated callbacks: textarea', () => {
   it('formResetCallback clears value', async () => {
-    await import('../../components/textarea/snice-textarea');
+    await import('../../packages/components/src/textarea/snice-textarea');
     const el = document.createElement('snice-textarea') as any;
     el.value = 'hello';
     document.body.appendChild(el);
@@ -66,7 +66,7 @@ describe('form-associated callbacks: textarea', () => {
   });
 
   it('formDisabledCallback disables element', async () => {
-    await import('../../components/textarea/snice-textarea');
+    await import('../../packages/components/src/textarea/snice-textarea');
     const el = document.createElement('snice-textarea') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -77,7 +77,7 @@ describe('form-associated callbacks: textarea', () => {
 
 describe('form-associated callbacks: select', () => {
   it('formResetCallback clears value', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     el.value = 'x';
     document.body.appendChild(el);
@@ -88,7 +88,7 @@ describe('form-associated callbacks: select', () => {
   });
 
   it('formDisabledCallback disables element', async () => {
-    await import('../../components/select/snice-select');
+    await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     document.body.appendChild(el);
     await el.ready;
@@ -99,7 +99,7 @@ describe('form-associated callbacks: select', () => {
 
 describe('key-value: constructor attaches ElementInternals when supported', () => {
   it('constructor calls attachInternals if available', async () => {
-    await import('../../components/key-value/snice-key-value');
+    await import('../../packages/components/src/key-value/snice-key-value');
 
     // Install a minimal attachInternals so we can observe whether the
     // constructor calls it. Default happy-dom lacks this API.

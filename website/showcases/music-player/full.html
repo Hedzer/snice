@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Player</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -99,7 +99,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <snice-music-player id="mp-combo" shuffle repeat="all" compact show-playlist="false"></snice-music-player>
 
 <script type="module">
-  import '../../../components/music-player/snice-music-player.ts';
+  import '../../../packages/components/src/music-player/snice-music-player.ts';
 
   const sampleTracks = [
     { id: '1', title: 'Ambient Dreams', artist: 'Synthwave', album: 'Chill Vibes', duration: 245, src: '' },

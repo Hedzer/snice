@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
-import '../../components/order-tracker/snice-order-tracker';
-import type { SniceOrderTrackerElement, OrderStep } from '../../components/order-tracker/snice-order-tracker.types';
+import '../../packages/components/src/order-tracker/snice-order-tracker';
+import type { SniceOrderTrackerElement, OrderStep } from '../../packages/components/src/order-tracker/snice-order-tracker.types';
 
 const sampleSteps: OrderStep[] = [
   { label: 'Ordered', status: 'completed', timestamp: 'Feb 20, 2026' },

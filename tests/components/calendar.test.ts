@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/calendar/snice-calendar';
-import type { SniceCalendarElement, CalendarEvent } from '../../components/calendar/snice-calendar.types';
+import '../../packages/components/src/calendar/snice-calendar';
+import type { SniceCalendarElement, CalendarEvent } from '../../packages/components/src/calendar/snice-calendar.types';
 
 describe('snice-calendar', () => {
   let calendar: SniceCalendarElement;

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, dispatch, request, respond, controller } from '../src/index';
-import { attachController } from '../src/controller';
+import { element, dispatch, request, respond, controller } from '../packages/core/src/index';
+import { attachController } from '../packages/core/src/controller';
 
 afterEach(() => { document.body.innerHTML = ''; });
 

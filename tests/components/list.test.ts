@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, wait } from './test-utils';
-import '../../components/list/snice-list';
-import type { SniceListElement } from '../../components/list/snice-list.types';
+import '../../packages/components/src/list/snice-list';
+import type { SniceListElement } from '../../packages/components/src/list/snice-list.types';
 
 describe('snice-list', () => {
   let list: SniceListElement;

@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, property, render, html, on } from '../src/index';
+import { element, property, render, html, on } from '../packages/core/src/index';
 
 async function settle() {
   await new Promise((r) => queueMicrotask(r));

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { element, property, render, html } from '../src/index';
+import { element, property, render, html } from '../packages/core/src/index';
 
 // Switching between two templates that each embed their own <style> must not
 // accumulate <style> tags. The template-switch path preserved every <style>

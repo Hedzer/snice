@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/spreadsheet/snice-spreadsheet';
-import type { SniceSpreadsheetElement } from '../../components/spreadsheet/snice-spreadsheet.types';
+import '../../packages/components/src/spreadsheet/snice-spreadsheet';
+import type { SniceSpreadsheetElement } from '../../packages/components/src/spreadsheet/snice-spreadsheet.types';
 
 const SAMPLE_DATA = [
   ['Name', 'Age', 'City'],

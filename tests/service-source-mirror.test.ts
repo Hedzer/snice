@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, dispatch, render, styles, html, css } from '../src/index';
-import '../components/modal/snice-modal';
-import '../components/button/snice-button';
+import { element, property, dispatch, render, styles, html, css } from '../packages/core/src/index';
+import '../packages/components/src/modal/snice-modal';
+import '../packages/components/src/button/snice-button';
 
 type SourceType = 'docker' | 'devcontainer' | 'remote';
 type SourceStatus = 'running' | 'stopped' | 'connecting';

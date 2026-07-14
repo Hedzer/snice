@@ -14,7 +14,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 })();
 </script>
   <title>Chart</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -23,7 +23,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   </style>
   <script type="module">
-    import '../../../components/chart/snice-chart.ts';
+    import '../../../packages/components/src/chart/snice-chart.ts';
     document.addEventListener('DOMContentLoaded', () => {
       const labels7 = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
       const labels5 = ['A','B','C','D','E'];
@@ -213,6 +213,6 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-chart id="empty" type="line" height="150"></snice-chart>
 </section>
 
-<script type="module" src="../../../components/chart/snice-chart.ts"></script>
+<script type="module" src="../../../packages/components/src/chart/snice-chart.ts"></script>
 </body>
 </html>

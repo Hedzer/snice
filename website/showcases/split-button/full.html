@@ -16,7 +16,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Split Button</title>
-  <link rel="stylesheet" href="../../../components/theme/theme.css">
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
@@ -68,7 +68,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <div class="row" id="icon-end"></div>
 
 <script type="module">
-  import '../../../components/split-button/snice-split-button.ts';
+  import '../../../packages/components/src/split-button/snice-split-button.ts';
 
   const baseActions = [
     { label: 'Save as Draft', value: 'draft' },

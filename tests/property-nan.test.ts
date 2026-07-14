@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { element, property, watch, render, html } from '../src/index';
+import { element, property, watch, render, html } from '../packages/core/src/index';
 
 // A property whose value is NaN must not be treated as changed on every set:
 // the default dirty-check is `oldValue !== newValue`, and NaN !== NaN is true,

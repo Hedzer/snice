@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/waterfall/snice-waterfall';
-import type { SniceWaterfallElement } from '../../components/waterfall/snice-waterfall.types';
+import '../../packages/components/src/waterfall/snice-waterfall';
+import type { SniceWaterfallElement } from '../../packages/components/src/waterfall/snice-waterfall.types';
 
 describe('snice-waterfall', () => {
   let waterfall: SniceWaterfallElement;

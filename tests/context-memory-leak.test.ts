@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Router, context, Context } from '../src';
-import { getSymbol, CONTEXT_UPDATE } from '../src/symbols';
+import { Router, context, Context } from '../packages/core/src';
+import { getSymbol, CONTEXT_UPDATE } from '../packages/core/src/symbols';
 
 const NAVIGATION_CONTEXT_INSTANCE = getSymbol('navigation-context-instance');
 const CONTEXT_TIMER = getSymbol('context-timer');

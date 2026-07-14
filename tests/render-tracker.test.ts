@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { element, property, render, html, trackRenders } from '../src/index';
+import { element, property, render, html, trackRenders } from '../packages/core/src/index';
 
 // Test component
 @element('test-render-tracker')

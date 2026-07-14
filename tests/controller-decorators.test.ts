@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, controller, on, dispatch, debounce, throttle, once, memoize, render, html } from '../src/index';
+import { element, controller, on, dispatch, debounce, throttle, once, memoize, render, html } from '../packages/core/src/index';
 
 describe('Controller Decorators', () => {
   let container: HTMLDivElement;

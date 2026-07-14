@@ -49,7 +49,7 @@ const replacements = [
     ]
   },
   {
-    file: 'public/guide.html',
+    file: 'website/public/guide.html',
     patterns: [
       [/The runtime is ~\d+KB gzipped\. Each component adds ~\d+&ndash;\d+KB\./, `The runtime is ~${runtimeGzKB}KB gzipped. Each component adds ~${minComp}&ndash;${maxComp}KB.`],
     ]

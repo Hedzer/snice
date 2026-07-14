@@ -11,7 +11,7 @@ const ai = read('docs/ai/components/table.md');
 const standards = read('.ai/coding-standards.md');
 const publicShowcase = read('website/showcases/table/card.html');
 const fullShowcase = read('website/showcases/table/full.html');
-const stories = read('components/table/snice-table.stories.ts');
+const stories = read('packages/components/src/table/snice-table.stories.ts');
 const showcaseFooter = read('website/showcases/shared/_footer.html');
 
 const consumerMethods = [

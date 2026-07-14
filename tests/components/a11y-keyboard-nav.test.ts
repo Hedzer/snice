@@ -8,9 +8,9 @@ afterEach(() => { document.body.innerHTML = ''; });
 
 describe('tabs: ArrowRight moves selection to next tab', () => {
   it('pressing ArrowRight on the tablist selects the next tab', async () => {
-    await import('../../components/tabs/snice-tabs');
-    await import('../../components/tabs/snice-tab');
-    await import('../../components/tabs/snice-tab-panel');
+    await import('../../packages/components/src/tabs/snice-tabs');
+    await import('../../packages/components/src/tabs/snice-tab');
+    await import('../../packages/components/src/tabs/snice-tab-panel');
 
     const el = document.createElement('snice-tabs') as any;
     el.innerHTML = `
@@ -35,7 +35,7 @@ describe('tabs: ArrowRight moves selection to next tab', () => {
   });
 
   it('ArrowLeft wraps to last tab from first', async () => {
-    await import('../../components/tabs/snice-tabs');
+    await import('../../packages/components/src/tabs/snice-tabs');
 
     const el = document.createElement('snice-tabs') as any;
     el.innerHTML = `
@@ -57,7 +57,7 @@ describe('tabs: ArrowRight moves selection to next tab', () => {
   });
 
   it('Home key selects the first tab, End selects the last', async () => {
-    await import('../../components/tabs/snice-tabs');
+    await import('../../packages/components/src/tabs/snice-tabs');
 
     const el = document.createElement('snice-tabs') as any;
     el.selected = 1;

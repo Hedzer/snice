@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow } from './test-utils';
-import '../../components/camera-annotate/snice-camera-annotate';
-import type { SniceCameraAnnotateElement, AnnotationData } from '../../components/camera-annotate/snice-camera-annotate.types';
+import '../../packages/components/src/camera-annotate/snice-camera-annotate';
+import type { SniceCameraAnnotateElement, AnnotationData } from '../../packages/components/src/camera-annotate/snice-camera-annotate.types';
 
 // Mock getUserMedia since no camera in test env
 const mockStream = {

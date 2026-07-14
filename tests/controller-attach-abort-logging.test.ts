@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { element, controller, render, html } from '../src/index';
+import { element, controller, render, html } from '../packages/core/src/index';
 
 /**
  * Detaching an element before its controller finishes attaching is the

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/message-strip/snice-message-strip';
-import type { SniceMessageStripElement } from '../../components/message-strip/snice-message-strip.types';
+import '../../packages/components/src/message-strip/snice-message-strip';
+import type { SniceMessageStripElement } from '../../packages/components/src/message-strip/snice-message-strip.types';
 
 describe('snice-message-strip', () => {
   let strip: SniceMessageStripElement;

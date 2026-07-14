@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
-import '../../components/input/snice-input';
-import type { SniceInputElement } from '../../components/input/snice-input.types';
+import '../../packages/components/src/input/snice-input';
+import type { SniceInputElement } from '../../packages/components/src/input/snice-input.types';
 
 describe('snice-input', () => {
   let input: SniceInputElement;

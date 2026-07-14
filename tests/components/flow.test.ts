@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/flow/snice-flow';
-import type { SniceFlowElement, FlowNode, FlowEdge } from '../../components/flow/snice-flow.types';
+import '../../packages/components/src/flow/snice-flow';
+import type { SniceFlowElement, FlowNode, FlowEdge } from '../../packages/components/src/flow/snice-flow.types';
 
 const SAMPLE_NODES: FlowNode[] = [
   {

@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
-import '../../components/table/snice-table';
-import { TableColumnManager } from '../../components/table/table-column-manager';
-import { TableFilterEngine } from '../../components/table/table-filter-engine';
-import { TableEditor } from '../../components/table/table-editor';
-import { TableKeyboard } from '../../components/table/table-keyboard';
-import { TableExport } from '../../components/table/table-export';
-import { TableMasterDetail } from '../../components/table/table-master-detail';
-import { TableToolbar } from '../../components/table/table-toolbar';
-import { TableTreeData } from '../../components/table/table-tree-data';
-import { TableColumnMenu } from '../../components/table/table-column-menu';
-import { TableRowDnD, TableColumnDnD } from '../../components/table/table-row-dnd';
-import { TableVirtualizer } from '../../components/table/table-virtualizer';
+import '../../packages/components/src/table/snice-table';
+import { TableColumnManager } from '../../packages/components/src/table/table-column-manager';
+import { TableFilterEngine } from '../../packages/components/src/table/table-filter-engine';
+import { TableEditor } from '../../packages/components/src/table/table-editor';
+import { TableKeyboard } from '../../packages/components/src/table/table-keyboard';
+import { TableExport } from '../../packages/components/src/table/table-export';
+import { TableMasterDetail } from '../../packages/components/src/table/table-master-detail';
+import { TableToolbar } from '../../packages/components/src/table/table-toolbar';
+import { TableTreeData } from '../../packages/components/src/table/table-tree-data';
+import { TableColumnMenu } from '../../packages/components/src/table/table-column-menu';
+import { TableRowDnD, TableColumnDnD } from '../../packages/components/src/table/table-row-dnd';
+import { TableVirtualizer } from '../../packages/components/src/table/table-virtualizer';
 
 // Standard columns and data for tests
 const TEST_COLUMNS = [
@@ -2314,7 +2314,7 @@ describe('snice-table', () => {
     });
 
     it('every operator returns the correct subset for every supported column type', async () => {
-      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const { TableFilterEngine } = await import('../../packages/components/src/table/table-filter-engine');
       const engine = new TableFilterEngine();
 
       // Synthetic dataset with one row per "kind" so each filter has a
@@ -2422,7 +2422,7 @@ describe('snice-table', () => {
     });
 
     it('filter operators match the column type (engine-level, all numeric types)', async () => {
-      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const { TableFilterEngine } = await import('../../packages/components/src/table/table-filter-engine');
       const engine = new TableFilterEngine();
       const numericTypes = ['number', 'currency', 'rating', 'progress', 'filesize', 'duration', 'percent', 'percentage'];
       for (const t of numericTypes) {
@@ -2441,7 +2441,7 @@ describe('snice-table', () => {
     it('filter engine evaluates number, date, and text operators correctly', async () => {
       // Drive the engine directly so this exercises the cross-type filter logic
       // without depending on typed-cell rendering (which happy-dom can't handle).
-      const { TableFilterEngine } = await import('../../components/table/table-filter-engine');
+      const { TableFilterEngine } = await import('../../packages/components/src/table/table-filter-engine');
       const engine = new TableFilterEngine();
       const data = [
         { name: 'Alice', age: 30, when: '2026-01-15' },

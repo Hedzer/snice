@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
-import '../../components/drawer/snice-drawer';
-import type { SniceDrawerElement } from '../../components/drawer/snice-drawer.types';
+import '../../packages/components/src/drawer/snice-drawer';
+import type { SniceDrawerElement } from '../../packages/components/src/drawer/snice-drawer.types';
 
 describe('snice-drawer', () => {
   let drawer: SniceDrawerElement;

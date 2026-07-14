@@ -14,7 +14,7 @@ afterEach(() => {
 
 describe('link-preview: javascript: URLs are not opened', () => {
   it('clicking a preview with javascript:... href does not call window.open with it', async () => {
-    await import('../../components/link-preview/snice-link-preview');
+    await import('../../packages/components/src/link-preview/snice-link-preview');
 
     const opens: string[] = [];
     const origOpen = window.open;
@@ -46,7 +46,7 @@ describe('link-preview: javascript: URLs are not opened', () => {
 
 describe('location: map-url javascript: scheme is blocked', () => {
   it('iframe src is empty (not javascript:) when map-url has unsafe scheme', async () => {
-    await import('../../components/location/snice-location');
+    await import('../../packages/components/src/location/snice-location');
     const el = document.createElement('snice-location') as any;
     el.showMap = true;
     el.mapUrl = 'javascript:window.__xss=1';
@@ -66,7 +66,7 @@ describe('location: map-url javascript: scheme is blocked', () => {
 
 describe('pdf-viewer: print() does not open javascript: src', () => {
   it('print() with src=javascript:... does not invoke window.open', async () => {
-    await import('../../components/pdf-viewer/snice-pdf-viewer');
+    await import('../../packages/components/src/pdf-viewer/snice-pdf-viewer');
 
     const opens: string[] = [];
     const origOpen = window.open;
@@ -95,7 +95,7 @@ describe('pdf-viewer: print() does not open javascript: src', () => {
 
 describe('video-player: poster cannot inject CSS via background-image', () => {
   it('a poster string that breaks out of url() does not inject extra CSS declarations', async () => {
-    await import('../../components/video-player/snice-video-player');
+    await import('../../packages/components/src/video-player/snice-video-player');
     const el = document.createElement('snice-video-player') as any;
     el.poster = `x'); background: red url('https://evil/`;
     el.src = 'about:blank';
