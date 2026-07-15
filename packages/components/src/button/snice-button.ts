@@ -1,5 +1,5 @@
 import { element, property, query, render, styles, html, css, isSafeUrl } from 'snice';
-import { renderIcon } from '../utils';
+import { renderIcon, strictStringAttributeConverter } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
 
@@ -38,7 +38,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   @property({ type: Boolean,  })
   circle = false;
 
-  @property({ type: String,  })
+  @property({ type: String, converter: strictStringAttributeConverter })
   href = '';
 
   @property({ type: String,  })

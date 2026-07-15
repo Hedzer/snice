@@ -38,6 +38,16 @@
   color: var(--snice-color-primary-darker, rgb(29 78 216));
 }
 
+/* A rejected URL intentionally has no href. Keep its label visible without
+   presenting an inert destination as an actionable link. */
+.link:not([href]),
+.link:not([href]):hover,
+.link:not([href]):active {
+  color: var(--snice-color-text-disabled, hsl(0 0% 64%));
+  cursor: default;
+  background-size: 0% 1px;
+}
+
 .link--default {
   color: var(--snice-color-primary, rgb(59 130 246));
 }

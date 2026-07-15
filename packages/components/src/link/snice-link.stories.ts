@@ -126,6 +126,15 @@ export const External: Story = {
   ),
 };
 
+// h2: URL safety (native behavior for accepted URLs, inert rejected destination)
+export const UrlSafety: Story = {
+  render: () => row(
+    makeLink('Relative / hash', { href: '#url-safety' }),
+    makeLink('HTTPS external', { href: 'https://example.com', external: true }),
+    makeLink('Unsafe scheme blocked', { href: 'javascript:globalThis.__sniceUnsafeLinkStory = 1' }),
+  ),
+};
+
 // h2: External + Underline
 export const ExternalUnderline: Story = {
   render: () => row(

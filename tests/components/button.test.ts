@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
 import '../../packages/components/src/button/snice-button';
 import type { SniceButtonElement } from '../../packages/components/src/button/snice-button.types';
+import { allowedNavigationUrls, unsafeNavigationUrls } from '../navigation-url-cases';
 
 describe('snice-button', () => {
   let button: SniceButtonElement;
@@ -350,38 +351,24 @@ describe('snice-button', () => {
   });
 
   describe('safe URL navigation', () => {
-    const unsafeUrls = [
-      '   ',
-      '\u00a0',
-      'javascript:globalThis.__sniceButtonInjected++',
-      'JaVaScRiPt:globalThis.__sniceButtonInjected++',
-      '  javascript:globalThis.__sniceButtonInjected++',
-      '\u00a0javascript:globalThis.__sniceButtonInjected++',
-      'java\tscript:globalThis.__sniceButtonInjected++',
-      'java\nscript:globalThis.__sniceButtonInjected++',
-      'jav\u0000ascript:globalThis.__sniceButtonInjected++',
-      'data:text/html,<script>globalThis.__sniceButtonInjected++</script>',
-      'vbscript:msgbox(1)',
-      'file:///tmp/private',
-      'custom:payload',
-      'http://['
-    ];
+    it.each(unsafeNavigationUrls)(
+      'blocks an unsafe target navigation without a success event: %s (%s)',
+      async (href) => {
+        const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+        button = await createComponent<SniceButtonElement>('snice-button', {
+          href,
+          target: '_blank'
+        });
+        let buttonClicks = 0;
+        button.addEventListener('button-click', () => buttonClicks++);
 
-    it.each(unsafeUrls)('blocks an unsafe target navigation without a success event: %j', async (href) => {
-      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
-      button = await createComponent<SniceButtonElement>('snice-button', {
-        href,
-        target: '_blank'
-      });
-      let buttonClicks = 0;
-      button.addEventListener('button-click', () => buttonClicks++);
+        button.click();
+        await wait(10);
 
-      button.click();
-      await wait(10);
-
-      expect(open).not.toHaveBeenCalled();
-      expect(buttonClicks).toBe(0);
-    });
+        expect(open).not.toHaveBeenCalled();
+        expect(buttonClicks).toBe(0);
+      }
+    );
 
     it('blocks a direct script URL without execution, history changes, or click propagation', async () => {
       (globalThis as any).__sniceButtonInjected = 0;
@@ -426,14 +413,21 @@ describe('snice-button', () => {
       expect(buttonClick).not.toHaveBeenCalled();
     });
 
-    it('fails closed for a non-string runtime href without throwing', async () => {
+    it.each([
+      { toString: () => 'https://example.com' },
+      { toString: () => { throw new Error('must not convert'); } },
+      [],
+      1
+    ])('fails closed for a truthy non-string runtime href without throwing', async (href) => {
       const open = vi.spyOn(window, 'open').mockImplementation(() => null);
       button = await createComponent<SniceButtonElement>('snice-button', { target: '_blank' });
-      (button as any).href = { toString: () => 'https://example.com' };
       const buttonClick = vi.fn();
       button.addEventListener('button-click', buttonClick);
 
-      expect(() => button.click()).not.toThrow();
+      expect(() => {
+        (button as any).href = href;
+        button.click();
+      }).not.toThrow();
       await wait(10);
       expect(open).not.toHaveBeenCalled();
       expect(buttonClick).not.toHaveBeenCalled();
@@ -520,28 +514,25 @@ describe('snice-button', () => {
       }
     });
 
-    it.each([
-      ['/relative/path', '_self'],
-      ['https://example.com/path', '_blank'],
-      ['mailto:test@example.com', '_blank'],
-      ['tel:+15550100', 'phone-window'],
-      ['//example.com/network-path', '_blank']
-    ])('opens an allowed URL through its requested target: %s', async (href, target) => {
-      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
-      button = await createComponent<SniceButtonElement>('snice-button', {
-        href: `  ${href}  `,
-        target
-      });
-      const buttonClick = vi.fn();
-      button.addEventListener('button-click', buttonClick);
+    it.each(allowedNavigationUrls)(
+      'opens an allowed URL through its requested target: %s (%s)',
+      async (href, _description, target) => {
+        const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+        button = await createComponent<SniceButtonElement>('snice-button', {
+          href: `  ${href}  `,
+          target
+        });
+        const buttonClick = vi.fn();
+        button.addEventListener('button-click', buttonClick);
 
-      button.click();
-      await wait(10);
+        button.click();
+        await wait(10);
 
-      expect(open).toHaveBeenCalledOnce();
-      expect(open).toHaveBeenCalledWith(href, target);
-      expect(buttonClick).toHaveBeenCalledOnce();
-    });
+        expect(open).toHaveBeenCalledOnce();
+        expect(open).toHaveBeenCalledWith(href, target);
+        expect(buttonClick).toHaveBeenCalledOnce();
+      }
+    );
 
     it('navigates an allowed hash and emits the click event', async () => {
       const initialHref = window.location.href;

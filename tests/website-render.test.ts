@@ -133,4 +133,46 @@ test.describe('Website Component Rendering', () => {
     expect(state.sectionTop).toBeLessThanOrEqual(105);
     expect(state.orderMatches).toBe(true);
   });
+
+  test('deployed Link docs and full showcase enforce the shared URL policy', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-link')));
+    await page.locator('.more-link[data-slug="link"]').click();
+
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'URL Safety', exact: true })).toBeVisible();
+    await expect(docs).toContainText('shared isSafeUrl() policy');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    const safety = showcase.locator('#link-safe-destination');
+    await expect(safety).toBeVisible();
+    await expect(safety).toContainText('Malformed URLs and unsafe or obfuscated schemes');
+
+    const blocked = safety.locator('snice-link[href^="javascript:"]');
+    const blockedAnchor = blocked.locator('a');
+    await expect(blockedAnchor).not.toHaveAttribute('href', /.+/);
+    await expect(blockedAnchor).toHaveCSS('cursor', 'default');
+    await blockedAnchor.click();
+    expect(await blocked.evaluate(() => (globalThis as any).__sniceUnsafeLinkShowcase ?? 0)).toBe(0);
+
+    const rendered = await showcase.locator('snice-link').evaluateAll(links => ({
+      total: links.length,
+      anchors: links.filter(link => link.shadowRoot?.querySelector('a')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered.total).toBeGreaterThan(30);
+    expect(rendered.anchors).toBe(rendered.total);
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    await safety.getByRole('link', { name: 'Relative / hash' }).click();
+    await expect.poll(() => page.frames()
+      .find(frame => frame.url().includes('/showcase/link.html'))?.url()
+    ).toContain('#link-safe-destination');
+    expect(pageErrors).toEqual([]);
+  });
 });

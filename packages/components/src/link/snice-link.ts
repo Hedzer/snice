@@ -1,10 +1,11 @@
-import { element, property, render, styles, html, css } from 'snice';
+import { element, property, render, styles, html, css, isSafeUrl, nothing } from 'snice';
+import { strictStringAttributeConverter } from '../utils';
 import cssContent from './snice-link.css?inline';
 import type { LinkVariant, LinkTarget, SniceLinkElement } from './snice-link.types';
 
 @element('snice-link')
 export class SniceLink extends HTMLElement implements SniceLinkElement {
-  @property({  })
+  @property({ type: String, converter: strictStringAttributeConverter })
   href = '';
 
   @property({  })
@@ -30,8 +31,26 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
     return css/*css*/`${cssContent}`;
   }
 
+  /**
+   * Resolve the component's authored value to the exact href exposed by the
+   * internal anchor. Scheme validation stays centralized in core's
+   * `isSafeUrl()`; this method only applies link-specific empty/hash behavior.
+   */
+  private getNavigationHref(): string | null {
+    if (this.href === '') return '#';
+    if (typeof this.href !== 'string') return null;
+
+    const href = this.href.trim();
+    if (!href || !isSafeUrl(href)) return null;
+
+    return this.hash && !href.startsWith('#')
+      ? `#${href}`
+      : href;
+  }
+
   private handleClick(e: MouseEvent) {
-    if (this.disabled) {
+    const navigationHref = this.getNavigationHref();
+    if (this.disabled || navigationHref === null) {
       e.preventDefault();
       return;
     }
@@ -64,18 +83,11 @@ export class SniceLink extends HTMLElement implements SniceLinkElement {
     const linkTarget = this.external ? '_blank' : this.target;
     const linkRel = this.external ? 'noopener noreferrer' : '';
 
-    // Compute href with hash prefix if needed
-    let computedHref = this.href || '';
-    if (this.hash && computedHref && !computedHref.startsWith('#')) {
-      computedHref = `#${computedHref}`;
-    }
-    if (!computedHref) {
-      computedHref = '#';
-    }
+    const navigationHref = this.getNavigationHref();
 
     return html/*html*/`
       <a
-        href="${computedHref}"
+        href=${navigationHref ?? nothing}
         target="${linkTarget}"
         rel="${linkRel}"
         class="${linkClasses}"

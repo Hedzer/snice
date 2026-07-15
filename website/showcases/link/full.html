@@ -21,6 +21,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .note { max-width: 52rem; color: var(--snice-color-text-secondary, #777); line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -76,6 +77,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-link href="https://example.com" variant="secondary" external>External Secondary</snice-link>
   <snice-link href="https://example.com" variant="muted" external>External Muted</snice-link>
 </div>
+
+<section id="link-safe-destination">
+  <h2>Safe link destinations</h2>
+  <p class="note">Accepted destinations stay native anchors with keyboard and context-menu behavior. Malformed URLs and unsafe or obfuscated schemes render without an executable href.</p>
+  <div class="row">
+    <snice-link href="#link-safe-destination">Relative / hash</snice-link>
+    <snice-link href="https://example.com" external>HTTPS external</snice-link>
+    <snice-link href="javascript:globalThis.__sniceUnsafeLinkShowcase = 1">Unsafe scheme blocked</snice-link>
+  </div>
+</section>
 
 <h2>External + Underline</h2>
 <div class="row">

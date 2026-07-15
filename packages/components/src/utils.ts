@@ -2,6 +2,17 @@ import { html, unsafeHTML, TemplateResult } from 'snice';
 import { ICONS } from './icons/index';
 
 /**
+ * Reflect only actual string values across a string attribute boundary.
+ * Public component properties remain typed JavaScript inputs, so hostile or
+ * accidental object values must not be coerced by calling user code.
+ */
+export const strictStringAttributeConverter = {
+  toAttribute(value: unknown): string | null {
+    return typeof value === 'string' ? value : null;
+  }
+};
+
+/**
  * Detects icon type and returns appropriate template
  *
  * Scheme overrides:

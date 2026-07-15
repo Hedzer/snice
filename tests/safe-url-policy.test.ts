@@ -1,41 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { isSafeUrl } from './test-imports';
+import { allowedNavigationUrls, unsafeNavigationUrls } from './navigation-url-cases';
 
 describe('isSafeUrl shared URL policy', () => {
-  it.each([
-    ['/rooted/path', 'root-relative path'],
-    ['./sibling', 'dot-relative path'],
-    ['../parent', 'parent-relative path'],
-    ['plain/path', 'plain relative path'],
-    ['docs/page:edit', 'colon outside the scheme position'],
-    ['#section', 'hash reference'],
-    ['?page=2', 'query reference'],
-    ['//example.com/path', 'HTTP network-path reference'],
-    ['http://example.com/path', 'HTTP URL'],
-    ['HTTPS://EXAMPLE.COM/path', 'mixed-case HTTPS URL'],
-    ['mailto:user+tag@example.com?subject=Hello', 'email URL'],
-    ['tel:+1-555-0100', 'telephone URL'],
-    ['https://example.com/a%20b?next=javascript%3Aalert(1)', 'encoded query data'],
-    ['javascript%3Aalert(1)', 'percent-encoded relative path'],
-    ['  https://example.com/trimmed  ', 'ordinary surrounding spaces']
-  ])('accepts %s as an ordinary %s', (url) => {
+  it.each(allowedNavigationUrls)('accepts %s as an ordinary %s', (url) => {
     expect(isSafeUrl(url)).toBe(true);
   });
 
+  it('accepts ordinary surrounding spaces', () => {
+    expect(isSafeUrl('  https://example.com/trimmed  ')).toBe(true);
+  });
+
   it.each([
-    ['', 'empty input'],
-    ['   ', 'space-only input'],
-    ['javascript:alert(1)', 'JavaScript scheme'],
-    ['JaVaScRiPt:alert(1)', 'mixed-case JavaScript scheme'],
-    ['\u00a0javascript:alert(1)', 'Unicode-space-prefixed JavaScript scheme'],
-    ['data:text/html,<script>alert(1)</script>', 'HTML data URL'],
-    ['data:image/svg+xml,<svg onload=alert(1)>', 'SVG data URL'],
-    ['vbscript:msgbox(1)', 'VBScript scheme'],
-    ['file:///tmp/private', 'file scheme'],
-    ['ftp://example.com/file', 'unlisted FTP scheme'],
-    ['custom:payload', 'unlisted custom scheme'],
-    ['http://[', 'malformed absolute URL'],
-    ['//[', 'malformed network-path reference']
+    ['', 'empty input'] as const,
+    ...unsafeNavigationUrls
   ])('rejects %s as %s', (url) => {
     expect(isSafeUrl(url)).toBe(false);
   });
