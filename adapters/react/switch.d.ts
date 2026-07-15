@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Switch component
  */
-export interface SwitchProps extends SniceBaseProps {
+export interface SwitchProps extends SniceFormProps {
     checked?: any;
     disabled?: any;
     loading?: any;

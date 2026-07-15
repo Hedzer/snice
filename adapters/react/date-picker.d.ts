@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the DatePicker component
  */
-export interface DatePickerProps extends SniceBaseProps {
+export interface DatePickerProps extends SniceFormProps {
     size?: any;
     variant?: any;
     value?: any;

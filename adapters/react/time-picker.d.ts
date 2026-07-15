@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the TimePicker component
  */
-export interface TimePickerProps extends SniceBaseProps {
+export interface TimePickerProps extends SniceFormProps {
     value?: any;
     format?: any;
     step?: any;

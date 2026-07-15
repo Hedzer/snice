@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the KeyValue component
  */
-export interface KeyValueProps extends SniceBaseProps {
+export interface KeyValueProps extends SniceFormProps {
     label?: any;
     autoExpand?: any;
     rows?: any;

@@ -336,4 +336,73 @@ test.describe('Website Component Rendering', () => {
     });
     expect(pageErrors).toEqual([]);
   });
+
+  test('deployed Checkbox docs and full showcase preserve the native form contract', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-checkbox')));
+    await page.locator('.more-link[data-slug="checkbox"]').click();
+
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', {
+      name: 'Checked State and Reset Defaults',
+      exact: true
+    })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Form Integration', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Validation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('checked content attribute are the reset default');
+    await expect(docs).toContainText('input');
+    await expect(docs).toContainText('checkbox-change');
+    await expect(docs).toContainText('first <legend>');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', {
+      name: 'Native form integration, validation, reset, and fieldset rules',
+      exact: true
+    })).toBeVisible();
+    await expect(showcase.getByRole('heading', { name: 'Activation event order', exact: true })).toBeVisible();
+
+    const rendered = await showcase.locator('snice-checkbox').evaluateAll(checkboxes => ({
+      total: checkboxes.length,
+      rendered: checkboxes.filter(checkbox => checkbox.shadowRoot?.querySelector('input[type="checkbox"]')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 35, rendered: 35 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const form = showcase.locator('#checkbox-showcase-form');
+    const terms = showcase.locator('#checkbox-showcase-terms');
+    const digest = showcase.locator('#checkbox-showcase-digest');
+    const status = showcase.locator('#checkbox-form-status');
+    expect(await form.evaluate((element: HTMLFormElement) => ({
+      valid: element.checkValidity(),
+      entries: Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])
+    }))).toEqual({
+      valid: false,
+      entries: [['digest', 'weekly'], ['legend-choice', 'kept']]
+    });
+
+    await terms.getByRole('checkbox').click();
+    await form.getByRole('button', { name: 'Submit form' }).click();
+    await expect(status).toHaveText(
+      'Submitted: terms=accepted, digest=weekly, legend-choice=kept'
+    );
+    await digest.getByRole('checkbox').click();
+    await form.getByRole('button', { name: 'Reset defaults' }).click();
+    await expect(status).toHaveText('Reset: digest=weekly, legend-choice=kept');
+
+    const eventCheckbox = showcase.locator('#checkbox-showcase-events');
+    await eventCheckbox.getByRole('checkbox').click();
+    await expect(showcase.locator('#checkbox-event-status')).toHaveText(
+      'input → change → checkbox-change; checked=true'
+    );
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+  });
 });

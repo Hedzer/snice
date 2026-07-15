@@ -22,6 +22,6 @@ export const RangeSlider = createReactAdapter({
     tagName: 'snice-range-slider',
     properties: ["min", "max", "step", "valueLow", "valueHigh", "disabled", "showTooltip", "showLabels", "orientation"],
     events: { "range-change": "onRangeChange" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=range-slider.js.map

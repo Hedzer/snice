@@ -22,6 +22,6 @@ export const Input = createReactAdapter({
     tagName: 'snice-input',
     properties: ["type", "size", "variant", "value", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "password", "min", "max", "step", "pattern", "maxlength", "minlength", "autocomplete", "name", "align", "labelAlign", "stretch", "prefixIcon", "suffixIcon"],
     events: { "input-input": "onInputInput", "input-change": "onInputChange", "input-focus": "onInputFocus", "input-blur": "onInputBlur", "input-clear": "onInputClear" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=input.js.map

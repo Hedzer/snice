@@ -22,6 +22,6 @@ export const DateRangePicker = createReactAdapter({
     tagName: 'snice-date-range-picker',
     properties: ["start", "end", "size", "variant", "format", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "min", "max", "name", "columns", "firstDayOfWeek", "presets", "showCalendar"],
     events: { "daterange-change": "onDaterangeChange", "daterange-open": "onDaterangeOpen", "daterange-close": "onDaterangeClose", "daterange-clear": "onDaterangeClear", "daterange-preset": "onDaterangePreset", "daterange-focus": "onDaterangeFocus", "daterange-blur": "onDaterangeBlur" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=date-range-picker.js.map

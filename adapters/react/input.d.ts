@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Input component
  */
-export interface InputProps extends SniceBaseProps {
+export interface InputProps extends SniceFormProps {
     type?: any;
     size?: any;
     variant?: any;

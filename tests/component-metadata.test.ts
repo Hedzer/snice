@@ -41,6 +41,17 @@ describe('generated custom-element metadata', () => {
     expect(button.slots).toEqual(expect.arrayContaining([{ name: '' }, { name: 'icon' }]));
     expect(button.cssParts).toEqual(expect.arrayContaining([{ name: 'base' }, { name: 'label' }]));
     expect(button.cssProperties.length).toBeGreaterThan(0);
+
+    const checkbox = declarations.find(declaration => declaration.tagName === 'snice-checkbox')!;
+    expect(checkbox.members).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'field', name: 'checked', type: { text: 'boolean' } }),
+      expect.objectContaining({ kind: 'field', name: 'form', readonly: true }),
+      expect.objectContaining({ kind: 'field', name: 'validity', readonly: true }),
+      expect.objectContaining({ kind: 'field', name: 'willValidate', readonly: true })
+    ]));
+    expect(checkbox.attributes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'checked', fieldName: 'defaultChecked' })
+    ]));
   });
 
   it('emits a deterministic Custom Elements Manifest with publishable module paths', () => {

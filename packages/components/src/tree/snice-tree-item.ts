@@ -273,6 +273,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
             class="tree-item__checkbox"
             part="checkbox"
             style:display=${this.showCheckbox ? nothing : 'none'}
+            @click|stop=${this.handleCheckboxClick}
           >
             <snice-checkbox
               size="small"
@@ -343,6 +344,12 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     if (this.node.disabled) return;
     if (this.selected) this.deselect();
     else this.select();
+  }
+
+  private handleCheckboxClick() {
+    // Checkbox activation is independent from row selection. Stopping the
+    // native click here also prevents a row render from resetting the input
+    // before its native input/change sequence completes.
   }
 
   private handleKeydown(e: KeyboardEvent) {

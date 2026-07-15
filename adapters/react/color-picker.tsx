@@ -2,12 +2,12 @@
 // Source: components/color-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the ColorPicker component
  */
-export interface ColorPickerProps extends SniceBaseProps {
+export interface ColorPickerProps extends SniceFormProps {
   size?: any;
   value?: any;
   format?: any;
@@ -48,5 +48,5 @@ export const ColorPicker = createReactAdapter<ColorPickerProps>({
   tagName: 'snice-color-picker',
   properties: ["size","value","format","label","helperText","errorText","disabled","loading","required","invalid","name","showInput","showPresets","presets"],
   events: {"color-picker-input":"onColorPickerInput","color-picker-change":"onColorPickerChange","color-picker-focus":"onColorPickerFocus","color-picker-blur":"onColorPickerBlur"},
-  formAssociated: false
+  formAssociated: true
 });

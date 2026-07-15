@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Slider component
  */
-export interface SliderProps extends SniceBaseProps {
+export interface SliderProps extends SniceFormProps {
     size?: any;
     variant?: any;
     value?: any;

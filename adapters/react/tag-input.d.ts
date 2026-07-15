@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the TagInput component
  */
-export interface TagInputProps extends SniceBaseProps {
+export interface TagInputProps extends SniceFormProps {
     value?: any;
     suggestions?: any;
     maxTags?: any;

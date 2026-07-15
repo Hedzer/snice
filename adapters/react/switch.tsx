@@ -2,12 +2,12 @@
 // Source: components/switch/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the Switch component
  */
-export interface SwitchProps extends SniceBaseProps {
+export interface SwitchProps extends SniceFormProps {
   checked?: any;
   disabled?: any;
   loading?: any;
@@ -42,5 +42,5 @@ export const Switch = createReactAdapter<SwitchProps>({
   tagName: 'snice-switch',
   properties: ["checked","disabled","loading","required","invalid","size","name","value","label","labelOn","labelOff"],
   events: {"switch-change":"onSwitchChange"},
-  formAssociated: false
+  formAssociated: true
 });

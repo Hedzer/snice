@@ -22,6 +22,6 @@ export const StepInput = createReactAdapter({
     tagName: 'snice-step-input',
     properties: ["value", "min", "max", "step", "disabled", "readonly", "size", "wrap"],
     events: { "value-change": "onValueChange" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=step-input.js.map

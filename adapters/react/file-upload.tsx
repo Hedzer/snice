@@ -2,12 +2,12 @@
 // Source: components/file-upload/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the FileUpload component
  */
-export interface FileUploadProps extends SniceBaseProps {
+export interface FileUploadProps extends SniceFormProps {
   size?: any;
   variant?: any;
   accept?: any;
@@ -47,5 +47,5 @@ export const FileUpload = createReactAdapter<FileUploadProps>({
   tagName: 'snice-file-upload',
   properties: ["size","variant","accept","multiple","disabled","required","invalid","label","helperText","errorText","maxSize","maxFiles","name","dragDrop","showPreview"],
   events: {"file-upload-change":"onFileUploadChange","file-upload-error":"onFileUploadError"},
-  formAssociated: false
+  formAssociated: true
 });

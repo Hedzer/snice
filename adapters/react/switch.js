@@ -22,6 +22,6 @@ export const Switch = createReactAdapter({
     tagName: 'snice-switch',
     properties: ["checked", "disabled", "loading", "required", "invalid", "size", "name", "value", "label", "labelOn", "labelOff"],
     events: { "switch-change": "onSwitchChange" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=switch.js.map

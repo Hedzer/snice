@@ -7509,7 +7509,17 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "description": "Live checkedness. Every assignment makes the state dirty, just like\n`HTMLInputElement.checked`, without changing the authored reset default."
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -7523,6 +7533,14 @@
             },
             {
               "kind": "field",
+              "name": "defaultChecked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -7532,6 +7550,25 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -7567,11 +7604,11 @@
             },
             {
               "kind": "method",
-              "name": "handleCheckboxClick",
+              "name": "formStateRestoreCallback",
               "parameters": [
                 {
-                  "name": "e",
-                  "type": "Event",
+                  "name": "state",
+                  "type": "File | string | FormData | null",
                   "optional": false
                 }
               ],
@@ -7593,7 +7630,67 @@
             },
             {
               "kind": "method",
+              "name": "handleDefaultCheckedChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDisabledChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleIndeterminateChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleNameChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleRequiredChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -7608,6 +7705,16 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "field",
@@ -7627,6 +7734,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with this checkbox. @public"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "type": {
                 "text": "boolean"
@@ -7642,12 +7758,38 @@
               "default": "''"
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "required",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -7679,17 +7821,53 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'checkbox'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
               "default": "'on'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this checkbox participates in constraint validation. @public"
             }
           ],
           "attributes": [
             {
               "name": "checked",
-              "fieldName": "checked",
+              "fieldName": "defaultChecked",
               "type": {
                 "text": "boolean"
               },

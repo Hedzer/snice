@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Select component
  */
-export interface SelectProps extends SniceBaseProps {
+export interface SelectProps extends SniceFormProps {
     disabled?: any;
     required?: any;
     invalid?: any;

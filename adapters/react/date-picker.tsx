@@ -2,12 +2,12 @@
 // Source: components/date-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the DatePicker component
  */
-export interface DatePickerProps extends SniceBaseProps {
+export interface DatePickerProps extends SniceFormProps {
   size?: any;
   variant?: any;
   value?: any;
@@ -57,5 +57,5 @@ export const DatePicker = createReactAdapter<DatePickerProps>({
   tagName: 'snice-date-picker',
   properties: ["size","variant","value","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","open","firstDayOfWeek"],
   events: {"datepicker-input":"onDatepickerInput","datepicker-change":"onDatepickerChange","datepicker-focus":"onDatepickerFocus","datepicker-blur":"onDatepickerBlur","datepicker-open":"onDatepickerOpen","datepicker-close":"onDatepickerClose","datepicker-clear":"onDatepickerClear","datepicker-select":"onDatepickerSelect"},
-  formAssociated: false
+  formAssociated: true
 });

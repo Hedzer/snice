@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the RangeSlider component
  */
-export interface RangeSliderProps extends SniceBaseProps {
+export interface RangeSliderProps extends SniceFormProps {
     min?: any;
     max?: any;
     step?: any;

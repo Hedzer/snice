@@ -83,6 +83,10 @@ function descriptionOf(node, source) {
   return text || undefined;
 }
 
+function hasJsDocTag(node, tagName) {
+  return ts.getJSDocTags(node).some(tag => tag.tagName.text === tagName);
+}
+
 function memberName(member) {
   return member.name && (ts.isIdentifier(member.name) || ts.isStringLiteralLike(member.name))
     ? member.name.text
@@ -299,6 +303,19 @@ function parseComponentFile(sourcePath) {
       }
 
       if (stateCall) continue;
+      if (ts.isGetAccessorDeclaration(member) && hasJsDocTag(member, 'public')) {
+        const writable = statement.members.some(candidate =>
+          ts.isSetAccessorDeclaration(candidate) && memberName(candidate) === name
+        );
+        members.push({
+          kind: 'field',
+          name,
+          type: { text: member.type?.getText(source) || 'unknown' },
+          ...(writable ? {} : { readonly: true }),
+          ...(descriptionOf(member, source) ? { description: descriptionOf(member, source) } : {})
+        });
+        continue;
+      }
       if (ts.isMethodDeclaration(member) && !hasModifier(member, ts.SyntaxKind.StaticKeyword)) {
         if (['render', 'styles', 'connectedCallback', 'disconnectedCallback', 'attributeChangedCallback'].includes(name)) continue;
         members.push({

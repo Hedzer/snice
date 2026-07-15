@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
 <script>
 document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
 (function(){
@@ -16,10 +17,19 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Checkbox</title>
   <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface, #111827); color: var(--snice-color-text, #f8fafc); overflow-wrap: anywhere; }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     section { margin-bottom: 2rem; }
+    .form-demo { display: flex; flex-direction: column; gap: 0.875rem; max-width: 36rem; }
+    .form-demo fieldset { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; margin: 0; padding: 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.5rem; }
+    .form-demo legend { padding: 0 0.35rem; color: var(--snice-color-text-secondary, #cbd5e1); }
+    .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .form-actions button { padding: 0.5rem 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text, #f8fafc); cursor: pointer; }
+    .external-label { width: fit-content; color: var(--snice-color-text-secondary, #cbd5e1); text-decoration: underline; cursor: pointer; }
+    output { display: block; min-height: 1.5rem; padding: 0.625rem 0.75rem; border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text-secondary, #cbd5e1); font: 0.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
   </style>
   <script type="module">import '../../../packages/components/src/checkbox/snice-checkbox.ts';</script>
 </head>
@@ -131,10 +141,84 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-checkbox label="X"></snice-checkbox>
 </section>
 
-<section>
-  <h2>Form: name + value</h2>
-  <snice-checkbox label="Subscribe" name="newsletter" value="yes"></snice-checkbox>
+<section id="checkbox-form-contract">
+  <h2>Native form integration, validation, reset, and fieldset rules</h2>
+  <form id="checkbox-showcase-form" class="form-demo">
+    <snice-checkbox
+      id="checkbox-showcase-terms"
+      label="Accept the terms (required)"
+      name="terms"
+      value="accepted"
+      required
+    ></snice-checkbox>
+    <snice-checkbox
+      id="checkbox-showcase-digest"
+      label="Weekly digest (checked by default)"
+      name="digest"
+      value="weekly"
+      checked
+    ></snice-checkbox>
+    <fieldset disabled>
+      <legend>
+        Disabled fieldset
+        <snice-checkbox
+          id="checkbox-showcase-legend"
+          label="First legend remains enabled"
+          name="legend-choice"
+          value="kept"
+          checked
+        ></snice-checkbox>
+      </legend>
+      <snice-checkbox
+        id="checkbox-showcase-fieldset"
+        label="Descendant is effectively disabled and omitted"
+        name="disabled-choice"
+        value="omitted"
+        checked
+      ></snice-checkbox>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit">Submit form</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="checkbox-form-status" aria-live="polite">Ready — submit to inspect FormData.</output>
+  </form>
 </section>
 
+<section id="checkbox-event-contract">
+  <h2>Activation event order</h2>
+  <div class="form-demo">
+    <snice-checkbox id="checkbox-showcase-events" label="Toggle to observe input → change → checkbox-change"></snice-checkbox>
+    <label class="external-label" for="checkbox-showcase-events">External label activation</label>
+    <output id="checkbox-event-status" aria-live="polite">No activation yet.</output>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector('#checkbox-showcase-form');
+  const formStatus = document.querySelector('#checkbox-form-status');
+  const describeFormData = () => Array.from(new FormData(form).entries())
+    .map(([name, value]) => `${name}=${String(value)}`)
+    .join(', ') || '(empty)';
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    formStatus.textContent = `Submitted: ${describeFormData()}`;
+  });
+  form.addEventListener('reset', () => {
+    requestAnimationFrame(() => { formStatus.textContent = `Reset: ${describeFormData()}`; });
+  });
+
+  const eventCheckbox = document.querySelector('#checkbox-showcase-events');
+  const eventStatus = document.querySelector('#checkbox-event-status');
+  const observedEvents = [];
+  for (const type of ['input', 'change', 'checkbox-change']) {
+    eventCheckbox.addEventListener(type, () => {
+      if (type === 'input') observedEvents.length = 0;
+      observedEvents.push(type);
+      eventStatus.textContent = `${observedEvents.join(' → ')}; checked=${eventCheckbox.checked}`;
+    });
+  }
+</script>
 </body>
 </html>

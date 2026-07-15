@@ -2,12 +2,12 @@
 // Source: components/time-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the TimePicker component
  */
-export interface TimePickerProps extends SniceBaseProps {
+export interface TimePickerProps extends SniceFormProps {
   value?: any;
   format?: any;
   step?: any;
@@ -55,5 +55,5 @@ export const TimePicker = createReactAdapter<TimePickerProps>({
   tagName: 'snice-time-picker',
   properties: ["value","format","step","minTime","maxTime","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","size","loading","clearable"],
   events: {"time-change":"onTimeChange","timepicker-focus":"onTimepickerFocus","timepicker-blur":"onTimepickerBlur","timepicker-open":"onTimepickerOpen","timepicker-close":"onTimepickerClose","timepicker-clear":"onTimepickerClear"},
-  formAssociated: false
+  formAssociated: true
 });

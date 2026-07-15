@@ -2,12 +2,12 @@
 // Source: components/step-input/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the StepInput component
  */
-export interface StepInputProps extends SniceBaseProps {
+export interface StepInputProps extends SniceFormProps {
   value?: any;
   min?: any;
   max?: any;
@@ -39,5 +39,5 @@ export const StepInput = createReactAdapter<StepInputProps>({
   tagName: 'snice-step-input',
   properties: ["value","min","max","step","disabled","readonly","size","wrap"],
   events: {"value-change":"onValueChange"},
-  formAssociated: false
+  formAssociated: true
 });

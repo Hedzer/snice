@@ -22,6 +22,6 @@ export const Radio = createReactAdapter({
     tagName: 'snice-radio',
     properties: ["checked", "disabled", "loading", "required", "invalid", "variant", "size", "name", "value", "label", "description"],
     events: { "radio-change": "onRadioChange" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=radio.js.map

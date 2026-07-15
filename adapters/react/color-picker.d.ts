@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the ColorPicker component
  */
-export interface ColorPickerProps extends SniceBaseProps {
+export interface ColorPickerProps extends SniceFormProps {
     size?: any;
     value?: any;
     format?: any;

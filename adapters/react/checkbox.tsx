@@ -2,13 +2,13 @@
 // Source: components/checkbox/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the Checkbox component
  */
-export interface CheckboxProps extends SniceBaseProps {
-  checked?: any;
+export interface CheckboxProps extends SniceFormProps {
+  defaultChecked?: any;
   indeterminate?: any;
   disabled?: any;
   loading?: any;
@@ -18,6 +18,7 @@ export interface CheckboxProps extends SniceBaseProps {
   name?: any;
   value?: any;
   label?: any;
+  checked?: any;
   onCheckboxChange?: (event: any) => void;
 }
 
@@ -39,7 +40,7 @@ export interface CheckboxProps extends SniceBaseProps {
  */
 export const Checkbox = createReactAdapter<CheckboxProps>({
   tagName: 'snice-checkbox',
-  properties: ["checked","indeterminate","disabled","loading","required","invalid","size","name","value","label"],
+  properties: ["defaultChecked","indeterminate","disabled","loading","required","invalid","size","name","value","label","checked"],
   events: {"checkbox-change":"onCheckboxChange"},
-  formAssociated: false
+  formAssociated: true
 });

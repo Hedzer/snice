@@ -22,6 +22,6 @@ export const KeyValue = createReactAdapter({
     tagName: 'snice-key-value',
     properties: ["label", "autoExpand", "rows", "showDescription", "keyPlaceholder", "valuePlaceholder", "disabled", "readonly", "name", "variant", "mode", "showCopy"],
     events: { "kv-add": "onKvAdd", "kv-remove": "onKvRemove", "kv-change": "onKvChange", "kv-copy": "onKvCopy" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=key-value.js.map

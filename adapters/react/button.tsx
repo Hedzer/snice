@@ -2,12 +2,12 @@
 // Source: components/button/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the Button component
  */
-export interface ButtonProps extends SniceBaseProps {
+export interface ButtonProps extends SniceFormProps {
   variant?: any;
   size?: any;
   type?: any;
@@ -45,5 +45,5 @@ export const Button = createReactAdapter<ButtonProps>({
   tagName: 'snice-button',
   properties: ["variant","size","type","disabled","loading","outline","pill","circle","href","target","download","icon","iconPlacement","justifyText"],
   events: {"button-click":"onButtonClick"},
-  formAssociated: false
+  formAssociated: true
 });

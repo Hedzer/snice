@@ -1,15 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-checkbox';
-import type { CheckboxSize } from './snice-checkbox.types';
+import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 
 type Args = {
   size?: CheckboxSize;
   checked?: boolean;
+  defaultChecked?: boolean;
   indeterminate?: boolean;
   disabled?: boolean;
   loading?: boolean;
   required?: boolean;
   invalid?: boolean;
+  name?: string;
+  value?: string;
   label?: string;
 };
 
@@ -44,19 +47,25 @@ const meta: Meta<Args> = {
   tags: ['autodocs'],
   argTypes: {
     size:          { control: 'select', options: SIZES },
-    checked:       { control: 'boolean' },
+    checked:       { control: 'boolean', description: 'Live checked property' },
+    defaultChecked:{ control: 'boolean', description: 'Reset default / checked attribute' },
     indeterminate: { control: 'boolean' },
     disabled:      { control: 'boolean' },
     loading:       { control: 'boolean' },
     required:      { control: 'boolean' },
     invalid:       { control: 'boolean' },
+    name:          { control: 'text' },
+    value:         { control: 'text' },
     label:         { control: 'text' },
   },
   render: (args) => {
-    const el = document.createElement('snice-checkbox');
+    const el = document.createElement('snice-checkbox') as SniceCheckboxElement;
     if (args.size  !== undefined) el.setAttribute('size', String(args.size));
     if (args.label !== undefined) el.setAttribute('label', String(args.label));
-    if (args.checked)       el.toggleAttribute('checked',       true);
+    if (args.name  !== undefined) el.name = args.name;
+    if (args.value !== undefined) el.value = args.value;
+    if (args.defaultChecked !== undefined) el.defaultChecked = args.defaultChecked;
+    if (args.checked !== undefined) el.checked = args.checked;
     if (args.indeterminate) el.toggleAttribute('indeterminate', true);
     if (args.disabled)      el.toggleAttribute('disabled',      true);
     if (args.loading)       el.toggleAttribute('loading',       true);
@@ -163,11 +172,66 @@ export const LongLabel: Story = {
   ),
 };
 
-// h2: Form: name + value
+// h2: Native form integration
 export const FormIntegration: Story = {
-  render: () => col(
-    makeCB({ name: 'agree', value: 'yes', label: 'I agree (name=agree, value=yes)', checked: true }),
-  ),
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'checkbox-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:32rem;';
+    form.innerHTML = `
+      <snice-checkbox
+        id="checkbox-story-terms"
+        name="terms"
+        value="accepted"
+        label="Accept the terms"
+        required
+      ></snice-checkbox>
+      <snice-checkbox
+        id="checkbox-story-digest"
+        name="digest"
+        value="weekly"
+        label="Weekly digest (checked by default)"
+        checked
+      ></snice-checkbox>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, #475569);border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-checkbox
+            id="checkbox-story-legend"
+            name="legend-choice"
+            value="kept"
+            label="First legend remains enabled"
+            checked
+          ></snice-checkbox>
+        </legend>
+        <snice-checkbox
+          id="checkbox-story-fieldset"
+          name="disabled-choice"
+          value="omitted"
+          label="Descendant is effectively disabled"
+          checked
+        ></snice-checkbox>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
 };
 
 export const AllVariants: Story = {
@@ -219,7 +283,7 @@ export const CSSPartsStyling: Story = {
         height: 22px;
         transition: box-shadow 0.2s, border-color 0.2s;
       }
-      .parts-demo-checkbox snice-checkbox[checked]::part(checkbox) {
+      .parts-demo-checkbox snice-checkbox.styled-default-checked::part(checkbox) {
         background: linear-gradient(135deg, #7c3aed, #5b21b6);
         border-color: #a78bfa;
         box-shadow: 0 0 16px rgba(124, 58, 237, 0.7);
@@ -239,7 +303,7 @@ export const CSSPartsStyling: Story = {
 
     styledSection.appendChild(col(
       makeCB({ label: 'Styled unchecked', size: 'medium' }),
-      makeCB({ label: 'Styled checked', checked: true, size: 'medium' }),
+      makeCB({ class: 'styled-default-checked', label: 'Styled checked', checked: true, size: 'medium' }),
       makeCB({ label: 'Styled loading', loading: true, size: 'medium' }),
     ));
     wrap.appendChild(styledSection);

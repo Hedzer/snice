@@ -22,6 +22,6 @@ export const Slider = createReactAdapter({
     tagName: 'snice-slider',
     properties: ["size", "variant", "value", "min", "max", "step", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "name", "showValue", "showTicks", "vertical"],
     events: { "slider-input": "onSliderInput", "slider-change": "onSliderChange" },
-    formAssociated: false
+    formAssociated: true
 });
 //# sourceMappingURL=slider.js.map

@@ -2,12 +2,12 @@
 // Source: components/date-time-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the DateTimePicker component
  */
-export interface DateTimePickerProps extends SniceBaseProps {
+export interface DateTimePickerProps extends SniceFormProps {
   size?: any;
   value?: any;
   dateFormat?: any;
@@ -55,5 +55,5 @@ export const DateTimePicker = createReactAdapter<DateTimePickerProps>({
   tagName: 'snice-date-time-picker',
   properties: ["size","value","dateFormat","timeFormat","min","max","showSeconds","loading","clearable","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant"],
   events: {"datetimepicker-clear":"onDatetimepickerClear","datetime-change":"onDatetimeChange","datetimepicker-focus":"onDatetimepickerFocus","datetimepicker-blur":"onDatetimepickerBlur","datetimepicker-open":"onDatetimepickerOpen","datetimepicker-close":"onDatetimepickerClose"},
-  formAssociated: false
+  formAssociated: true
 });

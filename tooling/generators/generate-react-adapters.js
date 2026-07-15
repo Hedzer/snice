@@ -46,7 +46,7 @@ const reactTypeOverrides = {
 /**
  * Extract properties from a component's TypeScript file
  */
-function extractPropertiesFromFile(filePath) {
+export function extractPropertiesFromFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
     const properties = [];
@@ -59,6 +59,19 @@ function extractPropertiesFromFile(filePath) {
     while ((match = propertyRegex.exec(content)) !== null) {
       if (match[1]) continue; // private or protected
       properties.push(match[2]);
+    }
+
+    // A native-compatible live property may need a custom accessor instead of
+    // @property's field storage (for example checkbox.checked must notice even
+    // same-value assignments). Explicitly documented writable accessors are
+    // still React properties and must not fall through as string attributes.
+    const publicAccessorRegex = /\/\*\*[\s\S]*?@public[\s\S]*?\*\/\s*get\s+(\w+)\s*\(/g;
+    while ((match = publicAccessorRegex.exec(content)) !== null) {
+      const propertyName = match[1];
+      const setterRegex = new RegExp(`\\bset\\s+${propertyName}\\s*\\(`);
+      if (setterRegex.test(content) && !properties.includes(propertyName)) {
+        properties.push(propertyName);
+      }
     }
 
     // Look for @dispatch decorators (custom events)
@@ -85,7 +98,9 @@ function extractPropertiesFromFile(filePath) {
     }
 
     // Detect if form-associated
-    const isFormAssociated = content.includes('static formAssociated = true');
+    const decoratorFormAssociated = /@element\(\s*['"][^'"]+['"]\s*,\s*\{[^}]*\bformAssociated\s*:\s*true\b[^}]*\}\s*\)/
+      .test(content);
+    const isFormAssociated = content.includes('static formAssociated = true') || decoratorFormAssociated;
 
     return { properties, events, isFormAssociated };
   } catch (error) {
@@ -97,7 +112,7 @@ function extractPropertiesFromFile(filePath) {
 /**
  * Generate React component wrapper for a Snice component
  */
-function generateReactComponent(componentName, metadata) {
+export function generateReactComponent(componentName, metadata) {
   const { properties, events, isFormAssociated } = metadata;
   const typeOverrides = reactTypeOverrides[componentName] || { properties: {}, events: {} };
   const tagName = `snice-${componentName}`;
@@ -158,7 +173,7 @@ export const ${componentClassName} = createReactAdapter<${componentClassName}Pro
 /**
  * Scan components directory and generate adapters
  */
-function generateAdapters() {
+export function generateAdapters() {
   const componentsDir = path.join(projectRoot, 'packages', 'components', 'src');
   const reactDir = path.join(projectRoot, 'adapters', 'react');
   const componentsFile = path.join(reactDir, 'components.ts');
@@ -250,5 +265,5 @@ ${componentExports.map(c => c.type).join('\n')}
   console.log(`Generated ${components.length} component adapters\n`);
 }
 
-// Run the generator
-generateAdapters();
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : '';
+if (invokedPath === fileURLToPath(import.meta.url)) generateAdapters();

@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the StepInput component
  */
-export interface StepInputProps extends SniceBaseProps {
+export interface StepInputProps extends SniceFormProps {
     value?: any;
     min?: any;
     max?: any;

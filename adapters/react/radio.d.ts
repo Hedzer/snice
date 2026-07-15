@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Radio component
  */
-export interface RadioProps extends SniceBaseProps {
+export interface RadioProps extends SniceFormProps {
     checked?: any;
     disabled?: any;
     loading?: any;

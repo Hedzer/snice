@@ -2,12 +2,12 @@
 // Source: components/input/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
 import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 
 /**
  * Props for the Input component
  */
-export interface InputProps extends SniceBaseProps {
+export interface InputProps extends SniceFormProps {
   type?: any;
   size?: any;
   variant?: any;
@@ -63,5 +63,5 @@ export const Input = createReactAdapter<InputProps>({
   tagName: 'snice-input',
   properties: ["type","size","variant","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","password","min","max","step","pattern","maxlength","minlength","autocomplete","name","align","labelAlign","stretch","prefixIcon","suffixIcon"],
   events: {"input-input":"onInputInput","input-change":"onInputChange","input-focus":"onInputFocus","input-blur":"onInputBlur","input-clear":"onInputClear"},
-  formAssociated: false
+  formAssociated: true
 });

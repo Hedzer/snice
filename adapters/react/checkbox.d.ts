@@ -1,9 +1,9 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Checkbox component
  */
-export interface CheckboxProps extends SniceBaseProps {
-    checked?: any;
+export interface CheckboxProps extends SniceFormProps {
+    defaultChecked?: any;
     indeterminate?: any;
     disabled?: any;
     loading?: any;
@@ -13,6 +13,7 @@ export interface CheckboxProps extends SniceBaseProps {
     name?: any;
     value?: any;
     label?: any;
+    checked?: any;
     onCheckboxChange?: (event: any) => void;
 }
 /**

@@ -62,6 +62,7 @@ test.describe('Tree Component Checkbox', () => {
     });
 
     await expect.poll(() => tree.evaluate((el: any) => el.checkedNodes.includes('src'))).toBe(true);
+    await expect.poll(() => tree.evaluate((el: any) => [...el.selectedNodes])).toEqual([]);
 
     // Check if handleItemCheck was called
     const handlerCalled = await tree.evaluate((el: any) => {

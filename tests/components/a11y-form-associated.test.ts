@@ -46,15 +46,25 @@ for (const spec of COMPONENTS) {
       expect(el[spec.resetField]).toEqual(spec.resetTo);
     });
 
-    it('formDisabledCallback sets disabled', async () => {
+    it('formDisabledCallback applies effective disabledness', async () => {
       await import(spec.path);
       const el = document.createElement(spec.tag) as any;
       for (const [k, v] of Object.entries(spec.initial)) el[k] = v;
       document.body.appendChild(el);
       await el.ready;
       el.formDisabledCallback(true);
-      expect(el.disabled).toBe(true);
+      await el.rendered;
+      if (spec.tag === 'snice-checkbox') {
+        // Native input.disabled reflects only the authored attribute; a
+        // disabled fieldset changes effective disabledness without rewriting
+        // that property. The shadow input still becomes non-interactive.
+        expect(el.disabled).toBe(false);
+        expect(el.shadowRoot.querySelector('input').disabled).toBe(true);
+      } else {
+        expect(el.disabled).toBe(true);
+      }
       el.formDisabledCallback(false);
+      await el.rendered;
       expect(el.disabled).toBe(false);
     });
   });

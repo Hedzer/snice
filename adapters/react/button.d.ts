@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Button component
  */
-export interface ButtonProps extends SniceBaseProps {
+export interface ButtonProps extends SniceFormProps {
     variant?: any;
     size?: any;
     type?: any;

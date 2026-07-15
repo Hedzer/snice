@@ -1,8 +1,8 @@
-import type { SniceBaseProps } from './types';
+import type { SniceFormProps } from './types';
 /**
  * Props for the Textarea component
  */
-export interface TextareaProps extends SniceBaseProps {
+export interface TextareaProps extends SniceFormProps {
     size?: any;
     variant?: any;
     resize?: any;
