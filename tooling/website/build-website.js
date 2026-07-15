@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..', '..');
-const out = join(root, 'website', 'public');
+const out = process.env.SNICE_WEBSITE_PUBLIC_DIR || join(root, 'website', 'public');
 
 try { mkdirSync(out, { recursive: true }); } catch {}
 

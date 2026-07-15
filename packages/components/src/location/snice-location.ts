@@ -1,5 +1,5 @@
-import { element, property, render, styles, dispatch, html, css, isSafeUrl } from 'snice';
-import { renderIcon } from '../utils';
+import { element, property, render, styles, dispatch, on, html, css, isSafeUrl, nothing } from 'snice';
+import { renderIcon, strictStringAttributeConverter } from '../utils';
 import type { SniceLocationElement, LocationData, LocationDisplayMode } from './snice-location.types';
 import locationStyles from './snice-location.css?inline';
 
@@ -44,7 +44,7 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
   @property({ attribute: 'icon-image' })
   iconImage = '';
 
-  @property({ attribute: 'map-url' })
+  @property({ type: String, attribute: 'map-url', converter: strictStringAttributeConverter })
   mapUrl = '';
 
   @property({ type: Boolean })
@@ -95,48 +95,55 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     return parts.join(', ');
   }
 
-  openMap(): void {
+  /**
+   * Resolve the currently authored location to a navigation or embed URL.
+   * Scheme policy remains centralized in core's `isSafeUrl()`; this method
+   * only applies location-specific fallback and embed formatting.
+   */
+  private resolveMapUrl(embed = false): string | null {
     const coords = this.getCoordinates();
-    let url = this.mapUrl;
+    const address = this.getFullAddress();
+    let url: unknown = this.mapUrl;
 
-    if (!url && coords) {
-      url = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
-    } else if (!url && this.getFullAddress()) {
-      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.getFullAddress())}`;
+    if (url === '' && coords) {
+      url = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}${embed ? '&output=embed' : ''}`;
+    } else if (url === '' && address) {
+      const query = encodeURIComponent(address);
+      url = embed
+        ? `https://www.google.com/maps?q=${query}&output=embed`
+        : `https://www.google.com/maps/search/?api=1&query=${query}`;
     }
 
-    if (url && isSafeUrl(url)) {
-      window.open(url, '_blank');
-    }
+    if (typeof url !== 'string') return null;
+    const href = url.trim();
+    return href && isSafeUrl(href) ? href : null;
   }
 
+  openMap(): void {
+    const url = this.resolveMapUrl();
+    if (!url) return;
+
+    window.open(url, '_blank', 'noopener');
+  }
+
+  @on('click')
   private handleClick() {
-    if (this.clickable) {
-      this.dispatchLocationClick();
-      this.openMap();
-    }
+    if (!this.clickable) return;
+
+    this.dispatchLocationClick();
+    this.openMap();
+  }
+
+  @on('keydown', '.location')
+  private handleKeydown(event: KeyboardEvent) {
+    if (!this.clickable || event.key !== 'Enter') return;
+
+    event.preventDefault();
+    this.click();
   }
 
   private getMapEmbedUrl(): string {
-    const coords = this.getCoordinates();
-
-    if (this.mapUrl) {
-      // Only return caller-supplied URLs that are safe to embed. Reject
-      // javascript:/data:/vbscript: and anything else that could execute
-      // in the embedding document's origin.
-      return isSafeUrl(this.mapUrl) ? this.mapUrl : '';
-    }
-
-    if (coords) {
-      return `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}&output=embed`;
-    }
-
-    const address = this.getFullAddress();
-    if (address) {
-      return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
-    }
-
-    return '';
+    return this.resolveMapUrl(true) ?? '';
   }
 
   @render()
@@ -146,7 +153,12 @@ export class SniceLocation extends HTMLElement implements SniceLocationElement {
     const mapEmbedUrl = this.showMap ? this.getMapEmbedUrl() : '';
 
     return html/*html*/`
-      <div class="location ${this.clickable ? 'location--clickable' : ''}" part="base" @click=${() => this.handleClick()}>
+      <div
+        class="location ${this.clickable ? 'location--clickable' : ''}"
+        part="base"
+        role=${this.clickable ? 'link' : nothing}
+        tabindex=${this.clickable ? '0' : nothing}
+      >
         <if ${this.showIcon}>
           <div class="icon" part="icon">
             <slot name="icon">

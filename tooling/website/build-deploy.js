@@ -12,10 +12,10 @@ import { execSync } from 'child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..', '..');
-const publicDir = join(root, 'website', 'public');
+const publicDir = process.env.SNICE_WEBSITE_PUBLIC_DIR || join(root, 'website', 'public');
 const fullShowcasesDir = join(root, 'website', 'showcases');
 const componentsDir = join(root, 'packages', 'components', 'src');
-const siteDir = join(root, 'dist', 'site');
+const siteDir = process.env.SNICE_WEBSITE_SITE_DIR || join(root, 'dist', 'site');
 
 // Read .wip exclusions
 const wipPath = join(root, 'packages', 'components', '.wip');

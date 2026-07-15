@@ -13,6 +13,7 @@ type Args = {
   longitude?: string;
   showIcon?: boolean;
   icon?: string;
+  mapUrl?: string;
   clickable?: boolean;
   showMap?: boolean;
 };
@@ -45,6 +46,7 @@ const meta: Meta<Args> = {
     longitude: { control: 'text' },
     showIcon:  { control: 'boolean' },
     icon:      { control: 'text' },
+    mapUrl:    { control: 'text' },
     clickable: { control: 'boolean' },
     showMap:   { control: 'boolean' },
   },
@@ -64,6 +66,7 @@ const meta: Meta<Args> = {
     if (args.longitude !== undefined) el.setAttribute('longitude', args.longitude);
     if (args.showIcon  === false)     el.setAttribute('show-icon', 'false');
     if (args.icon      !== undefined) el.setAttribute('icon',      args.icon);
+    if (args.mapUrl    !== undefined) el.setAttribute('map-url',   args.mapUrl);
     if (args.clickable) el.toggleAttribute('clickable', true);
     if (args.showMap)   el.toggleAttribute('show-map',  true);
     wrap.appendChild(el);
@@ -279,6 +282,38 @@ export const CustomMapURL: Story = {
       name: 'Custom Map', address: 'Custom URL location', city: 'Mapville',
       'map-url': 'https://www.google.com/maps?q=48.8566,2.3522&output=embed', 'show-map': true,
     }));
+    return wrap;
+  },
+};
+
+// h2: Safe external navigation
+export const SafeExternalNavigation: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+
+    const safe = makeLoc({
+      name: 'Safe relative destination', address: 'Activates locally in a new tab',
+      'map-url': '#location-safe-navigation', clickable: true,
+    });
+    safe.id = 'location-story-safe';
+
+    const blocked = makeLoc({
+      name: 'Blocked unsafe destination', address: 'Still emits location-click; never opens',
+      'map-url': 'javascript:globalThis.__sniceUnsafeLocationStory = 1', clickable: true,
+    });
+    blocked.id = 'location-story-blocked';
+
+    const status = document.createElement('output');
+    status.setAttribute('aria-live', 'polite');
+    status.textContent = 'Activate either location to inspect the event.';
+    for (const location of [safe, blocked]) {
+      location.addEventListener('location-click', () => {
+        status.textContent = `location-click: ${location.getAttribute('name')}`;
+      });
+    }
+
+    wrap.append(safe, blocked, status);
     return wrap;
   },
 };

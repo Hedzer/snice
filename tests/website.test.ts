@@ -1,18 +1,28 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { execSync } from 'child_process';
-import { readFileSync, readdirSync, existsSync } from 'fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
 import { join } from 'path';
 import { getWipComponents } from '../tooling/shared/wip-components.js';
 
 const root = process.cwd();
-const publicDir = join(root, 'website/public');
+const testDir = mkdtempSync(join(tmpdir(), 'snice-website-build-'));
+const publicDir = join(testDir, 'public');
+const sourcePublicDir = join(root, 'website/public');
 const cdnDir = join(root, 'dist/cdn');
 const wip = getWipComponents();
 
 describe('Website Build', () => {
   beforeAll(() => {
-    execSync('npm run build:website', { cwd: root, stdio: 'pipe' });
+    cpSync(sourcePublicDir, publicDir, { recursive: true });
+    execSync('npm run build:website', {
+      cwd: root,
+      env: { ...process.env, SNICE_WEBSITE_PUBLIC_DIR: publicDir },
+      stdio: 'pipe'
+    });
   });
+
+  afterAll(() => rmSync(testDir, { recursive: true, force: true }));
 
   it('should create the website public directory', () => {
     expect(existsSync(publicDir)).toBe(true);

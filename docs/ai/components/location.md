@@ -27,11 +27,11 @@ clickable: boolean = false;
 - `getData()` → `LocationData`
 - `getCoordinates()` → `{ latitude, longitude } | null`
 - `getFullAddress()` → `string`
-- `openMap()` → Opens location in maps (new tab)
+- `openMap()` → Validates and opens the resolved map URL in an isolated new tab; does not emit `location-click`
 
 ## Events
 
-- `location-click` → `LocationData` (when clickable)
+- `location-click` → `LocationData`; synchronous, bubbling, composed; emitted before navigation for pointer, Enter, and host `click()` activation
 
 ## Slots
 
@@ -43,6 +43,23 @@ clickable: boolean = false;
 - `icon` - Icon container
 - `content` - Content area (name, address, coordinates)
 - `map` - Embedded map container
+
+## URL Safety
+
+- `mapUrl`/`map-url` is checked by core `isSafeUrl()` before both `window.open()` and iframe rendering.
+- Valid relative references and the default safe protocols (`http:`, `https:`, `mailto:`, `tel:`) are accepted. Malformed URLs, control-character obfuscation, and unlisted schemes are rejected.
+- Non-string runtime `mapUrl` values fail closed without coercion.
+- Exact `''` generates a URL from coordinates first, then the encoded full address. Whitespace-only authored values are invalid and do not trigger fallback.
+- Successful opens use `'_blank'` with `'noopener'`; the opened page receives no `window.opener`.
+
+## Activation Contract
+
+- `clickable=true` renders the internal base with `role="link"` and `tabindex="0"`.
+- Pointer activation, Enter, and `element.click()` each emit one `location-click`, then attempt safe navigation.
+- Space and unrelated keys do not activate link semantics.
+- An unsafe/missing destination still emits the activation event but never opens.
+- Direct `openMap()` validates/opens without checking `clickable` and without emitting the event.
+- `clickable=false` removes the interactive role/tab stop and makes pointer, keyboard, and host `click()` activation inert.
 
 ## Basic Usage
 

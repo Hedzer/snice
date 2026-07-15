@@ -12,6 +12,9 @@ Displays location information with addresses, coordinates, maps, and custom icon
 - [Slots](#slots)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
+- [URL Safety](#url-safety)
+- [Interaction and Keyboard](#interaction-and-keyboard)
+- [Accessibility](#accessibility)
 - [Examples](#examples)
 
 ## Properties
@@ -31,8 +34,8 @@ Displays location information with addresses, coordinates, maps, and custom icon
 | `showIcon` (attr: `show-icon`) | `boolean` | `true` | Show location icon |
 | `icon` | `string` | `'📍'` | Icon (emoji, URL). Use slot for icon fonts. |
 | `iconImage` (attr: `icon-image`) | `string` | `''` | Icon image URL |
-| `mapUrl` (attr: `map-url`) | `string` | `''` | Custom map URL |
-| `clickable` | `boolean` | `false` | Make location clickable |
+| `mapUrl` (attr: `map-url`) | `string` | `''` | Custom navigation and embed URL; unsafe URLs are rejected |
+| `clickable` | `boolean` | `false` | Give the rendered location link semantics and activation behavior |
 
 ## Methods
 
@@ -41,13 +44,13 @@ Displays location information with addresses, coordinates, maps, and custom icon
 | `getData()` | -- | Returns complete LocationData object |
 | `getCoordinates()` | -- | Returns `{ latitude, longitude }` or null |
 | `getFullAddress()` | -- | Returns formatted address string |
-| `openMap()` | -- | Opens location in maps (new tab) |
+| `openMap()` | -- | Safely opens the resolved map URL in an isolated new tab without emitting `location-click` |
 
 ## Events
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `location-click` | `LocationData` | Fired when a clickable location is clicked |
+| `location-click` | `LocationData` | Fired synchronously when a clickable location is activated by pointer, Enter, or `click()`; bubbles and crosses the shadow boundary |
 
 ## Slots
 
@@ -100,6 +103,32 @@ import 'snice/components/location/snice-location';
 </snice-location>
 ```
 
+## URL Safety
+
+Both `map-url` channels use Snice's shared `isSafeUrl()` policy before a URL reaches `window.open()` or an embedded `<iframe>`. Valid relative references and the default safe schemes (`http:`, `https:`, `mailto:`, and `tel:`) are accepted. Malformed URLs, control-character obfuscation, and unlisted schemes such as `javascript:`, `data:`, `vbscript:`, `file:`, and `ftp:` are rejected. Rejected URLs do not open a window or render a map iframe.
+
+The runtime `mapUrl` property fails closed for non-string values and does not call an object's string conversion hooks. Leading and trailing whitespace on a valid custom URL is removed before use.
+
+When `map-url` is exactly empty, the component generates a Google Maps URL from coordinates, or from the encoded full address when coordinates are unavailable. An authored whitespace-only `map-url` is invalid; it is not treated as an absent value and does not fall back to location data.
+
+Every successful navigation uses a new browsing context with `noopener`, so the opened page cannot retain a `window.opener` reference.
+
+## Interaction and Keyboard
+
+With `clickable`, all three component activation paths have the same observable order:
+
+1. Clicking the rendered location, pressing Enter while it is focused, or calling `location.click()` emits one `location-click` event.
+2. The component resolves and validates the current URL.
+3. A safe URL opens; an unsafe or missing URL does nothing.
+
+The event describes activation, so it is still emitted when navigation is blocked by the URL policy. Space does not activate the component because its interaction model is a link, not a button.
+
+`openMap()` is the lower-level imperative API. It validates and opens the current destination regardless of `clickable`, but deliberately does not emit `location-click`.
+
+## Accessibility
+
+A clickable location exposes `role="link"`, enters the tab order, responds to Enter, and has a visible `:focus-visible` outline. A non-clickable location has no interactive role or tab stop. Provide a meaningful `name` or other visible location content so the link has an understandable accessible name.
+
 ## Examples
 
 ### Display Modes
@@ -150,7 +179,7 @@ Use the `icon` attribute for emoji or the `icon` slot for external icon fonts.
 
 ### Clickable Locations
 
-Set the `clickable` attribute to make the location interactive.
+Set the `clickable` attribute to make the location an Enter-activatable link. If `map-url` is omitted, coordinates take precedence over the full address when generating the destination.
 
 ```html
 <snice-location
@@ -216,6 +245,9 @@ const address = location.getFullAddress();
 
 // Open in maps
 location.openMap();
+
+// Run the same event-then-navigation path as pointer or Enter activation
+location.click();
 
 // Listen for clicks
 location.addEventListener('location-click', (e) => {

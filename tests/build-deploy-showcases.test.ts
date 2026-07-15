@@ -1,17 +1,26 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { transformSync } from 'esbuild';
 
 const root = process.cwd();
-const showcaseDir = join(root, 'dist/site/showcase');
+const testDir = mkdtempSync(join(tmpdir(), 'snice-deploy-build-'));
+const siteDir = join(testDir, 'site');
+const showcaseDir = join(siteDir, 'showcase');
 
 describe('deployed full showcases', () => {
   beforeAll(() => {
-    execFileSync(process.execPath, ['tooling/website/build-deploy.js'], { cwd: root, stdio: 'pipe' });
+    execFileSync(process.execPath, ['tooling/website/build-deploy.js'], {
+      cwd: root,
+      env: { ...process.env, SNICE_WEBSITE_SITE_DIR: siteDir },
+      stdio: 'pipe'
+    });
   });
+
+  afterAll(() => rmSync(testDir, { recursive: true, force: true }));
 
   it('keeps template interpolation and JavaScript property names intact', () => {
     const table = readFileSync(join(showcaseDir, 'table.html'), 'utf8');

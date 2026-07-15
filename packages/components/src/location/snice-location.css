@@ -18,6 +18,12 @@
   opacity: 0.8;
 }
 
+.location--clickable:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+}
+
 .icon {
   display: flex;
   align-items: center;

@@ -48,7 +48,9 @@ async function main() {
   const forwarded = passthrough.filter(arg => arg !== '--targeted');
   const requestedTargets = forwarded.filter(arg => !arg.startsWith('-'));
   const needsStorybook = !targeted || requestedTargets.length === 0 || requestedTargets.some(target =>
-    target === 'tests/live' || target.startsWith('tests/live/components/spreadsheet')
+    target === 'tests/live'
+      || target.startsWith('tests/live/components/spreadsheet')
+      || target === 'tests/live/components/location/location-storybook.spec.ts'
   );
   const managedChildren = [];
 

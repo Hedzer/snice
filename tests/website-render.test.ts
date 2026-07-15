@@ -175,4 +175,82 @@ test.describe('Website Component Rendering', () => {
     ).toContain('#link-safe-destination');
     expect(pageErrors).toEqual([]);
   });
+
+  test('deployed Location docs and full showcase enforce safe external navigation', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-location')));
+    await page.locator('.more-link[data-slug="location"]').click();
+
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'URL Safety', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Interaction and Keyboard', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Accessibility', exact: true })).toBeVisible();
+    await expect(docs).toContainText("shared isSafeUrl() policy");
+    await expect(docs).toContainText('window.opener');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', { name: 'Safe external navigation', exact: true })).toBeVisible();
+    await expect(showcase.locator('#location-safe-map')).toBeVisible();
+    await expect(showcase.locator('#location-blocked-map')).toBeVisible();
+
+    const rendered = await showcase.locator('snice-location').evaluateAll(locations => ({
+      total: locations.length,
+      rendered: locations.filter(location => location.shadowRoot?.querySelector('.location')).length,
+      links: locations.filter(location => !location.hasAttribute('clickable')
+        || location.shadowRoot?.querySelector('[role="link"][tabindex="0"]')).length,
+      unsafeIframes: locations.filter(location => {
+        const src = location.shadowRoot?.querySelector('iframe')?.getAttribute('src') ?? '';
+        return /^javascript:/i.test(src);
+      }).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered.total).toBe(32);
+    expect(rendered.rendered).toBe(32);
+    expect(rendered.links).toBe(32);
+    expect(rendered.unsafeIframes).toBe(0);
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    await showcase.locator('body').evaluate(() => {
+      const calls: Array<[string, string | undefined, string | undefined]> = [];
+      (globalThis as any).__sniceLocationShowcaseOriginalOpen = window.open;
+      (globalThis as any).__sniceLocationShowcaseCalls = calls;
+      (globalThis as any).__sniceUnsafeLocationShowcase = 0;
+      window.open = ((url?: string | URL, target?: string, features?: string) => {
+        calls.push([String(url), target, features]);
+        return null;
+      }) as typeof window.open;
+    });
+
+    await showcase.locator('#location-safe-map').getByRole('link').click();
+    await expect(showcase.locator('#location-navigation-status')).toHaveText(
+      'location-click: Safe relative destination'
+    );
+    await showcase.locator('#location-blocked-map').getByRole('link').click();
+    await expect(showcase.locator('#location-navigation-status')).toHaveText(
+      'location-click: Blocked unsafe destination'
+    );
+    expect(await showcase.locator('body').evaluate(() => ({
+      calls: (globalThis as any).__sniceLocationShowcaseCalls,
+      executed: (globalThis as any).__sniceUnsafeLocationShowcase
+    }))).toEqual({
+      calls: [['#location-safe-navigation', '_blank', 'noopener']],
+      executed: 0
+    });
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+
+    await showcase.locator('body').evaluate(() => {
+      window.open = (globalThis as any).__sniceLocationShowcaseOriginalOpen;
+      delete (globalThis as any).__sniceLocationShowcaseOriginalOpen;
+      delete (globalThis as any).__sniceLocationShowcaseCalls;
+      delete (globalThis as any).__sniceUnsafeLocationShowcase;
+    });
+    expect(pageErrors).toEqual([]);
+  });
 });

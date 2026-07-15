@@ -23,6 +23,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     snice-location { max-width: 400px; display: block; }
+    .note { max-width: 52rem; color: var(--snice-color-text-secondary, #aaa); }
+    #location-navigation-status { display: block; margin-top: 0.75rem; color: var(--snice-color-text-secondary, #aaa); }
   </style>
 </head>
 <body>
@@ -148,6 +150,26 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   show-map>
 </snice-location>
 
+<h2 id="location-safe-navigation">Safe external navigation</h2>
+<p class="note">The first location opens a safe relative destination with an isolated opener. The second still reports activation, but its unsafe scheme never reaches the browser.</p>
+<div class="row">
+  <snice-location
+    id="location-safe-map"
+    name="Safe relative destination"
+    address="Opens this showcase hash in a new tab"
+    map-url="#location-safe-navigation"
+    clickable>
+  </snice-location>
+  <snice-location
+    id="location-blocked-map"
+    name="Blocked unsafe destination"
+    address="Emits location-click without opening"
+    map-url="javascript:globalThis.__sniceUnsafeLocationShowcase = 1"
+    clickable>
+  </snice-location>
+</div>
+<output id="location-navigation-status" aria-live="polite">Activate either location to inspect the event.</output>
+
 <h2>Name only</h2>
 <snice-location name="Just a Name"></snice-location>
 
@@ -186,6 +208,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-location mode="compact" name="No Icon Compact" address="2 St" city="Town" show-icon="false"></snice-location>
 </div>
 
-<script type="module">import '../../../packages/components/src/location/snice-location.ts';</script>
+<script type="module">
+import '../../../packages/components/src/location/snice-location.ts';
+
+const navigationStatus = document.querySelector('#location-navigation-status');
+for (const location of document.querySelectorAll('#location-safe-map, #location-blocked-map')) {
+  location.addEventListener('location-click', () => {
+    navigationStatus.textContent = `location-click: ${location.name}`;
+  });
+}
+</script>
 </body>
 </html>
