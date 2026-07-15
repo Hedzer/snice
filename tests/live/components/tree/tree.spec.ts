@@ -8,11 +8,10 @@ test.describe('Tree Component', () => {
 
   test('should render tree structure', async ({ page }) => {
     // Check if tree element exists in DOM
-    const tree = page.locator('#tree1');
+    const tree = page.locator('#tree-single');
     await expect(tree).toBeVisible();
 
-    // Wait a bit for components to register and DOMContentLoaded
-    await page.waitForTimeout(2000);
+    await expect.poll(() => tree.evaluate((el) => el.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item').length || 0)).toBe(4);
 
     // Check the tree has nodes set
     const nodesFromPage = await tree.evaluate((el: any) => el.nodes);
@@ -105,6 +104,6 @@ test.describe('Tree Component', () => {
     console.log('Label info:', JSON.stringify(labelInfo, null, 2).substring(0, 1000));
 
     expect(treeItemsCount).toBeGreaterThan(0);
-    expect(labelInfo.textContent).toContain('project');
+    expect(labelInfo.textContent).toBe('src');
   });
 });

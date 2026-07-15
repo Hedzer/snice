@@ -1,17 +1,71 @@
-import { element, property, watch, dispatch, ready } from 'snice';
+import {
+  element,
+  property,
+  state,
+  watch,
+  dispatch,
+  ready,
+  render,
+  styles,
+  html,
+  css,
+  nothing,
+  repeat,
+  isSafeUrl
+} from 'snice';
 import cssContent from './snice-tree-item.css?inline';
 import type { TreeNode } from './snice-tree.types';
-import type { SniceTreeItemElement, TreeItemToggleDetail, TreeItemSelectDetail, TreeItemCheckDetail } from './snice-tree-item.types';
+import type {
+  SniceTreeItemElement,
+  TreeItemToggleDetail,
+  TreeItemSelectDetail,
+  TreeItemCheckDetail
+} from './snice-tree-item.types';
 import '../checkbox/snice-checkbox';
 import '../spinner/snice-spinner';
 
+const SAFE_RASTER_DATA_IMAGE = /^data:image\/(?:avif|bmp|gif|jpeg|png|webp|x-icon)(?:;base64)?,/i;
+const EMPTY_TREE_NODE: TreeNode = { id: '', label: '' };
+
+function normalizeIconImageSource(value: unknown): string {
+  if (typeof value !== 'string') return '';
+
+  const source = value.trim();
+  if (!source) return '';
+  // URLs must encode delimiters rather than carrying raw markup/attribute
+  // characters. Property binding already prevents attribute injection, but
+  // rejecting malformed input gives iconImage an unambiguous URL contract.
+  if (/[\u0000-\u0020\u007f"'<>`]/.test(source)) return '';
+  if (source.toLowerCase().startsWith('data:')) {
+    return SAFE_RASTER_DATA_IMAGE.test(source) ? source : '';
+  }
+
+  return isSafeUrl(source, { allowed: ['http:', 'https:', 'blob:'] }) ? source : '';
+}
+
 @element('snice-tree-item')
 export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
-  private nodeData: TreeNode = { id: '', label: '' };
+  @state()
+  private nodeData: TreeNode = EMPTY_TREE_NODE;
+
+  @state()
   private levelDepth = 0;
 
-  @property({ type: Number })
+  @state()
+  private posInSet = 1;
+
+  @state()
+  private setSize = 1;
+
+  @state()
   private version = 0;
+
+  private inheritedRevision = -1;
+
+  @state()
+  private failedIconImage = '';
+
+  private lastIconImageValue: unknown = '';
 
   @property({ type: Boolean })
   expanded = false;
@@ -35,7 +89,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   indeterminate = false;
 
   get node(): TreeNode {
-    return this.nodeData;
+    return this.nodeData ?? EMPTY_TREE_NODE;
   }
 
   get level(): number {
@@ -43,72 +97,103 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   }
 
   get hasChildren(): boolean {
-    return !!(this.nodeData.children && this.nodeData.children.length > 0) || !!this.nodeData.lazy;
+    return Boolean(this.node.children?.length) || Boolean(this.node.lazy);
   }
 
-  private posInSet = 1;
-  private setSize = 1;
+  // Template property names are parsed through HTML and therefore lowercase
+  // in browsers. These internal adapters keep the recursive handoff explicit
+  // while preserving the component's camel-cased implementation fields.
+  private set treeitemnode(node: TreeNode) {
+    this.nodeData = node;
+  }
+
+  private set treeitemlevel(level: number) {
+    this.levelDepth = level;
+  }
+
+  private set treeitemposition(position: number) {
+    this.posInSet = position;
+  }
+
+  private set treeitemsize(size: number) {
+    this.setSize = size;
+  }
+
+  private set treeitemcheckbox(show: boolean) {
+    this.showCheckbox = show;
+  }
+
+  private set treeitemicon(show: boolean) {
+    this.showIcon = show;
+  }
+
+  private set treeitemrevision(revision: number) {
+    if (revision === this.inheritedRevision) return;
+    this.inheritedRevision = revision;
+    this.version++;
+  }
+
+  @ready()
+  private adoptPreUpgradeBindings() {
+    // A recursively parsed custom element can receive property bindings before
+    // its class upgrades. Those values are own properties and would otherwise
+    // shadow the prototype setters above. Lift them into reactive state once.
+    const takeOwn = (name: string): unknown => {
+      if (!Object.prototype.hasOwnProperty.call(this, name)) return undefined;
+      const value = (this as any)[name];
+      delete (this as any)[name];
+      return value;
+    };
+
+    const node = takeOwn('treeitemnode');
+    const level = takeOwn('treeitemlevel');
+    const position = takeOwn('treeitemposition');
+    const size = takeOwn('treeitemsize');
+    const checkbox = takeOwn('treeitemcheckbox');
+    const icon = takeOwn('treeitemicon');
+    const revision = takeOwn('treeitemrevision');
+
+    if (node && typeof node === 'object') this.treeitemnode = node as TreeNode;
+    if (typeof level === 'number') this.treeitemlevel = level;
+    if (typeof position === 'number') this.treeitemposition = position;
+    if (typeof size === 'number') this.treeitemsize = size;
+    if (typeof checkbox === 'boolean') this.treeitemcheckbox = checkbox;
+    if (typeof icon === 'boolean') this.treeitemicon = icon;
+    if (typeof revision === 'number') this.treeitemrevision = revision;
+  }
 
   setNode(node: TreeNode, level: number, posInSet: number = 1, setSize: number = 1) {
-    this.nodeData = node;
+    const sameNode = this.nodeData === node;
     this.levelDepth = level;
     this.posInSet = posInSet;
     this.setSize = setSize;
+    this.nodeData = node;
 
-    // Sync internal state
-    if (node.expanded !== undefined) {
-      this.expanded = node.expanded;
+    // A caller can mutate an existing node object and pass it to setNode()
+    // again. Preserve that supported workflow even though the object identity
+    // did not change and the reactive property correctly skipped its setter.
+    if (sameNode) {
+      this.syncNodeState(node);
+      this.version++;
     }
-    if (node.selected !== undefined) {
-      this.selected = node.selected;
+  }
+
+  @watch('nodeData')
+  private handleNodeDataChange(_oldNode: TreeNode | undefined, node: TreeNode) {
+    this.syncNodeState(node);
+  }
+
+  private syncNodeState(node: TreeNode) {
+    if (!node || typeof node !== 'object') return;
+    if (node.iconImage !== this.lastIconImageValue) {
+      this.failedIconImage = '';
+      this.lastIconImageValue = node.iconImage;
     }
-    if (node.checked !== undefined) {
-      this.checked = node.checked;
-    }
-    if (node.indeterminate !== undefined) {
-      this.indeterminate = node.indeterminate;
-    }
 
-    // Update DOM (this also calls updateChildrenDOM which creates child elements
-    // and synchronously calls updateChildTreeItems)
-    this.updateDOM();
-  }
-
-  @watch('expanded')
-  handleExpandedChange() {
-    if (this.shadowRoot) this.updateExpandedState();
-  }
-
-  @watch('selected')
-  handleSelectedChange() {
-    if (this.shadowRoot) this.updateSelectedState();
-  }
-
-  @watch('checked')
-  handleCheckedChange() {
-    if (this.shadowRoot) this.updateCheckboxState();
-  }
-
-  @watch('indeterminate')
-  handleIndeterminateChange() {
-    if (this.shadowRoot) this.updateCheckboxState();
-  }
-
-  @watch('loading')
-  handleLoadingChange() {
-    if (this.shadowRoot) this.updateLoadingState();
-  }
-
-  private updateChildTreeItems() {
-    if (!this.shadowRoot || !this.hasChildren) return;
-
-    const childItems = this.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
-    const total = this.node.children?.length || 0;
-    this.node.children?.forEach((child, index) => {
-      if (childItems[index] && (childItems[index] as any).setNode) {
-        (childItems[index] as any).setNode(child, this.level + 1, index + 1, total);
-      }
-    });
+    this.expanded = node.expanded ?? false;
+    this.selected = node.selected ?? false;
+    this.checked = node.checked ?? false;
+    this.indeterminate = node.indeterminate ?? false;
   }
 
   @dispatch('tree-item-toggle', { bubbles: true, composed: true })
@@ -131,216 +216,133 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
     return { nodeId: this.node.id, node: this.node };
   }
 
-  // NOTE: We don't use @render() here because it causes full re-renders
-  // which destroys the tree structure when properties change. Instead, we
-  // manually manipulate the shadow DOM for better performance and stability.
-
-  @ready()
-  init() {
-    this.renderTemplate();
-    this.updateDOM();
+  @styles()
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
-  private renderTemplate() {
-    const template = `
-      <style>${cssContent}</style>
-      <div class="tree-item">
+  @render()
+  renderTreeItem() {
+    const children = this.node.children ?? [];
+    const hasChildren = this.hasChildren;
+    const safeImageSource = normalizeIconImageSource(this.node.iconImage);
+    const showImage = this.showIcon && Boolean(safeImageSource) && this.failedIconImage !== safeImageSource;
+    const showTextIcon = this.showIcon && !showImage && Boolean(this.node.icon);
+    const showAnyIcon = showImage || showTextIcon;
+    const ariaExpanded = hasChildren ? this.expanded.toString() : nothing;
+
+    return html`
+      <div class="tree-item" style:--tree-level=${this.level.toString()}>
         <div
           class="tree-item__content"
+          class:tree-item__content--selected=${this.selected}
+          class:tree-item__content--disabled=${Boolean(this.node.disabled)}
           part="content"
           role="treeitem"
-          tabindex="0">
-
-          <div class="tree-item__loading" part="loading" style="display: none;">
+          tabindex=${this.node.disabled ? '-1' : '0'}
+          aria-selected=${this.selected.toString()}
+          aria-disabled=${Boolean(this.node.disabled).toString()}
+          aria-busy=${this.loading.toString()}
+          aria-level=${String(this.level + 1)}
+          aria-setsize=${String(this.setSize)}
+          aria-posinset=${String(this.posInSet)}
+          aria-expanded=${ariaExpanded}
+          @click=${this.handleContentClick}
+          @keydown=${this.handleKeydown}
+        >
+          <div
+            class="tree-item__loading"
+            part="loading"
+            style:display=${this.loading ? 'inline-flex' : 'none'}
+          >
             <snice-spinner size="small"></snice-spinner>
           </div>
 
-          <div class="tree-item__expander" part="expander">
+          <div
+            class="tree-item__expander"
+            class:tree-item__expander--expanded=${this.expanded}
+            class:tree-item__expander--hidden=${!hasChildren}
+            part="expander"
+            style:display=${this.loading ? 'none' : nothing}
+            @click|stop=${this.handleExpanderClick}
+          >
             <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
           </div>
 
-          <div class="tree-item__checkbox" part="checkbox" style="display: none;">
-            <snice-checkbox size="small"></snice-checkbox>
+          <div
+            class="tree-item__checkbox"
+            part="checkbox"
+            style:display=${this.showCheckbox ? nothing : 'none'}
+          >
+            <snice-checkbox
+              size="small"
+              .checked=${this.checked}
+              .indeterminate=${this.indeterminate}
+              .disabled=${Boolean(this.node.disabled)}
+              @checkbox-change=${this.handleCheckboxChangeEvent}
+            ></snice-checkbox>
           </div>
 
-          <div class="tree-item__icon" part="icon" style="display: none;"></div>
+          <div
+            class="tree-item__icon"
+            part="icon"
+            style:display=${showAnyIcon ? nothing : 'none'}
+          >
+            <if ${showImage}>
+              <img
+                class="tree-item__icon-image"
+                .src=${safeImageSource}
+                alt=""
+                aria-hidden="true"
+                part="icon-image"
+                @error=${this.handleIconImageError}
+              />
+              <else-if ${showTextIcon}>
+                <span part="icon-text">${this.node.icon}</span>
+              </else-if>
+            </if>
+          </div>
 
-          <div class="tree-item__label" part="label"></div>
+          <div class="tree-item__label" part="label">${this.node.label || ''}</div>
         </div>
 
-        <div class="tree-item__children" part="children" role="group"></div>
+        <div
+          class="tree-item__children"
+          class:tree-item__children--expanded=${this.expanded}
+          part="children"
+          role="group"
+        >
+          ${repeat(children, {
+            key: child => child.id,
+            render: (child, index) => html`
+              <snice-tree-item
+                .treeitemnode=${child}
+                .treeitemlevel=${this.level + 1}
+                .treeitemposition=${index + 1}
+                .treeitemsize=${children.length}
+                .treeitemcheckbox=${this.showCheckbox}
+                .treeitemicon=${this.showIcon}
+                .treeitemrevision=${this.version}
+              ></snice-tree-item>
+            `
+          })}
+        </div>
       </div>
     `;
-
-    if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = template;
-    } else {
-      this.attachShadow({ mode: 'open' }).innerHTML = template;
-    }
-
-    // Attach event listeners
-    const content = this.shadowRoot!.querySelector('.tree-item__content');
-    const expander = this.shadowRoot!.querySelector('.tree-item__expander');
-
-    content?.addEventListener('click', (e) => this.handleContentClick(e as MouseEvent));
-    content?.addEventListener('keydown', (e) => this.handleKeydown(e as KeyboardEvent));
-    expander?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggle();
-    });
-
-    // Attach checkbox listener — element exists in the DOM already (just set innerHTML above)
-    const checkbox = this.shadowRoot!.querySelector('snice-checkbox');
-    checkbox?.addEventListener('checkbox-change', (e) => this.handleCheckboxChangeEvent(e as CustomEvent));
   }
 
-  private updateDOM() {
-    if (!this.shadowRoot) return;
-
-    const container = this.shadowRoot.querySelector('.tree-item');
-    const content = this.shadowRoot.querySelector('.tree-item__content');
-    const label = this.shadowRoot.querySelector('.tree-item__label');
-    const icon = this.shadowRoot.querySelector('.tree-item__icon');
-
-    // Update level
-    if (container) {
-      (container as HTMLElement).style.setProperty('--tree-level', this.level.toString());
-    }
-
-    // Update label
-    if (label) {
-      label.textContent = this.node.label || '';
-    }
-
-    // Update icon
-    if (icon && this.showIcon) {
-      if (this.node.iconImage) {
-        icon.innerHTML = `<img class="tree-item__icon-image" src="${this.node.iconImage}" alt="" part="icon-image">`;
-        (icon as HTMLElement).style.display = '';
-      } else if (this.node.icon) {
-        icon.innerHTML = `<span part="icon-text">${this.node.icon}</span>`;
-        (icon as HTMLElement).style.display = '';
-      } else {
-        (icon as HTMLElement).style.display = 'none';
-      }
-    } else if (icon) {
-      (icon as HTMLElement).style.display = 'none';
-    }
-
-    // Update ARIA attributes
-    if (content) {
-      content.setAttribute('tabindex', this.node.disabled ? '-1' : '0');
-      content.setAttribute('aria-selected', this.selected.toString());
-      content.setAttribute('aria-disabled', (this.node.disabled || false).toString());
-      content.setAttribute('aria-busy', this.loading.toString());
-      // Level is 1-indexed for ARIA; internal level starts at 0.
-      content.setAttribute('aria-level', String(this.level + 1));
-      content.setAttribute('aria-setsize', String(this.setSize));
-      content.setAttribute('aria-posinset', String(this.posInSet));
-
-      if (this.hasChildren) {
-        content.setAttribute('aria-expanded', this.expanded.toString());
-      } else {
-        content.removeAttribute('aria-expanded');
-      }
-    }
-
-    this.updateExpandedState();
-    this.updateSelectedState();
-    this.updateCheckboxState();
-    this.updateLoadingState();
-    this.updateChildrenDOM();
+  private handleIconImageError() {
+    this.failedIconImage = normalizeIconImageSource(this.node.iconImage);
   }
 
-  private updateExpandedState() {
-    if (!this.shadowRoot) return;
-
-    const expander = this.shadowRoot.querySelector('.tree-item__expander');
-    const children = this.shadowRoot.querySelector('.tree-item__children');
-    const content = this.shadowRoot.querySelector('.tree-item__content');
-
-    if (expander) {
-      expander.classList.toggle('tree-item__expander--expanded', this.expanded);
-      expander.classList.toggle('tree-item__expander--hidden', !this.hasChildren);
-    }
-
-    if (children) {
-      children.classList.toggle('tree-item__children--expanded', this.expanded);
-    }
-
-    if (content && this.hasChildren) {
-      content.setAttribute('aria-expanded', this.expanded.toString());
-    }
+  private handleExpanderClick() {
+    this.toggle();
   }
 
-  private updateSelectedState() {
-    if (!this.shadowRoot) return;
-
-    const content = this.shadowRoot.querySelector('.tree-item__content');
-    if (content) {
-      content.classList.toggle('tree-item__content--selected', this.selected);
-      content.setAttribute('aria-selected', this.selected.toString());
-    }
-  }
-
-  private updateCheckboxState() {
-    if (!this.shadowRoot) return;
-
-    const checkboxContainer = this.shadowRoot.querySelector('.tree-item__checkbox') as HTMLElement;
-    const checkbox = this.shadowRoot.querySelector('snice-checkbox') as any;
-
-    if (checkboxContainer) {
-      checkboxContainer.style.display = this.showCheckbox ? '' : 'none';
-    }
-
-    if (checkbox) {
-      checkbox.checked = this.checked;
-      checkbox.indeterminate = this.indeterminate;
-      checkbox.disabled = this.node.disabled || false;
-    }
-  }
-
-  private updateLoadingState() {
-    if (!this.shadowRoot) return;
-
-    const loadingContainer = this.shadowRoot.querySelector('.tree-item__loading') as HTMLElement;
-    const expander = this.shadowRoot.querySelector('.tree-item__expander') as HTMLElement;
-
-    if (loadingContainer && expander) {
-      loadingContainer.style.display = this.loading ? '' : 'none';
-      expander.style.display = this.loading ? 'none' : '';
-    }
-  }
-
-  private updateChildrenDOM() {
-    if (!this.shadowRoot || !this.hasChildren) return;
-
-    const childrenContainer = this.shadowRoot.querySelector('.tree-item__children');
-    if (!childrenContainer) return;
-
-    // Clear existing children
-    childrenContainer.innerHTML = '';
-
-    // Create child tree items
-    this.node.children?.forEach(child => {
-      const item = document.createElement('snice-tree-item') as any;
-      if (this.showCheckbox) item.setAttribute('show-checkbox', '');
-      if (this.showIcon) item.setAttribute('show-icon', '');
-      childrenContainer.appendChild(item);
-    });
-
-    // Update child nodes — they were just appended to the DOM above
-    this.updateChildTreeItems();
-  }
-
-  private handleContentClick(e: MouseEvent) {
+  private handleContentClick() {
     if (this.node.disabled) return;
-    // Toggle selection instead of always selecting
-    if (this.selected) {
-      this.deselect();
-    } else {
-      this.select();
-    }
+    if (this.selected) this.deselect();
+    else this.select();
   }
 
   private handleKeydown(e: KeyboardEvent) {
@@ -348,55 +350,30 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
 
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      // Toggle selection instead of always selecting
-      if (this.selected) {
-        this.deselect();
-      } else {
-        this.select();
-      }
+      if (this.selected) this.deselect();
+      else this.select();
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      if (this.hasChildren && !this.expanded) {
-        this.expand();
-      }
+      if (this.hasChildren && !this.expanded) this.expand();
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      if (this.hasChildren && this.expanded) {
-        this.collapse();
-      }
+      if (this.hasChildren && this.expanded) this.collapse();
     }
   }
 
   private handleCheckboxChangeEvent(e: CustomEvent) {
     e.stopPropagation();
-    const newChecked = e.detail.checked;
-
-    // Update local state
-    this.checked = newChecked;
-
-    // Update node state
-    this.node.checked = newChecked;
-
-    // Manually dispatch event to parent tree
-    this.dispatchEvent(new CustomEvent('tree-item-check', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        nodeId: this.node.id,
-        checked: this.checked
-      }
-    }));
+    this.checked = Boolean(e.detail.checked);
+    this.node.checked = this.checked;
+    this.dispatchCheckEvent();
   }
 
-  // Public API
   expand() {
     if (!this.hasChildren || this.expanded) return;
 
-    // If lazy load, set loading state and dispatch event
-    if (this.node.lazy && (!this.node.children || this.node.children.length === 0)) {
+    if (this.node.lazy && !this.node.children?.length) {
       this.loading = true;
       this.dispatchLazyLoadEvent();
-      // Parent will set loading=false after loading children
       return;
     }
 
@@ -417,25 +394,18 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
   }
 
   toggle() {
-    if (this.expanded) {
-      this.collapse();
-    } else {
-      this.expand();
-    }
+    if (this.expanded) this.collapse();
+    else this.expand();
   }
 
   select() {
     if (this.node.disabled) return;
     this.selected = true;
-    // Don't modify node.selected here - let the parent tree handle it
-    this.updateSelectedState();
     this.dispatchSelectEvent();
   }
 
   deselect() {
     this.selected = false;
-    // Don't modify node.selected here - let the parent tree handle it
-    this.updateSelectedState();
     this.dispatchSelectEvent();
   }
 

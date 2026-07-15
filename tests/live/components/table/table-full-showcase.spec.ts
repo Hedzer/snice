@@ -14,7 +14,6 @@ test.describe('table full showcase', () => {
     });
 
     await page.goto(showcaseUrl);
-    await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => {
       const remote = document.querySelector('#remote-demo') as any;
       const virtual = document.querySelector('#virtual-demo') as any;

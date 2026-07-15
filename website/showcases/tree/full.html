@@ -86,6 +86,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-tree id="tree-custom-icons"></snice-tree>
 </div>
 
+<h2>Image Icons with Text Fallbacks</h2>
+<div class="box" style="max-width: 400px;">
+  <snice-tree id="tree-image-icons"></snice-tree>
+</div>
+
 <h2>Deeply Nested (4 levels)</h2>
 <div class="box" style="max-width: 400px;">
   <snice-tree id="tree-deep"></snice-tree>
@@ -182,6 +187,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       { id: '7', label: 'Security', icon: '🔒' },
     ]},
     { id: '8', label: 'Trash', icon: '🗑️' },
+  ];
+
+  // Image icons use URL data; the text icon is retained as a load fallback.
+  document.getElementById('tree-image-icons').nodes = [
+    { id: 'snice', label: 'Snice', icon: '◆', iconImage: '/images/snice-logo.png', expanded: true, children: [
+      { id: 'us', label: 'United States', icon: '🇺🇸', iconImage: '/assets/flags/us.png' },
+      { id: 'gb', label: 'United Kingdom', icon: '🇬🇧', iconImage: '/assets/flags/gb.png' },
+      { id: 'jp', label: 'Japan', icon: '🇯🇵', iconImage: '/assets/flags/jp.png' },
+    ]},
+    { id: 'text-fallback', label: 'Text icon', icon: '📄' },
   ];
 
   // Deeply nested

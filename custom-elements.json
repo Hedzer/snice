@@ -48119,56 +48119,6 @@
               }
             },
             {
-              "kind": "method",
-              "name": "handleCheckedChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleExpandedChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleIndeterminateChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleLoadingChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleSelectedChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
               "kind": "field",
               "name": "indeterminate",
               "type": {
@@ -48177,22 +48127,22 @@
               "default": "false"
             },
             {
-              "kind": "method",
-              "name": "init",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
               "kind": "field",
               "name": "loading",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "renderTreeItem",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",

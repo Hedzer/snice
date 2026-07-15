@@ -33,8 +33,8 @@ Displays hierarchical data with expandable/collapsible nodes, selection, checkbo
 interface TreeNode {
   id: string;
   label: string;
-  icon?: string;
-  iconImage?: string;
+  icon?: string;       // Literal text, such as an emoji
+  iconImage?: string;  // Valid image URL; takes precedence over icon
   children?: TreeNode[];
   disabled?: boolean;
   selected?: boolean;
@@ -199,6 +199,24 @@ Set `show-icons="false"` to hide node icons.
 ```html
 <snice-tree show-icons="false"></snice-tree>
 ```
+
+### Text and Image Icons
+
+Use `icon` for literal text or emoji. Use `iconImage` for a relative, HTTP(S), blob, or raster data-image URL. When both are present, the image takes precedence and the text icon becomes its fallback if the image fails to load.
+
+```typescript
+tree.nodes = [
+  { id: 'docs', label: 'Documentation', icon: '📚' },
+  {
+    id: 'workspace',
+    label: 'Workspace',
+    icon: '◆',
+    iconImage: '/assets/workspace.png'
+  }
+];
+```
+
+Icon strings are always displayed literally; markup-looking strings do not create HTML or SVG elements. `iconImage` rejects executable schemes, SVG data payloads, malformed URLs, and raw markup or attribute delimiters. Encode URL delimiters normally rather than placing raw quotes or spaces in the value.
 
 ### Programmatic Control
 

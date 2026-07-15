@@ -9,7 +9,7 @@ test.describe('Tree Single Selection', () => {
 
   test('should only allow one item selected at a time', async ({ page }) => {
     const result = await page.evaluate(async () => {
-      const tree = document.querySelector('#tree1') as any;
+      const tree = document.querySelector('#tree-single') as any;
       if (!tree || !tree.shadowRoot) return { error: 'Tree not found' };
 
       // Get the first root item
@@ -17,9 +17,8 @@ test.describe('Tree Single Selection', () => {
       if (!rootItem || !rootItem.shadowRoot) return { error: 'Root item not found' };
 
       // Expand the first item to access its children
-      const expander = rootItem.shadowRoot.querySelector('.tree-item__expander');
-      if (expander) expander.click();
-      await new Promise(r => setTimeout(r, 300));
+      if (!rootItem.expanded) rootItem.expand();
+      await rootItem.rendered;
 
       // Get first child item
       const childItems = rootItem.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');

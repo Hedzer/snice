@@ -17,8 +17,8 @@ checkedNodes: string[] = [];      // attr: checked-nodes
 interface TreeNode {
   id: string;
   label: string;
-  icon?: string;
-  iconImage?: string;
+  icon?: string;       // literal text/emoji; never HTML
+  iconImage?: string;  // relative, HTTP(S), blob, or raster data-image URL
   children?: TreeNode[];
   disabled?: boolean;
   selected?: boolean;
@@ -29,6 +29,9 @@ interface TreeNode {
   data?: any;
 }
 ```
+
+- `iconImage` takes precedence; `icon` is the load-error fallback.
+- Unsafe/malformed image sources and SVG data payloads are rejected.
 
 ## Methods
 
@@ -75,5 +78,12 @@ tree.nodes = [
       { id: 'main.ts', label: 'main.ts', icon: '📄' }
     ]
   }
+];
+```
+
+```typescript
+tree.nodes = [
+  { id: 'docs', label: 'Docs', icon: '📚' },
+  { id: 'workspace', label: 'Workspace', icon: '◆', iconImage: '/assets/workspace.png' }
 ];
 ```

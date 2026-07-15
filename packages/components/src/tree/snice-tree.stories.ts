@@ -185,6 +185,18 @@ export const CustomIconsEmoji: Story = {
   },
 };
 
+// h2: Image Icons with Text Fallbacks
+export const ImageIconsWithTextFallbacks: Story = {
+  render: () => makeTree({}, [
+    { id: 'snice', label: 'Snice', icon: '◆', iconImage: '/public/images/snice-logo.png', expanded: true, children: [
+      { id: 'us', label: 'United States', icon: '🇺🇸', iconImage: '/public/assets/flags/us.png' },
+      { id: 'gb', label: 'United Kingdom', icon: '🇬🇧', iconImage: '/public/assets/flags/gb.png' },
+      { id: 'jp', label: 'Japan', icon: '🇯🇵', iconImage: '/public/assets/flags/jp.png' },
+    ]},
+    { id: 'text-fallback', label: 'Text icon', icon: '📄' },
+  ]),
+};
+
 // h2: Deeply Nested (4 levels)
 export const DeeplyNested4Levels: Story = {
   render: () => {

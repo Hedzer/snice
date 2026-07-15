@@ -118,6 +118,199 @@ describe('snice-tree', () => {
       });
       expect(tree.showIcons).toBe(false);
     });
+
+    it('renders markup-looking icon strings as literal text', async () => {
+      const icon = '<img data-tree-injected="image" src="missing.png" onerror="globalThis.__treeInjected++"><svg data-tree-injected="svg" onload="globalThis.__treeInjected++"><script>globalThis.__treeInjected++</script></svg>';
+      (globalThis as any).__treeInjected = 0;
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'unsafe-icon', label: 'Safe node', icon }];
+      await wait(50);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const iconContainer = item.shadowRoot.querySelector('.tree-item__icon') as HTMLElement;
+      const iconText = iconContainer.querySelector('[part="icon-text"]');
+
+      expect(iconText?.textContent).toBe(icon);
+      expect(iconContainer.querySelector('img')).toBeNull();
+      expect(iconContainer.querySelector('svg')).toBeNull();
+      expect(iconContainer.querySelector('script')).toBeNull();
+      expect(iconContainer.querySelector('[data-tree-injected]')).toBeNull();
+      expect((globalThis as any).__treeInjected).toBe(0);
+    });
+
+    it('assigns valid image sources through the image src property', async () => {
+      const iconImage = 'https://cdn.example.test/icons/folder.png?label=%22quoted%22&mode=tree';
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'image-icon', label: 'Image node', icon: 'fallback', iconImage }];
+      await wait(50);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const image = item.shadowRoot.querySelector('.tree-item__icon-image') as HTMLImageElement;
+
+      expect(image).toBeTruthy();
+      expect(image.getAttribute('src')).toBe(iconImage);
+      expect(image.getAttribute('onerror')).toBeNull();
+      expect(image.getAttribute('data-tree-injected')).toBeNull();
+      expect(image.alt).toBe('');
+    });
+
+    it('supports relative, blob, and raster data image sources', async () => {
+      const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADElEQVR42mNk+M8AAAICAQB7CYcKAAAAAElFTkSuQmCC';
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [
+        { id: 'relative', label: 'Relative', iconImage: '/assets/folder.png' },
+        { id: 'blob', label: 'Blob', iconImage: 'blob:https://example.test/1234' },
+        { id: 'data', label: 'Data', iconImage: png }
+      ];
+      await wait(50);
+
+      const items = Array.from(tree.shadowRoot!.querySelectorAll('snice-tree-item')) as any[];
+      const sources = items.map(item => (item.shadowRoot.querySelector('img') as HTMLImageElement)?.getAttribute('src'));
+
+      expect(sources[0]).toBe('/assets/folder.png');
+      expect(sources[1]).toBe('blob:https://example.test/1234');
+      expect(sources[2]).toBe(png);
+    });
+
+    it.each([
+      ['javascript scheme', 'javascript:globalThis.__treeInjected++'],
+      ['vbscript scheme', 'vbscript:msgbox(1)'],
+      ['HTML data payload', 'data:text/html,<img src=x onerror=globalThis.__treeInjected++>'],
+      ['SVG data payload', 'data:image/svg+xml,<svg onload=globalThis.__treeInjected++></svg>'],
+      ['quoted attribute payload', 'missing.png" onerror="globalThis.__treeInjected++" data-tree-injected="image'],
+      ['malformed absolute URL', 'http://[']
+    ])('rejects an unsafe iconImage with a %s', async (_caseName, iconImage) => {
+      const fallback = '<svg data-tree-injected="fallback" onload="globalThis.__treeInjected++"></svg>';
+      (globalThis as any).__treeInjected = 0;
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'unsafe-image', label: 'Still intact', icon: fallback, iconImage }];
+      await wait(50);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const iconContainer = item.shadowRoot.querySelector('.tree-item__icon') as HTMLElement;
+
+      expect(iconContainer.querySelector('img')).toBeNull();
+      expect(iconContainer.querySelector('svg')).toBeNull();
+      expect(iconContainer.querySelector('[data-tree-injected]')).toBeNull();
+      expect(iconContainer.textContent?.trim()).toBe(fallback);
+      expect(item.shadowRoot.querySelector('.tree-item__label')?.textContent).toBe('Still intact');
+      expect((globalThis as any).__treeInjected).toBe(0);
+    });
+
+    it('hides an invalid image channel when no text fallback is supplied', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'invalid-only', label: 'No icon', iconImage: 'javascript:alert(1)' }];
+      await wait(50);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const iconContainer = item.shadowRoot.querySelector('.tree-item__icon') as HTMLElement;
+
+      expect(iconContainer.querySelector('img')).toBeNull();
+      expect(iconContainer.style.display).toBe('none');
+      expect(item.shadowRoot.querySelectorAll('.tree-item__content').length).toBe(1);
+      expect(item.shadowRoot.querySelector('.tree-item__label')?.textContent).toBe('No icon');
+    });
+
+    it('falls back to text after an image error and retries a changed source', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'fallback', label: 'Fallback', icon: '📄', iconImage: '/missing.png' }];
+      await wait(50);
+
+      const firstItem = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const firstImage = firstItem.shadowRoot.querySelector('img') as HTMLImageElement;
+      firstImage.dispatchEvent(new Event('error'));
+      await firstItem.rendered;
+
+      expect(firstItem.shadowRoot.querySelector('img')).toBeNull();
+      expect(firstItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent).toBe('📄');
+
+      tree.updateNode('fallback', { iconImage: '/replacement.png' });
+      await wait(50);
+      const replacementItem = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const replacementImage = replacementItem.shadowRoot.querySelector('img') as HTMLImageElement;
+      expect(replacementImage.getAttribute('src')).toBe('/replacement.png');
+    });
+
+    it('keeps nested adversarial icons inert without damaging siblings or hierarchy', async () => {
+      const maliciousIcon = '<svg data-tree-injected="nested"><script>globalThis.__treeInjected++</script></svg>';
+      const maliciousImage = 'x" onerror="globalThis.__treeInjected++" data-tree-injected="nested-image';
+      (globalThis as any).__treeInjected = 0;
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{
+        id: 'root', label: 'Root', icon: '📁', expanded: true, children: [
+          { id: 'branch', label: 'Branch', icon: '📁', expanded: true, children: [
+            { id: 'leaf', label: 'Leaf', icon: maliciousIcon, iconImage: maliciousImage },
+            { id: 'sibling', label: 'Sibling', icon: '📄' }
+          ] }
+        ]
+      }];
+      await wait(100);
+
+      const root = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const branch = root.shadowRoot.querySelector('.tree-item__children > snice-tree-item') as any;
+      const leaves = branch.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item');
+      const leaf = leaves[0] as any;
+      const sibling = leaves[1] as any;
+
+      expect(leaves.length).toBe(2);
+      expect(leaf.shadowRoot.querySelector('.tree-item__label')?.textContent).toBe('Leaf');
+      expect(leaf.shadowRoot.querySelector('[part="icon-text"]')?.textContent).toBe(maliciousIcon);
+      expect(leaf.shadowRoot.querySelector('.tree-item__icon img')).toBeNull();
+      expect(leaf.shadowRoot.querySelector('[data-tree-injected]')).toBeNull();
+      expect(sibling.shadowRoot.querySelector('.tree-item__label')?.textContent).toBe('Sibling');
+      expect(root.expanded).toBe(true);
+      expect(branch.expanded).toBe(true);
+      expect((globalThis as any).__treeInjected).toBe(0);
+    });
+
+    it('preserves keyed child identity and safe rendering across same-object rerenders', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      const nodes = [{
+        id: 'root', label: 'Root', expanded: true, children: [
+          { id: 'alpha', label: 'Alpha', icon: 'A' },
+          { id: 'beta', label: 'Beta', icon: 'B' }
+        ]
+      }];
+      tree.nodes = nodes;
+      await wait(50);
+
+      const root = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const before = Array.from(root.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item')) as any[];
+      const alpha = before[0];
+      const beta = before[1];
+      nodes[0].children.reverse();
+      nodes[0].children[0].icon = '<img data-tree-injected="rerender" src=x>';
+      root.setNode(nodes[0], 0, 1, 1);
+      await root.rendered;
+      await wait(20);
+
+      const after = Array.from(root.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item')) as any[];
+      expect(after[0]).toBe(beta);
+      expect(after[1]).toBe(alpha);
+      expect(after[0].shadowRoot.querySelector('[part="icon-text"]')?.textContent).toBe('<img data-tree-injected="rerender" src=x>');
+      expect(after[0].shadowRoot.querySelector('[data-tree-injected]')).toBeNull();
+      expect(after[1].shadowRoot.querySelector('.tree-item__label')?.textContent).toBe('Alpha');
+    });
+
+    it('reacts to runtime showIcons changes throughout nested nodes', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'root', label: 'Root', icon: '📁', expanded: true, children: [
+        { id: 'child', label: 'Child', icon: '📄' }
+      ] }];
+      await wait(50);
+
+      const root = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const child = root.shadowRoot.querySelector('.tree-item__children > snice-tree-item') as any;
+      tree.showIcons = false;
+      await wait(30);
+      expect((root.shadowRoot.querySelector('.tree-item__icon') as HTMLElement).style.display).toBe('none');
+      expect((child.shadowRoot.querySelector('.tree-item__icon') as HTMLElement).style.display).toBe('none');
+
+      tree.showIcons = true;
+      await wait(30);
+      expect((root.shadowRoot.querySelector('.tree-item__icon') as HTMLElement).style.display).toBe('');
+      expect((child.shadowRoot.querySelector('.tree-item__icon') as HTMLElement).style.display).toBe('');
+    });
   });
 
   describe('expand/collapse', () => {

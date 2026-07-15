@@ -9,7 +9,7 @@ test.describe('Tree Selection Background', () => {
 
   test('should change background color on selection toggle', async ({ page }) => {
     const result = await page.evaluate(async () => {
-      const tree = document.querySelector('#tree1') as any;
+      const tree = document.querySelector('#tree-single') as any;
       if (!tree || !tree.shadowRoot) return { error: 'Tree not found' };
 
       const item = tree.shadowRoot.querySelector('snice-tree-item') as any;

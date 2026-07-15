@@ -4,16 +4,16 @@ test.describe('Tree Component Checkbox', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:5566/components/tree/demo.html');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Wait for components to initialize
+    await page.waitForFunction(() => {
+      const tree = document.querySelector('#tree-check');
+      return tree?.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item').length === 4;
+    });
   });
 
   test('should check and uncheck checkboxes', async ({ page }) => {
     // Get the checkbox tree
-    const tree = page.locator('#tree-checkbox');
+    const tree = page.locator('#tree-check');
     await expect(tree).toBeVisible();
-
-    // Wait for tree items to render
-    await page.waitForTimeout(1000);
 
     // Expand the first tree item so children are visible
     const expandResult = await tree.evaluate((el: any) => {
@@ -41,12 +41,10 @@ test.describe('Tree Component Checkbox', () => {
       });
     });
 
-    await page.waitForTimeout(500);
-
     // Set up event listener to track if handler is called
     await page.evaluate(() => {
       (window as any).treeCheckEventFired = false;
-      document.getElementById('tree-checkbox')?.addEventListener('tree-item-check', () => {
+      document.getElementById('tree-check')?.addEventListener('tree-node-check', () => {
         (window as any).treeCheckEventFired = true;
       });
     });
@@ -63,7 +61,7 @@ test.describe('Tree Component Checkbox', () => {
       return true;
     });
 
-    await page.waitForTimeout(1000);
+    await expect.poll(() => tree.evaluate((el: any) => el.checkedNodes.includes('src'))).toBe(true);
 
     // Check if handleItemCheck was called
     const handlerCalled = await tree.evaluate((el: any) => {
@@ -116,6 +114,7 @@ test.describe('Tree Component Checkbox', () => {
     });
 
     expect(clicked).toBe(true);
+    expect(handlerCalled).toBe(true);
     expect(afterClick?.checkboxChecked).toBe(true);
     expect(afterClick?.itemChecked).toBe(true);
 
@@ -125,17 +124,32 @@ test.describe('Tree Component Checkbox', () => {
     }
   });
 
-  test('should show checked status from tree', async ({ page }) => {
-    const statusText = await page.locator('#checkbox-status').textContent();
+  test('should reflect programmatic checkedNodes changes', async ({ page }) => {
+    const tree = page.locator('#tree-check');
+    await tree.evaluate((el: any) => {
+      el.checkedNodes = ['src', 'index.ts'];
+    });
 
-    // Click "Check All" button
-    await page.click('button:has-text("Check All")');
-    await page.waitForTimeout(1000);
+    await expect.poll(() => tree.evaluate((el: any) => {
+      const root = el.shadowRoot?.querySelector('.tree__content > snice-tree-item');
+      const child = root?.shadowRoot?.querySelector('.tree-item__children > snice-tree-item');
+      return {
+        rootChecked: root?.checked,
+        childChecked: child?.checked,
+        checkedNodes: [...el.checkedNodes]
+      };
+    })).toEqual({
+      rootChecked: true,
+      childChecked: true,
+      checkedNodes: ['src', 'index.ts']
+    });
 
-    const afterCheckAll = await page.locator('#checkbox-status').textContent();
-
-    await page.screenshot({ path: '/tmp/tree-checkbox-all-checked.png' });
-
-    expect(afterCheckAll).toContain('Checked');
+    await tree.evaluate((el: any) => {
+      el.checkedNodes = [];
+    });
+    await expect.poll(() => tree.evaluate((el: any) => {
+      const root = el.shadowRoot?.querySelector('.tree__content > snice-tree-item');
+      return root?.checked;
+    })).toBe(false);
   });
 });

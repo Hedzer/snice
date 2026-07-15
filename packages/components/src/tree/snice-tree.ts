@@ -162,10 +162,21 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
       const total = this.nodes.length;
       items.forEach((item, index) => {
         if (this.nodes[index] && (item as any).setNode) {
+          (item as any).showCheckbox = this.showCheckboxes;
+          (item as any).showIcon = this.showIcons;
           (item as any).setNode(this.nodes[index], 0, index + 1, total);
         }
       });
     }
+  }
+
+  @watch('showCheckboxes', 'showIcons', { immediate: false })
+  private handleDisplayOptionsChange() {
+    const items = this.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item');
+    items?.forEach(item => {
+      (item as any).showCheckbox = this.showCheckboxes;
+      (item as any).showIcon = this.showIcons;
+    });
   }
 
   @watch('selectedNodes')

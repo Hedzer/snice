@@ -3,29 +3,32 @@ import { test, expect } from '@playwright/test';
 test.describe('Tree Lazy Loading', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:5566/components/tree/demo.html');
-    await page.waitForTimeout(1000);
+    await page.waitForFunction(() => {
+      const tree = document.querySelector('#tree-lazy') as any;
+      return tree?.shadowRoot?.querySelectorAll('.tree__content > snice-tree-item').length === 2;
+    });
   });
 
   test('should show expander for lazy nodes', async ({ page }) => {
     const tree = page.locator('#tree-lazy');
-    const rootItem = tree.locator('snice-tree-item').first();
+    const rootItem = tree.locator('.tree__content > snice-tree-item').nth(1);
 
     // Check that expander is visible for lazy node
-    const expander = rootItem.locator('.tree-item__expander');
+    const expander = rootItem.locator('.tree-item__content > .tree-item__expander');
     await expect(expander).toBeVisible();
     await expect(expander).not.toHaveClass(/tree-item__expander--hidden/);
   });
 
   test('should show loading spinner when expanding lazy node', async ({ page }) => {
     const tree = page.locator('#tree-lazy');
-    const rootItem = tree.locator('snice-tree-item').first();
+    const rootItem = tree.locator('.tree__content > snice-tree-item').nth(1);
 
     // Click expander
-    const expander = rootItem.locator('.tree-item__expander');
+    const expander = rootItem.locator('.tree-item__content > .tree-item__expander');
     await expander.click();
 
     // Loading spinner should appear
-    const loadingSpinner = rootItem.locator('.tree-item__loading');
+    const loadingSpinner = rootItem.locator('.tree-item__content > .tree-item__loading');
     await expect(loadingSpinner).toBeVisible();
 
     // Expander should be hidden
@@ -33,31 +36,39 @@ test.describe('Tree Lazy Loading', () => {
   });
 
   test('should update node data and expand after lazy load', async ({ page }) => {
-    await page.evaluate(async () => {
+    const initial = await page.evaluate(() => {
       const tree = document.querySelector('#tree-lazy') as any;
-
-      // Get initial node state
-      const initialNode = tree.nodes[0];
-      console.log('Initial node:', initialNode);
-
-      // Click to trigger lazy load
-      const rootItem = tree.shadowRoot.querySelector('snice-tree-item') as any;
+      const initialNode = tree.nodes[1];
+      const rootItem = tree.shadowRoot.querySelectorAll('.tree__content > snice-tree-item')[1] as any;
       const expander = rootItem.shadowRoot.querySelector('.tree-item__expander');
-      expander.click();
+      expander?.click();
+      return {
+        childCount: initialNode.children?.length ?? 0,
+        lazy: initialNode.lazy,
+        loading: rootItem.loading
+      };
+    });
 
-      // Wait for lazy load
-      await new Promise(r => setTimeout(r, 2000));
-
-      // Check node was updated
-      const updatedNode = tree.nodes[0];
-      console.log('Updated node:', updatedNode);
-
-      if (!updatedNode.children || updatedNode.children.length !== 3) {
-        throw new Error(`Expected 3 children, got ${updatedNode.children?.length}`);
-      }
-      if (updatedNode.lazy !== false) {
-        throw new Error(`Expected lazy to be false, got ${updatedNode.lazy}`);
-      }
+    expect(initial).toEqual({ childCount: 0, lazy: true, loading: true });
+    await expect.poll(() => page.evaluate(() => {
+      const tree = document.querySelector('#tree-lazy') as any;
+      const updatedNode = tree.nodes[1];
+      // updateNode() replaces the rendered root items, so inspect the current
+      // item rather than retaining the pre-update element reference.
+      const updatedItem = tree.shadowRoot.querySelectorAll('.tree__content > snice-tree-item')[1] as any;
+      return {
+        childCount: updatedNode.children?.length ?? 0,
+        lazy: updatedNode.lazy,
+        expanded: updatedItem.expanded,
+        loading: updatedItem.loading,
+        renderedChildren: updatedItem.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item').length
+      };
+    }), { timeout: 5000 }).toEqual({
+      childCount: 2,
+      lazy: false,
+      expanded: true,
+      loading: false,
+      renderedChildren: 2
     });
   });
 });

@@ -147,6 +147,196 @@ const inertFileGalleryDataResult = {
   }))
 };
 
+async function exerciseUntrustedTreeData(
+  page: Page,
+  build: 'source' | 'distribution' | 'cdn'
+) {
+  await page.goto('/guide.html');
+  if (build === 'source') {
+    await page.evaluate(async () => {
+      await import('/packages/components/src/tree/snice-tree.ts');
+    });
+  } else if (build === 'distribution') {
+    await page.evaluate(async () => {
+      await import('/dist/components/tree/snice-tree.js');
+    });
+  } else {
+    await page.addScriptTag({ url: '/components/snice-tree.min.js' });
+  }
+  await page.waitForFunction(() => !!customElements.get('snice-tree'));
+
+  return page.evaluate(async () => {
+    const maliciousIcon = '<img data-tree-injected="icon" src="missing-icon.png" onerror="globalThis.__sniceTreeInjected++"><svg data-tree-injected="svg" onload="globalThis.__sniceTreeInjected++"><script>globalThis.__sniceTreeInjected++</script></svg>';
+    const quotedImage = 'missing.png" onerror="globalThis.__sniceTreeInjected++" data-tree-injected="image';
+    const dynamicIcon = '<svg data-tree-injected="dynamic" onload="globalThis.__sniceTreeInjected++"></svg>';
+    (globalThis as any).__sniceTreeInjected = 0;
+
+    const tree = document.createElement('snice-tree') as any;
+    tree.nodes = [{
+      id: 'root', label: 'Root', icon: '📁', expanded: true, children: [
+        { id: 'text', label: 'Text icon', icon: maliciousIcon },
+        { id: 'quoted', label: 'Quoted image', icon: quotedImage, iconImage: quotedImage },
+        { id: 'javascript', label: 'Script image', iconImage: 'javascript:globalThis.__sniceTreeInjected++' },
+        { id: 'svg-data', label: 'SVG data', icon: 'SVG fallback', iconImage: 'data:image/svg+xml,<svg onload=globalThis.__sniceTreeInjected++></svg>' },
+        { id: 'valid', label: 'Valid image', icon: 'Image fallback', iconImage: '/assets/flags/us.png' },
+        { id: 'branch', label: 'Branch', icon: '📁', expanded: true, children: [
+          { id: 'leaf', label: 'Leaf', icon: maliciousIcon, iconImage: quotedImage },
+          { id: 'sibling', label: 'Sibling', icon: '📄' }
+        ] }
+      ]
+    }];
+    document.body.appendChild(tree);
+    await tree.ready;
+
+    const collectItems = () => {
+      const result: any[] = [];
+      const visit = (item: any) => {
+        result.push(item);
+        item.shadowRoot
+          ?.querySelectorAll('.tree-item__children > snice-tree-item')
+          .forEach((child: any) => visit(child));
+      };
+      tree.shadowRoot
+        ?.querySelectorAll('.tree__content > snice-tree-item')
+        .forEach((item: any) => visit(item));
+      return result;
+    };
+
+    const readyDeadline = performance.now() + 5000;
+    let items = collectItems();
+    while (
+      (items.length !== 9 || items.some(item => !item.shadowRoot))
+      && performance.now() < readyDeadline
+    ) {
+      await new Promise(resolve => setTimeout(resolve, 20));
+      items = collectItems();
+    }
+    if (items.length !== 9 || items.some(item => !item.shadowRoot)) {
+      const branch = items.find(item => item.node?.id === 'branch');
+      throw new Error(JSON.stringify({
+        message: 'Tree descendants did not finish rendering',
+        itemIds: items.map(item => item.node?.id),
+        branchNode: branch?.node,
+        branchShadow: branch?.shadowRoot?.innerHTML
+      }));
+    }
+
+    let byId = new Map(items.map(item => [item.node.id, item]));
+    const textItem = byId.get('text')!;
+    const quotedItem = byId.get('quoted')!;
+    const javascriptItem = byId.get('javascript')!;
+    const svgDataItem = byId.get('svg-data')!;
+    const validItem = byId.get('valid')!;
+    const rootItem = byId.get('root')!;
+    const branchItem = byId.get('branch')!;
+    const leafItem = byId.get('leaf')!;
+
+    const before = {
+      itemCount: items.length,
+      labels: items.map(item => item.shadowRoot.querySelector('.tree-item__label')?.textContent),
+      textIcon: textItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent,
+      quotedFallback: quotedItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent,
+      javascriptImage: Boolean(javascriptItem.shadowRoot.querySelector('img')),
+      javascriptHidden: javascriptItem.shadowRoot.querySelector('.tree-item__icon')?.style.display === 'none',
+      svgFallback: svgDataItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent,
+      validImageAttribute: validItem.shadowRoot.querySelector('img')?.getAttribute('src'),
+      validImageProperty: validItem.shadowRoot.querySelector('img')?.src.endsWith('/assets/flags/us.png'),
+      validImageHandler: validItem.shadowRoot.querySelector('img')?.getAttribute('onerror'),
+      leafText: leafItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent,
+      rootChildren: rootItem.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item').length,
+      branchChildren: branchItem.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item').length,
+      rootExpanded: rootItem.expanded,
+      branchExpanded: branchItem.expanded,
+      injectedNodes: items.reduce(
+        (count, item) => count + item.shadowRoot.querySelectorAll('[data-tree-injected]').length,
+        0
+      ),
+      scripts: items.reduce(
+        (count, item) => count + item.shadowRoot.querySelectorAll('script').length,
+        0
+      )
+    };
+
+    tree.showIcons = false;
+    await new Promise(resolve => setTimeout(resolve, 40));
+    const iconsHidden = collectItems().every(item =>
+      item.shadowRoot.querySelector('.tree-item__icon')?.style.display === 'none'
+    );
+    tree.showIcons = true;
+    await new Promise(resolve => setTimeout(resolve, 40));
+    items = collectItems();
+    byId = new Map(items.map(item => [item.node.id, item]));
+    const iconsRestored = byId.get('text')!.shadowRoot.querySelector('.tree-item__icon')?.style.display !== 'none'
+      && Boolean(byId.get('valid')!.shadowRoot.querySelector('img'));
+
+    const validImage = byId.get('valid')!.shadowRoot.querySelector('img')!;
+    validImage.dispatchEvent(new Event('error'));
+    await byId.get('valid')!.rendered;
+    const imageFallback = byId.get('valid')!.shadowRoot.querySelector('[part="icon-text"]')?.textContent;
+
+    tree.updateNode('text', { icon: dynamicIcon });
+    await new Promise(resolve => setTimeout(resolve, 100));
+    items = collectItems();
+    byId = new Map(items.map(item => [item.node.id, item]));
+    const dynamicItem = byId.get('text')!;
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const after = {
+      dynamicText: dynamicItem.shadowRoot.querySelector('[part="icon-text"]')?.textContent,
+      dynamicInjected: dynamicItem.shadowRoot.querySelectorAll('[data-tree-injected]').length,
+      hierarchyIntact: items.length === 9
+        && byId.get('branch')!.shadowRoot.querySelectorAll('.tree-item__children > snice-tree-item').length === 2,
+      executed: (globalThis as any).__sniceTreeInjected,
+      documentInjectedNodes: document.querySelectorAll('[data-tree-injected]').length
+    };
+
+    tree.remove();
+    return { before, iconsHidden, iconsRestored, imageFallback, after };
+  });
+}
+
+const inertTreeDataResult = {
+  before: {
+    itemCount: 9,
+    labels: [
+      'Root',
+      'Text icon',
+      'Quoted image',
+      'Script image',
+      'SVG data',
+      'Valid image',
+      'Branch',
+      'Leaf',
+      'Sibling'
+    ],
+    textIcon: '<img data-tree-injected="icon" src="missing-icon.png" onerror="globalThis.__sniceTreeInjected++"><svg data-tree-injected="svg" onload="globalThis.__sniceTreeInjected++"><script>globalThis.__sniceTreeInjected++</script></svg>',
+    quotedFallback: 'missing.png" onerror="globalThis.__sniceTreeInjected++" data-tree-injected="image',
+    javascriptImage: false,
+    javascriptHidden: true,
+    svgFallback: 'SVG fallback',
+    validImageAttribute: '/assets/flags/us.png',
+    validImageProperty: true,
+    validImageHandler: null,
+    leafText: '<img data-tree-injected="icon" src="missing-icon.png" onerror="globalThis.__sniceTreeInjected++"><svg data-tree-injected="svg" onload="globalThis.__sniceTreeInjected++"><script>globalThis.__sniceTreeInjected++</script></svg>',
+    rootChildren: 6,
+    branchChildren: 2,
+    rootExpanded: true,
+    branchExpanded: true,
+    injectedNodes: 0,
+    scripts: 0
+  },
+  iconsHidden: true,
+  iconsRestored: true,
+  imageFallback: 'Image fallback',
+  after: {
+    dynamicText: '<svg data-tree-injected="dynamic" onload="globalThis.__sniceTreeInjected++"></svg>',
+    dynamicInjected: 0,
+    hierarchyIntact: true,
+    executed: 0,
+    documentInjectedNodes: 0
+  }
+};
+
 async function exerciseUntrustedSelectData(page: Page, build: 'distribution' | 'cdn') {
   await page.goto('/guide.html');
   if (build === 'distribution') {
@@ -285,6 +475,18 @@ test.describe('declarative rendering framework in a real browser', () => {
 
   test('renders file-gallery metadata safely through the CDN component', async ({ page }) => {
     expect(await exerciseUntrustedFileGalleryData(page, 'cdn')).toEqual(inertFileGalleryDataResult);
+  });
+
+  test('renders tree icon data safely through the source component', async ({ page }) => {
+    expect(await exerciseUntrustedTreeData(page, 'source')).toEqual(inertTreeDataResult);
+  });
+
+  test('renders tree icon data safely through the built ESM component', async ({ page }) => {
+    expect(await exerciseUntrustedTreeData(page, 'distribution')).toEqual(inertTreeDataResult);
+  });
+
+  test('renders tree icon data safely through the CDN component', async ({ page }) => {
+    expect(await exerciseUntrustedTreeData(page, 'cdn')).toEqual(inertTreeDataResult);
   });
 
   test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {
