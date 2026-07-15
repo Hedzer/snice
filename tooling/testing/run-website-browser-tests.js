@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Run the generated public website browser gates on a managed local server. */
 import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
 import net from 'net';
 
 // Do not use the Vite development ports (52891/5566): components.html
@@ -9,6 +10,8 @@ import net from 'net';
 const PORT = 52892;
 const HOST = '127.0.0.1';
 const STARTUP_TIMEOUT_MS = 30_000;
+const siteDir = process.env.SNICE_TEST_SITE_DIR
+  || fileURLToPath(new URL('../../dist/site/', import.meta.url));
 
 function probePort(timeoutMs = 800) {
   return new Promise(resolve => {
@@ -38,11 +41,12 @@ async function waitForPort() {
 }
 
 async function main() {
+  const passthrough = process.argv.slice(2);
   const alreadyUp = await probePort();
   let server = null;
   if (!alreadyUp) {
     server = spawn('python3', ['-m', 'http.server', String(PORT), '--bind', HOST], {
-      cwd: new URL('../../dist/site/', import.meta.url),
+      cwd: siteDir,
       stdio: 'ignore',
       detached: true
     });
@@ -65,7 +69,8 @@ async function main() {
     'test',
     'tests/website-render.test.ts',
     'tests/live/components/table/table-website-showcase.spec.ts',
-    '--config=tests/playwright.config.ts'
+    '--config=tests/playwright.config.ts',
+    ...passthrough
   ], {
     stdio: 'inherit',
     env: {

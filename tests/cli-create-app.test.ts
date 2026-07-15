@@ -71,14 +71,9 @@ describe('CLI create-app command', () => {
     
     // Install dependencies
     console.log('Installing dependencies...');
-    await execAsync('npm install', { 
+    await execAsync(`npm install --no-save --package-lock=false ${process.cwd()}`, {
       cwd: appPath,
       timeout: 60000 // 60 second timeout for npm install
-    });
-    
-    // Link local snice package for testing
-    await execAsync(`npm link ${process.cwd()}`, {
-      cwd: appPath
     });
     
     // Build the app
@@ -229,14 +224,9 @@ describe('CLI create-app command', () => {
     );
 
     // Install dependencies
-    await execAsync('npm install', {
+    await execAsync(`npm install --no-save --package-lock=false ${process.cwd()}`, {
       cwd: appPath,
       timeout: 60000
-    });
-
-    // Link local snice package for testing
-    await execAsync(`npm link ${process.cwd()}`, {
-      cwd: appPath
     });
 
     // Build the app

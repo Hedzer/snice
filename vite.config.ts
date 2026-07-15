@@ -72,7 +72,7 @@ function servePublicIndex() {
       server.middlewares.use((req: any, res: any, next: any) => {
         if (req.url === '/' || req.url === '/index.html') {
           try {
-            const html = readFileSync(join(server.config.root, 'website', 'public', 'index.html'), 'utf-8');
+            const html = readFileSync(join(server.config.publicDir, 'index.html'), 'utf-8');
             server.transformIndexHtml(req.url, html).then((transformed: string) => {
               res.setHeader('Content-Type', 'text/html');
               res.end(transformed);
@@ -141,7 +141,7 @@ function showcaseRebuilder() {
 }
 
 export default defineConfig({
-  publicDir: 'website/public',
+  publicDir: process.env.SNICE_TEST_PUBLIC_DIR || 'website/public',
   plugins: [
     swc.vite({
       jsc: {
@@ -166,6 +166,17 @@ export default defineConfig({
   server: {
     port: 5566,
     strictPort: true,
+    // Coverage reports are generated inside the repository during the full
+    // suite. They are not application inputs and must not reload browser-test
+    // pages while independent validation gates run concurrently.
+    watch: {
+      ignored: [
+        '**/coverage/**',
+        ...(process.env.SNICE_TEST_PUBLIC_DIR
+          ? ['**/website/public/**', '**/dist/site/**']
+          : []),
+      ],
+    },
   },
   optimizeDeps: {
     exclude: ['snice', 'snice/router'],

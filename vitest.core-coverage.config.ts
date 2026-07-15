@@ -17,13 +17,12 @@ const coreEngine = [
   'packages/core/src/template.ts'
 ];
 
-export default mergeConfig(baseConfig, defineConfig({
+const coreCoverageConfig = mergeConfig(baseConfig, defineConfig({
   test: {
     coverage: {
       provider: 'v8',
       all: true,
       include: coreEngine,
-      reporter: ['text', 'json-summary', 'html'],
       reportsDirectory: 'coverage/core-engine',
       thresholds: {
         // Strictly greater than 90%; a result that rounds to exactly 90 fails.
@@ -35,3 +34,9 @@ export default mergeConfig(baseConfig, defineConfig({
     }
   }
 }));
+
+// mergeConfig concatenates arrays. Replace (rather than merge) the base
+// reporter list so text and HTML reports are each generated exactly once.
+coreCoverageConfig.test!.coverage!.reporter = ['text', 'json-summary', 'html'];
+
+export default coreCoverageConfig;
