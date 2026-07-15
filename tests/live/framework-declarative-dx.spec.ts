@@ -1,5 +1,152 @@
 import { expect, test, type Page } from '@playwright/test';
 
+async function exerciseUntrustedFileGalleryData(
+  page: Page,
+  build: 'source' | 'distribution' | 'cdn'
+) {
+  await page.goto('/guide.html');
+  if (build === 'source') {
+    await page.evaluate(async () => {
+      await import('/packages/components/src/file-gallery/snice-file-gallery.ts');
+    });
+  } else if (build === 'distribution') {
+    await page.evaluate(async () => {
+      await import('/dist/components/file-gallery/snice-file-gallery.js');
+    });
+  } else {
+    await page.addScriptTag({ url: '/components/snice-file-gallery.min.js' });
+  }
+  await page.waitForFunction(() => !!customElements.get('snice-file-gallery'));
+
+  return page.evaluate(async (targetBuild) => {
+    const runtime = targetBuild === 'source'
+      ? await import('/packages/core/src/index.ts')
+      : targetBuild === 'distribution'
+        ? await import('/dist/index.esm.js')
+        : (globalThis as any).Snice;
+    const { unsafeHTML } = runtime;
+
+    const fileName = '<img data-gallery-injected="filename" src="missing-name.png" onerror="globalThis.__sniceGalleryInjected++"><svg><script>globalThis.__sniceGalleryInjected++</script></svg>.png';
+    const mimeType = 'image/png"><img data-gallery-injected="mime" src="missing-mime.png" onerror="globalThis.__sniceGalleryInjected++">';
+    const preview = 'missing-preview.png" onerror="globalThis.__sniceGalleryInjected++" data-gallery-injected="preview';
+    const badge = '<img data-gallery-injected="badge" src="missing-badge.png" onerror="globalThis.__sniceGalleryInjected++"><b>New</b>';
+    const error = 'Failed"><img data-gallery-injected="error" src="missing-error.png" onerror="globalThis.__sniceGalleryInjected++">';
+    const actionIcon = '<svg data-gallery-injected="icon" onload="globalThis.__sniceGalleryInjected++"><script>globalThis.__sniceGalleryInjected++</script><circle cx="12" cy="12" r="5"/></svg>';
+    const actionLabel = '<img data-gallery-injected="action" src="missing-action.png" onerror="globalThis.__sniceGalleryInjected++">Camera';
+    (globalThis as any).__sniceGalleryInjected = 0;
+
+    const results = [];
+    for (const view of ['grid', 'list'] as const) {
+      const gallery = document.createElement('snice-file-gallery') as any;
+      gallery.autoUpload = false;
+      gallery.view = view;
+      gallery.showDropzone = false;
+      document.body.appendChild(gallery);
+      await gallery.ready;
+
+      const first = new File(['first'], fileName, { type: mimeType });
+      const second = new File(['second'], '<strong data-gallery-injected="added">added.txt</strong>', { type: 'text/plain' });
+      gallery.addFileWithPreview(first, preview);
+      gallery.addFiles([second]);
+
+      const firstFile = gallery.files[0];
+      const secondFile = gallery.files[1];
+      firstFile.uploadStatus = 'error';
+      firstFile.error = error;
+      gallery.setFileBadge(firstFile.id, badge, 'top-left');
+      gallery.setFileBadge(
+        secondFile.id,
+        unsafeHTML('<span data-trusted-gallery-badge="true"><strong>JD</strong></span>'),
+        'bottom-right'
+      );
+      const actionId = gallery.addCustomAction(actionIcon, actionLabel);
+      gallery.addCustomAction(
+        unsafeHTML('<svg data-trusted-gallery-icon="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>'),
+        'Trusted camera'
+      );
+      await gallery.rendered;
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const shadow = gallery.shadowRoot!;
+      const fileItems = shadow.querySelectorAll<HTMLElement>('[data-file-id]');
+      const firstItem = fileItems[0];
+      const renderedName = firstItem.querySelector<HTMLElement>('.gallery-item-name')!;
+      const image = firstItem.querySelector<HTMLImageElement>('.gallery-item-image')!;
+      const renderedBadge = firstItem.querySelector<HTMLElement>('.gallery-item-badge')!;
+      const renderedError = firstItem.querySelector<HTMLElement>('.gallery-item-error')!;
+      const customAction = Array.from(
+        shadow.querySelectorAll<HTMLElement>('.gallery-item--add-button')
+      ).find(item => item.title === actionLabel)!;
+      let clickedActionId = '';
+      gallery.addEventListener('custom-action-click', (event: CustomEvent) => {
+        clickedActionId = event.detail.actionId;
+      });
+      customAction.click();
+
+      results.push({
+        view,
+        layout: shadow.querySelector('.gallery')?.classList.contains(`gallery--${view}`),
+        fileCount: fileItems.length,
+        fileNameText: renderedName.textContent?.trim() === first.name,
+        fileNameTitle: renderedName.title === first.name,
+        addedFileText: fileItems[1].querySelector('.gallery-item-name')?.textContent?.trim() === second.name,
+        mimeNotRendered: !shadow.textContent?.includes(first.type),
+        preview: image.getAttribute('src') === preview,
+        previewHandler: image.getAttribute('onerror'),
+        imageAlt: image.alt === first.name,
+        badgeText: renderedBadge.textContent?.trim() === badge,
+        badgePosition: renderedBadge.classList.contains('gallery-item-badge--top-left'),
+        errorTitle: renderedError.title === error,
+        errorText: renderedError.textContent === 'Upload failed',
+        actionTitle: customAction.title === actionLabel,
+        actionLabel: customAction.querySelector('.gallery-item-name')?.textContent?.trim() === actionLabel,
+        actionIcon: customAction.querySelector('.gallery-item-add-icon')?.textContent?.trim() === actionIcon,
+        actionClick: clickedActionId === actionId,
+        trustedBadge: shadow.querySelector('[data-trusted-gallery-badge] strong')?.textContent === 'JD',
+        trustedIcon: Boolean(shadow.querySelector('[data-trusted-gallery-icon] circle')),
+        injectedNodes: shadow.querySelectorAll('[data-gallery-injected]').length,
+        scripts: shadow.querySelectorAll('script').length
+      });
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return {
+      executed: (globalThis as any).__sniceGalleryInjected,
+      documentInjectedNodes: document.querySelectorAll('[data-gallery-injected]').length,
+      results
+    };
+  }, build);
+}
+
+const inertFileGalleryDataResult = {
+  executed: 0,
+  documentInjectedNodes: 0,
+  results: ['grid', 'list'].map(view => ({
+    view,
+    layout: true,
+    fileCount: 2,
+    fileNameText: true,
+    fileNameTitle: true,
+    addedFileText: true,
+    mimeNotRendered: true,
+    preview: true,
+    previewHandler: null,
+    imageAlt: true,
+    badgeText: true,
+    badgePosition: true,
+    errorTitle: true,
+    errorText: true,
+    actionTitle: true,
+    actionLabel: true,
+    actionIcon: true,
+    actionClick: true,
+    trustedBadge: true,
+    trustedIcon: true,
+    injectedNodes: 0,
+    scripts: 0
+  }))
+};
+
 async function exerciseUntrustedSelectData(page: Page, build: 'distribution' | 'cdn') {
   await page.goto('/guide.html');
   if (build === 'distribution') {
@@ -128,6 +275,18 @@ const inertSelectDataResult = {
 };
 
 test.describe('declarative rendering framework in a real browser', () => {
+  test('renders file-gallery metadata safely through the source component', async ({ page }) => {
+    expect(await exerciseUntrustedFileGalleryData(page, 'source')).toEqual(inertFileGalleryDataResult);
+  });
+
+  test('renders file-gallery metadata safely through the built ESM component', async ({ page }) => {
+    expect(await exerciseUntrustedFileGalleryData(page, 'distribution')).toEqual(inertFileGalleryDataResult);
+  });
+
+  test('renders file-gallery metadata safely through the CDN component', async ({ page }) => {
+    expect(await exerciseUntrustedFileGalleryData(page, 'cdn')).toEqual(inertFileGalleryDataResult);
+  });
+
   test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {

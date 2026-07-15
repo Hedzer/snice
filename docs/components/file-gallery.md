@@ -7,6 +7,7 @@ The `<snice-file-gallery>` component provides a file upload gallery with drag-an
 ## Table of Contents
 - [Properties](#properties)
 - [Methods](#methods)
+- [Content Safety](#content-safety)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
@@ -76,7 +77,7 @@ The `<snice-file-gallery>` component provides a file upload gallery with drag-an
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `addCustomAction(icon: string, text: string)` | `string` | Add a custom action button; returns the action ID |
+| `addCustomAction(icon: FileGalleryContent, text: string)` | `string` | Add a custom action button; returns the action ID |
 | `removeCustomAction(actionId: string)` | `void` | Remove a custom action button |
 | `clearCustomActions()` | `void` | Remove all custom action buttons |
 
@@ -85,8 +86,24 @@ The `<snice-file-gallery>` component provides a file upload gallery with drag-an
 | Method | Description |
 |--------|-------------|
 | `openFilePicker()` | Programmatically open the file picker dialog |
-| `setFileBadge(fileId, badge, position?)` | Add a custom badge overlay to a file's preview |
+| `setFileBadge(fileId, badge: FileGalleryContent, position?)` | Add a custom badge overlay to a file's preview |
 | `removeFileBadge(fileId)` | Remove a badge from a file |
+
+## Content Safety
+
+`FileGalleryContent` is `string | UnsafeHTML`. All caller-provided strings are treated as data, never HTML. Displayed filenames, badges, action icons, action labels, and upload errors are inserted as text; MIME values and preview URLs remain non-markup data or attribute values. Markup-looking strings cannot add elements, attributes, event handlers, or scripts.
+
+Use Snice's `unsafeHTML()` only when an application intentionally supplies static or already-sanitized markup. This is the explicit trusted channel for rich badge content and custom SVG icons; never wrap filenames, server responses, or other untrusted values.
+
+```typescript
+import { unsafeHTML } from 'snice';
+
+gallery.setFileBadge(fileId, 'New');       // literal text
+gallery.addCustomAction('📷', 'Camera');   // literal text icon
+
+gallery.setFileBadge(fileId, unsafeHTML(trustedBadgeMarkup));
+gallery.addCustomAction(unsafeHTML(trustedSvgMarkup), 'Camera');
+```
 
 ## Events
 
@@ -187,12 +204,14 @@ class UploadHandler implements IController {
 ### Custom Action Buttons
 
 ```typescript
+import { unsafeHTML } from 'snice';
+
 const cameraIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke-width="2"/>
   <circle cx="12" cy="13" r="4" stroke-width="2"/>
 </svg>`;
 
-const cameraActionId = gallery.addCustomAction(cameraIcon, 'Camera');
+const cameraActionId = gallery.addCustomAction(unsafeHTML(cameraIcon), 'Camera');
 
 gallery.addEventListener('custom-action-click', (e) => {
   if (e.detail.actionId === cameraActionId) {
@@ -204,6 +223,10 @@ gallery.addEventListener('custom-action-click', (e) => {
 ### Custom Badges
 
 ```typescript
+import { unsafeHTML } from 'snice';
+
+gallery.setFileBadge('file-id-123', 'New', 'top-left');
+
 const avatarHTML = `<div style="
   width: 40px; height: 40px; border-radius: 50%;
   background: #3b82f6; color: white;
@@ -211,8 +234,10 @@ const avatarHTML = `<div style="
   font-weight: bold; border: 2px solid white;
 ">JD</div>`;
 
-gallery.setFileBadge('file-id-123', avatarHTML, 'top-right');
+gallery.setFileBadge('file-id-123', unsafeHTML(avatarHTML), 'top-right');
 ```
+
+Only use `unsafeHTML()` with static or sanitized content that your application trusts. Ordinary badge strings are displayed literally.
 
 ### Tracking Upload Events
 

@@ -21,6 +21,14 @@ showHeader: boolean = true;     // attribute: show-header
 files: GalleryFile[];           // read-only getter
 ```
 
+Content type:
+
+```typescript
+type FileGalleryContent = string | UnsafeHTML;
+```
+
+Strings are escaped text. Rich badge/SVG composition requires the explicit `unsafeHTML()` wrapper and must contain only static or application-sanitized markup. Never wrap filenames, MIME values, upload errors, server responses, or other untrusted data.
+
 ## Methods
 
 Getters:
@@ -46,12 +54,24 @@ Upload control:
 - `pauseAll()` / `resumeAll()` / `retryAll()` / `cancelAll()`
 
 Custom actions:
-- `addCustomAction(icon: string, text: string): string`
+- `addCustomAction(icon: FileGalleryContent, text: string): string`
 - `removeCustomAction(actionId)` / `clearCustomActions()`
 
 Utility:
 - `openFilePicker()`
-- `setFileBadge(fileId, badge, position?)` / `removeFileBadge(fileId)`
+- `setFileBadge(fileId, badge: FileGalleryContent, position?)` / `removeFileBadge(fileId)`
+
+Safe/trusted composition:
+
+```typescript
+import { unsafeHTML } from 'snice';
+
+gallery.setFileBadge(fileId, 'New');
+gallery.addCustomAction('📷', 'Camera');
+
+gallery.setFileBadge(fileId, unsafeHTML(trustedBadgeMarkup));
+gallery.addCustomAction(unsafeHTML(trustedSvgMarkup), 'Camera');
+```
 
 ## Events
 

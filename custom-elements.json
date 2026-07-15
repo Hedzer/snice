@@ -14704,7 +14704,7 @@
               "parameters": [
                 {
                   "name": "icon",
-                  "type": "string",
+                  "type": "FileGalleryContent",
                   "optional": false
                 },
                 {
@@ -15177,28 +15177,18 @@
                 },
                 {
                   "name": "badge",
-                  "type": "string",
+                  "type": "FileGalleryContent",
                   "optional": false
                 },
                 {
                   "name": "position",
-                  "type": "'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
+                  "type": "FileGalleryBadgePosition",
                   "optional": true
                 }
               ],
               "return": {
                 "type": {
                   "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "setupComponent",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
                 }
               }
             },

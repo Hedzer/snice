@@ -1,8 +1,17 @@
+import type { UnsafeHTML } from 'snice';
+
 export type FileGalleryView = 'grid' | 'list';
+export type FileGalleryBadgePosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+/**
+ * Gallery copy is text by default. Use Snice's explicit `unsafeHTML()` wrapper
+ * only for static or sanitized markup that the application trusts.
+ */
+export type FileGalleryContent = string | UnsafeHTML;
 
 export interface CustomAction {
   id: string;
-  icon: string;
+  icon: FileGalleryContent;
   text: string;
 }
 
@@ -13,8 +22,8 @@ export interface GalleryFile {
   uploadProgress: number;
   uploadStatus: 'pending' | 'uploading' | 'paused' | 'completed' | 'error';
   error?: string;
-  badge?: string; // Custom badge text or HTML to display on preview
-  badgePosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  badge?: FileGalleryContent;
+  badgePosition?: FileGalleryBadgePosition;
 }
 
 export interface UploadRequest {
@@ -75,12 +84,12 @@ export interface SniceFileGalleryElement extends HTMLElement {
   cancelAll(): void;
 
   // Custom actions
-  addCustomAction(icon: string, text: string): string;
+  addCustomAction(icon: FileGalleryContent, text: string): string;
   removeCustomAction(actionId: string): void;
   clearCustomActions(): void;
 
   // Utility
   openFilePicker(): void;
-  setFileBadge(fileId: string, badge: string, position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'): void;
+  setFileBadge(fileId: string, badge: FileGalleryContent, position?: FileGalleryBadgePosition): void;
   removeFileBadge(fileId: string): void;
 }
