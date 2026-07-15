@@ -37,6 +37,20 @@ html`
 
 Dynamic text is escaped. `unsafeHTML(value)` is the explicit opt-in for trusted raw HTML. Use `svg`` for an SVG fragment that does not include its own outer `<svg>` element.
 
+Escaping prevents markup injection; it does not make an untrusted navigation URL safe. Validate URL sinks with `isSafeUrl()`:
+
+```typescript
+import { isSafeUrl } from 'snice';
+
+if (isSafeUrl(candidateUrl)) {
+  window.location.href = candidateUrl;
+}
+
+isSafeUrl(objectUrl, { allowed: ['blob:'] });
+```
+
+By default, relative references and absolute `http:`, `https:`, `mailto:`, and `tel:` URLs are accepted. Network-path references must resolve to an allowed protocol. Malformed URLs, raw ASCII control characters, and every other explicit scheme are rejected. Passing `allowed` replaces the absolute-protocol list but does not disable relative references. `snice-button` applies this policy automatically to its `href` property.
+
 ## Bindings
 
 This section is the quick syntax overview. See [Binding Channels](./bindings.md) for the complete value, cleanup, event, spread, sentinel, and form-control semantics.

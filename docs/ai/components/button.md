@@ -31,7 +31,7 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 
 ## Events
 
-- `button-click` -> `{ originalEvent: MouseEvent }`
+- `button-click` -> `{ originalEvent: MouseEvent }`; only after an enabled, non-loading activation passes `href` validation
 
 ## Slots
 
@@ -88,12 +88,23 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 
 <!-- As link -->
 <snice-button href="/page">Link</snice-button>
-<snice-button href="/file.pdf" download>Download</snice-button>
+<snice-button href="#section">Hash</snice-button>
+<snice-button href="mailto:team@example.com">Email</snice-button>
+<snice-button href="/file.pdf" download="file.pdf">Download</snice-button>
 
 <!-- Form -->
 <snice-button type="submit" variant="primary">Submit</snice-button>
 <snice-button type="reset">Reset</snice-button>
 ```
+
+## URL Policy
+
+- `href` is trimmed, then checked with shared `isSafeUrl()`.
+- Allowed by default: relative/root/hash/query references, HTTP(S) network-path references, and explicit `http:`, `https:`, `mailto:`, `tel:` URLs.
+- Rejected: malformed URLs, raw ASCII controls, and every other explicit scheme (`javascript:`, `data:`, `vbscript:`, `file:`, custom, etc.).
+- HTML character references are decoded by the browser before validation; mixed-case, whitespace-prefixed, control-obfuscated, attribute, and property inputs follow the same policy.
+- A rejected `href` stops activation: no location/history change, popup, download, form submit/reset, native click propagation, or `button-click` event.
+- Direct non-string `href` assignments fail closed.
 
 ## Accessibility
 

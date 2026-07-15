@@ -25,6 +25,18 @@ class MyView extends SniceElement {
 - `@state(options?: { deep?, hasChanged? })`: no attribute channel.
 - `deep:true`: nested plain object/array/Map/Set writes; cycles + stable proxies; uses native Proxy/Reflect; no IE; class instances remain intact.
 
+## URL safety
+
+```typescript
+isSafeUrl(value: unknown, options?: { allowed?: readonly string[] }): boolean
+```
+
+- Template escaping blocks markup injection, not executable URL schemes.
+- Defaults: relative references plus absolute/network `http:`, `https:`, `mailto:`, `tel:` URLs.
+- Rejects malformed input, raw ASCII controls, and every other explicit scheme.
+- `allowed` replaces the absolute/network protocol list; relative references remain allowed.
+- `snice-button.href` applies this policy automatically and blocks the entire activation on failure.
+
 ## Bindings
 
 Exact per-channel value/removal rules, event grammar, spreads, sentinels, and form data flow: [bindings.md](bindings.md).

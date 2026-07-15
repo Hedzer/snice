@@ -214,9 +214,10 @@ export const AllButtonTypes: Story = {
 // h2: Link buttons (href)
 export const LinkButtons: Story = {
   render: () => row(
-    makeBtn('primary', 'href link',     { href: '#link1' }),
-    makeBtn('primary', 'target=_blank', { href: '#link2', target: '_blank' }),
-    makeBtn('primary', 'download',      { href: '#download', download: 'file.txt' }),
+    makeBtn('primary', 'Relative / hash', { href: '#button-link' }),
+    makeBtn('primary', 'HTTPS target',    { href: 'https://example.com', target: '_blank' }),
+    makeBtn('primary', 'Safe download',   { href: '#download', download: 'file.txt' }),
+    makeBtn('danger', 'Unsafe scheme (blocked)', { href: 'javascript:globalThis.__sniceUnsafeButtonStory = true', outline: true }),
   ),
 };
 

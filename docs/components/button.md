@@ -13,6 +13,7 @@ The button component provides an interactive element for user actions. It suppor
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [URL Safety](#url-safety)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -27,7 +28,7 @@ The button component provides an interactive element for user actions. It suppor
 | `outline` | `boolean` | `false` | Use outline style |
 | `pill` | `boolean` | `false` | Use pill (fully rounded) shape |
 | `circle` | `boolean` | `false` | Use circle shape (icon only) |
-| `href` | `string` | `''` | URL to navigate to on click |
+| `href` | `string` | `''` | Safe URL to navigate to on click; see [URL Safety](#url-safety) |
 | `target` | `string` | `''` | Link target (e.g. `_blank`) |
 | `download` | `string` | `''` | Download attribute for file downloads |
 | `icon` | `string` | `''` | Icon (emoji, URL, image file). Use the `icon` slot for icon fonts. |
@@ -48,7 +49,7 @@ The button component provides an interactive element for user actions. It suppor
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `button-click` | `{ originalEvent: MouseEvent }` | Fired when the button is clicked |
+| `button-click` | `{ originalEvent: MouseEvent }` | Fired after an enabled, non-loading activation is accepted |
 
 ## Slots
 
@@ -197,6 +198,10 @@ Use `href` to navigate on click.
 <snice-button href="/files/document.pdf" download="document.pdf">Download PDF</snice-button>
 ```
 
+Accepted relative references include ordinary paths, root-relative paths, hashes, and queries. Absolute URLs use the shared Snice URL policy: `http:`, `https:`, `mailto:`, and `tel:` are allowed. HTTP(S) network-path references such as `//cdn.example.com/file` are also allowed.
+
+Surrounding whitespace is trimmed. Malformed URLs, raw ASCII control characters, and all other explicit schemes—including `javascript:`, `data:`, `vbscript:`, `file:`, and custom schemes—are blocked. A blocked activation does not navigate, open a target, start a download, submit or reset a form, or emit `button-click`.
+
 ### Form Buttons
 
 ```html
@@ -226,6 +231,24 @@ button.addEventListener('click', async () => {
   }
 });
 ```
+
+## URL Safety
+
+`snice-button` applies Snice's shared `isSafeUrl()` policy automatically whenever `href` is present. For other components or native elements that receive untrusted navigational URLs, validate before assigning the URL:
+
+```typescript
+import { isSafeUrl } from 'snice';
+
+if (isSafeUrl(candidate)) {
+  link.href = candidate;
+}
+
+// Replace the default absolute-protocol list when a context needs another
+// browser-supported protocol. Relative references remain accepted.
+isSafeUrl(objectUrl, { allowed: ['blob:'] });
+```
+
+HTML escaping and URL validation solve different problems: an escaped string cannot inject markup, but it may still contain an executable URL scheme. Use `isSafeUrl()` at navigation sinks; use `unsafeHTML()` only for explicitly trusted markup.
 
 ## Accessibility
 

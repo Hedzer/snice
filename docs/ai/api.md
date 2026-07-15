@@ -273,6 +273,15 @@ type ResponseMiddleware = (
 //   });
 ```
 
+## URL Safety
+
+```typescript
+isSafeUrl(value: unknown, options?: { allowed?: readonly string[] }): boolean
+// URL-sink validation. Relative references are accepted. Default absolute/network
+// protocols: http:, https:, mailto:, tel:. Malformed input, raw ASCII controls,
+// and every other explicit scheme are rejected. `allowed` replaces the protocol list.
+```
+
 ## Templates
 
 ```typescript

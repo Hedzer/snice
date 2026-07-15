@@ -7,6 +7,8 @@ describe('snice-button', () => {
   let button: SniceButtonElement;
 
   afterEach(() => {
+    vi.restoreAllMocks();
+    delete (globalThis as any).__sniceButtonInjected;
     if (button) {
       removeComponent(button as HTMLElement);
     }
@@ -344,6 +346,253 @@ describe('snice-button', () => {
 
       expect(clickDetail).toBeTruthy();
       expect(clickDetail.originalEvent).toBeTruthy();
+    });
+  });
+
+  describe('safe URL navigation', () => {
+    const unsafeUrls = [
+      '   ',
+      '\u00a0',
+      'javascript:globalThis.__sniceButtonInjected++',
+      'JaVaScRiPt:globalThis.__sniceButtonInjected++',
+      '  javascript:globalThis.__sniceButtonInjected++',
+      '\u00a0javascript:globalThis.__sniceButtonInjected++',
+      'java\tscript:globalThis.__sniceButtonInjected++',
+      'java\nscript:globalThis.__sniceButtonInjected++',
+      'jav\u0000ascript:globalThis.__sniceButtonInjected++',
+      'data:text/html,<script>globalThis.__sniceButtonInjected++</script>',
+      'vbscript:msgbox(1)',
+      'file:///tmp/private',
+      'custom:payload',
+      'http://['
+    ];
+
+    it.each(unsafeUrls)('blocks an unsafe target navigation without a success event: %j', async (href) => {
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href,
+        target: '_blank'
+      });
+      let buttonClicks = 0;
+      button.addEventListener('button-click', () => buttonClicks++);
+
+      button.click();
+      await wait(10);
+
+      expect(open).not.toHaveBeenCalled();
+      expect(buttonClicks).toBe(0);
+    });
+
+    it('blocks a direct script URL without execution, history changes, or click propagation', async () => {
+      (globalThis as any).__sniceButtonInjected = 0;
+      const initialHref = window.location.href;
+      const initialHistoryLength = window.history.length;
+      const documentClick = vi.fn();
+      document.addEventListener('click', documentClick);
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: 'javascript:globalThis.__sniceButtonInjected++'
+      });
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      try {
+        button.click();
+        await wait(10);
+
+        expect((globalThis as any).__sniceButtonInjected).toBe(0);
+        expect(window.location.href).toBe(initialHref);
+        expect(window.history.length).toBe(initialHistoryLength);
+        expect(buttonClick).not.toHaveBeenCalled();
+        expect(documentClick).not.toHaveBeenCalled();
+      } finally {
+        document.removeEventListener('click', documentClick);
+      }
+    });
+
+    it('blocks unsafe href values supplied through the reflected attribute', async () => {
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      button = await createComponent<SniceButtonElement>('snice-button');
+      button.setAttribute('href', 'JaVaScRiPt:globalThis.__sniceButtonInjected++');
+      button.setAttribute('target', '_blank');
+      await wait(10);
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      button.click();
+      await wait(10);
+
+      expect(button.href).toBe('JaVaScRiPt:globalThis.__sniceButtonInjected++');
+      expect(open).not.toHaveBeenCalled();
+      expect(buttonClick).not.toHaveBeenCalled();
+    });
+
+    it('fails closed for a non-string runtime href without throwing', async () => {
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      button = await createComponent<SniceButtonElement>('snice-button', { target: '_blank' });
+      (button as any).href = { toString: () => 'https://example.com' };
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      expect(() => button.click()).not.toThrow();
+      await wait(10);
+      expect(open).not.toHaveBeenCalled();
+      expect(buttonClick).not.toHaveBeenCalled();
+    });
+
+    it.each([null, undefined, false, 0, Number.NaN])(
+      'fails closed for a falsey non-string runtime href: %j',
+      async (href) => {
+        const form = document.createElement('form');
+        document.body.appendChild(form);
+        button = await createComponent<SniceButtonElement>('snice-button', {
+          type: 'submit'
+        });
+        form.appendChild(button);
+        (button as any).href = href;
+        const submit = vi.fn((event: Event) => event.preventDefault());
+        const buttonClick = vi.fn();
+        form.addEventListener('submit', submit);
+        button.addEventListener('button-click', buttonClick);
+
+        try {
+          expect(() => button.click()).not.toThrow();
+          await wait(10);
+
+          expect(submit).not.toHaveBeenCalled();
+          expect(buttonClick).not.toHaveBeenCalled();
+        } finally {
+          form.remove();
+        }
+      }
+    );
+
+    it('does not create a download activation for an unsafe URL', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: 'javascript:globalThis.__sniceButtonInjected++',
+        download: 'report.txt'
+      });
+      const originalCreateElement = document.createElement.bind(document);
+      const createdAnchors: HTMLAnchorElement[] = [];
+      vi.spyOn(document, 'createElement').mockImplementation(((tagName: string, options?: ElementCreationOptions) => {
+        const element = originalCreateElement(tagName, options);
+        if (tagName.toLowerCase() === 'a') createdAnchors.push(element as HTMLAnchorElement);
+        return element;
+      }) as typeof document.createElement);
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      button.click();
+      await wait(10);
+
+      expect(createdAnchors).toEqual([]);
+      expect(buttonClick).not.toHaveBeenCalled();
+    });
+
+    it.each(['submit', 'reset'] as const)('does not perform a %s action for an unsafe URL', async (type) => {
+      const form = document.createElement('form');
+      const input = document.createElement('input');
+      input.defaultValue = 'authored';
+      input.value = 'changed';
+      form.appendChild(input);
+      document.body.appendChild(form);
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: 'javascript:globalThis.__sniceButtonInjected++',
+        type
+      });
+      form.appendChild(button);
+      const submit = vi.fn((event: Event) => event.preventDefault());
+      const reset = vi.fn();
+      const buttonClick = vi.fn();
+      form.addEventListener('submit', submit);
+      form.addEventListener('reset', reset);
+      button.addEventListener('button-click', buttonClick);
+
+      try {
+        button.click();
+        await wait(10);
+
+        expect(submit).not.toHaveBeenCalled();
+        expect(reset).not.toHaveBeenCalled();
+        expect(input.value).toBe('changed');
+        expect(buttonClick).not.toHaveBeenCalled();
+      } finally {
+        form.remove();
+      }
+    });
+
+    it.each([
+      ['/relative/path', '_self'],
+      ['https://example.com/path', '_blank'],
+      ['mailto:test@example.com', '_blank'],
+      ['tel:+15550100', 'phone-window'],
+      ['//example.com/network-path', '_blank']
+    ])('opens an allowed URL through its requested target: %s', async (href, target) => {
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: `  ${href}  `,
+        target
+      });
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      button.click();
+      await wait(10);
+
+      expect(open).toHaveBeenCalledOnce();
+      expect(open).toHaveBeenCalledWith(href, target);
+      expect(buttonClick).toHaveBeenCalledOnce();
+    });
+
+    it('navigates an allowed hash and emits the click event', async () => {
+      const initialHref = window.location.href;
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: '#snice-button-safe-target'
+      });
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      try {
+        button.click();
+        await wait(10);
+
+        expect(window.location.hash).toBe('#snice-button-safe-target');
+        expect(buttonClick).toHaveBeenCalledOnce();
+      } finally {
+        window.history.replaceState(null, '', initialHref);
+      }
+    });
+
+    it('creates an anchor download only for an allowed URL', async () => {
+      let activation: { href: string | null; download: string } | null = null;
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: '/files/report.pdf',
+        download: 'quarterly-report.pdf'
+      });
+      const originalCreateElement = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation(((tagName: string, options?: ElementCreationOptions) => {
+        const element = originalCreateElement(tagName, options);
+        if (tagName.toLowerCase() === 'a') {
+          const anchor = element as HTMLAnchorElement;
+          anchor.click = () => {
+            activation = {
+              href: anchor.getAttribute('href'),
+              download: anchor.download
+            };
+          };
+        }
+        return element;
+      }) as typeof document.createElement);
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      button.click();
+      await wait(10);
+
+      expect(activation).toEqual({
+        href: '/files/report.pdf',
+        download: 'quarterly-report.pdf'
+      });
+      expect(buttonClick).toHaveBeenCalledOnce();
     });
   });
 

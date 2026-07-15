@@ -1,4 +1,4 @@
-import { element, property, query, render, styles, html, css } from 'snice';
+import { element, property, query, render, styles, html, css, isSafeUrl } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
@@ -128,17 +128,26 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       return;
     }
 
-    // Handle navigation if href is set
-    if (this.href) {
+    // A non-empty href turns this activation into navigation. Treat an
+    // invalid URL as a blocked activation: it must not fall through to form
+    // behavior or emit the success-oriented button-click event.
+    if (this.href !== '') {
+      const href = typeof this.href === 'string' ? this.href.trim() : '';
+      if (!href || !isSafeUrl(href)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
       if (this.download) {
         const a = document.createElement('a');
-        a.href = this.href;
+        a.href = href;
         a.download = this.download;
         a.click();
       } else if (this.target) {
-        window.open(this.href, this.target);
+        window.open(href, this.target);
       } else {
-        window.location.href = this.href;
+        window.location.href = href;
       }
     }
 

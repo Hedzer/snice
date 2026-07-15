@@ -1101,6 +1101,15 @@ class UserEditor extends SniceElement {
   ${visible ? html`&lt;section&gt;Visible&lt;/section&gt;` : nothing}
 `</snice-code-block>
 <p>Dynamic text is escaped. <code>unsafeHTML(value)</code> is the explicit opt-in for trusted raw HTML. Use <code>svg</code><code> for an SVG fragment that does not include its own outer </code>&lt;svg&gt;` element.</p>
+<p>Escaping prevents markup injection; it does not make an untrusted navigation URL safe. Validate URL sinks with <code>isSafeUrl()</code>:</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">import { isSafeUrl } from 'snice';
+
+if (isSafeUrl(candidateUrl)) {
+  window.location.href = candidateUrl;
+}
+
+isSafeUrl(objectUrl, { allowed: ['blob:'] });</snice-code-block>
+<p>By default, relative references and absolute <code>http:</code>, <code>https:</code>, <code>mailto:</code>, and <code>tel:</code> URLs are accepted. Network-path references must resolve to an allowed protocol. Malformed URLs, raw ASCII control characters, and every other explicit scheme are rejected. Passing <code>allowed</code> replaces the absolute-protocol list but does not disable relative references. <code>snice-button</code> applies this policy automatically to its <code>href</code> property.</p>
 <h2 id="rendering-bindings">Bindings</h2>
 <p>This section is the quick syntax overview. See <a href="#bindings">Binding Channels</a> for the complete value, cleanup, event, spread, sentinel, and form-control semantics.</p>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">html`&lt;input

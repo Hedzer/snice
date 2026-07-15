@@ -464,6 +464,263 @@ const inertSelectDataResult = {
   remoteIconHandler: null
 };
 
+async function exerciseButtonNavigationPolicy(
+  page: Page,
+  build: 'source' | 'distribution' | 'cdn'
+) {
+  await page.goto('/guide.html');
+  if (build === 'source') {
+    await page.evaluate(async () => {
+      await import('/packages/components/src/button/snice-button.ts');
+    });
+  } else if (build === 'distribution') {
+    await page.evaluate(async () => {
+      await import('/dist/components/button/snice-button.js');
+    });
+  } else {
+    await page.addScriptTag({ url: '/components/snice-button.min.js' });
+  }
+  await page.waitForFunction(() => !!customElements.get('snice-button'));
+
+  return page.evaluate(async () => {
+    const opened: Array<{ url: string; target: string }> = [];
+    const downloads: Array<{ href: string | null; download: string }> = [];
+    const originalOpen = window.open;
+    const originalAnchorClick = HTMLAnchorElement.prototype.click;
+    let unsafeButtonClicks = 0;
+    let unsafeDocumentClicks = 0;
+    let unsafeErrors = 0;
+    let formSubmits = 0;
+    let formResets = 0;
+    (globalThis as any).__sniceButtonInjected = 0;
+
+    window.open = ((url?: string | URL, target?: string) => {
+      opened.push({ url: String(url ?? ''), target: target ?? '' });
+      return null;
+    }) as typeof window.open;
+    HTMLAnchorElement.prototype.click = function () {
+      downloads.push({
+        href: this.getAttribute('href'),
+        download: this.download
+      });
+    };
+
+    const documentClick = () => unsafeDocumentClicks++;
+    document.addEventListener('click', documentClick);
+
+    const connectButton = async (configure: (button: any) => void) => {
+      const button = document.createElement('snice-button') as any;
+      button.textContent = 'Navigation test';
+      configure(button);
+      button.addEventListener('button-click', () => unsafeButtonClicks++);
+      document.body.appendChild(button);
+      await button.ready;
+      await button.rendered;
+      return button;
+    };
+
+    const activate = async (button: any) => {
+      try {
+        const internal = button.shadowRoot?.querySelector('button') as HTMLButtonElement | null;
+        if (!internal) throw new Error('Button did not render');
+        internal.click();
+        await new Promise(resolve => setTimeout(resolve, 0));
+      } catch {
+        unsafeErrors++;
+      }
+    };
+
+    const initialHref = location.href;
+    const initialHistoryLength = history.length;
+
+    try {
+      const unsafeButtons = [
+        await connectButton(button => {
+          button.href = 'javascript:globalThis.__sniceButtonInjected += 1';
+        }),
+        await connectButton(button => {
+          button.href = 'JaVaScRiPt:globalThis.__sniceButtonInjected += 2';
+        }),
+        await connectButton(button => {
+          button.setAttribute('href', '  javascript:globalThis.__sniceButtonInjected += 4');
+        }),
+        await connectButton(button => {
+          button.setAttribute('href', 'java\tscript:globalThis.__sniceButtonInjected += 8');
+        }),
+        await connectButton(button => {
+          button.href = { toString: () => 'https://example.test/coerced' };
+          button.target = '_blank';
+        }),
+        await connectButton(button => {
+          button.href = null;
+          button.target = '_blank';
+        }),
+        await connectButton(button => {
+          button.href = 0;
+          button.target = '_blank';
+        }),
+        await connectButton(button => {
+          button.href = 'data:text/html,<script>globalThis.__sniceButtonInjected += 16</script>';
+          button.target = '_blank';
+        }),
+        await connectButton(button => {
+          button.href = 'http://[';
+          button.target = '_blank';
+        }),
+        await connectButton(button => {
+          button.href = 'javascript:globalThis.__sniceButtonInjected += 32';
+          button.download = 'unsafe.txt';
+        })
+      ];
+
+      const authored = document.createElement('div');
+      authored.innerHTML = `
+        <snice-button href="jav&#x61;script:globalThis.__sniceButtonInjected += 64">Encoded letter</snice-button>
+        <snice-button href="javascript&#58;globalThis.__sniceButtonInjected += 128">Encoded colon</snice-button>
+        <snice-button href="java&#x0a;script:globalThis.__sniceButtonInjected += 256">Encoded control</snice-button>
+      `;
+      document.body.appendChild(authored);
+      const authoredButtons = Array.from(authored.querySelectorAll('snice-button')) as any[];
+      for (const button of authoredButtons) {
+        button.addEventListener('button-click', () => unsafeButtonClicks++);
+        await button.ready;
+        await button.rendered;
+      }
+
+      const form = document.createElement('form');
+      const input = document.createElement('input');
+      input.defaultValue = 'authored';
+      input.value = 'changed';
+      form.appendChild(input);
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        formSubmits++;
+      });
+      form.addEventListener('reset', () => formResets++);
+      document.body.appendChild(form);
+      const formButton = await connectButton(button => {
+        button.href = 'javascript:globalThis.__sniceButtonInjected += 512';
+        button.type = 'submit';
+      });
+      form.appendChild(formButton);
+
+      for (const button of [...unsafeButtons, ...authoredButtons, formButton]) {
+        await activate(button);
+      }
+
+      const blocked = {
+        executed: (globalThis as any).__sniceButtonInjected,
+        buttonClicks: unsafeButtonClicks,
+        documentClicks: unsafeDocumentClicks,
+        popups: [...opened],
+        downloads: [...downloads],
+        errors: unsafeErrors,
+        locationUnchanged: location.href === initialHref,
+        historyUnchanged: history.length === initialHistoryLength,
+        formSubmits,
+        formResets,
+        formValue: input.value
+      };
+
+      document.removeEventListener('click', documentClick);
+      opened.length = 0;
+      downloads.length = 0;
+      let safeButtonClicks = 0;
+
+      const safeTargets = [
+        ['/relative/path', '_blank'],
+        ['http://example.test/path', 'http-window'],
+        ['HTTPS://example.test/path', '_blank'],
+        ['mailto:test@example.com', 'mail-window'],
+        ['tel:+15550100', 'phone-window'],
+        ['//example.test/network-path', '_blank'],
+        ['javascript%3AglobalThis.__sniceButtonInjected += 1024', '_blank']
+      ] as const;
+
+      for (const [href, target] of safeTargets) {
+        const button = document.createElement('snice-button') as any;
+        button.href = `  ${href}  `;
+        button.target = target;
+        button.textContent = href;
+        button.addEventListener('button-click', () => safeButtonClicks++);
+        document.body.appendChild(button);
+        await button.ready;
+        await button.rendered;
+        await activate(button);
+      }
+
+      const hashButton = document.createElement('snice-button') as any;
+      hashButton.href = '#snice-button-safe-hash';
+      hashButton.textContent = 'Hash';
+      hashButton.addEventListener('button-click', () => safeButtonClicks++);
+      document.body.appendChild(hashButton);
+      await hashButton.ready;
+      await hashButton.rendered;
+      await activate(hashButton);
+      const hashNavigated = location.hash === '#snice-button-safe-hash';
+
+      const downloadButton = document.createElement('snice-button') as any;
+      downloadButton.href = '/files/report.pdf';
+      downloadButton.download = 'report.pdf';
+      downloadButton.textContent = 'Download';
+      downloadButton.addEventListener('button-click', () => safeButtonClicks++);
+      document.body.appendChild(downloadButton);
+      await downloadButton.ready;
+      await downloadButton.rendered;
+      await activate(downloadButton);
+
+      const allowed = {
+        buttonClicks: safeButtonClicks,
+        popups: [...opened],
+        downloads: [...downloads],
+        hashNavigated,
+        executed: (globalThis as any).__sniceButtonInjected,
+        errors: unsafeErrors
+      };
+
+      return { blocked, allowed };
+    } finally {
+      document.removeEventListener('click', documentClick);
+      window.open = originalOpen;
+      HTMLAnchorElement.prototype.click = originalAnchorClick;
+      history.replaceState(null, '', initialHref);
+      delete (globalThis as any).__sniceButtonInjected;
+    }
+  });
+}
+
+const buttonNavigationPolicyResult = {
+  blocked: {
+    executed: 0,
+    buttonClicks: 0,
+    documentClicks: 0,
+    popups: [],
+    downloads: [],
+    errors: 0,
+    locationUnchanged: true,
+    historyUnchanged: true,
+    formSubmits: 0,
+    formResets: 0,
+    formValue: 'changed'
+  },
+  allowed: {
+    buttonClicks: 9,
+    popups: [
+      { url: '/relative/path', target: '_blank' },
+      { url: 'http://example.test/path', target: 'http-window' },
+      { url: 'HTTPS://example.test/path', target: '_blank' },
+      { url: 'mailto:test@example.com', target: 'mail-window' },
+      { url: 'tel:+15550100', target: 'phone-window' },
+      { url: '//example.test/network-path', target: '_blank' },
+      { url: 'javascript%3AglobalThis.__sniceButtonInjected += 1024', target: '_blank' }
+    ],
+    downloads: [{ href: '/files/report.pdf', download: 'report.pdf' }],
+    hashNavigated: true,
+    executed: 0,
+    errors: 0
+  }
+};
+
 test.describe('declarative rendering framework in a real browser', () => {
   test('renders file-gallery metadata safely through the source component', async ({ page }) => {
     expect(await exerciseUntrustedFileGalleryData(page, 'source')).toEqual(inertFileGalleryDataResult);
@@ -487,6 +744,18 @@ test.describe('declarative rendering framework in a real browser', () => {
 
   test('renders tree icon data safely through the CDN component', async ({ page }) => {
     expect(await exerciseUntrustedTreeData(page, 'cdn')).toEqual(inertTreeDataResult);
+  });
+
+  test('enforces safe button navigation through the source component', async ({ page }) => {
+    expect(await exerciseButtonNavigationPolicy(page, 'source')).toEqual(buttonNavigationPolicyResult);
+  });
+
+  test('enforces safe button navigation through the built ESM component', async ({ page }) => {
+    expect(await exerciseButtonNavigationPolicy(page, 'distribution')).toEqual(buttonNavigationPolicyResult);
+  });
+
+  test('enforces safe button navigation through the CDN component', async ({ page }) => {
+    expect(await exerciseButtonNavigationPolicy(page, 'cdn')).toEqual(buttonNavigationPolicyResult);
   });
 
   test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {

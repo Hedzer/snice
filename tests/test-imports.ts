@@ -58,7 +58,8 @@ export const {
   SniceElement,
   repeat,
   classMap,
-  styleMap
+  styleMap,
+  isSafeUrl
 } = modules.main;
 
 /** Complete module namespace for assertions about the supported public API. */

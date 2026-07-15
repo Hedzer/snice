@@ -53,6 +53,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       text-align: right;
       padding-right: 0.5rem;
     }
+    .policy-note {
+      max-width: 52rem;
+      margin: -0.25rem 0 0.75rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -254,12 +261,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     </div>
   </section>
 
-  <section>
-    <h2>Link buttons (href)</h2>
+  <section id="button-safe-destination">
+    <h2>Safe link buttons (href)</h2>
+    <p class="policy-note">Relative URLs and HTTP, HTTPS, email, and telephone links are accepted. Malformed URLs and unsafe schemes are blocked before navigation, downloads, form actions, or success events.</p>
     <div class="row">
-      <snice-button variant="primary" href="#link1">href link</snice-button>
-      <snice-button variant="primary" href="#link2" target="_blank">target=_blank</snice-button>
-      <snice-button variant="primary" href="#download" download="file.txt">download</snice-button>
+      <snice-button variant="primary" href="#button-safe-destination">Relative / hash</snice-button>
+      <snice-button variant="primary" href="https://example.com" target="_blank">HTTPS target</snice-button>
+      <snice-button variant="primary" href="/images/snice-logo.png" download="snice-logo.png">Safe download</snice-button>
+      <snice-button variant="danger" outline href="javascript:globalThis.__sniceUnsafeShowcase = true">Unsafe scheme (blocked)</snice-button>
     </div>
   </section>
 

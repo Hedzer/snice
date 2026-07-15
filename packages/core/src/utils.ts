@@ -161,31 +161,50 @@ export function escapeAttr(value: unknown): string {
 }
 
 /**
- * Validate a URL's scheme against a safe-list. Rejects `javascript:`,
- * `data:`, `vbscript:`, and any scheme not in the allowed set. Pass to
- * `window.open`, `iframe.src`, `<a href>`, etc. when the URL originates
- * from user input.
+ * Validate a URL's scheme against a safe-list. Relative references are
+ * accepted after parsing, while absolute and network-path references must
+ * resolve to an allowed protocol. Raw ASCII control characters are rejected
+ * before parsing so they cannot be stripped out to disguise a scheme.
+ *
+ * Rejects `javascript:`, `data:`, `vbscript:`, and any scheme not in the
+ * allowed set by default. Pass to `window.open`, `iframe.src`, `<a href>`,
+ * etc. when the URL originates from user input.
  *
  * @example
  *   if (!isSafeUrl(url)) return;
  *   window.open(url, '_blank');
  */
 export function isSafeUrl(
-  url: string,
+  url: unknown,
   opts: { allowed?: readonly string[] } = {}
 ): boolean {
-  const s = String(url ?? '').trim();
+  let raw: string;
+  try {
+    raw = String(url ?? '');
+  } catch {
+    return false;
+  }
+
+  if (!raw || /[\u0000-\u001f\u007f]/.test(raw)) return false;
+  const s = raw.trim();
   if (!s) return false;
   const allowed = opts.allowed ?? ['http:', 'https:', 'mailto:', 'tel:'];
-  // Relative paths and hash/query-only URLs are fine
-  if (/^[#?/]/.test(s)) return true;
+
   try {
-    const u = new URL(s, 'http://__snice-base/');
-    if (u.origin === 'http://__snice-base') return true; // relative
-    return allowed.includes(u.protocol);
+    const parsed = new URL(s, 'http://__snice-relative.invalid/');
+    const hasExplicitScheme = /^[a-z][a-z\d+.-]*:/i.test(s);
+    const isNetworkPathReference = /^[\\/]{2}/.test(s);
+
+    // Paths, hashes, and query-only references inherit the embedding page's
+    // protocol and are safe independently of the absolute-protocol allowlist.
+    if (!hasExplicitScheme && !isNetworkPathReference) return true;
+
+    return allowed.some(protocol =>
+      typeof protocol === 'string'
+      && protocol.toLowerCase() === parsed.protocol
+    );
   } catch {
-    // Unparseable URL: only safe as a relative path
-    return /^[\w\-./]+$/.test(s);
+    return false;
   }
 }
 
