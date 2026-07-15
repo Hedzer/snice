@@ -1,17 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-radio';
-import type { RadioSize, RadioVariant } from './snice-radio.types';
+import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 
 type Args = {
   size?: RadioSize;
   variant?: RadioVariant;
   checked?: boolean;
+  defaultChecked?: boolean;
   disabled?: boolean;
   loading?: boolean;
   required?: boolean;
   invalid?: boolean;
   label?: string;
   description?: string;
+  name?: string;
   value?: string;
 };
 
@@ -41,23 +43,27 @@ const meta: Meta<Args> = {
   argTypes: {
     size:        { control: 'select', options: SIZES },
     variant:     { control: 'select', options: VARIANTS },
-    checked:     { control: 'boolean' },
+    checked:     { control: 'boolean', description: 'Live checked property' },
+    defaultChecked: { control: 'boolean', description: 'Reset default / checked attribute' },
     disabled:    { control: 'boolean' },
     loading:     { control: 'boolean' },
     required:    { control: 'boolean' },
     invalid:     { control: 'boolean' },
     label:       { control: 'text' },
     description: { control: 'text' },
+    name:        { control: 'text' },
     value:       { control: 'text' },
   },
   render: (args) => {
-    const el = document.createElement('snice-radio');
+    const el = document.createElement('snice-radio') as SniceRadioElement;
     if (args.size        !== undefined) el.setAttribute('size',        String(args.size));
     if (args.variant     !== undefined) el.setAttribute('variant',     String(args.variant));
     if (args.label       !== undefined) el.setAttribute('label',       String(args.label));
     if (args.description !== undefined) el.setAttribute('description', String(args.description));
-    if (args.value       !== undefined) el.setAttribute('value',       String(args.value));
-    if (args.checked)  el.toggleAttribute('checked',  true);
+    if (args.name        !== undefined) el.name = args.name;
+    if (args.value       !== undefined) el.value = args.value;
+    if (args.defaultChecked !== undefined) el.defaultChecked = args.defaultChecked;
+    if (args.checked !== undefined) el.checked = args.checked;
     if (args.disabled) el.toggleAttribute('disabled', true);
     if (args.loading)  el.toggleAttribute('loading',  true);
     if (args.required) el.toggleAttribute('required', true);
@@ -190,6 +196,71 @@ export const StateMatrix: Story = {
   },
 };
 
+// h2: Native form integration
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'radio-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:32rem;';
+    form.innerHTML = `
+      <fieldset style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, #475569);border-radius:.5rem;padding:.75rem;">
+        <legend>Choose a plan</legend>
+        <snice-radio
+          id="radio-story-basic"
+          name="plan"
+          value="basic"
+          label="Basic"
+          required
+        ></snice-radio>
+        <snice-radio
+          id="radio-story-pro"
+          name="plan"
+          value="pro"
+          label="Pro (selected by default)"
+          checked
+        ></snice-radio>
+      </fieldset>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, #475569);border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-radio
+            id="radio-story-legend"
+            name="legend-plan"
+            value="kept"
+            label="First legend remains enabled"
+            checked
+          ></snice-radio>
+        </legend>
+        <snice-radio
+          id="radio-story-fieldset"
+          name="disabled-plan"
+          value="omitted"
+          label="Descendant is effectively disabled"
+          checked
+        ></snice-radio>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
+};
+
 export const AllVariants: Story = {
   render: () => col(
     makeRadio({ label: 'Default (unchecked)' }),
@@ -237,7 +308,7 @@ export const CSSPartsStyling: Story = {
         width: 20px;
         height: 20px;
       }
-      .parts-demo-radio snice-radio[checked]::part(radio) {
+      .parts-demo-radio snice-radio.styled-default-checked::part(radio) {
         border-color: #fbbf24;
         box-shadow: 0 0 16px rgba(245, 158, 11, 0.65);
         background: #451a03;
@@ -267,7 +338,7 @@ export const CSSPartsStyling: Story = {
     styledSection.appendChild(style);
 
     styledSection.appendChild(col(
-      makeRadio({ label: 'Styled Option A', name: 'sty', value: 'a', checked: true }),
+      makeRadio({ class: 'styled-default-checked', label: 'Styled Option A', name: 'sty', value: 'a', checked: true }),
       makeRadio({ label: 'Styled Option B', name: 'sty', value: 'b' }),
       makeRadio({ variant: 'block', label: 'Styled Block', description: 'Custom description styling', name: 'styb', value: 'x', checked: true }),
     ));

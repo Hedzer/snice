@@ -263,6 +263,15 @@ test.describe('Website Component Rendering', () => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
+    // The showcase must author the real Google Maps URL, but this gate tests
+    // Snice rather than third-party response scripts. Keep WebKit deterministic
+    // under the full concurrent suite by serving inert content for that frame.
+    await page.route('https://www.google.com/**', route => route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><title>Map test fixture</title>'
+    }));
+
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => Boolean(customElements.get('snice-location')));
     await page.locator('.more-link[data-slug="location"]').click();
@@ -399,6 +408,75 @@ test.describe('Website Component Rendering', () => {
     await eventCheckbox.getByRole('checkbox').click();
     await expect(showcase.locator('#checkbox-event-status')).toHaveText(
       'input → change → checkbox-change; checked=true'
+    );
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('deployed Radio docs and full showcase preserve the native group and form contract', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-radio')));
+    await page.locator('.more-link[data-slug="radio"]').click();
+
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', {
+      name: 'Checked State and Reset Defaults',
+      exact: true
+    })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Radio Groups', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Form Integration', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Validation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('form owner');
+    await expect(docs).toContainText('shadow root');
+    await expect(docs).toContainText('input');
+    await expect(docs).toContainText('radio-change');
+    await expect(docs).toContainText('first <legend>');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', {
+      name: 'Native form integration, group validation, reset, and fieldset rules',
+      exact: true
+    })).toBeVisible();
+    await expect(showcase.getByRole('heading', {
+      name: 'Activation event order and arrow navigation',
+      exact: true
+    })).toBeVisible();
+
+    const rendered = await showcase.locator('snice-radio').evaluateAll(radios => ({
+      total: radios.length,
+      rendered: radios.filter(radio => radio.shadowRoot?.querySelector('input[type="radio"]')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 51, rendered: 51 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const form = showcase.locator('#radio-showcase-form');
+    const pro = showcase.locator('#radio-showcase-pro');
+    const status = showcase.locator('#radio-form-status');
+    expect(await form.evaluate((element: HTMLFormElement) => ({
+      valid: element.checkValidity(),
+      entries: Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])
+    }))).toEqual({
+      valid: false,
+      entries: [['legend-plan', 'kept']]
+    });
+
+    await pro.locator('.radio-label').click();
+    await form.getByRole('button', { name: 'Submit form' }).click();
+    await expect(status).toHaveText('Submitted: plan=pro, legend-plan=kept');
+    await form.getByRole('button', { name: 'Reset defaults' }).click();
+    await expect(status).toHaveText('Reset: legend-plan=kept');
+
+    await showcase.locator('#radio-showcase-event-b').locator('.radio-label').click();
+    await expect(showcase.locator('#radio-event-status')).toHaveText(
+      'input → change → radio-change; value=b'
     );
 
     await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());

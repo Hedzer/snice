@@ -1,88 +1,105 @@
 # snice-radio
 
-Form radio button input with automatic group management by name.
+Form-associated native-style radio with group coordination, reset defaults, required validation, and default/block presentation.
 
-## Properties
+## State
 
 ```typescript
-checked: boolean = false;
-disabled: boolean = false;
-loading: boolean = false;
-required: boolean = false;
-invalid: boolean = false;
-variant: 'default'|'block' = 'default'; // 'block' = card-style radio
+checked: boolean = false;         // live, property-only, direct assignments are silent
+defaultChecked: boolean = false;  // reflected by the checked attribute; form-reset default
+disabled: boolean = false;        // authored disabled state
+loading: boolean = false;         // blocks interaction; does not disable form participation
+required: boolean = false;        // applies to the whole group
+invalid: boolean = false;         // visual/ARIA state only; not a validation error
+variant: 'default'|'block' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
-name: string = '';           // Group name for mutual exclusion
-value: string = '';
+name: string = '';
+value: string = 'on';
 label: string = '';
-description: string = '';    // Subtitle text (block variant only)
+description: string = '';
 ```
+
+`checked` is current checkedness. `defaultChecked` and the `checked` content attribute are the authored reset default. Assigning `checked`, including the same value, makes checkedness dirty. Later default changes do not overwrite dirty state. `form.reset()` restores group defaults silently; the last authored checked member in tree order wins.
+
+## Group Identity
+
+Named radios coordinate only when all are equal:
+
+1. non-empty `name`
+2. form owner, including `form="id"`
+3. document or shadow root
+
+Empty-name radios are independent. Same-name radios in different forms or roots are independent. Checked insertion/reconnection, removal, dynamic `name`, and dynamic form ownership recompute selection, group validity, and the roving tab stop.
+
+## Native Form Contract
+
+```typescript
+readonly type: 'radio';
+readonly form: HTMLFormElement|null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList|null;
+
+checkValidity(): boolean;
+reportValidity(): boolean;
+setCustomValidity(message: string): void;
+```
+
+- A selected, enabled, named radio contributes one `FormData` entry.
+- Default `value` is `'on'`; explicit `value=""` is preserved.
+- Disabled and disabled-fieldset radios are omitted and skipped by validation.
+- A radio in the first `<legend>` of a disabled fieldset remains enabled.
+- Fieldset ancestry never rewrites `disabled` or its attribute.
+- If any member has `required`, every member has `valueMissing` until any member is checked. A disabled `required` member still establishes that group requirement.
+- A checked disabled member satisfies requiredness but is omitted from `FormData`.
+- `setCustomValidity()` is per member; `required` validity is group-wide.
+- `invalid` is presentation only and does not create `customError` or `valueMissing`.
+
+## Activation and Events
+
+```text
+input -> change -> radio-change
+```
+
+`radio-change` detail:
+
+```typescript
+{ checked: true, value: string, radio: SniceRadioElement }
+```
+
+Only the newly selected radio emits. The old member is silently unchecked. Direct assignment, default changes, group reconciliation, reset, and restoration emit nothing. An already selected radio emits no state-change events.
+
+`click()` and `select()` run activation. Internal/external label clicks, Space, and arrows use the same path. External-label `preventDefault()` cancels selection. Events bubble and are composed from the host.
 
 ## Methods
 
-- `focus()` - Focus radio input
-- `blur()` - Remove focus
-- `click()` - Programmatic click
-- `select()` - Select and fire change event
+- `focus()` / `blur()`
+- `click()` - activate unless authored-, fieldset-, or loading-disabled
+- `select()` - activate only when not selected
+- `checkValidity()` / `reportValidity()`
+- `setCustomValidity(message)`
 
-## Events
+## Keyboard
 
-- `radio-change` → `{ checked: boolean, value: string, radio: SniceRadioElement }`
+- Space selects focused radio.
+- Right/Down selects next enabled member.
+- Left/Up selects previous enabled member.
+- Navigation wraps and skips disabled/loading radios.
+- Checked enabled member is the tab stop; otherwise first enabled member.
 
-## Slots
-
-- `suffix` - End content for block variant (badges, prices)
-
-## CSS Parts
-
-- `input` - Hidden native radio input
-- `radio` - Radio circle container
-- `dot` - Inner dot indicator
-- `spinner` - Loading spinner
-- `content` - Content wrapper (block variant)
-- `label` - Label text
-- `description` - Description text (block variant)
-
-## Basic Usage
+## Presentation
 
 ```html
-<!-- Radio group -->
-<snice-radio name="color" value="red" label="Red"></snice-radio>
-<snice-radio name="color" value="green" label="Green"></snice-radio>
-<snice-radio name="color" value="blue" label="Blue" checked></snice-radio>
+<snice-radio name="plan" value="basic" label="Basic" required></snice-radio>
+<snice-radio name="plan" value="pro" label="Pro" checked></snice-radio>
 
-<!-- Sizes -->
-<snice-radio label="Small" size="small"></snice-radio>
-<snice-radio label="Large" size="large"></snice-radio>
-
-<!-- States -->
-<snice-radio label="Disabled" disabled></snice-radio>
-<snice-radio label="Loading" loading></snice-radio>
-<snice-radio label="Invalid" invalid></snice-radio>
-
-<!-- Block variant (card-style) -->
-<snice-radio variant="block" name="plan" value="free" label="Free" description="For individuals" checked>
-  <span slot="suffix">Free forever</span>
-</snice-radio>
-<snice-radio variant="block" name="plan" value="pro" label="Pro" description="For teams">
-  <span slot="suffix">$12/mo</span>
+<snice-radio variant="block" name="plan" value="team"
+  label="Team" description="For growing teams">
+  <span slot="suffix">$29/mo</span>
 </snice-radio>
 ```
 
-```typescript
-radio.addEventListener('radio-change', (e) => {
-  console.log('Selected:', e.detail.value);
-});
-```
+Slot: `suffix`.
 
-## Keyboard Navigation
-
-- Arrow keys navigate within group (wraps around)
-- Focused radio is auto-selected
-
-## Accessibility
-
-- Native `<input type="radio">` for form participation
-- `aria-invalid` when invalid
-- Focus ring on keyboard navigation
-- Required indicator on label
+CSS parts: `input`, `radio`, `dot`, `spinner`, `content`, `label`, `description`.

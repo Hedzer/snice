@@ -54,7 +54,7 @@ for (const spec of COMPONENTS) {
       await el.ready;
       el.formDisabledCallback(true);
       await el.rendered;
-      if (spec.tag === 'snice-checkbox') {
+      if (spec.tag === 'snice-checkbox' || spec.tag === 'snice-radio') {
         // Native input.disabled reflects only the authored attribute; a
         // disabled fieldset changes effective disabledness without rewriting
         // that property. The shadow input still becomes non-interactive.

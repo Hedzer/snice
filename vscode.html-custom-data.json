@@ -6437,7 +6437,7 @@
       "attributes": [
         {
           "name": "checked",
-          "description": "checked: boolean"
+          "description": "defaultChecked: boolean"
         },
         {
           "name": "description",

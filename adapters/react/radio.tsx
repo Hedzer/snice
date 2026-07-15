@@ -8,7 +8,7 @@ import type { SniceFormProps } from './types';
  * Props for the Radio component
  */
 export interface RadioProps extends SniceFormProps {
-  checked?: any;
+  defaultChecked?: any;
   disabled?: any;
   loading?: any;
   required?: any;
@@ -19,6 +19,7 @@ export interface RadioProps extends SniceFormProps {
   value?: any;
   label?: any;
   description?: any;
+  checked?: any;
   onRadioChange?: (event: any) => void;
 }
 
@@ -40,7 +41,7 @@ export interface RadioProps extends SniceFormProps {
  */
 export const Radio = createReactAdapter<RadioProps>({
   tagName: 'snice-radio',
-  properties: ["checked","disabled","loading","required","invalid","variant","size","name","value","label","description"],
+  properties: ["defaultChecked","disabled","loading","required","invalid","variant","size","name","value","label","description","checked"],
   events: {"radio-change":"onRadioChange"},
   formAssociated: true
 });

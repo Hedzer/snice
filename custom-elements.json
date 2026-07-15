@@ -30638,7 +30638,17 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "description": "Live checkedness. Assignments are silent, make checkedness dirty, and do\nnot change the authored reset default, matching `HTMLInputElement`."
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -30649,6 +30659,14 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "defaultChecked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
             },
             {
               "kind": "field",
@@ -30669,6 +30687,25 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -30704,16 +30741,11 @@
             },
             {
               "kind": "method",
-              "name": "handleCheckedChange",
+              "name": "formStateRestoreCallback",
               "parameters": [
                 {
-                  "name": "oldValue",
-                  "type": "boolean",
-                  "optional": false
-                },
-                {
-                  "name": "newValue",
-                  "type": "boolean",
+                  "name": "state",
+                  "type": "File | string | FormData | null",
                   "optional": false
                 }
               ],
@@ -30725,14 +30757,8 @@
             },
             {
               "kind": "method",
-              "name": "handleClick",
-              "parameters": [
-                {
-                  "name": "e",
-                  "type": "Event",
-                  "optional": false
-                }
-              ],
+              "name": "handleDefaultCheckedChange",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -30752,32 +30778,6 @@
             {
               "kind": "method",
               "name": "handleInvalidChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleKeydown",
-              "parameters": [
-                {
-                  "name": "e",
-                  "type": "KeyboardEvent",
-                  "optional": false
-                }
-              ],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleLabelChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -30843,6 +30843,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with this radio. @public"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "type": {
                 "text": "boolean"
@@ -30856,6 +30865,16 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "field",
@@ -30876,6 +30895,22 @@
               }
             },
             {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "size",
               "type": {
@@ -30885,11 +30920,38 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'radio'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "default": "'on'"
             },
             {
               "kind": "field",
@@ -30898,12 +30960,21 @@
                 "text": "'default' | 'block'"
               },
               "default": "'default'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this radio participates in constraint validation. @public"
             }
           ],
           "attributes": [
             {
               "name": "checked",
-              "fieldName": "checked",
+              "fieldName": "defaultChecked",
               "type": {
                 "text": "boolean"
               },

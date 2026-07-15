@@ -1,11 +1,26 @@
-import { element, property, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-radio.css?inline';
 import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 
 @element('snice-radio', { formAssociated: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
   internals!: ElementInternals;
-  private isUpdatingGroup = false;
+
+  private static readonly pendingRootSyncs = new Set<ParentNode>();
+
+  private dirtyCheckedness = false;
+  private pendingUserChange = false;
+  private customValidationMessage = '';
+  private lastRoot: ParentNode | null = null;
+
+  @state()
+  private checkedState = false;
+
+  @state()
+  private formDisabled = false;
+
+  @state()
+  private keyboardFocused = false;
 
   constructor() {
     super();
@@ -14,48 +29,52 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     }
   }
 
-  formResetCallback() {
-    this.checked = false;
-    if (this.internals) {
-      this.internals.setFormValue(null);
-    }
+  /**
+   * Live checkedness. Assignments are silent, make checkedness dirty, and do
+   * not change the authored reset default, matching `HTMLInputElement`.
+   * @public
+   */
+  get checked(): boolean {
+    return this.checkedState;
   }
 
-  formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+  set checked(value: boolean) {
+    this.setCheckedness(Boolean(value), true, true);
   }
 
-  @property({ type: Boolean,  })
-  checked = false;
+  // The checked content attribute is the reset default, exposed through the
+  // native-compatible `defaultChecked` property.
+  @property({ type: Boolean, attribute: 'checked' })
+  defaultChecked = false;
 
-  @property({ type: Boolean,  })
+  @property({ type: Boolean })
   disabled = false;
 
-  @property({ type: Boolean,  })
+  @property({ type: Boolean })
   loading = false;
 
-  @property({ type: Boolean,  })
+  @property({ type: Boolean })
   required = false;
 
-  @property({ type: Boolean,  })
+  @property({ type: Boolean })
   invalid = false;
 
-  @property({  })
+  @property()
   variant: RadioVariant = 'default';
 
-  @property({  })
+  @property()
   size: RadioSize = 'medium';
 
-  @property({  })
+  @property()
   name = '';
 
-  @property({  })
-  value = '';
+  @property()
+  value = 'on';
 
-  @property({  })
+  @property()
   label = '';
 
-  @property({  })
+  @property()
   description = '';
 
   @query('.radio-input')
@@ -73,23 +92,30 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   @render()
   render() {
     const isBlock = this.variant === 'block';
-    const wrapperClasses = `radio-wrapper${isBlock ? ' radio-wrapper--block' : ''}${this.disabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
-    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}`;
+    const interactionDisabled = this.interactionDisabled;
+    const group = this.findGroupRadios();
+    const groupRequired = group.some(radio => radio.required);
+    const wrapperClasses = `radio-wrapper${isBlock ? ' radio-wrapper--block' : ''}${interactionDisabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
+    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}${this.keyboardFocused ? ' radio--keyboard-focus' : ''}`;
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
-    const hasDescription = !!this.description;
 
     return html/*html*/`
       <label class="${wrapperClasses}">
         <input
           type="radio"
           class="radio-input"
-          ?checked="${this.checked}"
-          ?disabled="${this.disabled || this.loading}"
-          ?required="${this.required}"
-          name="${this.name}"
-          value="${this.value}"
-          aria-invalid="${this.invalid}"
+          .checked=${this.checked}
+          .disabled=${interactionDisabled}
+          .required=${groupRequired}
+          .name=${this.name}
+          .value=${this.formValue}
+          .tabIndex=${this.tabIndexFor(group)}
+          aria-invalid="${this.invalid ? 'true' : 'false'}"
+          aria-checked="${this.checked}"
           part="input"
+          @input=${this.handleInternalInput}
+          @change=${this.handleInternalChange}
+          @blur=${this.handleInternalBlur}
         />
 
         <span class="${radioClasses}" part="radio">
@@ -108,7 +134,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
                 ${this.label}
               </span>
             </if>
-            <if ${hasDescription}>
+            <if ${this.description}>
               <span class="radio-description" part="description">
                 ${this.description}
               </span>
@@ -128,170 +154,346 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     `;
   }
 
-  @styles()
-  styles() {
-    return css/*css*/`${cssContent}`;
-  }
-
   @ready()
   init() {
-    // Set initial states
-    if (this.input) {
-      this.input.checked = this.checked;
-      
-      // Set form value
-      if (this.name) {
-        this.input.name = this.name;
-      }
-      if (this.value) {
-        this.input.value = this.value;
-      }
+    // Property bindings can run before this custom element upgrades. Preserve
+    // that value, then remove the own data property so it cannot shadow the
+    // native-compatible accessor.
+    if (Object.prototype.hasOwnProperty.call(this, 'checked')) {
+      const checked = Boolean((this as { checked: unknown }).checked);
+      delete (this as Partial<{ checked: unknown }>).checked;
+      this.checked = checked;
     }
+
+    this.lastRoot = this.radioRoot;
+    this.setCheckedness(this.checked || (!this.dirtyCheckedness && this.defaultChecked), false, false);
+    this.syncGroupState();
+  }
+
+  connectedCallback() {
+    const root = this.radioRoot;
+    this.lastRoot = root;
+    queueMicrotask(() => {
+      if (!this.isConnected) return;
+      this.lastRoot = this.radioRoot;
+      if (this.checked) this.uncheckOthersInGroup(false);
+      this.syncGroupState();
+    });
+  }
+
+  disconnectedCallback() {
+    const root = this.lastRoot;
+    this.lastRoot = null;
+    SniceRadio.scheduleRootSync(root);
+  }
+
+  formAssociatedCallback() {
+    if (this.checked) this.uncheckOthersInGroup(true);
+    this.syncRootState();
+  }
+
+  formResetCallback() {
+    this.dirtyCheckedness = false;
+    this.setCheckedness(this.defaultChecked, false, false);
+    this.syncRootState();
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    // Effective disabledness can come from a disabled fieldset. Keep it
+    // separate from the authored disabled property/attribute.
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+
+    if (state === 'checked') {
+      this.setCheckedness(true, true, true);
+    } else if (state === 'unchecked') {
+      this.setCheckedness(false, true, true);
+    }
+    this.syncRootState();
+  }
+
+  private handleInternalInput(event: Event) {
+    const target = event.currentTarget as HTMLInputElement;
+    const changed = target.checked !== this.checked;
+    this.pendingUserChange = changed;
+    if (!changed) return;
+
+    this.setCheckedness(target.checked, true, true);
+  }
+
+  private handleInternalChange() {
+    if (!this.pendingUserChange) return;
+    this.pendingUserChange = false;
+
+    // Native input is composed and already reaches the host. Native change is
+    // not composed, so surface it before the component-specific event.
+    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+    this.dispatchRadioChange();
+  }
+
+  private handleInternalBlur() {
+    this.keyboardFocused = false;
+  }
+
+  @on('pointerdown')
+  private handlePointerDown() {
+    this.keyboardFocused = false;
   }
 
   @on('click')
-  handleClick(e: Event) {
-    if (this.disabled) return;
+  private handleHostActivationClick(event: MouseEvent) {
+    // Internal input/label activation is already native. A click whose
+    // original target is the host comes from an associated external label (or
+    // an explicitly dispatched host click) and must be forwarded exactly once.
+    if (event.composedPath()[0] !== this) return;
+    if (this.interactionDisabled) return;
 
-    if (!this.checked) {
-      this.checked = true;
-      this.dispatchChangeEvent();
-    }
+    this.input?.focus();
+    queueMicrotask(() => {
+      if (event.defaultPrevented || this.interactionDisabled) return;
+      this.input?.click();
+    });
   }
 
   @on('keydown')
-  handleKeydown(e: KeyboardEvent) {
-    if (this.disabled || !this.name) return;
+  private handleKeydown(event: KeyboardEvent) {
+    if (this.interactionDisabled || !this.name || event.composedPath()[0] !== this.input) return;
 
-    const isArrowKey = e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowLeft';
+    const isArrowKey = event.key === 'ArrowDown'
+      || event.key === 'ArrowRight'
+      || event.key === 'ArrowUp'
+      || event.key === 'ArrowLeft';
     if (!isArrowKey) return;
 
-    e.preventDefault();
-    const radios = this.findGroupRadios().filter(r => !r.disabled);
+    const radios = this.findGroupRadios().filter(radio => !radio.interactionDisabled);
     if (radios.length < 2) return;
 
     const currentIndex = radios.indexOf(this);
-    const forward = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+    if (currentIndex === -1) return;
+
+    event.preventDefault();
+    const forward = event.key === 'ArrowDown' || event.key === 'ArrowRight';
     const nextIndex = forward
       ? (currentIndex + 1) % radios.length
       : (currentIndex - 1 + radios.length) % radios.length;
-
     const next = radios[nextIndex];
+    next.keyboardFocused = true;
     next.focus();
     next.select();
   }
 
-
-  @watch('checked')
-  handleCheckedChange(oldValue: boolean, newValue: boolean) {
-    if (this.input) {
-      this.input.checked = this.checked;
-    }
-
-    // Skip if we're in the middle of updating the group (prevent infinite loops)
-    if (this.isUpdatingGroup) {
-      return;
-    }
-
-    // Only uncheck others when transitioning from false to true
-    if (newValue === true && oldValue === false && this.name) {
-      this.uncheckOthersInGroup();
+  @watch('defaultChecked', { immediate: false })
+  handleDefaultCheckedChange() {
+    if (!this.dirtyCheckedness) {
+      this.setCheckedness(this.defaultChecked, false, true);
     }
   }
 
-  @watch('disabled')
-  handleDisabledChange() {
-    if (this.input) {
-      this.input.disabled = this.disabled;
-    }
-    if (this.wrapper) {
-      this.wrapper.classList.toggle('radio-wrapper--disabled', this.disabled);
-    }
-  }
-
-  @watch('invalid')
-  handleInvalidChange() {
-    if (this.input) {
-      this.input.setAttribute('aria-invalid', String(this.invalid));
-    }
-    if (this.radio) {
-      this.radio.classList.toggle('radio--invalid', this.invalid);
-    }
-  }
-
-  @watch('required')
-  handleRequiredChange() {
-    if (this.input) {
-      this.input.required = this.required;
-    }
-    if (this.labelElement) {
-      this.labelElement.classList.toggle('radio-label--required', this.required);
-    }
-  }
-
-  @watch('label')
-  handleLabelChange() {
-    if (this.labelElement) {
-      this.labelElement.textContent = this.label;
-      this.labelElement.style.display = this.label ? '' : 'none';
-    }
-  }
-
-  @watch('name')
+  @watch('name', { immediate: false })
   handleNameChange() {
-    if (this.input) {
-      this.input.name = this.name;
-    }
+    if (this.checked) this.uncheckOthersInGroup(true);
+    this.syncRootState();
   }
 
-  @watch('value')
+  @watch('value', { immediate: false })
   handleValueChange() {
-    if (this.input) {
-      this.input.value = this.value;
-    }
+    this.syncNativeInput();
+    this.syncOwnFormState();
   }
 
-  private uncheckOthersInGroup(except?: SniceRadio) {
-    if (!this.name) return;
+  @watch('required', { immediate: false })
+  handleRequiredChange() {
+    this.syncRootState();
+  }
 
-    const exceptElement = except || this;
+  @watch('disabled', 'loading', 'formDisabled', { immediate: false })
+  handleDisabledChange() {
+    this.syncRootState();
+  }
 
-    // Find all radios with the same name in the correct scope and uncheck them
-    this.findGroupRadios().forEach(radio => {
-      if (radio !== exceptElement && radio.checked) {
-        // Set flag to prevent recursive watch handler calls
-        radio.isUpdatingGroup = true;
-        radio.checked = false;
-        radio.isUpdatingGroup = false;
-      }
-    });
+  @watch('invalid', { immediate: false })
+  handleInvalidChange() {
+    this.input?.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
+  }
+
+  private get interactionDisabled() {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
+  private get formValue() {
+    return String(this.value ?? '');
+  }
+
+  private get radioRoot(): ParentNode | null {
+    const root = this.getRootNode();
+    if (root === this || !('querySelectorAll' in root)) return null;
+    return root as ParentNode;
   }
 
   /**
-   * Find all radios in the same group as this one. Scope rules:
-   *   1. If the radio is inside a <form>, only search within that form.
-   *   2. Otherwise search within the enclosing root (document or shadow root).
-   * This correctly coordinates radios that live inside a web component's
-   * shadow DOM (where `document.querySelectorAll` would never find them)
-   * and prevents two unrelated forms from cross-contaminating.
+   * ElementInternals.form is authoritative in browsers. Some DOM
+   * implementations expose ElementInternals without implementing form-owner
+   * discovery, so preserve the HTML ownership rules as a fallback: an
+   * explicit form attribute wins, otherwise use the nearest ancestor form.
+   */
+  private get fallbackFormOwner(): HTMLFormElement | null {
+    const explicitOwner = this.getAttribute('form');
+    if (explicitOwner !== null) {
+      const root = this.radioRoot;
+      if (!root) return null;
+      return Array.from(root.querySelectorAll('form[id]'))
+        .find((candidate): candidate is HTMLFormElement =>
+          candidate instanceof HTMLFormElement && candidate.id === explicitOwner
+        ) ?? null;
+    }
+
+    return this.closest('form');
+  }
+
+  private setCheckedness(checked: boolean, dirtySelf: boolean, dirtyPeers: boolean) {
+    if (dirtySelf) this.dirtyCheckedness = true;
+    this.checkedState = checked;
+    this.syncNativeInput();
+
+    if (checked) this.uncheckOthersInGroup(dirtyPeers);
+    this.syncGroupState();
+  }
+
+  private uncheckFromGroup(dirty: boolean) {
+    if (dirty) this.dirtyCheckedness = true;
+    this.checkedState = false;
+    this.syncNativeInput();
+    this.syncOwnFormState();
+  }
+
+  private uncheckOthersInGroup(dirtyPeers: boolean) {
+    if (!this.name) return;
+    for (const radio of this.findGroupRadios()) {
+      if (radio !== this && radio.checked) radio.uncheckFromGroup(dirtyPeers);
+    }
+  }
+
+  /**
+   * Native radio groups share a non-empty name, a form owner, and a tree root.
+   * Filtering instead of selector interpolation also handles every valid name.
    */
   private findGroupRadios(): SniceRadio[] {
-    if (!this.name) return [];
-    const form = this.closest('form');
-    const scope: ParentNode = form
-      ?? (this.getRootNode() as unknown as ParentNode)
-      ?? document;
-    const selector = `snice-radio[name="${CSS.escape(this.name)}"]`;
-    return Array.from((scope as any).querySelectorAll(selector) as NodeListOf<SniceRadio>);
+    if (!this.name) return [this];
+    const root = this.radioRoot;
+    if (!root) return [this];
+    const form = this.form;
+    return Array.from(root.querySelectorAll('snice-radio'))
+      .filter((radio): radio is SniceRadio => radio instanceof SniceRadio)
+      .filter(radio => radio.name === this.name && radio.form === form);
+  }
+
+  private tabIndexFor(group = this.findGroupRadios()) {
+    const enabled = group.filter(radio => !radio.interactionDisabled);
+    const selected = enabled.find(radio => radio.checked);
+    const tabbable = selected ?? enabled[0];
+    return tabbable === this ? 0 : -1;
+  }
+
+  private syncNativeInput(group = this.findGroupRadios()) {
+    if (!this.input) return;
+    this.input.checked = this.checked;
+    this.input.disabled = this.interactionDisabled;
+    this.input.required = group.some(radio => radio.required);
+    this.input.name = this.name;
+    this.input.value = this.formValue;
+    this.input.tabIndex = this.tabIndexFor(group);
+    this.input.setCustomValidity(this.customValidationMessage);
+    this.input.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
+    this.input.setAttribute('aria-checked', String(this.checked));
+  }
+
+  private syncOwnFormState(group = this.findGroupRadios()) {
+    if (this.internals) {
+      this.internals.setFormValue(
+        this.checked ? this.formValue : null,
+        this.checked ? 'checked' : 'unchecked'
+      );
+    }
+    this.syncValidity(group);
+  }
+
+  private syncValidity(group = this.findGroupRadios()) {
+    const valueMissing = group.some(radio => radio.required)
+      && !group.some(radio => radio.checked);
+    const customError = this.customValidationMessage.length > 0;
+
+    if (this.input) {
+      this.input.checked = this.checked;
+      this.input.required = group.some(radio => radio.required);
+      this.input.setCustomValidity(this.customValidationMessage);
+    }
+    if (!this.internals) return;
+
+    if (!valueMissing && !customError) {
+      this.internals.setValidity({});
+      return;
+    }
+
+    const message = this.customValidationMessage
+      || this.input?.validationMessage
+      || 'Please select an option.';
+    if (this.input) {
+      this.internals.setValidity({ valueMissing, customError }, message, this.input);
+    } else {
+      this.internals.setValidity({ valueMissing, customError }, message);
+    }
+  }
+
+  private syncGroupState() {
+    const group = this.findGroupRadios();
+    for (const radio of group) radio.syncNativeInput(group);
+    for (const radio of group) radio.syncOwnFormState(group);
+  }
+
+  private syncRootState() {
+    const root = this.radioRoot;
+    if (!root) {
+      this.syncGroupState();
+      return;
+    }
+    SniceRadio.syncRadiosInRoot(root);
+  }
+
+  private static radiosInRoot(root: ParentNode) {
+    return Array.from(root.querySelectorAll('snice-radio'))
+      .filter((radio): radio is SniceRadio => radio instanceof SniceRadio);
+  }
+
+  private static syncRadiosInRoot(root: ParentNode) {
+    const radios = SniceRadio.radiosInRoot(root);
+    for (const radio of radios) radio.syncNativeInput();
+    for (const radio of radios) radio.syncOwnFormState();
+  }
+
+  private static scheduleRootSync(root: ParentNode | null) {
+    if (!root || SniceRadio.pendingRootSyncs.has(root)) return;
+    SniceRadio.pendingRootSyncs.add(root);
+    queueMicrotask(() => {
+      SniceRadio.pendingRootSyncs.delete(root);
+      SniceRadio.syncRadiosInRoot(root);
+    });
   }
 
   @dispatch('radio-change', { bubbles: true, composed: true })
-  private dispatchChangeEvent() {
+  private dispatchRadioChange() {
     return {
       checked: this.checked,
       value: this.value,
       radio: this
     };
+  }
+
+  @styles()
+  styles() {
+    return css/*css*/`${cssContent}`;
   }
 
   // Public API
@@ -300,17 +502,61 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   }
 
   blur() {
+    this.keyboardFocused = false;
     this.input?.blur();
   }
 
   click() {
+    if (this.interactionDisabled) return;
     this.input?.click();
   }
 
   select() {
-    if (!this.checked) {
-      this.checked = true;
-      this.dispatchChangeEvent();
-    }
+    if (!this.checked) this.click();
+  }
+
+  /** Native-compatible control type. @public */
+  get type(): 'radio' {
+    return 'radio' as const;
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return this.internals?.form ?? this.fallbackFormOwner;
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input!.validity;
+  }
+
+  /** Current localized validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this radio participates in constraint validation. @public */
+  get willValidate(): boolean {
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated with this radio. @public */
+  get labels(): NodeList | null {
+    return this.internals?.labels ?? this.input?.labels ?? null;
+  }
+
+  checkValidity() {
+    this.syncRootState();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity() {
+    this.syncRootState();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
+  }
+
+  setCustomValidity(message: string) {
+    this.customValidationMessage = String(message);
+    this.syncOwnFormState();
   }
 }

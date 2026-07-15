@@ -3,7 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the Radio component
  */
 export interface RadioProps extends SniceFormProps {
-    checked?: any;
+    defaultChecked?: any;
     disabled?: any;
     loading?: any;
     required?: any;
@@ -14,6 +14,7 @@ export interface RadioProps extends SniceFormProps {
     value?: any;
     label?: any;
     description?: any;
+    checked?: any;
     onRadioChange?: (event: any) => void;
 }
 /**

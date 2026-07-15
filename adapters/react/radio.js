@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Radio = createReactAdapter({
     tagName: 'snice-radio',
-    properties: ["checked", "disabled", "loading", "required", "invalid", "variant", "size", "name", "value", "label", "description"],
+    properties: ["defaultChecked", "disabled", "loading", "required", "invalid", "variant", "size", "name", "value", "label", "description", "checked"],
     events: { "radio-change": "onRadioChange" },
     formAssociated: true
 });

@@ -152,6 +152,14 @@
   outline-offset: 2px;
 }
 
+/* Arrow navigation moves focus programmatically. WebKit does not always
+   expose :focus-visible for that path, so the component mirrors the ring. */
+.radio--keyboard-focus {
+  box-shadow: 0 0 0 3px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
+  outline-offset: 2px;
+}
+
 /* Hover effect */
 .radio-wrapper:not(.radio-wrapper--disabled):hover .radio {
   border-color: var(--snice-color-primary, rgb(37 99 235));
