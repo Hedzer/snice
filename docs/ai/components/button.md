@@ -90,6 +90,8 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 <snice-button href="/page">Link</snice-button>
 <snice-button href="#section">Hash</snice-button>
 <snice-button href="mailto:team@example.com">Email</snice-button>
+<snice-button href="/report" target="_blank">Isolated tab</snice-button>
+<snice-button href="/report" target="report-window">Isolated named window</snice-button>
 <snice-button href="/file.pdf" download="file.pdf">Download</snice-button>
 
 <!-- Form -->
@@ -105,6 +107,15 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 - HTML character references are decoded by the browser before validation; mixed-case, whitespace-prefixed, control-obfuscated, attribute, and property inputs follow the same policy.
 - A rejected `href` stops activation: no location/history change, popup, download, form submit/reset, native click propagation, or `button-click` event.
 - Direct non-string `href` assignments fail closed.
+
+## Target and Download Semantics
+
+- No `target`: navigate the current page.
+- `_self`, `_parent`, `_top` (ASCII case-insensitive): retain native same-context behavior.
+- `_blank` or a named target: `window.open(trimmedHref, exactTarget, 'noopener')`; every newly created context has `window.opener === null` at creation.
+- Repeated use of a named target creates separate isolated contexts rather than reusing an earlier named window.
+- Non-empty `download` takes precedence over `target`: activate a detached anchor with the validated `href` and filename; do not call `window.open`.
+- Successful targeted navigation or download occurs before `button-click` is dispatched.
 
 ## Accessibility
 

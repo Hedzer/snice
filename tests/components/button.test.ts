@@ -515,7 +515,7 @@ describe('snice-button', () => {
     });
 
     it.each(allowedNavigationUrls)(
-      'opens an allowed URL through its requested target: %s (%s)',
+      'opens an allowed URL through its requested target with opener isolation: %s (%s)',
       async (href, _description, target) => {
         const open = vi.spyOn(window, 'open').mockImplementation(() => null);
         button = await createComponent<SniceButtonElement>('snice-button', {
@@ -529,13 +529,49 @@ describe('snice-button', () => {
         await wait(10);
 
         expect(open).toHaveBeenCalledOnce();
-        expect(open).toHaveBeenCalledWith(href, target);
+        expect(open).toHaveBeenCalledWith(href, target, 'noopener');
         expect(buttonClick).toHaveBeenCalledOnce();
       }
     );
 
+    it.each(['_BLANK', '_SeLf', '_PaReNt', '_ToP', 'named-report-window'])(
+      'preserves the exact target while requesting opener isolation: %s',
+      async (target) => {
+        const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+        button = await createComponent<SniceButtonElement>('snice-button', {
+          href: '/safe-target',
+          target
+        });
+
+        button.click();
+        await wait(10);
+
+        expect(open).toHaveBeenCalledOnce();
+        expect(open).toHaveBeenCalledWith('/safe-target', target, 'noopener');
+      }
+    );
+
+    it('preserves targeted navigation before button-click event ordering', async () => {
+      const order: string[] = [];
+      vi.spyOn(window, 'open').mockImplementation(() => {
+        order.push('open');
+        return null;
+      });
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: '/ordered-target',
+        target: '_blank'
+      });
+      button.addEventListener('button-click', () => order.push('button-click'));
+
+      button.click();
+      await wait(10);
+
+      expect(order).toEqual(['open', 'button-click']);
+    });
+
     it('navigates an allowed hash and emits the click event', async () => {
       const initialHref = window.location.href;
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
       button = await createComponent<SniceButtonElement>('snice-button', {
         href: '#snice-button-safe-target'
       });
@@ -547,6 +583,7 @@ describe('snice-button', () => {
         await wait(10);
 
         expect(window.location.hash).toBe('#snice-button-safe-target');
+        expect(open).not.toHaveBeenCalled();
         expect(buttonClick).toHaveBeenCalledOnce();
       } finally {
         window.history.replaceState(null, '', initialHref);
@@ -555,9 +592,11 @@ describe('snice-button', () => {
 
     it('creates an anchor download only for an allowed URL', async () => {
       let activation: { href: string | null; download: string } | null = null;
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
       button = await createComponent<SniceButtonElement>('snice-button', {
         href: '/files/report.pdf',
-        download: 'quarterly-report.pdf'
+        download: 'quarterly-report.pdf',
+        target: '_blank'
       });
       const originalCreateElement = document.createElement.bind(document);
       vi.spyOn(document, 'createElement').mockImplementation(((tagName: string, options?: ElementCreationOptions) => {
@@ -583,6 +622,7 @@ describe('snice-button', () => {
         href: '/files/report.pdf',
         download: 'quarterly-report.pdf'
       });
+      expect(open).not.toHaveBeenCalled();
       expect(buttonClick).toHaveBeenCalledOnce();
     });
   });

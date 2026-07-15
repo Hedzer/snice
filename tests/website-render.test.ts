@@ -176,6 +176,89 @@ test.describe('Website Component Rendering', () => {
     expect(pageErrors).toEqual([]);
   });
 
+  test('deployed Button docs and full showcase preserve safe isolated navigation', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-button')));
+    await page.locator('.more-link[data-slug="button"]').click();
+
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'URL Safety', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Target Isolation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('window.opener === null');
+    await expect(docs).toContainText('separate isolated contexts');
+    await expect(docs).toContainText('download behavior takes precedence over target');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    const navigation = showcase.locator('#button-safe-destination');
+    await expect(showcase.getByRole('heading', {
+      name: 'Safe and isolated link buttons (href)',
+      exact: true
+    })).toBeVisible();
+    await expect(navigation).toContainText('without access to window.opener');
+
+    const rendered = await showcase.locator('snice-button').evaluateAll(buttons => ({
+      total: buttons.length,
+      rendered: buttons.filter(button => button.shadowRoot?.querySelector('button')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered.total).toBe(97);
+    expect(rendered.rendered).toBe(97);
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    await showcase.locator('body').evaluate(() => {
+      (globalThis as any).__sniceUnsafeShowcase = 0;
+      (globalThis as any).__sniceUnsafeShowcaseEvent = 0;
+      document.querySelector('#button-showcase-blocked')?.addEventListener('button-click', () => {
+        (globalThis as any).__sniceUnsafeShowcaseEvent++;
+      });
+    });
+    await showcase.locator('#button-showcase-blocked').getByRole('button').click();
+    expect(await showcase.locator('body').evaluate(() => ({
+      executed: (globalThis as any).__sniceUnsafeShowcase,
+      events: (globalThis as any).__sniceUnsafeShowcaseEvent
+    }))).toEqual({ executed: 0, events: 0 });
+    await expect(showcase.locator('#button-navigation-status')).toHaveText(
+      'Activate a button to inspect button-click.'
+    );
+
+    await showcase.locator('#button-showcase-same').getByRole('button').click();
+    await expect.poll(() => page.frames()
+      .find(frame => frame.url().includes('/showcase/button.html'))?.url()
+    ).toContain('#button-safe-destination');
+    await expect(showcase.locator('#button-navigation-status')).toHaveText('button-click: Same context');
+
+    const blankPromise = page.context().waitForEvent('page');
+    await showcase.locator('#button-showcase-blank').getByRole('button').click();
+    const blank = await blankPromise;
+    await blank.waitForLoadState('domcontentloaded');
+    expect(await blank.evaluate(() => window.opener === null)).toBe(true);
+    expect(new URL(blank.url()).hash).toBe('#button-blank-target');
+    await blank.close();
+
+    const namedPromise = page.context().waitForEvent('page');
+    await showcase.locator('#button-showcase-named').getByRole('button').click();
+    const named = await namedPromise;
+    await named.waitForLoadState('domcontentloaded');
+    expect(await named.evaluate(() => window.opener === null)).toBe(true);
+    await named.close();
+
+    const pageCount = page.context().pages().length;
+    const downloadPromise = page.waitForEvent('download');
+    await showcase.locator('#button-showcase-download').getByRole('button').click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('snice-logo.png');
+    expect(page.context().pages()).toHaveLength(pageCount);
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+  });
+
   test('deployed Location docs and full showcase enforce safe external navigation', async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));

@@ -74,7 +74,7 @@ export function stampHtml(content, baseDir = targetDir) {
   );
 
   const TAG = /<\/?[A-Za-z][^>]*>/g;
-  const ATTRIBUTE_ASSET = /(\b[\w:-]+\s*=\s*["'])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?(["'])/gi;
+  const ATTRIBUTE_ASSET = /(\b([\w:-]+)\s*=\s*["'])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?(["'])/gi;
   const CSS_ASSET = /(url\(\s*["']?)((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?(["']?\s*\))/gi;
   const QUOTED_ASSET = /(["'`])((?!https?:\/\/|\/\/|data:)(?:[\w./-]+\/)?[\w.-]+\.(?:css|json|png|jpe?g|gif|svg|ico|webp|woff2?|md|js))(\?v=[a-f0-9.]+)?\1/gi;
 
@@ -82,7 +82,10 @@ export function stampHtml(content, baseDir = targetDir) {
   const HTML_PATH = /(href=["'])((?!https?:\/\/|\/\/|#|mailto:)[\w./-]+\.html)(\?v=[^"']+)?(["'])/gi;
 
   if (clean) {
-    content = content.replace(TAG, (tag) => tag.replace(ATTRIBUTE_ASSET, '$1$2$4'));
+    content = content.replace(TAG, (tag) => tag.replace(
+      ATTRIBUTE_ASSET,
+      (_match, prefix, _attribute, url, _oldVersion, quote) => `${prefix}${url}${quote}`
+    ));
     content = content.replace(CSS_ASSET, '$1$2$4');
     content = content.replace(QUOTED_ASSET, '$1$2$1');
     content = content.replace(HTML_PATH, '$1$2$4');
@@ -93,7 +96,13 @@ export function stampHtml(content, baseDir = targetDir) {
   // them even for intentional broken/fallback examples or generated partials.
   content = content.replace(TAG, (tag) => tag.replace(
     ATTRIBUTE_ASSET,
-    (_match, prefix, url, _oldVersion, quote) => `${prefix}${url}?v=${hash}${quote}`
+    (_match, prefix, attribute, url, _oldVersion, quote) => {
+      // `download` is a suggested filename, not a resource URL. Appending a
+      // cache key changes the file customers receive (for example,
+      // report.pdf?v=abc becomes report.pdf_v=abc in Chromium/WebKit).
+      if (attribute.toLowerCase() === 'download') return `${prefix}${url}${quote}`;
+      return `${prefix}${url}?v=${hash}${quote}`;
+    }
   ));
   content = content.replace(
     CSS_ASSET,

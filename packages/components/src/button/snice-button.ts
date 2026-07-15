@@ -145,7 +145,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
         a.download = this.download;
         a.click();
       } else if (this.target) {
-        window.open(href, this.target);
+        window.open(href, this.target, 'noopener');
       } else {
         window.location.href = href;
       }

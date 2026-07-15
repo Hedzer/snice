@@ -14,6 +14,7 @@ The button component provides an interactive element for user actions. It suppor
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [URL Safety](#url-safety)
+- [Target Isolation](#target-isolation)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -29,8 +30,8 @@ The button component provides an interactive element for user actions. It suppor
 | `pill` | `boolean` | `false` | Use pill (fully rounded) shape |
 | `circle` | `boolean` | `false` | Use circle shape (icon only) |
 | `href` | `string` | `''` | Safe URL to navigate to on click; see [URL Safety](#url-safety) |
-| `target` | `string` | `''` | Link target (e.g. `_blank`) |
-| `download` | `string` | `''` | Download attribute for file downloads |
+| `target` | `string` | `''` | Link target; newly created contexts are isolated from `window.opener` |
+| `download` | `string` | `''` | Download filename; download behavior takes precedence over `target` |
 | `icon` | `string` | `''` | Icon (emoji, URL, image file). Use the `icon` slot for icon fonts. |
 | `iconPlacement` (attr: `icon-placement`) | `'start' \| 'end'` | `'start'` | Icon position relative to label |
 
@@ -195,6 +196,7 @@ Use `href` to navigate on click.
 ```html
 <snice-button href="/page">Go to Page</snice-button>
 <snice-button href="https://example.com" target="_blank">Visit Site</snice-button>
+<snice-button href="/reports/latest" target="report-window">Open Isolated Report</snice-button>
 <snice-button href="/files/document.pdf" download="document.pdf">Download PDF</snice-button>
 ```
 
@@ -249,6 +251,16 @@ isSafeUrl(objectUrl, { allowed: ['blob:'] });
 ```
 
 HTML escaping and URL validation solve different problems: an escaped string cannot inject markup, but it may still contain an executable URL scheme. Use `isSafeUrl()` at navigation sinks; use `unsafeHTML()` only for explicitly trusted markup.
+
+## Target Isolation
+
+When `target` is absent, an accepted `href` navigates the current page. The special targets `_self`, `_parent`, and `_top` retain their normal same-context behavior. Target matching for those special names is ASCII case-insensitive, as it is for native browser navigation.
+
+`_blank` and named targets can create a new browsing context. `snice-button` requests `noopener` when it performs any targeted navigation, so a newly opened page sees `window.opener === null` from the moment it is created. This prevents the destination from reading or redirecting the page that opened it.
+
+Opener isolation changes one native named-target behavior: repeated activations of a name such as `target="report-window"` open separate isolated contexts instead of reusing an earlier named window. Use `_self`, `_parent`, or `_top` when same-context navigation is intended.
+
+When `download` is non-empty, download behavior takes precedence over `target`. Snice activates a detached anchor with the validated URL and requested filename; it does not open a browsing context.
 
 ## Accessibility
 

@@ -62,6 +62,17 @@ describe('asset stamping', () => {
     expect(stamped).not.toContain("images/snice-logo.png?v=");
   });
 
+  it('stamps a download URL without corrupting its suggested filename', () => {
+    const stamped = stampHtml(`
+      <a href="images/snice-logo.png" download="snice-logo.png">Download</a>
+      <snice-button href="images/snice-logo.png" download="snice-logo.png?v=deadbee">Download</snice-button>
+    `);
+
+    expect(stamped.match(/href="images\/snice-logo\.png\?v=[a-f0-9]+"/g)).toHaveLength(2);
+    expect(stamped.match(/download="snice-logo\.png"/g)).toHaveLength(2);
+    expect(stamped).not.toMatch(/download="[^"]*\?v=/);
+  });
+
   it('changes the content hash when a nested theme or image asset changes', () => {
     const directory = mkdtempSync(join(tmpdir(), 'snice-stamps-'));
     temporaryDirectories.push(directory);

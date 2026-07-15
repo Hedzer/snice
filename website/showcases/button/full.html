@@ -46,6 +46,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       grid-template-columns: auto repeat(6, auto);
       gap: 0.5rem;
       align-items: center;
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
     }
     .matrix-label {
       font-size: 0.7rem;
@@ -59,6 +62,23 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       color: var(--snice-color-text-secondary, #aaa);
       font-size: 0.82rem;
       line-height: 1.5;
+    }
+    #button-navigation-status {
+      display: block;
+      margin-top: 0.75rem;
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+    }
+    snice-button.long-label {
+      max-width: 100%;
+    }
+    snice-button.long-label::part(base) {
+      max-width: 100%;
+    }
+    snice-button.long-label::part(label) {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
 </head>
@@ -262,14 +282,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <section id="button-safe-destination">
-    <h2>Safe link buttons (href)</h2>
-    <p class="policy-note">Relative URLs and HTTP, HTTPS, email, and telephone links are accepted. Malformed URLs and unsafe schemes are blocked before navigation, downloads, form actions, or success events.</p>
+    <h2>Safe and isolated link buttons (href)</h2>
+    <p class="policy-note">Relative URLs and HTTP, HTTPS, email, and telephone links are accepted. Same-context navigation stays in place. Blank and named targets open without access to <code>window.opener</code>; isolated named targets intentionally open a new context instead of reusing an earlier window. Downloads remain downloads even when a target is present. Malformed URLs and unsafe schemes are blocked before navigation, downloads, form actions, or success events.</p>
     <div class="row">
-      <snice-button variant="primary" href="#button-safe-destination">Relative / hash</snice-button>
-      <snice-button variant="primary" href="https://example.com" target="_blank">HTTPS target</snice-button>
-      <snice-button variant="primary" href="/images/snice-logo.png" download="snice-logo.png">Safe download</snice-button>
-      <snice-button variant="danger" outline href="javascript:globalThis.__sniceUnsafeShowcase = true">Unsafe scheme (blocked)</snice-button>
+      <snice-button id="button-showcase-same" variant="primary" href="#button-safe-destination">Same context</snice-button>
+      <snice-button id="button-showcase-blank" variant="primary" href="#button-blank-target" target="_blank">Isolated blank target</snice-button>
+      <snice-button id="button-showcase-named" variant="primary" href="#button-named-target" target="snice-button-showcase-window">Isolated named target</snice-button>
+      <snice-button id="button-showcase-download" variant="success" href="/images/snice-logo.png" target="_blank" download="snice-logo.png">Download without popup</snice-button>
+      <snice-button id="button-showcase-blocked" variant="danger" outline href="javascript:globalThis.__sniceUnsafeShowcase = true">Unsafe scheme (blocked)</snice-button>
     </div>
+    <output id="button-navigation-status" aria-live="polite">Activate a button to inspect button-click.</output>
   </section>
 
   <section>
@@ -282,7 +304,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <section>
     <h2>Edge case: very long text</h2>
     <div class="row">
-      <snice-button variant="primary">This is a very long button label that should demonstrate text overflow handling in buttons</snice-button>
+      <snice-button class="long-label" variant="primary">This is a very long button label that should demonstrate text overflow handling in buttons</snice-button>
     </div>
   </section>
 
@@ -308,6 +330,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <script type="module">
     import '../../../packages/components/src/button/snice-button.ts';
+
+    const navigationStatus = document.querySelector('#button-navigation-status');
+    for (const button of document.querySelectorAll('#button-safe-destination snice-button')) {
+      button.addEventListener('button-click', () => {
+        navigationStatus.textContent = `button-click: ${button.textContent.trim()}`;
+      });
+    }
   </script>
 </body>
 </html>

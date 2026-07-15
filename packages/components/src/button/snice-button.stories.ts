@@ -15,6 +15,8 @@ type Args = {
   iconPlacement?: 'start' | 'end';
   type?: 'button' | 'submit' | 'reset';
   href?: string;
+  target?: string;
+  download?: string;
 };
 
 const VARIANTS: ButtonVariant[] = ['default', 'primary', 'success', 'warning', 'danger', 'text'];
@@ -55,6 +57,8 @@ const meta: Meta<Args> = {
     iconPlacement: { control: 'select', options: ['start', 'end'] },
     type:          { control: 'select', options: ['button', 'submit', 'reset'] },
     href:          { control: 'text' },
+    target:        { control: 'text' },
+    download:      { control: 'text' },
   },
   render: (args) => {
     const el = document.createElement('snice-button');
@@ -64,6 +68,8 @@ const meta: Meta<Args> = {
     if (args.icon          !== undefined) el.setAttribute('icon',           String(args.icon));
     if (args.iconPlacement !== undefined) el.setAttribute('icon-placement', String(args.iconPlacement));
     if (args.href          !== undefined) el.setAttribute('href',           String(args.href));
+    if (args.target        !== undefined) el.setAttribute('target',         String(args.target));
+    if (args.download      !== undefined) el.setAttribute('download',       String(args.download));
     if (args.disabled) el.toggleAttribute('disabled', true);
     if (args.loading)  el.toggleAttribute('loading',  true);
     if (args.outline)  el.toggleAttribute('outline',  true);
@@ -211,14 +217,47 @@ export const AllButtonTypes: Story = {
   ),
 };
 
-// h2: Link buttons (href)
+// h2: Safe and isolated link buttons (href)
 export const LinkButtons: Story = {
-  render: () => row(
-    makeBtn('primary', 'Relative / hash', { href: '#button-link' }),
-    makeBtn('primary', 'HTTPS target',    { href: 'https://example.com', target: '_blank' }),
-    makeBtn('primary', 'Safe download',   { href: '#download', download: 'file.txt' }),
-    makeBtn('danger', 'Unsafe scheme (blocked)', { href: 'javascript:globalThis.__sniceUnsafeButtonStory = true', outline: true }),
-  ),
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;max-width:52rem;';
+
+    const note = document.createElement('p');
+    note.style.cssText = 'margin:0;color:#888;line-height:1.5;';
+    note.textContent = 'Same-context navigation stays in place. Blank and named targets open without access to window.opener; isolated named targets intentionally do not reuse an earlier window.';
+
+    const sameContext = makeBtn('primary', 'Same context', { href: '#button-story-same-context' });
+    sameContext.id = 'button-story-same-context';
+    const blank = makeBtn('primary', 'Isolated blank target', {
+      href: '#button-story-blank-target', target: '_blank'
+    });
+    blank.id = 'button-story-blank';
+    const named = makeBtn('primary', 'Isolated named target', {
+      href: '#button-story-named-target', target: 'snice-button-story-window'
+    });
+    named.id = 'button-story-named';
+    const download = makeBtn('success', 'Download without popup', {
+      href: '/public/images/snice-logo.png', target: '_blank', download: 'snice-logo.png'
+    });
+    download.id = 'button-story-download';
+    const blocked = makeBtn('danger', 'Unsafe scheme (blocked)', {
+      href: 'javascript:globalThis.__sniceUnsafeButtonStory = true', outline: true
+    });
+    blocked.id = 'button-story-blocked';
+
+    const status = document.createElement('output');
+    status.setAttribute('aria-live', 'polite');
+    status.textContent = 'Activate a button to inspect button-click.';
+    for (const button of [sameContext, blank, named, download, blocked]) {
+      button.addEventListener('button-click', () => {
+        status.textContent = `button-click: ${button.textContent?.trim()}`;
+      });
+    }
+
+    wrap.append(note, row(sameContext, blank, named, download, blocked), status);
+    return wrap;
+  },
 };
 
 // h2: All boolean states combined

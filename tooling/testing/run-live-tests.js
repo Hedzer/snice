@@ -50,6 +50,7 @@ async function main() {
   const needsStorybook = !targeted || requestedTargets.length === 0 || requestedTargets.some(target =>
     target === 'tests/live'
       || target.startsWith('tests/live/components/spreadsheet')
+      || target === 'tests/live/components/button/button-storybook.spec.ts'
       || target === 'tests/live/components/location/location-storybook.spec.ts'
   );
   const managedChildren = [];
