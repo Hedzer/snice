@@ -1,4 +1,131 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function exerciseUntrustedSelectData(page: Page, build: 'distribution' | 'cdn') {
+  await page.goto('/guide.html');
+  if (build === 'distribution') {
+    await page.evaluate(async () => {
+      await import('/dist/components/select/snice-select.js');
+    });
+  } else {
+    await page.addScriptTag({ url: '/components/snice-select.min.js' });
+  }
+  await page.waitForFunction(() => !!customElements.get('snice-select'));
+
+  return page.evaluate(async () => {
+    const maliciousLabel = '<img data-select-injected="label" src="missing-label.png" onerror="globalThis.__sniceSelectInjected++"><svg><script>globalThis.__sniceSelectInjected++</script></svg>';
+    const maliciousValue = 'value" tabindex="0" data-select-injected="value';
+    const maliciousIcon = 'missing-icon.png" onerror="globalThis.__sniceSelectInjected++" data-select-injected="icon';
+    const maliciousPlaceholder = '<img data-select-injected="placeholder" src="missing-placeholder.png" onerror="globalThis.__sniceSelectInjected++">';
+    const secondValue = 'second" aria-label="forged';
+    const secondLabel = '<b data-select-injected="second">Second</b>';
+    (globalThis as any).__sniceSelectInjected = 0;
+
+    const selected = document.createElement('snice-select') as any;
+    selected.options = [{ value: maliciousValue, label: maliciousLabel, icon: maliciousIcon }];
+    selected.value = maliciousValue;
+    document.body.appendChild(selected);
+    await selected.ready;
+
+    const multiple = document.createElement('snice-select') as any;
+    multiple.multiple = true;
+    multiple.options = [
+      { value: maliciousValue, label: maliciousLabel, icon: maliciousIcon },
+      { value: secondValue, label: secondLabel }
+    ];
+    multiple.value = `${maliciousValue},${secondValue}`;
+    document.body.appendChild(multiple);
+    await multiple.ready;
+
+    const placeholder = document.createElement('snice-select') as any;
+    placeholder.placeholder = maliciousPlaceholder;
+    document.body.appendChild(placeholder);
+    await placeholder.ready;
+
+    const declarative = document.createElement('snice-select') as any;
+    const declarativeOption = document.createElement('snice-option');
+    declarativeOption.setAttribute('value', maliciousValue);
+    declarativeOption.setAttribute('icon', maliciousIcon);
+    declarativeOption.textContent = maliciousLabel;
+    declarative.appendChild(declarativeOption);
+    document.body.appendChild(declarative);
+    await declarative.ready;
+
+    const remote = document.createElement('snice-select') as any;
+    remote.remote = true;
+    remote.searchable = true;
+    document.body.appendChild(remote);
+    await remote.ready;
+    remote.addEventListener('@request/select/search', (event: CustomEvent) => {
+      event.detail.discovery.resolve();
+      event.detail.data.resolve([{
+        value: maliciousValue,
+        label: maliciousLabel,
+        icon: maliciousIcon
+      }]);
+    });
+    await remote.performRemoteSearch('adversarial query');
+
+    selected.options = [{
+      value: 'dynamic" data-select-injected="dynamic',
+      label: '<img data-select-injected="dynamic-label" src="missing-dynamic.png">',
+      icon: maliciousIcon
+    }];
+    selected.value = 'dynamic" data-select-injected="dynamic';
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const selectedShadow = selected.shadowRoot!;
+    const multipleShadow = multiple.shadowRoot!;
+    const placeholderShadow = placeholder.shadowRoot!;
+    const declarativeShadow = declarative.shadowRoot!;
+    const remoteShadow = remote.shadowRoot!;
+    const shadows = [selectedShadow, multipleShadow, placeholderShadow, declarativeShadow, remoteShadow];
+    const option = selectedShadow.querySelector('.select-option') as HTMLElement;
+    const icon = option.querySelector('.select-option-icon') as HTMLImageElement;
+
+    return {
+      executed: (globalThis as any).__sniceSelectInjected,
+      injectedNodes: document.querySelectorAll('[data-select-injected]').length
+        + shadows.reduce((count, shadow) => count + shadow.querySelectorAll('[data-select-injected]').length, 0),
+      scripts: shadows.reduce((count, shadow) => count + shadow.querySelectorAll('script').length, 0),
+      dynamicLabel: selectedShadow.querySelector('.select-option-label')?.textContent,
+      dynamicValue: option.getAttribute('data-value'),
+      forgedTabIndex: option.getAttribute('tabindex'),
+      iconSource: icon.getAttribute('src'),
+      iconHandler: icon.getAttribute('onerror'),
+      multipleLabels: Array.from(multipleShadow.querySelectorAll('.select-tag')).map(tag => tag.textContent),
+      multipleValues: Array.from(multipleShadow.querySelectorAll('.select-tag-remove')).map(tag => tag.getAttribute('data-value')),
+      placeholder: placeholderShadow.querySelector('.select-placeholder')?.textContent,
+      declarativeLabel: declarativeShadow.querySelector('.select-option-label')?.textContent,
+      remoteLabel: remoteShadow.querySelector('.select-option-label')?.textContent,
+      remoteValue: remoteShadow.querySelector('.select-option')?.getAttribute('data-value'),
+      remoteIconHandler: remoteShadow.querySelector('.select-option-icon')?.getAttribute('onerror')
+    };
+  });
+}
+
+const inertSelectDataResult = {
+  executed: 0,
+  injectedNodes: 0,
+  scripts: 0,
+  dynamicLabel: '<img data-select-injected="dynamic-label" src="missing-dynamic.png">',
+  dynamicValue: 'dynamic" data-select-injected="dynamic',
+  forgedTabIndex: null,
+  iconSource: 'missing-icon.png" onerror="globalThis.__sniceSelectInjected++" data-select-injected="icon',
+  iconHandler: null,
+  multipleLabels: [
+    '<img data-select-injected="label" src="missing-label.png" onerror="globalThis.__sniceSelectInjected++"><svg><script>globalThis.__sniceSelectInjected++</script></svg>×',
+    '<b data-select-injected="second">Second</b>×'
+  ],
+  multipleValues: [
+    'value" tabindex="0" data-select-injected="value',
+    'second" aria-label="forged'
+  ],
+  placeholder: '<img data-select-injected="placeholder" src="missing-placeholder.png" onerror="globalThis.__sniceSelectInjected++">',
+  declarativeLabel: '<img data-select-injected="label" src="missing-label.png" onerror="globalThis.__sniceSelectInjected++"><svg><script>globalThis.__sniceSelectInjected++</script></svg>',
+  remoteLabel: '<img data-select-injected="label" src="missing-label.png" onerror="globalThis.__sniceSelectInjected++"><svg><script>globalThis.__sniceSelectInjected++</script></svg>',
+  remoteValue: 'value" tabindex="0" data-select-injected="value',
+  remoteIconHandler: null
+};
 
 test.describe('declarative rendering framework in a real browser', () => {
   test('deep reactivity uses native Proxy and Reflect semantics in a real browser', async ({ page }) => {
@@ -109,5 +236,13 @@ test.describe('declarative rendering framework in a real browser', () => {
       cancellation: 1,
       restarted: 2
     });
+  });
+
+  test('renders untrusted select data inertly through the built ESM component distribution', async ({ page }) => {
+    expect(await exerciseUntrustedSelectData(page, 'distribution')).toEqual(inertSelectDataResult);
+  });
+
+  test('renders untrusted select data inertly through the built CDN bundle', async ({ page }) => {
+    expect(await exerciseUntrustedSelectData(page, 'cdn')).toEqual(inertSelectDataResult);
   });
 });

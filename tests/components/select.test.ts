@@ -472,6 +472,167 @@ describe('snice-select', () => {
   });
 });
 
+describe('snice-select untrusted option data', () => {
+  let container: HTMLElement;
+
+  const maliciousLabel = '<img data-select-injected="label" src="missing-label.png" onerror="globalThis.__sniceSelectInjected = true"><svg><script>globalThis.__sniceSelectInjected = true</script></svg>';
+  const maliciousValue = 'value" tabindex="0" data-select-injected="value';
+  const maliciousIcon = 'missing-icon.png" onerror="globalThis.__sniceSelectInjected = true" data-select-injected="icon';
+  const maliciousPlaceholder = '<img data-select-injected="placeholder" src="missing-placeholder.png" onerror="globalThis.__sniceSelectInjected = true">';
+
+  async function createAdversarialSelect(options: SelectOption[], setup?: (select: SniceSelectElement) => void) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    select.options = options;
+    setup?.(select);
+    container.appendChild(select);
+    await select.ready;
+    await new Promise(resolve => setTimeout(resolve, 30));
+    return select;
+  }
+
+  afterEach(() => {
+    delete (globalThis as any).__sniceSelectInjected;
+    if (container) removeComponent(container);
+  });
+
+  it('renders programmatic option labels, values, and icon URLs as data', async () => {
+    const select = await createAdversarialSelect([{
+      value: maliciousValue,
+      label: maliciousLabel,
+      icon: maliciousIcon
+    }]);
+    const shadow = (select as HTMLElement).shadowRoot!;
+    const option = shadow.querySelector('.select-option') as HTMLElement;
+    const label = option.querySelector('.select-option-label') as HTMLElement;
+    const icon = option.querySelector('.select-option-icon') as HTMLImageElement;
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(shadow.querySelector('script')).toBeNull();
+    expect(label.textContent).toBe(maliciousLabel);
+    expect(option.getAttribute('data-value')).toBe(maliciousValue);
+    expect(option.getAttribute('tabindex')).toBeNull();
+    expect(icon.getAttribute('src')).toBe(maliciousIcon);
+    expect(icon.getAttribute('onerror')).toBeNull();
+    expect((globalThis as any).__sniceSelectInjected).toBeUndefined();
+  });
+
+  it('renders selected labels and placeholders as text', async () => {
+    const selected = await createAdversarialSelect([{
+      value: maliciousValue,
+      label: maliciousLabel,
+      icon: maliciousIcon
+    }], select => {
+      select.value = maliciousValue;
+    });
+    let shadow = (selected as HTMLElement).shadowRoot!;
+    const selectedLabel = shadow.querySelector('.select-value--single span') as HTMLElement;
+    const selectedIcon = shadow.querySelector('.select-value-icon') as HTMLImageElement;
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(selectedLabel.textContent).toBe(maliciousLabel);
+    expect(selectedIcon.getAttribute('src')).toBe(maliciousIcon);
+    expect(selectedIcon.getAttribute('onerror')).toBeNull();
+
+    removeComponent(container);
+    const placeholder = await createAdversarialSelect([], select => {
+      select.placeholder = maliciousPlaceholder;
+    });
+    shadow = (placeholder as HTMLElement).shadowRoot!;
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(shadow.querySelector('.select-placeholder')?.textContent).toBe(maliciousPlaceholder);
+    expect((globalThis as any).__sniceSelectInjected).toBeUndefined();
+  });
+
+  it('keeps multiple-value tags and remove metadata inert', async () => {
+    const firstValue = 'first" data-select-injected="first';
+    const secondValue = 'second" aria-label="forged';
+    const select = await createAdversarialSelect([
+      { value: firstValue, label: maliciousLabel, icon: maliciousIcon },
+      { value: secondValue, label: '<b data-select-injected="second">Second</b>' }
+    ], element => {
+      element.multiple = true;
+      element.value = `${firstValue},${secondValue}`;
+    });
+    const shadow = (select as HTMLElement).shadowRoot!;
+    const tags = Array.from(shadow.querySelectorAll('.select-tag'));
+    const removeButtons = Array.from(shadow.querySelectorAll('.select-tag-remove')) as HTMLElement[];
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(tags).toHaveLength(2);
+    expect(tags[0].textContent).toContain(maliciousLabel);
+    expect(tags[1].textContent).toContain('<b data-select-injected="second">Second</b>');
+    expect(removeButtons.map(button => button.getAttribute('data-value'))).toEqual([firstValue, secondValue]);
+    expect(removeButtons[0].getAttribute('aria-label')).toBe(`Remove ${maliciousLabel}`);
+    expect((globalThis as any).__sniceSelectInjected).toBeUndefined();
+  });
+
+  it('keeps declarative and dynamically replaced options inert', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    const option = document.createElement('snice-option');
+    option.setAttribute('value', maliciousValue);
+    option.setAttribute('icon', maliciousIcon);
+    option.textContent = maliciousLabel;
+    select.appendChild(option);
+    container.appendChild(select);
+    await select.ready;
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    let shadow = (select as HTMLElement).shadowRoot!;
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(shadow.querySelector('.select-option-label')?.textContent).toBe(maliciousLabel);
+
+    select.options = [{
+      value: 'dynamic" data-select-injected="dynamic',
+      label: '<img data-select-injected="dynamic-label" src="missing-dynamic.png">',
+      icon: maliciousIcon
+    }];
+    option.remove();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    shadow = (select as HTMLElement).shadowRoot!;
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(shadow.querySelector('.select-option-label')?.textContent).toBe('<img data-select-injected="dynamic-label" src="missing-dynamic.png">');
+    expect((globalThis as any).__sniceSelectInjected).toBeUndefined();
+  });
+
+  it('renders remote search results as inert option data', async () => {
+    const select = await createAdversarialSelect([], element => {
+      element.remote = true;
+      element.searchable = true;
+    });
+
+    select.addEventListener('@request/select/search', ((event: CustomEvent) => {
+      expect(event.detail.payload.query).toBe('adversarial query');
+      event.detail.discovery.resolve();
+      event.detail.data.resolve([{
+        value: maliciousValue,
+        label: maliciousLabel,
+        icon: maliciousIcon
+      }]);
+    }) as EventListener);
+
+    await (select as any).performRemoteSearch('adversarial query');
+
+    const shadow = (select as HTMLElement).shadowRoot!;
+    const option = shadow.querySelector('.select-option') as HTMLElement;
+    const icon = shadow.querySelector('.select-option-icon') as HTMLImageElement;
+
+    expect(shadow.querySelector('[data-select-injected]')).toBeNull();
+    expect(shadow.querySelector('script')).toBeNull();
+    expect(option.getAttribute('data-value')).toBe(maliciousValue);
+    expect(option.querySelector('.select-option-label')?.textContent).toBe(maliciousLabel);
+    expect(icon.getAttribute('src')).toBe(maliciousIcon);
+    expect(icon.getAttribute('onerror')).toBeNull();
+    expect((globalThis as any).__sniceSelectInjected).toBeUndefined();
+  });
+});
+
 describe('snice-select editable mode', () => {
   let container: HTMLElement;
 

@@ -277,7 +277,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           </div>
 
           <div class="select-options" part="options">
-            <!-- Options will be rendered in @ready() -->
+            <!-- Dynamic options expose part="option" and render in @ready(). -->
           </div>
         </div>
 
@@ -294,51 +294,93 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     `;
   }
 
-  private renderOptions(): string {
+  private createIcon(className: string, source?: string): HTMLImageElement {
+    const icon = document.createElement('img');
+    icon.className = className;
+    icon.setAttribute('src', source || '');
+    icon.setAttribute('alt', '');
+    icon.hidden = !source;
+    return icon;
+  }
+
+  private renderOptions(): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+
     if (this.remoteSearching) {
-      return /*html*/`
-        <div class="select-loading-indicator">
-          <span class="select-loading-spinner"></span>
-          <span>Searching...</span>
-        </div>
-      `;
+      const indicator = document.createElement('div');
+      indicator.className = 'select-loading-indicator';
+
+      const spinner = document.createElement('span');
+      spinner.className = 'select-loading-spinner';
+
+      const message = document.createElement('span');
+      message.textContent = 'Searching...';
+
+      indicator.append(spinner, message);
+      fragment.append(indicator);
+      return fragment;
     }
 
     const options = (this.searchable || this.editable || this.remote) ? this.filteredOptions : this.mergedOptions;
 
     if (options.length === 0) {
-      return /*html*/`
-        <div class="select-no-options">
-          <span class="select-no-options-text" data-search="true" ${!(this.searchable || this.editable || this.remote) || this.filteredOptions.length > 0 ? 'hidden' : ''}>No matches found</span>
-          <span class="select-no-options-text" data-search="false" ${(this.searchable || this.editable || this.remote) && this.filteredOptions.length === 0 ? 'hidden' : ''}>No options available</span>
-        </div>
-      `;
+      const noOptions = document.createElement('div');
+      noOptions.className = 'select-no-options';
+
+      const noMatches = document.createElement('span');
+      noMatches.className = 'select-no-options-text';
+      noMatches.dataset.search = 'true';
+      noMatches.hidden = !(this.searchable || this.editable || this.remote) || this.filteredOptions.length > 0;
+      noMatches.textContent = 'No matches found';
+
+      const noAvailable = document.createElement('span');
+      noAvailable.className = 'select-no-options-text';
+      noAvailable.dataset.search = 'false';
+      noAvailable.hidden = (this.searchable || this.editable || this.remote) && this.filteredOptions.length === 0;
+      noAvailable.textContent = 'No options available';
+
+      noOptions.append(noMatches, noAvailable);
+      fragment.append(noOptions);
+      return fragment;
     }
 
-    return options.map((opt, index) => {
+    options.forEach((opt, index) => {
       const isSelected = this.multiple ?
         this.selectedValues.has(opt.value) :
         opt.value === this.value;
 
-      return /*html*/`
-        <div class="select-option
-          ${isSelected ? 'select-option--selected' : ''}
-          ${opt.disabled ? 'select-option--disabled' : ''}
-          ${index === this.focusedIndex ? 'select-option--focused' : ''}
-          ${opt.icon ? 'select-option--has-icon' : ''}"
-          data-value="${opt.value}"
-          role="option"
-          aria-selected="${isSelected}"
-          aria-disabled="${opt.disabled}"
-          part="option">
-          <span class="select-option-check" aria-hidden="true" ${!this.multiple ? 'hidden' : ''}>
-            <span class="select-option-check-mark" ${!isSelected ? 'hidden' : ''}>✓</span>
-          </span>
-          <img class="select-option-icon" src="${opt.icon || ''}" alt="" ${!opt.icon ? 'hidden' : ''} />
-          <span class="select-option-label">${opt.label}</span>
-        </div>
-      `;
-    }).join('');
+      const option = document.createElement('div');
+      option.className = 'select-option';
+      option.classList.toggle('select-option--selected', isSelected);
+      option.classList.toggle('select-option--disabled', Boolean(opt.disabled));
+      option.classList.toggle('select-option--focused', index === this.focusedIndex);
+      option.classList.toggle('select-option--has-icon', Boolean(opt.icon));
+      option.setAttribute('data-value', opt.value);
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', String(isSelected));
+      option.setAttribute('aria-disabled', String(opt.disabled));
+      option.setAttribute('part', 'option');
+
+      const check = document.createElement('span');
+      check.className = 'select-option-check';
+      check.setAttribute('aria-hidden', 'true');
+      check.hidden = !this.multiple;
+
+      const checkMark = document.createElement('span');
+      checkMark.className = 'select-option-check-mark';
+      checkMark.hidden = !isSelected;
+      checkMark.textContent = '✓';
+      check.append(checkMark);
+
+      const label = document.createElement('span');
+      label.className = 'select-option-label';
+      label.textContent = opt.label;
+
+      option.append(check, this.createIcon('select-option-icon', opt.icon), label);
+      fragment.append(option);
+    });
+
+    return fragment;
   }
 
   @styles()
@@ -1002,27 +1044,44 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     );
 
     if (this.multiple && selectedOptions.length > 0) {
-      this.valueDisplay.innerHTML = /*html*/`
-        <div class="select-value--multiple">
-          ${selectedOptions.map(opt => /*html*/`
-            <span class="select-tag">
-              <img class="select-tag-icon" src="${opt.icon || ''}" alt="" ${!opt.icon ? 'hidden' : ''} />
-              ${opt.label}
-              <span class="select-tag-remove" data-value="${opt.value}" aria-label="Remove ${opt.label}" ${this.disabled || this.readonly ? 'hidden' : ''}>×</span>
-            </span>
-          `).join('')}
-        </div>
-      `;
+      const values = document.createElement('div');
+      values.className = 'select-value--multiple';
+
+      selectedOptions.forEach(opt => {
+        const tag = document.createElement('span');
+        tag.className = 'select-tag';
+
+        const removeButton = document.createElement('span');
+        removeButton.className = 'select-tag-remove';
+        removeButton.setAttribute('data-value', opt.value);
+        removeButton.setAttribute('aria-label', `Remove ${opt.label}`);
+        removeButton.hidden = this.disabled || this.readonly;
+        removeButton.textContent = '×';
+
+        tag.append(
+          this.createIcon('select-tag-icon', opt.icon),
+          document.createTextNode(opt.label),
+          removeButton
+        );
+        values.append(tag);
+      });
+
+      this.valueDisplay.replaceChildren(values);
     } else if (selectedOptions.length > 0) {
       const selected = selectedOptions[0];
-      this.valueDisplay.innerHTML = /*html*/`
-        <div class="select-value--single">
-          <img class="select-value-icon" src="${selected.icon || ''}" alt="" ${!selected.icon ? 'hidden' : ''} />
-          <span>${selected.label}</span>
-        </div>
-      `;
+      const value = document.createElement('div');
+      value.className = 'select-value--single';
+
+      const label = document.createElement('span');
+      label.textContent = selected.label;
+
+      value.append(this.createIcon('select-value-icon', selected.icon), label);
+      this.valueDisplay.replaceChildren(value);
     } else {
-      this.valueDisplay.innerHTML = /*html*/`<span class="select-placeholder">${this.placeholder}</span>`;
+      const placeholder = document.createElement('span');
+      placeholder.className = 'select-placeholder';
+      placeholder.textContent = this.placeholder;
+      this.valueDisplay.replaceChildren(placeholder);
     }
   }
 
@@ -1040,7 +1099,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private updateDropdownContent() {
     if (!this.optionsList) return;
-    this.optionsList.innerHTML = this.renderOptions();
+    this.optionsList.replaceChildren(this.renderOptions());
   }
 
 
