@@ -117,7 +117,8 @@ export class FormLabelAssociation {
     private readonly host: HTMLElement,
     private readonly getInternals: () => ElementInternals | undefined,
     private readonly getTarget: () => HTMLElement | undefined,
-    private readonly getFallbackName: () => string
+    private readonly getFallbackName: () => string,
+    private readonly syncRelatedNames?: (accessibleName: string) => void
   ) {}
 
   get labels(): NodeList | null {
@@ -156,6 +157,7 @@ export class FormLabelAssociation {
     if (!this.connected) return;
     this.connected = false;
     this.host.removeEventListener('click', this.handleHostActivation);
+    this.unbindLabelActivation();
     this.releaseRegistry();
     this.currentLabels = [];
     this.currentNamingNodes = [];
@@ -164,7 +166,13 @@ export class FormLabelAssociation {
 
   sync() {
     if (this.connected) this.bindRegistry();
+    this.unbindLabelActivation();
     this.currentLabels = this.resolveLabels();
+    if (this.connected) {
+      for (const label of this.currentLabels) {
+        label.addEventListener('click', this.handleLabelActivation);
+      }
+    }
     this.currentNamingNodes = [...this.currentLabels];
     this.referencedIds.clear();
     for (const label of this.currentLabels) {
@@ -178,6 +186,7 @@ export class FormLabelAssociation {
       ? normalizeAccessibleText(this.currentLabels.map(label => labelAccessibleText(label, this.host)).join(' '))
       : normalizeAccessibleText(this.getFallbackName());
     this.getTarget()?.setAttribute('aria-label', name);
+    this.syncRelatedNames?.(name);
   }
 
   isAffectedBy(mutation: MutationRecord): boolean {
@@ -222,6 +231,41 @@ export class FormLabelAssociation {
     if (this.currentLabels.length === 0) return;
     this.getTarget()?.focus();
   };
+
+  private handleLabelActivation = (event: MouseEvent) => {
+    const path = event.composedPath();
+    const eventTarget = event.target;
+    if (eventTarget === this.host || (eventTarget instanceof Node && this.host.contains(eventTarget))) return;
+
+    // Native labels do not redirect activation from an interactive descendant.
+    // Preserve that rule while filling the wrapping-FACE activation gap in
+    // engines that do not forward the label click to the custom-element host.
+    const label = event.currentTarget as HTMLLabelElement;
+    const interactiveDescendant = path.some(node =>
+      node instanceof HTMLElement &&
+      node !== label &&
+      node.matches('a[href], button, input, select, textarea, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"]')
+    );
+    if (interactiveDescendant) return;
+
+    const target = this.getTarget();
+    target?.focus();
+    // WebKit may run its FACE label default action after the bubbling click and
+    // move focus back to the host. Re-assert the shadow target after that
+    // default action while retaining the browser's normal activation event.
+    setTimeout(() => {
+      const currentTarget = this.getTarget();
+      if (this.connected && currentTarget?.isConnected && this.currentLabels.includes(label)) {
+        currentTarget.focus();
+      }
+    }, 0);
+  };
+
+  private unbindLabelActivation() {
+    for (const label of this.currentLabels) {
+      label.removeEventListener('click', this.handleLabelActivation);
+    }
+  }
 
   private bindRegistry() {
     const root = labelRoot(this.host);

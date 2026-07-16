@@ -143,3 +143,7 @@ Array.from(new FormData(booking).entries());
 Parts: `input`, `calendar-toggle`, `clear`, `spinner`, `calendar`, `helper-text`, `error-text`.
 
 Enter/Space opens from the range input; Escape closes. Calendar days, presets, month/year navigation, and Today are labeled buttons. The popup uses `popover="manual"`, stays clamped to the viewport, scrolls internally when needed, and repositions on page scroll/resize. Required, effective disabledness, loading, and visual `aria-invalid` state are mirrored to the visible input.
+
+External `<label for>`, wrapping labels, and multiple labels form one live name for the complete range; `labels` returns them in document order. Label text/association, host `id`, DOM moves, insertion/removal, and reconnect stay synchronized. External labels take precedence; fallback is `label`, then `Date range`. Activation focuses without opening, while disabled controls remain inert.
+
+Helper/error content is referenced exactly once with `aria-describedby`; error replaces helper and has `role="alert"`. The popup is a separately named `<accessible name> calendar` group, so the canonical start/end submission model does not create unnamed or duplicate visible fields.

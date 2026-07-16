@@ -460,7 +460,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.outsideClickHandler = (e: MouseEvent) => {
       if (!this.isOpen) return;
       const path = e.composedPath();
-      if (path.includes(this)) return;
+      const associatedLabelClicked = Array.from(this.labels || [])
+        .some(label => path.includes(label));
+      if (path.includes(this) || associatedLabelClicked) return;
       if (this.editable) {
         this.commitEditableValue();
       }

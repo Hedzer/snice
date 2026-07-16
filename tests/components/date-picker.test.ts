@@ -10,6 +10,7 @@ describe('snice-date-picker', () => {
     if (datePicker) {
       removeComponent(datePicker as HTMLElement);
     }
+    document.querySelectorAll('[data-date-picker-label-test]').forEach(element => element.remove());
   });
 
   describe('basic functionality', () => {
@@ -767,6 +768,76 @@ describe('snice-date-picker', () => {
       const errorEl = queryShadow(datePicker as HTMLElement, '.error-text');
       expect(errorEl).toBeTruthy();
       expect(errorEl?.textContent).toContain('Invalid date');
+    });
+
+    it('names the field from every associated label and describes it exactly once', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        id: 'labelled-date-picker',
+        label: 'Internal fallback',
+        'helper-text': 'Use the local arrival date.'
+      });
+      const primary = document.createElement('label');
+      primary.dataset.datePickerLabelTest = 'true';
+      primary.htmlFor = datePicker.id;
+      primary.textContent = 'Arrival date';
+      const secondary = document.createElement('label');
+      secondary.dataset.datePickerLabelTest = 'true';
+      secondary.htmlFor = datePicker.id;
+      secondary.textContent = 'required';
+      datePicker.before(primary, secondary);
+      (datePicker as any).labelAssociation.sync();
+      await (datePicker as any).rendered;
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(Array.from(datePicker.labels || [], label => label.textContent)).toEqual(['Arrival date', 'required']);
+      expect(input.getAttribute('aria-label')).toBe('Arrival date required');
+      expect(queryShadow(datePicker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Use the local arrival date.');
+      expect(datePicker.shadowRoot?.querySelectorAll(`#${descriptionId}`)).toHaveLength(1);
+    });
+
+    it('focuses but does not open for associated-label activation', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        id: 'focus-date-picker'
+      });
+      const label = document.createElement('label');
+      label.dataset.datePickerLabelTest = 'true';
+      label.htmlFor = datePicker.id;
+      label.textContent = 'Departure';
+      datePicker.before(label);
+      (datePicker as any).labelAssociation.sync();
+
+      datePicker.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+      expect(datePicker.shadowRoot?.activeElement).toBe(queryShadow(datePicker as HTMLElement, '.input'));
+      expect(datePicker.open).toBe(false);
+    });
+
+    it('updates external label text and error descriptions dynamically', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        id: 'dynamic-date-picker',
+        label: 'Fallback',
+        'helper-text': 'Initial help'
+      });
+      const label = document.createElement('label');
+      label.dataset.datePickerLabelTest = 'true';
+      label.htmlFor = datePicker.id;
+      label.textContent = 'Start date';
+      datePicker.before(label);
+      (datePicker as any).labelAssociation.sync();
+      label.textContent = 'Revised start date';
+      datePicker.invalid = true;
+      datePicker.errorText = 'Choose an available date.';
+      await (datePicker as any).rendered;
+      (datePicker as any).labelAssociation.sync();
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(input.getAttribute('aria-label')).toBe('Revised start date');
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(queryShadow(datePicker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Choose an available date.');
+      expect(queryShadow(datePicker as HTMLElement, `#${descriptionId}`)?.getAttribute('role')).toBe('alert');
+      expect(queryShadow(datePicker as HTMLElement, '.helper-text')).toBeNull();
     });
   });
 

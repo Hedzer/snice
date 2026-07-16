@@ -10,6 +10,7 @@ Calendar-backed text date control with strict parsing, seven display formats, mi
 - Partial or impossible manual text stays visible but sets `value = ''` and `validity.badInput`.
 - Programmatic malformed values sanitize to `''`; valid configured-format strings remain accepted for compatibility.
 - Named enabled controls participate in `FormData`; required/min/max/custom validity, reset, restoration, explicit form ownership, readonly, disabled fieldsets, and the first-legend exception are supported.
+- Explicit, wrapping, and multiple external labels provide a live accessible name and focus the text field without opening the calendar. Helper/error text is described exactly once.
 
 ```html
 <form id="booking">

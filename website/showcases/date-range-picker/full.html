@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
 (function(){
@@ -16,10 +17,17 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Date Range Picker</title>
   <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); overflow-wrap: anywhere; }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     section { margin-bottom: 2rem; max-width: 800px; }
+    .label-demo { display: grid; gap: 1rem; width: min(100%, 42rem); }
+    .label-row { display: flex; gap: 0.35rem; align-items: baseline; flex-wrap: wrap; }
+    .demo-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .demo-actions button { padding: 0.5rem 0.75rem; }
+    output { display:block; min-height:1.5rem; padding:.625rem .75rem; border-radius:.375rem; background:var(--snice-color-surface-raised, #1e293b); font:.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
   </style>
   <script type="module">
     import '../../../packages/components/src/date-range-picker/snice-date-range-picker.ts';
@@ -60,6 +68,33 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       output.textContent = event.detail.startIso && event.detail.endIso
         ? `Changed: ${event.detail.startIso} → ${event.detail.endIso}`
         : 'Changed: incomplete range';
+    });
+
+    const labelledPicker = document.getElementById('range-showcase-labelled');
+    const primaryLabel = document.getElementById('range-showcase-primary-label');
+    const secondaryLabel = document.getElementById('range-showcase-secondary-label');
+    const labelStatus = document.getElementById('range-showcase-label-status');
+    let labelsAttached = true;
+    const updateLabelStatus = () => requestAnimationFrame(() => {
+      labelStatus.textContent = `Accessible name: ${labelledPicker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('range-showcase-change-label').addEventListener('click', () => {
+      primaryLabel.textContent = primaryLabel.textContent === 'Booking dates' ? 'Travel window' : 'Booking dates';
+      updateLabelStatus();
+    });
+    document.getElementById('range-showcase-toggle-error').addEventListener('click', event => {
+      const showing = labelledPicker.errorText !== '';
+      labelledPicker.invalid = !showing;
+      labelledPicker.errorText = showing ? '' : 'Choose a complete available range.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateLabelStatus();
+    });
+    document.getElementById('range-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      secondaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateLabelStatus();
     });
   </script>
 </head>
@@ -167,6 +202,38 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <section>
   <h2>Form: name</h2>
   <snice-date-range-picker label="Vacation" name="vacation" required clearable></snice-date-range-picker>
+</section>
+
+<section id="date-range-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-demo">
+    <div>
+      <div class="label-row">
+        <label id="range-showcase-primary-label" for="range-showcase-labelled">Booking dates</label>
+        <label id="range-showcase-secondary-label" for="range-showcase-labelled">required</label>
+      </div>
+      <snice-date-range-picker
+        id="range-showcase-labelled"
+        label="Internal range fallback"
+        helper-text="Choose check-in and check-out."
+        required
+      ></snice-date-range-picker>
+    </div>
+    <label>
+      Wrapped reporting window
+      <snice-date-range-picker id="range-showcase-wrapped" helper-text="One named range field."></snice-date-range-picker>
+    </label>
+    <div>
+      <label for="range-showcase-disabled">Disabled range</label>
+      <snice-date-range-picker id="range-showcase-disabled" disabled></snice-date-range-picker>
+    </div>
+    <div class="demo-actions">
+      <button id="range-showcase-change-label" type="button">Change label</button>
+      <button id="range-showcase-toggle-error" type="button">Show error</button>
+      <button id="range-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="range-showcase-label-status" aria-live="polite">Accessible name: Booking dates required</output>
+  </div>
 </section>
 
 <section>

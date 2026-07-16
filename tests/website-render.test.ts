@@ -560,7 +560,7 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered).toEqual(expect.objectContaining({ total: 33, rendered: 33 }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 36, rendered: 36 }));
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     const form = showcase.locator('#date-picker-showcase-form');
@@ -668,7 +668,7 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered).toEqual(expect.objectContaining({ total: 29, rendered: 29 }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 32, rendered: 32 }));
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     const form = showcase.locator('#drp-form');
@@ -741,7 +741,7 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered).toEqual(expect.objectContaining({ total: 32, rendered: 32 }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 35, rendered: 35 }));
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     const form = showcase.locator('#date-time-picker-showcase-form');

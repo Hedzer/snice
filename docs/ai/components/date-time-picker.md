@@ -104,3 +104,9 @@ Reset/restore do not emit customer events. Clear preserves existing event order:
 CSS parts: `base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`.
 
 Popup is top-layer when available, viewport-clamped, internally scrollable, and responsive. All seven date formats, 12/24-hour modes, seconds, sizes, dropdown/inline variants, year/month/Today navigation, loading, clear, helper/error text, methods, and existing events remain supported.
+
+External `<label for>`, wrapping labels, and multiple labels are live and returned by `labels` in document order. Text/association changes, host `id`, DOM moves, insertion/removal, and reconnect update naming. External labels take precedence; fallback is `label`, then `Date and time`.
+
+Label activation focuses the editable input without opening the dropdown. Inline activation focuses the composite panel. Disabled controls remain inert. The panel, calendar, hours, minutes, optional seconds, and period groups are named independently from the same accessible name; date buttons use formatted date names.
+
+Exactly one helper/error node is connected with `aria-describedby`; error replaces helper, uses `role="alert"`, and visual `invalid` mirrors to `aria-invalid` without replacing native validity APIs.

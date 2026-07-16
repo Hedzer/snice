@@ -42,6 +42,7 @@ describe('snice-date-range-picker', () => {
   afterEach(() => {
     if (picker && picker.isConnected) removeComponent(picker as HTMLElement);
     document.querySelectorAll('[data-range-test]').forEach(element => element.remove());
+    document.querySelectorAll('[data-range-label-test]').forEach(element => element.remove());
     restoreAttachInternals?.();
     restoreAttachInternals = undefined;
   });
@@ -143,6 +144,68 @@ describe('snice-date-range-picker', () => {
       picker.columns = 1;
       await settle();
       expect((picker as HTMLElement).shadowRoot!.querySelectorAll('.month')).toHaveLength(1);
+    });
+  });
+
+  describe('external label and description lifecycle', () => {
+    it('uses multiple associated labels for the one range field and names its calendar group', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        id: 'labelled-range',
+        label: 'Internal range',
+        'helper-text': 'Choose both endpoints.'
+      });
+      const primary = document.createElement('label');
+      primary.dataset.rangeLabelTest = 'true';
+      primary.htmlFor = picker.id;
+      primary.textContent = 'Booking dates';
+      const secondary = document.createElement('label');
+      secondary.dataset.rangeLabelTest = 'true';
+      secondary.htmlFor = picker.id;
+      secondary.textContent = 'required';
+      picker.before(primary, secondary);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      const descriptionId = getInput().getAttribute('aria-describedby')!;
+      expect(Array.from(picker.labels || [], label => label.textContent)).toEqual(['Booking dates', 'required']);
+      expect(getInput().getAttribute('aria-label')).toBe('Booking dates required');
+      expect(queryShadow(picker as HTMLElement, '.calendar')?.getAttribute('aria-label')).toBe('Booking dates required calendar');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Choose both endpoints.');
+      expect(picker.shadowRoot?.querySelectorAll(`#${descriptionId}`)).toHaveLength(1);
+    });
+
+    it('focuses the range field without opening its calendar on label activation', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        id: 'focus-range'
+      });
+      const label = document.createElement('label');
+      label.dataset.rangeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Travel window';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+
+      picker.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+      expect(picker.shadowRoot?.activeElement).toBe(getInput());
+      expect(picker.showCalendar).toBe(false);
+    });
+
+    it('switches one shared description from helper to dynamic error text', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        label: 'Booking dates',
+        'helper-text': 'Choose both endpoints.'
+      });
+      const descriptionId = getInput().getAttribute('aria-describedby')!;
+      picker.invalid = true;
+      picker.errorText = 'The selected range is unavailable.';
+      await settle();
+
+      expect(getInput().getAttribute('aria-label')).toBe('Booking dates');
+      expect(getInput().getAttribute('aria-invalid')).toBe('true');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('The selected range is unavailable.');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.getAttribute('role')).toBe('alert');
+      expect(queryShadow(picker as HTMLElement, '.helper-text')).toBeNull();
     });
   });
 

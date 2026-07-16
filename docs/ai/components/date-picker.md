@@ -154,3 +154,7 @@ All component events bubble and are composed. Direct property/default changes, r
 - Enter/Space on the input opens; Escape on the input closes.
 - Calendar dates are labeled buttons; constrained dates are disabled.
 - Calendar uses `popover="manual"`; input state mirrors disabled/readonly/required/loading/`aria-invalid`.
+- External `<label for>`, wrapping labels, and multiple labels are supported. `labels` is live and returned in document order; label text, `for`, host `id`, insertion/removal, DOM moves, and reconnect update the name.
+- External labels override the naming fallback: `label`, then `Date`. Label activation focuses the input without opening the calendar; disabled controls remain inert.
+- `helperText` or `errorText` is referenced exactly once with `aria-describedby`. Error replaces helper, has `role="alert"`, and `invalid` mirrors to `aria-invalid` without establishing native invalidity.
+- The popup is separately named `<accessible name> calendar`.

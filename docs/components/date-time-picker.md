@@ -80,6 +80,27 @@ The form-state restoration callback preserves exact visible text, including part
 
 The text field is editable. Calendar and time selectors update the same live value. `dateFormat` and `timeFormat` affect presentation and keyboard parsing only; changing either setting never rewrites the live value or authored default.
 
+## Labels and composite names
+
+Explicit `<label for>`, wrapping labels, and multiple labels are supported. `labels` returns the live associated labels in document order. Text edits and changes to `for`, the host `id`, surrounding DOM, and connection state update naming without rebuilding the component.
+
+```html
+<label for="appointment">Appointment</label>
+<label for="appointment">required</label>
+<snice-date-time-picker
+  id="appointment"
+  name="appointment"
+  helper-text="Times are displayed locally."
+  required
+></snice-date-time-picker>
+```
+
+External labels are combined and take precedence. The fallback order is the `label` property, then `Date and time`. In dropdown mode, label activation focuses the editable field without opening the panel. In `variant="inline"`, it focuses the named composite group. Disabled controls remain inert.
+
+The dropdown/inline panel is named `<control name> controls`; its calendar is `<control name> date`, and hours, minutes, optional seconds, and period each have a distinct group name. Calendar day buttons use formatted date names. This keeps repeated numeric buttons understandable without pretending the component is several unrelated form fields.
+
+Helper/error content is connected once with `aria-describedby`; error text replaces helper text, uses `role="alert"`, and `invalid` mirrors to `aria-invalid`. Visual error properties remain separate from constraint validity.
+
 Supported date formats:
 
 - `yyyy-mm-dd`
@@ -228,3 +249,6 @@ The dropdown uses the top-layer Popover API when available. It flips and clamps 
 - Disabled and readonly states block all picker buttons, including inline controls.
 - The first-legend disabled-fieldset exception follows native form behavior.
 - Helper and error text remain available as separate CSS parts for application-specific presentation.
+- External labels are live, focus the intended dropdown or inline target, and never open unrelated UI.
+- The panel, calendar, and time columns have distinct names derived from the control name.
+- Helper/error text is referenced exactly once; errors replace helper text and are exposed as alerts.

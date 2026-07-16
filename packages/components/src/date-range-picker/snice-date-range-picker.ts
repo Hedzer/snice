@@ -7,6 +7,7 @@ import type {
   DateRangePreset,
   SniceDateRangePickerElement,
 } from './snice-date-range-picker.types';
+import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-date-range-picker', { formAssociated: true })
 export class SniceDateRangePicker extends HTMLElement implements SniceDateRangePickerElement {
@@ -14,12 +15,21 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   private dirtyRange = false;
   private customValidationMessage = '';
+  private readonly descriptionId = `snice-date-range-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals === 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.input,
+      () => this.label || 'Date range',
+      name => this.calendarEl?.setAttribute('aria-label', `${name} calendar`)
+    );
   }
 
   @state()
@@ -180,11 +190,13 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     const hasPresets = this.presets && this.presets.length > 0;
     const isDual = this.columns === 2;
     const nextMonthDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 1);
+    const accessibleName = this.labelAssociation.accessibleName;
+    const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
       <div class="date-picker-wrapper">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
@@ -199,6 +211,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             .readOnly=${true}
             .required=${this.required}
             .name=${this.name || ''}
+            aria-label="${accessibleName}"
+            aria-describedby="${describedBy}"
             aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="input"
             autocomplete="off"
@@ -241,7 +255,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             <span class="spinner" part="spinner"></span>
           </if>
 
-          <div class="calendar" part="calendar" popover="manual" ?hidden=${!this.showCalendar}
+          <div class="calendar" part="calendar" popover="manual" role="group" aria-label="${accessibleName} calendar" ?hidden=${!this.showCalendar}
             @click=${(e: Event) => this.handleCalendarClick(e)}
             @mouseover=${(e: Event) => this.handleDayHover(e)}
             @mouseout=${() => this.handleCalendarMouseOut()}
@@ -341,10 +355,10 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default></default>
         </case>
@@ -381,6 +395,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       this.updateClearButton();
     });
     this.setupClickOutside();
+    this.labelAssociation.connect();
   }
 
   formAssociatedCallback() {
@@ -1053,6 +1068,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @reconnect()
   private onReconnect() {
     this.setupClickOutside();
+    this.labelAssociation.connect();
   }
 
   @dispose()
@@ -1060,6 +1076,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     document.removeEventListener('click', this.clickOutsideHandler);
     window.removeEventListener('resize', this.positionCalendarHandler);
     window.removeEventListener('scroll', this.positionCalendarHandler, true);
+    this.labelAssociation.disconnect();
   }
 
   // --- Watchers ---
@@ -1306,7 +1323,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   /** Labels associated with this range picker. @public */
   get labels(): NodeList | null {
-    return this.internals?.labels ?? this.input?.labels ?? null;
+    return this.labelAssociation.labels;
   }
 
   checkValidity() {

@@ -54,6 +54,7 @@ async function main() {
       || target === 'tests/live/components/button/button-storybook.spec.ts'
       || target === 'tests/live/components/checkbox/checkbox-storybook.spec.ts'
       || target === 'tests/live/components/date-picker/date-picker-storybook.spec.ts'
+      || target === 'tests/live/components/date-picker/date-family-label-storybook.spec.ts'
       || target === 'tests/live/components/date-range-picker/date-range-picker-storybook.spec.ts'
       || target === 'tests/live/components/date-time-picker/date-time-picker-storybook.spec.ts'
       || target === 'tests/live/components/key-value/key-value-storybook.spec.ts'

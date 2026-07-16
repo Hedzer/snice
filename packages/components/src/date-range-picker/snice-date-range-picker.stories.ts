@@ -308,6 +308,78 @@ export const FormIntegration: Story = {
   },
 };
 
+// h2: External label lifecycle
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const fixture = document.createElement('section');
+    fixture.id = 'date-range-picker-label-story';
+    fixture.innerHTML = `
+      <style>
+        #date-range-picker-label-story { display:grid;gap:1rem;max-width:42rem; }
+        #date-range-picker-label-story .label-row { display:flex;gap:.35rem;align-items:baseline;flex-wrap:wrap; }
+        #date-range-picker-label-story .controls { display:flex;gap:.5rem;flex-wrap:wrap; }
+        #date-range-picker-label-story button { padding:.45rem .7rem; }
+      </style>
+      <div>
+        <div class="label-row">
+          <label id="range-story-primary" for="range-story-picker">Booking dates</label>
+          <label id="range-story-secondary" for="range-story-picker">required</label>
+        </div>
+        <snice-date-range-picker
+          id="range-story-picker"
+          label="Internal range fallback"
+          helper-text="Choose check-in and check-out."
+          required
+        ></snice-date-range-picker>
+      </div>
+      <label>
+        Wrapped reporting window
+        <snice-date-range-picker id="range-story-wrapped" helper-text="One named range field."></snice-date-range-picker>
+      </label>
+      <div>
+        <label for="range-story-disabled">Disabled range</label>
+        <snice-date-range-picker id="range-story-disabled" disabled></snice-date-range-picker>
+      </div>
+      <div class="controls">
+        <button type="button" data-action="name">Change label</button>
+        <button type="button" data-action="error">Show error</button>
+        <button type="button" data-action="association">Remove external labels</button>
+      </div>
+      <output aria-live="polite">Accessible name: Booking dates required</output>
+    `;
+
+    const picker = fixture.querySelector('#range-story-picker') as SniceDateRangePickerElement;
+    const primary = fixture.querySelector('#range-story-primary') as HTMLLabelElement;
+    const secondary = fixture.querySelector('#range-story-secondary') as HTMLLabelElement;
+    const output = fixture.querySelector('output')!;
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      const input = picker.shadowRoot?.querySelector('.input');
+      output.textContent = `Accessible name: ${input?.getAttribute('aria-label') || ''}`;
+    });
+    fixture.querySelector('[data-action="name"]')!.addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Booking dates' ? 'Travel window' : 'Booking dates';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="error"]')!.addEventListener('click', event => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose a complete available range.';
+      button.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="association"]')!.addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      (event.currentTarget as HTMLButtonElement).textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+    return fixture;
+  },
+};
+
 // h2: CSS Parts Styling
 // Available parts: input, calendar-toggle, clear, spinner, calendar, error-text, helper-text
 export const CSSPartsStyling: Story = {

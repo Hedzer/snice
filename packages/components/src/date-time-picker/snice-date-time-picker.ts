@@ -1,6 +1,7 @@
 import { element, property, state, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-time-picker.css?inline';
 import type { DateTimePickerVariant, DateTimePickerTimeFormat, DateTimePickerSize, DateTimePickerDateFormat, SniceDateTimePickerElement } from './snice-date-time-picker.types';
+import { FormLabelAssociation } from '../form-label-association';
 
 interface DateTimeParts {
   year: number;
@@ -17,12 +18,21 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   private dirtyValue = false;
   private customValidationMessage = '';
+  private readonly descriptionId = `snice-date-time-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : (this.variant === 'inline' ? this.panel : this.input),
+      () => this.label || 'Date and time',
+      name => this.syncCompositeAccessibleNames(name)
+    );
   }
 
   @property()
@@ -158,11 +168,13 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       this.loading ? 'input--loading' : ''
     ].filter(Boolean).join(' ');
     const isInline = this.variant === 'inline';
+    const accessibleName = this.labelAssociation.accessibleName;
+    const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
       <div class="datetime-wrapper" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" part="label">${this.label}</label>
+          <label class="${labelClasses}" part="label" @click=${() => this.focus()}>${this.label}</label>
         </if>
 
         <if ${!isInline}>
@@ -175,6 +187,8 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
               .disabled=${interactionDisabled}
               .readOnly=${this.readonly}
               .required=${this.required}
+              aria-label="${accessibleName}"
+              aria-describedby="${describedBy}"
               aria-invalid="${this.invalid || validityInvalid ? 'true' : 'false'}"
               part="input"
               autocomplete="off"
@@ -221,8 +235,16 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
           </div>
         </if>
 
-        <div class="panel ${isInline ? 'panel--inline' : ''}" part="panel" ?hidden=${!isInline && !this.showPanel}>
-          <div class="panel-calendar" part="calendar">
+        <div
+          class="panel ${isInline ? 'panel--inline' : ''}"
+          part="panel"
+          role="group"
+          aria-label="${accessibleName} controls"
+          aria-describedby="${isInline ? describedBy : ''}"
+          tabindex="-1"
+          ?hidden=${!isInline && !this.showPanel}
+        >
+          <div class="panel-calendar" part="calendar" role="group" aria-label="${accessibleName} date">
             ${this.renderCalendar()}
           </div>
           <div class="panel-time" part="time">
@@ -232,10 +254,10 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default></default>
         </case>
@@ -307,11 +329,12 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   private renderTimeSelectors() {
     const hourMax = this.timeFormat === '12h' ? 12 : 23;
     const hourStart = this.timeFormat === '12h' ? 1 : 0;
+    const accessibleName = this.labelAssociation.accessibleName;
 
     return html/*html*/`
       <div class="time-header">Time</div>
       <div class="time-selectors">
-        <div class="time-column">
+        <div class="time-column" role="group" data-time-unit="hours" aria-label="${accessibleName} hours">
           <label class="time-label">Hr</label>
           <div class="time-list" @click=${(e: Event) => this.handleHourClick(e)}>
             ${Array.from({ length: hourMax - hourStart + 1 }, (_, i) => i + hourStart).map(h => {
@@ -329,7 +352,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
           </div>
         </div>
 
-        <div class="time-column">
+        <div class="time-column" role="group" data-time-unit="minutes" aria-label="${accessibleName} minutes">
           <label class="time-label">Min</label>
           <div class="time-list" @click=${(e: Event) => this.handleMinuteClick(e)}>
             ${Array.from({ length: 12 }, (_, i) => i * 5).map(m => {
@@ -347,7 +370,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         </div>
 
         <if ${this.showSeconds}>
-          <div class="time-column">
+          <div class="time-column" role="group" data-time-unit="seconds" aria-label="${accessibleName} seconds">
             <label class="time-label">Sec</label>
             <div class="time-list" @click=${(e: Event) => this.handleSecondClick(e)}>
               ${Array.from({ length: 12 }, (_, i) => i * 5).map(s => {
@@ -366,7 +389,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         </if>
 
         <if ${this.timeFormat === '12h'}>
-          <div class="time-column time-column--period">
+          <div class="time-column time-column--period" role="group" data-time-unit="period" aria-label="${accessibleName} period">
             <label class="time-label">Period</label>
             <div class="time-list">
               <button
@@ -404,6 +427,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     this.syncNativeInput();
     this.syncFormState();
     this.setupClickOutside();
+    this.labelAssociation.connect();
     queueMicrotask(() => {
       this.syncNativeInput();
       this.updateClearButton();
@@ -760,6 +784,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
           type="button"
           data-date="${dateStr}"
           ?disabled=${isDisabled(date)}
+          aria-label="${this.formatDatePart(date)}"
         >${day}</button>
       `);
     }
@@ -884,6 +909,14 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     this.clearButton.style.display = shouldShow ? '' : 'none';
   }
 
+  private syncCompositeAccessibleNames(name: string) {
+    this.panel?.setAttribute('aria-label', `${name} controls`);
+    this.shadowRoot?.querySelector('.panel-calendar')?.setAttribute('aria-label', `${name} date`);
+    this.shadowRoot?.querySelectorAll<HTMLElement>('[data-time-unit]').forEach(group => {
+      group.setAttribute('aria-label', `${name} ${group.dataset.timeUnit}`);
+    });
+  }
+
   private handleHourClick(e: Event) {
     if (this.interactionDisabled || this.readonly) return;
     const target = (e.target as HTMLElement).closest('[data-hour]');
@@ -997,6 +1030,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   @reconnect()
   private onReconnect() {
     this.setupClickOutside();
+    this.labelAssociation.connect();
   }
 
   @dispose()
@@ -1004,6 +1038,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     document.removeEventListener('click', this.clickOutsideHandler);
     window.removeEventListener('resize', this.positionPanelHandler);
     window.removeEventListener('scroll', this.positionPanelHandler, true);
+    this.labelAssociation.disconnect();
   }
 
   // Watchers
@@ -1303,11 +1338,12 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
   };
 
   focus() {
-    this.input?.focus();
+    if (this.interactionDisabled) return;
+    (this.variant === 'inline' ? this.panel : this.input)?.focus();
   }
 
   blur() {
-    this.input?.blur();
+    (this.variant === 'inline' ? this.panel : this.input)?.blur();
   }
 
   clear() {
@@ -1345,7 +1381,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   /** Labels associated with this picker. @public */
   get labels(): NodeList | null {
-    return this.internals?.labels ?? this.input?.labels ?? null;
+    return this.labelAssociation.labels;
   }
 
   checkValidity() {

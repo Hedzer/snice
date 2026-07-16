@@ -42,6 +42,7 @@ describe('snice-date-time-picker', () => {
       if ((picker as HTMLElement).isConnected) removeComponent(picker as HTMLElement);
     }
     document.querySelectorAll('[data-date-time-test]').forEach(element => element.remove());
+    document.querySelectorAll('[data-date-time-label-test]').forEach(element => element.remove());
     restoreAttachInternals?.();
     restoreAttachInternals = undefined;
   });
@@ -84,6 +85,131 @@ describe('snice-date-time-picker', () => {
       const toggleBtn = queryShadow(picker as HTMLElement, '.toggle-button');
       expect(toggleBtn).toBeTruthy();
       expect(toggleBtn?.tagName).toBe('BUTTON');
+    });
+  });
+
+  describe('external label and composite naming lifecycle', () => {
+    it('names the dropdown field, composite panel, and individual time groups without duplicating its description', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        id: 'labelled-date-time',
+        label: 'Internal fallback',
+        'helper-text': 'Times are shown locally.',
+        'show-seconds': true,
+        'time-format': '12h'
+      });
+      const primary = document.createElement('label');
+      primary.dataset.dateTimeLabelTest = 'true';
+      primary.htmlFor = picker.id;
+      primary.textContent = 'Appointment';
+      const secondary = document.createElement('label');
+      secondary.dataset.dateTimeLabelTest = 'true';
+      secondary.htmlFor = picker.id;
+      secondary.textContent = 'required';
+      picker.before(primary, secondary);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      const input = getInput();
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(Array.from(picker.labels || [], label => label.textContent)).toEqual(['Appointment', 'required']);
+      expect(input.getAttribute('aria-label')).toBe('Appointment required');
+      expect(queryShadow(picker as HTMLElement, '.panel')?.getAttribute('aria-label')).toBe('Appointment required controls');
+      expect(queryShadow(picker as HTMLElement, '.panel-calendar')?.getAttribute('aria-label')).toBe('Appointment required date');
+      expect(Array.from(picker.shadowRoot!.querySelectorAll('.time-column'), column => column.getAttribute('aria-label')))
+        .toEqual([
+          'Appointment required hours',
+          'Appointment required minutes',
+          'Appointment required seconds',
+          'Appointment required period'
+        ]);
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Times are shown locally.');
+      expect(picker.shadowRoot?.querySelectorAll(`#${descriptionId}`)).toHaveLength(1);
+    });
+
+    it('focuses the dropdown field without opening its panel on label activation', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        id: 'focus-date-time'
+      });
+      const label = document.createElement('label');
+      label.dataset.dateTimeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Starts at';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+
+      picker.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+      expect(picker.shadowRoot?.activeElement).toBe(getInput());
+      expect((picker as any).showPanel).toBe(false);
+    });
+
+    it('uses the inline composite group as the label focus target', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        id: 'inline-date-time',
+        variant: 'inline',
+        label: 'Schedule',
+        'helper-text': 'Choose a date and time.'
+      });
+      const label = document.createElement('label');
+      label.dataset.dateTimeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Inline appointment';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      picker.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+      const panel = queryShadow<HTMLElement>(picker as HTMLElement, '.panel')!;
+      expect(picker.shadowRoot?.activeElement).toBe(panel);
+      expect(panel.getAttribute('aria-label')).toBe('Inline appointment controls');
+      expect(panel.getAttribute('aria-describedby')).toMatch(/^snice-date-time-picker-desc-/);
+    });
+
+    it('keeps a disabled inline composite inert on label activation and focus()', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        id: 'disabled-inline-date-time',
+        variant: 'inline',
+        disabled: true
+      });
+      const label = document.createElement('label');
+      label.dataset.dateTimeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Disabled inline appointment';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      label.click();
+      picker.focus();
+
+      expect(picker.shadowRoot?.activeElement).toBeNull();
+      expect((picker as any).showPanel).toBe(false);
+    });
+
+    it('updates the external name and shared error description dynamically', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        id: 'dynamic-date-time',
+        'helper-text': 'Initial help'
+      });
+      const label = document.createElement('label');
+      label.dataset.dateTimeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Begins';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+      label.textContent = 'Revised start';
+      picker.invalid = true;
+      picker.errorText = 'Choose an available time.';
+      await settle();
+      (picker as any).labelAssociation.sync();
+
+      const descriptionId = getInput().getAttribute('aria-describedby')!;
+      expect(getInput().getAttribute('aria-label')).toBe('Revised start');
+      expect(getInput().getAttribute('aria-invalid')).toBe('true');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Choose an available time.');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.getAttribute('role')).toBe('alert');
+      expect(queryShadow(picker as HTMLElement, '.helper-text')).toBeNull();
     });
   });
 

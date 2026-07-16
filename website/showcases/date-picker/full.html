@@ -28,6 +28,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .form-demo legend { padding: 0 0.35rem; color: var(--snice-color-text-secondary, #cbd5e1); }
     .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .form-actions button { padding: 0.5rem 0.75rem; border: 1px solid var(--snice-color-border, #475569); border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text, #f8fafc); cursor: pointer; }
+    .label-demo { display: grid; gap: 1rem; width: min(100%, 38rem); }
+    .label-row { display: flex; gap: 0.35rem; align-items: baseline; flex-wrap: wrap; }
     output { display: block; min-height: 1.5rem; padding: 0.625rem 0.75rem; border-radius: 0.375rem; background: var(--snice-color-surface-raised, #1e293b); color: var(--snice-color-text-secondary, #cbd5e1); font: 0.8125rem/1.45 ui-monospace, monospace; }
     @media (max-width: 480px) { body { padding: 1rem; } }
   </style>
@@ -150,6 +152,38 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-date-picker label="Disabled clearable" disabled value="2026-01-01" clearable></snice-date-picker>
 </section>
 
+<section id="date-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-demo">
+    <div>
+      <div class="label-row">
+        <label id="date-showcase-primary-label" for="date-showcase-labelled">Arrival date</label>
+        <label id="date-showcase-secondary-label" for="date-showcase-labelled">required</label>
+      </div>
+      <snice-date-picker
+        id="date-showcase-labelled"
+        label="Internal date fallback"
+        helper-text="Used to schedule local delivery."
+        required
+      ></snice-date-picker>
+    </div>
+    <label>
+      Wrapped departure date
+      <snice-date-picker id="date-showcase-wrapped" helper-text="Wrapping labels work too."></snice-date-picker>
+    </label>
+    <div>
+      <label for="date-showcase-disabled">Disabled date</label>
+      <snice-date-picker id="date-showcase-disabled" disabled></snice-date-picker>
+    </div>
+    <div class="form-actions">
+      <button id="date-showcase-change-label" type="button">Change label</button>
+      <button id="date-showcase-toggle-error" type="button">Show error</button>
+      <button id="date-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="date-showcase-label-status" aria-live="polite">Accessible name: Arrival date required</output>
+  </div>
+</section>
+
 <section id="date-picker-form-contract">
   <h2>Native form integration, canonical values, validation, reset, and fieldset rules</h2>
   <form id="date-picker-showcase-form" class="form-demo">
@@ -211,6 +245,33 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   });
   form.addEventListener('reset', () => {
     requestAnimationFrame(() => { formStatus.textContent = `Reset: ${describeFormData()}`; });
+  });
+
+  const labelledPicker = document.querySelector('#date-showcase-labelled');
+  const primaryLabel = document.querySelector('#date-showcase-primary-label');
+  const secondaryLabel = document.querySelector('#date-showcase-secondary-label');
+  const labelStatus = document.querySelector('#date-showcase-label-status');
+  let labelsAttached = true;
+  const updateLabelStatus = () => requestAnimationFrame(() => {
+    labelStatus.textContent = `Accessible name: ${labelledPicker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+  });
+  document.querySelector('#date-showcase-change-label').addEventListener('click', () => {
+    primaryLabel.textContent = primaryLabel.textContent === 'Arrival date' ? 'Departure date' : 'Arrival date';
+    updateLabelStatus();
+  });
+  document.querySelector('#date-showcase-toggle-error').addEventListener('click', event => {
+    const showing = labelledPicker.errorText !== '';
+    labelledPicker.invalid = !showing;
+    labelledPicker.errorText = showing ? '' : 'Choose an available date.';
+    event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+    updateLabelStatus();
+  });
+  document.querySelector('#date-showcase-toggle-labels').addEventListener('click', event => {
+    labelsAttached = !labelsAttached;
+    primaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+    secondaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+    event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+    updateLabelStatus();
   });
 </script>
 

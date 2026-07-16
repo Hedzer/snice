@@ -8,6 +8,7 @@ Calendar-backed start/end selection with seven display formats, presets, single-
 - `defaultStart`/`defaultEnd` map to the `start`/`end` attributes and define the pair restored by form reset.
 - `format` changes visible text, never the canonical submitted fields.
 - A picker named `booking` contributes `booking-start` and `booking-end` to `FormData`, each as canonical local-calendar `YYYY-MM-DD` or `''`.
+- The visible UI remains one named range field: explicit, wrapping, and multiple labels are live, focus without opening, and name the calendar separately.
 - Partial, malformed, reversed, required-empty, and min/max-invalid ranges expose native validity without silently changing customer data.
 - Reset, restoration, explicit form ownership, disabled fieldsets, the first-legend exception, readonly/loading states, and custom validity are supported.
 

@@ -13,6 +13,7 @@
 - [Basic Usage](#basic-usage)
 - [Value, Display, and Reset Defaults](#value-display-and-reset-defaults)
 - [Form Integration](#form-integration)
+- [Labels and Descriptions](#labels-and-descriptions)
 - [Validation](#validation)
 - [Date Formats](#date-formats)
 - [Examples](#examples)
@@ -184,6 +185,25 @@ Successful-control rules:
 
 Browser restoration preserves exact visible text. A complete restored string recreates its canonical value; partial/invalid restored text remains visible and invalid. Application code should not call lifecycle callbacks directly.
 
+## Labels and Descriptions
+
+The picker supports the same external label shapes as a native form control: an explicit `<label for="arrival">`, a wrapping `<label>`, and multiple labels. `labels` returns the currently associated labels in document order. Label text, `for`, the picker `id`, DOM moves, and label insertion/removal remain live after connection and reconnect.
+
+```html
+<label for="arrival">Arrival date</label>
+<label for="arrival">required</label>
+<snice-date-picker
+  id="arrival"
+  name="arrival"
+  helper-text="Use the destination's local date."
+  required
+></snice-date-picker>
+```
+
+External labels are combined in document order and take naming precedence. With no associated external label, the accessible name falls back to the `label` property and then `Date`. Clicking an external or internal label focuses the text field without opening the calendar. Disabled pickers remain inert.
+
+The visible field references exactly one live description. Error content replaces helper content in that description and uses `role="alert"`; the corresponding properties are `errorText` and `helperText`. `invalid` mirrors to `aria-invalid`. These presentation properties do not themselves change native constraint validity. The popup is a separately named `<control name> calendar` group, so its navigation never becomes part of the field name.
+
 ## Validation
 
 The component exposes the native-style `validity`, `validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()`, and `setCustomValidity()` API.
@@ -282,4 +302,6 @@ picker.addEventListener('datepicker-change', event => {
 - Calendar days are real buttons with formatted `aria-label` values; constrained dates are disabled buttons.
 - The calendar uses `popover="manual"` for top-layer placement where supported.
 - The text input mirrors required, disabled, readonly, loading, and `aria-invalid` state.
+- Explicit, wrapping, and multiple external labels name and focus the text field; association and text changes are live.
+- Helper/error text is connected with `aria-describedby` once, and the error replaces rather than duplicates helper text.
 - `form`, `labels`, `validity`, `validationMessage`, and `willValidate` expose the host's native form/accessibility relationship.

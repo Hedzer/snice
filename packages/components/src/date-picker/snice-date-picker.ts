@@ -1,6 +1,7 @@
 import { element, property, state, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
+import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-date-picker', { formAssociated: true })
 export class SniceDatePicker extends HTMLElement implements SniceDatePickerElement {
@@ -8,12 +9,20 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private dirtyValue = false;
   private customValidationMessage = '';
+  private readonly descriptionId = `snice-date-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.input,
+      () => this.label || 'Date'
+    );
   }
   @property({  })
   size: DatePickerSize = 'medium';
@@ -144,11 +153,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       this.clearable ? 'input--clearable' : '',
       this.loading ? 'input--loading' : ''
     ].filter(Boolean).join(' ');
+    const accessibleName = this.labelAssociation.accessibleName;
+    const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
       <div class="date-picker-wrapper">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
@@ -163,6 +174,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             .readOnly=${this.readonly}
             .required=${this.required}
             .name=${this.name || ''}
+            aria-label="${accessibleName}"
+            aria-describedby="${describedBy}"
             aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="input"
             autocomplete="off"
@@ -274,10 +287,10 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default></default>
         </case>
@@ -304,6 +317,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       this.updateClearButton();
     });
     this.setupCalendarClickOutside();
+    this.labelAssociation.connect();
   }
 
   formAssociatedCallback() {
@@ -647,11 +661,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @reconnect()
   private onReconnect() {
     this.setupCalendarClickOutside();
+    this.labelAssociation.connect();
   }
 
   @dispose()
   private cleanupClickOutside() {
     document.removeEventListener('click', this.clickOutsideHandler);
+    this.labelAssociation.disconnect();
   }
 
   private handleInput(e: Event) {
@@ -1135,7 +1151,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   /** Labels associated with this date picker. @public */
   get labels(): NodeList | null {
-    return this.internals?.labels ?? this.input?.labels ?? null;
+    return this.labelAssociation.labels;
   }
 
   checkValidity() {

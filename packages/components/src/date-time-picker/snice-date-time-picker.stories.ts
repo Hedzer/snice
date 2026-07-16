@@ -264,6 +264,84 @@ export const FormIntegration: Story = {
   },
 };
 
+// h2: External label lifecycle and composite naming
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const fixture = document.createElement('section');
+    fixture.id = 'date-time-picker-label-story';
+    fixture.innerHTML = `
+      <style>
+        #date-time-picker-label-story { display:grid;gap:1rem;max-width:46rem; }
+        #date-time-picker-label-story .label-row { display:flex;gap:.35rem;align-items:baseline;flex-wrap:wrap; }
+        #date-time-picker-label-story .controls { display:flex;gap:.5rem;flex-wrap:wrap; }
+        #date-time-picker-label-story button { padding:.45rem .7rem; }
+      </style>
+      <div>
+        <div class="label-row">
+          <label id="datetime-story-primary" for="datetime-story-picker">Appointment</label>
+          <label id="datetime-story-secondary" for="datetime-story-picker">required</label>
+        </div>
+        <snice-date-time-picker
+          id="datetime-story-picker"
+          label="Internal date-time fallback"
+          helper-text="Times are displayed locally."
+          show-seconds
+          time-format="12h"
+          required
+        ></snice-date-time-picker>
+      </div>
+      <div>
+        <label for="datetime-story-inline">Inline schedule</label>
+        <snice-date-time-picker
+          id="datetime-story-inline"
+          variant="inline"
+          helper-text="The date and each time group retain distinct names."
+        ></snice-date-time-picker>
+      </div>
+      <div>
+        <label for="datetime-story-disabled">Disabled appointment</label>
+        <snice-date-time-picker id="datetime-story-disabled" disabled></snice-date-time-picker>
+      </div>
+      <div class="controls">
+        <button type="button" data-action="name">Change label</button>
+        <button type="button" data-action="error">Show error</button>
+        <button type="button" data-action="association">Remove external labels</button>
+      </div>
+      <output aria-live="polite">Accessible name: Appointment required</output>
+    `;
+
+    const picker = fixture.querySelector('#datetime-story-picker') as any;
+    const primary = fixture.querySelector('#datetime-story-primary') as HTMLLabelElement;
+    const secondary = fixture.querySelector('#datetime-story-secondary') as HTMLLabelElement;
+    const output = fixture.querySelector('output')!;
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      const input = picker.shadowRoot?.querySelector('.input');
+      output.textContent = `Accessible name: ${input?.getAttribute('aria-label') || ''}`;
+    });
+    fixture.querySelector('[data-action="name"]')!.addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Appointment' ? 'Event starts' : 'Appointment';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="error"]')!.addEventListener('click', event => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose an available date and time.';
+      button.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="association"]')!.addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      (event.currentTarget as HTMLButtonElement).textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+    return fixture;
+  },
+};
+
 // h2: Sizes
 export const Sizes: Story = {
   render: () => row(...SIZES.map(s => makePicker({ size: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))),

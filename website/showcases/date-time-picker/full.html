@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
 (function(){
@@ -16,10 +17,17 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Date Time Picker</title>
   <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui; margin: 0; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); overflow-wrap: anywhere; }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     section { margin-bottom: 2rem; max-width: 700px; }
+    .label-demo { display: grid; gap: 1rem; width: min(100%, 46rem); }
+    .label-row { display: flex; gap: 0.35rem; align-items: baseline; flex-wrap: wrap; }
+    .demo-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .demo-actions button { padding: 0.5rem 0.75rem; }
+    output { display:block; min-height:1.5rem; padding:.625rem .75rem; border-radius:.375rem; background:var(--snice-color-surface-raised, #1e293b); font:.8125rem/1.45 ui-monospace, monospace; }
+    @media (max-width: 480px) { body { padding: 1rem; } }
   </style>
   <script type="module">import '../../../packages/components/src/date-time-picker/snice-date-time-picker.ts';</script>
 </head>
@@ -114,6 +122,46 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-date-time-picker label="Event Start" name="event_start" required></snice-date-time-picker>
 </section>
 
+<section id="date-time-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-demo">
+    <div>
+      <div class="label-row">
+        <label id="datetime-showcase-primary-label" for="datetime-showcase-labelled">Appointment</label>
+        <label id="datetime-showcase-secondary-label" for="datetime-showcase-labelled">required</label>
+      </div>
+      <snice-date-time-picker
+        id="datetime-showcase-labelled"
+        label="Internal date-time fallback"
+        helper-text="Times are displayed locally."
+        show-seconds
+        time-format="12h"
+        required
+      ></snice-date-time-picker>
+    </div>
+    <div>
+      <label for="datetime-showcase-inline">Inline schedule</label>
+      <snice-date-time-picker
+        id="datetime-showcase-inline"
+        variant="inline"
+        helper-text="Date, hours, minutes, seconds, and period are named groups."
+        show-seconds
+        time-format="12h"
+      ></snice-date-time-picker>
+    </div>
+    <div>
+      <label for="datetime-showcase-disabled">Disabled appointment</label>
+      <snice-date-time-picker id="datetime-showcase-disabled" disabled></snice-date-time-picker>
+    </div>
+    <div class="demo-actions">
+      <button id="datetime-showcase-change-label" type="button">Change label</button>
+      <button id="datetime-showcase-toggle-error" type="button">Show error</button>
+      <button id="datetime-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="datetime-showcase-label-status" aria-live="polite">Accessible name: Appointment required</output>
+  </div>
+</section>
+
 <section>
   <h2>Native form lifecycle</h2>
   <form id="date-time-picker-showcase-form" style="display:flex;flex-direction:column;gap:.75rem">
@@ -206,6 +254,33 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     });
     form.addEventListener('reset', () => {
       requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+
+    const labelledPicker = document.getElementById('datetime-showcase-labelled');
+    const primaryLabel = document.getElementById('datetime-showcase-primary-label');
+    const secondaryLabel = document.getElementById('datetime-showcase-secondary-label');
+    const labelStatus = document.getElementById('datetime-showcase-label-status');
+    let labelsAttached = true;
+    const updateLabelStatus = () => requestAnimationFrame(() => {
+      labelStatus.textContent = `Accessible name: ${labelledPicker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('datetime-showcase-change-label').addEventListener('click', () => {
+      primaryLabel.textContent = primaryLabel.textContent === 'Appointment' ? 'Event starts' : 'Appointment';
+      updateLabelStatus();
+    });
+    document.getElementById('datetime-showcase-toggle-error').addEventListener('click', event => {
+      const showing = labelledPicker.errorText !== '';
+      labelledPicker.invalid = !showing;
+      labelledPicker.errorText = showing ? '' : 'Choose an available date and time.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateLabelStatus();
+    });
+    document.getElementById('datetime-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      secondaryLabel.htmlFor = labelsAttached ? labelledPicker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateLabelStatus();
     });
   })();
 </script>

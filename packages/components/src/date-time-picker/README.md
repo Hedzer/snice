@@ -2,6 +2,8 @@
 
 `snice-date-time-picker` is a form-associated local date-time control with editable text, a calendar, time columns, native reset/restore/fieldset behavior, and constraint validation.
 
+Explicit, wrapping, and multiple labels are live. They focus the dropdown field without opening it, or the composite group in inline mode. The panel, calendar, and time columns retain distinct derived names, and helper/error text is described exactly once.
+
 ```html
 <snice-date-time-picker
   name="appointment"

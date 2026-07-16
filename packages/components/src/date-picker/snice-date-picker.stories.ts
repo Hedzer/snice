@@ -285,6 +285,78 @@ export const FormIntegration: Story = {
   },
 };
 
+// h2: External label lifecycle
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const fixture = document.createElement('section');
+    fixture.id = 'date-picker-label-story';
+    fixture.innerHTML = `
+      <style>
+        #date-picker-label-story { display:grid;gap:1rem;max-width:38rem; }
+        #date-picker-label-story .label-row { display:flex;gap:.35rem;align-items:baseline;flex-wrap:wrap; }
+        #date-picker-label-story .controls { display:flex;gap:.5rem;flex-wrap:wrap; }
+        #date-picker-label-story button { padding:.45rem .7rem; }
+      </style>
+      <div>
+        <div class="label-row">
+          <label id="date-story-primary" for="date-story-picker">Arrival date</label>
+          <label id="date-story-secondary" for="date-story-picker">required</label>
+        </div>
+        <snice-date-picker
+          id="date-story-picker"
+          label="Internal fallback"
+          helper-text="Used to schedule local delivery."
+          required
+        ></snice-date-picker>
+      </div>
+      <label>
+        Wrapped departure date
+        <snice-date-picker id="date-story-wrapped" helper-text="Wrapping labels work too."></snice-date-picker>
+      </label>
+      <div>
+        <label for="date-story-disabled">Disabled date</label>
+        <snice-date-picker id="date-story-disabled" disabled></snice-date-picker>
+      </div>
+      <div class="controls">
+        <button type="button" data-action="name">Change label</button>
+        <button type="button" data-action="error">Show error</button>
+        <button type="button" data-action="association">Remove external labels</button>
+      </div>
+      <output aria-live="polite">Accessible name: Arrival date required</output>
+    `;
+
+    const picker = fixture.querySelector('#date-story-picker') as SniceDatePickerElement;
+    const primary = fixture.querySelector('#date-story-primary') as HTMLLabelElement;
+    const secondary = fixture.querySelector('#date-story-secondary') as HTMLLabelElement;
+    const output = fixture.querySelector('output')!;
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      const input = picker.shadowRoot?.querySelector('.input');
+      output.textContent = `Accessible name: ${input?.getAttribute('aria-label') || ''}`;
+    });
+    fixture.querySelector('[data-action="name"]')!.addEventListener('click', () => {
+      primary.firstChild!.textContent = primary.textContent?.startsWith('Arrival') ? 'Departure date' : 'Arrival date';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="error"]')!.addEventListener('click', event => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose an available date.';
+      button.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="association"]')!.addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      (event.currentTarget as HTMLButtonElement).textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+    return fixture;
+  },
+};
+
 // h2: Disabled + value + clearable (clear hidden when disabled)
 export const DisabledValueClearable: Story = {
   render: () => row(

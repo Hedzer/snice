@@ -13,6 +13,7 @@
 - [Basic Usage](#basic-usage)
 - [Live Values and Reset Defaults](#live-values-and-reset-defaults)
 - [Canonical Form Submission](#canonical-form-submission)
+- [Labels and Descriptions](#labels-and-descriptions)
 - [Validation](#validation)
 - [Formats and Presets](#formats-and-presets)
 - [Examples](#examples)
@@ -197,6 +198,25 @@ Successful-control rules:
 - `form="form-id"` associates a picker outside a form with that form owner.
 - Session-history/autofill restoration preserves both live endpoint strings without emitting customer events.
 
+## Labels and Descriptions
+
+Although the value submits as two canonical endpoints, the visible UI is one range field. Explicit, wrapping, and multiple external labels therefore give the input one combined group name; they do not create ambiguous start/end fields.
+
+```html
+<label for="booking-window">Booking dates</label>
+<label for="booking-window">required</label>
+<snice-date-range-picker
+  id="booking-window"
+  name="booking"
+  helper-text="Choose check-in and check-out."
+  required
+></snice-date-range-picker>
+```
+
+`labels` is live and returned in document order. External label text and association changes—including `for`, host `id`, DOM moves, insertion, removal, and reconnect—update the input name. External labels take precedence; the fallback order is `label`, then `Date range`. Clicking an internal or associated external label focuses the range field without opening the calendar, and disabled controls remain inert.
+
+Helper or error content is referenced exactly once with `aria-describedby`; error text replaces helper text and uses `role="alert"`. `invalid` mirrors to `aria-invalid` but remains separate from native validity. The popup is named `<range name> calendar`, keeping its date and navigation buttons distinct from the field itself.
+
 ## Validation
 
 The component exposes `validity`, `validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()`, and `setCustomValidity()` on the host.
@@ -305,4 +325,6 @@ range.addEventListener('daterange-change', event => {
 - The popup flips or clamps to the viewport, scrolls internally when its full contents cannot fit, and repositions on page scroll or resize.
 - Navigation buttons and date buttons provide accessible labels; constrained dates are disabled.
 - The visible input mirrors required, effective disabledness, loading, and `aria-invalid` presentation.
+- Explicit, wrapping, and multiple labels provide one live name for the complete range and focus it without opening the popup.
+- Helper/error content is described once; the named calendar group remains separate from the range field.
 - `form`, `labels`, `validity`, `validationMessage`, and `willValidate` expose native relationships on the host.
