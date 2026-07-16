@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-range-picker.css?inline';
 import type {
   DateRangePickerSize,
@@ -12,6 +12,9 @@ import type {
 export class SniceDateRangePicker extends HTMLElement implements SniceDateRangePickerElement {
   internals!: ElementInternals;
 
+  private dirtyRange = false;
+  private customValidationMessage = '';
+
   constructor() {
     super();
     if (typeof this.attachInternals === 'function') {
@@ -19,11 +22,48 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     }
   }
 
-  @property({})
-  start = '';
+  @state()
+  private startState = '';
 
-  @property({})
-  end = '';
+  @state()
+  private endState = '';
+
+  @state()
+  private formDisabled = false;
+
+  /**
+   * Live start value. Canonical and configured display-format strings are
+   * accepted; assigning it does not rewrite the authored reset default.
+   * @public
+   */
+  get start(): string {
+    return this.startState;
+  }
+
+  set start(value: string) {
+    this.setStartFromString(value, true);
+  }
+
+  /**
+   * Live end value. Canonical and configured display-format strings are
+   * accepted; assigning it does not rewrite the authored reset default.
+   * @public
+   */
+  get end(): string {
+    return this.endState;
+  }
+
+  set end(value: string) {
+    this.setEndFromString(value, true);
+  }
+
+  /** The `start` content attribute and form-reset start default. */
+  @property({ attribute: 'start' })
+  defaultStart = '';
+
+  /** The `end` content attribute and form-reset end default. */
+  @property({ attribute: 'end' })
+  defaultEnd = '';
 
   @property({})
   size: DateRangePickerSize = 'medium';
@@ -97,8 +137,12 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @query('.calendar-toggle')
   calendarToggle?: HTMLButtonElement;
 
+  @query('.input-container')
+  inputContainer?: HTMLElement;
+
   private startDate: Date | null = null;
   private endDate: Date | null = null;
+  private validationInput?: HTMLInputElement;
   private viewDate = new Date();
   private selectionPhase: 'idle' | 'selecting' = 'idle';
   private hoverDate: Date | null = null;
@@ -121,6 +165,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   @render()
   template() {
+    const interactionDisabled = this.interactionDisabled;
+    const showClear = Boolean(this.start || this.end) && this.clearable && !interactionDisabled && !this.readonly;
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const inputClasses = [
       'input',
@@ -147,12 +193,13 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
           <input
             class="${inputClasses}"
             type="text"
-            value="${this.getDisplayValue()}"
-            placeholder="${this.placeholder || this.getPlaceholder()}"
-            ?disabled=${this.disabled || this.loading}
-            ?readonly=${true}
-            ?required=${this.required}
-            name="${this.name || ''}"
+            .value=${this.getDisplayValue()}
+            .placeholder=${this.placeholder || this.getPlaceholder()}
+            .disabled=${interactionDisabled}
+            .readOnly=${true}
+            .required=${this.required}
+            .name=${this.name || ''}
+            aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="input"
             autocomplete="off"
             @click=${(e: Event) => this.handleInputClick(e)}
@@ -167,7 +214,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             aria-label="Open calendar"
             tabindex="-1"
             part="calendar-toggle"
-            ?disabled=${this.disabled || this.loading || this.readonly}
+            .disabled=${interactionDisabled || this.readonly}
             @click=${(e: Event) => this.handleCalendarToggle(e)}
           >
             <svg viewBox="0 0 24 24" width="18" height="18">
@@ -176,12 +223,13 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
           </button>
 
           <button
-            class="clear-button"
+            class="clear-button${showClear ? ' clear-button--visible' : ''}"
             type="button"
             aria-label="Clear"
             tabindex="-1"
             part="clear"
-            style="display: none;"
+            style="${showClear ? '' : 'display: none;'}"
+            .disabled=${interactionDisabled || this.readonly}
             @click=${() => this.clear()}
           >
             <svg viewBox="0 0 24 24" width="16" height="16">
@@ -306,10 +354,61 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   @ready()
   init() {
-    this.parseInitialValues();
-    this.updateFormValue();
-    queueMicrotask(() => this.updateClearButton());
+    // Firefox focuses the form-associated host when reporting ElementInternals
+    // validity even when a shadow validation anchor is supplied. Keep the host
+    // programmatically focusable without adding a second sequential tab stop.
+    if (!this.hasAttribute('tabindex')) this.tabIndex = -1;
+
+    // Preserve properties assigned before custom-element upgrade. Own data
+    // properties otherwise shadow the native-style live accessors forever.
+    const hasOwnStart = Object.prototype.hasOwnProperty.call(this, 'start');
+    const hasOwnEnd = Object.prototype.hasOwnProperty.call(this, 'end');
+    const liveStart = hasOwnStart ? (this as { start: unknown }).start : this.defaultStart;
+    const liveEnd = hasOwnEnd ? (this as { end: unknown }).end : this.defaultEnd;
+    if (hasOwnStart) delete (this as Partial<{ start: unknown }>).start;
+    if (hasOwnEnd) delete (this as Partial<{ end: unknown }>).end;
+
+    if (hasOwnStart || hasOwnEnd) {
+      this.commitRangeValues(liveStart, liveEnd, true);
+    } else if (!this.dirtyRange) {
+      this.applyDefaultRange();
+    }
+
+    this.syncNativeInput();
+    this.syncFormState();
+    queueMicrotask(() => {
+      this.syncNativeInput();
+      this.updateClearButton();
+    });
     this.setupClickOutside();
+  }
+
+  formAssociatedCallback() {
+    this.syncFormState();
+  }
+
+  formResetCallback() {
+    this.dirtyRange = false;
+    this.selectionPhase = 'idle';
+    this.hoverDate = null;
+    this.applyDefaultRange();
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    // Effective disabledness can come from a disabled fieldset. Keep it
+    // separate from the authored `disabled` property and content attribute.
+    this.formDisabled = disabled;
+    if (disabled && this.showCalendar) this.close();
+    this.syncNativeInput();
+    this.syncValidity();
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    const restored = this.readRestoredState(state);
+    if (!restored) return;
+    this.selectionPhase = 'idle';
+    this.hoverDate = null;
+    this.commitRangeValues(restored.start, restored.end, true);
   }
 
   // --- Display ---
@@ -327,7 +426,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     return `${fmt}  —  ${fmt}`;
   }
 
-  // --- Date parsing/formatting (copied from date-picker) ---
+  // --- Date parsing/formatting (kept compatible with date-picker formats) ---
 
   private parseDate(dateString: string): Date | null {
     if (!dateString) return null;
@@ -381,7 +480,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   }
 
   private formatDate(date: Date): string {
-    if (!date) return '';
+    if (!this.isValidDate(date)) return '';
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
@@ -399,6 +498,17 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       case 'mmmm dd, yyyy': return `${this.monthNames[date.getMonth()]} ${dd}, ${yyyy}`;
       default: return `${mm}/${dd}/${yyyy}`;
     }
+  }
+
+  private toCanonicalDate(date: Date): string {
+    const year = date.getFullYear().toString().padStart(4, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private isValidDate(date: Date | null): date is Date {
+    return date instanceof Date && Number.isFinite(date.getTime());
   }
 
   private getPlaceholderForFormat(): string {
@@ -539,26 +649,71 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     return days;
   }
 
-  // --- Init ---
+  // --- Live/default range state ---
 
-  private parseInitialValues() {
-    if (this.start) {
-      const date = this.parseDate(this.start);
-      if (date) {
-        this.startDate = date;
-        this.viewDate = new Date(date);
-      }
+  private applyDefaultRange() {
+    this.commitRangeValues(this.defaultStart, this.defaultEnd, false);
+  }
+
+  private setStartFromString(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyRange = true;
+    this.startState = String(value ?? '');
+    this.startDate = this.parseDate(this.startState);
+    if (this.startDate) this.viewDate = new Date(this.startDate);
+    this.finishRangeStateUpdate();
+  }
+
+  private setEndFromString(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyRange = true;
+    this.endState = String(value ?? '');
+    this.endDate = this.parseDate(this.endState);
+    this.finishRangeStateUpdate();
+  }
+
+  private commitRangeValues(start: unknown, end: unknown, dirty: boolean) {
+    if (dirty) this.dirtyRange = true;
+
+    this.startState = String(start ?? '');
+    this.endState = String(end ?? '');
+    this.startDate = this.parseDate(this.startState);
+    this.endDate = this.parseDate(this.endState);
+    if (this.startDate) this.viewDate = new Date(this.startDate);
+
+    this.finishRangeStateUpdate();
+  }
+
+  private finishRangeStateUpdate() {
+    this.syncNativeInput();
+    this.syncFormState();
+    this.updateClearButton();
+    if (this.showCalendar && this.calendarEl) this.updateCalendarGrid();
+  }
+
+  private readRestoredState(state: File | string | FormData | null): { start: string; end: string } | null {
+    if (state instanceof FormData) {
+      const start = state.get(`${this.name}-start`) ?? state.get('start');
+      const end = state.get(`${this.name}-end`) ?? state.get('end');
+      if ((typeof start !== 'string' && start !== null) || (typeof end !== 'string' && end !== null)) return null;
+      return { start: start ?? '', end: end ?? '' };
     }
-    if (this.end) {
-      const date = this.parseDate(this.end);
-      if (date) this.endDate = date;
+    if (typeof state !== 'string') return null;
+
+    try {
+      const parsed = JSON.parse(state) as unknown;
+      if (!Array.isArray(parsed) || parsed.length !== 2 ||
+          typeof parsed[0] !== 'string' || typeof parsed[1] !== 'string') {
+        return null;
+      }
+      return { start: parsed[0], end: parsed[1] };
+    } catch {
+      return null;
     }
   }
 
   // --- Handlers ---
 
   private handleInputClick(_e: Event) {
-    if (!this.showCalendar && !this.disabled && !this.readonly) {
+    if (!this.showCalendar && !this.interactionDisabled && !this.readonly) {
       this.open();
     }
   }
@@ -613,30 +768,23 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   }
 
   private handleDaySelect(date: Date) {
-    if (this.selectionPhase === 'idle') {
-      this.startDate = date;
-      this.endDate = null;
+    // A live start assignment can invalidate the first click while the popup
+    // remains open. Treat the next day as a fresh start instead of assuming a
+    // stale selection phase still has a usable Date.
+    if (this.selectionPhase === 'idle' || !this.startDate) {
       this.selectionPhase = 'selecting';
-      this.start = this.formatDate(date);
-      this.end = '';
-      this.updateInput();
+      this.commitRangeValues(this.formatDate(date), '', true);
       this.updateCalendarGrid();
     } else {
       if (date.getTime() < this.startDate!.getTime()) {
-        this.startDate = date;
-        this.start = this.formatDate(date);
-        this.updateInput();
+        this.commitRangeValues(this.formatDate(date), '', true);
         this.updateCalendarGrid();
         return;
       }
 
-      this.endDate = date;
-      this.end = this.formatDate(date);
       this.selectionPhase = 'idle';
       this.hoverDate = null;
-      this.updateInput();
-      this.updateFormValue();
-      this.updateClearButton();
+      this.commitRangeValues(this.start, this.formatDate(date), true);
       this.dispatchChangeEvent();
       this.close();
     }
@@ -645,7 +793,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   private handlePresetSelect(preset: DateRangePreset) {
     const startDate = preset.start instanceof Date ? preset.start : this.parseDate(preset.start as string);
     const endDate = preset.end instanceof Date ? preset.end : this.parseDate(preset.end as string);
-    if (startDate && endDate) {
+    if (this.isValidDate(startDate) && this.isValidDate(endDate)) {
       this.presetPreviewStart = null;
       this.presetPreviewEnd = null;
       this.selectRange(startDate, endDate);
@@ -684,7 +832,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     if (!preset) return;
     const s = preset.start instanceof Date ? preset.start : this.parseDate(preset.start as string);
     const en = preset.end instanceof Date ? preset.end : this.parseDate(preset.end as string);
-    if (s && en) {
+    if (this.isValidDate(s) && this.isValidDate(en)) {
       this.presetPreviewStart = s.getTime() <= en.getTime() ? s : en;
       this.presetPreviewEnd = s.getTime() <= en.getTime() ? en : s;
       this.updateCalendarGrid();
@@ -765,26 +913,129 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     }
   }
 
+  private get interactionDisabled() {
+    return this.disabled || this.loading || this.formDisabled;
+  }
+
+  private syncNativeInput() {
+    if (this.input) {
+      this.input.value = this.getDisplayValue();
+      this.input.disabled = this.interactionDisabled;
+      this.input.readOnly = true;
+      this.input.required = this.required;
+      this.input.name = this.name || '';
+    }
+    if (this.calendarToggle) this.calendarToggle.disabled = this.interactionDisabled || this.readonly;
+    if (this.clearButton) this.clearButton.disabled = this.interactionDisabled || this.readonly;
+  }
+
   private updateClearButton() {
-    if (!this.clearButton || !this.clearable) return;
-    const shouldShow = (this.startDate || this.endDate) && !this.disabled && !this.readonly;
+    if (!this.clearButton) return;
+    const shouldShow = Boolean(this.start || this.end) && this.clearable && !this.interactionDisabled && !this.readonly;
     this.clearButton.style.display = shouldShow ? '' : 'none';
+    this.clearButton.classList.toggle('clear-button--visible', shouldShow);
+    this.clearButton.disabled = this.interactionDisabled || this.readonly;
+  }
+
+  private updateClearButtonAfterRender() {
+    // Property watchers run before their queued render. The nested microtask
+    // applies imperative query state after that render has reconciled.
+    queueMicrotask(() => queueMicrotask(() => this.updateClearButton()));
   }
 
   private updateCalendarGrid() {
     this.template();
   }
 
-  private updateFormValue() {
-    if (!this.internals) return;
-    if (this.name && (this.start || this.end)) {
+  private syncFormState() {
+    if (this.internals && this.name) {
       const formData = new FormData();
-      formData.append(`${this.name}-start`, this.start);
-      formData.append(`${this.name}-end`, this.end);
-      this.internals.setFormValue(formData);
-    } else {
+      formData.append(`${this.name}-start`, this.startDate ? this.toCanonicalDate(this.startDate) : '');
+      formData.append(`${this.name}-end`, this.endDate ? this.toCanonicalDate(this.endDate) : '');
+      this.internals.setFormValue(formData, JSON.stringify([this.start, this.end]));
+    } else if (this.internals) {
       this.internals.setFormValue(null);
     }
+    this.syncValidity();
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) {
+      this.validationInput = document.createElement('input');
+      this.validationInput.type = 'text';
+    }
+    return this.validationInput;
+  }
+
+  private syncValidity() {
+    const barred = this.interactionDisabled || this.readonly;
+    const hasStart = Boolean(this.start);
+    const hasEnd = Boolean(this.end);
+    const invalidStart = hasStart && !this.startDate;
+    const invalidEnd = hasEnd && !this.endDate;
+    const partial = hasStart !== hasEnd;
+    const complete = Boolean(this.startDate && this.endDate);
+    const reversed = complete && this.startDate!.getTime() > this.endDate!.getTime();
+    const minDate = this.parseDate(this.min);
+    const maxDate = this.parseDate(this.max);
+    const rangeUnderflow = complete && Boolean(minDate) &&
+      (this.startDate!.getTime() < minDate!.getTime() || this.endDate!.getTime() < minDate!.getTime());
+    const rangeOverflow = complete && Boolean(maxDate) &&
+      (this.startDate!.getTime() > maxDate!.getTime() || this.endDate!.getTime() > maxDate!.getTime());
+
+    const flags: ValidityStateFlags = {
+      badInput: !barred && (invalidStart || invalidEnd || partial),
+      customError: !barred && (Boolean(this.customValidationMessage) || reversed),
+      patternMismatch: false,
+      rangeOverflow: !barred && rangeOverflow,
+      rangeUnderflow: !barred && rangeUnderflow,
+      stepMismatch: false,
+      tooLong: false,
+      tooShort: false,
+      typeMismatch: false,
+      valueMissing: !barred && this.required && !complete
+    };
+    const hasError = Object.values(flags).some(Boolean);
+    const message = this.customValidationMessage ||
+      (flags.badInput ? 'Please select both a valid start and end date.' : '') ||
+      (reversed ? 'End date must be on or after start date.' : '') ||
+      (flags.valueMissing ? 'Please select a date range.' : '') ||
+      (flags.rangeUnderflow && minDate ? `Dates must be on or after ${this.toCanonicalDate(minDate)}.` : '') ||
+      (flags.rangeOverflow && maxDate ? `Dates must be on or before ${this.toCanonicalDate(maxDate)}.` : '') ||
+      (hasError ? 'Please select a valid date range.' : '');
+
+    const proxy = this.validationProxy;
+    proxy.disabled = barred;
+    proxy.value = complete ? `${this.toCanonicalDate(this.startDate!)} / ${this.toCanonicalDate(this.endDate!)}` : '';
+    proxy.setCustomValidity(hasError ? message : '');
+    this.input?.setCustomValidity(hasError ? message : '');
+
+    if (!this.internals) return;
+    if (!hasError) {
+      this.internals.setValidity({});
+    } else if (this.input) {
+      this.internals.setValidity(flags, message, this.input);
+    } else {
+      this.internals.setValidity(flags, message);
+    }
+  }
+
+  /**
+   * ElementInternals.form is authoritative in browsers. Some DOM test
+   * implementations expose ElementInternals without form-owner discovery, so
+   * retain the standard explicit-form/nearest-form lookup as a fallback.
+   */
+  private get fallbackFormOwner(): HTMLFormElement | null {
+    const explicitOwner = this.getAttribute('form');
+    if (explicitOwner !== null) {
+      const root = this.getRootNode();
+      if (!('querySelectorAll' in root)) return null;
+      return Array.from((root as ParentNode).querySelectorAll('form[id]'))
+        .find((candidate): candidate is HTMLFormElement =>
+          candidate instanceof HTMLFormElement && candidate.id === explicitOwner
+        ) ?? null;
+    }
+    return this.closest('form');
   }
 
   private clickOutsideHandler = (e: MouseEvent) => {
@@ -795,6 +1046,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   private setupClickOutside() {
     document.addEventListener('click', this.clickOutsideHandler);
+    window.addEventListener('resize', this.positionCalendarHandler);
+    window.addEventListener('scroll', this.positionCalendarHandler, true);
   }
 
   @reconnect()
@@ -805,29 +1058,15 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @dispose()
   private cleanupClickOutside() {
     document.removeEventListener('click', this.clickOutsideHandler);
+    window.removeEventListener('resize', this.positionCalendarHandler);
+    window.removeEventListener('scroll', this.positionCalendarHandler, true);
   }
 
   // --- Watchers ---
 
-  @watch('start')
-  handleStartPropChange() {
-    const date = this.parseDate(this.start);
-    this.startDate = date;
-    if (date) this.viewDate = new Date(date);
-    this.updateInput();
-    this.updateClearButton();
-    this.updateFormValue();
-    if (this.showCalendar) this.updateCalendarGrid();
-  }
-
-  @watch('end')
-  handleEndPropChange() {
-    const date = this.parseDate(this.end);
-    this.endDate = date;
-    this.updateInput();
-    this.updateClearButton();
-    this.updateFormValue();
-    if (this.showCalendar) this.updateCalendarGrid();
+  @watch('defaultStart', 'defaultEnd')
+  handleDefaultRangeChange() {
+    if (!this.dirtyRange) this.applyDefaultRange();
   }
 
   @watch('show-calendar')
@@ -835,11 +1074,11 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     if (this.calendarEl) {
       if (this.showCalendar) {
         this.calendarEl.removeAttribute('hidden');
-        this.positionCalendar();
         this.calendarEl.classList.add('calendar--open');
         if (typeof (this.calendarEl as any).showPopover === 'function') {
           (this.calendarEl as any).showPopover();
         }
+        this.positionCalendar();
         this.dispatchOpenEvent();
       } else {
         this.calendarEl.classList.remove('calendar--open');
@@ -852,16 +1091,49 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled', { immediate: false })
   handleDisabledChange() {
-    if (this.input) this.input.disabled = this.disabled;
-    if (this.calendarToggle) this.calendarToggle.disabled = this.disabled;
+    if (this.interactionDisabled && this.showCalendar) this.close();
+    this.syncNativeInput();
+    this.syncValidity();
     this.updateClearButton();
+    this.updateClearButtonAfterRender();
+  }
+
+  @watch('readonly')
+  handleReadonlyChange() {
+    if (this.readonly && this.showCalendar) this.close();
+    this.syncNativeInput();
+    this.syncValidity();
+    this.updateClearButton();
+    this.updateClearButtonAfterRender();
+  }
+
+  @watch('name', 'required', 'min', 'max', { immediate: false })
+  handleFormConstraintChange() {
+    this.syncNativeInput();
+    this.syncFormState();
+    if (this.showCalendar) this.updateCalendarGrid();
+  }
+
+  @watch('clearable', { immediate: false })
+  handleClearableChange() {
+    this.updateClearButtonAfterRender();
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    if (this.input) {
+      this.input.setAttribute('aria-invalid', String(this.invalid));
+      this.input.classList.toggle('input--invalid', this.invalid);
+    }
   }
 
   @watch('format')
   handleFormatChange() {
     this.updateInput();
+    this.syncValidity();
+    if (this.showCalendar) this.updateCalendarGrid();
   }
 
   // --- Events ---
@@ -873,8 +1145,8 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       end: this.end,
       startDate: this.startDate,
       endDate: this.endDate,
-      startIso: this.startDate ? this.startDate.toISOString().split('T')[0] : '',
-      endIso: this.endDate ? this.endDate.toISOString().split('T')[0] : '',
+      startIso: this.startDate ? this.toCanonicalDate(this.startDate) : '',
+      endIso: this.endDate ? this.toCanonicalDate(this.endDate) : '',
       dateRangePicker: this,
     };
   }
@@ -920,33 +1192,27 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   }
 
   clear() {
-    this.startDate = null;
-    this.endDate = null;
-    this.start = '';
-    this.end = '';
     this.selectionPhase = 'idle';
     this.hoverDate = null;
-    this.updateInput();
-    this.updateFormValue();
-    this.updateClearButton();
+    this.commitRangeValues('', '', true);
     this.dispatchClearEvent();
     this.dispatchChangeEvent();
     this.focus();
   }
 
   open() {
-    if (!this.disabled && !this.readonly) {
+    if (!this.interactionDisabled && !this.readonly) {
       this.showCalendar = true;
       this.calendarView = 'days';
       if (this.startDate) this.viewDate = new Date(this.startDate);
       this.updateCalendarGrid();
       if (this.calendarEl) {
         this.calendarEl.removeAttribute('hidden');
-        this.positionCalendar();
         this.calendarEl.classList.add('calendar--open');
         if (typeof (this.calendarEl as any).showPopover === 'function') {
           (this.calendarEl as any).showPopover();
         }
+        this.positionCalendar();
       }
       this.dispatchOpenEvent();
     }
@@ -969,43 +1235,92 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   }
 
   private positionCalendar() {
-    if (!this.calendarEl || CSS.supports('position-anchor', '--a')) return;
-    const container = this.shadowRoot?.querySelector('.input-container') as HTMLElement;
+    if (!this.calendarEl) return;
+    const container = this.inputContainer;
     if (!container) return;
-    const rect = container.getBoundingClientRect();
-    this.calendarEl.style.top = `${rect.bottom + 2}px`;
-    this.calendarEl.style.left = `${rect.left}px`;
-    this.calendarEl.style.minWidth = `${rect.width}px`;
+    const anchor = container.getBoundingClientRect();
+    const popup = this.calendarEl.getBoundingClientRect();
+    const margin = 8;
+    const gap = 2;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const popupWidth = Math.max(popup.width, anchor.width);
+    const below = anchor.bottom + gap;
+    const above = anchor.top - popup.height - gap;
+
+    let top = below;
+    if (below + popup.height > viewportHeight - margin && above >= margin) top = above;
+    top = Math.max(margin, Math.min(top, viewportHeight - popup.height - margin));
+
+    let left = anchor.left;
+    if (left + popupWidth > viewportWidth - margin) left = viewportWidth - popupWidth - margin;
+    left = Math.max(margin, left);
+
+    this.calendarEl.style.top = `${top}px`;
+    this.calendarEl.style.left = `${left}px`;
+    this.calendarEl.style.minWidth = `${anchor.width}px`;
   }
 
+  private positionCalendarHandler = () => {
+    if (this.showCalendar) this.positionCalendar();
+  };
+
   selectRange(startDate: Date, endDate: Date) {
+    // Invalid Date instances are possible at runtime despite the public
+    // TypeScript signature. Ignore them atomically so an API call or preset
+    // cannot replace a usable range with NaN-derived strings.
+    if (!this.isValidDate(startDate) || !this.isValidDate(endDate)) return;
+
     let s = startDate;
     let e = endDate;
     if (s.getTime() > e.getTime()) { const tmp = s; s = e; e = tmp; }
 
-    this.startDate = s;
-    this.endDate = e;
-    this.start = this.formatDate(s);
-    this.end = this.formatDate(e);
     this.selectionPhase = 'idle';
     this.hoverDate = null;
-    this.viewDate = this.getBestViewDate(s, e);
-    this.updateInput();
-    this.updateFormValue();
-    this.updateClearButton();
+    this.commitRangeValues(this.formatDate(s), this.formatDate(e), true);
+    if (this.startDate && this.endDate) this.viewDate = this.getBestViewDate(this.startDate, this.endDate);
     this.updateCalendarGrid();
     this.dispatchChangeEvent();
   }
 
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return this.internals?.form ?? this.fallbackFormOwner;
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this range picker participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.validationProxy.willValidate;
+  }
+
+  /** Labels associated with this range picker. @public */
+  get labels(): NodeList | null {
+    return this.internals?.labels ?? this.input?.labels ?? null;
+  }
+
   checkValidity() {
-    return this.input?.checkValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.validationProxy.checkValidity();
   }
 
   reportValidity() {
-    return this.input?.reportValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
   }
 
   setCustomValidity(message: string) {
-    this.input?.setCustomValidity(message);
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 }

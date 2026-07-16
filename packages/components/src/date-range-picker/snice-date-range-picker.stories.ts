@@ -1,12 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-date-range-picker';
-import type { DateRangePickerSize, DateRangePickerVariant, DateRangeFormat } from './snice-date-range-picker.types';
+import type {
+  DateRangePickerSize,
+  DateRangePickerVariant,
+  DateRangeFormat,
+  SniceDateRangePickerElement,
+} from './snice-date-range-picker.types';
 
 type Args = {
   size?: DateRangePickerSize;
   variant?: DateRangePickerVariant;
   start?: string;
   end?: string;
+  defaultStart?: string;
+  defaultEnd?: string;
   format?: DateRangeFormat;
   placeholder?: string;
   label?: string;
@@ -54,6 +61,8 @@ const meta: Meta<Args> = {
     variant:        { control: 'select', options: VARIANTS },
     start:          { control: 'text' },
     end:            { control: 'text' },
+    defaultStart:   { control: 'text' },
+    defaultEnd:     { control: 'text' },
     format:         { control: 'select', options: FORMATS },
     placeholder:    { control: 'text' },
     label:          { control: 'text' },
@@ -72,11 +81,11 @@ const meta: Meta<Args> = {
     firstDayOfWeek: { control: 'number' },
   },
   render: (args) => {
-    const el = document.createElement('snice-date-range-picker');
+    const el = document.createElement('snice-date-range-picker') as SniceDateRangePickerElement;
     if (args.size           !== undefined) el.setAttribute('size',              String(args.size));
     if (args.variant        !== undefined) el.setAttribute('variant',           String(args.variant));
-    if (args.start          !== undefined) el.setAttribute('start',             String(args.start));
-    if (args.end            !== undefined) el.setAttribute('end',               String(args.end));
+    if (args.defaultStart   !== undefined) el.defaultStart =                    String(args.defaultStart);
+    if (args.defaultEnd     !== undefined) el.defaultEnd =                      String(args.defaultEnd);
     if (args.format         !== undefined) el.setAttribute('format',            String(args.format));
     if (args.placeholder    !== undefined) el.setAttribute('placeholder',       String(args.placeholder));
     if (args.label          !== undefined) el.setAttribute('label',             String(args.label));
@@ -93,6 +102,8 @@ const meta: Meta<Args> = {
     if (args.required)  el.toggleAttribute('required',  true);
     if (args.invalid)   el.toggleAttribute('invalid',   true);
     if (args.clearable) el.toggleAttribute('clearable', true);
+    if (args.start          !== undefined) el.start = String(args.start);
+    if (args.end            !== undefined) el.end = String(args.end);
     return el;
   },
 };
@@ -219,6 +230,82 @@ export const FormName: Story = {
   render: () => row(
     makePicker({ name: 'date_range', label: 'Date Range (name=date_range)' }),
   ),
+};
+
+// h2: Native form integration
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'date-range-picker-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:40rem;';
+    form.innerHTML = `
+      <snice-date-range-picker
+        id="date-range-picker-story-booking"
+        name="booking"
+        start="2026-03-10"
+        end="2026-03-20"
+        format="dd/mm/yyyy"
+        min="2026-03-01"
+        max="2026-03-31"
+        label="Booking dates"
+        helper-text="Displayed as DD/MM/YYYY; submitted as canonical start/end fields"
+        columns="2"
+        clearable
+        required
+      ></snice-date-range-picker>
+      <snice-date-range-picker
+        id="date-range-picker-story-readonly"
+        name="confirmed"
+        start="2026-03-12"
+        end="2026-03-18"
+        format="mmmm dd, yyyy"
+        label="Confirmed range"
+        readonly
+      ></snice-date-range-picker>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, rgb(226 226 226));border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-date-range-picker
+            id="date-range-picker-story-legend"
+            name="legend"
+            start="2026-03-04"
+            end="2026-03-05"
+            label="First legend remains enabled"
+          ></snice-date-range-picker>
+        </legend>
+        <snice-date-range-picker
+          id="date-range-picker-story-fieldset"
+          name="disabled-window"
+          start="2026-03-06"
+          end="2026-03-07"
+          label="Descendant is effectively disabled"
+        ></snice-date-range-picker>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+
+    const picker = form.querySelector('#date-range-picker-story-booking') as any;
+    picker.presets = [
+      { label: 'March week', start: '2026-03-05', end: '2026-03-11' },
+      { label: 'Late March', start: new Date(2026, 2, 21), end: new Date(2026, 2, 28) }
+    ];
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
 };
 
 // h2: CSS Parts Styling

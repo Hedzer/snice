@@ -3082,6 +3082,46 @@ el.addEventListener('comment-add',
 &lt;snice-date-range-picker invalid error-text="Invalid"&gt;&lt;/snice-date-range-picker&gt;</snice-code-block>
         </div>
       </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:.75rem">
+          <form id="showcase-range-form" style="display:flex;flex-direction:column;gap:.75rem;width:100%">
+            <snice-date-range-picker
+              id="showcase-range-form-picker"
+              name="booking"
+              label="Native Form Range"
+              start="2026-03-10"
+              end="2026-03-20"
+              format="dd/mm/yyyy"
+              min="2026-03-01"
+              max="2026-03-31"
+              helper-text="Canonical booking-start and booking-end fields"
+              clearable
+              required
+            ></snice-date-range-picker>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button type="submit">Submit</button>
+              <button type="reset">Reset</button>
+            </div>
+            <output aria-live="polite">Ready</output>
+          </form>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;form&gt;
+  &lt;snice-date-range-picker
+    name="booking"
+    start="2026-03-10"
+    end="2026-03-20"
+    min="2026-03-01"
+    max="2026-03-31"
+    clearable
+    required
+  &gt;&lt;/snice-date-range-picker&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</snice-code-block>
+        </div>
+      </div>
     </div>
     <script>
       (() => {
@@ -3093,6 +3133,21 @@ el.addEventListener('comment-add',
           { label: 'Last 30 days', start: new Date(Date.now() - 30 * 86400000), end: today },
           { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
         ];
+
+        const form = document.getElementById('showcase-range-form');
+        if (!form || form.dataset.bound === 'true') return;
+        form.dataset.bound = 'true';
+        const output = form.querySelector('output');
+        const describeData = () => Array.from(new FormData(form).entries())
+          .map(([name, value]) => `${name}=${String(value)}`)
+          .join(', ') || '(empty)';
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          output.textContent = `Submitted: ${describeData()}`;
+        });
+        form.addEventListener('reset', () => {
+          requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+        });
       })();
     </script>
     <!-- ── Date Time Picker ── -->

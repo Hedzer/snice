@@ -11360,6 +11360,24 @@
             },
             {
               "kind": "field",
+              "name": "defaultEnd",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `end` content attribute and form-reset end default."
+            },
+            {
+              "kind": "field",
+              "name": "defaultStart",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `start` content attribute and form-reset start default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -11372,7 +11390,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live end value. Canonical and configured display-format strings are\naccepted; assigning it does not rewrite the authored reset default."
             },
             {
               "kind": "field",
@@ -11402,6 +11420,25 @@
             },
             {
               "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "format",
               "type": {
                 "text": "'yyyy-mm-dd' | 'mm/dd/yyyy' | 'dd/mm/yyyy' | 'yyyy/mm/dd' | 'dd-mm-yyyy' | 'mm-dd-yyyy' | 'mmmm dd, yyyy'"
@@ -11410,7 +11447,23 @@
             },
             {
               "kind": "method",
-              "name": "handleDisabledChange",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": "boolean",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -11420,7 +11473,43 @@
             },
             {
               "kind": "method",
-              "name": "handleEndPropChange",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleClearableChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultRangeChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDisabledChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -11440,7 +11529,7 @@
             },
             {
               "kind": "method",
-              "name": "handleShowCalendarChange",
+              "name": "handleFormConstraintChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -11450,7 +11539,27 @@
             },
             {
               "kind": "method",
-              "name": "handleStartPropChange",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleReadonlyChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleShowCalendarChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -11491,6 +11600,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with this range picker. @public"
             },
             {
               "kind": "field",
@@ -11635,7 +11753,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live start value. Canonical and configured display-format strings are\naccepted; assigning it does not rewrite the authored reset default."
             },
             {
               "kind": "method",
@@ -11649,11 +11767,38 @@
             },
             {
               "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "type": {
                 "text": "'outlined' | 'filled' | 'underlined'"
               },
               "default": "'outlined'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this range picker participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -11683,11 +11828,12 @@
             },
             {
               "name": "end",
-              "fieldName": "end",
+              "fieldName": "defaultEnd",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `end` content attribute and form-reset end default."
             },
             {
               "name": "error-text",
@@ -11811,11 +11957,12 @@
             },
             {
               "name": "start",
-              "fieldName": "start",
+              "fieldName": "defaultStart",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `start` content attribute and form-reset start default."
             },
             {
               "name": "variant",

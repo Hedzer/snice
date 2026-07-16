@@ -593,4 +593,80 @@ test.describe('Website Component Rendering', () => {
     await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
     expect(pageErrors).toEqual([]);
   });
+
+  test('deployed Date Range Picker card, docs, and full showcase preserve the complete form contract', async ({ page }) => {
+    const pageErrors: string[] = [];
+    const consoleErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-range-picker')));
+
+    const cardForm = page.locator('#showcase-range-form');
+    const cardPicker = page.locator('#showcase-range-form-picker');
+    expect(await cardForm.evaluate((element: HTMLFormElement) =>
+      Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])))
+      .toEqual([['booking-start', '2026-03-10'], ['booking-end', '2026-03-20']]);
+    await cardPicker.locator('.clear-button').click();
+    expect(await cardForm.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+    await cardForm.getByRole('button', { name: 'Reset' }).click();
+    await expect(cardForm.locator('output')).toHaveText(
+      'Reset: booking-start=2026-03-10, booking-end=2026-03-20'
+    );
+
+    await page.locator('.more-link[data-slug="date-range-picker"]').click();
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'Live Values and Reset Defaults', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Canonical Form Submission', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Validation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('booking-start');
+    await expect(docs).toContainText('booking-end');
+    await expect(docs).toContainText('YYYY-MM-DD');
+    await expect(docs).toContainText('defaultStart');
+    await expect(docs).toContainText('defaultEnd');
+    await expect(docs).toContainText('disabled fieldset');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', { name: 'Native form lifecycle', exact: true })).toBeVisible();
+    const rendered = await showcase.locator('snice-date-range-picker').evaluateAll(pickers => ({
+      total: pickers.length,
+      rendered: pickers.filter(picker => picker.shadowRoot?.querySelector('.input')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 29, rendered: 29 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const form = showcase.locator('#drp-form');
+    const booking = showcase.locator('#drp-form-picker');
+    const output = showcase.locator('#drp-form-output');
+    expect(await form.evaluate((element: HTMLFormElement) => ({
+      valid: element.checkValidity(),
+      entries: Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])
+    }))).toEqual({
+      valid: true,
+      entries: [['booking-start', '2026-03-10'], ['booking-end', '2026-03-20']]
+    });
+
+    await booking.locator('.clear-button').click();
+    await form.getByRole('button', { name: 'Submit canonical range' }).click();
+    expect(await form.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+    await form.getByRole('button', { name: 'Reset defaults' }).click();
+    await expect(output).toHaveText('Reset: booking-start=2026-03-10, booking-end=2026-03-20');
+
+    await booking.locator('.calendar-toggle').click();
+    await booking.locator('[data-date="2026-03-12"]').click();
+    await booking.locator('[data-date="2026-03-22"]').click();
+    await form.getByRole('button', { name: 'Submit canonical range' }).click();
+    await expect(output).toHaveText('Submitted: booking-start=2026-03-12, booking-end=2026-03-22');
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  });
 });

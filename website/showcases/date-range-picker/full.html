@@ -42,6 +42,25 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       { label: 'Last 7 days', start: new Date(Date.now() - 7 * 86400000), end: today },
       { label: 'This month', start: new Date(today.getFullYear(), today.getMonth(), 1), end: new Date(today.getFullYear(), today.getMonth() + 1, 0) },
     ];
+
+    // Native form lifecycle
+    const form = document.getElementById('drp-form');
+    const output = document.getElementById('drp-form-output');
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    document.getElementById('drp-form-picker').addEventListener('daterange-change', event => {
+      output.textContent = event.detail.startIso && event.detail.endIso
+        ? `Changed: ${event.detail.startIso} → ${event.detail.endIso}`
+        : 'Changed: incomplete range';
+    });
   </script>
 </head>
 <body>
@@ -148,6 +167,31 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <section>
   <h2>Form: name</h2>
   <snice-date-range-picker label="Vacation" name="vacation" required clearable></snice-date-range-picker>
+</section>
+
+<section>
+  <h2>Native form lifecycle</h2>
+  <form id="drp-form" style="display:flex;flex-direction:column;gap:.75rem">
+    <snice-date-range-picker
+      id="drp-form-picker"
+      name="booking"
+      label="Booking dates"
+      start="2026-03-10"
+      end="2026-03-20"
+      format="dd/mm/yyyy"
+      min="2026-03-01"
+      max="2026-03-31"
+      helper-text="Submits booking-start and booking-end as YYYY-MM-DD"
+      columns="2"
+      clearable
+      required
+    ></snice-date-range-picker>
+    <div class="row">
+      <button type="submit">Submit canonical range</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="drp-form-output" aria-live="polite">Ready</output>
+  </form>
 </section>
 
 </body>

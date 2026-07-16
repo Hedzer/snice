@@ -9,8 +9,14 @@ export interface DateRangePreset {
 }
 
 export interface SniceDateRangePickerElement extends HTMLElement {
+  /** Live start value; accepts canonical or configured display-format strings. */
   start: string;
+  /** Live end value; accepts canonical or configured display-format strings. */
   end: string;
+  /** Authored `start` attribute used as the form-reset default. */
+  defaultStart: string;
+  /** Authored `end` attribute used as the form-reset default. */
+  defaultEnd: string;
   size: DateRangePickerSize;
   variant: DateRangePickerVariant;
   format: DateRangeFormat;
@@ -19,6 +25,7 @@ export interface SniceDateRangePickerElement extends HTMLElement {
   errorText: string;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   clearable: boolean;
@@ -29,6 +36,11 @@ export interface SniceDateRangePickerElement extends HTMLElement {
   firstDayOfWeek: number;
   presets: DateRangePreset[];
   showCalendar: boolean;
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   focus(): void;
   blur(): void;

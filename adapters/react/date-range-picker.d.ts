@@ -3,8 +3,8 @@ import type { SniceFormProps } from './types';
  * Props for the DateRangePicker component
  */
 export interface DateRangePickerProps extends SniceFormProps {
-    start?: any;
-    end?: any;
+    defaultStart?: any;
+    defaultEnd?: any;
     size?: any;
     variant?: any;
     format?: any;
@@ -25,6 +25,8 @@ export interface DateRangePickerProps extends SniceFormProps {
     firstDayOfWeek?: any;
     presets?: any;
     showCalendar?: any;
+    start?: any;
+    end?: any;
     onDaterangeChange?: (event: any) => void;
     onDaterangeOpen?: (event: any) => void;
     onDaterangeClose?: (event: any) => void;

@@ -2964,7 +2964,7 @@
         },
         {
           "name": "end",
-          "description": "end: string"
+          "description": "The `end` content attribute and form-reset end default."
         },
         {
           "name": "error-text",
@@ -3062,7 +3062,7 @@
         },
         {
           "name": "start",
-          "description": "start: string"
+          "description": "The `start` content attribute and form-reset start default."
         },
         {
           "name": "variant",
