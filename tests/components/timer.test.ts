@@ -117,13 +117,18 @@ describe('SniceTimer', () => {
 
       const completeSpy = vi.fn();
       timer.addEventListener('timer-complete', completeSpy);
+      const completed = new Promise<void>(resolve => {
+        timer.addEventListener('timer-complete', () => resolve(), { once: true });
+      });
 
       timer.start();
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Wait for the behavior under test instead of assuming a requestAnimationFrame
+      // callback will run within a 100 ms scheduling margin under full-suite load.
+      await completed;
 
       expect(completeSpy).toHaveBeenCalled();
-    });
+    }, 30_000);
 
     it('should reset to initialTime', async () => {
       timer.mode = 'timer';

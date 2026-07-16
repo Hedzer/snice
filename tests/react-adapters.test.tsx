@@ -186,7 +186,7 @@ describe('React Adapters', () => {
       expect(utils.extractComponentMetadata).toBeDefined();
       expect(utils.isFormAssociated).toBeDefined();
       expect(utils.waitForComponentDefinition).toBeDefined();
-    });
+    }, 30_000);
 
     it('should convert kebab-case to camelCase', async () => {
       const { kebabToCamel } = await import('../adapters/react/utils');

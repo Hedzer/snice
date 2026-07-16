@@ -178,5 +178,5 @@ describe('camera: does not auto-request getUserMedia on default mount', () => {
     await new Promise(r => setTimeout(r, 30));
 
     expect(getUserMediaCalls).toBe(0);
-  });
+  }, 30_000);
 });

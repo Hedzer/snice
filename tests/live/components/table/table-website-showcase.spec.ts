@@ -4,7 +4,11 @@ const websiteUrl = process.env.TABLE_WEBSITE_URL
   || '/components.html#comp-table';
 
 test('public website table card opens the complete working showcase', async ({ page }) => {
-  test.setTimeout(60_000);
+  // This journey runs beside both source/built suites and the deployed-site
+  // browser matrix in the release gate. Keep the same assertions while
+  // allowing the intentionally large public table showcase to finish loading
+  // when the whole machine is busy.
+  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {

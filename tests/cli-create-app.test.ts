@@ -73,7 +73,10 @@ describe('CLI create-app command', () => {
     console.log('Installing dependencies...');
     await execAsync(`npm install --no-save --package-lock=false ${process.cwd()}`, {
       cwd: appPath,
-      timeout: 60000 // 60 second timeout for npm install
+      // Source and built mirrors intentionally exercise this customer install
+      // together in the release gate. Local npm packing can exceed one minute
+      // while every artifact and browser matrix is under load.
+      timeout: 120000
     });
     
     // Build the app
@@ -90,7 +93,7 @@ describe('CLI create-app command', () => {
     // Verify the build output contains the compiled JS
     const distFiles = await execAsync('ls -la dist/assets/', { cwd: appPath });
     expect(distFiles.stdout).toContain('.js');
-  }, 120000); // 2 minute timeout for the full build test
+  }, 240000);
   
   it('should reject invalid app names', async () => {
     // Test with invalid characters
@@ -226,7 +229,7 @@ describe('CLI create-app command', () => {
     // Install dependencies
     await execAsync(`npm install --no-save --package-lock=false ${process.cwd()}`, {
       cwd: appPath,
-      timeout: 60000
+      timeout: 120000
     });
 
     // Build the app
@@ -242,7 +245,7 @@ describe('CLI create-app command', () => {
     // Verify the build output contains compiled JS
     const distFiles = await execAsync('ls -la dist/assets/', { cwd: appPath });
     expect(distFiles.stdout).toContain('.js');
-  }, 120000);
+  }, 240000);
 
   it('should include CLAUDE.md in react template', async () => {
     const appName = 'test-claude-react';
