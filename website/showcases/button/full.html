@@ -69,6 +69,25 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       color: var(--snice-color-text-secondary, #aaa);
       font-size: 0.82rem;
     }
+    .lifecycle-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 52rem;
+    }
+    .lifecycle-form fieldset {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-width: 0;
+      border: 1px solid var(--snice-color-border, #ddd);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+    }
+    .lifecycle-form output {
+      color: var(--snice-color-text-secondary, #aaa);
+      font-size: 0.82rem;
+    }
     snice-button.long-label {
       max-width: 100%;
     }
@@ -328,6 +347,30 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     </div>
   </section>
 
+  <section id="button-fieldset-lifecycle">
+    <h2>Disabled fieldset lifecycle</h2>
+    <p class="policy-note">The first legend follows the native exception and remains enabled. Every button in the fieldset body is effectively disabled without changing its authored <code>disabled</code> property.</p>
+    <form id="button-lifecycle-form" class="lifecycle-form">
+      <input id="button-lifecycle-input" value="authored value" aria-label="Reset lifecycle value">
+      <fieldset id="button-lifecycle-fieldset" disabled>
+        <legend>
+          Fieldset actions
+          <snice-button id="button-lifecycle-legend">First legend action</snice-button>
+        </legend>
+        <div class="row">
+          <snice-button id="button-lifecycle-ordinary">Ordinary action</snice-button>
+          <snice-button id="button-lifecycle-submit" type="submit" variant="primary">Submit action</snice-button>
+          <snice-button id="button-lifecycle-reset" type="reset">Reset action</snice-button>
+          <snice-button id="button-lifecycle-nav" href="#button-fieldset-lifecycle" target="_blank">Navigate action</snice-button>
+        </div>
+      </fieldset>
+      <div class="row">
+        <snice-button id="button-lifecycle-toggle" type="button">Enable fieldset</snice-button>
+      </div>
+      <output id="button-lifecycle-status" aria-live="polite">Disabled fieldset blocks every body action.</output>
+    </form>
+  </section>
+
   <script type="module">
     import '../../../packages/components/src/button/snice-button.ts';
 
@@ -337,6 +380,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
         navigationStatus.textContent = `button-click: ${button.textContent.trim()}`;
       });
     }
+
+    const lifecycleForm = document.querySelector('#button-lifecycle-form');
+    const lifecycleFieldset = document.querySelector('#button-lifecycle-fieldset');
+    const lifecycleToggle = document.querySelector('#button-lifecycle-toggle');
+    const lifecycleStatus = document.querySelector('#button-lifecycle-status');
+    document.querySelector('#button-lifecycle-legend').addEventListener('button-click', () => {
+      lifecycleStatus.textContent = 'First legend action accepted.';
+    });
+    document.querySelector('#button-lifecycle-ordinary').addEventListener('button-click', () => {
+      lifecycleStatus.textContent = 'Ordinary action accepted.';
+    });
+    lifecycleToggle.addEventListener('button-click', () => {
+      lifecycleFieldset.toggleAttribute('disabled');
+      lifecycleToggle.textContent = lifecycleFieldset.hasAttribute('disabled')
+        ? 'Enable fieldset'
+        : 'Disable fieldset';
+      lifecycleStatus.textContent = lifecycleFieldset.hasAttribute('disabled')
+        ? 'Disabled fieldset blocks every body action.'
+        : 'Fieldset body actions are enabled.';
+    });
+    lifecycleForm.addEventListener('submit', event => {
+      event.preventDefault();
+      lifecycleStatus.textContent = 'Submit action accepted.';
+    });
+    lifecycleForm.addEventListener('reset', () => {
+      requestAnimationFrame(() => {
+        lifecycleStatus.textContent = 'Reset action accepted.';
+      });
+    });
   </script>
 </body>
 </html>

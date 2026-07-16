@@ -44,4 +44,31 @@ describe('Button documentation alignment', () => {
       expect(content).toContain(phrase);
     }
   });
+
+  it.each([
+    ['human', human],
+    ['AI', ai]
+  ])('%s reference documents the complete disabled-fieldset contract', (_name, doc) => {
+    expect(doc).toMatch(/disabled fieldset/i);
+    expect(doc).toMatch(/first[- ]`?legend`?/i);
+    expect(doc).toMatch(/authored state/i);
+    for (const mode of ['button', 'submit', 'reset', 'href']) {
+      expect(doc).toContain(mode);
+    }
+    for (const blockedEffect of ['form action', 'navigation', 'button-click']) {
+      expect(doc).toContain(blockedEffect);
+    }
+  });
+
+  it.each([
+    ['full showcase', showcase],
+    ['Storybook', stories]
+  ])('%s demonstrates the disabled-fieldset lifecycle and first-legend exception', (_name, content) => {
+    expect(content).toContain('Disabled fieldset lifecycle');
+    expect(content).toMatch(/First legend (?:action|remains enabled)/);
+    expect(content).toContain('Enable fieldset');
+    for (const action of ['Submit', 'Reset', 'Navigate']) {
+      expect(content).toContain(action);
+    }
+  });
 });

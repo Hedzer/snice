@@ -176,7 +176,7 @@ test.describe('Website Component Rendering', () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test('deployed Button docs and full showcase preserve safe isolated navigation', async ({ page }) => {
+  test('deployed Button docs and full showcase preserve navigation and disabled-fieldset behavior', async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
@@ -187,9 +187,12 @@ test.describe('Website Component Rendering', () => {
     const docs = page.locator('#help-drawer-body');
     await expect(docs.getByRole('heading', { name: 'URL Safety', exact: true })).toBeVisible();
     await expect(docs.getByRole('heading', { name: 'Target Isolation', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Disabled Fieldsets', exact: true })).toBeVisible();
     await expect(docs).toContainText('window.opener === null');
     await expect(docs).toContainText('separate isolated contexts');
     await expect(docs).toContainText('download behavior takes precedence over target');
+    await expect(docs).toContainText('first-legend exception');
+    await expect(docs).toContainText('never changes or reflects the public button.disabled property');
 
     await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
     const showcase = page.frameLocator('#help-drawer-iframe');
@@ -206,8 +209,8 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered.total).toBe(97);
-    expect(rendered.rendered).toBe(97);
+    expect(rendered.total).toBe(103);
+    expect(rendered.rendered).toBe(103);
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     await showcase.locator('body').evaluate(() => {
@@ -253,6 +256,33 @@ test.describe('Website Component Rendering', () => {
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe('snice-logo.png');
     expect(page.context().pages()).toHaveLength(pageCount);
+
+    const fieldset = showcase.locator('#button-lifecycle-fieldset');
+    const ordinaryHost = showcase.locator('#button-lifecycle-ordinary');
+    const ordinaryButton = ordinaryHost.getByRole('button');
+    await expect(showcase.getByRole('heading', {
+      name: 'Disabled fieldset lifecycle',
+      exact: true
+    })).toBeVisible();
+    await expect(fieldset).toHaveAttribute('disabled');
+    await expect(showcase.locator('#button-lifecycle-legend').getByRole('button')).toBeEnabled();
+    await expect(ordinaryHost).not.toHaveAttribute('disabled');
+    await expect(ordinaryButton).toBeDisabled();
+    await ordinaryButton.click({ force: true });
+    await expect(showcase.locator('#button-lifecycle-status')).toHaveText(
+      'Disabled fieldset blocks every body action.'
+    );
+
+    await showcase.locator('#button-lifecycle-toggle').getByRole('button').click();
+    await expect(fieldset).not.toHaveAttribute('disabled');
+    await expect(ordinaryButton).toBeEnabled();
+    await ordinaryButton.click();
+    await expect(showcase.locator('#button-lifecycle-status')).toHaveText('Ordinary action accepted.');
+
+    await showcase.locator('#button-lifecycle-toggle').getByRole('button').click();
+    await expect(fieldset).toHaveAttribute('disabled');
+    await expect(ordinaryHost).not.toHaveAttribute('disabled');
+    await expect(ordinaryButton).toBeDisabled();
 
     await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
     await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');

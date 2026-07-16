@@ -117,8 +117,31 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 - Non-empty `download` takes precedence over `target`: activate a detached anchor with the validated `href` and filename; do not call `window.open`.
 - Successful targeted navigation or download occurs before `button-click` is dispatched.
 
+## Disabled Fieldset Contract
+
+- As a form-associated custom element, `snice-button` inherits effective disabledness from an ancestor `<fieldset disabled>`.
+- Effective disabledness blocks pointer, keyboard, internal synthetic, and public `click()` activation for `button`, `submit`, `reset`, and `href` modes.
+- A blocked activation performs no form action, navigation, popup, download, or `button-click` dispatch.
+- `button.disabled` and the `disabled` attribute always represent authored state. Fieldset state is tracked separately and never overwrites or reflects them.
+- The first `<legend>` child of a disabled fieldset retains the native exception: descendant buttons remain enabled. Later legends and the fieldset body do not.
+- Nested fieldsets obey every disabling ancestor. Moving or reconnecting a button recalculates effective disabledness and `ElementInternals.form` ownership.
+
+```html
+<form>
+  <fieldset disabled>
+    <legend>
+      Actions
+      <snice-button>Enabled legend action</snice-button>
+    </legend>
+    <snice-button type="submit">Disabled submit</snice-button>
+    <snice-button type="reset">Disabled reset</snice-button>
+    <snice-button href="/report">Disabled navigation</snice-button>
+  </fieldset>
+</form>
+```
+
 ## Accessibility
 
 - Keyboard accessible (Enter, Space)
 - Focus ring on `:focus-visible`
-- Form-associated (`formAssociated: true`)
+- Form-associated (`formAssociated: true`), including disabled fieldsets and the first-legend exception

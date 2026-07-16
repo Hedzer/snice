@@ -50,6 +50,7 @@ async function main() {
   const needsStorybook = !targeted || requestedTargets.length === 0 || requestedTargets.some(target =>
     target === 'tests/live'
       || target.startsWith('tests/live/components/spreadsheet')
+      || target === 'tests/live/components/button/button-fieldset-storybook.spec.ts'
       || target === 'tests/live/components/button/button-storybook.spec.ts'
       || target === 'tests/live/components/checkbox/checkbox-storybook.spec.ts'
       || target === 'tests/live/components/date-picker/date-picker-storybook.spec.ts'

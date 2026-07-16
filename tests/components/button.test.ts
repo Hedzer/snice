@@ -261,6 +261,93 @@ describe('snice-button', () => {
       const btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
       expect(btnEl?.disabled).toBe(true);
     });
+
+    it('keeps disabled-fieldset state separate from the authored disabled property', async () => {
+      button = await createComponent<SniceButtonElement>('snice-button');
+
+      (button as any).formDisabledCallback(true);
+      await wait(10);
+
+      let btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(button.disabled).toBe(false);
+      expect(button.hasAttribute('disabled')).toBe(false);
+      expect(btnEl.disabled).toBe(true);
+      expect(btnEl.classList.contains('button--disabled')).toBe(true);
+
+      button.disabled = true;
+      (button as any).formDisabledCallback(false);
+      await wait(10);
+      btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(button.disabled).toBe(true);
+      expect(button.hasAttribute('disabled')).toBe(true);
+      expect(btnEl.disabled).toBe(true);
+
+      button.disabled = false;
+      await wait(10);
+      btnEl = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+      expect(btnEl.disabled).toBe(false);
+      expect(btnEl.classList.contains('button--disabled')).toBe(false);
+    });
+
+    it('suppresses every activation channel while effectively fieldset-disabled and restores them afterward', async () => {
+      const form = document.createElement('form');
+      document.body.appendChild(form);
+      button = await createComponent<SniceButtonElement>('snice-button');
+      form.appendChild(button);
+      const requestSubmit = vi.spyOn(form, 'requestSubmit').mockImplementation(() => {});
+      const reset = vi.spyOn(form, 'reset').mockImplementation(() => {});
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const buttonClick = vi.fn();
+      button.addEventListener('button-click', buttonClick);
+
+      (button as any).formDisabledCallback(true);
+      await wait(10);
+
+      for (const type of ['button', 'submit', 'reset'] as const) {
+        button.type = type;
+        button.href = '';
+        await wait(10);
+        button.click();
+        const internal = queryShadow(button as HTMLElement, '.button') as HTMLButtonElement;
+        internal.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
+      }
+      button.type = 'button';
+      button.href = '/safe-fieldset-target';
+      button.target = '_blank';
+      await wait(10);
+      button.click();
+      (queryShadow(button as HTMLElement, '.button') as HTMLButtonElement)
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
+
+      expect(requestSubmit).not.toHaveBeenCalled();
+      expect(reset).not.toHaveBeenCalled();
+      expect(open).not.toHaveBeenCalled();
+      expect(buttonClick).not.toHaveBeenCalled();
+
+      (button as any).formDisabledCallback(false);
+      button.href = '';
+      await wait(10);
+      button.click();
+      expect(buttonClick).toHaveBeenCalledTimes(1);
+
+      button.type = 'submit';
+      await wait(10);
+      button.click();
+      expect(requestSubmit).toHaveBeenCalledTimes(1);
+
+      button.type = 'reset';
+      await wait(10);
+      button.click();
+      expect(reset).toHaveBeenCalledTimes(1);
+
+      button.type = 'button';
+      button.href = '/safe-fieldset-target';
+      await wait(10);
+      button.click();
+      expect(open).toHaveBeenCalledWith('/safe-fieldset-target', '_blank', 'noopener');
+
+      form.remove();
+    });
   });
 
   describe('loading state', () => {

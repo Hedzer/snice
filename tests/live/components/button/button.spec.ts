@@ -7,7 +7,7 @@ test.describe('Snice Button full showcase', () => {
     await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => {
       const buttons = Array.from(document.querySelectorAll('snice-button'));
-      return buttons.length === 97
+      return buttons.length === 103
         && buttons.every(button => button.shadowRoot?.querySelector('button'));
     });
   });
@@ -76,7 +76,7 @@ test.describe('Snice Button full showcase', () => {
       };
     });
 
-    expect(result.total).toBe(97);
+    expect(result.total).toBe(103);
     expect(result.rendered).toBe(result.total);
     expect(result.headings).toEqual([
       'All variants',
@@ -97,7 +97,8 @@ test.describe('Snice Button full showcase', () => {
       'Edge case: empty button',
       'Edge case: very long text',
       'Edge case: single character',
-      'All boolean states combined'
+      'All boolean states combined',
+      'Disabled fieldset lifecycle'
     ]);
     expect(result.variants.every(entry => entry.authored > 0 && entry.rendered === entry.authored)).toBe(true);
     expect(result.sizes.every(entry => entry.authored > 0 && entry.rendered === entry.authored)).toBe(true);
@@ -235,5 +236,54 @@ test.describe('Snice Button full showcase', () => {
     expect(mobile.scroll).toBeLessThanOrEqual(mobile.viewport);
     expect(mobile.maxButtonWidth).toBeLessThanOrEqual(mobile.viewport - 48);
     expect(pageErrors).toEqual([]);
+  });
+
+  test('demonstrates the native disabled-fieldset lifecycle without changing authored state', async ({ page }) => {
+    const fieldset = page.locator('#button-lifecycle-fieldset');
+    const legend = page.locator('#button-lifecycle-legend').getByRole('button');
+    const bodyButtons = ['ordinary', 'submit', 'reset', 'nav'];
+
+    await expect(legend).toBeEnabled();
+    for (const id of bodyButtons) {
+      const host = page.locator(`#button-lifecycle-${id}`);
+      await expect(host).not.toHaveAttribute('disabled');
+      await expect(host.getByRole('button')).toBeDisabled();
+    }
+
+    await page.locator('#button-lifecycle-ordinary').getByRole('button').click({ force: true });
+    await expect(page.locator('#button-lifecycle-status')).toHaveText(
+      'Disabled fieldset blocks every body action.'
+    );
+    await legend.click();
+    await expect(page.locator('#button-lifecycle-status')).toHaveText('First legend action accepted.');
+
+    await page.locator('#button-lifecycle-toggle').getByRole('button').click();
+    await expect(fieldset).not.toHaveAttribute('disabled');
+    for (const id of bodyButtons) await expect(page.locator(`#button-lifecycle-${id}`).getByRole('button')).toBeEnabled();
+
+    await page.locator('#button-lifecycle-ordinary').getByRole('button').click();
+    await expect(page.locator('#button-lifecycle-status')).toHaveText('Ordinary action accepted.');
+    await page.locator('#button-lifecycle-submit').getByRole('button').click();
+    await expect(page.locator('#button-lifecycle-status')).toHaveText('Submit action accepted.');
+
+    await page.locator('#button-lifecycle-input').fill('changed');
+    await page.locator('#button-lifecycle-reset').getByRole('button').click();
+    await expect(page.locator('#button-lifecycle-input')).toHaveValue('authored value');
+    await expect(page.locator('#button-lifecycle-status')).toHaveText('Reset action accepted.');
+
+    await page.locator('#button-lifecycle-toggle').getByRole('button').click();
+    await expect(fieldset).toHaveAttribute('disabled');
+    await expect(page.locator('#button-lifecycle-status')).toHaveText(
+      'Disabled fieldset blocks every body action.'
+    );
+    for (const id of bodyButtons) {
+      const host = page.locator(`#button-lifecycle-${id}`);
+      await expect(host).not.toHaveAttribute('disabled');
+      await expect(host.getByRole('button')).toBeDisabled();
+    }
+    await page.locator('#button-lifecycle-ordinary').getByRole('button').click({ force: true });
+    await expect(page.locator('#button-lifecycle-status')).toHaveText(
+      'Disabled fieldset blocks every body action.'
+    );
   });
 });

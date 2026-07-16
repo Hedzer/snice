@@ -217,6 +217,52 @@ export const AllButtonTypes: Story = {
   ),
 };
 
+// h2: Disabled fieldset lifecycle
+export const DisabledFieldsetLifecycle: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.75rem;max-width:44rem;';
+    form.innerHTML = `
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;min-width:0;border:1px solid var(--snice-color-border, #ddd);border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Fieldset actions
+          <snice-button id="button-story-legend">First legend remains enabled</snice-button>
+        </legend>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <snice-button id="button-story-ordinary">Ordinary</snice-button>
+          <snice-button type="submit">Submit</snice-button>
+          <snice-button type="reset">Reset</snice-button>
+          <snice-button href="#button-story-fieldset-target" target="_blank">Navigate</snice-button>
+        </div>
+      </fieldset>
+      <snice-button id="button-story-toggle" type="button">Enable fieldset</snice-button>
+      <output aria-live="polite">Disabled fieldset blocks every body action.</output>
+    `;
+    const fieldset = form.querySelector('fieldset')!;
+    const toggle = form.querySelector('#button-story-toggle')!;
+    const legend = form.querySelector('#button-story-legend')!;
+    const output = form.querySelector('output')!;
+    toggle.addEventListener('button-click', () => {
+      fieldset.toggleAttribute('disabled');
+      toggle.textContent = fieldset.hasAttribute('disabled') ? 'Enable fieldset' : 'Disable fieldset';
+      output.textContent = fieldset.hasAttribute('disabled')
+        ? 'Disabled fieldset blocks every body action.'
+        : 'Fieldset body actions are enabled.';
+    });
+    legend.addEventListener('button-click', () => {
+      output.textContent = 'First legend action accepted.';
+    });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = 'Submitted.';
+    });
+    form.addEventListener('reset', () => {
+      output.textContent = 'Reset.';
+    });
+    return form;
+  },
+};
+
 // h2: Safe and isolated link buttons (href)
 export const LinkButtons: Story = {
   render: () => {

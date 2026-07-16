@@ -1,4 +1,4 @@
-import { element, property, query, render, styles, html, css, isSafeUrl } from 'snice';
+import { element, property, state, query, render, styles, html, css, isSafeUrl } from 'snice';
 import { renderIcon, strictStringAttributeConverter } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
@@ -6,6 +6,9 @@ import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustif
 @element('snice-button', { formAssociated: true })
 export class SniceButton extends HTMLElement implements SniceButtonElement {
   internals!: ElementInternals;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -63,6 +66,14 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     return !!this.iconSlotChild;
   }
 
+  private get effectiveDisabled() {
+    return this.disabled || this.formDisabled;
+  }
+
+  private get interactionDisabled() {
+    return this.effectiveDisabled || this.loading;
+  }
+
   @query('.button')
   button?: HTMLButtonElement;
 
@@ -77,6 +88,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
 
   @render()
   render() {
+    const effectiveDisabled = this.effectiveDisabled;
     const hasIcon = this.icon || this.hasIconSlot;
     const showIconStart = hasIcon && this.iconPlacement === 'start';
     const showIconEnd = hasIcon && this.iconPlacement === 'end';
@@ -88,13 +100,13 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       this.pill ? 'button--pill' : '',
       this.circle ? 'button--circle' : '',
       this.loading ? 'button--loading' : '',
-      this.disabled ? 'button--disabled' : '',
+      effectiveDisabled ? 'button--disabled' : '',
       hasIcon ? `button--has-icon` : '',
       hasIcon ? `button--icon-${this.iconPlacement}` : ''
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <button class="${classes}" type="${this.type}" ?disabled="${this.disabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
+      <button class="${classes}" type="${this.type}" ?disabled="${effectiveDisabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
         <if ${showIconStart}>
           <span class="icon-slot" part="icon">
@@ -122,7 +134,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   }
 
   private handleInternalClick(event: MouseEvent) {
-    if (this.disabled || this.loading) {
+    if (this.interactionDisabled) {
       event.preventDefault();
       event.stopPropagation();
       return;
@@ -172,6 +184,13 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     }));
   }
 
+  private formDisabledCallback(disabled: boolean) {
+    // The browser reports effective disabledness here, including disabled
+    // ancestor fieldsets and their first-legend exception. Keep that state
+    // separate so the authored `disabled` property/attribute is untouched.
+    this.formDisabled = disabled;
+  }
+
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
@@ -191,6 +210,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   }
 
   focus(options?: FocusOptions) {
+    if (this.effectiveDisabled) return;
     this.button?.focus(options);
   }
 
@@ -199,6 +219,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   }
 
   click() {
+    if (this.effectiveDisabled) return;
     this.button?.click();
   }
 }

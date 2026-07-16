@@ -214,6 +214,30 @@ Surrounding whitespace is trimmed. Malformed URLs, raw ASCII control characters,
 </form>
 ```
 
+### Disabled Fieldsets
+
+Because `snice-button` is form-associated, an ancestor `<fieldset disabled>` disables it exactly like a native button. Effective fieldset disabledness applies to ordinary, submit, reset, and `href` buttons: pointer, keyboard, and programmatic `click()` activation are suppressed; no form action, navigation, download, popup, or `button-click` event occurs.
+
+The browser's native first-`legend` exception is preserved. A button inside the disabled fieldset's first legend remains enabled, while buttons in later legends and the fieldset body are disabled.
+
+```html
+<form>
+  <fieldset disabled>
+    <legend>
+      Account actions
+      <snice-button type="button">Still enabled in first legend</snice-button>
+    </legend>
+
+    <snice-button type="button">Disabled action</snice-button>
+    <snice-button type="submit">Disabled submit</snice-button>
+    <snice-button type="reset">Disabled reset</snice-button>
+    <snice-button href="/account/export">Disabled navigation</snice-button>
+  </fieldset>
+</form>
+```
+
+Fieldset state is effective state, not authored state. It never changes or reflects the public `button.disabled` property. Moving a button between forms, fieldsets, or a first legend updates its effective state and form owner automatically.
+
 ### Async Action Handling
 
 ```typescript
@@ -267,4 +291,4 @@ When `download` is non-empty, download behavior takes precedence over `target`. 
 - **Keyboard support**: Fully keyboard accessible with Enter and Space
 - **Focus indicators**: Clear focus states for keyboard navigation
 - **ARIA attributes**: Proper roles and states for screen readers
-- **Disabled state**: Properly disabled buttons cannot be focused or activated
+- **Disabled state**: Authored and disabled-fieldset states cannot be focused or activated; the first-legend exception follows native HTML behavior
