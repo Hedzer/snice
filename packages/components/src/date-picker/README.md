@@ -1,233 +1,93 @@
 # Snice Date Picker
 
-A comprehensive calendar-based date selection component built with Snice framework.
+Calendar-backed text date control with strict parsing, seven display formats, min/max constraints, clear/loading/readonly/disabled states, and complete native form lifecycle behavior.
 
-## Features
+## Core model
 
-- ✅ **Calendar-based date selection** with month navigation
-- ✅ **Multiple date formats** (MM/DD/YYYY, DD/MM/YYYY, YYYY-MM-DD, etc.)
-- ✅ **Keyboard navigation** and accessibility support
-- ✅ **Min/max date constraints** for date range validation
-- ✅ **Multiple sizes** (small, medium, large) and variants (outlined, filled, underlined)
-- ✅ **Input validation** with custom error messages
-- ✅ **Clearable** with optional clear button
-- ✅ **Imperative API** for programmatic control
-- ✅ **Custom events** for integration with forms and controllers
-
-## Basic Usage
+- `value` is live canonical `YYYY-MM-DD` data or `''`.
+- `defaultValue` maps to the `value` content attribute and is the reset default restored by form reset.
+- `format` controls visible/manual text, never the submitted value.
+- Partial or impossible manual text stays visible but sets `value = ''` and `validity.badInput`.
+- Programmatic malformed values sanitize to `''`; valid configured-format strings remain accepted for compatibility.
+- Named enabled controls participate in `FormData`; required/min/max/custom validity, reset, restoration, explicit form ownership, readonly, disabled fieldsets, and the first-legend exception are supported.
 
 ```html
-<snice-date-picker 
-  label="Select Date" 
-  placeholder="Choose a date"
-  clearable>
-</snice-date-picker>
+<form id="booking">
+  <snice-date-picker
+    id="arrival"
+    name="arrival"
+    value="2026-03-15"
+    format="dd/mm/yyyy"
+    min="2026-03-10"
+    max="2026-03-20"
+    label="Arrival date"
+    clearable
+    required
+  ></snice-date-picker>
+  <button type="submit">Submit</button>
+  <button type="reset">Reset</button>
+</form>
+```
+
+```typescript
+arrival.value; // '2026-03-15'; visible input is '15/03/2026'
+Array.from(new FormData(booking).entries()); // [['arrival', '2026-03-15']]
+
+arrival.value = '20/03/2026'; // configured-format compatibility
+arrival.value; // '2026-03-20'; authored value attribute is unchanged
+booking.reset(); // restores '2026-03-15'
 ```
 
 ## Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size of the component |
-| `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style variant |
-| `value` | `string` | `''` | Current date value (in specified format) |
-| `format` | `'mm/dd/yyyy' \| 'dd/mm/yyyy' \| 'yyyy-mm-dd' \| etc.` | `'mm/dd/yyyy'` | Date display format |
-| `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `string` | `''` | Input label |
-| `helper-text` | `string` | `''` | Helper text below input |
-| `error-text` | `string` | `''` | Error message (shows when invalid=true) |
-| `disabled` | `boolean` | `false` | Disable the component |
-| `readonly` | `boolean` | `false` | Make input read-only |
-| `required` | `boolean` | `false` | Mark as required field |
-| `invalid` | `boolean` | `false` | Show error state |
-| `clearable` | `boolean` | `false` | Show clear button |
-| `min` | `string` | `''` | Minimum allowed date (YYYY-MM-DD) |
-| `max` | `string` | `''` | Maximum allowed date (YYYY-MM-DD) |
-| `name` | `string` | `''` | Form field name |
-| `first-day-of-week` | `number` | `0` | First day of week (0=Sunday, 1=Monday, etc.) |
+| Property | Attribute | Type/default | Purpose |
+|----------|-----------|--------------|---------|
+| `value` | -- | `string = ''` | Live canonical date. |
+| `defaultValue` | `value` | `string = ''` | Authored/reset default. |
+| `format` | `format` | `DateFormat = 'mm/dd/yyyy'` | Visible/manual format. |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | Control size. |
+| `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | Visual variant. |
+| `placeholder` | `placeholder` | `string` | Explicit placeholder; otherwise format hint. |
+| `label` | `label` | `string` | Visible label. |
+| `helperText` | `helper-text` | `string` | Supporting text. |
+| `errorText` | `error-text` | `string` | Visible error text. |
+| `disabled` | `disabled` | `boolean` | Authored disabled state. |
+| `readonly` | `readonly` | `boolean` | Read-only successful control. |
+| `loading` | `loading` | `boolean` | Spinner/interaction lock; form participation remains. |
+| `required` | `required` | `boolean` | Required validity constraint. |
+| `invalid` | `invalid` | `boolean` | Visual/ARIA state only. |
+| `clearable` | `clearable` | `boolean` | Shows clear button for editable text. |
+| `min` / `max` | same | `string` | Inclusive date bounds; canonical values recommended. |
+| `name` | `name` | `string` | Form key. |
+| `open` | `open` | `boolean` | Popup state. |
+| `firstDayOfWeek` | `first-day-of-week` | `number = 0` | First weekday column. |
+
+Read-only native properties: `type`, `form`, `validity`, `validationMessage`, `willValidate`, and `labels`.
+
+`DateFormat`: `mm/dd/yyyy`, `dd/mm/yyyy`, `yyyy-mm-dd`, `yyyy/mm/dd`, `dd-mm-yyyy`, `mm-dd-yyyy`, or `mmmm dd, yyyy`.
 
 ## Methods
 
-| Method | Parameters | Description |
-|--------|------------|-------------|
-| `focus()` | - | Focus the input field |
-| `blur()` | - | Blur the input field |
-| `clear()` | - | Clear the selected date |
-| `open()` | - | Open the calendar popup |
-| `close()` | - | Close the calendar popup |
-| `selectDate(date)` | `Date` | Select a specific date |
-| `goToMonth(year, month)` | `number, number` | Navigate to specific month |
-| `goToToday()` | - | Select today's date |
-| `checkValidity()` | - | Check if current value is valid |
-| `reportValidity()` | - | Report validity state |
-| `setCustomValidity(message)` | `string` | Set custom validation message |
+- `focus()` / `blur()`
+- `clear()`
+- `show()` / `hide()`
+- `selectDate(date)`
+- `goToMonth(year, zeroBasedMonth)`
+- `goToToday()`
+- `checkValidity()` / `reportValidity()`
+- `setCustomValidity(message)`
 
 ## Events
 
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `@snice/datepicker-change` | `{ value, date, formatted, iso, datePicker }` | Fired when date value changes |
-| `@snice/datepicker-input` | `{ value, datePicker }` | Fired on input changes |
-| `@snice/datepicker-select` | `{ date, formatted, iso, datePicker }` | Fired when date is selected from calendar |
-| `@snice/datepicker-focus` | `{ datePicker }` | Fired when input gains focus |
-| `@snice/datepicker-blur` | `{ datePicker }` | Fired when input loses focus |
-| `@snice/datepicker-open` | `{ datePicker }` | Fired when calendar opens |
-| `@snice/datepicker-close` | `{ datePicker }` | Fired when calendar closes |
-| `@snice/datepicker-clear` | `{ datePicker }` | Fired when date is cleared |
+- `datepicker-input` → `{ value, datePicker }`
+- `datepicker-change` → `{ value, date, formatted, iso, datePicker }`
+- `datepicker-select` → `{ date, formatted, iso, datePicker }`
+- `datepicker-clear`, `datepicker-focus`, `datepicker-blur`, `datepicker-open`, `datepicker-close` → `{ datePicker }`
 
-## Examples
+Event `value`/`iso` fields are canonical. Events bubble and are composed. Direct assignments and form lifecycle restoration are silent.
 
-### Different Formats
+## CSS Parts
 
-```html
-<!-- US Format -->
-<snice-date-picker 
-  label="US Date" 
-  format="mm/dd/yyyy">
-</snice-date-picker>
+`input`, `calendar-toggle`, `clear`, `spinner`, `calendar`, `helper-text`, `error-text`.
 
-<!-- European Format -->
-<snice-date-picker 
-  label="European Date" 
-  format="dd/mm/yyyy">
-</snice-date-picker>
-
-<!-- ISO Format -->
-<snice-date-picker 
-  label="ISO Date" 
-  format="yyyy-mm-dd">
-</snice-date-picker>
-```
-
-### With Constraints
-
-```html
-<snice-date-picker 
-  label="Date Range" 
-  min="2024-01-01" 
-  max="2024-12-31"
-  helper-text="Select a date in 2024">
-</snice-date-picker>
-```
-
-### Different Sizes and Variants
-
-```html
-<!-- Small filled -->
-<snice-date-picker 
-  size="small" 
-  variant="filled" 
-  label="Small Date">
-</snice-date-picker>
-
-<!-- Large underlined -->
-<snice-date-picker 
-  size="large" 
-  variant="underlined" 
-  label="Large Date">
-</snice-date-picker>
-```
-
-### Form Integration
-
-```html
-<form>
-  <snice-date-picker 
-    name="startDate"
-    label="Start Date" 
-    required
-    min="2024-01-01">
-  </snice-date-picker>
-  
-  <snice-date-picker 
-    name="endDate"
-    label="End Date" 
-    required>
-  </snice-date-picker>
-</form>
-```
-
-### Event Handling
-
-```javascript
-// Listen for date changes
-document.addEventListener('@snice/datepicker-change', (e) => {
-  console.log('New date:', e.detail.date);
-  console.log('Formatted:', e.detail.formatted);
-  console.log('ISO:', e.detail.iso);
-});
-
-// Programmatic control
-const datePicker = document.querySelector('snice-date-picker');
-datePicker.selectDate(new Date(2024, 11, 25)); // Select Christmas
-datePicker.goToToday(); // Jump to today
-```
-
-### With Controllers
-
-```typescript
-import { controller, on } from 'snice';
-
-@controller('date-form')
-class DateFormController {
-  element!: HTMLElement;
-  
-  @on('@snice/datepicker-change')
-  handleDateChange(e: CustomEvent) {
-    const { date, formatted } = e.detail;
-    console.log(`Date changed to: ${formatted}`);
-    
-    // Validate date range, update other fields, etc.
-    this.validateDateRange();
-  }
-  
-  private validateDateRange() {
-    const startPicker = this.element.querySelector('[name="startDate"]');
-    const endPicker = this.element.querySelector('[name="endDate"]');
-    // Add validation logic
-  }
-}
-```
-
-## Accessibility
-
-The date picker includes comprehensive accessibility support:
-
-- **ARIA labels** for all interactive elements
-- **Keyboard navigation** (Tab, Enter, Escape, Arrow keys)
-- **Screen reader** announcements
-- **Focus management** within calendar
-- **Semantic HTML** structure
-
-## Keyboard Navigation
-
-| Key | Action |
-|-----|--------|
-| `Tab` | Navigate between elements |
-| `Enter` / `Space` | Open calendar or select date |
-| `Escape` | Close calendar |
-| `Arrow Keys` | Navigate calendar days |
-| `Page Up/Down` | Navigate months |
-| `Home/End` | Go to start/end of week |
-
-## Customization
-
-The component uses CSS custom properties for easy theming:
-
-```css
-snice-date-picker {
-  --border-color: #e5e7eb;
-  --focus-color: #2563eb;
-  --background: white;
-  --text-color: #374151;
-  --error-color: #ef4444;
-}
-```
-
-## Browser Support
-
-- ✅ Chrome/Edge 88+
-- ✅ Firefox 87+
-- ✅ Safari 14+
-- ✅ iOS Safari 14+
-- ✅ Chrome Android 88+
+See the complete human reference at `docs/components/date-picker.md` and the compact AI contract at `docs/ai/components/date-picker.md`.

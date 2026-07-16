@@ -52,6 +52,7 @@ async function main() {
       || target.startsWith('tests/live/components/spreadsheet')
       || target === 'tests/live/components/button/button-storybook.spec.ts'
       || target === 'tests/live/components/checkbox/checkbox-storybook.spec.ts'
+      || target === 'tests/live/components/date-picker/date-picker-storybook.spec.ts'
       || target === 'tests/live/components/radio/radio-storybook.spec.ts'
       || target === 'tests/live/components/location/location-storybook.spec.ts'
   );

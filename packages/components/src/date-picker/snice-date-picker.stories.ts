@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-date-picker';
-import type { DatePickerSize, DatePickerVariant, DateFormat } from './snice-date-picker.types';
+import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement } from './snice-date-picker.types';
 
 type Args = {
   size?: DatePickerSize;
   variant?: DatePickerVariant;
   value?: string;
+  defaultValue?: string;
   format?: DateFormat;
   placeholder?: string;
   label?: string;
@@ -51,6 +52,7 @@ const meta: Meta<Args> = {
     size:           { control: 'select', options: SIZES },
     variant:        { control: 'select', options: VARIANTS },
     value:          { control: 'text' },
+    defaultValue:   { control: 'text' },
     format:         { control: 'select', options: FORMATS },
     placeholder:    { control: 'text' },
     label:          { control: 'text' },
@@ -68,10 +70,10 @@ const meta: Meta<Args> = {
     firstDayOfWeek: { control: 'number' },
   },
   render: (args) => {
-    const el = document.createElement('snice-date-picker');
+    const el = document.createElement('snice-date-picker') as SniceDatePickerElement;
     if (args.size           !== undefined) el.setAttribute('size',               String(args.size));
     if (args.variant        !== undefined) el.setAttribute('variant',            String(args.variant));
-    if (args.value          !== undefined) el.setAttribute('value',              String(args.value));
+    if (args.defaultValue   !== undefined) el.defaultValue =                     String(args.defaultValue);
     if (args.format         !== undefined) el.setAttribute('format',             String(args.format));
     if (args.placeholder    !== undefined) el.setAttribute('placeholder',        String(args.placeholder));
     if (args.label          !== undefined) el.setAttribute('label',              String(args.label));
@@ -87,6 +89,7 @@ const meta: Meta<Args> = {
     if (args.required)  el.toggleAttribute('required',  true);
     if (args.invalid)   el.toggleAttribute('invalid',   true);
     if (args.clearable) el.toggleAttribute('clearable', true);
+    if (args.value          !== undefined) el.value = String(args.value);
     return el;
   },
 };
@@ -214,6 +217,72 @@ export const FormNameRequired: Story = {
   render: () => row(
     makePicker({ name: 'start_date', required: true, label: 'Start Date (name=start_date)' }),
   ),
+};
+
+// h2: Native form integration
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'date-picker-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:32rem;';
+    form.innerHTML = `
+      <snice-date-picker
+        id="date-picker-story-delivery"
+        name="delivery-date"
+        value="2026-03-15"
+        format="dd/mm/yyyy"
+        min="2026-03-10"
+        max="2026-03-20"
+        label="Delivery date"
+        helper-text="Displayed as DD/MM/YYYY; submitted as YYYY-MM-DD"
+        clearable
+        required
+      ></snice-date-picker>
+      <snice-date-picker
+        id="date-picker-story-readonly"
+        name="confirmed-date"
+        value="2026-03-16"
+        format="mmmm dd, yyyy"
+        label="Confirmed date"
+        readonly
+      ></snice-date-picker>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, #475569);border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-date-picker
+            id="date-picker-story-legend"
+            name="legend-date"
+            value="2026-03-12"
+            label="First legend remains enabled"
+          ></snice-date-picker>
+        </legend>
+        <snice-date-picker
+          id="date-picker-story-fieldset"
+          name="disabled-date"
+          value="2026-03-13"
+          label="Descendant is effectively disabled"
+        ></snice-date-picker>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
 };
 
 // h2: Disabled + value + clearable (clear hidden when disabled)

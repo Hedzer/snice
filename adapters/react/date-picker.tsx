@@ -10,7 +10,7 @@ import type { SniceFormProps } from './types';
 export interface DatePickerProps extends SniceFormProps {
   size?: any;
   variant?: any;
-  value?: any;
+  defaultValue?: any;
   format?: any;
   placeholder?: any;
   label?: any;
@@ -27,6 +27,7 @@ export interface DatePickerProps extends SniceFormProps {
   name?: any;
   open?: any;
   firstDayOfWeek?: any;
+  value?: any;
   onDatepickerInput?: (event: any) => void;
   onDatepickerChange?: (event: any) => void;
   onDatepickerFocus?: (event: any) => void;
@@ -55,7 +56,7 @@ export interface DatePickerProps extends SniceFormProps {
  */
 export const DatePicker = createReactAdapter<DatePickerProps>({
   tagName: 'snice-date-picker',
-  properties: ["size","variant","value","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","open","firstDayOfWeek"],
+  properties: ["size","variant","defaultValue","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","open","firstDayOfWeek","value"],
   events: {"datepicker-input":"onDatepickerInput","datepicker-change":"onDatepickerChange","datepicker-focus":"onDatepickerFocus","datepicker-blur":"onDatepickerBlur","datepicker-open":"onDatepickerOpen","datepicker-close":"onDatepickerClose","datepicker-clear":"onDatepickerClear","datepicker-select":"onDatepickerSelect"},
   formAssociated: true
 });

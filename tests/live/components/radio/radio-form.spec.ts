@@ -9,7 +9,17 @@ async function loadRadio(page: Page, build: BuildTarget) {
     const radio = document.createElement('snice-radio') as HTMLElement & { checked: boolean };
     radio.id = 'pre-upgrade-radio';
     radio.checked = true;
-    document.body.appendChild(radio);
+    const peers = document.createElement('fieldset');
+    peers.disabled = true;
+    peers.innerHTML = Array.from({ length: 24 }, (_, index) => `
+      <snice-radio
+        id="pre-upgrade-peer-${index}"
+        name="pre-upgrade-group"
+        value="${index}"
+        ${index === 0 ? 'checked' : ''}
+      ></snice-radio>
+    `).join('');
+    document.body.append(radio, peers);
   });
 
   if (build === 'source') {
@@ -26,25 +36,32 @@ async function loadRadio(page: Page, build: BuildTarget) {
 
   await page.waitForFunction(() => Boolean(customElements.get('snice-radio')));
   const preUpgrade = await page.evaluate(async () => {
-    const radio = document.querySelector('#pre-upgrade-radio') as HTMLElement & {
+    const radios = Array.from(document.querySelectorAll('snice-radio')) as Array<HTMLElement & {
       checked: boolean;
       ready: Promise<void>;
       rendered: Promise<void>;
-    };
-    await radio.ready;
-    await radio.rendered;
+    }>;
+    await Promise.all(radios.map(radio => radio.ready));
+    await Promise.all(radios.map(radio => radio.rendered));
+    const radio = radios[0];
     return {
       checked: radio.checked,
       ownsChecked: Object.prototype.hasOwnProperty.call(radio, 'checked'),
       inputChecked: (radio.shadowRoot!.querySelector('input') as HTMLInputElement).checked,
-      checkedAttribute: radio.hasAttribute('checked')
+      checkedAttribute: radio.hasAttribute('checked'),
+      upgradedPeers: radios.filter(peer => peer.shadowRoot?.querySelector('input')).length,
+      fieldsetDisabledPeers: radios.slice(1).filter(peer =>
+        (peer.shadowRoot?.querySelector('input') as HTMLInputElement | null)?.disabled
+      ).length
     };
   });
   expect(preUpgrade).toEqual({
     checked: true,
     ownsChecked: false,
     inputChecked: true,
-    checkedAttribute: false
+    checkedAttribute: false,
+    upgradedPeers: 25,
+    fieldsetDisabledPeers: 24
   });
 }
 
@@ -876,6 +893,9 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
   test(`matches native radio form and group behavior through ${build}`, async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') pageErrors.push(message.text());
+    });
     await loadRadio(page, build);
     assertFormAndGroupContract(await exerciseFormAndGroupContract(page));
     expect(pageErrors).toEqual([]);
@@ -884,6 +904,9 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
   test(`matches native radio activation and keyboard behavior through ${build}`, async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') pageErrors.push(message.text());
+    });
     await loadRadio(page, build);
     await exerciseInteractionContract(page);
     expect(pageErrors).toEqual([]);

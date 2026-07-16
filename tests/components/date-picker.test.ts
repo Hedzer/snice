@@ -286,12 +286,314 @@ describe('snice-date-picker', () => {
     });
   });
 
-  describe('API methods', () => {
-    let tracker: any;
+  describe('canonical value and display formatting', () => {
+    const formats = [
+      ['mm/dd/yyyy', '03/06/2026'],
+      ['dd/mm/yyyy', '06/03/2026'],
+      ['yyyy-mm-dd', '2026-03-06'],
+      ['yyyy/mm/dd', '2026/03/06'],
+      ['dd-mm-yyyy', '06-03-2026'],
+      ['mm-dd-yyyy', '03-06-2026'],
+      ['mmmm dd, yyyy', 'March 06, 2026']
+    ] as const;
 
+    for (const [format, display] of formats) {
+      it(`keeps ${format} display separate from the canonical value`, async () => {
+        datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+          format,
+          value: '2026-03-06'
+        });
+
+        const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+        expect(input.value).toBe(display);
+        expect(datePicker.value).toBe('2026-03-06');
+        expect(datePicker.defaultValue).toBe('2026-03-06');
+      });
+    }
+
+    it('accepts the configured display format at the assignment boundary', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        format: 'dd/mm/yyyy'
+      });
+
+      datePicker.value = '29/02/2024';
+      await (datePicker as any).rendered;
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      expect(datePicker.value).toBe('2024-02-29');
+      expect(input.value).toBe('29/02/2024');
+    });
+
+    it.each([
+      ['mm/dd/yyyy', '03-06-2026', '03/06/2026'],
+      ['dd/mm/yyyy', '06-03-2026', '06/03/2026'],
+      ['yyyy/mm/dd', '2026-03-06', '2026/03/06'],
+      ['dd-mm-yyyy', '06/03/2026', '06-03-2026'],
+      ['mm-dd-yyyy', '03/06/2026', '03-06-2026']
+    ] as const)('retains alternate numeric separators for %s input', async (format, assigned, display) => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', { format });
+
+      datePicker.value = assigned;
+
+      expect(datePicker.value).toBe('2026-03-06');
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.value).toBe(display);
+    });
+
+    it('changes display format without changing value or reset default', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-06'
+      });
+      datePicker.value = '2026-12-25';
+      expect(datePicker.getAttribute('value')).toBe('2026-03-06');
+
+      datePicker.format = 'mmmm dd, yyyy';
+      await (datePicker as any).rendered;
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      expect(datePicker.value).toBe('2026-12-25');
+      expect(datePicker.defaultValue).toBe('2026-03-06');
+      expect(input.value).toBe('December 25, 2026');
+    });
+
+    it.each([
+      '2026-02-29',
+      '2024-02-30',
+      '2026-04-31',
+      '2026-13-01',
+      '2026-00-10',
+      'not-a-date'
+    ])('sanitizes impossible or malformed assignment %s', async value => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      datePicker.value = value;
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      expect(datePicker.value).toBe('');
+      expect(input.value).toBe('');
+    });
+
+    it('accepts leap day only in leap years and does not roll dates', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      datePicker.value = '2000-02-29';
+      expect(datePicker.value).toBe('2000-02-29');
+      datePicker.value = '1900-02-29';
+      expect(datePicker.value).toBe('');
+    });
+  });
+
+  describe('manual entry and form lifecycle', () => {
+    it('publishes a canonical value as soon as manual input is complete', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      let detail: any;
+      datePicker.addEventListener('datepicker-input', event => {
+        detail = (event as CustomEvent).detail;
+      });
+
+      input.value = '3/6/2026';
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+      expect(datePicker.value).toBe('2026-03-06');
+      expect(input.value).toBe('3/6/2026');
+      expect(detail.value).toBe('2026-03-06');
+    });
+
+    it('normalizes valid text on change and emits canonical event detail', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      let detail: any;
+      datePicker.addEventListener('datepicker-change', event => {
+        detail = (event as CustomEvent).detail;
+      });
+
+      input.value = '3/6/2026';
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+
+      expect(input.value).toBe('03/06/2026');
+      expect(detail).toMatchObject({
+        value: '2026-03-06',
+        formatted: '03/06/2026',
+        iso: '2026-03-06'
+      });
+    });
+
+    it('preserves partial text while clearing stale canonical state', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-06',
+        clearable: true
+      });
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      input.value = '03/';
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+      expect(input.value).toBe('03/');
+      expect(datePicker.value).toBe('');
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '.clear-button')!.style.display).not.toBe('none');
+    });
+
+    it('rejects impossible manual dates without rolling into another month', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      input.value = '02/31/2026';
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+
+      expect(input.value).toBe('02/31/2026');
+      expect(datePicker.value).toBe('');
+      expect(datePicker.checkValidity()).toBe(false);
+    });
+
+    it('restores the authored default and keeps live assignment dirty', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-06'
+      });
+      datePicker.value = '2026-04-10';
+      datePicker.setAttribute('value', '2026-05-20');
+
+      expect(datePicker.value).toBe('2026-04-10');
+      expect(datePicker.defaultValue).toBe('2026-05-20');
+
+      (datePicker as any).formResetCallback();
+      expect(datePicker.value).toBe('2026-05-20');
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.value).toBe('05/20/2026');
+    });
+
+    it('tracks authored default changes until the live value becomes dirty', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-06'
+      });
+      datePicker.defaultValue = '2026-04-10';
+      expect(datePicker.value).toBe('2026-04-10');
+
+      datePicker.value = '2026-05-20';
+      datePicker.defaultValue = '2026-06-30';
+      expect(datePicker.value).toBe('2026-05-20');
+    });
+
+    it('restores complete and partial browser state without dispatching events', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const change = vi.fn();
+      datePicker.addEventListener('datepicker-change', change);
+
+      (datePicker as any).formStateRestoreCallback('12/25/2026', 'restore');
+      expect(datePicker.value).toBe('2026-12-25');
+      (datePicker as any).formStateRestoreCallback('12/', 'autocomplete');
+      expect(datePicker.value).toBe('');
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.value).toBe('12/');
+      (datePicker as any).formStateRestoreCallback(new FormData(), 'restore');
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.value).toBe('12/');
+      expect(change).not.toHaveBeenCalled();
+    });
+
+    it('keeps fieldset disabledness separate from the authored disabled state', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-06',
+        clearable: true
+      });
+      datePicker.show();
+      (datePicker as any).formDisabledCallback(true);
+
+      expect(datePicker.disabled).toBe(false);
+      expect(datePicker.hasAttribute('disabled')).toBe(false);
+      expect(datePicker.open).toBe(false);
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.disabled).toBe(true);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '.calendar-toggle')!.disabled).toBe(true);
+
+      (datePicker as any).formDisabledCallback(false);
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.disabled).toBe(false);
+    });
+  });
+
+  describe('native constraint-validation API', () => {
+    it('exposes native-compatible control identity and form owner', async () => {
+      const form = document.createElement('form');
+      form.id = 'date-form';
+      document.body.appendChild(form);
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      datePicker.setAttribute('form', 'date-form');
+
+      expect(datePicker.type).toBe('date');
+      expect(datePicker.form).toBe(form);
+      form.remove();
+    });
+
+    it('enforces required, min, and max with native validity flags', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        required: true,
+        min: '2026-03-10',
+        max: '2026-03-20'
+      });
+
+      expect(datePicker.checkValidity()).toBe(false);
+      datePicker.value = '2026-03-09';
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(datePicker.validity.rangeUnderflow || datePicker.validity.customError).toBe(true);
+      datePicker.value = '2026-03-21';
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(datePicker.validity.rangeOverflow || datePicker.validity.customError).toBe(true);
+      datePicker.value = '2026-03-15';
+      expect(datePicker.checkValidity()).toBe(true);
+    });
+
+    it('bars readonly and disabled controls from validation without losing value', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        required: true,
+        readonly: true
+      });
+      expect(datePicker.value).toBe('');
+      expect(datePicker.checkValidity()).toBe(true);
+
+      datePicker.readonly = false;
+      expect(datePicker.checkValidity()).toBe(false);
+      (datePicker as any).formDisabledCallback(true);
+      expect(datePicker.checkValidity()).toBe(true);
+    });
+
+    it('sets and clears custom validity on the form-associated host', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-15'
+      });
+      datePicker.setCustomValidity('Dates are closed');
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(datePicker.validationMessage).toContain('Dates are closed');
+      datePicker.setCustomValidity('');
+      expect(datePicker.checkValidity()).toBe(true);
+    });
+
+    it('disables out-of-range calendar days but permits boundary dates', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-15',
+        min: '2026-03-10',
+        max: '2026-03-20'
+      });
+      datePicker.show();
+
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-09"]')!.disabled).toBe(true);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-10"]')!.disabled).toBe(false);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-20"]')!.disabled).toBe(false);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-21"]')!.disabled).toBe(true);
+    });
+
+    it('retains display-formatted min and max compatibility', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        format: 'dd/mm/yyyy',
+        value: '2026-03-15',
+        min: '10/03/2026',
+        max: '20/03/2026',
+        required: true
+      });
+      datePicker.show();
+
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-09"]')!.disabled).toBe(true);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2026-03-10"]')!.disabled).toBe(false);
+      datePicker.value = '2026-03-21';
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(datePicker.validity.rangeOverflow || datePicker.validity.customError).toBe(true);
+    });
+  });
+
+  describe('API methods', () => {
     beforeEach(async () => {
       datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
-      tracker = wait(datePicker as HTMLElement);
     });
 
     it('should support focus method', () => {
@@ -322,7 +624,114 @@ describe('snice-date-picker', () => {
     it('should support selectDate method', async () => {
       const date = new Date(2024, 0, 15);
       datePicker.selectDate(date);
-      expect(datePicker.value).toBeTruthy();
+      expect(datePicker.value).toBe('2024-01-15');
+    });
+
+    it('should support month navigation and selecting today', async () => {
+      datePicker.goToMonth(2030, 6);
+      expect(queryShadow(datePicker as HTMLElement, '.month-label')?.textContent).toContain('July');
+      expect(queryShadow(datePicker as HTMLElement, '.year-button')?.textContent).toBe('2030');
+
+      const today = new Date();
+      const expected = `${today.getFullYear().toString().padStart(4, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      datePicker.goToToday();
+      expect(datePicker.value).toBe(expected);
+    });
+
+    it('clears safely when selectDate receives an invalid Date', () => {
+      datePicker.value = '2024-01-15';
+      datePicker.selectDate(new Date(Number.NaN));
+      expect(datePicker.value).toBe('');
+    });
+  });
+
+  describe('preserved presentation, state, and navigation capabilities', () => {
+    it('keeps loading interaction-blocked while retaining its live value', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-15',
+        loading: true,
+        clearable: true
+      });
+
+      expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.disabled).toBe(true);
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '.calendar-toggle')!.disabled).toBe(true);
+      expect(queryShadow(datePicker as HTMLElement, '.spinner')).toBeTruthy();
+      expect(queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '.clear-button')!.style.display).toBe('none');
+      datePicker.show();
+      expect(datePicker.open).toBe(false);
+      expect(datePicker.value).toBe('2026-03-15');
+    });
+
+    it('preserves custom placeholders, invalid presentation, and Monday-first headers', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        placeholder: 'Choose delivery day',
+        invalid: true,
+        'first-day-of-week': 1
+      });
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      const headers = Array.from((datePicker as HTMLElement).shadowRoot!.querySelectorAll('.weekday'))
+        .map(header => header.textContent);
+      expect(input.placeholder).toBe('Choose delivery day');
+      expect(input.classList.contains('input--invalid')).toBe(true);
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(headers).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+    });
+
+    it('preserves month navigation, year-grid navigation, and date selection', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-03-15'
+      });
+      datePicker.show();
+
+      queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-nav="next-month"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await (datePicker as any).rendered;
+      expect(queryShadow(datePicker as HTMLElement, '.month-label')?.textContent).toContain('April');
+
+      queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-nav="show-years"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await (datePicker as any).rendered;
+      expect((datePicker as HTMLElement).shadowRoot!.querySelectorAll('[data-year]').length).toBe(12);
+
+      queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-nav="next-years"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await (datePicker as any).rendered;
+      queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-year="2030"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await (datePicker as any).rendered;
+      expect(queryShadow(datePicker as HTMLElement, '.month-label')?.textContent).toContain('April');
+      expect(queryShadow(datePicker as HTMLElement, '.year-button')?.textContent).toBe('2030');
+
+      queryShadow<HTMLButtonElement>(datePicker as HTMLElement, '[data-date="2030-04-10"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      expect(datePicker.value).toBe('2030-04-10');
+      expect(datePicker.open).toBe(false);
+    });
+
+    it('preserves input keyboard open/close and disabled guards', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      expect(datePicker.open).toBe(true);
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+      expect(datePicker.open).toBe(false);
+
+      datePicker.disabled = true;
+      await (datePicker as any).rendered;
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, composed: true }));
+      expect(datePicker.open).toBe(false);
+    });
+
+    it('keeps Today unavailable when the current date is outside constraints', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        min: '2999-01-01',
+        max: '2999-12-31'
+      });
+      datePicker.show();
+
+      expect(queryShadow<HTMLElement>(datePicker as HTMLElement, '.today-button')!.hasAttribute('disabled')).toBe(true);
     });
   });
 

@@ -184,7 +184,8 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   disconnectedCallback() {
     const root = this.lastRoot;
     this.lastRoot = null;
-    SniceRadio.scheduleRootSync(root);
+    const Radio = this.constructor as typeof SniceRadio;
+    Radio.scheduleRootSync(root);
   }
 
   formAssociatedCallback() {
@@ -386,7 +387,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     if (!root) return [this];
     const form = this.form;
     return Array.from(root.querySelectorAll('snice-radio'))
-      .filter((radio): radio is SniceRadio => radio instanceof SniceRadio)
+      .filter((radio): radio is SniceRadio =>
+        typeof (radio as SniceRadio).syncNativeInput === 'function'
+      )
       .filter(radio => radio.name === this.name && radio.form === form);
   }
 
@@ -459,26 +462,35 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
       this.syncGroupState();
       return;
     }
-    SniceRadio.syncRadiosInRoot(root);
+    const Radio = this.constructor as typeof SniceRadio;
+    Radio.syncRadiosInRoot(root);
   }
 
   private static radiosInRoot(root: ParentNode) {
     return Array.from(root.querySelectorAll('snice-radio'))
-      .filter((radio): radio is SniceRadio => radio instanceof SniceRadio);
+      // customElements.define() upgrades matching elements synchronously. A
+      // root can therefore contain a mix of upgraded and not-yet-upgraded
+      // peers while this component's constructor is running. Detect the
+      // initialized API instead of depending on a class binding that a
+      // decorator/bundler may still be assigning during that window.
+      .filter((radio): radio is SniceRadio =>
+        typeof (radio as SniceRadio).syncNativeInput === 'function'
+      );
   }
 
   private static syncRadiosInRoot(root: ParentNode) {
-    const radios = SniceRadio.radiosInRoot(root);
+    const radios = this.radiosInRoot(root);
     for (const radio of radios) radio.syncNativeInput();
     for (const radio of radios) radio.syncOwnFormState();
   }
 
   private static scheduleRootSync(root: ParentNode | null) {
-    if (!root || SniceRadio.pendingRootSyncs.has(root)) return;
-    SniceRadio.pendingRootSyncs.add(root);
+    if (!root || this.pendingRootSyncs.has(root)) return;
+    this.pendingRootSyncs.add(root);
+    const Radio = this;
     queueMicrotask(() => {
-      SniceRadio.pendingRootSyncs.delete(root);
-      SniceRadio.syncRadiosInRoot(root);
+      Radio.pendingRootSyncs.delete(root);
+      Radio.syncRadiosInRoot(root);
     });
   }
 

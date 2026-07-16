@@ -11,7 +11,10 @@ export interface DatePickerValue {
 export interface SniceDatePickerElement extends HTMLElement {
   size: DatePickerSize;
   variant: DatePickerVariant;
+  /** Live canonical date (`YYYY-MM-DD`), or empty when no valid date exists. */
   value: string;
+  /** Authored `value` attribute used as the form-reset default. */
+  defaultValue: string;
   format: DateFormat;
   placeholder: string;
   label: string;
@@ -19,6 +22,7 @@ export interface SniceDatePickerElement extends HTMLElement {
   errorText: string;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   clearable: boolean;
@@ -27,6 +31,12 @@ export interface SniceDatePickerElement extends HTMLElement {
   name: string;
   open: boolean;
   firstDayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
+  readonly type: 'date';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
   
   // Methods
   focus(): void;

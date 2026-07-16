@@ -5,7 +5,7 @@ import type { SniceFormProps } from './types';
 export interface DatePickerProps extends SniceFormProps {
     size?: any;
     variant?: any;
-    value?: any;
+    defaultValue?: any;
     format?: any;
     placeholder?: any;
     label?: any;
@@ -22,6 +22,7 @@ export interface DatePickerProps extends SniceFormProps {
     name?: any;
     open?: any;
     firstDayOfWeek?: any;
+    value?: any;
     onDatepickerInput?: (event: any) => void;
     onDatepickerChange?: (event: any) => void;
     onDatepickerFocus?: (event: any) => void;

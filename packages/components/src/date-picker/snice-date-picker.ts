@@ -1,10 +1,13 @@
-import { element, property, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 
 @element('snice-date-picker', { formAssociated: true })
 export class SniceDatePicker extends HTMLElement implements SniceDatePickerElement {
   internals!: ElementInternals;
+
+  private dirtyValue = false;
+  private customValidationMessage = '';
 
   constructor() {
     super();
@@ -18,8 +21,28 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   @property({  })
   variant: DatePickerVariant = 'outlined';
 
-  @property({  })
-  value = '';
+  @state()
+  private valueState = '';
+
+  @state()
+  private formDisabled = false;
+
+  /**
+   * Live value in the stable `YYYY-MM-DD` form used by native date inputs.
+   * Assigning it does not rewrite the authored reset default.
+   * @public
+   */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValueFromString(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '';
 
   // Track input separately to prevent cursor jumps during typing
   private inputValue = '';
@@ -91,6 +114,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   firstDayButton?: HTMLButtonElement;
 
   private selectedDate: Date | null = null;
+  private validationInput?: HTMLInputElement;
   private viewDate = new Date();
   private calendarView: 'days' | 'years' = 'days';
   private yearRangeStart = 0;
@@ -109,6 +133,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   @render()
   render() {
+    const interactionDisabled = this.interactionDisabled;
+    const showClear = Boolean(this.inputValue) && this.clearable && !interactionDisabled && !this.readonly;
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const inputClasses = [
       'input',
@@ -131,12 +157,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
           <input
             class="${inputClasses}"
             type="text"
-            value="${this.inputValue || this.getFormattedValue()}"
-            placeholder="${this.placeholder || this.getPlaceholderForFormat()}"
-            ?disabled=${this.disabled || this.loading}
-            ?readonly=${this.readonly}
-            ?required=${this.required}
-            name="${this.name || ''}"
+            .value=${this.inputValue}
+            .placeholder=${this.placeholder || this.getPlaceholderForFormat()}
+            .disabled=${interactionDisabled}
+            .readOnly=${this.readonly}
+            .required=${this.required}
+            .name=${this.name || ''}
+            aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="input"
             autocomplete="off"
             @input=${(e: Event) => this.handleInput(e)}
@@ -153,7 +180,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             aria-label="Open calendar"
             tabindex="-1"
             part="calendar-toggle"
-            ?disabled=${this.disabled || this.loading}
+            .disabled=${interactionDisabled}
             @click=${(e: Event) => this.handleCalendarToggle(e)}
           >
             <svg viewBox="0 0 24 24" width="18" height="18">
@@ -162,12 +189,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
           </button>
 
           <button
-            class="clear-button"
+            class="clear-button${showClear ? ' clear-button--visible' : ''}"
             type="button"
             aria-label="Clear"
             tabindex="-1"
             part="clear"
-            style="display: none;"
+            style="${showClear ? '' : 'display: none;'}"
+            .disabled=${interactionDisabled || this.readonly}
             @click=${(e: Event) => this.handleClear(e)}
           >
             <svg viewBox="0 0 24 24" width="16" height="16">
@@ -231,7 +259,13 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
             </case>
 
             <div class="calendar-footer">
-              <snice-button class="today-button" variant="default" size="small" data-nav="today">
+              <snice-button
+                class="today-button"
+                variant="default"
+                size="small"
+                data-nav="today"
+                ?disabled=${!this.isDateInRange(new Date())}
+              >
                 Today
               </snice-button>
             </div>
@@ -253,100 +287,156 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   @ready()
   init() {
-    this.parseInitialValue();
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
+    // Preserve a property assigned before custom-element upgrade. The own data
+    // property otherwise shadows the native-compatible accessor forever.
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      this.value = String(value ?? '');
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
     }
-    // Update clear button after queries are resolved
-    queueMicrotask(() => this.updateClearButton());
+
+    this.syncNativeInput();
+    this.syncFormState();
+    queueMicrotask(() => {
+      this.syncNativeInput();
+      this.updateClearButton();
+    });
     this.setupCalendarClickOutside();
-
-    if (this.input) {
-      this.input.disabled = this.disabled;
-      this.input.readOnly = this.readonly;
-      this.input.required = this.required;
-
-      if (this.invalid) {
-        this.input.setAttribute('aria-invalid', 'true');
-        this.input.classList.add('input--invalid');
-      }
-    }
   }
 
-  private parseInitialValue() {
-    if (this.value) {
-      const date = this.parseDate(this.value);
-      if (date) {
-        this.selectedDate = date;
-        this.viewDate = new Date(date);
-        this.inputValue = this.formatDate(date);
-      } else {
-        this.inputValue = this.value;
-      }
+  formAssociatedCallback() {
+    this.syncFormState();
+  }
+
+  formResetCallback() {
+    this.dirtyValue = false;
+    this.applyDefaultValue();
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    // Effective disabledness can come from a disabled fieldset. Keep it
+    // separate from the authored `disabled` property and content attribute.
+    this.formDisabled = disabled;
+    if (disabled && this.open) this.hide();
+    this.syncNativeInput();
+    this.syncValidity();
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    // Restore exact visible text. Complete dates derive their canonical value;
+    // partial/invalid text stays visible and invalid, never submitted as a date.
+    this.setValueFromInput(state, true);
+  }
+
+  private applyDefaultValue() {
+    this.setValueFromString(this.defaultValue, false);
+  }
+
+  private setValueFromString(value: unknown, dirty: boolean) {
+    const candidate = String(value ?? '');
+    const date = this.parseDate(candidate);
+    this.commitDateState(date, date ? this.formatDate(date) : '', dirty);
+  }
+
+  private setValueFromInput(inputValue: string, dirty: boolean) {
+    this.commitDateState(this.parseDate(inputValue), inputValue, dirty);
+  }
+
+  private commitDateState(date: Date | null, inputValue: string, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+
+    const normalizedDate = date
+      ? this.createLocalDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
+      : null;
+    this.selectedDate = normalizedDate;
+    this.inputValue = inputValue;
+    if (normalizedDate) this.viewDate = new Date(normalizedDate);
+
+    this.valueState = normalizedDate ? this.toCanonicalDate(normalizedDate) : '';
+    this.syncNativeInput();
+    this.syncFormState();
+    this.updateClearButton();
+    if (this.open && this.calendar) this.updateCalendarGrid();
+  }
+
+  private createLocalDate(year: number, month: number, day: number): Date | null {
+    if (!Number.isInteger(year) || year < 1 ||
+        !Number.isInteger(month) || month < 1 || month > 12 ||
+        !Number.isInteger(day) || day < 1 || day > 31) {
+      return null;
     }
+
+    // setFullYear avoids JavaScript's special 1900 offset for years 0-99.
+    const date = new Date(0);
+    date.setHours(0, 0, 0, 0);
+    date.setFullYear(year, month - 1, day);
+    return date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+      ? date
+      : null;
+  }
+
+  private parseCanonicalDate(dateString: string): Date | null {
+    const match = dateString.match(/^(\d{4,})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    return this.createLocalDate(Number(match[1]), Number(match[2]), Number(match[3]));
   }
 
   private parseDate(dateString: string): Date | null {
     if (!dateString) return null;
 
+    // Canonical values are accepted regardless of the configured display
+    // format, exactly like assigning to a native date input's value property.
+    const canonicalDate = this.parseCanonicalDate(dateString);
+    if (canonicalDate) return canonicalDate;
+
     if (this.format === 'mmmm dd, yyyy') {
-      const monthNameRegex = /^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})$/;
+      const monthNameRegex = /^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4,})$/;
       const match = dateString.match(monthNameRegex);
       if (match) {
         const [, monthName, day, year] = match;
         const monthIndex = this.monthNames.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
         if (monthIndex >= 0) {
-          const date = new Date(parseInt(year), monthIndex, parseInt(day));
-          if (!isNaN(date.getTime())) {
-            return date;
-          }
+          return this.createLocalDate(Number(year), monthIndex + 1, Number(day));
         }
       }
       return null;
     }
 
-    // Detect ISO date format (yyyy-mm-dd) and parse manually to avoid UTC issues
-    const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
-    const isoMatch = dateString.match(isoDateRegex);
-    if (isoMatch) {
-      const [, year, month, day] = isoMatch.map(Number);
-      const date = new Date(year, month - 1, day);
-      if (!isNaN(date.getTime())) {
-        return date;
-      }
+    let match: RegExpMatchArray | null = null;
+    let year = 0;
+    let month = 0;
+    let day = 0;
+    switch (this.format) {
+      case 'mm/dd/yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, month, day, year] = match.map(Number);
+        break;
+      case 'dd/mm/yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, day, month, year] = match.map(Number);
+        break;
+      case 'yyyy/mm/dd':
+        match = dateString.match(/^(\d{4,})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+        if (match) [, year, month, day] = match.map(Number);
+        break;
+      case 'dd-mm-yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, day, month, year] = match.map(Number);
+        break;
+      case 'mm-dd-yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, month, day, year] = match.map(Number);
+        break;
+      case 'yyyy-mm-dd':
+        return null;
     }
 
-    // Try manual parsing based on format
-    const parts = dateString.split(/[-\/]/);
-    if (parts.length === 3) {
-      let year: number, month: number, day: number;
-
-      switch (this.format) {
-        case 'mm/dd/yyyy':
-        case 'mm-dd-yyyy':
-          [month, day, year] = parts.map(Number);
-          break;
-        case 'dd/mm/yyyy':
-        case 'dd-mm-yyyy':
-          [day, month, year] = parts.map(Number);
-          break;
-        case 'yyyy-mm-dd':
-        case 'yyyy/mm/dd':
-          [year, month, day] = parts.map(Number);
-          break;
-        default:
-          return null;
-      }
-
-      if (year && month && day) {
-        const date = new Date(year, month - 1, day);
-        if (!isNaN(date.getTime())) {
-          return date;
-        }
-      }
-    }
-
-    return null;
+    return match ? this.createLocalDate(year, month, day) : null;
   }
 
   private formatDate(date: Date): string {
@@ -358,7 +448,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     
     const mm = month.toString().padStart(2, '0');
     const dd = day.toString().padStart(2, '0');
-    const yyyy = year.toString();
+    const yyyy = year.toString().padStart(4, '0');
     
     switch (this.format) {
       case 'mm/dd/yyyy':
@@ -380,8 +470,11 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  private getFormattedValue(): string {
-    return this.selectedDate ? this.formatDate(this.selectedDate) : this.value;
+  private toCanonicalDate(date: Date): string {
+    const year = date.getFullYear().toString().padStart(4, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private getPlaceholderForFormat(): string {
@@ -430,6 +523,19 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     return years;
   }
 
+  private isDateInRange(date: Date): boolean {
+    const normalized = this.createLocalDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    if (!normalized) return false;
+
+    // Canonical constraints are the documented/native form, but retain the
+    // picker's earlier support for constraints written in its display format.
+    const minDate = this.parseDate(this.min);
+    if (minDate && normalized < minDate) return false;
+    const maxDate = this.parseDate(this.max);
+    if (maxDate && normalized > maxDate) return false;
+    return true;
+  }
+
   private getDaysGrid() {
     const year = this.viewDate.getFullYear();
     const month = this.viewDate.getMonth();
@@ -456,18 +562,6 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       date.getMonth() === this.selectedDate.getMonth() &&
       date.getFullYear() === this.selectedDate.getFullYear();
 
-    const isDisabled = (date: Date) => {
-      if (this.min) {
-        const minDate = this.parseDate(this.min);
-        if (minDate && date < minDate) return true;
-      }
-      if (this.max) {
-        const maxDate = this.parseDate(this.max);
-        if (maxDate && date > maxDate) return true;
-      }
-      return false;
-    };
-
     const days = [];
 
     // Empty cells for days before month starts
@@ -482,7 +576,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
       if (isToday(date)) classes.push('day--today');
       if (isSelected(date)) classes.push('day--selected');
-      if (isDisabled(date)) classes.push('day--disabled');
+      if (!this.isDateInRange(date)) classes.push('day--disabled');
 
       const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
@@ -491,7 +585,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
           class="${classes.join(' ')}"
           type="button"
           data-date="${dateStr}"
-          ?disabled="${isDisabled(date)}"
+          .disabled=${!this.isDateInRange(date)}
           aria-label="${this.formatDate(date)}"
         >
           ${day}
@@ -503,29 +597,36 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private updateInputValue() {
-    if (this.input && document.activeElement !== this.input) {
-      const displayValue = this.getFormattedValue();
-      this.input.value = displayValue;
-      this.inputValue = displayValue;
-    }
+    if (this.selectedDate) this.inputValue = this.formatDate(this.selectedDate);
+    this.syncNativeInput();
+    this.syncFormState();
     this.updateClearButton();
   }
 
-  private isCompleteDate(value: string): boolean {
-    if (this.format === 'mmmm dd, yyyy') {
-      return /^[A-Za-z]+\s+\d{1,2},\s+\d{4}$/.test(value);
+  private get interactionDisabled() {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
+  private syncNativeInput() {
+    if (this.input) {
+      if (this.input.value !== this.inputValue) this.input.value = this.inputValue;
+      this.input.disabled = this.interactionDisabled;
+      this.input.readOnly = this.readonly;
+      this.input.required = this.required;
+      this.input.name = this.name;
+      this.input.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
     }
-    
-    const separators = (value.match(/[\/\-]/g) || []).length;
-    return separators >= 2 && value.length >= 8;
+    if (this.calendarToggle) this.calendarToggle.disabled = this.interactionDisabled;
+    if (this.clearButton) this.clearButton.disabled = this.interactionDisabled || this.readonly;
   }
 
   private updateClearButton() {
-    if (!this.clearButton || !this.clearable) return;
+    if (!this.clearButton) return;
 
-    const shouldShow = this.selectedDate && !this.disabled && !this.readonly;
+    const shouldShow = Boolean(this.inputValue) && this.clearable && !this.interactionDisabled && !this.readonly;
     this.clearButton.style.display = shouldShow ? '' : 'none';
-    this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
+    this.clearButton.classList.toggle('clear-button--visible', shouldShow);
+    this.clearButton.disabled = this.interactionDisabled || this.readonly;
   }
 
   private updateCalendarGrid() {
@@ -555,18 +656,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
   private handleInput(e: Event) {
     const input = e.target as HTMLInputElement;
-    this.inputValue = input.value;
-
-    const date = this.parseDate(input.value);
-    if (date && this.isCompleteDate(input.value)) {
-      this.selectedDate = date;
-      this.viewDate = new Date(date);
-      if (this.open) {
-        this.updateCalendarGrid();
-      }
-    }
-
-    this.updateClearButton();
+    this.setValueFromInput(input.value, true);
     this.dispatchInputEvent();
   }
 
@@ -574,23 +664,11 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     const input = e.target as HTMLInputElement;
     const date = this.parseDate(input.value);
     if (date) {
-      this.selectedDate = date;
-      this.value = this.formatDate(date);
-      this.inputValue = this.value;
-      if (this.input) {
-        this.input.value = this.value;
-      }
-    } else if (input.value) {
-      this.selectedDate = null;
-      this.value = input.value;
-      this.inputValue = input.value;
+      this.commitDateState(date, this.formatDate(date), true);
     } else {
-      this.selectedDate = null;
-      this.value = '';
-      this.inputValue = '';
+      this.setValueFromInput(input.value, true);
     }
 
-    this.updateClearButton();
     this.dispatchChangeEvent();
   }
 
@@ -599,7 +677,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private handleInputClick(e: Event) {
-    if (!this.open && !this.disabled && !this.readonly) {
+    if (!this.open && !this.interactionDisabled && !this.readonly) {
       this.show();
     }
   }
@@ -635,10 +713,8 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     if (target.closest('[data-date]')) {
       const dateString = target.closest('[data-date]')?.getAttribute('data-date');
       if (dateString) {
-        // Parse as local date to avoid timezone issues
-        const [year, month, day] = dateString.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        this.selectDate(date);
+        const date = this.parseCanonicalDate(dateString);
+        if (date && this.isDateInRange(date)) this.selectDate(date);
       }
     } else if (target.closest('[data-nav]')) {
       const nav = target.closest('[data-nav]')?.getAttribute('data-nav');
@@ -707,7 +783,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       const dateStr = focused.getAttribute('data-date');
       if (dateStr) return new Date(dateStr + 'T00:00:00');
     }
-    if (this.value) return new Date(this.value);
+    if (this.selectedDate) return new Date(this.selectedDate);
     return new Date(this.viewDate);
   }
 
@@ -749,21 +825,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @watch('value')
-  handleValueChange() {
-    const date = this.parseDate(this.value);
-    this.selectedDate = date;
-    if (date) {
-      this.viewDate = new Date(date);
-    }
-    this.updateInputValue();
-    this.updateClearButton();
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
-    if (this.open) {
-      this.updateCalendarGrid();
-    }
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   // Manual DOM manipulation required since Snice is imperative
@@ -791,23 +855,31 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled', { immediate: false })
   handleDisabledChange() {
-    if (this.input) {
-      this.input.disabled = this.disabled;
-    }
-    if (this.calendarToggle) {
-      this.calendarToggle.disabled = this.disabled;
-    }
+    if (this.interactionDisabled && this.open) this.hide();
+    this.syncNativeInput();
+    this.syncValidity();
     this.updateClearButton();
   }
 
   @watch('readonly')
   handleReadonlyChange() {
-    if (this.input) {
-      this.input.readOnly = this.readonly;
-    }
+    if (this.readonly && this.open) this.hide();
+    this.syncNativeInput();
+    this.syncValidity();
     this.updateClearButton();
+  }
+
+  @watch('name', 'required', 'min', 'max', { immediate: false })
+  handleFormConstraintChange() {
+    this.syncNativeInput();
+    this.syncFormState();
+  }
+
+  @watch('clearable', { immediate: false })
+  handleClearableChange() {
+    queueMicrotask(() => this.updateClearButton());
   }
 
   @watch('invalid')
@@ -823,6 +895,84 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.updateInputValue();
   }
 
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) {
+      this.validationInput = document.createElement('input');
+      this.validationInput.type = 'date';
+    }
+    return this.validationInput;
+  }
+
+  private syncFormState() {
+    if (this.internals) {
+      // Empty controls remain successful controls (`name=` submits ""), while
+      // the restore state keeps the exact visible text for history/autofill.
+      this.internals.setFormValue(this.value, this.inputValue);
+    }
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const proxy = this.validationProxy;
+    proxy.disabled = this.disabled || this.formDisabled;
+    proxy.readOnly = this.readonly;
+    proxy.required = this.required;
+    const minDate = this.parseDate(this.min);
+    const maxDate = this.parseDate(this.max);
+    proxy.min = minDate ? this.toCanonicalDate(minDate) : '';
+    proxy.max = maxDate ? this.toCanonicalDate(maxDate) : '';
+    proxy.value = this.value;
+    proxy.setCustomValidity(this.customValidationMessage);
+
+    const barred = proxy.disabled || proxy.readOnly;
+    const badInput = !barred && Boolean(this.inputValue) && !this.selectedDate;
+    const nativeValidity = proxy.validity;
+    const flags: ValidityStateFlags = {
+      badInput,
+      customError: nativeValidity.customError,
+      patternMismatch: nativeValidity.patternMismatch,
+      rangeOverflow: nativeValidity.rangeOverflow,
+      rangeUnderflow: nativeValidity.rangeUnderflow,
+      stepMismatch: nativeValidity.stepMismatch,
+      tooLong: nativeValidity.tooLong,
+      tooShort: nativeValidity.tooShort,
+      typeMismatch: nativeValidity.typeMismatch,
+      valueMissing: nativeValidity.valueMissing
+    };
+    const hasError = Object.values(flags).some(Boolean);
+    const message = this.customValidationMessage ||
+      (badInput ? 'Please enter a valid date.' : proxy.validationMessage) ||
+      (hasError ? 'Please enter a valid date.' : '');
+
+    this.input?.setCustomValidity(hasError ? message : '');
+    if (!this.internals) return;
+    if (!hasError) {
+      this.internals.setValidity({});
+    } else if (this.input) {
+      this.internals.setValidity(flags, message, this.input);
+    } else {
+      this.internals.setValidity(flags, message);
+    }
+  }
+
+  /**
+   * ElementInternals.form is authoritative in browsers. Some DOM test
+   * implementations expose ElementInternals without form-owner discovery, so
+   * retain the standard explicit-form/nearest-form lookup as a fallback.
+   */
+  private get fallbackFormOwner(): HTMLFormElement | null {
+    const explicitOwner = this.getAttribute('form');
+    if (explicitOwner !== null) {
+      const root = this.getRootNode();
+      if (!('querySelectorAll' in root)) return null;
+      return Array.from((root as ParentNode).querySelectorAll('form[id]'))
+        .find((candidate): candidate is HTMLFormElement =>
+          candidate instanceof HTMLFormElement && candidate.id === explicitOwner
+        ) ?? null;
+    }
+    return this.closest('form');
+  }
+
   @dispatch('datepicker-input', { bubbles: true, composed: true })
   private dispatchInputEvent() {
     return { value: this.value, datePicker: this };
@@ -834,7 +984,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       value: this.value,
       date: this.selectedDate,
       formatted: this.selectedDate ? this.formatDate(this.selectedDate) : '',
-      iso: this.selectedDate ? this.selectedDate.toISOString().split('T')[0] : '',
+      iso: this.value,
       datePicker: this 
     };
   }
@@ -869,7 +1019,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     return { 
       date,
       formatted: this.formatDate(date),
-      iso: date.toISOString().split('T')[0],
+      iso: this.toCanonicalDate(date),
       datePicker: this 
     };
   }
@@ -883,16 +1033,14 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   clear() {
-    this.selectedDate = null;
-    this.value = '';
-    this.updateInputValue();
+    this.commitDateState(null, '', true);
     this.dispatchClearEvent();
     this.dispatchChangeEvent();
     this.focus();
   }
 
   show() {
-    if (!this.disabled && !this.readonly) {
+    if (!this.interactionDisabled && !this.readonly) {
       this.open = true;
       this.calendarView = 'days';
       if (this.selectedDate) {
@@ -934,12 +1082,17 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   selectDate(date: Date) {
-    this.selectedDate = date;
-    this.value = this.formatDate(date);
-    this.viewDate = new Date(date);
-    this.updateInputValue();
-    this.updateCalendarGrid();
-    this.dispatchSelectEvent(date);
+    const normalized = date instanceof Date
+      ? this.createLocalDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
+      : null;
+    if (!normalized) {
+      this.commitDateState(null, '', true);
+      this.dispatchChangeEvent();
+      return;
+    }
+
+    this.commitDateState(normalized, this.formatDate(normalized), true);
+    this.dispatchSelectEvent(normalized);
     this.dispatchChangeEvent();
     this.hide();
     this.focus();
@@ -955,15 +1108,48 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.selectDate(today);
   }
 
+  /** Native-compatible control type. @public */
+  get type(): 'date' {
+    return 'date' as const;
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return this.internals?.form ?? this.fallbackFormOwner;
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current localized validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this date picker participates in constraint validation. @public */
+  get willValidate(): boolean {
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated with this date picker. @public */
+  get labels(): NodeList | null {
+    return this.internals?.labels ?? this.input?.labels ?? null;
+  }
+
   checkValidity() {
-    return this.input?.checkValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
   }
 
   reportValidity() {
-    return this.input?.reportValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
   }
 
   setCustomValidity(message: string) {
-    this.input?.setCustomValidity(message);
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 }

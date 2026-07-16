@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const DatePicker = createReactAdapter({
     tagName: 'snice-date-picker',
-    properties: ["size", "variant", "value", "format", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "min", "max", "name", "open", "firstDayOfWeek"],
+    properties: ["size", "variant", "defaultValue", "format", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "min", "max", "name", "open", "firstDayOfWeek", "value"],
     events: { "datepicker-input": "onDatepickerInput", "datepicker-change": "onDatepickerChange", "datepicker-focus": "onDatepickerFocus", "datepicker-blur": "onDatepickerBlur", "datepicker-open": "onDatepickerOpen", "datepicker-close": "onDatepickerClose", "datepicker-clear": "onDatepickerClear", "datepicker-select": "onDatepickerSelect" },
     formAssociated: true
 });

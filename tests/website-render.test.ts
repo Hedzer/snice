@@ -483,4 +483,114 @@ test.describe('Website Component Rendering', () => {
     await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
     expect(pageErrors).toEqual([]);
   });
+
+  test('deployed Date Picker card, docs, and full showcase preserve canonical native form behavior', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-picker')));
+
+    const cardForm = page.locator('#date-card-form');
+    const cardPicker = page.locator('#date-card-delivery');
+    expect(await cardForm.evaluate((element: HTMLFormElement) =>
+      Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])))
+      .toEqual([['delivery-date', '2026-03-15']]);
+    await cardPicker.locator('.input').fill('18/03/2026');
+    await cardPicker.locator('.input').press('Tab');
+    await cardForm.getByRole('button', { name: 'Submit' }).click();
+    await expect(page.locator('#date-card-status')).toHaveText('Submitted: delivery-date=2026-03-18');
+    await cardForm.getByRole('button', { name: 'Reset' }).click();
+    await expect(page.locator('#date-card-status')).toHaveText('Reset: delivery-date=2026-03-15');
+
+    await page.locator('.more-link[data-slug="date-picker"]').click();
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', {
+      name: 'Value, Display, and Reset Defaults',
+      exact: true
+    })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Form Integration', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Validation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('canonical');
+    await expect(docs).toContainText('defaultValue');
+    await expect(docs).toContainText('badInput');
+    await expect(docs).toContainText('first <legend>');
+    await expect(docs).toContainText('loading');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', {
+      name: 'Native form integration, canonical values, validation, reset, and fieldset rules',
+      exact: true
+    })).toBeVisible();
+
+    const rendered = await showcase.locator('snice-date-picker').evaluateAll(pickers => ({
+      total: pickers.length,
+      rendered: pickers.filter(picker => picker.shadowRoot?.querySelector('.input')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 33, rendered: 33 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const form = showcase.locator('#date-picker-showcase-form');
+    const delivery = showcase.locator('#date-picker-showcase-delivery');
+    const legend = showcase.locator('#date-picker-showcase-legend');
+    const fieldset = showcase.locator('#date-picker-showcase-fieldset');
+    const status = showcase.locator('#date-picker-form-status');
+    expect(await form.evaluate((element: HTMLFormElement) => ({
+      valid: element.checkValidity(),
+      entries: Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])
+    }))).toEqual({
+      valid: true,
+      entries: [
+        ['delivery-date', '2026-03-15'],
+        ['confirmed-date', '2026-03-16'],
+        ['legend-date', '2026-03-12']
+      ]
+    });
+    expect(await fieldset.evaluate((picker: any) => ({
+      authoredDisabled: picker.disabled,
+      effectiveDisabled: picker.matches(':disabled'),
+      inputDisabled: picker.shadowRoot.querySelector('.input').disabled,
+      willValidate: picker.willValidate
+    }))).toEqual({
+      authoredDisabled: false,
+      effectiveDisabled: true,
+      inputDisabled: true,
+      willValidate: false
+    });
+    expect(await legend.evaluate((picker: any) => picker.matches(':disabled'))).toBe(false);
+
+    await delivery.locator('.input').fill('18/03/2026');
+    await delivery.locator('.input').press('Tab');
+    await form.getByRole('button', { name: 'Submit form' }).click();
+    await expect(status).toHaveText(
+      'Submitted: delivery-date=2026-03-18, confirmed-date=2026-03-16, legend-date=2026-03-12'
+    );
+    await delivery.locator('.calendar-toggle').click();
+    await expect(delivery.locator('[data-date="2026-03-09"]')).toBeDisabled();
+    await delivery.locator('[data-date="2026-03-20"]').click();
+    expect(await delivery.evaluate((picker: any) => ({
+      value: picker.value,
+      display: picker.shadowRoot.querySelector('.input').value,
+      valid: picker.checkValidity(),
+      open: picker.open
+    }))).toEqual({ value: '2026-03-20', display: '20/03/2026', valid: true, open: false });
+
+    await form.getByRole('button', { name: 'Reset defaults' }).click();
+    await expect(status).toHaveText(
+      'Reset: delivery-date=2026-03-15, confirmed-date=2026-03-16, legend-date=2026-03-12'
+    );
+    await delivery.locator('.clear-button').click();
+    await form.getByRole('button', { name: 'Submit form' }).click();
+    await expect(status).toHaveText(
+      'Reset: delivery-date=2026-03-15, confirmed-date=2026-03-16, legend-date=2026-03-12'
+    );
+    expect(await form.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+  });
 });

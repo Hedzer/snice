@@ -10594,6 +10594,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -10628,11 +10637,72 @@
             },
             {
               "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "format",
               "type": {
                 "text": "'yyyy-mm-dd' | 'mm/dd/yyyy' | 'dd/mm/yyyy' | 'yyyy/mm/dd' | 'dd-mm-yyyy' | 'mm-dd-yyyy' | 'mmmm dd, yyyy'"
               },
               "default": "'mm/dd/yyyy'"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": "boolean",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -10667,6 +10737,26 @@
             },
             {
               "kind": "method",
+              "name": "handleClearableChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleDisabledChange",
               "parameters": [],
               "return": {
@@ -10678,6 +10768,16 @@
             {
               "kind": "method",
               "name": "handleFormatChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleFormConstraintChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -10708,16 +10808,6 @@
             {
               "kind": "method",
               "name": "handleReadonlyChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -10768,6 +10858,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with this date picker. @public"
             },
             {
               "kind": "field",
@@ -10895,11 +10994,38 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'date'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live value in the stable `YYYY-MM-DD` form used by native date inputs.\nAssigning it does not rewrite the authored reset default."
             },
             {
               "kind": "field",
@@ -10908,6 +11034,15 @@
                 "text": "'outlined' | 'filled' | 'underlined'"
               },
               "default": "'outlined'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this date picker participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -11049,11 +11184,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             },
             {
               "name": "variant",
