@@ -14,6 +14,7 @@
     "../src/**/*",
     "live/layout-navigation.spec.ts",
     "live/components/date-picker/*.spec.ts",
-    "live/components/date-range-picker/*.spec.ts"
+    "live/components/date-range-picker/*.spec.ts",
+    "live/components/date-time-picker/*.spec.ts"
   ]
 }

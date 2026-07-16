@@ -5,6 +5,7 @@ import type { DateTimePickerVariant, DateTimePickerTimeFormat, DateTimePickerSiz
 type Args = {
   size?: DateTimePickerSize;
   value?: string;
+  defaultValue?: string;
   dateFormat?: DateTimePickerDateFormat;
   timeFormat?: DateTimePickerTimeFormat;
   min?: string;
@@ -52,6 +53,7 @@ const meta: Meta<Args> = {
   argTypes: {
     size:        { control: 'select', options: SIZES },
     value:       { control: 'text' },
+    defaultValue:{ control: 'text', description: 'Authored value attribute / form-reset default' },
     dateFormat:  { control: 'select', options: DATE_FORMATS },
     timeFormat:  { control: 'select', options: TIME_FORMATS },
     min:         { control: 'text' },
@@ -74,6 +76,7 @@ const meta: Meta<Args> = {
     const el = document.createElement('snice-date-time-picker');
     if (args.size        !== undefined) el.setAttribute('size',         String(args.size));
     if (args.value       !== undefined) el.setAttribute('value',        String(args.value));
+    if (args.defaultValue !== undefined) (el as any).defaultValue =     String(args.defaultValue);
     if (args.dateFormat  !== undefined) el.setAttribute('date-format',  String(args.dateFormat));
     if (args.timeFormat  !== undefined) el.setAttribute('time-format',  String(args.timeFormat));
     if (args.min         !== undefined) el.setAttribute('min',          String(args.min));
@@ -192,6 +195,73 @@ export const CustomPlaceholder: Story = {
 // h2: Form: name
 export const FormName: Story = {
   render: () => row(makePicker({ name: 'scheduled_at', label: 'Scheduled At (name=scheduled_at)' })),
+};
+
+// h2: Native form integration
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'date-time-picker-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:40rem;';
+    form.innerHTML = `
+      <snice-date-time-picker
+        id="date-time-picker-story-appointment"
+        name="appointment"
+        value="2026-03-10T14:05"
+        date-format="dd/mm/yyyy"
+        min="2026-03-01T00:00"
+        max="2026-03-31T23:59"
+        label="Appointment"
+        helper-text="Displayed locally; submitted as a canonical local datetime"
+        show-seconds
+        clearable
+        required
+      ></snice-date-time-picker>
+      <snice-date-time-picker
+        id="date-time-picker-story-readonly"
+        name="confirmed"
+        value="2026-03-12T16:30"
+        date-format="mmmm dd, yyyy"
+        time-format="12h"
+        label="Confirmed appointment"
+        readonly
+      ></snice-date-time-picker>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, rgb(226 226 226));border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-date-time-picker
+            id="date-time-picker-story-legend"
+            name="legend-time"
+            value="2026-03-04T11:00"
+            label="First legend remains enabled"
+          ></snice-date-time-picker>
+        </legend>
+        <snice-date-time-picker
+          id="date-time-picker-story-fieldset"
+          name="disabled-time"
+          value="2026-03-06T12:00"
+          label="Descendant is effectively disabled"
+        ></snice-date-time-picker>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
 };
 
 // h2: Sizes

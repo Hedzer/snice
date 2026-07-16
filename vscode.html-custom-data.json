@@ -3197,7 +3197,7 @@
         },
         {
           "name": "value",
-          "description": "value: string"
+          "description": "The `value` content attribute and form-reset default."
         },
         {
           "name": "variant",

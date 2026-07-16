@@ -115,6 +115,56 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </section>
 
 <section>
+  <h2>Native form lifecycle</h2>
+  <form id="date-time-picker-showcase-form" style="display:flex;flex-direction:column;gap:.75rem">
+    <snice-date-time-picker
+      id="date-time-picker-showcase-appointment"
+      name="appointment"
+      label="Appointment"
+      value="2026-03-10T14:05"
+      date-format="dd/mm/yyyy"
+      min="2026-03-01T00:00"
+      max="2026-03-31T23:59"
+      helper-text="Displayed locally; submitted as YYYY-MM-DDTHH:mm:ss"
+      show-seconds
+      clearable
+      required
+    ></snice-date-time-picker>
+    <snice-date-time-picker
+      id="date-time-picker-showcase-readonly"
+      name="confirmed"
+      label="Confirmed appointment"
+      value="2026-03-12T16:30"
+      date-format="mmmm dd, yyyy"
+      time-format="12h"
+      readonly
+    ></snice-date-time-picker>
+    <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border);border-radius:.5rem;padding:.75rem">
+      <legend>
+        Disabled fieldset
+        <snice-date-time-picker
+          id="date-time-picker-showcase-legend"
+          name="legend-time"
+          label="First legend remains enabled"
+          value="2026-03-04T11:00"
+        ></snice-date-time-picker>
+      </legend>
+      <snice-date-time-picker
+        id="date-time-picker-showcase-fieldset"
+        name="disabled-time"
+        label="Descendant is effectively disabled"
+        value="2026-03-06T12:00"
+      ></snice-date-time-picker>
+    </fieldset>
+    <div class="row">
+      <button type="submit">Submit canonical datetime</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="date-time-picker-form-output" aria-live="polite">Ready</output>
+  </form>
+</section>
+
+<section>
   <h2>Sizes</h2>
   <div class="row">
     <snice-date-time-picker label="Small" size="small" value="2026-03-06T10:00"></snice-date-time-picker>
@@ -142,6 +192,23 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <h2>variant="inline" + 12h + show-seconds</h2>
   <snice-date-time-picker label="Full inline" variant="inline" time-format="12h" show-seconds value="2026-07-04T15:30:00"></snice-date-time-picker>
 </section>
+
+<script>
+  (() => {
+    const form = document.getElementById('date-time-picker-showcase-form');
+    const output = document.getElementById('date-time-picker-form-output');
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+  })();
+</script>
 
 </body>
 </html>

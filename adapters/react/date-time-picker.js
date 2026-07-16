@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const DateTimePicker = createReactAdapter({
     tagName: 'snice-date-time-picker',
-    properties: ["size", "value", "dateFormat", "timeFormat", "min", "max", "showSeconds", "loading", "clearable", "disabled", "readonly", "placeholder", "label", "helperText", "errorText", "required", "invalid", "name", "variant"],
+    properties: ["size", "defaultValue", "dateFormat", "timeFormat", "min", "max", "showSeconds", "loading", "clearable", "disabled", "readonly", "placeholder", "label", "helperText", "errorText", "required", "invalid", "name", "variant", "value"],
     events: { "datetimepicker-clear": "onDatetimepickerClear", "datetime-change": "onDatetimeChange", "datetimepicker-focus": "onDatetimepickerFocus", "datetimepicker-blur": "onDatetimepickerBlur", "datetimepicker-open": "onDatetimepickerOpen", "datetimepicker-close": "onDatetimepickerClose" },
     formAssociated: true
 });

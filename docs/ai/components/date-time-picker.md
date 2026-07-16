@@ -1,76 +1,106 @@
 # snice-date-time-picker
 
-Combined date and time picker. Calendar for date, scrollable columns for time. Form-associated.
+Editable local date-time field with calendar and time selectors. Form-associated; never converts to UTC.
+
+## Canonical form value
+
+```text
+showSeconds=false -> YYYY-MM-DDTHH:mm
+showSeconds=true  -> YYYY-MM-DDTHH:mm:ss
+```
+
+Malformed/partial text stays visible, sets `badInput`, and contributes an empty form value. DST gaps/repeated times remain unchanged local wall times.
+
+```html
+<form>
+  <snice-date-time-picker
+    name="appointment"
+    value="2026-03-10T14:05"
+    min="2026-03-10T09:30"
+    max="2026-03-20T17:45"
+    required
+  ></snice-date-time-picker>
+</form>
+```
+
+## Live/default semantics
+
+```typescript
+picker.value: string;        // live value; does not reflect
+picker.defaultValue: string; // value attribute / reset default
+```
+
+- `form.reset()` restores `defaultValue` without customer events.
+- Attribute/default changes update live state only while pristine.
+- State restore accepts strings, preserves exact visible text, and ignores `File`, `FormData`, and `null`.
+- Pre-upgrade `value` property assignment is adopted.
 
 ## Properties
 
 ```typescript
-value: string = '';                                   // ISO datetime (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS)
-dateFormat: DateTimePickerDateFormat = 'yyyy-mm-dd';  // attribute: date-format
-timeFormat: '12h'|'24h' = '24h';                     // attribute: time-format
+value = '';
+defaultValue = ''; // attribute: value
+dateFormat: 'yyyy-mm-dd'|'mm/dd/yyyy'|'dd/mm/yyyy'|'yyyy/mm/dd'|'dd-mm-yyyy'|'mm-dd-yyyy'|'mmmm dd, yyyy' = 'yyyy-mm-dd';
+timeFormat: '12h'|'24h' = '24h';
 size: 'small'|'medium'|'large' = 'medium';
-min: string = '';                                     // Min date (YYYY-MM-DD)
-max: string = '';                                     // Max date (YYYY-MM-DD)
-showSeconds: boolean = false;                         // attribute: show-seconds
-disabled: boolean = false;
-readonly: boolean = false;
-loading: boolean = false;
-clearable: boolean = false;
-placeholder: string = '';
-label: string = '';
-helperText: string = '';                              // attribute: helper-text
-errorText: string = '';                               // attribute: error-text
-required: boolean = false;
-invalid: boolean = false;
-name: string = '';
+min = ''; // date-only or canonical local datetime
+max = ''; // date-only or canonical local datetime
+showSeconds = false;
+loading = false;
+clearable = false;
+disabled = false;
+readonly = false;
+placeholder = '';
+label = '';
+helperText = ''; // helper-text
+errorText = '';  // error-text
+required = false;
+invalid = false; // authored visual state
+name = '';
 variant: 'dropdown'|'inline' = 'dropdown';
 ```
 
-Date formats: `'yyyy-mm-dd'`|`'mm/dd/yyyy'`|`'dd/mm/yyyy'`|`'yyyy/mm/dd'`|`'dd-mm-yyyy'`|`'mm-dd-yyyy'`|`'mmmm dd, yyyy'`
+`dateFormat` and `timeFormat` control display/input presentation only; canonical form submission stays local ISO syntax.
 
-## Methods
+Date-only `min` starts at `00:00:00`; date-only `max` includes `23:59:59`.
 
-- `open()` - Open panel
-- `close()` - Close panel
-- `clear()` - Clear value
-- `focus()` - Focus input
-- `blur()` - Blur input
-- `checkValidity()` / `reportValidity()` / `setCustomValidity(msg)`
-
-## Events
-
-- `datetime-change` → `{ value, date, dateString, timeString, iso, dateTimePicker }`
-- `datetimepicker-focus` → `{ dateTimePicker }`
-- `datetimepicker-blur` → `{ dateTimePicker }`
-- `datetimepicker-open` → `{ dateTimePicker }`
-- `datetimepicker-close` → `{ dateTimePicker }`
-- `datetimepicker-clear` → `{ dateTimePicker }`
-
-## CSS Parts
-
-`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
-
-## Basic Usage
-
-```html
-<snice-date-time-picker label="Appointment"></snice-date-time-picker>
-<snice-date-time-picker value="2024-12-25T14:30" time-format="12h"></snice-date-time-picker>
-<snice-date-time-picker show-seconds value="2024-12-25T14:30:45"></snice-date-time-picker>
-<snice-date-time-picker variant="inline" value="2024-06-15T10:00"></snice-date-time-picker>
-<snice-date-time-picker min="2024-01-01" max="2024-12-31"></snice-date-time-picker>
-```
+## Native form API
 
 ```typescript
-dtp.addEventListener('datetime-change', (e) => {
-  console.log('ISO:', e.detail.iso);
-  console.log('Date:', e.detail.dateString);
-  console.log('Time:', e.detail.timeString);
-});
+readonly type: 'datetime-local';
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList | null;
+checkValidity(): boolean;
+reportValidity(): boolean;
+setCustomValidity(message: string): void;
 ```
 
-## Accessibility
+Validity mapping:
 
-- Form-associated with ElementInternals
-- Calendar uses popover="manual"
-- Responsive: stacks vertically on mobile (<480px)
-- Year picker via calendar header year button
+- required empty -> `valueMissing`
+- partial/malformed/impossible -> `badInput`
+- before `min` -> `rangeUnderflow`
+- after `max` -> `rangeOverflow`
+- custom message -> `customError`
+
+`disabled`/disabled fieldset: no interaction, omitted from FormData, barred validation. First-legend exception works. `readonly`: submitted but barred. `loading`: submitted but interaction/validation blocked.
+
+## Methods and events
+
+Methods: `open()`, `close()`, `clear()`, `focus()`, `blur()`, validation methods above.
+
+Events:
+
+- `datetime-change` -> `{ value, date, dateString, timeString, iso, dateTimePicker }`
+- `datetimepicker-focus` / `datetimepicker-blur`
+- `datetimepicker-open` / `datetimepicker-close`
+- `datetimepicker-clear`
+
+Reset/restore do not emit customer events. Clear preserves existing event order: clear, then change.
+
+CSS parts: `base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`.
+
+Popup is top-layer when available, viewport-clamped, internally scrollable, and responsive. All seven date formats, 12/24-hour modes, seconds, sizes, dropdown/inline variants, year/month/Today navigation, loading, clear, helper/error text, methods, and existing events remain supported.

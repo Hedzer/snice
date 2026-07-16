@@ -75,4 +75,62 @@
 &lt;snice-date-time-picker invalid error-text="Invalid"&gt;&lt;/snice-date-time-picker&gt;</snice-code-block>
         </div>
       </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:.75rem">
+          <form id="showcase-date-time-form" style="display:flex;flex-direction:column;gap:.75rem;width:100%">
+            <snice-date-time-picker
+              id="showcase-date-time-form-picker"
+              name="appointment"
+              label="Native Form Appointment"
+              value="2026-03-10T14:05"
+              date-format="dd/mm/yyyy"
+              min="2026-03-01T00:00"
+              max="2026-03-31T23:59"
+              helper-text="Canonical local datetime; no UTC conversion"
+              show-seconds
+              clearable
+              required
+            ></snice-date-time-picker>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button type="submit">Submit</button>
+              <button type="reset">Reset</button>
+            </div>
+            <output aria-live="polite">Ready</output>
+          </form>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;form&gt;
+  &lt;snice-date-time-picker
+    name="appointment"
+    value="2026-03-10T14:05"
+    min="2026-03-01T00:00"
+    max="2026-03-31T23:59"
+    show-seconds
+    clearable
+    required
+  &gt;&lt;/snice-date-time-picker&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</snice-code-block>
+        </div>
+      </div>
     </div>
+    <script>
+      (() => {
+        const form = document.getElementById('showcase-date-time-form');
+        if (!form || form.dataset.bound === 'true') return;
+        form.dataset.bound = 'true';
+        const output = form.querySelector('output');
+        const describeData = () => Array.from(new FormData(form).entries())
+          .map(([name, value]) => `${name}=${String(value)}`)
+          .join(', ') || '(empty)';
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          output.textContent = `Submitted: ${describeData()}`;
+        });
+        form.addEventListener('reset', () => {
+          requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+        });
+      })();
+    </script>

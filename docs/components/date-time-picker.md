@@ -1,241 +1,230 @@
 <!-- AI: For the AI-optimized version of this doc, see docs/ai/components/date-time-picker.md -->
 
 # Date Time Picker
-`<snice-date-time-picker>`
 
-Combined date and time picker with calendar and scrollable time selectors. Form-associated custom element.
+`<snice-date-time-picker>` combines an editable local date-time field, calendar, and time selectors. It is a form-associated custom element with native reset, disabled-fieldset, state-restoration, and constraint-validation behavior.
 
-## Table of Contents
-- [Properties](#properties)
-- [Methods](#methods)
-- [Events](#events)
-- [CSS Parts](#css-parts)
-- [Basic Usage](#basic-usage)
-- [Examples](#examples)
-- [Accessibility](#accessibility)
-
-## Properties
-
-| Property | Attribute | Type | Default | Description |
-|----------|-----------|------|---------|-------------|
-| `value` | `value` | `string` | `''` | ISO datetime value (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS) |
-| `dateFormat` | `date-format` | `DateTimePickerDateFormat` | `'yyyy-mm-dd'` | Date display format (`'yyyy-mm-dd'` \| `'mm/dd/yyyy'` \| `'dd/mm/yyyy'` \| `'yyyy/mm/dd'` \| `'dd-mm-yyyy'` \| `'mm-dd-yyyy'` \| `'mmmm dd, yyyy'`) |
-| `timeFormat` | `time-format` | `'12h' \| '24h'` | `'24h'` | Time display format |
-| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
-| `min` | `min` | `string` | `''` | Minimum selectable date |
-| `max` | `max` | `string` | `''` | Maximum selectable date |
-| `showSeconds` | `show-seconds` | `boolean` | `false` | Show seconds selector |
-| `disabled` | `disabled` | `boolean` | `false` | Disables the picker |
-| `readonly` | `readonly` | `boolean` | `false` | Makes input read-only |
-| `loading` | `loading` | `boolean` | `false` | Shows loading spinner |
-| `clearable` | `clearable` | `boolean` | `false` | Shows clear button when value is set |
-| `placeholder` | `placeholder` | `string` | `''` | Input placeholder text |
-| `label` | `label` | `string` | `''` | Label text |
-| `helperText` | `helper-text` | `string` | `''` | Helper text below input |
-| `errorText` | `error-text` | `string` | `''` | Error text below input |
-| `required` | `required` | `boolean` | `false` | Marks as required |
-| `invalid` | `invalid` | `boolean` | `false` | Shows invalid styling |
-| `name` | `name` | `string` | `''` | Form field name |
-| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Display variant |
-
-## Methods
-
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| `open()` | -- | Opens the dropdown panel |
-| `close()` | -- | Closes the dropdown panel |
-| `clear()` | -- | Clears the selected date and time |
-| `focus()` | -- | Focuses the input |
-| `blur()` | -- | Removes focus |
-| `checkValidity()` | -- | Returns input validity |
-| `reportValidity()` | -- | Reports input validity |
-| `setCustomValidity()` | `message: string` | Sets custom validation message |
-
-## Events
-
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `datetime-change` | `{ value, date, dateString, timeString, iso, dateTimePicker }` | Fired when date or time changes |
-| `datetimepicker-focus` | `{ dateTimePicker }` | Fired on input focus |
-| `datetimepicker-blur` | `{ dateTimePicker }` | Fired on input blur |
-| `datetimepicker-open` | `{ dateTimePicker }` | Fired when panel opens |
-| `datetimepicker-close` | `{ dateTimePicker }` | Fired when panel closes |
-| `datetimepicker-clear` | `{ dateTimePicker }` | Fired when value is cleared |
-
-## CSS Parts
-
-| Part | Description |
-|------|-------------|
-| `base` | The wrapper container |
-| `label` | The label element |
-| `input` | The text input |
-| `toggle` | The calendar icon button |
-| `panel` | The dropdown/inline panel |
-| `calendar` | The calendar section |
-| `time` | The time selector section |
-| `clear` | The clear button |
-| `spinner` | The loading spinner |
-| `helper-text` | The helper text element |
-| `error-text` | The error text element |
-
-## Basic Usage
+## Basic usage
 
 ```typescript
 import 'snice/components/date-time-picker/snice-date-time-picker';
 ```
 
 ```html
-<snice-date-time-picker label="Appointment"></snice-date-time-picker>
+<form>
+  <snice-date-time-picker
+    name="appointment"
+    label="Appointment"
+    value="2026-03-10T14:05"
+    required
+  ></snice-date-time-picker>
+</form>
 ```
 
-**CDN**
+CDN:
+
 ```html
 <script src="snice-runtime.min.js"></script>
 <script src="snice-date-time-picker.min.js"></script>
 ```
 
-## Examples
+## Local datetime contract
 
-### With Initial Value
+The picker represents a local wall-clock date and time. It has no time zone and does not convert to UTC or apply an offset.
 
-Set the `value` attribute with an ISO datetime string.
-
-```html
-<snice-date-time-picker value="2024-12-25T14:30" label="Event Start"></snice-date-time-picker>
-```
-
-### Time Formats
-
-Use the `time-format` attribute to switch between 12-hour and 24-hour display.
+- Without `show-seconds`, the successful form value is exactly `YYYY-MM-DDTHH:mm`.
+- With `show-seconds`, the successful form value is exactly `YYYY-MM-DDTHH:mm:ss`.
+- Display settings do not change that canonical form.
+- A malformed or partial field remains visible and invalid, but is never submitted as though it were a valid datetime.
+- DST gaps and repeated wall times remain the local values the customer entered; the picker does not silently shift them.
 
 ```html
-<snice-date-time-picker time-format="24h" label="24-Hour" value="2024-12-25T14:30"></snice-date-time-picker>
-<snice-date-time-picker time-format="12h" label="12-Hour" value="2024-12-25T14:30"></snice-date-time-picker>
+<form id="schedule-form">
+  <snice-date-time-picker
+    name="scheduled-at"
+    value="2026-03-08T02:30"
+    date-format="mm/dd/yyyy"
+    time-format="12h"
+  ></snice-date-time-picker>
+</form>
+
+<script>
+  new FormData(document.querySelector('#schedule-form')).get('scheduled-at');
+  // "2026-03-08T02:30"
+</script>
 ```
 
-### With Seconds
+### Live value and reset default
 
-Set the `show-seconds` attribute to include a seconds selector.
+The API follows the native live/default split:
 
-```html
-<snice-date-time-picker show-seconds value="2024-12-25T14:30:45" label="Precise Time"></snice-date-time-picker>
+- `value` is the current live value.
+- `defaultValue` is the reset default represented by the `value` content attribute.
+- Assigning `picker.value` does not rewrite the attribute or reset default.
+- Changing the `value` attribute updates the live value only while the field is pristine.
+- `form.reset()` restores the latest authored default without firing customer change events.
+
+```typescript
+const picker = document.querySelector('snice-date-time-picker');
+
+picker.value = '2026-04-20T16:25';       // live state
+picker.defaultValue = '2026-05-30T08:15'; // reset state / value attribute
+
+picker.form?.reset();
+console.log(picker.value); // "2026-05-30T08:15"
 ```
 
-### Date Format
+The form-state restoration callback preserves exact visible text, including partial input, while recalculating its canonical value and validity. Non-string restoration states are ignored.
 
-Use `date-format` to control how the date portion is displayed.
+## Input and display
 
-```html
-<snice-date-time-picker date-format="mm/dd/yyyy" label="US Format"></snice-date-time-picker>
-<snice-date-time-picker date-format="dd/mm/yyyy" label="EU Format"></snice-date-time-picker>
-<snice-date-time-picker date-format="yyyy-mm-dd" label="ISO Format"></snice-date-time-picker>
-<snice-date-time-picker date-format="mmmm dd, yyyy" label="Long Format"></snice-date-time-picker>
-```
+The text field is editable. Calendar and time selectors update the same live value. `dateFormat` and `timeFormat` affect presentation and keyboard parsing only; changing either setting never rewrites the live value or authored default.
 
-### Sizes
+Supported date formats:
 
-Use the `size` attribute to change the picker size.
+- `yyyy-mm-dd`
+- `mm/dd/yyyy`
+- `dd/mm/yyyy`
+- `yyyy/mm/dd`
+- `dd-mm-yyyy`
+- `mm-dd-yyyy`
+- `mmmm dd, yyyy`
 
-```html
-<snice-date-time-picker size="small" label="Small"></snice-date-time-picker>
-<snice-date-time-picker size="medium" label="Medium"></snice-date-time-picker>
-<snice-date-time-picker size="large" label="Large"></snice-date-time-picker>
-```
-
-### Loading
-
-Set the `loading` attribute to show a spinner and disable interaction.
-
-```html
-<snice-date-time-picker loading label="Loading"></snice-date-time-picker>
-```
-
-### Clearable
-
-Set the `clearable` attribute to show a clear button when a value is selected.
-
-```html
-<snice-date-time-picker value="2024-12-25T14:30" clearable label="Clearable"></snice-date-time-picker>
-```
-
-### Year Picker
-
-Click the year in the calendar header to open a 12-year grid. Navigate between year ranges with the arrow buttons, then click a year to return to the day view.
-
-### Min and Max Dates
-
-Use `min` and `max` to restrict the selectable date range.
+Supported time formats are `24h` and `12h`. Set `show-seconds` to display, edit, select, and submit second precision.
 
 ```html
 <snice-date-time-picker
-  min="2024-12-01"
-  max="2024-12-31"
-  label="December Only"
-  helper-text="Only dates in December 2024">
-</snice-date-time-picker>
+  date-format="mmmm dd, yyyy"
+  time-format="12h"
+  show-seconds
+  value="2026-12-25T14:30:45"
+  label="Event start"
+></snice-date-time-picker>
 ```
 
-### Inline Variant
+## Validation
 
-Use `variant="inline"` to always show the calendar and time selectors.
+The host exposes `validity`, `validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()`, and `setCustomValidity()`.
+
+| Condition | Validity flag |
+|---|---|
+| Required and empty | `valueMissing` |
+| Partial, malformed, impossible date, or invalid time | `badInput` |
+| Earlier than `min` | `rangeUnderflow` |
+| Later than `max` | `rangeOverflow` |
+| Non-empty custom message | `customError` |
+
+`min` and `max` accept either a canonical local datetime or a date-only `YYYY-MM-DD` boundary. Date-only `min` means the start of that day; date-only `max` includes the complete day.
 
 ```html
-<snice-date-time-picker variant="inline" value="2024-06-15T10:00" label="Inline"></snice-date-time-picker>
+<snice-date-time-picker
+  name="appointment"
+  min="2026-03-10T09:30"
+  max="2026-03-20T17:45"
+  required
+></snice-date-time-picker>
 ```
-
-### Helper and Error Text
-
-Use `helper-text` and `error-text` for guidance or validation.
-
-```html
-<snice-date-time-picker label="Start" helper-text="Choose a date and time"></snice-date-time-picker>
-<snice-date-time-picker label="End" invalid error-text="End must be after start"></snice-date-time-picker>
-```
-
-### Disabled and Readonly
-
-Use `disabled` or `readonly` to prevent user interaction.
-
-```html
-<snice-date-time-picker disabled value="2024-12-25T14:30" label="Disabled"></snice-date-time-picker>
-<snice-date-time-picker readonly value="2024-12-25T14:30" label="Readonly"></snice-date-time-picker>
-```
-
-### Form Integration
-
-Use `name` and `required` for native form participation.
-
-```html
-<form>
-  <snice-date-time-picker name="appointment" required label="Appointment"></snice-date-time-picker>
-</form>
-```
-
-### Event Handling
-
-Listen for changes using the `datetime-change` event.
 
 ```typescript
-dtp.addEventListener('datetime-change', (e) => {
-  console.log('ISO:', e.detail.iso);
-  console.log('Date:', e.detail.dateString);
-  console.log('Time:', e.detail.timeString);
-});
-```
-
-### Form Validation
-
-The component supports the Constraint Validation API.
-
-```typescript
-picker.setCustomValidity('Please select a future date and time');
+picker.setCustomValidity('No appointments remain for this day.');
 picker.reportValidity();
+picker.setCustomValidity('');
 ```
+
+The `invalid` property remains an authored visual state. Native constraint failures also apply invalid styling and `aria-invalid` automatically.
+
+## Disabled, readonly, and loading states
+
+- `disabled` and disabled ancestor fieldsets suppress every user interaction, omit the control from `FormData`, and bar validation.
+- A control in the first `<legend>` of a disabled fieldset follows the native legend exception.
+- Inherited fieldset disabledness never overwrites the public `disabled` property or attribute.
+- `readonly` prevents editing and picker interaction, remains successful in `FormData`, and is barred from validation.
+- `loading` shows the spinner, prevents interaction, preserves the form value, and is barred from validation.
+- Disabling an open dropdown closes it.
+
+```html
+<fieldset disabled>
+  <legend>
+    Schedule
+    <snice-date-time-picker name="legend-time"></snice-date-time-picker>
+  </legend>
+  <snice-date-time-picker name="disabled-time"></snice-date-time-picker>
+</fieldset>
+```
+
+## Properties
+
+| Property | Attribute | Type | Default | Description |
+|---|---|---|---|---|
+| `value` | — | `string` | `''` | Current live local datetime or current malformed/partial text |
+| `defaultValue` | `value` | `string` | `''` | Authored form-reset default |
+| `dateFormat` | `date-format` | `DateTimePickerDateFormat` | `'yyyy-mm-dd'` | Date display and keyboard-input format |
+| `timeFormat` | `time-format` | `'12h' \| '24h'` | `'24h'` | Time display and keyboard-input format |
+| `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Field size |
+| `min` | `min` | `string` | `''` | Inclusive minimum date or local datetime |
+| `max` | `max` | `string` | `''` | Inclusive maximum date or local datetime |
+| `showSeconds` | `show-seconds` | `boolean` | `false` | Enables second precision |
+| `loading` | `loading` | `boolean` | `false` | Shows loading state and blocks interaction |
+| `clearable` | `clearable` | `boolean` | `false` | Shows a clear button for non-empty input |
+| `disabled` | `disabled` | `boolean` | `false` | Authored disabled state |
+| `readonly` | `readonly` | `boolean` | `false` | Prevents customer changes |
+| `placeholder` | `placeholder` | `string` | `''` | Custom placeholder |
+| `label` | `label` | `string` | `''` | Internal label text |
+| `helperText` | `helper-text` | `string` | `''` | Guidance below the field |
+| `errorText` | `error-text` | `string` | `''` | Error text below the field |
+| `required` | `required` | `boolean` | `false` | Requires a complete valid local datetime |
+| `invalid` | `invalid` | `boolean` | `false` | Authored invalid presentation |
+| `name` | `name` | `string` | `''` | Successful-control name |
+| `variant` | `variant` | `'dropdown' \| 'inline'` | `'dropdown'` | Popup or always-visible picker |
+
+Read-only native form properties:
+
+| Property | Type | Description |
+|---|---|---|
+| `type` | `'datetime-local'` | Native-compatible control type |
+| `form` | `HTMLFormElement \| null` | Current form owner, including `form="id"` association |
+| `validity` | `ValidityState` | Current constraint state |
+| `validationMessage` | `string` | Current validation message |
+| `willValidate` | `boolean` | Whether constraint validation applies |
+| `labels` | `NodeList \| null` | Labels associated with the host |
+
+## Methods
+
+| Method | Description |
+|---|---|
+| `open()` | Opens the dropdown when interaction is allowed |
+| `close()` | Closes the dropdown |
+| `clear()` | Clears live state and emits the existing clear/change events |
+| `focus()` | Focuses the editable field |
+| `blur()` | Blurs the editable field |
+| `checkValidity()` | Recalculates and returns current validity |
+| `reportValidity()` | Recalculates and reports current validity |
+| `setCustomValidity(message)` | Sets or clears a custom error |
+
+## Events
+
+| Event | Detail | Description |
+|---|---|---|
+| `datetime-change` | `{ value, date, dateString, timeString, iso, dateTimePicker }` | Date or time changed through the field or picker |
+| `datetimepicker-focus` | `{ dateTimePicker }` | Field focused |
+| `datetimepicker-blur` | `{ dateTimePicker }` | Field blurred |
+| `datetimepicker-open` | `{ dateTimePicker }` | Dropdown opened |
+| `datetimepicker-close` | `{ dateTimePicker }` | Dropdown closed |
+| `datetimepicker-clear` | `{ dateTimePicker }` | Live state cleared |
+
+Reset and browser state restoration do not emit customer change events.
+
+## CSS parts
+
+`base`, `label`, `input`, `toggle`, `panel`, `calendar`, `time`, `clear`, `spinner`, `helper-text`, `error-text`
+
+The dropdown uses the top-layer Popover API when available. It flips and clamps to the viewport, constrains its width and height, and scrolls internally on narrow or short screens. The inline variant keeps the full calendar and time selectors in document flow.
 
 ## Accessibility
 
-- Form-associated custom element with `ElementInternals`
-- Calendar popup uses `popover="manual"` for proper layering
-- Supports `aria-invalid` when in invalid state
-- Required fields show visual indicator on the label
-- On screens smaller than 480px, the panel stacks vertically
+- The host participates in native forms through `ElementInternals`.
+- Required and calculated invalid state are exposed on the editable field.
+- The toggle and clear controls have accessible names.
+- Disabled and readonly states block all picker buttons, including inline controls.
+- The first-legend disabled-fieldset exception follows native form behavior.
+- Helper and error text remain available as separate CSS parts for application-specific presentation.

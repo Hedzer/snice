@@ -4,7 +4,10 @@ export type DateTimePickerSize = 'small' | 'medium' | 'large';
 export type DateTimePickerDateFormat = 'yyyy-mm-dd' | 'mm/dd/yyyy' | 'dd/mm/yyyy' | 'yyyy/mm/dd' | 'dd-mm-yyyy' | 'mm-dd-yyyy' | 'mmmm dd, yyyy';
 
 export interface SniceDateTimePickerElement extends HTMLElement {
+  /** Live local date-time value. */
   value: string;
+  /** Reset default represented by the `value` content attribute. */
+  defaultValue: string;
   size: DateTimePickerSize;
   dateFormat: DateTimePickerDateFormat;
   timeFormat: DateTimePickerTimeFormat;
@@ -23,6 +26,12 @@ export interface SniceDateTimePickerElement extends HTMLElement {
   invalid: boolean;
   name: string;
   variant: DateTimePickerVariant;
+  readonly type: 'datetime-local';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   // Methods
   open(): void;

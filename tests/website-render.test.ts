@@ -669,4 +669,121 @@ test.describe('Website Component Rendering', () => {
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   });
+
+  test('deployed Date Time Picker card, docs, and full showcase preserve the complete local form contract', async ({ page }) => {
+    const pageErrors: string[] = [];
+    const consoleErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
+    await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-time-picker')));
+
+    const cardForm = page.locator('#showcase-date-time-form');
+    const cardPicker = page.locator('#showcase-date-time-form-picker');
+    expect(await cardForm.evaluate((element: HTMLFormElement) =>
+      Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])))
+      .toEqual([['appointment', '2026-03-10T14:05:00']]);
+    await cardPicker.locator('.clear-button').click();
+    expect(await cardForm.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+    await cardForm.getByRole('button', { name: 'Reset' }).click();
+    await expect(cardForm.locator('output')).toHaveText('Reset: appointment=2026-03-10T14:05:00');
+
+    await page.locator('.more-link[data-slug="date-time-picker"]').click();
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'Local datetime contract', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Live value and reset default', exact: true })).toBeVisible();
+    await expect(docs.getByRole('heading', { name: 'Validation', exact: true })).toBeVisible();
+    await expect(docs).toContainText('YYYY-MM-DDTHH:mm:ss');
+    await expect(docs).toContainText('defaultValue');
+    await expect(docs).toContainText('badInput');
+    await expect(docs).toContainText('disabled ancestor fieldsets');
+    await expect(docs).toContainText('no time zone');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', { name: 'Native form lifecycle', exact: true })).toBeVisible();
+    const rendered = await showcase.locator('snice-date-time-picker').evaluateAll(pickers => ({
+      total: pickers.length,
+      rendered: pickers.filter(picker => picker.shadowRoot?.querySelector('.panel')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 32, rendered: 32 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const form = showcase.locator('#date-time-picker-showcase-form');
+    const appointment = showcase.locator('#date-time-picker-showcase-appointment');
+    const legend = showcase.locator('#date-time-picker-showcase-legend');
+    const fieldset = showcase.locator('#date-time-picker-showcase-fieldset');
+    const output = showcase.locator('#date-time-picker-form-output');
+    expect(await form.evaluate((element: HTMLFormElement) => ({
+      valid: element.checkValidity(),
+      entries: Array.from(new FormData(element).entries()).map(([name, value]) => [name, String(value)])
+    }))).toEqual({
+      valid: true,
+      entries: [
+        ['appointment', '2026-03-10T14:05:00'],
+        ['confirmed', '2026-03-12T16:30'],
+        ['legend-time', '2026-03-04T11:00']
+      ]
+    });
+    expect(await fieldset.evaluate((picker: any) => ({
+      authoredDisabled: picker.disabled,
+      effectiveDisabled: picker.matches(':disabled'),
+      inputDisabled: picker.shadowRoot.querySelector('.input').disabled,
+      willValidate: picker.willValidate
+    }))).toEqual({
+      authoredDisabled: false,
+      effectiveDisabled: true,
+      inputDisabled: true,
+      willValidate: false
+    });
+    expect(await legend.evaluate((picker: any) => picker.matches(':disabled'))).toBe(false);
+
+    const input = appointment.locator('.input');
+    await input.fill('12/03/2026 09:30:15');
+    await input.blur();
+    await form.getByRole('button', { name: 'Submit canonical datetime' }).click();
+    await expect(output).toHaveText(
+      'Submitted: appointment=2026-03-12T09:30:15, confirmed=2026-03-12T16:30, legend-time=2026-03-04T11:00'
+    );
+
+    await appointment.locator('.toggle-button').click();
+    const popupBounds = await appointment.locator('.panel').evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: innerWidth, height: innerHeight };
+    });
+    expect(popupBounds.left).toBeGreaterThanOrEqual(0);
+    expect(popupBounds.top).toBeGreaterThanOrEqual(0);
+    expect(popupBounds.right).toBeLessThanOrEqual(popupBounds.width);
+    expect(popupBounds.bottom).toBeLessThanOrEqual(popupBounds.height);
+    await appointment.locator('[data-date="2026-03-15"]').click();
+    await appointment.locator('[data-hour="16"]').click();
+    await appointment.locator('[data-minute="30"]').click();
+    await appointment.locator('[data-second="45"]').click();
+    await appointment.evaluate((picker: any) => picker.close());
+    await form.getByRole('button', { name: 'Submit canonical datetime' }).click();
+    await expect(output).toHaveText(
+      'Submitted: appointment=2026-03-15T16:30:45, confirmed=2026-03-12T16:30, legend-time=2026-03-04T11:00'
+    );
+
+    await form.getByRole('button', { name: 'Reset defaults' }).click();
+    await expect(output).toHaveText(
+      'Reset: appointment=2026-03-10T14:05:00, confirmed=2026-03-12T16:30, legend-time=2026-03-04T11:00'
+    );
+    await appointment.locator('.clear-button').click();
+    await form.getByRole('button', { name: 'Submit canonical datetime' }).click();
+    expect(await form.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+    await expect(output).toHaveText(
+      'Reset: appointment=2026-03-10T14:05:00, confirmed=2026-03-12T16:30, legend-time=2026-03-04T11:00'
+    );
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  });
 });

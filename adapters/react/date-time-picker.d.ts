@@ -4,7 +4,7 @@ import type { SniceFormProps } from './types';
  */
 export interface DateTimePickerProps extends SniceFormProps {
     size?: any;
-    value?: any;
+    defaultValue?: any;
     dateFormat?: any;
     timeFormat?: any;
     min?: any;
@@ -22,6 +22,7 @@ export interface DateTimePickerProps extends SniceFormProps {
     invalid?: any;
     name?: any;
     variant?: any;
+    value?: any;
     onDatetimepickerClear?: (event: any) => void;
     onDatetimeChange?: (event: any) => void;
     onDatetimepickerFocus?: (event: any) => void;
