@@ -16,11 +16,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <title>Key Value</title>
   <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
   <style>
-    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
-    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface, rgb(255 255 255)); color: var(--snice-color-text, rgb(23 23 23)); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, rgb(115 115 115)); }
     .row { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
-    .box { border: 1px solid var(--snice-color-border, #e2e2e2); border-radius: 8px; padding: 1rem; }
+    .box { border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: 8px; padding: 1rem; }
+    .form-demo { display: flex; flex-direction: column; gap: 0.75rem; }
+    .form-demo fieldset { display: flex; flex-direction: column; gap: 0.75rem; border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: 8px; padding: 0.75rem; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .form-actions button { padding: 0.5rem 0.75rem; border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: 4px; background: var(--snice-color-surface, rgb(255 255 255)); color: var(--snice-color-text, rgb(23 23 23)); cursor: pointer; }
+    output { overflow-wrap: anywhere; color: var(--snice-color-text-secondary, rgb(82 82 82)); }
   </style>
   <script type="module">
     import '../../../packages/components/src/key-value/snice-key-value.ts';
@@ -67,6 +72,26 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
         { key: 'token', value: 'eyJhbGciOiJIUzI1NiJ9' },
         { key: 'expires', value: '2026-12-31' },
       ]);
+
+      document.getElementById('kv-disabled').setItems([
+        { key: 'LOCKED', value: 'authored disabled' },
+      ]);
+      document.getElementById('kv-readonly').setItems([
+        { key: 'VERSION', value: '2.1.0' },
+      ]);
+
+      const form = document.getElementById('key-value-showcase-form');
+      const output = document.getElementById('key-value-form-output');
+      const describeData = () => Array.from(new FormData(form).entries())
+        .map(([name, value]) => `${name}=${String(value)}`)
+        .join(', ') || '(empty)';
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        output.textContent = `Submitted: ${describeData()}`;
+      });
+      form.addEventListener('reset', () => {
+        requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+      });
     });
   </script>
 </head>
@@ -126,11 +151,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <!-- Disabled -->
 <h2>Disabled</h2>
-<div class="box"><snice-key-value disabled label="Disabled"></snice-key-value></div>
+<div class="box"><snice-key-value id="kv-disabled" disabled label="Disabled"></snice-key-value></div>
 
 <!-- Readonly -->
 <h2>Readonly</h2>
-<div class="box"><snice-key-value readonly label="Readonly"></snice-key-value></div>
+<div class="box"><snice-key-value id="kv-readonly" readonly show-copy label="Readonly (copy remains available)"></snice-key-value></div>
 
 <!-- show-copy -->
 <h2>show-copy: true</h2>
@@ -162,8 +187,49 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </snice-key-value>
 </div>
 
-<h2>Name (form integration)</h2>
-<div class="box"><snice-key-value name="metadata" label="Metadata"></snice-key-value></div>
+<h2>Native form lifecycle</h2>
+<div class="box">
+  <form id="key-value-showcase-form" class="form-demo">
+    <snice-key-value
+      id="key-value-showcase-editor"
+      name="metadata"
+      label="Deployment metadata"
+      value='[{"key":"region","value":"us-east-1","description":"Primary region"},{"key":"tag","value":"stable","description":"First duplicate"},{"key":"tag","value":"東京 ✓","description":"Duplicate and Unicode"}]'
+      show-description
+      show-copy
+      required
+    ></snice-key-value>
+    <snice-key-value
+      id="key-value-showcase-readonly"
+      name="readonly-metadata"
+      label="Readonly successful value"
+      value='[{"key":"release","value":"2026.07","description":""}]'
+      readonly
+    ></snice-key-value>
+    <fieldset disabled>
+      <legend>
+        Disabled fieldset
+        <snice-key-value
+          id="key-value-showcase-legend"
+          name="legend-metadata"
+          label="First legend remains enabled"
+          value='[{"key":"legend","value":"included","description":""}]'
+        ></snice-key-value>
+      </legend>
+      <snice-key-value
+        id="key-value-showcase-fieldset"
+        name="disabled-metadata"
+        label="Descendant is effectively disabled"
+        value='[{"key":"disabled","value":"omitted","description":""}]'
+      ></snice-key-value>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit">Submit</button>
+      <button type="reset">Reset defaults</button>
+    </div>
+    <output id="key-value-form-output" aria-live="polite">Ready</output>
+  </form>
+</div>
 
 </body>
 </html>

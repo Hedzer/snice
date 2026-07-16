@@ -1,34 +1,54 @@
 # snice-key-value
 
-Key-value pair editor for HTTP headers, env vars, config entries. Dual API: declarative `<snice-kv-pair>` children or imperative `setItems()`.
+Form-associated ordered string-pair editor. Preserves duplicates, descriptions, Unicode, and row order. Direct `<snice-kv-pair>` children or imperative data API.
+
+## Table of Contents
+
+- [Components](#components)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Slots](#slots)
+- [CSS Parts](#css-parts)
+- [Basic Usage](#basic-usage)
+- [Examples](#examples)
+- [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Components
 
-- `snice-key-value` — Container/editor
-- `snice-kv-pair` — Data container child (no shadow DOM)
+- `snice-key-value` - Editor/display/FACE control.
+- `snice-kv-pair` - Direct declarative data child; attributes: `key`, `value`, `description`.
 
-## Properties (snice-key-value)
+## Properties
 
-```typescript
+```ts
+value: string = '[]';                  // live ordered JSON entry array; no attribute
+defaultValue: string = '[]';           // attr: value; reset default
 label: string = '';
 autoExpand: boolean = true;            // attr: auto-expand
-rows: number = 0;                       // 0 = unlimited; >0 = fixed count
-showDescription: boolean = false;       // attr: show-description
-keyPlaceholder: string = 'Key';         // attr: key-placeholder
-valuePlaceholder: string = 'Value';     // attr: value-placeholder
-placeholders: Array<{key,value}> = [];  // JS only — random sample placeholders
+rows: number = 0;                      // 0 variable; >0 exact fixed count
+showDescription: boolean = false;      // attr: show-description
+keyPlaceholder: string = 'Key';        // attr: key-placeholder
+valuePlaceholder: string = 'Value';    // attr: value-placeholder
+placeholders: Array<{key:string;value:string}> = []; // JS only
 disabled: boolean = false;
 readonly: boolean = false;
+required: boolean = false;
 name: string = '';
 variant: 'default'|'compact' = 'default';
-mode: 'edit'|'view' = 'edit';              // view = read-only display
-showCopy: boolean = false;                  // attr: show-copy
-value: string;                              // readonly getter — JSON string of items
+mode: 'edit'|'view' = 'edit';
+showCopy: boolean = false;              // attr: show-copy
+readonly type: 'key-value';
+readonly form: HTMLFormElement|null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList|null;
 ```
 
-## Properties (snice-kv-pair)
-
-```typescript
+```ts
+// snice-kv-pair
 key: string = '';
 value: string = '';
 description: string = '';
@@ -36,71 +56,111 @@ description: string = '';
 
 ## Methods
 
-- `setItems(items)` - Set items imperatively (ignored in slot mode)
-- `addItem(key?, value?, description?)` - Append pair
-- `removeItem(index)` - Remove by index
-- `clear()` - Remove all
-- `getItems()` - Returns non-empty items
-- `focus()` - Focus first key input
+- `setItems(items: KeyValueItem[])` - Replace live data; silent; ignored in slot mode.
+- `addItem(key?, value?, description?)` - Fill first empty/add row; emits add then change.
+- `removeItem(index)` - Remove display index; emits remove then change.
+- `clear()` - Clear and emit change.
+- `getItems(): KeyValueItem[]` - Ordered meaningful-row copies.
+- `focus()` - First key input.
+- `checkValidity(): boolean`
+- `reportValidity(): boolean`
+- `setCustomValidity(message: string): void`
 
 ## Events
 
-- `kv-add` → `{ item: KeyValueItem, index: number }`
-- `kv-remove` → `{ item: KeyValueItem, index: number }`
-- `kv-change` → `{ items: KeyValueItem[] }`
-- `kv-copy` → `{ items: KeyValueItem[] }`
+- `kv-add` -> `{ item: KeyValueItem, index: number }`
+- `kv-remove` -> `{ item: KeyValueItem, index: number }`
+- `kv-change` -> `{ items: KeyValueItem[] }`
+- `kv-copy` -> `{ items: KeyValueItem[] }`
+- No user events: `setItems`, property assignment, slot sync, reset, restore.
 
 ## Slots
 
-- `(default)` - `<snice-kv-pair>` child elements
+- `(default)` - Direct `<snice-kv-pair>` children.
+- Direct children override all imperative mutation methods.
+- Child attributes are declarative reset defaults; removing all children reapplies `defaultValue`.
 
 ## CSS Parts
 
-`base`, `title`, `copy-button`, `rows`, `row`, `key-input`, `value-input`, `description-input`, `delete-button`, `view-row`, `view-key`, `view-value`, `view-desc`, `empty`
+- `base`, `title`, `copy-button`, `rows`, `row`
+- `key-input`, `value-input`, `description-input`, `delete-button`, `error`
+- `view-row`, `view-key`, `view-value`, `view-desc`, `empty`
 
 ## Basic Usage
 
-```typescript
+```html
+<snice-key-value name="headers" label="HTTP Headers" required>
+  <snice-kv-pair key="Accept" value="application/json"></snice-kv-pair>
+  <snice-kv-pair key="Cache-Control" value="no-cache"></snice-kv-pair>
+</snice-key-value>
+```
+
+```ts
 import 'snice/components/key-value/snice-key-value';
 ```
 
-```html
-<!-- Declarative -->
-<snice-key-value label="HTTP Headers">
-  <snice-kv-pair key="Content-Type" value="application/json"></snice-kv-pair>
-  <snice-kv-pair key="Authorization" value="Bearer token"></snice-kv-pair>
-</snice-key-value>
+## Examples
 
-<!-- Imperative -->
-<snice-key-value label="Environment Variables"></snice-key-value>
+### Serialization
+
+```ts
+type KeyValueItem = { key: string; value: string; description?: string };
+// Canonical emitted/submitted shape:
+'[{"key":"A","value":"1","description":""},{"key":"A","value":"2","description":"duplicate"}]'
+// Empty editor: '[]'
 ```
 
-```typescript
-kv.setItems([
-  { key: 'NODE_ENV', value: 'production' },
-  { key: 'PORT', value: '3000' }
-]);
-kv.addEventListener('kv-change', e => console.log(e.detail.items));
+- Every output entry: exact string fields `key`, `value`, `description`.
+- Duplicate keys are preserved with their order, descriptions, and Unicode.
+- Omits wholly empty display rows.
+- Accepts old string-valued object JSON input; immediately normalizes to array.
+- Malformed JSON/schema is retained in live `value`, sets `badInput`, and remains raw `FormData` if validation is bypassed.
+
+### Lifecycle
+
+```ts
+editor.value = '[{"key":"live","value":"2","description":""}]';
+editor.defaultValue = '[{"key":"reset","value":"1","description":""}]';
+editor.form?.reset();
 ```
 
-```html
-<!-- Fixed rows -->
-<snice-key-value rows="5" label="Config"></snice-key-value>
+- Pristine default/`value`-attribute mutation updates live value.
+- Dirty default mutation changes next reset only.
+- Reset -> `defaultValue`; slot mode reset -> current pair attributes.
+- Browser restore accepts strings only; non-string state ignored atomically.
+- Disabled/fieldset-disabled: blocked, omitted, validation-barred; authored `disabled` unchanged.
+- Readonly/view: editing and validation barred; value still submitted; copy allowed.
 
-<!-- Compact with descriptions -->
-<snice-key-value variant="compact" show-description></snice-key-value>
+### Validation
 
-<!-- View mode -->
-<snice-key-value mode="view" label="Response Headers">
-  <snice-kv-pair key="Content-Type" value="application/json"></snice-kv-pair>
-</snice-key-value>
+- `valueMissing`: `required` and no meaningful rows.
+- `badInput`: malformed serialized state or meaningful row with blank/whitespace key.
+- Empty value is valid when key exists. Value-only/description-only row is invalid.
+- `customError`: non-empty `setCustomValidity()`.
+- Invalid key gets `aria-invalid`; message uses `part="error"` and `role="alert"`.
+
+### Rows/data
+
+```ts
+editor.setItems([{ key: 'NODE_ENV', value: 'production' }]);
+editor.addItem('PORT', '3000', 'HTTP listener');
+editor.removeItem(0);
+editor.clear();
 ```
 
-## Behavior
+- Variable + auto-expand: trailing empty display row, never serialized.
+- Fixed `rows`: exact count, no delete/auto-expand; add fills empty row; full add is no-op.
+- Lowering fixed `rows` drops entries beyond new count.
+- Public data methods remain usable while UI is disabled/readonly.
+- Copy: formatted canonical ordered array; preserves duplicates.
 
-- **Auto-expand** (default): last row non-empty -> new empty row appended
-- **Fixed rows**: `rows="5"` -> exactly 5, no delete buttons, no auto-expand
-- **Slot precedence**: `<snice-kv-pair>` children override `setItems()`
-- **View mode**: `mode="view"` renders as read-only text, empty items hidden
-- **Copy button**: `show-copy` adds clipboard button, copies JSON
-- **Form associated**: `value` getter returns JSON string, `setFormValue()` on every change
+## Keyboard Navigation
+
+- `Tab`/`Shift+Tab` through text inputs.
+- Standard text editing; buttons use native activation when focused.
+
+## Accessibility
+
+- ARIA group named by `label` or default name.
+- Row-specific input labels; exact invalid key marked.
+- FACE: `FormData`, `form.elements`, `form="id"`, labels, reset/restore, fieldsets/first legend.

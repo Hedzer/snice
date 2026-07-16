@@ -3,6 +3,8 @@ import './snice-key-value';
 import type { KeyValueVariant, KeyValueMode } from './snice-key-value.types';
 
 type Args = {
+  value?: string;
+  defaultValue?: string;
   label?: string;
   autoExpand?: boolean;
   rows?: number;
@@ -11,6 +13,7 @@ type Args = {
   valuePlaceholder?: string;
   disabled?: boolean;
   readonly?: boolean;
+  required?: boolean;
   name?: string;
   variant?: KeyValueVariant;
   mode?: KeyValueMode;
@@ -47,8 +50,8 @@ function makeKvWithPairs(attrs: Record<string, string | boolean | number> = {}, 
   const el = makeKv(attrs);
   for (const pair of pairs) {
     const pairEl = document.createElement('snice-kv-pair');
-    pairEl.setAttribute('pair-key', pair.key);
-    pairEl.setAttribute('pair-value', pair.value);
+    pairEl.setAttribute('key', pair.key);
+    pairEl.setAttribute('value', pair.value);
     if (pair.description) pairEl.setAttribute('description', pair.description);
     el.appendChild(pairEl);
   }
@@ -60,6 +63,8 @@ const meta: Meta<Args> = {
   component: 'snice-key-value',
   tags: ['autodocs'],
   argTypes: {
+    value:            { control: 'text', description: 'Live ordered JSON entry-array value' },
+    defaultValue:     { control: 'text', description: 'Authored value attribute / form-reset default' },
     label:            { control: 'text' },
     autoExpand:       { control: 'boolean' },
     rows:             { control: 'number' },
@@ -68,6 +73,7 @@ const meta: Meta<Args> = {
     valuePlaceholder: { control: 'text' },
     disabled:         { control: 'boolean' },
     readonly:         { control: 'boolean' },
+    required:         { control: 'boolean' },
     name:             { control: 'text' },
     variant:          { control: 'select', options: VARIANTS },
     mode:             { control: 'select', options: MODES },
@@ -75,6 +81,8 @@ const meta: Meta<Args> = {
   },
   render: (args) => {
     const el = document.createElement('snice-key-value');
+    if (args.defaultValue     !== undefined) (el as any).defaultValue = String(args.defaultValue);
+    if (args.value            !== undefined) (el as any).value =        String(args.value);
     if (args.label            !== undefined) el.setAttribute('label',             String(args.label));
     if (args.rows             !== undefined) el.setAttribute('rows',              String(args.rows));
     if (args.keyPlaceholder   !== undefined) el.setAttribute('key-placeholder',   String(args.keyPlaceholder));
@@ -85,6 +93,7 @@ const meta: Meta<Args> = {
     if (args.autoExpand === false) el.setAttribute('auto-expand', 'false');
     if (args.disabled)        el.toggleAttribute('disabled',          true);
     if (args.readonly)        el.toggleAttribute('readonly',          true);
+    if (args.required)        el.toggleAttribute('required',          true);
     if (args.showDescription) el.toggleAttribute('show-description',  true);
     if (args.showCopy)        el.toggleAttribute('show-copy',         true);
     return el;
@@ -263,6 +272,69 @@ export const ViewModeCopyNoLabel: Story = {
 // h2: Name (form integration)
 export const NameFormIntegration: Story = {
   render: () => col(makeKv({ name: 'headers', label: 'HTTP Headers (name=headers)' })),
+};
+
+// h2: Native form lifecycle
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'key-value-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:46rem;';
+    form.innerHTML = `
+      <snice-key-value
+        id="key-value-story-main"
+        name="headers"
+        label="Request headers"
+        value='[{"key":"Accept","value":"application/json","description":"Preferred response"},{"key":"X-Trace","value":"✓ 東京","description":"Unicode survives"}]'
+        show-description
+        show-copy
+        required
+      ></snice-key-value>
+      <snice-key-value
+        id="key-value-story-readonly"
+        name="response-headers"
+        label="Readonly duplicate headers"
+        value='[{"key":"Set-Cookie","value":"session=one","description":"First cookie"},{"key":"Set-Cookie","value":"theme=dark","description":"Second cookie"}]'
+        show-description
+        show-copy
+        readonly
+      ></snice-key-value>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;min-width:0;border:1px solid var(--snice-color-border, rgb(226 226 226));border-radius:.5rem;padding:.75rem;">
+        <legend style="box-sizing:border-box;width:100%;max-width:100%;">
+          Disabled fieldset
+          <snice-key-value
+            id="key-value-story-legend"
+            name="legend-metadata"
+            label="First legend remains enabled"
+            value='[{"key":"legend","value":"included","description":""}]'
+          ></snice-key-value>
+        </legend>
+        <snice-key-value
+          id="key-value-story-fieldset"
+          name="disabled-metadata"
+          label="Descendant is effectively disabled"
+          value='[{"key":"disabled","value":"omitted","description":""}]'
+        ></snice-key-value>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
 };
 
 // h2: CSS Parts Styling

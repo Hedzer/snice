@@ -4664,6 +4664,10 @@
           "description": "readonly: boolean"
         },
         {
+          "name": "required",
+          "description": "required: boolean"
+        },
+        {
           "name": "rows",
           "description": "rows: number"
         },
@@ -4674,6 +4678,10 @@
         {
           "name": "show-description",
           "description": "showDescription: boolean"
+        },
+        {
+          "name": "value",
+          "description": "The `value` content attribute and imperative-mode form-reset default."
         },
         {
           "name": "value-placeholder",

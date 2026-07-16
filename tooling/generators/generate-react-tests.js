@@ -168,7 +168,7 @@ const componentTestConfig = {
   },
   'key-value': {
     isForm: true,
-    properties: ['label', 'autoExpand', 'rows', 'showDescription', 'keyPlaceholder', 'valuePlaceholder', 'disabled', 'readonly', 'name', 'mode', 'showCopy'],
+    properties: ['value', 'defaultValue', 'label', 'autoExpand', 'rows', 'showDescription', 'keyPlaceholder', 'valuePlaceholder', 'placeholders', 'disabled', 'readonly', 'required', 'name', 'mode', 'showCopy'],
     events: ['onKvAdd', 'onKvRemove', 'onKvChange', 'onKvCopy'],
     variants: ['default', 'compact']
   },
@@ -232,6 +232,8 @@ function generateTestFile(componentName, config = {}) {
       value = 100;
     } else if (prop === 'rows') {
       value = 5;
+    } else if (prop === 'placeholders') {
+      value = "[{ key: 'Key', value: 'Value' }]";
     } else if (prop === 'resize') {
       value = "'vertical'";
     } else if (prop === 'position') {

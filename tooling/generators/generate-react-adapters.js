@@ -25,6 +25,32 @@ const componentMetadata = {
 // decorator regex alone. Keep these inline so generated adapters remain
 // publishable without referring back to the unshipped TypeScript source tree.
 const reactTypeOverrides = {
+  'key-value': {
+    properties: {
+      value: 'string',
+      defaultValue: 'string',
+      label: 'string',
+      autoExpand: 'boolean',
+      rows: 'number',
+      showDescription: 'boolean',
+      keyPlaceholder: 'string',
+      valuePlaceholder: 'string',
+      placeholders: 'Array<{ key: string; value: string }>',
+      disabled: 'boolean',
+      readonly: 'boolean',
+      required: 'boolean',
+      name: 'string',
+      variant: "'default' | 'compact'",
+      mode: "'edit' | 'view'",
+      showCopy: 'boolean',
+    },
+    events: {
+      onKvAdd: 'CustomEvent<{ item: { key: string; value: string; description?: string }; index: number }>',
+      onKvRemove: 'CustomEvent<{ item: { key: string; value: string; description?: string }; index: number }>',
+      onKvChange: 'CustomEvent<{ items: Array<{ key: string; value: string; description?: string }> }>',
+      onKvCopy: 'CustomEvent<{ items: Array<{ key: string; value: string; description?: string }> }>',
+    },
+  },
   table: {
     properties: {
       columns: 'any[]',

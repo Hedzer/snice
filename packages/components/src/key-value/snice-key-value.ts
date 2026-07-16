@@ -1,4 +1,4 @@
-import { element, property, dispatch, ready, observe, render, styles, html, css as cssTag } from 'snice';
+import { element, property, state, query, queryAll, watch, dispatch, ready, observe, dispose, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-key-value.css?inline';
 import './snice-kv-pair';
 import type { KeyValueItem, KeyValueVariant, KeyValueMode, SniceKeyValueElement, SniceKvPairElement } from './snice-key-value.types';
@@ -6,6 +6,18 @@ import type { KeyValueItem, KeyValueVariant, KeyValueMode, SniceKeyValueElement,
 @element('snice-key-value', { formAssociated: true })
 export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   internals!: ElementInternals;
+
+  private dirtyValue = false;
+  private customValidationMessage = '';
+  private serializedParseError = false;
+  private validationInput?: HTMLInputElement;
+  private copyFeedbackTimer?: number;
+
+  @query('[part="key-input"]')
+  private firstKeyInput?: HTMLInputElement;
+
+  @queryAll('[part="key-input"]')
+  private keyInputs!: NodeListOf<HTMLInputElement>;
 
   constructor() {
     super();
@@ -38,6 +50,9 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   @property({ type: Boolean })
   readonly = false;
 
+  @property({ type: Boolean })
+  required = false;
+
   @property()
   name = '';
 
@@ -50,11 +65,36 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   @property({ type: Boolean, attribute: 'show-copy' })
   showCopy = false;
 
+  @state()
+  private valueState = '[]';
+
+  @state()
+  private formDisabled = false;
+
+  /**
+   * Ordered JSON entry-array value. Duplicate keys, descriptions, Unicode,
+   * and row order are preserved. Assigning it does not change the reset
+   * default stored by the `value` content attribute.
+   * @public
+   */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValueFromSerialized(value, true);
+  }
+
+  /** The `value` content attribute and imperative-mode form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '[]';
+
   /** Per-row placeholder samples */
+  @property({ type: Array, attribute: false })
   placeholders: Array<{ key: string; value: string }> = [];
 
   /** Internal items for rendering — reactive property triggers re-render */
-  @property({ type: Array, attribute: false })
+  @state()
   private items: KeyValueItem[] = [];
 
   /** Stable placeholder assignments per row index */
@@ -89,11 +129,55 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
 
   @ready()
   init() {
-    this.syncFromChildren();
-    if (!this.usingSlotMode) {
-      this.items = this.padItems(this.items);
+    let preUpgradeValue: unknown;
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      preUpgradeValue = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
     }
-    this.updateFormValue();
+
+    const children = this.getPairChildren();
+    if (children.length > 0) {
+      this.commitItems(this.itemsFromChildren(children), false);
+      this.usingSlotMode = true;
+    } else if (preUpgradeValue !== undefined) {
+      this.value = String(preUpgradeValue ?? '');
+    } else if (!this.dirtyValue && Array.isArray(this.items) && this.dataItems(this.items).length > 0) {
+      // Preserve the pre-existing runtime behavior for consumers that assign
+      // the reactive `items` field before connection. The documented
+      // `setItems()` API remains preferred, but connection must not discard
+      // state that older code already supplied.
+      this.commitItems(this.items, true);
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
+    } else {
+      this.commitItems(this.items, true);
+    }
+
+    if (!this.hasAttribute('tabindex')) this.tabIndex = -1;
+    this.syncFormState();
+    queueMicrotask(() => this.syncValidity());
+  }
+
+  private formAssociatedCallback() {
+    this.syncFormState();
+  }
+
+  private formResetCallback() {
+    this.dirtyValue = false;
+    if (this.usingSlotMode) this.syncFromChildren();
+    else this.applyDefaultValue();
+  }
+
+  private formDisabledCallback(disabled: boolean) {
+    // Ancestor fieldset state is effective state; it must never overwrite the
+    // authored public `disabled` property.
+    this.formDisabled = disabled;
+    this.syncValidity();
+  }
+
+  private formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    this.setValueFromSerialized(state, true);
   }
 
   @observe('mutation:childList')
@@ -107,34 +191,119 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   }
 
   private syncFromChildren() {
-    const children = Array.from(this.querySelectorAll('snice-kv-pair')) as SniceKvPairElement[];
+    const children = this.getPairChildren();
     if (children.length > 0) {
       this.usingSlotMode = true;
-      const newItems = children.map(child => ({
-        key: child.getAttribute('key') || '',
-        value: child.getAttribute('value') || '',
-        description: child.getAttribute('description') || '',
-      }));
-      this.items = this.padItems(newItems);
-    } else {
+      this.commitItems(this.itemsFromChildren(children), false);
+    } else if (this.usingSlotMode) {
       this.usingSlotMode = false;
+      this.dirtyValue = false;
+      this.applyDefaultValue();
     }
-    this.updateFormValue();
   }
 
-  /** Serialize non-empty items as JSON object for form submission */
-  private updateFormValue() {
-    if (!this.internals) return;
-    const items = this.getItems();
-    if (items.length === 0) {
-      this.internals.setFormValue('');
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
+  private get validationBarred(): boolean {
+    return this.interactionDisabled || this.readonly || this.mode === 'view';
+  }
+
+  private getPairChildren(): SniceKvPairElement[] {
+    return Array.from(this.children)
+      .filter((child): child is SniceKvPairElement => child.tagName === 'SNICE-KV-PAIR');
+  }
+
+  private itemsFromChildren(children: SniceKvPairElement[]): KeyValueItem[] {
+    return children.map(child => ({
+      key: child.getAttribute('key') ?? '',
+      value: child.getAttribute('value') ?? '',
+      description: child.getAttribute('description') ?? '',
+    }));
+  }
+
+  private normalizeItem(item: Partial<KeyValueItem> | null | undefined): KeyValueItem {
+    return {
+      key: String(item?.key ?? ''),
+      value: String(item?.value ?? ''),
+      description: String(item?.description ?? ''),
+    };
+  }
+
+  private serializeItems(items: KeyValueItem[]): string {
+    return JSON.stringify(items.map(item => ({
+      key: item.key,
+      value: item.value,
+      description: item.description ?? '',
+    })));
+  }
+
+  private parseSerializedItems(value: unknown): KeyValueItem[] | null {
+    const candidate = String(value ?? '');
+    if (candidate === '') return [];
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(candidate);
+    } catch {
+      return null;
+    }
+
+    // Accept the previous object representation as input for migration, but
+    // always expose and submit the ordered entry-array representation.
+    if (!Array.isArray(parsed) && parsed && typeof parsed === 'object') {
+      const entries = Object.entries(parsed as Record<string, unknown>);
+      if (entries.some(([, entryValue]) => typeof entryValue !== 'string')) return null;
+      return entries.map(([key, entryValue]) => ({ key, value: entryValue as string, description: '' }));
+    }
+
+    if (!Array.isArray(parsed)) return null;
+    const items: KeyValueItem[] = [];
+    for (const entry of parsed) {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+      const candidateEntry = entry as Record<string, unknown>;
+      if (Object.keys(candidateEntry).some(key => !['key', 'value', 'description'].includes(key))) return null;
+      if (typeof candidateEntry.key !== 'string' || typeof candidateEntry.value !== 'string') return null;
+      if (candidateEntry.description !== undefined && typeof candidateEntry.description !== 'string') return null;
+      items.push({
+        key: candidateEntry.key,
+        value: candidateEntry.value,
+        description: candidateEntry.description ?? '',
+      });
+    }
+    return items;
+  }
+
+  private setValueFromSerialized(value: unknown, dirty: boolean) {
+    const candidate = String(value ?? '');
+    const parsed = this.parseSerializedItems(candidate);
+    if (parsed === null) {
+      if (dirty) this.dirtyValue = true;
+      this.items = this.padItems([]);
+      this.valueState = candidate;
+      this.serializedParseError = true;
+      this.syncFormState();
       return;
     }
-    const obj: Record<string, string> = {};
-    for (const item of items) {
-      obj[item.key] = item.value;
-    }
-    this.internals.setFormValue(JSON.stringify(obj));
+    this.commitItems(parsed, dirty);
+  }
+
+  private applyDefaultValue() {
+    this.setValueFromSerialized(this.defaultValue, false);
+  }
+
+  private commitItems(items: KeyValueItem[], dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    const normalized = items.map(item => this.normalizeItem(item));
+    this.items = this.padItems(normalized);
+    this.serializedParseError = false;
+    this.valueState = this.serializeItems(this.dataItems(this.items));
+    this.syncFormState();
+  }
+
+  private dataItems(items: KeyValueItem[]): KeyValueItem[] {
+    return items.filter(item => !this.isEmptyItem(item));
   }
 
   /** Pad/trim items to match rows config, ensure at least one row */
@@ -159,28 +328,16 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     return result;
   }
 
-  private isEmptyItem(item: KeyValueItem): boolean {
+  private isEmptyItem(item: KeyValueItem | undefined): boolean {
+    if (!item) return true;
     return !item.key && !item.value && (!item.description || !item.description.trim());
   }
 
   // --- Public Methods ---
 
-  /** Get form value as JSON object */
-  get value(): string {
-    const items = this.getItems();
-    if (items.length === 0) return '';
-    const obj: Record<string, string> = {};
-    for (const item of items) {
-      obj[item.key] = item.value;
-    }
-    return JSON.stringify(obj);
-  }
-
   setItems(items: KeyValueItem[]): void {
     if (!this.usingSlotMode) {
-      const mapped = items.map(i => ({ key: i.key || '', value: i.value || '', description: i.description || '' }));
-      this.items = this.padItems(mapped);
-      this.updateFormValue();
+      this.commitItems(Array.isArray(items) ? items : [], true);
     }
   }
 
@@ -188,16 +345,16 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     if (this.usingSlotMode) return;
     const item: KeyValueItem = { key, value, description };
     const current = [...this.items];
-    if (this.autoExpand && this.rows === 0 && current.length > 0 && this.isEmptyItem(current[current.length - 1])) {
-      current.splice(current.length - 1, 0, item);
-    } else {
+    const emptyIndex = current.findIndex(candidate => this.isEmptyItem(candidate));
+    if (emptyIndex >= 0) current[emptyIndex] = item;
+    else if (this.rows === 0) {
       current.push(item);
     }
-    this.items = this.padItems(current);
-    const idx = this.items.indexOf(item);
+    const idx = emptyIndex >= 0 ? emptyIndex : current.indexOf(item);
+    if (idx < 0) return;
+    this.commitItems(current, true);
     this.emitAdd(item, idx);
     this.emitChange();
-    this.updateFormValue();
   }
 
   removeItem(index: number): void {
@@ -205,26 +362,23 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     if (index < 0 || index >= this.items.length) return;
     const removed = this.items[index];
     const current = this.items.filter((_, i) => i !== index);
-    this.items = this.padItems(current);
+    this.commitItems(current, true);
     this.emitRemove(removed, index);
     this.emitChange();
-    this.updateFormValue();
   }
 
   clear(): void {
     if (this.usingSlotMode) return;
-    this.items = this.padItems([]);
+    this.commitItems([], true);
     this.emitChange();
-    this.updateFormValue();
   }
 
   getItems(): KeyValueItem[] {
-    return this.items.filter(i => !this.isEmptyItem(i));
+    return this.dataItems(this.items).map(item => ({ ...item }));
   }
 
   focus(): void {
-    const firstInput = this.shadowRoot?.querySelector('.kv__input') as HTMLInputElement | null;
-    firstInput?.focus();
+    this.firstKeyInput?.focus();
   }
 
   // --- Row placeholders ---
@@ -244,68 +398,267 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
 
   private handleKeyInput(index: number, e: Event) {
     const input = e.target as HTMLInputElement;
+    if (this.interactionDisabled || this.readonly || this.mode === 'view') {
+      input.value = this.items[index]?.key ?? '';
+      return;
+    }
     const current = [...this.items];
     current[index] = { ...current[index], key: input.value };
     const needsExpand = this.autoExpand && this.rows === 0 && index === current.length - 1 && !this.isEmptyItem(current[index]);
     if (needsExpand) {
       current.push({ key: '', value: '', description: '' });
     }
-    this.items = current;
+    this.commitItems(current, true);
     this.emitChange();
-    this.updateFormValue();
   }
 
   private handleValueInput(index: number, e: Event) {
     const input = e.target as HTMLInputElement;
+    if (this.interactionDisabled || this.readonly || this.mode === 'view') {
+      input.value = this.items[index]?.value ?? '';
+      return;
+    }
     const current = [...this.items];
     current[index] = { ...current[index], value: input.value };
     const needsExpand = this.autoExpand && this.rows === 0 && index === current.length - 1 && !this.isEmptyItem(current[index]);
     if (needsExpand) {
       current.push({ key: '', value: '', description: '' });
     }
-    this.items = current;
+    this.commitItems(current, true);
     this.emitChange();
-    this.updateFormValue();
   }
 
   private handleDescriptionInput(index: number, e: Event) {
     const input = e.target as HTMLInputElement;
+    if (this.interactionDisabled || this.readonly || this.mode === 'view') {
+      input.value = this.items[index]?.description ?? '';
+      return;
+    }
     const current = [...this.items];
     current[index] = { ...current[index], description: input.value };
-    this.items = current;
+    this.commitItems(current, true);
     this.emitChange();
-    this.updateFormValue();
   }
 
   private handleDelete(index: number) {
-    if (this.rows > 0) return;
+    if (this.rows > 0 || this.interactionDisabled || this.readonly || this.mode === 'view') return;
     const removed = this.items[index];
     const current = this.items.filter((_, i) => i !== index);
-    this.items = this.padItems(current);
+    this.commitItems(current, true);
     if (!this.isEmptyItem(removed)) {
       this.emitRemove(removed, index);
       this.emitChange();
     }
-    this.updateFormValue();
   }
 
   private async handleCopy() {
-    const items = this.getItems();
-    const obj: Record<string, string> = {};
-    for (const item of items) {
-      obj[item.key] = item.value;
-    }
+    if (this.interactionDisabled) return;
     try {
-      await navigator.clipboard.writeText(JSON.stringify(obj, null, 2));
+      const items = this.getItems();
+      await navigator.clipboard.writeText(JSON.stringify(items, null, 2));
       this.copyFeedback = true;
       this.emitCopy();
-      // Reset feedback after delay
-      setTimeout(() => {
+      if (this.copyFeedbackTimer !== undefined) window.clearTimeout(this.copyFeedbackTimer);
+      this.copyFeedbackTimer = window.setTimeout(() => {
         this.copyFeedback = false;
+        this.copyFeedbackTimer = undefined;
       }, 1500);
     } catch {
       // Clipboard API not available
     }
+  }
+
+  @dispose()
+  private cleanupCopyFeedback() {
+    if (this.copyFeedbackTimer !== undefined) window.clearTimeout(this.copyFeedbackTimer);
+    this.copyFeedbackTimer = undefined;
+    this.copyFeedback = false;
+  }
+
+  @watch('defaultValue', { immediate: false })
+  private handleDefaultValueChange() {
+    if (!this.usingSlotMode && !this.dirtyValue) this.applyDefaultValue();
+  }
+
+  @watch('rows', 'autoExpand', { immediate: false })
+  private handleRowConfigurationChange() {
+    this.commitItems(this.items, this.dirtyValue);
+  }
+
+  @watch('placeholders', 'keyPlaceholder', 'valuePlaceholder', { immediate: false })
+  private handlePlaceholderChange() {
+    this.placeholderMap.clear();
+  }
+
+  @watch('disabled', 'formDisabled', 'readonly', 'mode', 'required', { immediate: false })
+  private handleFormStateChange() {
+    this.syncValidity();
+  }
+
+  @watch('name', { immediate: false })
+  private handleNameChange() {
+    this.syncFormState();
+  }
+
+  private isMalformedItem(item: KeyValueItem | undefined): boolean {
+    if (!item || this.isEmptyItem(item)) return false;
+    return item.key.trim().length === 0;
+  }
+
+  private getValidityFlags(): ValidityStateFlags {
+    if (this.validationBarred) {
+      return {
+        badInput: false,
+        customError: false,
+        patternMismatch: false,
+        rangeOverflow: false,
+        rangeUnderflow: false,
+        stepMismatch: false,
+        tooLong: false,
+        tooShort: false,
+        typeMismatch: false,
+        valueMissing: false,
+      };
+    }
+
+    const dataItems = this.dataItems(this.items);
+    return {
+      badInput: this.serializedParseError || dataItems.some(item => this.isMalformedItem(item)),
+      customError: Boolean(this.customValidationMessage),
+      patternMismatch: false,
+      rangeOverflow: false,
+      rangeUnderflow: false,
+      stepMismatch: false,
+      tooLong: false,
+      tooShort: false,
+      typeMismatch: false,
+      valueMissing: this.required && dataItems.length === 0,
+    };
+  }
+
+  private getValidationMessage(flags = this.getValidityFlags()): string {
+    if (flags.customError) return this.customValidationMessage;
+    if (this.serializedParseError) return 'Enter key-value data as an ordered JSON entry array.';
+    if (flags.valueMissing) return 'Add at least one key-value entry.';
+    if (flags.badInput) {
+      const malformedIndex = this.items.findIndex(item => this.isMalformedItem(item));
+      return `Row ${malformedIndex + 1} needs a non-empty key.`;
+    }
+    return '';
+  }
+
+  private getValidationAnchor(flags = this.getValidityFlags()): HTMLInputElement | undefined {
+    const inputs = this.keyInputs;
+    if (!inputs?.length) return undefined;
+    if (flags.badInput && !this.serializedParseError) {
+      const malformedIndex = this.items.findIndex(item => this.isMalformedItem(item));
+      if (malformedIndex >= 0) return inputs[malformedIndex] ?? inputs[0];
+    }
+    return inputs[0];
+  }
+
+  private hasValidationError(): boolean {
+    const flags = this.getValidityFlags();
+    return Object.values(flags).some(Boolean);
+  }
+
+  private syncFormState() {
+    if (this.internals) this.internals.setFormValue(this.valueState, this.valueState);
+    this.syncValidity();
+    queueMicrotask(() => this.syncValidity());
+  }
+
+  private syncValidity() {
+    const flags = this.getValidityFlags();
+    const hasError = Object.values(flags).some(Boolean);
+    const message = this.getValidationMessage(flags);
+    const anchor = this.getValidationAnchor(flags);
+
+    if (this.internals) {
+      if (!hasError) this.internals.setValidity({});
+      else if (anchor) this.internals.setValidity(flags, message, anchor);
+      else this.internals.setValidity(flags, message);
+    }
+
+    const proxy = this.validationProxy;
+    proxy.setCustomValidity(hasError ? message : '');
+
+    this.keyInputs.forEach((input, index) => {
+      const rowInvalid = !this.validationBarred && (
+        (this.serializedParseError && index === 0) ||
+        (flags.valueMissing && index === 0) ||
+        (flags.customError && index === 0) ||
+        this.isMalformedItem(this.items[index])
+      );
+      input.setAttribute('aria-invalid', String(rowInvalid));
+      input.classList.toggle('kv__input--invalid', rowInvalid);
+    });
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) this.validationInput = document.createElement('input');
+    return this.validationInput;
+  }
+
+  private get fallbackFormOwner(): HTMLFormElement | null {
+    const explicitOwner = this.getAttribute('form');
+    if (explicitOwner !== null) {
+      const root = this.getRootNode();
+      if (!('querySelectorAll' in root)) return null;
+      return Array.from((root as ParentNode).querySelectorAll('form[id]'))
+        .find((candidate): candidate is HTMLFormElement =>
+          candidate instanceof HTMLFormElement && candidate.id === explicitOwner
+        ) ?? null;
+    }
+    return this.closest('form');
+  }
+
+  /** Native-compatible control type. @public */
+  get type(): 'key-value' {
+    return 'key-value';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return this.internals?.form ?? this.fallbackFormOwner;
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this editor participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.validationBarred) return false;
+    return this.internals?.willValidate ?? true;
+  }
+
+  /** Labels associated with this editor. @public */
+  get labels(): NodeList | null {
+    return this.internals?.labels ?? null;
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    if (this.internals) return this.internals.checkValidity() && !this.hasValidationError();
+    return this.validationProxy.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    if (this.internals) return this.internals.reportValidity() && !this.hasValidationError();
+    return this.validationProxy.reportValidity();
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message ?? '');
+    this.syncValidity();
   }
 
   // --- Render ---
@@ -313,21 +666,31 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   private renderEditRow(item: KeyValueItem, index: number) {
     const ph = this.getPlaceholder(index);
     const isFixedMode = this.rows > 0;
-    const canDelete = !isFixedMode && !this.readonly && !this.disabled;
+    const canDelete = !isFixedMode && !this.readonly && !this.interactionDisabled;
     const showDesc = this.showDescription;
+    const flags = this.getValidityFlags();
+    const keyInvalid = !this.validationBarred && (
+      (this.serializedParseError && index === 0) ||
+      (flags.valueMissing && index === 0) ||
+      (flags.customError && index === 0) ||
+      this.isMalformedItem(item)
+    );
 
     return html`
       <div class="kv__row" part="row">
         <div class="kv__fields">
           <div class="kv__pair">
             <input
-              class="kv__input"
+              class="kv__input ${keyInvalid ? 'kv__input--invalid' : ''}"
               part="key-input"
               type="text"
               placeholder="${ph.key}"
               .value="${item.key}"
-              ?disabled=${this.disabled}
-              ?readonly=${this.readonly}
+              .disabled=${this.interactionDisabled}
+              .readOnly=${this.readonly}
+              aria-label="Key ${index + 1}"
+              aria-invalid="${keyInvalid ? 'true' : 'false'}"
+              aria-errormessage=${keyInvalid ? 'kv-error' : null}
               @input=${(e: Event) => this.handleKeyInput(index, e)}
             />
             <input
@@ -336,8 +699,9 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
               type="text"
               placeholder="${ph.value}"
               .value="${item.value}"
-              ?disabled=${this.disabled}
-              ?readonly=${this.readonly}
+              .disabled=${this.interactionDisabled}
+              .readOnly=${this.readonly}
+              aria-label="Value ${index + 1}"
               @input=${(e: Event) => this.handleValueInput(index, e)}
             />
           </div>
@@ -348,8 +712,9 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
               type="text"
               placeholder="Description"
               .value="${item.description || ''}"
-              ?disabled=${this.disabled}
-              ?readonly=${this.readonly}
+              .disabled=${this.interactionDisabled}
+              .readOnly=${this.readonly}
+              aria-label="Description ${index + 1}"
               @input=${(e: Event) => this.handleDescriptionInput(index, e)}
             />
           </if>
@@ -361,6 +726,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
             type="button"
             tabindex="-1"
             title="Remove row"
+            .disabled=${this.interactionDisabled || this.readonly}
             @click=${() => this.handleDelete(index)}
           >
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -399,6 +765,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
         type="button"
         tabindex="-1"
         title="${isCopied ? 'Copied!' : 'Copy as JSON'}"
+        .disabled=${this.interactionDisabled}
         @click=${() => this.handleCopy()}
       >
         <if ${isCopied}>
@@ -423,13 +790,24 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     const visibleItems = isView ? this.getItems() : this.items;
     const isEmpty = isView && visibleItems.length === 0;
     const showCopyBtn = this.showCopy && this.getItems().length > 0;
+    const validationMessage = this.getValidationMessage();
+    const showValidationMessage = !this.validationBarred && this.hasValidationError();
 
     return html`
-      <div class="kv" part="base">
+      <div
+        class="kv ${this.interactionDisabled ? 'kv--disabled' : ''}"
+        part="base"
+        role="group"
+        aria-labelledby=${hasTitle ? 'kv-title' : null}
+        aria-label=${hasTitle ? null : 'Key value editor'}
+        aria-required="${this.required ? 'true' : 'false'}"
+      >
         <if ${hasTitle || showCopyBtn}>
           <div class="kv__header">
             <if ${hasTitle}>
-              <h3 class="kv__title" part="title">${this.label}</h3>
+              <h3 id="kv-title" class="kv__title" part="title">
+                ${this.label}${this.required ? ' *' : ''}
+              </h3>
             </if>
             <if ${showCopyBtn}>
               ${this.renderCopyButton()}
@@ -446,6 +824,9 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
               : visibleItems.map((item, i) => this.renderEditRow(item, i))
             }
           </div>
+        </if>
+        <if ${showValidationMessage}>
+          <div id="kv-error" class="kv__error" part="error" role="alert">${validationMessage}</div>
         </if>
         <slot></slot>
       </div>

@@ -20543,6 +20543,16 @@
             },
             {
               "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "clear",
               "parameters": [],
               "return": {
@@ -20563,6 +20573,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "'[]'",
+              "description": "The `value` content attribute and imperative-mode form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -20578,6 +20597,15 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -20617,6 +20645,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with this editor. @public"
+            },
+            {
+              "kind": "field",
               "name": "mode",
               "type": {
                 "text": "'edit' | 'view'"
@@ -20653,6 +20690,15 @@
             },
             {
               "kind": "field",
+              "name": "placeholders",
+              "type": {
+                "text": "unknown[]"
+              },
+              "default": "[]",
+              "description": "Per-row placeholder samples"
+            },
+            {
+              "kind": "field",
               "name": "readonly",
               "type": {
                 "text": "boolean"
@@ -20676,12 +20722,46 @@
               }
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
               "kind": "field",
               "name": "rows",
               "type": {
                 "text": "number"
               },
               "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "method",
@@ -20727,6 +20807,41 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'key-value'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Ordered JSON entry-array value. Duplicate keys, descriptions, Unicode,\nand row order are preserved. Assigning it does not change the reset\ndefault stored by the `value` content attribute."
+            },
+            {
+              "kind": "field",
               "name": "valuePlaceholder",
               "type": {
                 "text": "string"
@@ -20740,6 +20855,15 @@
                 "text": "'default' | 'compact'"
               },
               "default": "'default'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this editor participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -20800,6 +20924,14 @@
               "reflects": true
             },
             {
+              "name": "required",
+              "fieldName": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
               "name": "rows",
               "fieldName": "rows",
               "type": {
@@ -20822,6 +20954,15 @@
                 "text": "boolean"
               },
               "reflects": true
+            },
+            {
+              "name": "value",
+              "fieldName": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true,
+              "description": "The `value` content attribute and imperative-mode form-reset default."
             },
             {
               "name": "value-placeholder",
@@ -20880,6 +21021,9 @@
               "name": "empty"
             },
             {
+              "name": "error"
+            },
+            {
               "name": "key-input"
             },
             {
@@ -20910,6 +21054,9 @@
           "cssProperties": [
             {
               "name": "--copied"
+            },
+            {
+              "name": "--invalid"
             },
             {
               "name": "--kv-bg"

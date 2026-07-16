@@ -123,6 +123,7 @@ async function main() {
     'playwright',
     'test',
     'tests/website-render.test.ts',
+    'tests/live/components/key-value/key-value-website-showcase.spec.ts',
     'tests/live/components/table/table-website-showcase.spec.ts',
     '--config=tests/playwright.config.ts',
     ...passthrough
@@ -131,6 +132,7 @@ async function main() {
     env: {
       ...process.env,
       WEBSITE_BASE_URL: `http://${HOST}:${port}`,
+      KEY_VALUE_WEBSITE_URL: `http://${HOST}:${port}/components.html#comp-key-value`,
       TABLE_WEBSITE_URL: `http://${HOST}:${port}/components.html#comp-table`
     }
   });

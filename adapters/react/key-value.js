@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const KeyValue = createReactAdapter({
     tagName: 'snice-key-value',
-    properties: ["label", "autoExpand", "rows", "showDescription", "keyPlaceholder", "valuePlaceholder", "disabled", "readonly", "name", "variant", "mode", "showCopy"],
+    properties: ["label", "autoExpand", "rows", "showDescription", "keyPlaceholder", "valuePlaceholder", "disabled", "readonly", "required", "name", "variant", "mode", "showCopy", "defaultValue", "placeholders", "value"],
     events: { "kv-add": "onKvAdd", "kv-remove": "onKvRemove", "kv-change": "onKvChange", "kv-copy": "onKvCopy" },
     formAssociated: true
 });

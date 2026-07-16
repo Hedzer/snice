@@ -1,5 +1,8 @@
 :host {
   display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   width: 100%;
   --kv-bg: var(--snice-color-surface, rgb(255 255 255));
@@ -15,6 +18,9 @@
 }
 
 .kv {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   background: var(--kv-bg);
   border: 1px solid var(--kv-border);
   border-radius: var(--kv-radius-lg);
@@ -81,6 +87,7 @@
 .kv__rows {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* ===== Edit mode ===== */
@@ -89,6 +96,7 @@
 .kv__row {
   display: flex;
   align-items: flex-start;
+  min-width: 0;
   gap: var(--snice-spacing-2xs, 0.25rem);
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
 }
@@ -105,18 +113,22 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   gap: var(--snice-spacing-3xs, 0.125rem);
 }
 
 .kv__pair {
   display: flex;
   flex: 1;
+  min-width: 0;
   gap: var(--snice-spacing-2xs, 0.25rem);
 }
 
 /* Inputs */
 .kv__input {
   flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   border: 1px solid var(--kv-border);
   border-radius: var(--kv-radius);
@@ -139,6 +151,15 @@
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
+.kv__input--invalid {
+  border-color: var(--kv-danger);
+}
+
+.kv__input--invalid:focus-visible {
+  border-color: var(--kv-danger);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) color-mix(in srgb, var(--kv-danger) 40%, transparent);
+}
+
 .kv__input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -153,6 +174,8 @@
 /* Description input */
 .kv__description {
   flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-sm, 0.75rem);
   border: 1px solid var(--kv-border);
   border-radius: var(--kv-radius);
@@ -180,6 +203,11 @@
   cursor: not-allowed;
 }
 
+.kv__description[readonly] {
+  background: var(--kv-bg-element);
+  cursor: default;
+}
+
 /* Delete button */
 .kv__delete {
   display: flex;
@@ -202,6 +230,18 @@
 .kv__delete:hover {
   color: var(--kv-danger);
   background: color-mix(in srgb, var(--kv-danger) 10%, transparent);
+}
+
+.kv__delete:disabled,
+.kv__copy:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.kv__delete:disabled:hover,
+.kv__copy:disabled:hover {
+  color: var(--kv-text-secondary);
+  background: transparent;
 }
 
 .kv__delete svg {
@@ -258,6 +298,13 @@
   font-size: var(--snice-font-size-md, 1rem);
 }
 
+.kv__error {
+  padding: 0 var(--snice-spacing-md, 1rem) var(--snice-spacing-sm, 0.75rem);
+  color: var(--kv-danger);
+  font-size: 0.75rem;
+  line-height: var(--snice-line-height-normal, 1.5);
+}
+
 /* ===== Compact variant ===== */
 :host([variant="compact"]) .kv__input {
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
@@ -296,6 +343,9 @@
 /* ===== Disabled host ===== */
 :host([disabled]) {
   pointer-events: none;
+}
+
+.kv--disabled {
   opacity: 0.6;
 }
 

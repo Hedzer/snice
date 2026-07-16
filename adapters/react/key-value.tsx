@@ -8,22 +8,26 @@ import type { SniceFormProps } from './types';
  * Props for the KeyValue component
  */
 export interface KeyValueProps extends SniceFormProps {
-  label?: any;
-  autoExpand?: any;
-  rows?: any;
-  showDescription?: any;
-  keyPlaceholder?: any;
-  valuePlaceholder?: any;
-  disabled?: any;
-  readonly?: any;
-  name?: any;
-  variant?: any;
-  mode?: any;
-  showCopy?: any;
-  onKvAdd?: (event: any) => void;
-  onKvRemove?: (event: any) => void;
-  onKvChange?: (event: any) => void;
-  onKvCopy?: (event: any) => void;
+  label?: string;
+  autoExpand?: boolean;
+  rows?: number;
+  showDescription?: boolean;
+  keyPlaceholder?: string;
+  valuePlaceholder?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  required?: boolean;
+  name?: string;
+  variant?: 'default' | 'compact';
+  mode?: 'edit' | 'view';
+  showCopy?: boolean;
+  defaultValue?: string;
+  placeholders?: Array<{ key: string; value: string }>;
+  value?: string;
+  onKvAdd?: (event: CustomEvent<{ item: { key: string; value: string; description?: string }; index: number }>) => void;
+  onKvRemove?: (event: CustomEvent<{ item: { key: string; value: string; description?: string }; index: number }>) => void;
+  onKvChange?: (event: CustomEvent<{ items: Array<{ key: string; value: string; description?: string }> }>) => void;
+  onKvCopy?: (event: CustomEvent<{ items: Array<{ key: string; value: string; description?: string }> }>) => void;
 }
 
 /**
@@ -44,7 +48,7 @@ export interface KeyValueProps extends SniceFormProps {
  */
 export const KeyValue = createReactAdapter<KeyValueProps>({
   tagName: 'snice-key-value',
-  properties: ["label","autoExpand","rows","showDescription","keyPlaceholder","valuePlaceholder","disabled","readonly","name","variant","mode","showCopy"],
+  properties: ["label","autoExpand","rows","showDescription","keyPlaceholder","valuePlaceholder","disabled","readonly","required","name","variant","mode","showCopy","defaultValue","placeholders","value"],
   events: {"kv-add":"onKvAdd","kv-remove":"onKvRemove","kv-change":"onKvChange","kv-copy":"onKvCopy"},
   formAssociated: true
 });

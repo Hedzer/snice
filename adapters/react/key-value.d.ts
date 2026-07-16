@@ -3,22 +3,55 @@ import type { SniceFormProps } from './types';
  * Props for the KeyValue component
  */
 export interface KeyValueProps extends SniceFormProps {
-    label?: any;
-    autoExpand?: any;
-    rows?: any;
-    showDescription?: any;
-    keyPlaceholder?: any;
-    valuePlaceholder?: any;
-    disabled?: any;
-    readonly?: any;
-    name?: any;
-    variant?: any;
-    mode?: any;
-    showCopy?: any;
-    onKvAdd?: (event: any) => void;
-    onKvRemove?: (event: any) => void;
-    onKvChange?: (event: any) => void;
-    onKvCopy?: (event: any) => void;
+    label?: string;
+    autoExpand?: boolean;
+    rows?: number;
+    showDescription?: boolean;
+    keyPlaceholder?: string;
+    valuePlaceholder?: string;
+    disabled?: boolean;
+    readonly?: boolean;
+    required?: boolean;
+    name?: string;
+    variant?: 'default' | 'compact';
+    mode?: 'edit' | 'view';
+    showCopy?: boolean;
+    defaultValue?: string;
+    placeholders?: Array<{
+        key: string;
+        value: string;
+    }>;
+    value?: string;
+    onKvAdd?: (event: CustomEvent<{
+        item: {
+            key: string;
+            value: string;
+            description?: string;
+        };
+        index: number;
+    }>) => void;
+    onKvRemove?: (event: CustomEvent<{
+        item: {
+            key: string;
+            value: string;
+            description?: string;
+        };
+        index: number;
+    }>) => void;
+    onKvChange?: (event: CustomEvent<{
+        items: Array<{
+            key: string;
+            value: string;
+            description?: string;
+        }>;
+    }>) => void;
+    onKvCopy?: (event: CustomEvent<{
+        items: Array<{
+            key: string;
+            value: string;
+            description?: string;
+        }>;
+    }>) => void;
 }
 /**
  * KeyValue - React adapter for snice-key-value
