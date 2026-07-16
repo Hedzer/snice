@@ -942,4 +942,88 @@ test.describe('Website Component Rendering', () => {
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   });
+
+  test('deployed Select docs and full showcase preserve the external-label lifecycle', async ({ page }) => {
+    test.setTimeout(120_000);
+    const pageErrors: string[] = [];
+    const consoleErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
+    await page.goto(`${websiteBase}/components.html#comp-select`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-select')));
+    await expect(page.locator('#comp-select snice-select').first()).toBeVisible();
+
+    await page.locator('#comp-select .more-link[data-slug="select"]').click();
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'External Labels and Accessible Naming', exact: true })).toBeVisible();
+    await expect(docs).toContainText('document order');
+    await expect(docs).toContainText('focuses its button without opening');
+    await expect(docs).toContainText('there is no hidden native');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', { name: 'External Label Lifecycle', exact: true })).toBeVisible();
+    await page.waitForFunction(() => {
+      const iframe = document.querySelector('#help-drawer-iframe') as HTMLIFrameElement;
+      const selects = Array.from(iframe.contentDocument?.querySelectorAll('snice-select') || []);
+      return selects.length === 41 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
+    });
+
+    const standard = showcase.locator('#select-showcase-standard');
+    const target = standard.locator('.select-trigger');
+    await expect(target).toHaveAttribute('aria-label', 'Shipping country required');
+    expect(await standard.evaluate((select: any) => Array.from(select.labels, (label: HTMLLabelElement) => label.id)))
+      .toEqual(['select-showcase-primary-label', 'select-showcase-secondary-label']);
+    await showcase.locator('#select-showcase-primary-label').click();
+    expect(await standard.evaluate((select: HTMLElement) => select.shadowRoot?.activeElement?.classList.contains('select-trigger'))).toBe(true);
+    expect(await standard.evaluate((select: any) => select.open)).toBe(false);
+
+    await showcase.locator('#select-showcase-change-label').click();
+    await expect(target).toHaveAttribute('aria-label', 'Billing country required');
+    await showcase.locator('#select-showcase-toggle-error').click();
+    await expect(target).toHaveAttribute('aria-invalid', 'true');
+    await expect(standard.locator('.select-error-text')).toHaveText('Choose an available country.');
+    expect(await standard.locator('.select-helper-text').count()).toBe(0);
+
+    await showcase.locator('#select-showcase-toggle-labels').click();
+    await expect(target).toHaveAttribute('aria-label', 'Select');
+    expect(await standard.evaluate((select: any) => select.labels?.length ?? 0)).toBe(0);
+    await showcase.locator('#select-showcase-toggle-labels').click();
+    await expect(target).toHaveAttribute('aria-label', 'Billing country required');
+
+    const editable = showcase.locator('#select-showcase-editable');
+    await showcase.locator('#select-showcase-wrapping-label').click({ position: { x: 8, y: 8 } });
+    expect(await editable.evaluate((select: HTMLElement) => select.shadowRoot?.activeElement?.classList.contains('select-editable-input'))).toBe(true);
+    expect(await editable.evaluate((select: any) => select.open)).toBe(true);
+    await editable.locator('.select-editable-input').press('Escape');
+    expect(await editable.evaluate((select: any) => select.open)).toBe(false);
+
+    const layout = await showcase.locator('body').evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(layout.scroll).toBeLessThanOrEqual(layout.viewport);
+    expect(await page.locator('#help-drawer-iframe').getAttribute('src')).toContain('showcase/select.html');
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+
+    await page.setViewportSize({ width: 194, height: 844 });
+    await page.goto(`${websiteBase}/showcase/select.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => {
+      const selects = Array.from(document.querySelectorAll('snice-select'));
+      return selects.length === 41 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
+    });
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    const narrowLayout = await page.locator('body').evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(narrowLayout.scroll).toBeLessThanOrEqual(narrowLayout.viewport);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  });
 });

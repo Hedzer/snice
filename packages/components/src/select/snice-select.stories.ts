@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-select';
+import '../button/snice-button';
 import type { SelectSize, SelectOption } from './snice-select.types';
 
 type Args = {
   size?: SelectSize;
   value?: string;
   label?: string;
+  helperText?: string;
+  errorText?: string;
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
@@ -15,6 +18,8 @@ type Args = {
   multiple?: boolean;
   searchable?: boolean;
   clearable?: boolean;
+  editable?: boolean;
+  allowFreeText?: boolean;
 };
 
 const SIZES: SelectSize[] = ['small', 'medium', 'large'];
@@ -59,6 +64,8 @@ const meta: Meta<Args> = {
     size:       { control: 'select', options: SIZES },
     value:      { control: 'text' },
     label:      { control: 'text' },
+    helperText: { control: 'text' },
+    errorText:  { control: 'text' },
     placeholder:{ control: 'text' },
     disabled:   { control: 'boolean' },
     required:   { control: 'boolean' },
@@ -68,12 +75,16 @@ const meta: Meta<Args> = {
     multiple:   { control: 'boolean' },
     searchable: { control: 'boolean' },
     clearable:  { control: 'boolean' },
+    editable:   { control: 'boolean' },
+    allowFreeText: { control: 'boolean' },
   },
   render: (args) => {
     const el = document.createElement('snice-select');
     if (args.size        !== undefined) el.setAttribute('size',        String(args.size));
     if (args.value       !== undefined) el.setAttribute('value',       String(args.value));
     if (args.label       !== undefined) el.setAttribute('label',       String(args.label));
+    if (args.helperText  !== undefined) el.setAttribute('helper-text', String(args.helperText));
+    if (args.errorText   !== undefined) el.setAttribute('error-text',  String(args.errorText));
     if (args.placeholder !== undefined) el.setAttribute('placeholder', String(args.placeholder));
     if (args.disabled)   el.toggleAttribute('disabled',   true);
     if (args.required)   el.toggleAttribute('required',   true);
@@ -83,6 +94,8 @@ const meta: Meta<Args> = {
     if (args.multiple)   el.toggleAttribute('multiple',   true);
     if (args.searchable) el.toggleAttribute('searchable', true);
     if (args.clearable)  el.toggleAttribute('clearable',  true);
+    if (args.editable)   el.toggleAttribute('editable',   true);
+    if (args.allowFreeText) el.toggleAttribute('allow-free-text', true);
     (el as any).options = SAMPLE_OPTIONS;
     return el;
   },
@@ -204,7 +217,149 @@ export const AllVariants: Story = {
   ),
 };
 
-// Available CSS Parts: label, input, arrow, trigger, value, spinner, dropdown, search, search-input, options, option
+// h2: External label lifecycle
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const demo = document.createElement('section');
+    demo.id = 'select-label-story';
+    demo.dataset.contract = 'external-label-lifecycle';
+    demo.style.cssText = 'display:grid;gap:1.25rem;width:min(100%,46rem);';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      #select-label-story .label-example {
+        display: grid;
+        gap: .45rem;
+        min-width: 0;
+      }
+      #select-label-story .label-line {
+        align-items: baseline;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+        font-weight: 600;
+      }
+      #select-label-story .secondary-label {
+        color: var(--snice-color-text-secondary);
+        font-size: .8rem;
+        font-weight: 500;
+      }
+      #select-label-story .wrapping-label {
+        display: grid;
+        gap: .45rem;
+      }
+      #select-label-story .wrapping-label > :first-child { font-weight: 600; }
+      #select-label-story snice-select { width: min(100%, 22rem); }
+      #select-label-story .story-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+      }
+      #select-label-story output {
+        color: var(--snice-color-text-secondary);
+        overflow-wrap: anywhere;
+      }
+    `;
+
+    const intro = document.createElement('p');
+    intro.textContent = 'External labels name and focus the real shadow control. Change or remove them to exercise live reassociation.';
+    intro.style.cssText = 'margin:0;color:var(--snice-color-text-secondary);';
+
+    const explicitExample = document.createElement('div');
+    explicitExample.className = 'label-example';
+    const labelLine = document.createElement('div');
+    labelLine.className = 'label-line';
+    const primaryLabel = document.createElement('label');
+    primaryLabel.htmlFor = 'select-story-standard';
+    primaryLabel.textContent = 'Shipping country';
+    const secondaryLabel = document.createElement('label');
+    secondaryLabel.className = 'secondary-label';
+    secondaryLabel.htmlFor = 'select-story-standard';
+    secondaryLabel.setAttribute('aria-label', 'required');
+    secondaryLabel.textContent = '(required)';
+    labelLine.append(primaryLabel, secondaryLabel);
+    const standard = makeSelect({
+      id: 'select-story-standard',
+      name: 'shipping-country',
+      required: true,
+      'helper-text': 'Used to calculate delivery options.',
+      placeholder: 'Choose a country',
+    });
+    explicitExample.append(labelLine, standard);
+
+    const wrappingLabel = document.createElement('label');
+    wrappingLabel.className = 'wrapping-label';
+    const wrappingCaption = document.createElement('span');
+    wrappingCaption.textContent = 'Editable destination';
+    wrappingLabel.append(wrappingCaption);
+    const editable = makeSelect({
+      id: 'select-story-editable',
+      editable: true,
+      'allow-free-text': true,
+      'helper-text': 'Choose a suggestion or type a destination.',
+      placeholder: 'Type or select',
+    });
+    wrappingLabel.append(editable);
+
+    const disabledExample = document.createElement('div');
+    disabledExample.className = 'label-example';
+    const disabledLabel = document.createElement('label');
+    disabledLabel.htmlFor = 'select-story-disabled';
+    disabledLabel.textContent = 'Unavailable destination';
+    const disabled = makeSelect({ id: 'select-story-disabled', disabled: true, value: 'apple' });
+    disabledExample.append(disabledLabel, disabled);
+
+    const actions = document.createElement('div');
+    actions.className = 'story-actions';
+    const changeLabel = document.createElement('snice-button');
+    changeLabel.textContent = 'Change label';
+    const toggleLabels = document.createElement('snice-button');
+    toggleLabels.textContent = 'Remove external labels';
+    const toggleError = document.createElement('snice-button');
+    toggleError.textContent = 'Show error';
+    actions.append(changeLabel, toggleLabels, toggleError);
+
+    const status = document.createElement('output');
+    status.setAttribute('aria-live', 'polite');
+    status.textContent = 'Accessible name: Shipping country required';
+
+    let billing = false;
+    changeLabel.addEventListener('button-click', () => {
+      billing = !billing;
+      primaryLabel.textContent = billing ? 'Billing country' : 'Shipping country';
+      status.textContent = `Accessible name: ${primaryLabel.textContent} required`;
+    });
+
+    let associated = true;
+    toggleLabels.addEventListener('button-click', () => {
+      associated = !associated;
+      for (const label of [primaryLabel, secondaryLabel]) {
+        if (associated) label.htmlFor = standard.id;
+        else label.removeAttribute('for');
+      }
+      toggleLabels.textContent = associated ? 'Remove external labels' : 'Restore external labels';
+      status.textContent = associated
+        ? `Accessible name: ${primaryLabel.textContent} required`
+        : 'Accessible name fallback: Select';
+    });
+
+    let showingError = false;
+    toggleError.addEventListener('button-click', () => {
+      showingError = !showingError;
+      (standard as any).invalid = showingError;
+      (standard as any).errorText = showingError ? 'Choose an available country.' : '';
+      toggleError.textContent = showingError ? 'Clear error' : 'Show error';
+      status.textContent = showingError
+        ? 'Error replaces the helper description.'
+        : 'Helper description restored.';
+    });
+
+    demo.append(style, intro, explicitExample, wrappingLabel, disabledExample, actions, status);
+    return demo;
+  },
+};
+
+// Available CSS Parts: label, input, arrow, trigger, value, spinner, dropdown, search, search-input, options, option, helper-text, error-text
 export const CSSPartsStyling: Story = {
   render: () => {
     const wrap = document.createElement('div');

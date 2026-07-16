@@ -1,18 +1,26 @@
 import { element, property, query, queryAll, watch, dispatch, request, ready, dispose, reconnect, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
+import { FormLabelAssociation } from '../form-label-association';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import './snice-option';
 
 @element('snice-select', { formAssociated: true })
 export class SniceSelect extends HTMLElement implements SniceSelectElement {
   internals!: ElementInternals;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.editable ? this.editableInput : this.trigger,
+      () => this.label || 'Select'
+    );
   }
 
   formResetCallback() {
@@ -185,10 +193,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
     const triggerClasses = `select-trigger select-trigger--${this.size} ${this.loading ? 'select-trigger--loading' : ''} ${this.editable ? 'select-trigger--editable' : ''}`;
     const searchHidden = !this.searchable || this.editable;
+    const accessibleName = this.labelAssociation.accessibleName;
+    const optionsName = accessibleName ? `${accessibleName} options` : 'Options';
 
     return html/*html*/`
       <div class="select-wrapper">
-        <label class="${labelClasses}" part="label" ?hidden="${!this.label}">
+        <label class="${labelClasses}" part="label" ?hidden="${!this.label}" @click="${() => this.focus()}">
           ${this.label}
         </label>
 
@@ -204,7 +214,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
               role="combobox"
               aria-expanded="${this.isOpen ? 'true' : 'false'}"
               aria-autocomplete="list"
-              aria-label="${this.label || 'Select'}"
+              aria-label="${accessibleName}"
+              aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
+              aria-invalid="${this.invalid ? 'true' : 'false'}"
               part="input"
               @input="${(e: Event) => this.handleEditableInput(e)}"
               @focus="${() => this.handleEditableFocus()}"
@@ -227,7 +239,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             class="${triggerClasses}"
             aria-haspopup="listbox"
             aria-expanded="${this.isOpen ? 'true' : 'false'}"
-            aria-label="${this.label || 'Select'}"
+            aria-label="${accessibleName}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             aria-invalid="${this.invalid ? 'true' : 'false'}"
             part="trigger"
@@ -260,7 +272,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
         <div class="select-dropdown"
              role="listbox"
-             aria-label="${this.label || 'Options'}"
+             aria-label="${optionsName}"
              part="dropdown"
              @mousedown="${(e: MouseEvent) => this.handleDropdownMousedown(e)}"
              @click="${(e: MouseEvent) => this.handleOptionsClick(e)}">
@@ -423,18 +435,21 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
     // Setup global event listeners
     this.setupGlobalListeners();
+    this.labelAssociation.connect();
   }
 
   @reconnect()
   onReconnect() {
     this.setupGlobalListeners();
     this.observeChildren();
+    this.labelAssociation.connect();
   }
 
   @dispose()
   cleanup() {
     this.removeGlobalListeners();
     this.childObserver?.disconnect();
+    this.labelAssociation.disconnect();
   }
 
   private outsideClickHandler?: (e: MouseEvent) => void;
@@ -1129,6 +1144,11 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     } else {
       this.trigger?.focus();
     }
+  }
+
+  /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
   }
 
   blur() {

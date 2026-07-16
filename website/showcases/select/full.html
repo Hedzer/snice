@@ -21,7 +21,22 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    snice-select { width: 220px; }
+    snice-select { width: min(100%, 220px); max-width: 100%; }
+    .label-lifecycle { display: grid; gap: 1rem; width: min(100%, 720px); }
+    .label-examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 1rem; }
+    .label-example, .wrapping-label { display: grid; gap: 0.4rem; min-width: 0; }
+    .label-example > label, .wrapping-label > span { font-weight: 600; }
+    .label-example snice-select, .wrapping-label snice-select { width: 100%; }
+    .label-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.35rem; }
+    .secondary-label { color: var(--snice-color-text-secondary); font-size: 0.8rem; font-weight: 500; }
+    .label-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .label-actions button { max-width: 100%; padding: 0.45rem 0.75rem; border: 1px solid var(--snice-color-border); border-radius: 0.4rem; background: var(--snice-color-surface-raised, var(--snice-color-surface)); color: var(--snice-color-text); cursor: pointer; white-space: normal; }
+    .label-lifecycle output, .label-lifecycle p { margin: 0; color: var(--snice-color-text-secondary); overflow-wrap: anywhere; }
+    .state-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.75rem; }
+    @media (max-width: 300px) {
+      .label-lifecycle, .label-example { display: block; }
+      .label-lifecycle > * + *, .label-example > * + * { margin-top: 0.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -229,7 +244,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <h2>Sizes x States Matrix</h2>
-<div style="display: grid; grid-template-columns: repeat(3, 220px); gap: 0.75rem;">
+<div class="state-matrix">
   <snice-select size="small" label="Small + disabled" disabled value="a">
     <snice-option value="a">Alpha</snice-option>
   </snice-select>
@@ -271,9 +286,46 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-select id="programmatic" label="Set via .options" placeholder="Programmatic options" searchable clearable></snice-select>
 </div>
 
+<h2>External Label Lifecycle</h2>
+<section id="select-label-lifecycle" class="label-lifecycle">
+  <p>Explicit, wrapping, multiple, dynamic, disabled, helper, and error label states use the real shadow control.</p>
+  <div class="label-examples">
+    <div class="label-example">
+      <div class="label-line">
+        <label id="select-showcase-primary-label" for="select-showcase-standard">Shipping country</label>
+        <label id="select-showcase-secondary-label" class="secondary-label" for="select-showcase-standard" aria-label="required">(required)</label>
+      </div>
+      <snice-select id="select-showcase-standard" name="shipping-country" required helper-text="Used to calculate delivery options." placeholder="Choose a country">
+        <snice-option value="ca">Canada</snice-option>
+        <snice-option value="us">United States</snice-option>
+        <snice-option value="jp">Japan</snice-option>
+      </snice-select>
+    </div>
+    <label id="select-showcase-wrapping-label" class="wrapping-label">
+      <span>Editable destination</span>
+      <snice-select id="select-showcase-editable" editable allow-free-text helper-text="Choose a suggestion or type a destination." placeholder="Type or select">
+        <snice-option value="paris">Paris</snice-option>
+        <snice-option value="tokyo">Tokyo</snice-option>
+        <snice-option value="toronto">Toronto</snice-option>
+      </snice-select>
+    </label>
+    <div class="label-example">
+      <label for="select-showcase-disabled">Unavailable destination</label>
+      <snice-select id="select-showcase-disabled" disabled value="offline">
+        <snice-option value="offline">Offline</snice-option>
+      </snice-select>
+    </div>
+  </div>
+  <div class="label-actions">
+    <button id="select-showcase-change-label" type="button">Change label</button>
+    <button id="select-showcase-toggle-labels" type="button">Remove external labels</button>
+    <button id="select-showcase-toggle-error" type="button">Show error</button>
+  </div>
+  <output id="select-showcase-label-status" aria-live="polite">Accessible name: Shipping country required</output>
+</section>
+
 <script type="module">
   import '../../../packages/components/src/select/snice-select.ts';
-  import '../../../packages/components/src/select/snice-option.ts';
 
   const prog = document.getElementById('programmatic');
   prog.options = [
@@ -282,6 +334,43 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     { value: 'bun', label: 'Bun' },
     { value: 'workers', label: 'Cloudflare Workers', disabled: true },
   ];
+
+  const labelledSelect = document.getElementById('select-showcase-standard');
+  const primaryLabel = document.getElementById('select-showcase-primary-label');
+  const secondaryLabel = document.getElementById('select-showcase-secondary-label');
+  const changeLabel = document.getElementById('select-showcase-change-label');
+  const toggleLabels = document.getElementById('select-showcase-toggle-labels');
+  const toggleError = document.getElementById('select-showcase-toggle-error');
+  const labelStatus = document.getElementById('select-showcase-label-status');
+  let billing = false;
+  let associated = true;
+  let showingError = false;
+
+  changeLabel.addEventListener('click', () => {
+    billing = !billing;
+    primaryLabel.textContent = billing ? 'Billing country' : 'Shipping country';
+    labelStatus.textContent = `Accessible name: ${primaryLabel.textContent} required`;
+  });
+  toggleLabels.addEventListener('click', () => {
+    associated = !associated;
+    for (const label of [primaryLabel, secondaryLabel]) {
+      if (associated) label.htmlFor = labelledSelect.id;
+      else label.removeAttribute('for');
+    }
+    toggleLabels.textContent = associated ? 'Remove external labels' : 'Restore external labels';
+    labelStatus.textContent = associated
+      ? `Accessible name: ${primaryLabel.textContent} required`
+      : 'Accessible name fallback: Select';
+  });
+  toggleError.addEventListener('click', () => {
+    showingError = !showingError;
+    labelledSelect.invalid = showingError;
+    labelledSelect.errorText = showingError ? 'Choose an available country.' : '';
+    toggleError.textContent = showingError ? 'Clear error' : 'Show error';
+    labelStatus.textContent = showingError
+      ? 'Error replaces the helper description.'
+      : 'Helper description restored.';
+  });
 </script>
 </body>
 </html>

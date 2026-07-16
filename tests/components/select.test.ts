@@ -182,6 +182,84 @@ describe('snice-select', () => {
     expect(select.label).toBe('Choose option');
   });
 
+  it('uses associated labels as the shadow control name without duplicating descriptions', async () => {
+    const primary = document.createElement('label');
+    primary.textContent = 'Billing country';
+    const secondary = document.createElement('label');
+    secondary.textContent = 'required';
+    const select = await createSelectWithOptions();
+    select.id = 'labelled-select';
+    select.label = 'Internal fallback';
+    select.helperText = 'Used for tax calculation.';
+    primary.htmlFor = select.id;
+    secondary.htmlFor = select.id;
+    container.prepend(primary, secondary);
+
+    (select as any).internals = { labels: document.querySelectorAll('label[for="labelled-select"]') };
+    (select as any).labelAssociation.sync();
+    await select.rendered;
+
+    const trigger = queryShadow(select as HTMLElement, '.select-trigger') as HTMLButtonElement;
+    const descriptionId = trigger.getAttribute('aria-describedby')!;
+    expect(select.labels).toHaveLength(2);
+    expect(trigger.getAttribute('aria-label')).toBe('Billing country required');
+    expect(descriptionId).toBeTruthy();
+    expect(queryShadow(select as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Used for tax calculation.');
+    expect(queryShadowAll(select as HTMLElement, `#${descriptionId}`)).toHaveLength(1);
+  });
+
+  it('focuses the standard target for a browser-forwarded associated-label activation', async () => {
+    const label = document.createElement('label');
+    label.textContent = 'Region';
+    const select = await createSelectWithOptions();
+    select.id = 'focus-labelled-select';
+    label.htmlFor = select.id;
+    container.prepend(label);
+    (select as any).internals = { labels: document.querySelectorAll('label[for="focus-labelled-select"]') };
+    (select as any).labelAssociation.sync();
+
+    select.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+    const trigger = queryShadow(select as HTMLElement, '.select-trigger') as HTMLButtonElement;
+    expect(select.shadowRoot?.activeElement).toBe(trigger);
+    expect(select.open).toBe(false);
+  });
+
+  it('gives editable controls the same name, description, and invalid state', async () => {
+    const label = document.createElement('label');
+    label.textContent = 'Editable region';
+    const select = await createSelectWithOptions();
+    select.id = 'editable-labelled-select';
+    label.htmlFor = select.id;
+    container.prepend(label);
+    (select as any).internals = { labels: document.querySelectorAll('label[for="editable-labelled-select"]') };
+
+    select.editable = true;
+    select.helperText = 'Choose or type a region.';
+    select.invalid = true;
+    await select.rendered;
+    (select as any).labelAssociation.sync();
+
+    const input = queryShadow(select as HTMLElement, '.select-editable-input') as HTMLInputElement;
+    const descriptionId = input.getAttribute('aria-describedby')!;
+    expect(input.getAttribute('aria-label')).toBe('Editable region');
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    expect(queryShadow(select as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Choose or type a region.');
+  });
+
+  it('falls back to the label property and then the generic control name', async () => {
+    const labelled = await createComponent<SniceSelectElement>('snice-select', { label: 'Internal region' });
+    const labelledTrigger = queryShadow(labelled as HTMLElement, '.select-trigger') as HTMLButtonElement;
+    expect(labelled.labels?.length ?? 0).toBe(0);
+    expect(labelledTrigger.getAttribute('aria-label')).toBe('Internal region');
+
+    const absent = await createComponent<SniceSelectElement>('snice-select');
+    const absentTrigger = queryShadow(absent as HTMLElement, '.select-trigger') as HTMLButtonElement;
+    expect(absentTrigger.getAttribute('aria-label')).toBe('Select');
+    labelled.remove();
+    absent.remove();
+  });
+
   it('should support placeholder property', async () => {
     const select = await createComponent<SniceSelectElement>('snice-select', { placeholder: 'Pick one' });
     expect(select.placeholder).toBe('Pick one');

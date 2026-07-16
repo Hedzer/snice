@@ -26,12 +26,16 @@ allowFreeText: boolean = false;     // attr: allow-free-text
 remote: boolean = false;            // Remote search via @request('select/search')
 searchDebounce: number = 300;       // attr: search-debounce
 open: boolean = false;
+readonly isOpen: boolean;             // Current open state
 size: 'small'|'medium'|'large' = 'medium';
 name: string = '';
-label: string = '';
+label: string = '';                   // Visible label + accessible-name fallback
+helperText: string = '';              // attr: helper-text
+errorText: string = '';               // attr: error-text; wins over helperText
 placeholder: string = 'Select an option';
 maxHeight: string = '200px';        // attr: max-height
 options: SelectOption[] = [];       // JS only, works alongside <snice-option> children
+readonly labels: NodeList | null;   // Current explicit/wrapping external labels
 ```
 
 ### snice-option
@@ -60,7 +64,7 @@ icon: string = '';        // Icon URL
 ## CSS Parts
 
 - `label`, `trigger`, `value`, `input`, `arrow`, `spinner`
-- `dropdown`, `search`, `search-input`, `options`, `option`
+- `dropdown`, `search`, `search-input`, `options`, `option`, `helper-text`, `error-text`
 
 ## Basic Usage
 
@@ -90,9 +94,42 @@ select.addEventListener('select-change', (e) => console.log(e.detail.value));
 - `allow-free-text` accepts values not in options list
 - `remote` + `editable` enables async search via @request/@respond
 
+## External Labels and Accessible Name
+
+```html
+<label for="country">Shipping country</label>
+<snice-select id="country" name="country" helper-text="Used for delivery options">
+  <snice-option value="ca">Canada</snice-option>
+  <snice-option value="us">United States</snice-option>
+</snice-select>
+
+<label>
+  Billing country
+  <snice-select id="billing-country" editable></snice-select>
+</label>
+```
+
+Contract:
+
+- Explicit `<label for>` and wrapping `<label>` association are supported through the form-associated host.
+- Associated external labels are combined in document order and override `label` for the accessible name. With no association, naming falls back to `label`, then `Select`.
+- Option descendants of a wrapping label and hidden/`aria-hidden` decorations are excluded from its text.
+- Dynamic label text, `aria-label`, `aria-labelledby`, `for`, host `id`, DOM moves, and standard/editable mode update the shadow focus target.
+- A label click focuses the standard button without opening it. In editable mode it focuses the input, preserving the existing focus-to-open behavior. Disabled controls do not receive focus.
+- `labels` exposes the current associated elements.
+- `helperText` and `errorText` use exactly one `aria-describedby` target. `errorText` wins; `invalid` controls `aria-invalid`.
+
+## Form Integration
+
+- The host submits through `ElementInternals.setFormValue()`; there is no hidden native `<select>`.
+- Set `name` for `FormData` participation.
+
 ## Accessibility
 
-- Hidden native `<select>` for form submission
+- Explicit, wrapping, multiple, and dynamically reassociated external labels
+- External labels focus and name the real shadow button/input
+- One helper/error description, with error precedence
+- Direct form-associated custom-element submission through `ElementInternals`
 - Arrow keys, Enter, Escape for keyboard navigation
 - Dropdown closes on outside click
 - Children take precedence over `options` array
