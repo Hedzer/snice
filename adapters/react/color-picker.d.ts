@@ -3,8 +3,8 @@ import type { SniceFormProps } from './types';
  * Props for the ColorPicker component
  */
 export interface ColorPickerProps extends SniceFormProps {
+    defaultValue?: any;
     size?: any;
-    value?: any;
     format?: any;
     label?: any;
     helperText?: any;
@@ -17,6 +17,7 @@ export interface ColorPickerProps extends SniceFormProps {
     showInput?: any;
     showPresets?: any;
     presets?: any;
+    value?: any;
     onColorPickerInput?: (event: any) => void;
     onColorPickerChange?: (event: any) => void;
     onColorPickerFocus?: (event: any) => void;

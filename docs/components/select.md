@@ -29,7 +29,8 @@ A customizable dropdown selection with single/multiple selection, search filteri
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `string` | `''` | Selected value (comma-separated for multiple) |
+| `value` | `string` | `''` | Live selected value (comma-separated for multiple); property only |
+| `defaultValue` (attr: `value`) | `string` | `''` | Authored selection and form-reset default |
 | `disabled` | `boolean` | `false` | Disables the select |
 | `required` | `boolean` | `false` | Required for form validation |
 | `invalid` | `boolean` | `false` | Shows invalid state styling |
@@ -251,6 +252,8 @@ Multiple external labels produce one combined name, not multiple descriptions. `
 ## Form Integration
 
 The host participates directly through `ElementInternals`; there is no hidden native `<select>`. With a `name`, its current value is contributed to `FormData`.
+
+`value` is live state. `defaultValue` reflects the host's `value` content attribute and is the selection restored by `form.reset()`. Changing the default updates a pristine select; selecting, clearing, assigning `value` (even to the same value), editing free text, or browser restoration makes it dirty, so later default changes wait until reset. Reset/restoration are silent, repeated resets are stable, form moves and reconnects preserve both states, and disabled fieldsets do not rewrite authored `disabled`.
 
 ```html
 <form>

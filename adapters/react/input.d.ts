@@ -3,10 +3,10 @@ import type { SniceFormProps } from './types';
  * Props for the Input component
  */
 export interface InputProps extends SniceFormProps {
+    defaultValue?: any;
     type?: any;
     size?: any;
     variant?: any;
-    value?: any;
     placeholder?: any;
     label?: any;
     helperText?: any;
@@ -31,6 +31,7 @@ export interface InputProps extends SniceFormProps {
     stretch?: any;
     prefixIcon?: any;
     suffixIcon?: any;
+    value?: any;
     onInputInput?: (event: any) => void;
     onInputChange?: (event: any) => void;
     onInputFocus?: (event: any) => void;

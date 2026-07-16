@@ -1,10 +1,17 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-slider.css?inline';
 import type { SliderSize, SliderVariant, SniceSliderElement } from './snice-slider.types';
 
 @element('snice-slider', { formAssociated: true })
 export class SniceSlider extends HTMLElement implements SniceSliderElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
+
+  @state()
+  private valueState = 0;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,15 +20,39 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     }
   }
 
+  /**
+   * Live numeric value. Assignments do not rewrite the authored default.
+   * @public
+   */
+  get value(): number {
+    return this.valueState;
+  }
+
+  set value(value: number) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ type: Number, attribute: 'value' })
+  defaultValue = 0;
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = this.min;
-    if (this.internals) {
-      this.internals.setFormValue(String(this.value));
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    const value = Number(state);
+    if (!Number.isNaN(value)) this.setValue(value, true);
   }
 
   @property({  })
@@ -29,9 +60,6 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @property({  })
   variant: SliderVariant = 'default';
-
-  @property({ type: Number,  })
-  value = 0;
 
   @property({ type: Number,  })
   min = 0;
@@ -94,6 +122,10 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   private labelId = `snice-slider-label-${Math.random().toString(36).slice(2, 10)}`;
   private descId = `snice-slider-desc-${Math.random().toString(36).slice(2, 10)}`;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
   @render()
   render() {
     const wrapperClasses = ['slider-wrapper', this.vertical ? 'slider-wrapper--vertical' : ''].filter(Boolean).join(' ');
@@ -102,7 +134,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       'slider-track',
       `slider-track--${this.size}`,
       this.vertical ? 'slider-track--vertical' : '',
-      this.disabled ? 'slider-track--disabled' : '',
+      this.interactionDisabled ? 'slider-track--disabled' : '',
       this.loading ? 'slider-track--loading' : ''
     ].filter(Boolean).join(' ');
     const fillClasses = [
@@ -149,12 +181,12 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
               class="${thumbClasses}"
               style="${thumbStyle}"
               part="thumb"
-              tabindex="${this.disabled || this.loading ? -1 : 0}"
+              tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-valuemin="${this.min}"
               aria-valuemax="${this.max}"
               aria-valuenow="${this.value}"
-              aria-disabled="${this.disabled || this.loading}"
+              aria-disabled="${this.interactionDisabled}"
               aria-labelledby="${this.label ? this.labelId : ''}"
               aria-label="${this.label ? '' : 'Slider'}"
               aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
@@ -186,7 +218,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
             max="${this.max}"
             step="${this.step}"
             name="${this.name || ''}"
-            ?disabled="${this.disabled || this.loading}"
+            ?disabled="${this.interactionDisabled}"
             ?required="${this.required}"
             aria-hidden="true"
             tabindex="-1"
@@ -226,23 +258,46 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @ready()
   init() {
-    if (this.internals) {
-      this.internals.setFormValue(String(this.value));
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = Number((this as { value: unknown }).value);
+      delete (this as Partial<{ value: unknown }>).value;
+      if (!Number.isNaN(value)) this.value = value;
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
     }
-
-    this.clampValue();
+    this.clampValue(false);
+    this.syncFormValue();
   }
 
-  private clampValue() {
-    const clamped = Math.max(this.min, Math.min(this.max, this.value));
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return;
+    this.valueState = this.normalizeValue(parsed);
+    this.syncFormValue();
+  }
+
+  private normalizeValue(value: number): number {
+    const clamped = Math.max(this.min, Math.min(this.max, value));
     const stepped = Math.round(clamped / this.step) * this.step;
-    if (stepped !== this.value) {
-      this.value = stepped;
-    }
+    return Math.max(this.min, Math.min(this.max, stepped));
+  }
+
+  private clampValue(dirty = this.dirtyValue) {
+    this.setValue(this.value, dirty);
+  }
+
+  private syncFormValue() {
+    const value = String(this.value);
+    this.internals?.setFormValue(value, value);
   }
 
   private handleTrackMouseDown(e: MouseEvent) {
-    if (this.disabled || this.readonly || this.loading) return;
+    if (this.interactionDisabled || this.readonly) return;
     // Click on track - allow transition
     this.updateValueFromEvent(e);
     // Only start dragging if clicking on track (not thumb)
@@ -254,19 +309,19 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private handleTrackTouchStart(e: TouchEvent) {
-    if (this.disabled || this.readonly || this.loading) return;
+    if (this.interactionDisabled || this.readonly) return;
     this.updateValueFromEvent(e);
     this.startDragging();
   }
 
   private handleThumbMouseDown(e: MouseEvent) {
-    if (this.disabled || this.readonly || this.loading) return;
+    if (this.interactionDisabled || this.readonly) return;
     e.stopPropagation();
     this.startDragging();
   }
 
   private handleThumbTouchStart(e: TouchEvent) {
-    if (this.disabled || this.readonly || this.loading) return;
+    if (this.interactionDisabled || this.readonly) return;
     e.stopPropagation();
     this.startDragging();
   }
@@ -335,7 +390,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   }
 
   private handleKeyDown(e: KeyboardEvent) {
-    if (this.disabled || this.readonly || this.loading) return;
+    if (this.interactionDisabled || this.readonly) return;
 
     let handled = false;
     const largeStep = this.step * 10;
@@ -376,17 +431,13 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     }
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
-    this.clampValue();
-
     if (this.input && this.input.value !== String(this.value)) {
       this.input.value = String(this.value);
     }
 
-    if (this.internals) {
-      this.internals.setFormValue(String(this.value));
-    }
+    this.syncFormValue();
 
     if (this.thumb) {
       const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
@@ -407,18 +458,21 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled || this.loading;
+      this.input.disabled = this.interactionDisabled;
     }
   }
 
-  @watch('loading')
-  handleLoadingChange() {
-    if (this.input) {
-      this.input.disabled = this.disabled || this.loading;
-    }
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
+  }
+
+  @watch('min', 'max', 'step')
+  handleConstraintsChange() {
+    this.clampValue(this.dirtyValue);
   }
 
   @dispatch('slider-input', { bubbles: true, composed: true })

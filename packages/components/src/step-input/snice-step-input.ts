@@ -1,10 +1,17 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-step-input.css?inline';
 import type { StepInputSize, SniceStepInputElement } from './snice-step-input.types';
 
 @element('snice-step-input', { formAssociated: true })
 export class SniceStepInput extends HTMLElement implements SniceStepInputElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
+
+  @state()
+  private valueState = 0;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,19 +20,40 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     }
   }
 
+  /**
+   * Live numeric value. Assignments do not rewrite the authored default.
+   * @public
+   */
+  get value(): number {
+    return this.valueState;
+  }
+
+  set value(value: number) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ type: Number, attribute: 'value' })
+  defaultValue = 0;
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = isFinite(this.min) ? this.min : 0;
-    if (this.internals) {
-      this.internals.setFormValue(String(this.value));
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
   }
 
-  @property({ type: Number })
-  value = 0;
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    const value = Number(state);
+    if (!Number.isNaN(value)) this.setValue(value, true);
+  }
 
   @property({ type: Number })
   min = -Infinity;
@@ -51,13 +79,17 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @query('.step-input__input')
   input?: HTMLInputElement;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
   @render()
   renderContent() {
     const classes = `step-input step-input--${this.size}`;
     const isMinBound = !this.wrap && this.value <= this.min;
     const isMaxBound = !this.wrap && this.value >= this.max;
-    const disableDec = this.disabled || (!this.wrap && isMinBound);
-    const disableInc = this.disabled || (!this.wrap && isMaxBound);
+    const disableDec = this.interactionDisabled || (!this.wrap && isMinBound);
+    const disableInc = this.interactionDisabled || (!this.wrap && isMaxBound);
 
     return html/*html*/`
       <div class="${classes}" part="base">
@@ -83,7 +115,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
           min="${this.min === -Infinity ? '' : this.min}"
           max="${this.max === Infinity ? '' : this.max}"
           step="${this.step}"
-          ?disabled="${this.disabled}"
+          ?disabled="${this.interactionDisabled}"
           ?readonly="${this.readonly}"
           role="spinbutton"
           aria-valuenow="${this.value}"
@@ -118,16 +150,43 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   @ready()
   init() {
-    this.clampValue();
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = Number((this as { value: unknown }).value);
+      delete (this as Partial<{ value: unknown }>).value;
+      if (!Number.isNaN(value)) this.value = value;
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
+    }
+    this.clampValue(false);
+    this.syncFormValue();
   }
 
-  private clampValue() {
-    if (this.min !== -Infinity && this.value < this.min) {
-      this.value = this.min;
-    }
-    if (this.max !== Infinity && this.value > this.max) {
-      this.value = this.max;
-    }
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return;
+    this.valueState = this.normalizeValue(parsed);
+    this.syncFormValue();
+  }
+
+  private normalizeValue(value: number): number {
+    let normalized = value;
+    if (this.min !== -Infinity) normalized = Math.max(this.min, normalized);
+    if (this.max !== Infinity) normalized = Math.min(this.max, normalized);
+    return this.roundToStep(normalized);
+  }
+
+  private clampValue(dirty = this.dirtyValue) {
+    this.setValue(this.value, dirty);
+  }
+
+  private syncFormValue() {
+    const value = String(this.value);
+    this.internals?.setFormValue(value, value);
   }
 
   private roundToStep(val: number): number {
@@ -136,7 +195,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   }
 
   increment() {
-    if (this.disabled || this.readonly) return;
+    if (this.interactionDisabled || this.readonly) return;
     const oldValue = this.value;
     let newValue = this.roundToStep(this.value + this.step);
 
@@ -151,7 +210,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   }
 
   decrement() {
-    if (this.disabled || this.readonly) return;
+    if (this.interactionDisabled || this.readonly) return;
     const oldValue = this.value;
     let newValue = this.roundToStep(this.value - this.step);
 
@@ -213,12 +272,22 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     }
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
-    this.clampValue();
     if (this.input && this.input.value !== String(this.value)) {
       this.input.value = String(this.value);
     }
+    this.syncFormValue();
+  }
+
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
+  }
+
+  @watch('min', 'max', 'step')
+  handleConstraintsChange() {
+    this.clampValue(this.dirtyValue);
   }
 
   @dispatch('value-change', { bubbles: true, composed: true })

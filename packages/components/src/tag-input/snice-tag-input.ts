@@ -1,10 +1,18 @@
-import { element, property, render, styles, dispatch, ready, dispose, reconnect, watch, query, html, css } from 'snice';
+import { element, property, state, render, styles, dispatch, ready, dispose, reconnect, watch, query, html, css } from 'snice';
 import type { SniceTagInputElement } from './snice-tag-input.types';
 import tagInputStyles from './snice-tag-input.css?inline';
 
 @element('snice-tag-input', { formAssociated: true })
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
+  private suppressValueEvent = false;
+
+  @state()
+  private valueState: string[] = [];
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,19 +21,44 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     }
   }
 
+  /**
+   * Live tags. Assignments do not rewrite the authored reset default.
+   * @public
+   */
+  get value(): string[] {
+    return this.valueState;
+  }
+
+  set value(value: string[]) {
+    this.setValue(value, true, true);
+  }
+
+  /** JSON-backed `value` content attribute and form-reset default. */
+  @property({ type: Array, attribute: 'value' })
+  defaultValue: string[] = [];
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = [];
-    if (this.internals) {
-      this.internals.setFormValue('');
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
   }
 
-  @property({ type: Array, attribute: false })
-  value: string[] = [];
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    try {
+      const value = JSON.parse(state);
+      if (Array.isArray(value)) this.setValue(value.map(String), true, false);
+    } catch {
+      // Ignore malformed browser restoration state.
+    }
+  }
 
   @property({ type: Array, attribute: false })
   suggestions: string[] = [];
@@ -66,6 +99,14 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
   @ready()
   init() {
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      if (Array.isArray(value)) this.value = value.map(String);
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
+    }
+    this.syncFormValue();
     this.attachOutsideClickListener();
   }
 
@@ -83,19 +124,50 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     document.addEventListener('click', this.handleDocumentClick);
   }
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean, emit: boolean) {
+    if (!Array.isArray(value)) return;
+    if (dirty) this.dirtyValue = true;
+    this.suppressValueEvent = !emit;
+    try {
+      this.valueState = value.map(String);
+    } finally {
+      this.suppressValueEvent = false;
+    }
+    this.syncFormValue();
+  }
+
+  private syncFormValue() {
+    const value = JSON.stringify(this.value);
+    this.internals?.setFormValue(value, value);
+  }
+
   private handleDocumentClick = (e: Event) => {
     if (e.composedPath().includes(this)) return;
     this.showSuggestions = false;
   };
 
-  @watch('value', { immediate: false })
+  @watch('valueState', { immediate: false })
   handleValueChange() {
-    this.emitChange();
+    this.syncFormValue();
+    if (!this.suppressValueEvent) this.emitChange();
+  }
+
+  @watch('defaultValue', { immediate: false })
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   @render()
   renderTagInput() {
-    const isDisabled = this.disabled;
+    const isDisabled = this.interactionDisabled;
     const isReadonly = this.readonly;
     const canAdd = !isDisabled && !isReadonly && (this.maxTags === 0 || this.value.length < this.maxTags);
     const hasLabel = !!this.label;

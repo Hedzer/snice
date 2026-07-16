@@ -78,6 +78,10 @@ upload.addEventListener('file-upload-change', (e) => {
 });
 ```
 
+### Form Reset and Browser Restoration
+
+Like native `<input type="file">`, file upload has no authorable non-empty default: browsers do not allow markup to preselect local files. `form.reset()` silently clears the current `FileList`, previews, and successful form value. Browser restoration accepts one `File` or a `FormData` containing repeated files and is also silent. Multiple selected files submit as repeated entries under `name`; an empty selection contributes no entry. Disconnect/reconnect and moving between forms preserve the current selection, while disabled fieldsets make choosing, dropping, and removing files inert without changing the authored `disabled` property or attribute.
+
 ## Examples
 
 ### Basic Upload

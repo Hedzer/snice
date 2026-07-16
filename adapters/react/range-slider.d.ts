@@ -3,15 +3,17 @@ import type { SniceFormProps } from './types';
  * Props for the RangeSlider component
  */
 export interface RangeSliderProps extends SniceFormProps {
+    defaultValueLow?: any;
+    defaultValueHigh?: any;
     min?: any;
     max?: any;
     step?: any;
-    valueLow?: any;
-    valueHigh?: any;
     disabled?: any;
     showTooltip?: any;
     showLabels?: any;
     orientation?: any;
+    valueLow?: any;
+    valueHigh?: any;
     onRangeChange?: (event: any) => void;
 }
 /**

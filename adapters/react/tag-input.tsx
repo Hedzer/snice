@@ -8,7 +8,7 @@ import type { SniceFormProps } from './types';
  * Props for the TagInput component
  */
 export interface TagInputProps extends SniceFormProps {
-  value?: any;
+  defaultValue?: any;
   suggestions?: any;
   maxTags?: any;
   allowDuplicates?: any;
@@ -17,6 +17,7 @@ export interface TagInputProps extends SniceFormProps {
   readonly?: any;
   label?: any;
   name?: any;
+  value?: any;
   onTagAdd?: (event: any) => void;
   onTagRemove?: (event: any) => void;
   onTagChange?: (event: any) => void;
@@ -40,7 +41,7 @@ export interface TagInputProps extends SniceFormProps {
  */
 export const TagInput = createReactAdapter<TagInputProps>({
   tagName: 'snice-tag-input',
-  properties: ["value","suggestions","maxTags","allowDuplicates","placeholder","disabled","readonly","label","name"],
+  properties: ["defaultValue","suggestions","maxTags","allowDuplicates","placeholder","disabled","readonly","label","name","value"],
   events: {"tag-add":"onTagAdd","tag-remove":"onTagRemove","tag-change":"onTagChange"},
   formAssociated: true
 });

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Select = createReactAdapter({
     tagName: 'snice-select',
-    properties: ["disabled", "required", "invalid", "readonly", "loading", "multiple", "searchable", "clearable", "allowFreeText", "editable", "remote", "searchDebounce", "open", "size", "name", "value", "label", "helperText", "errorText", "placeholder", "maxHeight", "options"],
+    properties: ["defaultValue", "disabled", "required", "invalid", "readonly", "loading", "multiple", "searchable", "clearable", "allowFreeText", "editable", "remote", "searchDebounce", "open", "size", "name", "label", "helperText", "errorText", "placeholder", "maxHeight", "options", "value"],
     events: { "select-change": "onSelectChange", "select-open": "onSelectOpen", "select-close": "onSelectClose" },
     formAssociated: true
 });

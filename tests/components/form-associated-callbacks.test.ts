@@ -19,13 +19,16 @@ describe('form-associated callbacks: switch', () => {
     expect(el.checked).toBe(false);
   });
 
-  it('formDisabledCallback disables element', async () => {
+  it('formDisabledCallback applies inherited disabledness without rewriting authored state', async () => {
     await import('../../packages/components/src/switch/snice-switch');
     const el = document.createElement('snice-switch') as any;
     document.body.appendChild(el);
     await el.ready;
     el.formDisabledCallback(true);
-    expect(el.disabled).toBe(true);
+    await el.rendered;
+    expect(el.disabled).toBe(false);
+    expect(el.hasAttribute('disabled')).toBe(false);
+    expect(el.shadowRoot.querySelector('.switch-input').disabled).toBe(true);
   });
 });
 
@@ -43,13 +46,17 @@ describe('form-associated callbacks: slider', () => {
     expect(el.value).toBe(10);
   });
 
-  it('formDisabledCallback disables element', async () => {
+  it('formDisabledCallback applies inherited disabledness without rewriting authored state', async () => {
     await import('../../packages/components/src/slider/snice-slider');
     const el = document.createElement('snice-slider') as any;
     document.body.appendChild(el);
     await el.ready;
     el.formDisabledCallback(true);
-    expect(el.disabled).toBe(true);
+    await el.rendered;
+    expect(el.disabled).toBe(false);
+    expect(el.hasAttribute('disabled')).toBe(false);
+    expect(el.shadowRoot.querySelector('.slider-thumb').tabIndex).toBe(-1);
+    expect(el.shadowRoot.querySelector('.slider-input').disabled).toBe(true);
   });
 });
 
@@ -65,13 +72,16 @@ describe('form-associated callbacks: textarea', () => {
     expect(el.value).toBe('');
   });
 
-  it('formDisabledCallback disables element', async () => {
+  it('formDisabledCallback applies inherited disabledness without rewriting authored state', async () => {
     await import('../../packages/components/src/textarea/snice-textarea');
     const el = document.createElement('snice-textarea') as any;
     document.body.appendChild(el);
     await el.ready;
     el.formDisabledCallback(true);
-    expect(el.disabled).toBe(true);
+    await el.rendered;
+    expect(el.disabled).toBe(false);
+    expect(el.hasAttribute('disabled')).toBe(false);
+    expect(el.shadowRoot.querySelector('.textarea').disabled).toBe(true);
   });
 });
 
@@ -87,13 +97,16 @@ describe('form-associated callbacks: select', () => {
     expect(el.value).toBe('');
   });
 
-  it('formDisabledCallback disables element', async () => {
+  it('formDisabledCallback applies inherited disabledness without rewriting authored state', async () => {
     await import('../../packages/components/src/select/snice-select');
     const el = document.createElement('snice-select') as any;
     document.body.appendChild(el);
     await el.ready;
     el.formDisabledCallback(true);
-    expect(el.disabled).toBe(true);
+    await el.rendered;
+    expect(el.disabled).toBe(false);
+    expect(el.hasAttribute('disabled')).toBe(false);
+    expect(el.shadowRoot.querySelector('.select-trigger').disabled).toBe(true);
   });
 });
 

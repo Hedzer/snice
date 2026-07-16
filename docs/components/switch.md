@@ -18,7 +18,8 @@ A toggle switch input for boolean selections. Supports on/off labels, form integ
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `checked` | `boolean` | `false` | Whether the switch is on |
+| `checked` (property only) | `boolean` | `false` | Live on/off state |
+| `defaultChecked` (attr: `checked`) | `boolean` | `false` | Authored state restored by form reset |
 | `disabled` | `boolean` | `false` | Disables the switch |
 | `loading` | `boolean` | `false` | Shows loading spinner and disables the switch |
 | `required` | `boolean` | `false` | Makes the switch required |
@@ -64,6 +65,10 @@ import 'snice/components/switch/snice-switch';
 ```html
 <snice-switch label="Enable notifications"></snice-switch>
 ```
+
+### Checked State and Reset Default
+
+`checked` is live checkedness. `defaultChecked` and the `checked` content attribute are the authored reset default, matching a native checkbox. Assigning or toggling `checked`—even to its current value—makes it dirty, so later default changes do not alter live state until `form.reset()` silently restores them. Browser restoration, repeated resets, disconnect/reconnect, form moves, and disabled fieldsets preserve this separation. A checked, enabled switch contributes its `value`; an unchecked switch contributes no entry.
 
 ## Examples
 

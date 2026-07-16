@@ -8,13 +8,22 @@ Two-handle slider for selecting a numeric range (min/max pair).
 min: number = 0;
 max: number = 100;
 step: number = 1;
-valueLow: number = 0;              // attr: value-low
-valueHigh: number = 100;           // attr: value-high
+valueLow: number = 0;              // live property only
+valueHigh: number = 100;           // live property only
+defaultValueLow: number = 0;       // attr: value-low
+defaultValueHigh: number = 100;    // attr: value-high
 disabled: boolean = false;
 showTooltip: boolean = false;      // attr: show-tooltip
 showLabels: boolean = false;       // attr: show-labels
 orientation: 'horizontal'|'vertical' = 'horizontal';
 ```
+
+## Value and form lifecycle
+
+- Live endpoints are independent from authored `value-low`/`value-high` defaults.
+- Each pristine endpoint follows its default; interaction, restore, or assignment dirties it.
+- Form/restoration state is `"low,high"`; reset silently restores both latest defaults as one clamped ordered range.
+- Repeated reset, reconnect, form moves, and disabled fieldsets preserve authored state.
 
 ## Events
 

@@ -8,8 +8,8 @@ import type { SniceFormProps } from './types';
  * Props for the ColorPicker component
  */
 export interface ColorPickerProps extends SniceFormProps {
+  defaultValue?: any;
   size?: any;
-  value?: any;
   format?: any;
   label?: any;
   helperText?: any;
@@ -22,6 +22,7 @@ export interface ColorPickerProps extends SniceFormProps {
   showInput?: any;
   showPresets?: any;
   presets?: any;
+  value?: any;
   onColorPickerInput?: (event: any) => void;
   onColorPickerChange?: (event: any) => void;
   onColorPickerFocus?: (event: any) => void;
@@ -46,7 +47,7 @@ export interface ColorPickerProps extends SniceFormProps {
  */
 export const ColorPicker = createReactAdapter<ColorPickerProps>({
   tagName: 'snice-color-picker',
-  properties: ["size","value","format","label","helperText","errorText","disabled","loading","required","invalid","name","showInput","showPresets","presets"],
+  properties: ["defaultValue","size","format","label","helperText","errorText","disabled","loading","required","invalid","name","showInput","showPresets","presets","value"],
   events: {"color-picker-input":"onColorPickerInput","color-picker-change":"onColorPickerChange","color-picker-focus":"onColorPickerFocus","color-picker-blur":"onColorPickerBlur"},
   formAssociated: true
 });

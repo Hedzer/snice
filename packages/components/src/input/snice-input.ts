@@ -1,4 +1,4 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
@@ -6,6 +6,13 @@ import type { InputType, InputSize, InputVariant, SniceInputElement } from './sn
 @element('snice-input', { formAssociated: true })
 export class SniceInput extends HTMLElement implements SniceInputElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
+
+  @state()
+  private valueState = '';
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -15,14 +22,28 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   }
 
   /**
-   * Form-associated lifecycle callback: invoked when the containing form is
-   * reset. Clear the value so the visible field matches the form state.
+   * Live value. Assignments do not rewrite the authored reset default.
+   * @public
    */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '';
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = '';
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   /**
@@ -30,7 +51,11 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
    * disables the element.
    */
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state === 'string') this.setValue(state, true);
   }
 
   @property({  })
@@ -41,9 +66,6 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   @property({  })
   variant: InputVariant = 'outlined';
-
-  @property({  })
-  value = '';
 
   @property({  })
   placeholder = '';
@@ -131,6 +153,10 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   private inputId = `snice-input-${Math.random().toString(36).slice(2, 10)}`;
   private descId = `${this.inputId}-desc`;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
   @render()
   render() {
     const inputClasses = [
@@ -170,7 +196,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             type="${this.type}"
             value="${this.value}"
             placeholder="${this.placeholder}"
-            ?disabled="${this.disabled || this.loading}"
+            ?disabled="${this.interactionDisabled}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
             aria-invalid="${this.invalid ? 'true' : 'false'}"
@@ -193,6 +219,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
           <button
             class="${clearButtonClasses}"
             type="button"
+            .disabled=${this.interactionDisabled || this.readonly}
             aria-label="Clear"
             tabindex="-1"
             part="clear"
@@ -212,6 +239,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             <button
               class="password-toggle"
               type="button"
+              .disabled=${this.interactionDisabled}
               aria-label="Show password"
               tabindex="-1"
               part="password-toggle"
@@ -257,14 +285,20 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   @ready()
   init() {
-    // Set initial form value
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
+    // Preserve a value assigned before custom-element upgrade. The own data
+    // property would otherwise shadow the native-compatible accessor.
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      this.value = String(value ?? '');
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
     }
+    this.syncFormValue();
 
     // Set initial clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
+      const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
@@ -292,10 +326,24 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       if (this.pattern) this.input.pattern = this.pattern;
       if (this.placeholder) this.input.placeholder = this.placeholder;
       if (this.value) this.input.value = this.value;
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.interactionDisabled;
       this.input.readOnly = this.readonly;
       this.input.required = this.required;
     }
+  }
+
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    this.valueState = String(value ?? '');
+    this.syncFormValue();
+  }
+
+  private syncFormValue() {
+    this.internals?.setFormValue(this.value, this.value);
   }
 
   handleInput(e: Event) {
@@ -338,19 +386,17 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
     // Only update input.value if it's different to avoid unnecessary DOM updates
     if (this.input && this.input.value !== this.value) {
       this.input.value = this.value;
     }
     // Update form value
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncFormValue();
     // Show/hide clear button based on value
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
+      const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
@@ -368,27 +414,14 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled || this.loading;
+      this.input.disabled = this.interactionDisabled;
     }
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
-      this.clearButton.style.display = shouldShow ? '' : 'none';
-      this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
-    }
-  }
-
-  @watch('loading')
-  handleLoadingChange() {
-    if (this.input) {
-      this.input.disabled = this.disabled || this.loading;
-    }
-    // Update clear button visibility
-    if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
+      const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
@@ -401,10 +434,15 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     }
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
-      const shouldShow = this.value && !this.disabled && !this.readonly && !this.loading;
+      const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
       this.clearButton.style.display = shouldShow ? '' : 'none';
       this.clearButton.classList.toggle('clear-button--visible', !!shouldShow);
     }
+  }
+
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   @watch('placeholder')

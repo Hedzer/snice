@@ -8,10 +8,10 @@ import type { SniceFormProps } from './types';
  * Props for the Input component
  */
 export interface InputProps extends SniceFormProps {
+  defaultValue?: any;
   type?: any;
   size?: any;
   variant?: any;
-  value?: any;
   placeholder?: any;
   label?: any;
   helperText?: any;
@@ -36,6 +36,7 @@ export interface InputProps extends SniceFormProps {
   stretch?: any;
   prefixIcon?: any;
   suffixIcon?: any;
+  value?: any;
   onInputInput?: (event: any) => void;
   onInputChange?: (event: any) => void;
   onInputFocus?: (event: any) => void;
@@ -61,7 +62,7 @@ export interface InputProps extends SniceFormProps {
  */
 export const Input = createReactAdapter<InputProps>({
   tagName: 'snice-input',
-  properties: ["type","size","variant","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","password","min","max","step","pattern","maxlength","minlength","autocomplete","name","align","labelAlign","stretch","prefixIcon","suffixIcon"],
+  properties: ["defaultValue","type","size","variant","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","password","min","max","step","pattern","maxlength","minlength","autocomplete","name","align","labelAlign","stretch","prefixIcon","suffixIcon","value"],
   events: {"input-input":"onInputInput","input-change":"onInputChange","input-focus":"onInputFocus","input-blur":"onInputBlur","input-clear":"onInputClear"},
   formAssociated: true
 });

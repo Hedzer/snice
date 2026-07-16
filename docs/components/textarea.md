@@ -17,7 +17,8 @@ A multi-line text input with validation, character counting, and optional auto-g
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `string` | `''` | Textarea value |
+| `value` (property only) | `string` | `''` | Live textarea value; does not rewrite the reset default |
+| `defaultValue` (attr: `value`) | `string` | `''` | Authored value and form-reset default |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
 | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style |
 | `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Resize behavior |
@@ -76,6 +77,10 @@ import 'snice/components/textarea/snice-textarea';
 ```html
 <snice-textarea label="Comments" placeholder="Enter your comments here" rows="5"></snice-textarea>
 ```
+
+### Live Value and Reset Default
+
+`value` is the live editing channel; `defaultValue` and the `value` content attribute are the authored reset default. Default changes update live text only while pristine. Typing, assigning `value` (including the same value), or browser restoration makes the textarea dirty; `form.reset()` clears dirtiness and silently restores the current default. Repeated resets are stable, and moving or reconnecting the control does not lose either state. Inherited fieldset disabledness never rewrites the authored `disabled` state.
 
 ## Examples
 

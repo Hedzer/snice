@@ -3,7 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the StepInput component
  */
 export interface StepInputProps extends SniceFormProps {
-    value?: any;
+    defaultValue?: any;
     min?: any;
     max?: any;
     step?: any;
@@ -11,6 +11,7 @@ export interface StepInputProps extends SniceFormProps {
     readonly?: any;
     size?: any;
     wrap?: any;
+    value?: any;
     onValueChange?: (event: any) => void;
 }
 /**

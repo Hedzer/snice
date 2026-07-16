@@ -5,7 +5,8 @@ Text input field with validation, icons, and form association.
 ## Properties
 
 ```typescript
-value: string = '';
+value: string = '';              // live property only
+defaultValue: string = '';       // attr: value; authored/reset default
 type: 'text'|'password'|'email'|'number'|'tel'|'url'|'search'|'date'|'time'|'datetime-local' = 'text';
 variant: 'outlined'|'filled'|'underlined' = 'outlined';
 size: 'small'|'medium'|'large' = 'medium';
@@ -34,6 +35,13 @@ align: 'top'|'center'|'bottom'|'' = '';  // vertical alignment when host has exp
 labelAlign: 'left'|'center'|'right' = 'left';  // attr: label-align
 stretch: boolean = false;                 // input fills full host height
 ```
+
+## Value and form lifecycle
+
+- `value` is live; `defaultValue` reflects the `value` attribute.
+- A default mutation updates live state only while pristine. Typing, clear, browser restore, or any `value` assignment (including the same value) dirties it.
+- `form.reset()` silently restores the current default. Restore/reset emit no native or component value events.
+- Reconnect/form moves retain both states; fieldset disabledness never rewrites authored `disabled`.
 
 ## Methods
 

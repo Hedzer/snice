@@ -2383,7 +2383,7 @@
         },
         {
           "name": "value",
-          "description": "value: string"
+          "description": "The `value` content attribute and form-reset default."
         }
       ]
     },
@@ -4488,7 +4488,7 @@
         },
         {
           "name": "value",
-          "description": "value: string"
+          "description": "The `value` content attribute and form-reset default."
         },
         {
           "name": "variant",
@@ -6550,11 +6550,11 @@
         },
         {
           "name": "value-high",
-          "description": "valueHigh: number"
+          "description": "The `value-high` content attribute and upper form-reset default."
         },
         {
           "name": "value-low",
-          "description": "valueLow: number"
+          "description": "The `value-low` content attribute and lower form-reset default."
         }
       ]
     },
@@ -6982,7 +6982,7 @@
         },
         {
           "name": "value",
-          "description": "value: string"
+          "description": "The `value` content attribute and form-reset default."
         }
       ]
     },
@@ -7118,7 +7118,7 @@
         },
         {
           "name": "value",
-          "description": "value: number"
+          "description": "The `value` content attribute and form-reset default."
         },
         {
           "name": "variant",
@@ -7516,7 +7516,7 @@
         },
         {
           "name": "value",
-          "description": "value: number"
+          "description": "The `value` content attribute and form-reset default."
         },
         {
           "name": "wrap",
@@ -7570,7 +7570,7 @@
       "attributes": [
         {
           "name": "checked",
-          "description": "checked: boolean"
+          "description": "The `checked` content attribute and form-reset default."
         },
         {
           "name": "disabled",
@@ -8007,6 +8007,10 @@
         {
           "name": "readonly",
           "description": "readonly: boolean"
+        },
+        {
+          "name": "value",
+          "description": "JSON-backed `value` content attribute and form-reset default."
         }
       ]
     },
@@ -8184,7 +8188,7 @@
         },
         {
           "name": "value",
-          "description": "value: string"
+          "description": "The `value` content attribute and form-reset default."
         },
         {
           "name": "variant",

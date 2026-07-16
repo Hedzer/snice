@@ -1,10 +1,21 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-range-slider.css?inline';
 import type { RangeSliderOrientation, SniceRangeSliderElement } from './snice-range-slider.types';
 
 @element('snice-range-slider', { formAssociated: true })
 export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderElement {
   internals!: ElementInternals;
+  private dirtyValueLow = false;
+  private dirtyValueHigh = false;
+
+  @state()
+  private valueLowState = 0;
+
+  @state()
+  private valueHighState = 100;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,16 +24,59 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     }
   }
 
+  /**
+   * Live lower value. Assignments do not rewrite the authored default.
+   * @public
+   */
+  get valueLow(): number {
+    return this.valueLowState;
+  }
+
+  set valueLow(value: number) {
+    this.setValueLow(value, true);
+  }
+
+  /**
+   * Live upper value. Assignments do not rewrite the authored default.
+   * @public
+   */
+  get valueHigh(): number {
+    return this.valueHighState;
+  }
+
+  set valueHigh(value: number) {
+    this.setValueHigh(value, true);
+  }
+
+  /** The `value-low` content attribute and lower form-reset default. */
+  @property({ type: Number, attribute: 'value-low' })
+  defaultValueLow = 0;
+
+  /** The `value-high` content attribute and upper form-reset default. */
+  @property({ type: Number, attribute: 'value-high' })
+  defaultValueHigh = 100;
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.valueLow = this.min;
-    this.valueHigh = this.max;
-    if (this.internals) {
-      this.internals.setFormValue(`${this.valueLow},${this.valueHigh}`);
-    }
+    this.dirtyValueLow = false;
+    this.dirtyValueHigh = false;
+    this.applyDefaultValues();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state !== 'string') return;
+    const parts = state.split(',');
+    if (parts.length !== 2) return;
+    const [low, high] = parts.map(Number);
+    if (Number.isNaN(low) || Number.isNaN(high)) return;
+    this.setValues(low, high, true, true);
   }
 
   @property({ type: Number })
@@ -33,12 +87,6 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   @property({ type: Number })
   step = 1;
-
-  @property({ type: Number, attribute: 'value-low' })
-  valueLow = 0;
-
-  @property({ type: Number, attribute: 'value-high' })
-  valueHigh = 100;
 
   @property({ type: Boolean })
   disabled = false;
@@ -63,6 +111,10 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   private draggingThumb: 'low' | 'high' | null = null;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
   @render()
   renderContent() {
     const isVertical = this.orientation === 'vertical';
@@ -80,21 +132,21 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     const lowThumbStyle = isVertical ? `bottom: ${lowPct}%` : `left: ${lowPct}%`;
     const highThumbStyle = isVertical ? `bottom: ${highPct}%` : `left: ${highPct}%`;
 
-    const trackClasses = `range-slider__track${this.disabled ? ' range-slider__track--disabled' : ''}`;
+    const trackClasses = `range-slider__track${this.interactionDisabled ? ' range-slider__track--disabled' : ''}`;
     const isDragging = this.draggingThumb !== null;
     const rangeClasses = `range-slider__range${isDragging ? ' range-slider__range--dragging' : ''}`;
 
     const lowThumbClasses = [
       'range-slider__thumb',
       'range-slider__thumb--low',
-      this.disabled ? 'range-slider__thumb--disabled' : '',
+      this.interactionDisabled ? 'range-slider__thumb--disabled' : '',
       this.draggingThumb === 'low' ? 'range-slider__thumb--dragging' : ''
     ].filter(Boolean).join(' ');
 
     const highThumbClasses = [
       'range-slider__thumb',
       'range-slider__thumb--high',
-      this.disabled ? 'range-slider__thumb--disabled' : '',
+      this.interactionDisabled ? 'range-slider__thumb--disabled' : '',
       this.draggingThumb === 'high' ? 'range-slider__thumb--dragging' : ''
     ].filter(Boolean).join(' ');
 
@@ -113,7 +165,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               class="${lowThumbClasses}"
               style="${lowThumbStyle}"
               part="thumb-low"
-              tabindex="${this.disabled ? -1 : 0}"
+              tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-label="Range minimum"
               aria-valuenow="${this.valueLow}"
@@ -132,7 +184,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               class="${highThumbClasses}"
               style="${highThumbStyle}"
               part="thumb-high"
-              tabindex="${this.disabled ? -1 : 0}"
+              tabindex="${this.interactionDisabled ? -1 : 0}"
               role="slider"
               aria-label="Range maximum"
               aria-valuenow="${this.valueHigh}"
@@ -166,17 +218,74 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   @ready()
   init() {
+    if (Object.prototype.hasOwnProperty.call(this, 'valueLow')) {
+      const value = Number((this as { valueLow: unknown }).valueLow);
+      delete (this as Partial<{ valueLow: unknown }>).valueLow;
+      if (!Number.isNaN(value)) this.valueLow = value;
+    }
+    if (Object.prototype.hasOwnProperty.call(this, 'valueHigh')) {
+      const value = Number((this as { valueHigh: unknown }).valueHigh);
+      delete (this as Partial<{ valueHigh: unknown }>).valueHigh;
+      if (!Number.isNaN(value)) this.valueHigh = value;
+    }
+    if (!this.dirtyValueLow && !this.dirtyValueHigh) {
+      this.applyDefaultValues();
+    } else {
+      if (!this.dirtyValueLow) this.setValueLow(this.defaultValueLow, false);
+      if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
+    }
     this.clampValues();
+    this.syncFormValue();
+  }
+
+  private applyDefaultValues() {
+    this.setValues(this.defaultValueLow, this.defaultValueHigh, false, false);
+  }
+
+  private setValueLow(value: unknown, dirty: boolean) {
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return;
+    if (dirty) this.dirtyValueLow = true;
+    const normalized = this.normalizeValue(parsed);
+    this.valueLowState = Math.min(normalized, this.valueHigh);
+    this.syncFormValue();
+  }
+
+  private setValueHigh(value: unknown, dirty: boolean) {
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return;
+    if (dirty) this.dirtyValueHigh = true;
+    const normalized = this.normalizeValue(parsed);
+    this.valueHighState = Math.max(normalized, this.valueLow);
+    this.syncFormValue();
+  }
+
+  private setValues(low: unknown, high: unknown, dirtyLow: boolean, dirtyHigh: boolean) {
+    const parsedLow = Number(low);
+    const parsedHigh = Number(high);
+    if (Number.isNaN(parsedLow) || Number.isNaN(parsedHigh)) return;
+    if (dirtyLow) this.dirtyValueLow = true;
+    if (dirtyHigh) this.dirtyValueHigh = true;
+    const normalizedLow = this.normalizeValue(parsedLow);
+    const normalizedHigh = this.normalizeValue(parsedHigh);
+    this.valueLowState = Math.min(normalizedLow, normalizedHigh);
+    this.valueHighState = Math.max(normalizedLow, normalizedHigh);
+    this.syncFormValue();
+  }
+
+  private normalizeValue(value: number): number {
+    const clamped = Math.max(this.min, Math.min(this.max, value));
+    const stepped = Math.round(clamped / this.step) * this.step;
+    return Math.max(this.min, Math.min(this.max, stepped));
   }
 
   private clampValues() {
-    let low = Math.max(this.min, Math.min(this.max, this.valueLow));
-    let high = Math.max(this.min, Math.min(this.max, this.valueHigh));
-    low = Math.round(low / this.step) * this.step;
-    high = Math.round(high / this.step) * this.step;
-    if (low > high) low = high;
-    if (low !== this.valueLow) this.valueLow = low;
-    if (high !== this.valueHigh) this.valueHigh = high;
+    this.setValues(this.valueLow, this.valueHigh, this.dirtyValueLow, this.dirtyValueHigh);
+  }
+
+  private syncFormValue() {
+    const value = `${this.valueLow},${this.valueHigh}`;
+    this.internals?.setFormValue(value, value);
   }
 
   private getPositionFromEvent(e: MouseEvent | TouchEvent): number {
@@ -202,7 +311,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private handleTrackMouseDown(e: MouseEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     const pos = this.getPositionFromEvent(e);
     const val = this.positionToValue(pos);
 
@@ -223,7 +332,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private handleTrackTouchStart(e: TouchEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     const pos = this.getPositionFromEvent(e);
     const val = this.positionToValue(pos);
 
@@ -243,28 +352,28 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private handleLowThumbMouseDown(e: MouseEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     e.stopPropagation();
     this.draggingThumb = 'low';
     this.startDragging();
   }
 
   private handleLowThumbTouchStart(e: TouchEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     e.stopPropagation();
     this.draggingThumb = 'low';
     this.startDragging();
   }
 
   private handleHighThumbMouseDown(e: MouseEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     e.stopPropagation();
     this.draggingThumb = 'high';
     this.startDragging();
   }
 
   private handleHighThumbTouchStart(e: TouchEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     e.stopPropagation();
     this.draggingThumb = 'high';
     this.startDragging();
@@ -318,7 +427,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private handleLowKeyDown(e: KeyboardEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     let handled = false;
 
     switch (e.key) {
@@ -349,7 +458,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   }
 
   private handleHighKeyDown(e: KeyboardEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     let handled = false;
 
     switch (e.key) {
@@ -379,8 +488,23 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     }
   }
 
-  @watch('valueLow', 'valueHigh')
+  @watch('valueLowState', 'valueHighState')
   handleValuesChange() {
+    this.syncFormValue();
+  }
+
+  @watch('defaultValueLow')
+  handleDefaultValueLowChange() {
+    if (!this.dirtyValueLow) this.setValueLow(this.defaultValueLow, false);
+  }
+
+  @watch('defaultValueHigh')
+  handleDefaultValueHighChange() {
+    if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
+  }
+
+  @watch('min', 'max', 'step')
+  handleConstraintsChange() {
     this.clampValues();
   }
 

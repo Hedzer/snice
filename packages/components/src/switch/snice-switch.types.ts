@@ -2,6 +2,7 @@ export type SwitchSize = 'small' | 'medium' | 'large';
 
 export interface SniceSwitchElement extends HTMLElement {
   checked: boolean;
+  defaultChecked: boolean;
   disabled: boolean;
   required: boolean;
   invalid: boolean;

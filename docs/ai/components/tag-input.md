@@ -5,7 +5,8 @@ Tag/chip input with autocomplete suggestions, keyboard navigation, and comma-sep
 ## Properties
 
 ```typescript
-value: string[] = [];
+value: string[] = [];             // live property only
+defaultValue: string[] = [];      // attr: value as JSON; authored/reset default
 suggestions: string[] = [];
 maxTags: number = 0;              // 0 = unlimited (attr: max-tags)
 allowDuplicates: boolean = false; // attr: allow-duplicates
@@ -15,6 +16,13 @@ readonly: boolean = false;
 label: string = '';
 name: string = '';
 ```
+
+## Value and form lifecycle
+
+- The `value` attribute parses JSON and backs `defaultValue`; live `value` is a separate cloned array.
+- Adding/removing/restoring/assigning tags dirties live state. Pristine state follows default changes.
+- The successful/restoration value is JSON, preserving commas and Unicode within tags.
+- Reset/restoration are silent. Reconnect, form moves, repeated resets, and fieldset disabledness preserve authored state.
 
 ## Methods
 

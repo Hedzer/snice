@@ -1,5 +1,6 @@
 export interface SniceTagInputElement extends HTMLElement {
   value: string[];
+  defaultValue: string[];
   suggestions: string[];
   maxTags: number;
   allowDuplicates: boolean;

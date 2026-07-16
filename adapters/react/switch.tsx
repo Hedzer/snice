@@ -8,7 +8,7 @@ import type { SniceFormProps } from './types';
  * Props for the Switch component
  */
 export interface SwitchProps extends SniceFormProps {
-  checked?: any;
+  defaultChecked?: any;
   disabled?: any;
   loading?: any;
   required?: any;
@@ -19,6 +19,7 @@ export interface SwitchProps extends SniceFormProps {
   label?: any;
   labelOn?: any;
   labelOff?: any;
+  checked?: any;
   onSwitchChange?: (event: any) => void;
 }
 
@@ -40,7 +41,7 @@ export interface SwitchProps extends SniceFormProps {
  */
 export const Switch = createReactAdapter<SwitchProps>({
   tagName: 'snice-switch',
-  properties: ["checked","disabled","loading","required","invalid","size","name","value","label","labelOn","labelOff"],
+  properties: ["defaultChecked","disabled","loading","required","invalid","size","name","value","label","labelOn","labelOff","checked"],
   events: {"switch-change":"onSwitchChange"},
   formAssociated: true
 });

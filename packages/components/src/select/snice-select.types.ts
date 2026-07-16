@@ -18,6 +18,7 @@ export interface SniceOptionElement extends HTMLElement {
 
 export interface SniceSelectElement extends HTMLElement {
   value: string;
+  defaultValue: string;
   disabled: boolean;
   required: boolean;
   invalid: boolean;

@@ -1,10 +1,17 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-textarea.css?inline';
 import type { TextareaSize, TextareaVariant, TextareaResize, SniceTextareaElement } from './snice-textarea.types';
 
 @element('snice-textarea', { formAssociated: true })
 export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
+
+  @state()
+  private valueState = '';
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,15 +20,37 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     }
   }
 
+  /**
+   * Live value. Assignments do not rewrite the authored reset default.
+   * @public
+   */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '';
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = '';
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state === 'string') this.setValue(state, true);
   }
 
   @property({  })
@@ -32,9 +61,6 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
   @property({  })
   resize: TextareaResize = 'vertical';
-
-  @property({  })
-  value = '';
 
   @property({  })
   placeholder = '';
@@ -90,6 +116,10 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   private inputId = `snice-textarea-${Math.random().toString(36).slice(2, 10)}`;
   private descId = `${this.inputId}-desc`;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
   @render()
   render() {
     const textareaClasses = [
@@ -122,7 +152,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             id="${this.inputId}"
             .value="${this.value}"
             placeholder="${this.placeholder}"
-            ?disabled="${this.disabled || this.loading}"
+            ?disabled="${this.interactionDisabled}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
             aria-invalid="${this.invalid ? 'true' : 'false'}"
@@ -171,9 +201,14 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
   @ready()
   init() {
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      this.value = String(value ?? '');
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
     }
+    this.syncFormValue();
 
     if (this.textarea && this.invalid) {
       this.textarea.setAttribute('aria-invalid', 'true');
@@ -185,7 +220,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
       if (this.minlength > 0) this.textarea.minLength = this.minlength;
       if (this.placeholder) this.textarea.placeholder = this.placeholder;
       if (this.value) this.textarea.value = this.value;
-      this.textarea.disabled = this.disabled || this.loading;
+      this.textarea.disabled = this.interactionDisabled;
       this.textarea.readOnly = this.readonly;
       this.textarea.required = this.required;
 
@@ -193,6 +228,20 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
         this.adjustHeight();
       }
     }
+  }
+
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    this.valueState = String(value ?? '');
+    this.syncFormValue();
+  }
+
+  private syncFormValue() {
+    this.internals?.setFormValue(this.value, this.value);
   }
 
   handleInput(e: Event) {
@@ -227,7 +276,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     this.textarea.style.height = `${this.textarea.scrollHeight}px`;
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
     if (this.textarea && this.textarea.value !== this.value) {
       this.textarea.value = this.value;
@@ -237,9 +286,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
       }
     }
 
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncFormValue();
   }
 
   @watch('invalid')
@@ -254,10 +301,10 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.textarea) {
-      this.textarea.disabled = this.disabled || this.loading;
+      this.textarea.disabled = this.interactionDisabled;
     }
   }
 
@@ -265,13 +312,6 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   handleReadonlyChange() {
     if (this.textarea) {
       this.textarea.readOnly = this.readonly;
-    }
-  }
-
-  @watch('loading')
-  handleLoadingChange() {
-    if (this.textarea) {
-      this.textarea.disabled = this.disabled || this.loading;
     }
   }
 
@@ -308,6 +348,11 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     if (this.autoGrow && this.textarea) {
       this.adjustHeight();
     }
+  }
+
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   @dispatch('textarea-input', { bubbles: true, composed: true })

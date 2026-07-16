@@ -6,6 +6,7 @@ import { FormLabelAssociation } from '../form-label-association';
 @element('snice-color-picker', { formAssociated: true })
 export class SniceColorPicker extends HTMLElement implements SniceColorPickerElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
   private readonly descriptionId = `snice-color-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
   private readonly labelAssociation: FormLabelAssociation;
 
@@ -23,11 +24,32 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     );
   }
 
+  @state()
+  private valueState = '#000000';
+
+  /**
+   * Live color. Assignments do not rewrite the authored reset default.
+   * @public
+   */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '#000000';
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = '';
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -35,14 +57,15 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     this.formDisabled = disabled;
   }
 
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state === 'string') this.setValue(state, true);
+  }
+
   @state()
   private formDisabled = false;
 
   @property({  })
   size: ColorPickerSize = 'medium';
-
-  @property({  })
-  value = '#000000';
 
   @property({  })
   format: ColorPickerFormat = 'hex';
@@ -231,11 +254,14 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   @ready()
   init() {
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      this.value = String(value ?? '');
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
     }
-
-    this.normalizeValue();
+    this.syncFormValue();
     this.labelAssociation.connect();
   }
 
@@ -304,11 +330,19 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     this.dispatchBlurEvent();
   }
 
-  private normalizeValue() {
-    // Ensure value is a valid hex color
-    if (!this.value.startsWith('#')) {
-      this.value = '#000000';
-    }
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    const candidate = String(value ?? '');
+    this.valueState = candidate.startsWith('#') ? candidate : '#000000';
+    this.syncFormValue();
+  }
+
+  private syncFormValue() {
+    this.internals?.setFormValue(this.value, this.value);
   }
 
   private toHex(color: string): string {
@@ -440,10 +474,8 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
-    this.normalizeValue();
-
     if (this.input) {
       this.input.value = this.formatColor(this.value, this.format);
     }
@@ -452,9 +484,12 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
       this.nativeInput.value = this.toHex(this.value);
     }
 
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncFormValue();
+  }
+
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   @watch('format')

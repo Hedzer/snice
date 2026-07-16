@@ -3,7 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the TagInput component
  */
 export interface TagInputProps extends SniceFormProps {
-    value?: any;
+    defaultValue?: any;
     suggestions?: any;
     maxTags?: any;
     allowDuplicates?: any;
@@ -12,6 +12,7 @@ export interface TagInputProps extends SniceFormProps {
     readonly?: any;
     label?: any;
     name?: any;
+    value?: any;
     onTagAdd?: (event: any) => void;
     onTagRemove?: (event: any) => void;
     onTagChange?: (event: any) => void;

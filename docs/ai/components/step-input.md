@@ -5,7 +5,8 @@ Numeric stepper control with visible +/- buttons flanking an input field.
 ## Properties
 
 ```typescript
-value: number = 0;
+value: number = 0;                // live property only
+defaultValue: number = 0;         // attr: value; authored/reset default
 min: number = -Infinity;
 max: number = Infinity;
 step: number = 1;
@@ -14,6 +15,13 @@ readonly: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
 wrap: boolean = false;              // wrap around at min/max boundaries
 ```
+
+## Value and form lifecycle
+
+- `value` is live normalized state; `defaultValue` reflects the `value` attribute.
+- Pristine state follows default mutations. Input, increment/decrement, restore, or any live assignment dirties it.
+- Reset silently restores the latest default under current min/max/step constraints.
+- Repeated reset, reconnect, form moves, and fieldset disabledness do not rewrite authored state.
 
 ## Methods
 

@@ -5,6 +5,7 @@ export interface SniceSliderElement extends HTMLElement {
   size: SliderSize;
   variant: SliderVariant;
   value: number;
+  defaultValue: number;
   min: number;
   max: number;
   step: number;

@@ -19,7 +19,8 @@ An interactive range slider for selecting numeric values with mouse, touch, and 
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `number` | `0` | Current slider value |
+| `value` | `number` | `0` | Live slider value; property only |
+| `defaultValue` (attr: `value`) | `number` | `0` | Authored value restored by form reset |
 | `min` | `number` | `0` | Minimum value |
 | `max` | `number` | `100` | Maximum value |
 | `step` | `number` | `1` | Step increment |
@@ -77,6 +78,10 @@ import 'snice/components/slider/snice-slider';
 ```html
 <snice-slider label="Volume" min="0" max="100" value="50"></snice-slider>
 ```
+
+### Live Value and Reset Default
+
+`value` is live, clamped/stepped state. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Pristine sliders follow default changes; pointer, touch, keyboard, direct `value` assignment (even unchanged), or browser restoration makes the slider dirty. Reset/restoration are silent, repeated reset is stable, and disconnects/form moves retain both states. A disabled fieldset makes every thumb/input path inert without changing authored `disabled`.
 
 ## Examples
 

@@ -6,7 +6,8 @@ Color picker with format conversion, presets, and form integration.
 
 ```typescript
 size: 'small'|'medium'|'large' = 'medium';
-value: string = '#000000';
+value: string = '#000000';        // live property only
+defaultValue: string = '#000000'; // attr: value; authored/reset default
 format: 'hex'|'rgb'|'hsl' = 'hex';
 label: string = '';
 helperText: string = '';       // attribute: helper-text
@@ -21,6 +22,13 @@ presets: string[] = [...];
 loading: boolean = false;
 readonly labels: NodeList|null;
 ```
+
+## Value and form lifecycle
+
+- `value` is live; `defaultValue` reflects the `value` attribute.
+- Pristine state follows default changes. Typing, native/preset choice, restore, or any `value` assignment dirties it.
+- Reset/restoration are silent and preserve the default across reconnects/form moves.
+- Disabled fieldsets disable input, swatch, native chooser, and presets without rewriting `disabled`.
 
 ## Methods
 

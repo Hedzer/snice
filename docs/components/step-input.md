@@ -19,7 +19,8 @@ A numeric stepper control with visible increment and decrement buttons flanking 
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `number` | `0` | Current value |
+| `value` | `number` | `0` | Live numeric value; property only |
+| `defaultValue` (attr: `value`) | `number` | `0` | Authored value restored by form reset |
 | `min` | `number` | `-Infinity` | Minimum allowed value |
 | `max` | `number` | `Infinity` | Maximum allowed value |
 | `step` | `number` | `1` | Increment/decrement amount |
@@ -61,6 +62,10 @@ import 'snice/components/step-input/snice-step-input';
 ```html
 <snice-step-input value="5"></snice-step-input>
 ```
+
+### Live Value and Reset Default
+
+`value` is the live, normalized number; `defaultValue` reflects the `value` content attribute and is the reset default. A pristine control follows default mutations. Incrementing, decrementing, typing, assigning `value` (including the same value), or browser restoration makes it dirty; reset silently restores the latest default, clamped and stepped by the current constraints. Form moves, reconnects, repeated reset, and inherited fieldset disabledness preserve authored state.
 
 ## Examples
 

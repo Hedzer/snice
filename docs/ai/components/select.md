@@ -12,7 +12,8 @@ Customizable dropdown selection with single/multiple, search, editable input, an
 ### snice-select
 
 ```typescript
-value: string = '';                 // Comma-separated for multiple
+value: string = '';                 // Live; comma-separated for multiple
+defaultValue: string = '';          // attr: value; authored/reset default
 disabled: boolean = false;
 required: boolean = false;
 invalid: boolean = false;
@@ -47,6 +48,12 @@ disabled: boolean = false;
 selected: boolean = false;
 icon: string = '';        // Icon URL
 ```
+
+## Value and form lifecycle
+
+- `value` is live; `defaultValue` reflects the host `value` attribute.
+- Pristine selects follow default changes. Selection, clear, editable commits, restoration, or any `value` assignment (including the same value) makes live state dirty.
+- `form.reset()` restores the current default silently. Repeated resets, reconnects, form moves, and inherited fieldset disabledness retain authored state.
 
 ## Methods
 

@@ -4,6 +4,7 @@ export type ColorPickerFormat = 'hex' | 'rgb' | 'hsl';
 export interface SniceColorPickerElement extends HTMLElement {
   size: ColorPickerSize;
   value: string;
+  defaultValue: string;
   format: ColorPickerFormat;
   label: string;
   helperText: string;

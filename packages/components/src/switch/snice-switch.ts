@@ -1,10 +1,17 @@
-import { element, property, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
 
 @element('snice-switch', { formAssociated: true })
 export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   internals!: ElementInternals;
+  private dirtyCheckedness = false;
+
+  @state()
+  private checkedState = false;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,19 +20,41 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     }
   }
 
+  /**
+   * Live checkedness. Assignments do not rewrite the authored default.
+   * @public
+   */
+  get checked(): boolean {
+    return this.checkedState;
+  }
+
+  set checked(value: boolean) {
+    this.setCheckedness(Boolean(value), true);
+  }
+
+  /** The `checked` content attribute and form-reset default. */
+  @property({ type: Boolean, attribute: 'checked' })
+  defaultChecked = false;
+
+  formAssociatedCallback() {
+    this.syncFormState();
+  }
+
   formResetCallback() {
-    this.checked = false;
-    if (this.internals) {
-      this.internals.setFormValue(null);
-    }
+    this.dirtyCheckedness = false;
+    this.setCheckedness(this.defaultChecked, false);
+    this.syncFormState();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
   }
 
-  @property({ type: Boolean,  })
-  checked = false;
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (state === 'checked') this.setCheckedness(true, true);
+    else if (state === 'unchecked') this.setCheckedness(false, true);
+    this.syncFormState();
+  }
 
   @property({ type: Boolean,  })
   disabled = false;
@@ -78,9 +107,13 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   private inputId = `snice-switch-${Math.random().toString(36).slice(2, 10)}`;
   private labelId = `${this.inputId}-label`;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
   @render()
   render() {
-    const wrapperClasses = `switch-wrapper${this.disabled ? ' switch-wrapper--disabled' : ''}${this.loading ? ' switch-wrapper--loading' : ''}`;
+    const wrapperClasses = `switch-wrapper${this.interactionDisabled ? ' switch-wrapper--disabled' : ''}${this.loading ? ' switch-wrapper--loading' : ''}`;
     const trackClasses = `switch-track switch-track--${this.size}${this.invalid ? ' switch-track--invalid' : ''}${this.loading ? ' switch-track--loading' : ''}`;
     const labelClasses = `switch-label switch-label--${this.size}${this.required ? ' switch-label--required' : ''}`;
 
@@ -91,7 +124,7 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
           type="checkbox"
           class="switch-input"
           ?checked="${this.checked}"
-          ?disabled="${this.disabled || this.loading}"
+          ?disabled="${this.interactionDisabled}"
           ?required="${this.required}"
           name="${this.name}"
           value="${this.value}"
@@ -130,6 +163,14 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
 
   @ready()
   init() {
+    if (Object.prototype.hasOwnProperty.call(this, 'checked')) {
+      const checked = Boolean((this as { checked: unknown }).checked);
+      delete (this as Partial<{ checked: unknown }>).checked;
+      this.checked = checked;
+    } else if (!this.dirtyCheckedness) {
+      this.setCheckedness(this.defaultChecked, false);
+    }
+
     // Set initial states
     if (this.input) {
       this.input.checked = this.checked;
@@ -143,12 +184,22 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
       }
     }
 
-    if (this.internals) {
-      this.internals.setFormValue(this.checked ? this.value : null);
-    }
+    this.syncFormState();
 
     // Update state labels if provided
     this.updateStateLabels();
+  }
+
+  private setCheckedness(checked: boolean, dirty: boolean) {
+    if (dirty) this.dirtyCheckedness = true;
+    this.checkedState = checked;
+  }
+
+  private syncFormState() {
+    this.internals?.setFormValue(
+      this.checked ? this.value : null,
+      this.checked ? 'checked' : 'unchecked'
+    );
   }
 
   @on('change')
@@ -170,24 +221,22 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     e.stopPropagation();
   }
 
-  @watch('checked')
+  @watch('checkedState')
   handleCheckedChange() {
     if (this.input) {
       this.input.checked = this.checked;
       this.input.setAttribute('aria-checked', String(this.checked));
     }
-    if (this.internals) {
-      this.internals.setFormValue(this.checked ? this.value : null);
-    }
+    this.syncFormState();
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.interactionDisabled;
     }
     if (this.wrapper) {
-      this.wrapper.classList.toggle('switch-wrapper--disabled', this.disabled);
+      this.wrapper.classList.toggle('switch-wrapper--disabled', this.interactionDisabled);
     }
   }
 
@@ -236,6 +285,12 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
     if (this.input) {
       this.input.value = this.value;
     }
+    this.syncFormState();
+  }
+
+  @watch('defaultChecked')
+  handleDefaultCheckedChange() {
+    if (!this.dirtyCheckedness) this.setCheckedness(this.defaultChecked, false);
   }
 
   private updateStateLabels() {

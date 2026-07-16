@@ -18,7 +18,8 @@ A form-associated color selection interface with format conversion, preset color
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Size variant |
-| `value` | `string` | `'#000000'` | Current color value |
+| `value` | `string` | `'#000000'` | Live color value; property only |
+| `defaultValue` (attr: `value`) | `string` | `'#000000'` | Authored color restored by form reset |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Display format |
 | `label` | `string` | `''` | Label text |
 | `helperText` (attr: `helper-text`) | `string` | `''` | Helper text below the input |
@@ -69,6 +70,10 @@ snice-color-picker::part(error-text) {
 ```html
 <snice-color-picker label="Brand Color" value="#3b82f6"></snice-color-picker>
 ```
+
+### Live Color and Reset Default
+
+`value` is live color state. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Default changes update a pristine picker; typing, choosing a native color, selecting a preset, assigning `value` (even unchanged), or browser restoration makes it dirty. Reset and restoration do not emit color/input/change events. Reconnects and form moves preserve both values, while disabled fieldsets disable the text field, chooser, and presets without rewriting authored `disabled`.
 
 ```typescript
 import 'snice/components/color-picker/snice-color-picker';

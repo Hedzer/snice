@@ -2,6 +2,7 @@ export type StepInputSize = 'small' | 'medium' | 'large';
 
 export interface SniceStepInputElement extends HTMLElement {
   value: number;
+  defaultValue: number;
   min: number;
   max: number;
   step: number;

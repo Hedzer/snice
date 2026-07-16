@@ -19,7 +19,8 @@ A chip/tag-style input field where users can add tags by typing and pressing Ent
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `string[]` | `[]` | Array of current tag values |
+| `value` (property only) | `string[]` | `[]` | Live array of current tag values |
+| `defaultValue` (attr: `value`) | `string[]` | `[]` | JSON-backed authored tags restored by form reset |
 | `suggestions` | `string[]` | `[]` | Autocomplete suggestion list |
 | `maxTags` (attr: `max-tags`) | `number` | `0` | Maximum number of tags (0 = unlimited) |
 | `allowDuplicates` (attr: `allow-duplicates`) | `boolean` | `false` | Whether to allow duplicate tags |
@@ -67,6 +68,10 @@ import 'snice/components/tag-input/snice-tag-input';
 ```html
 <snice-tag-input placeholder="Add a tag..."></snice-tag-input>
 ```
+
+### Live Tags, Submission, and Reset
+
+The live `value` array is separate from `defaultValue`. The `value` content attribute is JSON, for example `value='["JavaScript","CSS"]'`, and represents the authored reset default. While pristine, changing it updates the live tags. Adding/removing tags, assigning `value`, or restoring browser state makes the live state dirty; `form.reset()` silently restores a cloned copy of the current default. The successful form value and browser-restoration state are the JSON array, preserving commas and Unicode inside individual tags. Disabled fieldsets make the field inert without changing its authored `disabled` property.
 
 ## Examples
 

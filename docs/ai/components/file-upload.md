@@ -63,3 +63,10 @@ upload.addEventListener('file-upload-error', e => console.error(e.detail.message
 ```
 
 Form-associated custom element. Works with native `<form>` and `FormData`.
+
+## Form lifecycle
+
+- Native file controls cannot have an authored non-empty default.
+- Reset silently clears files, previews, and form value; restoration accepts one `File` or repeated `File` entries in `FormData` and is silent.
+- Multiple files submit as repeated entries under `name`; empty selection submits nothing.
+- Reconnect/form moves retain current files. Disabled fieldsets make choose/drop/remove paths inert without rewriting authored `disabled`.

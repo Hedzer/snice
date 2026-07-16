@@ -7,6 +7,7 @@ export interface SniceInputElement extends HTMLElement {
   size: InputSize;
   variant: InputVariant;
   value: string;
+  defaultValue: string;
   placeholder: string;
   label: string;
   helperText: string;

@@ -1,10 +1,13 @@
-import { element, property, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-file-upload.css?inline';
 import type { FileUploadSize, FileUploadVariant, SniceFileUploadElement } from './snice-file-upload.types';
 
 @element('snice-file-upload', { formAssociated: true })
 export class SniceFileUpload extends HTMLElement implements SniceFileUploadElement {
   internals!: ElementInternals;
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -13,16 +16,29 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     }
   }
 
+  formAssociatedCallback() {
+    this.updateFormValue();
+  }
+
   formResetCallback() {
-    this.selectedFiles = [];
-    if (this.input) this.input.value = '';
-    if (this.internals) {
-      this.internals.setFormValue('');
-    }
+    this.replaceFiles([], false);
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (state instanceof File) {
+      this.replaceFiles([state], false);
+      return;
+    }
+    if (state instanceof FormData) {
+      const files = Array.from(state.values()).filter((value): value is File => value instanceof File);
+      this.replaceFiles(files, false);
+      return;
+    }
+    this.replaceFiles([], false);
   }
 
   @property({  })
@@ -81,6 +97,14 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   @property({ type: Array, attribute: false })
   private selectedFiles: File[] = [];
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+
+  /**
+   * The current live file selection. Files cannot be authored as a reset default.
+   * @public
+   */
   get files(): FileList | null {
     return this.input?.files || null;
   }
@@ -92,7 +116,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       'upload-area',
       `upload-area--${this.size}`,
       this.variant === 'filled' ? 'upload-area--filled' : '',
-      this.disabled ? 'upload-area--disabled' : '',
+      this.interactionDisabled ? 'upload-area--disabled' : '',
       this.isDragOver ? 'upload-area--drag-over' : '',
       this.invalid ? 'upload-area--invalid' : ''
     ].filter(Boolean).join(' ');
@@ -125,7 +149,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
           <button
             class="${buttonClasses}"
             type="button"
-            ?disabled="${this.disabled}"
+            ?disabled="${this.interactionDisabled}"
             @click="${this.handleButtonClick}"
           >
             Choose ${this.multiple ? 'Files' : 'File'}
@@ -136,7 +160,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
             type="file"
             accept="${this.accept}"
             ?multiple="${this.multiple}"
-            ?disabled="${this.disabled}"
+            ?disabled="${this.interactionDisabled}"
             ?required="${this.required}"
             name="${this.name || ''}"
             @change=${this.handleFileChange}
@@ -209,6 +233,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
         <button
           class="file-remove"
           type="button"
+          .disabled=${this.interactionDisabled}
           @click=${() => this.handleRemoveFile(index)}
           aria-label="Remove ${file.name}"
         >
@@ -231,7 +256,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   }
 
   private handleAreaClick(e: MouseEvent) {
-    if (this.disabled) return;
+    if (this.interactionDisabled) return;
     // Only trigger if clicking the area itself, not the button
     if ((e.target as HTMLElement).classList.contains('upload-area')) {
       this.input?.click();
@@ -240,27 +265,27 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   private handleButtonClick(e: Event) {
     e.stopPropagation();
-    if (!this.disabled) {
+    if (!this.interactionDisabled) {
       this.input?.click();
     }
   }
 
   private handleDragOver(e: DragEvent) {
-    if (!this.dragDrop || this.disabled) return;
+    if (!this.dragDrop || this.interactionDisabled) return;
     e.preventDefault();
     e.stopPropagation();
     this.isDragOver = true;
   }
 
   private handleDragLeave(e: DragEvent) {
-    if (!this.dragDrop || this.disabled) return;
+    if (!this.dragDrop || this.interactionDisabled) return;
     e.preventDefault();
     e.stopPropagation();
     this.isDragOver = false;
   }
 
   private handleDrop(e: DragEvent) {
-    if (!this.dragDrop || this.disabled) return;
+    if (!this.dragDrop || this.interactionDisabled) return;
     e.preventDefault();
     e.stopPropagation();
     this.isDragOver = false;
@@ -295,14 +320,10 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       });
     }
 
-    if (this.multiple) {
-      this.selectedFiles = [...this.selectedFiles, ...validFiles];
-    } else {
-      this.selectedFiles = validFiles.slice(0, 1);
-    }
-
-    this.updateFormValue();
-    this.dispatchChangeEvent();
+    const nextFiles = this.multiple
+      ? [...this.selectedFiles, ...validFiles]
+      : validFiles.slice(0, 1);
+    this.replaceFiles(nextFiles, true);
   }
 
   private handleRemoveFile(index: number) {
@@ -320,19 +341,57 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   private updateFormValue() {
     if (!this.internals) return;
 
-    const dataTransfer = new DataTransfer();
-    this.selectedFiles.forEach(file => {
-      dataTransfer.items.add(file);
-    });
+    if (this.selectedFiles.length === 0) {
+      this.internals.setFormValue(null, '');
+      return;
+    }
 
-    this.internals.setFormValue(dataTransfer.files.length > 0 ? dataTransfer.files as any : null);
+    if (!this.name) {
+      const state = new FormData();
+      for (const file of this.selectedFiles) state.append('file', file);
+      this.internals.setFormValue(null, state);
+      return;
+    }
+
+    if (!this.multiple && this.selectedFiles.length === 1) {
+      const [file] = this.selectedFiles;
+      this.internals.setFormValue(file, file);
+      return;
+    }
+
+    const formData = new FormData();
+    for (const file of this.selectedFiles) formData.append(this.name, file);
+    this.internals.setFormValue(formData, formData);
   }
 
-  @watch('disabled')
+  private replaceFiles(files: File[], emit: boolean) {
+    const nextFiles = this.multiple ? [...files] : files.slice(0, 1);
+    for (const file of this.selectedFiles) {
+      if (!nextFiles.includes(file)) this.revokePreviewUrl(file);
+    }
+    this.selectedFiles = nextFiles;
+
+    if (this.input) {
+      const transfer = new DataTransfer();
+      for (const file of nextFiles) transfer.items.add(file);
+      this.input.files = transfer.files;
+      if (nextFiles.length === 0) this.input.value = '';
+    }
+
+    this.updateFormValue();
+    if (emit) this.dispatchChangeEvent();
+  }
+
+  @watch('disabled', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.interactionDisabled;
     }
+  }
+
+  @watch('name', 'multiple')
+  handleFormConfigurationChange() {
+    this.updateFormValue();
   }
 
   @dispatch('file-upload-change', { bubbles: true, composed: true })
@@ -347,19 +406,12 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   // Public API
   clear() {
-    this.selectedFiles = [];
-    if (this.input) {
-      this.input.value = '';
-    }
-    this.updateFormValue();
+    this.replaceFiles([], false);
   }
 
   removeFile(index: number) {
     if (index >= 0 && index < this.selectedFiles.length) {
-      const [removed] = this.selectedFiles.splice(index, 1);
-      this.revokePreviewUrl(removed);
-      this.updateFormValue();
-      this.dispatchChangeEvent();
+      this.replaceFiles(this.selectedFiles.filter((_, current) => current !== index), true);
     }
   }
 

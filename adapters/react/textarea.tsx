@@ -8,10 +8,10 @@ import type { SniceFormProps } from './types';
  * Props for the Textarea component
  */
 export interface TextareaProps extends SniceFormProps {
+  defaultValue?: any;
   size?: any;
   variant?: any;
   resize?: any;
-  value?: any;
   placeholder?: any;
   label?: any;
   helperText?: any;
@@ -28,6 +28,7 @@ export interface TextareaProps extends SniceFormProps {
   autocomplete?: any;
   name?: any;
   autoGrow?: any;
+  value?: any;
   onTextareaInput?: (event: any) => void;
   onTextareaChange?: (event: any) => void;
   onTextareaFocus?: (event: any) => void;
@@ -52,7 +53,7 @@ export interface TextareaProps extends SniceFormProps {
  */
 export const Textarea = createReactAdapter<TextareaProps>({
   tagName: 'snice-textarea',
-  properties: ["size","variant","resize","value","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","rows","cols","maxlength","minlength","autocomplete","name","autoGrow"],
+  properties: ["defaultValue","size","variant","resize","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","rows","cols","maxlength","minlength","autocomplete","name","autoGrow","value"],
   events: {"textarea-input":"onTextareaInput","textarea-change":"onTextareaChange","textarea-focus":"onTextareaFocus","textarea-blur":"onTextareaBlur"},
   formAssociated: true
 });

@@ -1,4 +1,4 @@
-import { element, property, query, queryAll, watch, dispatch, request, ready, dispose, reconnect, render, styles, html, css as cssTag } from 'snice';
+import { element, property, state, query, queryAll, watch, dispatch, request, ready, dispose, reconnect, render, styles, html, css as cssTag } from 'snice';
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import { FormLabelAssociation } from '../form-label-association';
@@ -8,7 +8,14 @@ import './snice-option';
 @element('snice-select', { formAssociated: true })
 export class SniceSelect extends HTMLElement implements SniceSelectElement {
   internals!: ElementInternals;
+  private dirtyValue = false;
   private readonly labelAssociation: FormLabelAssociation;
+
+  @state()
+  private valueState = '';
+
+  @state()
+  private formDisabled = false;
 
   constructor() {
     super();
@@ -23,15 +30,38 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     );
   }
 
+  /**
+   * Live selected value(s). Assignments do not rewrite the reset default.
+   * @public
+   */
+  get value(): string {
+    return this.valueState;
+  }
+
+  set value(value: string) {
+    this.setValue(value, true);
+  }
+
+  /** The `value` content attribute and form-reset default. */
+  @property({ attribute: 'value' })
+  defaultValue = '';
+
+  formAssociatedCallback() {
+    this.syncFormValue();
+  }
+
   formResetCallback() {
-    this.value = '';
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.dirtyValue = false;
+    this.applyDefaultValue();
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    this.formDisabled = disabled;
+    if (disabled && this.isOpen) this.closeDropdown();
+  }
+
+  formStateRestoreCallback(state: File | string | FormData | null) {
+    if (typeof state === 'string') this.setValue(state, true);
   }
 
   @property({ type: Boolean,  })
@@ -86,9 +116,6 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   name = '';
 
   @property({  })
-  value = '';
-
-  @property({  })
   label = '';
 
   @property({ attribute: 'helper-text' })
@@ -101,6 +128,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   placeholder = 'Select an option';
 
   private descId = `snice-select-desc-${Math.random().toString(36).slice(2, 10)}`;
+
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
 
   @property({  attribute: 'max-height' })
   maxHeight = '200px';
@@ -208,7 +239,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
               type="text"
               class="select-editable-input select-editable-input--${this.size}"
               placeholder="${this.placeholder}"
-              ?disabled="${this.disabled}"
+              ?disabled="${this.interactionDisabled}"
               ?readonly="${this.readonly}"
               autocomplete="off"
               role="combobox"
@@ -237,6 +268,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
           <button
             type="button"
             class="${triggerClasses}"
+            .disabled=${this.interactionDisabled}
             aria-haspopup="listbox"
             aria-expanded="${this.isOpen ? 'true' : 'false'}"
             aria-label="${accessibleName}"
@@ -251,7 +283,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             </div>
 
             <span class="select-icons">
-              <span role="button" tabindex="0" class="select-clear" aria-label="Clear selection" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}" @keydown="${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleClearClick(e as unknown as MouseEvent); } }}">
+              <span role="button" tabindex="${this.interactionDisabled ? -1 : 0}" class="select-clear" aria-label="Clear selection" aria-disabled="${this.interactionDisabled ? 'true' : 'false'}" style="display: none;" @click="${(e: MouseEvent) => this.handleClearClick(e)}" @keydown="${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleClearClick(e as unknown as MouseEvent); } }}">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
                   <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"/>
                 </svg>
@@ -281,6 +313,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             <input
               type="text"
               class="select-search-input"
+              .disabled=${this.interactionDisabled}
               placeholder="Search..."
               aria-label="Search options"
               part="search-input"
@@ -405,6 +438,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Read options from child snice-option elements
     this.readOptionsFromChildren();
 
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
+      const value = (this as { value: unknown }).value;
+      delete (this as Partial<{ value: unknown }>).value;
+      this.value = String(value ?? '');
+    } else if (!this.dirtyValue) {
+      this.applyDefaultValue();
+    }
+
     // Initialize selected values
     if (this.multiple && this.value) {
       this.selectedValues = new Set(this.value.split(',').map(v => v.trim()));
@@ -414,9 +455,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.filteredOptions = [...this.mergedOptions];
 
     // Set initial form value
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncFormValue();
 
     if (this.editable) {
       this.syncEditableInputToValue();
@@ -436,6 +475,20 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     // Setup global event listeners
     this.setupGlobalListeners();
     this.labelAssociation.connect();
+  }
+
+  private applyDefaultValue() {
+    this.setValue(this.defaultValue, false);
+  }
+
+  private setValue(value: unknown, dirty: boolean) {
+    if (dirty) this.dirtyValue = true;
+    this.valueState = String(value ?? '');
+    this.syncFormValue();
+  }
+
+  private syncFormValue() {
+    this.internals?.setFormValue(this.value, this.value);
   }
 
   @reconnect()
@@ -613,7 +666,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private handleEditableClick() {
-    if (!this.isOpen && !this.disabled && !this.readonly) {
+    if (!this.isOpen && !this.interactionDisabled && !this.readonly) {
       this.openDropdown();
     }
   }
@@ -621,7 +674,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private handleEditableArrowClick(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (this.disabled || this.readonly) return;
+    if (this.interactionDisabled || this.readonly) return;
 
     if (this.isOpen) {
       this.closeDropdown();
@@ -853,6 +906,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private handleClearClick(e: MouseEvent) {
+    if (this.interactionDisabled || this.readonly) return;
     e.preventDefault();
     e.stopPropagation();
     this.clear();
@@ -868,12 +922,13 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
     e.stopPropagation();
 
-    if (!this.disabled && !this.readonly) {
+    if (!this.interactionDisabled && !this.readonly) {
       this.toggleDropdown();
     }
   }
 
   private handleOptionsClick(e: MouseEvent) {
+    if (this.interactionDisabled || this.readonly) return;
     const target = e.target as HTMLElement;
 
     // Handle tag remove click
@@ -954,7 +1009,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.dispatchChangeEvent(option);
   }
 
-  @watch('value')
+  @watch('valueState')
   handleValueChange() {
     if (this.multiple) {
       this.selectedValues = new Set(this.value ? this.value.split(',').map(v => v.trim()) : []);
@@ -965,9 +1020,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.updateValueDisplay();
       this.updateClearButton();
     }
-    if (this.internals) {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncFormValue();
+  }
+
+  @watch('defaultValue')
+  handleDefaultValueChange() {
+    if (!this.dirtyValue) this.applyDefaultValue();
   }
 
   @watch('options')
@@ -979,26 +1037,14 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (!this.editable) {
       this.updateTriggerState();
       this.updateClearButton();
     }
     // Side effect: close dropdown when disabled
-    if (this.disabled && this.isOpen) {
-      this.closeDropdown();
-    }
-  }
-
-  @watch('loading')
-  handleLoadingChange() {
-    if (!this.editable) {
-      this.updateTriggerState();
-      this.updateClearButton();
-    }
-    // Side effect: close dropdown when loading (but not for remote search)
-    if (this.loading && this.isOpen && !this.remote) {
+    if (this.interactionDisabled && this.isOpen && !this.remote) {
       this.closeDropdown();
     }
   }
@@ -1072,7 +1118,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
         removeButton.className = 'select-tag-remove';
         removeButton.setAttribute('data-value', opt.value);
         removeButton.setAttribute('aria-label', `Remove ${opt.label}`);
-        removeButton.hidden = this.disabled || this.readonly;
+        removeButton.hidden = this.interactionDisabled || this.readonly;
         removeButton.textContent = '×';
 
         tag.append(
@@ -1110,7 +1156,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
       this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
     );
 
-    const shouldShow = this.clearable && selectedOptions.length > 0 && !this.disabled && !this.readonly;
+    const shouldShow = this.clearable && selectedOptions.length > 0 && !this.interactionDisabled && !this.readonly;
     this.clearButton.style.display = shouldShow ? '' : 'none';
   }
 
@@ -1182,7 +1228,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   openDropdown() {
-    if (!this.isOpen && !this.disabled && !this.readonly) {
+    if (!this.isOpen && !this.interactionDisabled && !this.readonly) {
       this.open = true;
       this.dispatchOpenEvent();
     }
@@ -1219,12 +1265,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (!this.trigger) return;
 
     this.trigger.classList.toggle('select-trigger--open', this.isOpen);
-    this.trigger.classList.toggle('select-trigger--disabled', this.disabled);
+    this.trigger.classList.toggle('select-trigger--disabled', this.interactionDisabled);
     this.trigger.classList.toggle('select-trigger--readonly', this.readonly);
     this.trigger.classList.toggle('select-trigger--invalid', this.invalid);
     this.trigger.classList.toggle('select-trigger--loading', this.loading);
     this.trigger.setAttribute('aria-expanded', String(this.isOpen));
-    this.trigger.disabled = this.disabled || this.loading;
+    this.trigger.disabled = this.interactionDisabled;
   }
 
   private updateDropdownState() {

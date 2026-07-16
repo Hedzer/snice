@@ -8,9 +8,9 @@ import type { SniceFormProps } from './types';
  * Props for the Slider component
  */
 export interface SliderProps extends SniceFormProps {
+  defaultValue?: any;
   size?: any;
   variant?: any;
-  value?: any;
   min?: any;
   max?: any;
   step?: any;
@@ -26,6 +26,7 @@ export interface SliderProps extends SniceFormProps {
   showValue?: any;
   showTicks?: any;
   vertical?: any;
+  value?: any;
   onSliderInput?: (event: any) => void;
   onSliderChange?: (event: any) => void;
 }
@@ -48,7 +49,7 @@ export interface SliderProps extends SniceFormProps {
  */
 export const Slider = createReactAdapter<SliderProps>({
   tagName: 'snice-slider',
-  properties: ["size","variant","value","min","max","step","label","helperText","errorText","disabled","readonly","loading","required","invalid","name","showValue","showTicks","vertical"],
+  properties: ["defaultValue","size","variant","min","max","step","label","helperText","errorText","disabled","readonly","loading","required","invalid","name","showValue","showTicks","vertical","value"],
   events: {"slider-input":"onSliderInput","slider-change":"onSliderChange"},
   formAssociated: true
 });

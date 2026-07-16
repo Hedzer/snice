@@ -17,4 +17,6 @@ External `<label for="id">`, wrapping labels, and multiple labels are supported.
 
 The hidden native color input is unnamed and hidden from the accessibility tree. ElementInternals provides the single form value. One stable `aria-describedby` connects helper/error text, with error replacing helper and using `role="alert"`. Authored disabled, inherited fieldset disabled, and loading states block every interaction path without rewriting authored `disabled`.
 
+`value` is live state; `defaultValue` reflects the `value` content attribute and is the authored form-reset default. Pristine pickers follow default changes, while user selection, property assignment, and browser restoration dirty only live state. Reset/restoration are silent and survive reconnects and form moves.
+
 See [`docs/components/color-picker.md`](../../../../docs/components/color-picker.md) for the complete human reference. AI-oriented reference: [`docs/ai/components/color-picker.md`](../../../../docs/ai/components/color-picker.md).

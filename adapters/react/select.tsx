@@ -8,6 +8,7 @@ import type { SniceFormProps } from './types';
  * Props for the Select component
  */
 export interface SelectProps extends SniceFormProps {
+  defaultValue?: any;
   disabled?: any;
   required?: any;
   invalid?: any;
@@ -23,13 +24,13 @@ export interface SelectProps extends SniceFormProps {
   open?: any;
   size?: any;
   name?: any;
-  value?: any;
   label?: any;
   helperText?: any;
   errorText?: any;
   placeholder?: any;
   maxHeight?: any;
   options?: any;
+  value?: any;
   onSelectChange?: (event: any) => void;
   onSelectOpen?: (event: any) => void;
   onSelectClose?: (event: any) => void;
@@ -53,7 +54,7 @@ export interface SelectProps extends SniceFormProps {
  */
 export const Select = createReactAdapter<SelectProps>({
   tagName: 'snice-select',
-  properties: ["disabled","required","invalid","readonly","loading","multiple","searchable","clearable","allowFreeText","editable","remote","searchDebounce","open","size","name","value","label","helperText","errorText","placeholder","maxHeight","options"],
+  properties: ["defaultValue","disabled","required","invalid","readonly","loading","multiple","searchable","clearable","allowFreeText","editable","remote","searchDebounce","open","size","name","label","helperText","errorText","placeholder","maxHeight","options","value"],
   events: {"select-change":"onSelectChange","select-open":"onSelectOpen","select-close":"onSelectClose"},
   formAssociated: true
 });

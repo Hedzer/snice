@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const ColorPicker = createReactAdapter({
     tagName: 'snice-color-picker',
-    properties: ["size", "value", "format", "label", "helperText", "errorText", "disabled", "loading", "required", "invalid", "name", "showInput", "showPresets", "presets"],
+    properties: ["defaultValue", "size", "format", "label", "helperText", "errorText", "disabled", "loading", "required", "invalid", "name", "showInput", "showPresets", "presets", "value"],
     events: { "color-picker-input": "onColorPickerInput", "color-picker-change": "onColorPickerChange", "color-picker-focus": "onColorPickerFocus", "color-picker-blur": "onColorPickerBlur" },
     formAssociated: true
 });

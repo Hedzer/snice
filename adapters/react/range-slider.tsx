@@ -8,15 +8,17 @@ import type { SniceFormProps } from './types';
  * Props for the RangeSlider component
  */
 export interface RangeSliderProps extends SniceFormProps {
+  defaultValueLow?: any;
+  defaultValueHigh?: any;
   min?: any;
   max?: any;
   step?: any;
-  valueLow?: any;
-  valueHigh?: any;
   disabled?: any;
   showTooltip?: any;
   showLabels?: any;
   orientation?: any;
+  valueLow?: any;
+  valueHigh?: any;
   onRangeChange?: (event: any) => void;
 }
 
@@ -38,7 +40,7 @@ export interface RangeSliderProps extends SniceFormProps {
  */
 export const RangeSlider = createReactAdapter<RangeSliderProps>({
   tagName: 'snice-range-slider',
-  properties: ["min","max","step","valueLow","valueHigh","disabled","showTooltip","showLabels","orientation"],
+  properties: ["defaultValueLow","defaultValueHigh","min","max","step","disabled","showTooltip","showLabels","orientation","valueLow","valueHigh"],
   events: {"range-change":"onRangeChange"},
   formAssociated: true
 });

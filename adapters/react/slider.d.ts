@@ -3,9 +3,9 @@ import type { SniceFormProps } from './types';
  * Props for the Slider component
  */
 export interface SliderProps extends SniceFormProps {
+    defaultValue?: any;
     size?: any;
     variant?: any;
-    value?: any;
     min?: any;
     max?: any;
     step?: any;
@@ -21,6 +21,7 @@ export interface SliderProps extends SniceFormProps {
     showValue?: any;
     showTicks?: any;
     vertical?: any;
+    value?: any;
     onSliderInput?: (event: any) => void;
     onSliderChange?: (event: any) => void;
 }

@@ -3,10 +3,10 @@ import type { SniceFormProps } from './types';
  * Props for the Textarea component
  */
 export interface TextareaProps extends SniceFormProps {
+    defaultValue?: any;
     size?: any;
     variant?: any;
     resize?: any;
-    value?: any;
     placeholder?: any;
     label?: any;
     helperText?: any;
@@ -23,6 +23,7 @@ export interface TextareaProps extends SniceFormProps {
     autocomplete?: any;
     name?: any;
     autoGrow?: any;
+    value?: any;
     onTextareaInput?: (event: any) => void;
     onTextareaChange?: (event: any) => void;
     onTextareaFocus?: (event: any) => void;

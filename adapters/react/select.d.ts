@@ -3,6 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the Select component
  */
 export interface SelectProps extends SniceFormProps {
+    defaultValue?: any;
     disabled?: any;
     required?: any;
     invalid?: any;
@@ -18,13 +19,13 @@ export interface SelectProps extends SniceFormProps {
     open?: any;
     size?: any;
     name?: any;
-    value?: any;
     label?: any;
     helperText?: any;
     errorText?: any;
     placeholder?: any;
     maxHeight?: any;
     options?: any;
+    value?: any;
     onSelectChange?: (event: any) => void;
     onSelectOpen?: (event: any) => void;
     onSelectClose?: (event: any) => void;

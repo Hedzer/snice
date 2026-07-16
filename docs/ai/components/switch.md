@@ -5,7 +5,8 @@ Toggle switch input for boolean selections.
 ## Properties
 
 ```typescript
-checked: boolean = false;
+checked: boolean = false;          // live property only
+defaultChecked: boolean = false;   // attr: checked; authored/reset default
 disabled: boolean = false;
 loading: boolean = false;
 required: boolean = false;
@@ -17,6 +18,13 @@ label: string = '';
 labelOn: string = '';              // attr: label-on
 labelOff: string = '';             // attr: label-off
 ```
+
+## Checked and form lifecycle
+
+- `checked` is live; `defaultChecked` reflects the `checked` content attribute.
+- Any checked assignment/toggle, including the same value, dirties live checkedness. Pristine state follows default changes.
+- Reset silently restores `defaultChecked`; browser state uses `checked`/`unchecked`.
+- Only checked enabled switches submit `value`. Form moves/reconnect/fieldset state never rewrite authored defaults or `disabled`.
 
 ## Methods
 

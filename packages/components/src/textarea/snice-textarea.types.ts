@@ -7,6 +7,7 @@ export interface SniceTextareaElement extends HTMLElement {
   variant: TextareaVariant;
   resize: TextareaResize;
   value: string;
+  defaultValue: string;
   placeholder: string;
   label: string;
   helperText: string;

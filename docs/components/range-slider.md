@@ -21,8 +21,10 @@ A two-handle slider for selecting a numeric range, with a highlighted track betw
 | `min` | `number` | `0` | Minimum value |
 | `max` | `number` | `100` | Maximum value |
 | `step` | `number` | `1` | Step increment |
-| `valueLow` (attr: `value-low`) | `number` | `0` | Low handle value |
-| `valueHigh` (attr: `value-high`) | `number` | `100` | High handle value |
+| `valueLow` (property only) | `number` | `0` | Live low handle value |
+| `valueHigh` (property only) | `number` | `100` | Live high handle value |
+| `defaultValueLow` (attr: `value-low`) | `number` | `0` | Authored low value restored by form reset |
+| `defaultValueHigh` (attr: `value-high`) | `number` | `100` | Authored high value restored by form reset |
 | `disabled` | `boolean` | `false` | Disables the slider |
 | `showTooltip` (attr: `show-tooltip`) | `boolean` | `false` | Show value tooltip on hover/drag |
 | `showLabels` (attr: `show-labels`) | `boolean` | `false` | Show min/max labels below the track |
@@ -54,6 +56,10 @@ import 'snice/components/range-slider/snice-range-slider';
 ```html
 <snice-range-slider value-low="20" value-high="80"></snice-range-slider>
 ```
+
+### Live Range and Reset Defaults
+
+`valueLow`/`valueHigh` are live endpoints. `defaultValueLow`/`defaultValueHigh` reflect `value-low`/`value-high` and are independently tracked reset defaults. A pristine endpoint follows its default; pointer/keyboard input, property assignment (including the same value), or browser restoration dirties that endpoint. `form.reset()` silently restores both current defaults as one ordered, clamped range. The form/restoration value is `"low,high"`. Form moves, reconnects, repeated resets, and fieldset disabledness preserve authored defaults and never rewrite `disabled`.
 
 ## Examples
 

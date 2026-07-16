@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const StepInput = createReactAdapter({
     tagName: 'snice-step-input',
-    properties: ["value", "min", "max", "step", "disabled", "readonly", "size", "wrap"],
+    properties: ["defaultValue", "min", "max", "step", "disabled", "readonly", "size", "wrap", "value"],
     events: { "value-change": "onValueChange" },
     formAssociated: true
 });

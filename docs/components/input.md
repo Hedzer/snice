@@ -22,7 +22,8 @@ Text input field with validation, icons, and form association.
 | `type` | `type` | `'text' \| 'email' \| 'password' \| 'number' \| 'tel' \| 'url' \| 'search' \| 'date' \| 'time' \| 'datetime-local'` | `'text'` | Input type |
 | `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Input size |
 | `variant` | `variant` | `'outlined' \| 'filled' \| 'underlined'` | `'outlined'` | Visual style |
-| `value` | `value` | `string` | `''` | Input value |
+| `value` | — | `string` | `''` | Live input value; assigning it does not change the reset default |
+| `defaultValue` | `value` | `string` | `''` | Authored value and form-reset default |
 | `placeholder` | `placeholder` | `string` | `''` | Placeholder text |
 | `label` | `label` | `string` | `''` | Label text |
 | `helperText` | `helper-text` | `string` | `''` | Helper text below input |
@@ -101,6 +102,17 @@ import 'snice/components/input/snice-input';
 
 ```html
 <snice-input label="Name" placeholder="Enter your name"></snice-input>
+```
+
+### Live Value and Reset Default
+
+`value` is live state. `defaultValue` reflects the `value` content attribute and is what `form.reset()` restores. A default change updates a pristine input immediately; after typing, clearing, assigning `value` (even to the same value), or browser state restoration makes it dirty, later default changes affect only the next reset. Reset and browser restoration are silent: they do not emit native or component input/change events. Disabled fieldsets make every input affordance inert without changing the authored `disabled` property or attribute.
+
+```js
+const field = document.querySelector('snice-input');
+field.value = 'runtime';              // live only
+field.defaultValue = 'authored';      // also updates the value attribute
+field.form?.reset();                  // value becomes "authored"
 ```
 
 ## Examples

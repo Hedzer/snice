@@ -54,16 +54,14 @@ for (const spec of COMPONENTS) {
       await el.ready;
       el.formDisabledCallback(true);
       await el.rendered;
-      if (spec.tag === 'snice-checkbox' || spec.tag === 'snice-radio' || spec.tag === 'snice-color-picker') {
-        // Native input.disabled reflects only the authored attribute; a
-        // disabled fieldset changes effective disabledness without rewriting
-        // that property. Every shadow input still becomes non-interactive.
-        expect(el.disabled).toBe(false);
-        expect(Array.from(el.shadowRoot.querySelectorAll('input'))
-          .every((input: any) => input.disabled)).toBe(true);
-      } else {
-        expect(el.disabled).toBe(true);
-      }
+      // Native input.disabled reflects only the authored attribute; inherited
+      // disabledness must remain effective without rewriting that public state.
+      expect(el.disabled).toBe(false);
+      expect(el.hasAttribute('disabled')).toBe(false);
+      expect(Array.from(el.shadowRoot.querySelectorAll('input'))
+        .every((input: any) => input.disabled)).toBe(true);
+      expect(Array.from(el.shadowRoot.querySelectorAll('[tabindex]'))
+        .every((target: any) => target.tabIndex < 0 || target.matches('input:disabled'))).toBe(true);
       el.formDisabledCallback(false);
       await el.rendered;
       expect(el.disabled).toBe(false);

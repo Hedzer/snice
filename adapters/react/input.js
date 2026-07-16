@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Input = createReactAdapter({
     tagName: 'snice-input',
-    properties: ["type", "size", "variant", "value", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "password", "min", "max", "step", "pattern", "maxlength", "minlength", "autocomplete", "name", "align", "labelAlign", "stretch", "prefixIcon", "suffixIcon"],
+    properties: ["defaultValue", "type", "size", "variant", "placeholder", "label", "helperText", "errorText", "disabled", "readonly", "loading", "required", "invalid", "clearable", "password", "min", "max", "step", "pattern", "maxlength", "minlength", "autocomplete", "name", "align", "labelAlign", "stretch", "prefixIcon", "suffixIcon", "value"],
     events: { "input-input": "onInputInput", "input-change": "onInputChange", "input-focus": "onInputFocus", "input-blur": "onInputBlur", "input-clear": "onInputClear" },
     formAssociated: true
 });

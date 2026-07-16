@@ -3,7 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the Switch component
  */
 export interface SwitchProps extends SniceFormProps {
-    checked?: any;
+    defaultChecked?: any;
     disabled?: any;
     loading?: any;
     required?: any;
@@ -14,6 +14,7 @@ export interface SwitchProps extends SniceFormProps {
     label?: any;
     labelOn?: any;
     labelOff?: any;
+    checked?: any;
     onSwitchChange?: (event: any) => void;
 }
 /**

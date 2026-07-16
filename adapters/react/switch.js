@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Switch = createReactAdapter({
     tagName: 'snice-switch',
-    properties: ["checked", "disabled", "loading", "required", "invalid", "size", "name", "value", "label", "labelOn", "labelOff"],
+    properties: ["defaultChecked", "disabled", "loading", "required", "invalid", "size", "name", "value", "label", "labelOn", "labelOff", "checked"],
     events: { "switch-change": "onSwitchChange" },
     formAssociated: true
 });

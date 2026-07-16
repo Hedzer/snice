@@ -5,7 +5,8 @@ Range slider for numeric value selection. Form-associated.
 ## Properties
 
 ```typescript
-value: number = 0;
+value: number = 0;                // live property only
+defaultValue: number = 0;         // attr: value; authored/reset default
 min: number = 0;
 max: number = 100;
 step: number = 1;
@@ -25,6 +26,12 @@ showTicks: boolean = false;    // attr: show-ticks
 vertical: boolean = false;
 // form-align: CSS-only attribute, aligns with inputs in form rows
 ```
+
+## Value and form lifecycle
+
+- `value` is live clamped/stepped state; `defaultValue` reflects the `value` attribute.
+- Pristine state follows default changes. Pointer/touch/keyboard input, restore, or any assignment dirties it.
+- Reset/restoration are silent. Repeated reset, reconnect, form moves, and fieldset disabledness retain authored state.
 
 ## Methods
 

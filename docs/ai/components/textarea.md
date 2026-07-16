@@ -5,7 +5,8 @@ Multi-line text input with auto-grow and character count. Form-associated.
 ## Properties
 
 ```typescript
-value: string = '';
+value: string = '';              // live property only
+defaultValue: string = '';       // attr: value; authored/reset default
 variant: 'outlined'|'filled'|'underlined' = 'outlined';
 size: 'small'|'medium'|'large' = 'medium';
 resize: 'none'|'vertical'|'horizontal'|'both' = 'vertical';
@@ -26,6 +27,12 @@ name: string = '';
 autoGrow: boolean = false;    // attr: auto-grow
 loading: boolean = false;
 ```
+
+## Value and form lifecycle
+
+- `value` is live and `defaultValue`/the `value` attribute is authored reset state.
+- Pristine live state follows default mutations. Input, browser restore, or any `value` assignment (even unchanged) dirties it.
+- Reset restores the latest default silently and clears dirtiness. Repeated reset, reconnect, form moves, and disabled fieldsets preserve the native-style contract.
 
 ## Methods
 

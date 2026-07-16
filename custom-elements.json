@@ -8913,6 +8913,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "'#000000'",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -8930,6 +8939,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -8964,6 +8983,32 @@
             {
               "kind": "method",
               "name": "formResetCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -9106,7 +9151,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "'#000000'"
+              "description": "Live color. Assignments do not rewrite the authored reset default."
             }
           ],
           "attributes": [
@@ -9208,11 +9253,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             }
           ],
           "events": [
@@ -16114,6 +16160,25 @@
               "default": "''"
             },
             {
+              "kind": "field",
+              "name": "files",
+              "type": {
+                "text": "FileList | null"
+              },
+              "readonly": true,
+              "description": "The current live file selection. Files cannot be authored as a reset default."
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
@@ -16141,7 +16206,33 @@
             },
             {
               "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleDisabledChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleFormConfigurationChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -18822,6 +18913,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -18839,6 +18939,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -18871,8 +18981,23 @@
                 "type": {
                   "text": "unknown"
                 }
-              },
-              "description": "Form-associated lifecycle callback: invoked when the containing form is\nreset. Clear the value so the visible field matches the form state."
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -18916,6 +19041,16 @@
                   "optional": false
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -18977,16 +19112,6 @@
             {
               "kind": "method",
               "name": "handleLabelChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleLoadingChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -19330,7 +19455,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live value. Assignments do not rewrite the authored reset default."
             },
             {
               "kind": "field",
@@ -19552,11 +19677,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             },
             {
               "name": "variant",
@@ -31759,11 +31885,39 @@
             },
             {
               "kind": "field",
+              "name": "defaultValueHigh",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "The `value-high` content attribute and upper form-reset default."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValueLow",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "The `value-low` content attribute and lower form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -31784,6 +31938,52 @@
             {
               "kind": "method",
               "name": "formResetCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleConstraintsChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueHighChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueLowChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -31875,7 +32075,7 @@
               "type": {
                 "text": "number"
               },
-              "default": "100"
+              "description": "Live upper value. Assignments do not rewrite the authored default."
             },
             {
               "kind": "field",
@@ -31883,7 +32083,7 @@
               "type": {
                 "text": "number"
               },
-              "default": "0"
+              "description": "Live lower value. Assignments do not rewrite the authored default."
             }
           ],
           "attributes": [
@@ -31945,19 +32145,21 @@
             },
             {
               "name": "value-high",
-              "fieldName": "valueHigh",
+              "fieldName": "defaultValueHigh",
               "type": {
                 "text": "number"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value-high` content attribute and upper form-reset default."
             },
             {
               "name": "value-low",
-              "fieldName": "valueLow",
+              "fieldName": "defaultValueLow",
               "type": {
                 "text": "number"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value-low` content attribute and lower form-reset default."
             }
           ],
           "events": [
@@ -33707,6 +33909,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -33732,6 +33943,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -33767,7 +33988,23 @@
             },
             {
               "kind": "method",
-              "name": "handleDisabledChange",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -33777,7 +34014,7 @@
             },
             {
               "kind": "method",
-              "name": "handleLoadingChange",
+              "name": "handleDisabledChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34031,7 +34268,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live selected value(s). Assignments do not rewrite the reset default."
             }
           ],
           "attributes": [
@@ -34198,11 +34435,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             }
           ],
           "events": [
@@ -34473,6 +34711,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -34490,6 +34737,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -34525,7 +34782,23 @@
             },
             {
               "kind": "method",
-              "name": "handleDisabledChange",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleConstraintsChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34535,7 +34808,17 @@
             },
             {
               "kind": "method",
-              "name": "handleLoadingChange",
+              "name": "handleDefaultValueChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDisabledChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34699,7 +34982,7 @@
               "type": {
                 "text": "number"
               },
-              "default": "0"
+              "description": "Live numeric value. Assignments do not rewrite the authored default."
             },
             {
               "kind": "field",
@@ -34841,11 +35124,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "number"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             },
             {
               "name": "variant",
@@ -36334,6 +36618,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -36343,6 +36636,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -36369,6 +36672,42 @@
             {
               "kind": "method",
               "name": "formResetCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleConstraintsChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -36462,7 +36801,7 @@
               "type": {
                 "text": "number"
               },
-              "default": "0"
+              "description": "Live numeric value. Assignments do not rewrite the authored default."
             },
             {
               "kind": "field",
@@ -36524,11 +36863,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "number"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             },
             {
               "name": "wrap",
@@ -36837,7 +37177,7 @@
               "type": {
                 "text": "boolean"
               },
-              "default": "false"
+              "description": "Live checkedness. Assignments do not rewrite the authored default."
             },
             {
               "kind": "method",
@@ -36851,6 +37191,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultChecked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "The `checked` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -36860,6 +37209,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -36887,6 +37246,22 @@
               "kind": "method",
               "name": "formResetCallback",
               "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -36929,6 +37304,16 @@
                   "optional": false
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultCheckedChange",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -37101,11 +37486,12 @@
           "attributes": [
             {
               "name": "checked",
-              "fieldName": "checked",
+              "fieldName": "defaultChecked",
               "type": {
                 "text": "boolean"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `checked` content attribute and form-reset default."
             },
             {
               "name": "disabled",
@@ -45422,6 +45808,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "unknown[]"
+              },
+              "default": "[]",
+              "description": "JSON-backed `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -45435,6 +45830,16 @@
               "return": {
                 "type": {
                   "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
                 }
               }
             },
@@ -45457,6 +45862,32 @@
             {
               "kind": "method",
               "name": "formResetCallback",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -45572,9 +46003,9 @@
               "kind": "field",
               "name": "value",
               "type": {
-                "text": "unknown[]"
+                "text": "string[]"
               },
-              "default": "[]"
+              "description": "Live tags. Assignments do not rewrite the authored reset default."
             }
           ],
           "attributes": [
@@ -45633,6 +46064,15 @@
                 "text": "boolean"
               },
               "reflects": true
+            },
+            {
+              "name": "value",
+              "fieldName": "defaultValue",
+              "type": {
+                "text": "unknown[]"
+              },
+              "reflects": true,
+              "description": "JSON-backed `value` content attribute and form-reset default."
             }
           ],
           "events": [
@@ -46440,6 +46880,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The `value` content attribute and form-reset default."
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -46457,6 +46906,16 @@
             {
               "kind": "method",
               "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
               "parameters": [],
               "return": {
                 "type": {
@@ -46484,6 +46943,22 @@
               "kind": "method",
               "name": "formResetCallback",
               "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": "File | string | FormData | null",
+                  "optional": false
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -46526,6 +47001,16 @@
                   "optional": false
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleDefaultValueChange",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -46577,16 +47062,6 @@
             {
               "kind": "method",
               "name": "handleInvalidChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleLoadingChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -46810,7 +47285,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "''"
+              "description": "Live value. Assignments do not rewrite the authored reset default."
             },
             {
               "kind": "field",
@@ -46968,11 +47443,12 @@
             },
             {
               "name": "value",
-              "fieldName": "value",
+              "fieldName": "defaultValue",
               "type": {
                 "text": "string"
               },
-              "reflects": true
+              "reflects": true,
+              "description": "The `value` content attribute and form-reset default."
             },
             {
               "name": "variant",
