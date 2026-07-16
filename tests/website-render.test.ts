@@ -862,7 +862,7 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered).toEqual(expect.objectContaining({ total: 51, rendered: 51 }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 54, rendered: 54 }));
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     const form = showcase.locator('#time-picker-showcase-form');
@@ -936,6 +936,80 @@ test.describe('Website Component Rendering', () => {
     await appointment.locator('.clear-button').click();
     await form.getByRole('button', { name: 'Submit canonical time' }).click();
     expect(await form.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
+
+    await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('deployed Color Picker docs and full showcase preserve the external-label lifecycle', async ({ page }) => {
+    test.setTimeout(120_000);
+    const pageErrors: string[] = [];
+    const consoleErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
+    await page.goto(`${websiteBase}/components.html#comp-color-picker`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(customElements.get('snice-color-picker')));
+    await expect(page.locator('#comp-color-picker snice-color-picker').first()).toBeVisible();
+
+    await page.locator('#comp-color-picker .more-link[data-slug="color-picker"]').click();
+    const docs = page.locator('#help-drawer-body');
+    await expect(docs.getByRole('heading', { name: 'Accessibility', exact: true })).toBeVisible();
+    await expect(docs).toContainText('Multiple labels form one accessible name in document order');
+    await expect(docs).toContainText('hidden native color input');
+    await expect(docs).toContainText('never creates a duplicate form field');
+    await expect(docs).toContainText('Error text replaces helper text');
+
+    await page.locator('.help-drawer-tab[data-tab="showcase"]').click();
+    await expect(page.locator('#help-drawer-iframe')).toHaveAttribute('src', /color-picker/, { timeout: 20_000 });
+    const showcase = page.frameLocator('#help-drawer-iframe');
+    await expect(showcase.getByRole('heading', { name: 'External Label Lifecycle', exact: true }))
+      .toBeVisible({ timeout: 20_000 });
+    const rendered = await showcase.locator('snice-color-picker').evaluateAll(pickers => ({
+      total: pickers.length,
+      rendered: pickers.filter(picker => picker.shadowRoot?.querySelector('.color-swatch')).length,
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 27, rendered: 27 }));
+    expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
+
+    const labelled = showcase.locator('#color-showcase-labelled');
+    const input = labelled.locator('.color-input');
+    await expect(input).toHaveAccessibleName('Brand color required');
+    expect(await labelled.evaluate((picker: any) => Array.from(picker.labels, (label: HTMLLabelElement) => label.id)))
+      .toEqual(['color-showcase-primary-label', 'color-showcase-secondary-label']);
+    await showcase.locator('#color-showcase-primary-label').click();
+    await expect(input).toBeFocused();
+
+    await showcase.locator('#color-showcase-change-label').click();
+    await expect(input).toHaveAccessibleName('Surface color required');
+    await showcase.locator('#color-showcase-toggle-error').click();
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(labelled.locator('.error-text[role="alert"]'))
+      .toHaveText('Choose a color with sufficient contrast.');
+    await expect(labelled.locator('.helper-text')).toHaveCount(0);
+    await expect(labelled.locator('.color-swatch')).toHaveAccessibleName('Surface color required color chooser');
+    await expect(labelled.locator('[data-color]').first()).toHaveAccessibleName(/Set Surface color required to #/);
+    await expect(labelled.locator('.native-input')).not.toHaveAttribute('name', /.+/);
+
+    await showcase.locator('#color-showcase-toggle-labels').click();
+    await expect(input).toHaveAccessibleName('Internal color fallback');
+    expect(await labelled.evaluate((picker: any) => picker.labels.length)).toBe(0);
+
+    const swatchOnly = showcase.locator('#color-showcase-swatch');
+    await expect(swatchOnly.locator('.color-swatch')).toHaveAccessibleName('Swatch color');
+    await expect(swatchOnly.locator('.color-input')).toHaveCount(0);
+    await showcase.locator('label[for="color-showcase-swatch"]').click();
+    await expect(swatchOnly.locator('.color-swatch')).toBeFocused();
+
+    const disabled = showcase.locator('#color-showcase-disabled');
+    await showcase.locator('label[for="color-showcase-disabled"]').click();
+    expect(await disabled.evaluate((picker: HTMLElement) => Boolean(picker.shadowRoot?.activeElement))).toBe(false);
 
     await page.locator('.theme-btn').evaluate((button: HTMLButtonElement) => button.click());
     await expect(showcase.locator('html')).toHaveAttribute('data-theme', 'light');

@@ -9,12 +9,14 @@ export interface SniceColorPickerElement extends HTMLElement {
   helperText: string;
   errorText: string;
   disabled: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   name: string;
   showInput: boolean;
   showPresets: boolean;
   presets: string[];
+  readonly labels: NodeList | null;
 
   focus(): void;
   blur(): void;

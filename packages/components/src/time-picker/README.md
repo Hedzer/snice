@@ -18,4 +18,6 @@ Canonical form submission is `HH:mm`, or `HH:mm:ss` with `show-seconds`. Values 
 
 `value` is live state. `defaultValue` is the `value` content attribute and reset default. Malformed/partial input remains visible, sets `badInput`, and is not submitted as a valid time. Native validity also covers `valueMissing`, `rangeUnderflow`, `rangeOverflow`, `stepMismatch`, and `customError`.
 
+External `<label for="id">`, wrapping labels, and multiple labels are supported. The live `labels` property follows DOM changes. Label activation focuses without opening: the editable input for dropdown mode or the selector group for inline mode. Accessible names use associated labels, then `label`, then `Time`; toggle, clear, panel, and time-unit controls receive derived names. One stable `aria-describedby` connects helper/error text, with error replacing helper and using `role="alert"`.
+
 See [`docs/components/time-picker.md`](../../../../docs/components/time-picker.md) for the complete API, form lifecycle, validation, formats, events, and selector contract. AI-oriented reference: [`docs/ai/components/time-picker.md`](../../../../docs/ai/components/time-picker.md).

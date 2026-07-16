@@ -5,11 +5,16 @@ import type { SniceColorPickerElement } from '../../packages/components/src/colo
 
 describe('snice-color-picker', () => {
   let colorPicker: SniceColorPickerElement;
+  const settle = async () => {
+    await (colorPicker as any).rendered;
+    await Promise.resolve();
+  };
 
   afterEach(() => {
-    if (colorPicker) {
+    if (colorPicker && (colorPicker as HTMLElement).isConnected) {
       removeComponent(colorPicker as HTMLElement);
     }
+    document.querySelectorAll('[data-color-label-test]').forEach(element => element.remove());
   });
 
   describe('basic functionality', () => {
@@ -140,6 +145,184 @@ describe('snice-color-picker', () => {
 
       const labelEl = queryShadow(colorPicker as HTMLElement, '.label');
       expect(labelEl?.classList.contains('label--required')).toBe(true);
+    });
+  });
+
+  describe('external label and coherent control naming lifecycle', () => {
+    it('names one text field plus distinct chooser and preset affordances from every associated label', async () => {
+      colorPicker = await createComponent<SniceColorPickerElement>('snice-color-picker', {
+        id: 'labelled-color-picker',
+        label: 'Internal fallback',
+        'helper-text': 'Use an approved brand color.',
+        'show-presets': true
+      });
+      const primary = document.createElement('label');
+      primary.dataset.colorLabelTest = 'true';
+      primary.htmlFor = colorPicker.id;
+      primary.textContent = 'Brand color';
+      const secondary = document.createElement('label');
+      secondary.dataset.colorLabelTest = 'true';
+      secondary.htmlFor = colorPicker.id;
+      secondary.textContent = 'required';
+      colorPicker.before(primary, secondary);
+      (colorPicker as any).labelAssociation.sync();
+      await settle();
+
+      const input = queryShadow<HTMLInputElement>(colorPicker as HTMLElement, '.color-input')!;
+      const swatch = queryShadow<HTMLElement>(colorPicker as HTMLElement, '.color-swatch')!;
+      const native = queryShadow<HTMLInputElement>(colorPicker as HTMLElement, '.native-input')!;
+      const firstPreset = queryShadow<HTMLElement>(colorPicker as HTMLElement, '[data-color]')!;
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(Array.from(colorPicker.labels || [], label => label.textContent)).toEqual(['Brand color', 'required']);
+      expect(input.getAttribute('aria-label')).toBe('Brand color required');
+      expect(swatch.getAttribute('aria-label')).toBe('Brand color required color chooser');
+      expect(firstPreset.getAttribute('aria-label')).toBe(`Set Brand color required to ${firstPreset.dataset.color}`);
+      expect(native.hasAttribute('name')).toBe(false);
+      expect(native.getAttribute('aria-hidden')).toBe('true');
+      expect(queryShadow(colorPicker as HTMLElement, `#${descriptionId}`)?.textContent)
+        .toBe('Use an approved brand color.');
+      expect(colorPicker.shadowRoot?.querySelectorAll(`#${descriptionId}`)).toHaveLength(1);
+    });
+
+    it('focuses explicit and wrapping labels on the visible text field', async () => {
+      colorPicker = await createComponent<SniceColorPickerElement>('snice-color-picker', {
+        id: 'focus-color-picker'
+      });
+      const explicit = document.createElement('label');
+      explicit.dataset.colorLabelTest = 'true';
+      explicit.htmlFor = colorPicker.id;
+      explicit.textContent = 'Accent color';
+      colorPicker.before(explicit);
+      (colorPicker as any).labelAssociation.sync();
+      explicit.click();
+      expect(colorPicker.shadowRoot?.activeElement)
+        .toBe(queryShadow(colorPicker as HTMLElement, '.color-input'));
+
+      const wrapping = document.createElement('label');
+      wrapping.dataset.colorLabelTest = 'true';
+      wrapping.textContent = 'Wrapped color';
+      colorPicker.replaceWith(wrapping);
+      wrapping.appendChild(colorPicker as HTMLElement);
+      colorPicker.removeAttribute('id');
+      (colorPicker as any).labelAssociation.sync();
+      queryShadow<HTMLInputElement>(colorPicker as HTMLElement, '.color-input')!.blur();
+      wrapping.click();
+      expect(colorPicker.shadowRoot?.activeElement)
+        .toBe(queryShadow(colorPicker as HTMLElement, '.color-input'));
+    });
+
+    it('uses the swatch as the single primary target when the text field is hidden', async () => {
+      colorPicker = await createComponent<SniceColorPickerElement>('snice-color-picker', {
+        id: 'swatch-only-color-picker',
+        'show-input': false,
+        'helper-text': 'Open the native chooser.'
+      });
+      const label = document.createElement('label');
+      label.dataset.colorLabelTest = 'true';
+      label.htmlFor = colorPicker.id;
+      label.textContent = 'Swatch color';
+      colorPicker.before(label);
+      (colorPicker as any).labelAssociation.sync();
+      await settle();
+
+      label.click();
+      const swatch = queryShadow<HTMLElement>(colorPicker as HTMLElement, '.color-swatch')!;
+      expect(colorPicker.shadowRoot?.activeElement).toBe(swatch);
+      expect(swatch.getAttribute('aria-label')).toBe('Swatch color');
+      expect(swatch.getAttribute('aria-describedby')).toMatch(/^snice-color-picker-desc-/);
+      expect(queryShadow(colorPicker as HTMLElement, '.color-input')).toBeNull();
+    });
+
+    it('updates all related names and replaces helper text with one live error description', async () => {
+      colorPicker = await createComponent<SniceColorPickerElement>('snice-color-picker', {
+        id: 'dynamic-color-picker',
+        'helper-text': 'Initial help',
+        'show-presets': true
+      });
+      const label = document.createElement('label');
+      label.dataset.colorLabelTest = 'true';
+      label.htmlFor = colorPicker.id;
+      label.textContent = 'Surface';
+      colorPicker.before(label);
+      (colorPicker as any).labelAssociation.sync();
+
+      label.textContent = 'Revised surface color';
+      colorPicker.invalid = true;
+      colorPicker.errorText = 'This color does not meet contrast requirements.';
+      await settle();
+      (colorPicker as any).labelAssociation.sync();
+
+      const input = queryShadow<HTMLInputElement>(colorPicker as HTMLElement, '.color-input')!;
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(input.getAttribute('aria-label')).toBe('Revised surface color');
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(queryShadow(colorPicker as HTMLElement, '.color-swatch')?.getAttribute('aria-label'))
+        .toBe('Revised surface color color chooser');
+      expect(queryShadow(colorPicker as HTMLElement, '[data-color]')?.getAttribute('aria-label'))
+        .toContain('Set Revised surface color to');
+      expect(queryShadow(colorPicker as HTMLElement, `#${descriptionId}`)?.textContent)
+        .toBe('This color does not meet contrast requirements.');
+      expect(queryShadow(colorPicker as HTMLElement, `#${descriptionId}`)?.getAttribute('role')).toBe('alert');
+      expect(queryShadow(colorPicker as HTMLElement, '.helper-text')).toBeNull();
+    });
+
+    it.each(['disabled', 'loading', 'fieldset'] as const)('keeps %s label activation and every chooser path inert', async state => {
+      colorPicker = await createComponent<SniceColorPickerElement>('snice-color-picker', {
+        id: `blocked-color-picker-${state}`,
+        'show-input': false,
+        'show-presets': true
+      });
+      const label = document.createElement('label');
+      label.dataset.colorLabelTest = 'true';
+      label.htmlFor = colorPicker.id;
+      label.textContent = 'Blocked color';
+      colorPicker.before(label);
+      if (state === 'fieldset') (colorPicker as any).formDisabledCallback(true);
+      else (colorPicker as any)[state] = true;
+      await settle();
+      (colorPicker as any).labelAssociation.sync();
+      const native = queryShadow<HTMLInputElement>(colorPicker as HTMLElement, '.native-input')!;
+      let nativeClicks = 0;
+      native.addEventListener('click', () => nativeClicks++);
+
+      label.click();
+      colorPicker.focus();
+      queryShadow<HTMLElement>(colorPicker as HTMLElement, '.color-swatch')!.click();
+      queryShadow<HTMLElement>(colorPicker as HTMLElement, '[data-color]')!.click();
+
+      expect(colorPicker.shadowRoot?.activeElement).toBeNull();
+      expect(nativeClicks).toBe(0);
+      expect(native.disabled).toBe(true);
+      expect(colorPicker.value).toBe('#000000');
+      if (state === 'fieldset') {
+        expect(colorPicker.disabled).toBe(false);
+        expect(colorPicker.hasAttribute('disabled')).toBe(false);
+      }
+    });
+
+    it('rebinds labels after a move and reconnect without duplicating activation', async () => {
+      const first = document.createElement('div');
+      const second = document.createElement('div');
+      first.dataset.colorLabelTest = 'true';
+      second.dataset.colorLabelTest = 'true';
+      document.body.append(first, second);
+      colorPicker = document.createElement('snice-color-picker') as SniceColorPickerElement;
+      colorPicker.id = 'moved-color-picker';
+      const label = document.createElement('label');
+      label.dataset.colorLabelTest = 'true';
+      label.htmlFor = colorPicker.id;
+      label.textContent = 'Moved color';
+      first.append(label, colorPicker as HTMLElement);
+      await (colorPicker as any).ready;
+
+      second.append(label, colorPicker as HTMLElement);
+      await settle();
+      (colorPicker as any).labelAssociation.sync();
+      label.click();
+
+      expect(colorPicker.shadowRoot?.activeElement)
+        .toBe(queryShadow(colorPicker as HTMLElement, '.color-input'));
+      expect(Array.from(colorPicker.labels || [])).toEqual([label]);
     });
   });
 

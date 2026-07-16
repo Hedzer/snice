@@ -54,6 +54,16 @@ defaultValue: string; // value attribute and form-reset default
 - Reconnect preserves live/default state, form association, and outside-click behavior.
 - Internal text input has no `name`; ElementInternals is the only form entry, preventing duplicates.
 
+## Labels and accessible names
+
+- Supports explicit `<label for="id">`, wrapping labels, and multiple labels combined in document order.
+- Read-only `labels` is live across insertion, removal, reordering, retargeting, text changes, and reconnects.
+- Base name precedence: associated labels, then `label`, then fallback `Time`.
+- Label activation focuses without opening: editable input for dropdown, selector group for inline.
+- Disabled, disabled-fieldset, and loading controls are inert to label activation.
+- Related names: `<name>: open time picker`, `Clear <name>`, `<name> controls`, and `<name> hours|minutes|seconds|period`.
+- One stable `aria-describedby` targets helper/error text; error replaces helper, uses `role="alert"`, and invalid state uses `aria-invalid`.
+
 ## Validation
 
 Validity flags:
@@ -103,7 +113,7 @@ readonly labels: NodeList|null;
 ## Interaction
 
 - Dropdown: input click, clock click, `Enter`, or `ArrowDown` opens; `Escape` closes. Space is not intercepted because 12-hour keyboard input needs it.
-- Inline: selectors stay visible and interactive; it does not retain a popover attribute.
+- Inline: selectors stay visible and interactive; it does not retain a popover attribute and is the external-label focus target.
 - Range logic disables selector intervals wholly outside min/max. Guards also reject disabled option events.
 - Every selector and UI clear path is blocked by disabled, inherited fieldset disabledness, readonly, and loading.
 - Public `clear()` remains an imperative API and emits clear then change.

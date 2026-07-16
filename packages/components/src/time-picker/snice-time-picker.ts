@@ -1,6 +1,7 @@
 import { element, property, state, query, watch, dispatch, ready, dispose, reconnect, render, styles, html, css } from 'snice';
 import cssContent from './snice-time-picker.css?inline';
 import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize, SniceTimePickerElement } from './snice-time-picker.types';
+import { FormLabelAssociation } from '../form-label-association';
 
 interface TimeParts {
   hours: number;
@@ -14,12 +15,21 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   private dirtyValue = false;
   private customValidationMessage = '';
+  private readonly descriptionId = `snice-time-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : (this.variant === 'inline' ? this.dropdown : this.input),
+      () => this.label || 'Time',
+      name => this.syncCompositeAccessibleNames(name)
+    );
   }
 
   @state()
@@ -147,11 +157,13 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
       this.invalid || validityInvalid ? 'input--invalid' : '',
       this.loading ? 'input--loading' : ''
     ].filter(Boolean).join(' ');
+    const accessibleName = this.labelAssociation.accessibleName;
+    const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
       <div class="time-picker-wrapper" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}" part="label">${this.label}</label>
+          <label class="${labelClasses}" part="label" @click=${() => this.focus()}>${this.label}</label>
         </if>
 
         <if ${!isInline}>
@@ -164,6 +176,8 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
               .disabled=${interactionDisabled}
               .readOnly=${this.readonly}
               .required=${this.required}
+              aria-label="${accessibleName}"
+              aria-describedby="${describedBy}"
               aria-invalid="${this.invalid || validityInvalid ? 'true' : 'false'}"
               part="input"
               autocomplete="off"
@@ -177,7 +191,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
             <button
               class="clock-toggle"
               type="button"
-              aria-label="Open time picker"
+              aria-label="${accessibleName}: open time picker"
               tabindex="-1"
               part="toggle"
               .disabled=${interactionDisabled || this.readonly}
@@ -191,7 +205,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
             <button
               class="clear-button"
               type="button"
-              aria-label="Clear"
+              aria-label="Clear ${accessibleName}"
               tabindex="-1"
               part="clear"
               style="display: none;"
@@ -212,6 +226,10 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
         <div
           class="dropdown ${isInline ? 'dropdown--inline' : ''}"
           part="dropdown"
+          role="group"
+          aria-label="${accessibleName} controls"
+          aria-describedby="${isInline ? describedBy : ''}"
+          tabindex="-1"
           .popover=${isInline ? null : 'manual'}
           ?hidden=${!isInline && !this.showDropdown}
         >
@@ -220,10 +238,10 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default></default>
         </case>
@@ -238,7 +256,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
     return html/*html*/`
       <div class="selectors">
-        <div class="selector-column" part="hours">
+        <div class="selector-column" part="hours" role="group" data-time-unit="hours" aria-label="${this.labelAssociation.accessibleName} hours">
           <div class="selector-label">Hr</div>
           <div class="selector-list" @click=${(e: Event) => this.handleHourClick(e)}>
             ${hourOptions.map(h => {
@@ -255,7 +273,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
           </div>
         </div>
 
-        <div class="selector-column" part="minutes">
+        <div class="selector-column" part="minutes" role="group" data-time-unit="minutes" aria-label="${this.labelAssociation.accessibleName} minutes">
           <div class="selector-label">Min</div>
           <div class="selector-list" @click=${(e: Event) => this.handleMinuteClick(e)}>
             ${minuteOptions.map(m => {
@@ -273,7 +291,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
         </div>
 
         <if ${this.showSeconds}>
-          <div class="selector-column" part="seconds">
+          <div class="selector-column" part="seconds" role="group" data-time-unit="seconds" aria-label="${this.labelAssociation.accessibleName} seconds">
             <div class="selector-label">Sec</div>
             <div class="selector-list" @click=${(e: Event) => this.handleSecondClick(e)}>
               ${secondOptions.map(s => {
@@ -292,7 +310,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
         </if>
 
         <if ${this.format === '12h'}>
-          <div class="selector-column selector-column--period" part="period">
+          <div class="selector-column selector-column--period" part="period" role="group" data-time-unit="period" aria-label="${this.labelAssociation.accessibleName} period">
             <div class="selector-label">Period</div>
             <div class="selector-list">
               <button
@@ -330,6 +348,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     this.syncNativeInput();
     this.syncFormState();
     this.setupClickOutside();
+    this.labelAssociation.connect();
     queueMicrotask(() => {
       this.syncNativeInput();
       this.updateClearButton();
@@ -685,6 +704,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   @reconnect()
   private onReconnect() {
     this.setupClickOutside();
+    this.labelAssociation.connect();
   }
 
   @dispose()
@@ -692,6 +712,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     document.removeEventListener('click', this.clickOutsideHandler);
     window.removeEventListener('resize', this.positionDropdownHandler);
     window.removeEventListener('scroll', this.positionDropdownHandler, true);
+    this.labelAssociation.disconnect();
   }
 
   @watch('defaultValue')
@@ -964,6 +985,15 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
     this.clearButton.style.display = shouldShow ? '' : 'none';
   }
 
+  private syncCompositeAccessibleNames(name: string) {
+    this.dropdown?.setAttribute('aria-label', `${name} controls`);
+    this.shadowRoot?.querySelector('.clock-toggle')?.setAttribute('aria-label', `${name}: open time picker`);
+    this.shadowRoot?.querySelector('.clear-button')?.setAttribute('aria-label', `Clear ${name}`);
+    this.shadowRoot?.querySelectorAll<HTMLElement>('[data-time-unit]').forEach(group => {
+      group.setAttribute('aria-label', `${name} ${group.dataset.timeUnit}`);
+    });
+  }
+
   // Public API
 
   open() {
@@ -1025,7 +1055,12 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
   };
 
   focus() {
-    this.input?.focus();
+    if (this.interactionDisabled) return;
+    if (this.variant === 'inline') {
+      this.dropdown?.focus();
+    } else {
+      this.input?.focus();
+    }
   }
 
   blur() {
@@ -1067,7 +1102,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   /** Labels associated with this picker. @public */
   get labels(): NodeList | null {
-    return this.internals?.labels ?? this.input?.labels ?? null;
+    return this.labelAssociation.labels;
   }
 
   checkValidity() {

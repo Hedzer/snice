@@ -185,9 +185,14 @@
   transition: all var(--snice-transition-fast, 150ms);
 }
 
-.preset:hover {
+.preset:hover:not(.preset--disabled) {
   border-color: var(--snice-color-primary, rgb(37 99 235));
   transform: scale(1.1);
+}
+
+.preset--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .preset--selected {

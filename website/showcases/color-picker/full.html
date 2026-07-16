@@ -20,6 +20,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     section { margin-bottom: 2rem; }
+    .label-lifecycle { display: grid; gap: 1rem; max-width: 42rem; }
+    .label-row, .lifecycle-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: baseline; }
+    .lifecycle-controls button { padding: 0.45rem 0.7rem; }
   </style>
   <script type="module">import '../../../packages/components/src/color-picker/snice-color-picker.ts';</script>
 </head>
@@ -120,6 +123,74 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <h2>Required + invalid + error-text</h2>
   <snice-color-picker label="All validation states" required invalid error-text="Color is required"></snice-color-picker>
 </section>
+
+<section id="color-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-lifecycle">
+    <div>
+      <div class="label-row">
+        <label id="color-showcase-primary-label" for="color-showcase-labelled">Brand color</label>
+        <label id="color-showcase-secondary-label" for="color-showcase-labelled">required</label>
+      </div>
+      <snice-color-picker
+        id="color-showcase-labelled"
+        label="Internal color fallback"
+        helper-text="Use an approved brand color."
+        show-presets
+        required
+      ></snice-color-picker>
+    </div>
+    <div>
+      <label for="color-showcase-swatch">Swatch color</label>
+      <snice-color-picker
+        id="color-showcase-swatch"
+        show-input="false"
+        helper-text="The swatch is the primary label target."
+      ></snice-color-picker>
+    </div>
+    <div>
+      <label for="color-showcase-disabled">Disabled color</label>
+      <snice-color-picker id="color-showcase-disabled" disabled show-input="false"></snice-color-picker>
+    </div>
+    <div class="lifecycle-controls">
+      <button id="color-showcase-change-label" type="button">Change label</button>
+      <button id="color-showcase-toggle-error" type="button">Show error</button>
+      <button id="color-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="color-showcase-label-output" aria-live="polite">Accessible name: Brand color required</output>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const picker = document.getElementById('color-showcase-labelled');
+    const primary = document.getElementById('color-showcase-primary-label');
+    const secondary = document.getElementById('color-showcase-secondary-label');
+    const output = document.getElementById('color-showcase-label-output');
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      output.textContent = `Accessible name: ${picker.shadowRoot?.querySelector('.color-input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('color-showcase-change-label').addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Brand color' ? 'Surface color' : 'Brand color';
+      updateOutput();
+    });
+    document.getElementById('color-showcase-toggle-error').addEventListener('click', event => {
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose a color with sufficient contrast.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    document.getElementById('color-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+  })();
+</script>
 
 </body>
 </html>

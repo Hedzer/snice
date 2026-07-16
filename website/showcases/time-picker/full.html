@@ -22,6 +22,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); margin: 2rem 0 0.75rem; }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+    .label-lifecycle { display: grid; gap: 1rem; max-width: 42rem; }
+    .label-row, .lifecycle-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: baseline; }
+    .lifecycle-controls button { padding: 0.45rem 0.7rem; }
   </style>
 </head>
 <body>
@@ -118,6 +121,44 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </div>
 </form>
 
+<section id="time-picker-label-lifecycle">
+  <h2>External Label Lifecycle</h2>
+  <div class="label-lifecycle">
+    <div>
+      <div class="label-row">
+        <label id="time-showcase-primary-label" for="time-showcase-labelled">Appointment time</label>
+        <label id="time-showcase-secondary-label" for="time-showcase-labelled">required</label>
+      </div>
+      <snice-time-picker
+        id="time-showcase-labelled"
+        label="Internal time fallback"
+        helper-text="Times are displayed locally."
+        show-seconds
+        format="12h"
+        required
+      ></snice-time-picker>
+    </div>
+    <div>
+      <label for="time-showcase-inline">Inline schedule</label>
+      <snice-time-picker
+        id="time-showcase-inline"
+        variant="inline"
+        helper-text="Each selector group retains a distinct name."
+      ></snice-time-picker>
+    </div>
+    <div>
+      <label for="time-showcase-disabled">Disabled time</label>
+      <snice-time-picker id="time-showcase-disabled" disabled></snice-time-picker>
+    </div>
+    <div class="lifecycle-controls">
+      <button id="time-showcase-change-label" type="button">Change label</button>
+      <button id="time-showcase-toggle-error" type="button">Show error</button>
+      <button id="time-showcase-toggle-labels" type="button">Remove external labels</button>
+    </div>
+    <output id="time-showcase-label-output" aria-live="polite">Accessible name: Appointment time required</output>
+  </div>
+</section>
+
 <h2>Native form lifecycle</h2>
 <form id="time-picker-showcase-form" style="display:flex;flex-direction:column;gap:.75rem;max-width:40rem">
   <snice-time-picker
@@ -212,6 +253,35 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     });
     form.addEventListener('reset', () => {
       requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+  })();
+
+  (() => {
+    const picker = document.getElementById('time-showcase-labelled');
+    const primary = document.getElementById('time-showcase-primary-label');
+    const secondary = document.getElementById('time-showcase-secondary-label');
+    const output = document.getElementById('time-showcase-label-output');
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      output.textContent = `Accessible name: ${picker.shadowRoot?.querySelector('.input')?.getAttribute('aria-label') || ''}`;
+    });
+    document.getElementById('time-showcase-change-label').addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Appointment time' ? 'Event starts' : 'Appointment time';
+      updateOutput();
+    });
+    document.getElementById('time-showcase-toggle-error').addEventListener('click', event => {
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose an available time.';
+      event.currentTarget.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    document.getElementById('time-showcase-toggle-labels').addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
     });
   })();
 </script>

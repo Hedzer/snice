@@ -19,6 +19,7 @@ showInput: boolean = true;     // attribute: show-input
 showPresets: boolean = false;  // attribute: show-presets
 presets: string[] = [...];
 loading: boolean = false;
+readonly labels: NodeList|null;
 ```
 
 ## Methods
@@ -55,6 +56,12 @@ picker.addEventListener('color-picker-change', (e) => {
 
 ## Accessibility
 
-- Form-associated custom element
-- Label association, error/helper text announced
-- Keyboard accessible
+- FACE form value is provided only by ElementInternals. The hidden native color input has no `name`, is `aria-hidden`, and has `tabindex="-1"`.
+- Supports explicit `<label for="id">`, wrapping labels, and multiple labels combined in document order.
+- Read-only `labels` is live across insertion, removal, reordering, retargeting, text changes, and reconnects.
+- Base name precedence: associated labels, then `label`, then fallback `Color`.
+- Label activation focuses the text input when `showInput`, otherwise the swatch, without activating the native dialog.
+- Disabled, disabled-fieldset, and loading controls are inert to label, swatch, native-input, preset, and keyboard activation.
+- With text input, the swatch is `<name> color chooser`; without it, the swatch owns the base name. Presets are `Set <name> to <color>`.
+- One stable `aria-describedby` targets helper/error text; error replaces helper, uses `role="alert"`, and invalid state uses `aria-invalid`.
+- Swatch and presets accept Enter and Space.

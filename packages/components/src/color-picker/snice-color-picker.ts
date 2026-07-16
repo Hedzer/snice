@@ -1,16 +1,26 @@
-import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-color-picker.css?inline';
 import type { ColorPickerSize, ColorPickerFormat, SniceColorPickerElement } from './snice-color-picker.types';
+import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-color-picker', { formAssociated: true })
 export class SniceColorPicker extends HTMLElement implements SniceColorPickerElement {
   internals!: ElementInternals;
+  private readonly descriptionId = `snice-color-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : (this.showInput ? this.input : this.swatch),
+      () => this.label || 'Color',
+      name => this.syncCompositeAccessibleNames(name)
+    );
   }
 
   formResetCallback() {
@@ -21,8 +31,12 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.disabled = disabled;
+    // Inherited fieldset state must not rewrite the authored `disabled` state.
+    this.formDisabled = disabled;
   }
+
+  @state()
+  private formDisabled = false;
 
   @property({  })
   size: ColorPickerSize = 'medium';
@@ -79,13 +93,18 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   @query('.color-swatch')
   swatch?: HTMLElement;
 
+  private get interactionDisabled(): boolean {
+    return this.disabled || this.formDisabled || this.loading;
+  }
+
   @render()
   render() {
+    const interactionDisabled = this.interactionDisabled;
     const wrapperClasses = ['color-picker-wrapper'].filter(Boolean).join(' ');
     const swatchClasses = [
       'color-swatch',
       `color-swatch--${this.size}`,
-      this.disabled ? 'color-swatch--disabled' : '',
+      interactionDisabled ? 'color-swatch--disabled' : '',
       this.invalid ? 'color-swatch--invalid' : '',
       this.loading ? 'color-swatch--loading' : ''
     ].filter(Boolean).join(' ');
@@ -98,11 +117,13 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
 
     const displayValue = this.formatColor(this.value, this.format);
+    const accessibleName = this.labelAssociation.accessibleName;
+    const describedBy = this.errorText || this.helperText ? this.descriptionId : '';
 
     return html/*html*/`
       <div class="${wrapperClasses}" part="base">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
@@ -111,10 +132,14 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
           <div
             class="${swatchClasses}"
             @click=${this.handleSwatchClick}
-            tabindex="${this.disabled || this.loading ? -1 : 0}"
+            tabindex="${interactionDisabled ? -1 : 0}"
             role="button"
-            aria-label="Choose color"
+            aria-label="${this.showInput ? `${accessibleName} color chooser` : accessibleName}"
+            aria-describedby="${this.showInput ? '' : describedBy}"
+            aria-disabled="${interactionDisabled ? 'true' : 'false'}"
             @keydown=${this.handleSwatchKeyDown}
+            @focus=${this.handleFocus}
+            @blur=${this.handleBlur}
           >
             <div class="swatch-inner" style="background-color: ${this.value}"></div>
             <if ${this.loading}>
@@ -128,8 +153,11 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
                 class="${inputClasses}"
                 type="text"
                 .value="${displayValue}"
-                ?disabled="${this.disabled || this.loading}"
+                ?disabled="${interactionDisabled}"
                 ?required="${this.required}"
+                aria-label="${accessibleName}"
+                aria-describedby="${describedBy}"
+                aria-invalid="${this.invalid ? 'true' : 'false'}"
                 placeholder="${this.format === 'hex' ? '#000000' : this.format === 'rgb' ? 'rgb(0,0,0)' : 'hsl(0,0%,0%)'}"
                 @input=${this.handleInputChange}
                 @change=${this.handleInputChange}
@@ -143,8 +171,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
             class="native-input"
             type="color"
             .value="${this.toHex(this.value)}"
-            ?disabled="${this.disabled}"
-            name="${this.name || ''}"
+            ?disabled="${interactionDisabled}"
             @input=${this.handleNativeChange}
             @change=${this.handleNativeChange}
             aria-hidden="true"
@@ -160,10 +187,10 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default>
             <span class="helper-text" part="helper-text">&nbsp;</span>
@@ -175,16 +202,23 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   private renderPreset(color: string) {
     const isSelected = this.toHex(this.value).toLowerCase() === this.toHex(color).toLowerCase();
-    const classes = ['preset', isSelected ? 'preset--selected' : ''].filter(Boolean).join(' ');
+    const classes = [
+      'preset',
+      isSelected ? 'preset--selected' : '',
+      this.interactionDisabled ? 'preset--disabled' : ''
+    ].filter(Boolean).join(' ');
+    const accessibleName = this.labelAssociation.accessibleName;
 
     return html/*html*/`
       <div
         class="${classes}"
         style="background-color: ${color}"
+        data-color="${color}"
         @click=${() => this.handlePresetClick(color)}
-        tabindex="0"
+        tabindex="${this.interactionDisabled ? -1 : 0}"
         role="button"
-        aria-label="Select ${color}"
+        aria-label="Set ${accessibleName} to ${color}"
+        aria-disabled="${this.interactionDisabled ? 'true' : 'false'}"
         @keydown=${(e: KeyboardEvent) => this.handlePresetKeyDown(e, color)}
       ></div>
     `;
@@ -202,10 +236,21 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     }
 
     this.normalizeValue();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
+  }
+
+  @dispose()
+  private cleanup() {
+    this.labelAssociation.disconnect();
   }
 
   private handleSwatchClick() {
-    if (!this.disabled) {
+    if (!this.interactionDisabled) {
       this.nativeInput?.click();
     }
   }
@@ -218,6 +263,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   private handleNativeChange(e: Event) {
+    if (this.interactionDisabled) return;
     const input = e.target as HTMLInputElement;
     this.value = input.value;
     this.dispatchInputEvent();
@@ -225,6 +271,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   private handleInputChange(e: Event) {
+    if (this.interactionDisabled) return;
     const input = e.target as HTMLInputElement;
     const color = this.parseColor(input.value);
     if (color) {
@@ -235,7 +282,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   private handlePresetClick(color: string) {
-    if (!this.disabled) {
+    if (!this.interactionDisabled) {
       this.value = color;
       this.dispatchInputEvent();
       this.dispatchChangeEvent();
@@ -417,14 +464,22 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     }
   }
 
-  @watch('disabled')
+  @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
-      this.input.disabled = this.disabled;
+      this.input.disabled = this.interactionDisabled;
     }
     if (this.nativeInput) {
-      this.nativeInput.disabled = this.disabled;
+      this.nativeInput.disabled = this.interactionDisabled;
     }
+  }
+
+  private syncCompositeAccessibleNames(name: string) {
+    this.input?.setAttribute('aria-label', name);
+    this.swatch?.setAttribute('aria-label', this.showInput ? `${name} color chooser` : name);
+    this.shadowRoot?.querySelectorAll<HTMLElement>('[data-color]').forEach(preset => {
+      preset.setAttribute('aria-label', `Set ${name} to ${preset.dataset.color}`);
+    });
   }
 
   @dispatch('color-picker-input', { bubbles: true, composed: true })
@@ -449,11 +504,21 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   // Public API
   focus() {
-    this.input?.focus() || this.swatch?.focus();
+    if (this.interactionDisabled) return;
+    if (this.showInput) {
+      this.input?.focus();
+    } else {
+      this.swatch?.focus();
+    }
   }
 
   blur() {
     this.input?.blur();
     this.swatch?.blur();
+  }
+
+  /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
   }
 }

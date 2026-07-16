@@ -81,6 +81,20 @@ It implements the complete lifecycle:
 - `loading` blocks interaction and validation without discarding the current form value.
 - Disconnecting and reconnecting preserves the live value, form ownership, and outside-click behavior.
 
+## External labels and accessible naming
+
+The picker supports the same external label forms as a native form control: an explicit `<label for="picker-id">`, a wrapping `<label>`, or both. Multiple labels are combined in document order, and the read-only `labels` property stays current when labels are added, removed, reordered, retargeted, or edited. When neither an external label nor the `label` property supplies a name, the fallback accessible name is `Time`.
+
+Activating an associated external label focuses the picker without opening the dropdown. For the dropdown variant the focus target is the editable text input; for the inline variant it is the selector group. A disabled, disabled-fieldset, or loading picker is inert, so label activation does not move focus or open controls. The visible internal label follows the same focus behavior.
+
+Composite controls receive related, unambiguous names derived from the complete field name:
+
+- The dropdown toggle is named `<field name>: open time picker`, and the clear action is `Clear <field name>`.
+- The selector panel is `<field name> controls`.
+- Hour, minute, optional second, and AM/PM selector groups are named `<field name> hours`, `minutes`, `seconds`, and `period`.
+
+Only the primary focus target uses the field's base accessible name. Helper or error text is connected to that target by one stable `aria-describedby` reference. Error text replaces helper text, has `role="alert"`, and the field exposes `aria-invalid` while invalid. The internal editable input has no `name`; ElementInternals remains the single successful form control.
+
 ## Validation
 
 The picker participates in `form.checkValidity()`, `form.reportValidity()`, `:valid`, and `:invalid`. Its `ValidityState` uses:
@@ -188,7 +202,7 @@ The dropdown opens from input click, the clock button, `Enter`, or `ArrowDown`; 
 | `open()` | Opens the dropdown when interaction is allowed and variant is `dropdown`. |
 | `close()` | Closes the dropdown. |
 | `clear()` | Clears live text/value and dispatches clear then change events. |
-| `focus()` | Focuses the editable input when present. |
+| `focus()` | Focuses the editable input, or the selector group for the inline variant, when interaction is allowed. |
 | `blur()` | Blurs the editable input when present. |
 | `checkValidity()` | Synchronizes constraints and returns current validity. |
 | `reportValidity()` | Reports and returns current validity. |

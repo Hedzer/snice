@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-time-picker';
-import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize } from './snice-time-picker.types';
+import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize, SniceTimePickerElement } from './snice-time-picker.types';
 
 type Args = {
   value?: string;
@@ -275,6 +275,84 @@ export const FormIntegration: Story = {
       requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
     });
     return form;
+  },
+};
+
+// h2: External label lifecycle and composite naming
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const fixture = document.createElement('section');
+    fixture.id = 'time-picker-label-story';
+    fixture.innerHTML = `
+      <style>
+        #time-picker-label-story { display:grid;gap:1rem;max-width:40rem; }
+        #time-picker-label-story .label-row { display:flex;gap:.35rem;align-items:baseline;flex-wrap:wrap; }
+        #time-picker-label-story .controls { display:flex;gap:.5rem;flex-wrap:wrap; }
+        #time-picker-label-story button { padding:.45rem .7rem; }
+      </style>
+      <div>
+        <div class="label-row">
+          <label id="time-story-primary" for="time-story-picker">Appointment time</label>
+          <label id="time-story-secondary" for="time-story-picker">required</label>
+        </div>
+        <snice-time-picker
+          id="time-story-picker"
+          label="Internal time fallback"
+          helper-text="Times are displayed locally."
+          show-seconds
+          format="12h"
+          required
+        ></snice-time-picker>
+      </div>
+      <div>
+        <label for="time-story-inline">Inline schedule</label>
+        <snice-time-picker
+          id="time-story-inline"
+          variant="inline"
+          helper-text="Each time group keeps a distinct name."
+        ></snice-time-picker>
+      </div>
+      <div>
+        <label for="time-story-disabled">Disabled time</label>
+        <snice-time-picker id="time-story-disabled" disabled></snice-time-picker>
+      </div>
+      <div class="controls">
+        <button type="button" data-action="name">Change label</button>
+        <button type="button" data-action="error">Show error</button>
+        <button type="button" data-action="association">Remove external labels</button>
+      </div>
+      <output aria-live="polite">Accessible name: Appointment time required</output>
+    `;
+
+    const picker = fixture.querySelector('#time-story-picker') as SniceTimePickerElement;
+    const primary = fixture.querySelector('#time-story-primary') as HTMLLabelElement;
+    const secondary = fixture.querySelector('#time-story-secondary') as HTMLLabelElement;
+    const output = fixture.querySelector('output')!;
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      const input = picker.shadowRoot?.querySelector('.input');
+      output.textContent = `Accessible name: ${input?.getAttribute('aria-label') || ''}`;
+    });
+    fixture.querySelector('[data-action="name"]')!.addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Appointment time' ? 'Event starts' : 'Appointment time';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="error"]')!.addEventListener('click', event => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose an available time.';
+      button.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="association"]')!.addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      (event.currentTarget as HTMLButtonElement).textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+    return fixture;
   },
 };
 

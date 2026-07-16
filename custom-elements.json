@@ -9037,6 +9037,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated through wrapping `<label>` or explicit `for`/`id`. @public"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "type": {
                 "text": "boolean"

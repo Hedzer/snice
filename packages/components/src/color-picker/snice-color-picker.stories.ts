@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-color-picker';
-import type { ColorPickerSize, ColorPickerFormat } from './snice-color-picker.types';
+import type { ColorPickerSize, ColorPickerFormat, SniceColorPickerElement } from './snice-color-picker.types';
 
 type Args = {
   size?: ColorPickerSize;
@@ -205,6 +205,83 @@ export const RequiredInvalidErrorText: Story = {
   render: () => row(
     makePicker({ value: '#000000', label: 'Color', required: true, invalid: true, 'error-text': 'A valid color is required' }),
   ),
+};
+
+// h2: External label lifecycle and coherent chooser naming
+export const ExternalLabelLifecycle: Story = {
+  render: () => {
+    const fixture = document.createElement('section');
+    fixture.id = 'color-picker-label-story';
+    fixture.innerHTML = `
+      <style>
+        #color-picker-label-story { display:grid;gap:1rem;max-width:40rem; }
+        #color-picker-label-story .label-row { display:flex;gap:.35rem;align-items:baseline;flex-wrap:wrap; }
+        #color-picker-label-story .controls { display:flex;gap:.5rem;flex-wrap:wrap; }
+        #color-picker-label-story button { padding:.45rem .7rem; }
+      </style>
+      <div>
+        <div class="label-row">
+          <label id="color-story-primary" for="color-story-picker">Brand color</label>
+          <label id="color-story-secondary" for="color-story-picker">required</label>
+        </div>
+        <snice-color-picker
+          id="color-story-picker"
+          label="Internal color fallback"
+          helper-text="Use an approved brand color."
+          show-presets
+          required
+        ></snice-color-picker>
+      </div>
+      <div>
+        <label for="color-story-swatch">Swatch color</label>
+        <snice-color-picker
+          id="color-story-swatch"
+          show-input="false"
+          helper-text="The swatch becomes the primary label target."
+        ></snice-color-picker>
+      </div>
+      <div>
+        <label for="color-story-disabled">Disabled color</label>
+        <snice-color-picker id="color-story-disabled" disabled show-input="false"></snice-color-picker>
+      </div>
+      <div class="controls">
+        <button type="button" data-action="name">Change label</button>
+        <button type="button" data-action="error">Show error</button>
+        <button type="button" data-action="association">Remove external labels</button>
+      </div>
+      <output aria-live="polite">Accessible name: Brand color required</output>
+    `;
+
+    const picker = fixture.querySelector('#color-story-picker') as SniceColorPickerElement;
+    const primary = fixture.querySelector('#color-story-primary') as HTMLLabelElement;
+    const secondary = fixture.querySelector('#color-story-secondary') as HTMLLabelElement;
+    const output = fixture.querySelector('output')!;
+    let labelsAttached = true;
+    const updateOutput = () => requestAnimationFrame(() => {
+      const input = picker.shadowRoot?.querySelector('.color-input');
+      output.textContent = `Accessible name: ${input?.getAttribute('aria-label') || ''}`;
+    });
+    fixture.querySelector('[data-action="name"]')!.addEventListener('click', () => {
+      primary.textContent = primary.textContent === 'Brand color' ? 'Surface color' : 'Brand color';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="error"]')!.addEventListener('click', event => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const showing = picker.errorText !== '';
+      picker.invalid = !showing;
+      picker.errorText = showing ? '' : 'Choose a color with sufficient contrast.';
+      button.textContent = showing ? 'Show error' : 'Clear error';
+      updateOutput();
+    });
+    fixture.querySelector('[data-action="association"]')!.addEventListener('click', event => {
+      labelsAttached = !labelsAttached;
+      primary.htmlFor = labelsAttached ? picker.id : '';
+      secondary.htmlFor = labelsAttached ? picker.id : '';
+      (event.currentTarget as HTMLButtonElement).textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
+      updateOutput();
+    });
+    return fixture;
+  },
 };
 
 // h2: CSS Parts Styling

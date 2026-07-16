@@ -42,6 +42,7 @@ describe('snice-time-picker', () => {
       removeComponent(picker as HTMLElement);
     }
     document.querySelectorAll('[data-time-picker-test]').forEach(element => element.remove());
+    document.querySelectorAll('[data-time-label-test]').forEach(element => element.remove());
     restoreAttachInternals?.();
     restoreAttachInternals = undefined;
   });
@@ -114,6 +115,152 @@ describe('snice-time-picker', () => {
       const toggleBtn = queryShadow(picker as HTMLElement, '.clock-toggle');
       expect(toggleBtn).toBeTruthy();
       expect(toggleBtn?.tagName).toBe('BUTTON');
+    });
+  });
+
+  describe('external label and composite naming lifecycle', () => {
+    it('uses every associated label for one field, its controls, and one shared description', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', {
+        id: 'labelled-time-picker',
+        label: 'Internal fallback',
+        'helper-text': 'Times are local.',
+        'show-seconds': true,
+        format: '12h'
+      });
+      const primary = document.createElement('label');
+      primary.dataset.timeLabelTest = 'true';
+      primary.htmlFor = picker.id;
+      primary.textContent = 'Appointment time';
+      const secondary = document.createElement('label');
+      secondary.dataset.timeLabelTest = 'true';
+      secondary.htmlFor = picker.id;
+      secondary.textContent = 'required';
+      picker.before(primary, secondary);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      const input = getInput();
+      const descriptionId = input.getAttribute('aria-describedby')!;
+      expect(Array.from(picker.labels || [], label => label.textContent)).toEqual(['Appointment time', 'required']);
+      expect(input.getAttribute('aria-label')).toBe('Appointment time required');
+      expect(queryShadow(picker as HTMLElement, '.dropdown')?.getAttribute('aria-label')).toBe('Appointment time required controls');
+      expect(Array.from(picker.shadowRoot!.querySelectorAll('[data-time-unit]'), group => group.getAttribute('aria-label')))
+        .toEqual([
+          'Appointment time required hours',
+          'Appointment time required minutes',
+          'Appointment time required seconds',
+          'Appointment time required period'
+        ]);
+      expect(queryShadow(picker as HTMLElement, '.clock-toggle')?.getAttribute('aria-label'))
+        .toBe('Appointment time required: open time picker');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Times are local.');
+      expect(picker.shadowRoot?.querySelectorAll(`#${descriptionId}`)).toHaveLength(1);
+    });
+
+    it('focuses explicit and wrapping dropdown labels without opening the picker', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', {
+        id: 'focus-time-picker'
+      });
+      const explicit = document.createElement('label');
+      explicit.dataset.timeLabelTest = 'true';
+      explicit.htmlFor = picker.id;
+      explicit.textContent = 'Starts at';
+      picker.before(explicit);
+      (picker as any).labelAssociation.sync();
+
+      explicit.click();
+      expect(picker.shadowRoot?.activeElement).toBe(getInput());
+      expect((picker as any).showDropdown).toBe(false);
+
+      const wrapping = document.createElement('label');
+      wrapping.dataset.timeLabelTest = 'true';
+      wrapping.textContent = 'Wrapped time';
+      picker.replaceWith(wrapping);
+      wrapping.appendChild(picker as HTMLElement);
+      picker.removeAttribute('id');
+      (picker as any).labelAssociation.sync();
+      getInput().blur();
+      wrapping.click();
+      expect(picker.shadowRoot?.activeElement).toBe(getInput());
+      expect((picker as any).showDropdown).toBe(false);
+    });
+
+    it('uses the inline controls as the label target and keeps disabled inline controls inert', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', {
+        id: 'inline-time-picker',
+        variant: 'inline',
+        'helper-text': 'Choose a time.'
+      });
+      const label = document.createElement('label');
+      label.dataset.timeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Inline appointment';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+      await settle();
+
+      label.click();
+      const panel = queryShadow<HTMLElement>(picker as HTMLElement, '.dropdown')!;
+      expect(picker.shadowRoot?.activeElement).toBe(panel);
+      expect(panel.getAttribute('aria-label')).toBe('Inline appointment controls');
+      expect(panel.getAttribute('aria-describedby')).toMatch(/^snice-time-picker-desc-/);
+
+      panel.blur();
+      picker.disabled = true;
+      await settle();
+      label.click();
+      picker.focus();
+      expect(picker.shadowRoot?.activeElement).toBeNull();
+    });
+
+    it('updates external names and replaces helper text with one live error description', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', {
+        id: 'dynamic-time-picker',
+        'helper-text': 'Initial help'
+      });
+      const label = document.createElement('label');
+      label.dataset.timeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Begins';
+      picker.before(label);
+      (picker as any).labelAssociation.sync();
+
+      label.textContent = 'Revised start time';
+      picker.invalid = true;
+      picker.errorText = 'Choose an available time.';
+      await settle();
+      (picker as any).labelAssociation.sync();
+
+      const descriptionId = getInput().getAttribute('aria-describedby')!;
+      expect(getInput().getAttribute('aria-label')).toBe('Revised start time');
+      expect(getInput().getAttribute('aria-invalid')).toBe('true');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.textContent).toBe('Choose an available time.');
+      expect(queryShadow(picker as HTMLElement, `#${descriptionId}`)?.getAttribute('role')).toBe('alert');
+      expect(queryShadow(picker as HTMLElement, '.helper-text')).toBeNull();
+    });
+
+    it('rebinds label activation after moving and reconnecting the host', async () => {
+      const first = document.createElement('div');
+      const second = document.createElement('div');
+      first.dataset.timeLabelTest = 'true';
+      second.dataset.timeLabelTest = 'true';
+      document.body.append(first, second);
+      picker = document.createElement('snice-time-picker') as SniceTimePickerElement;
+      picker.id = 'moved-time-picker';
+      const label = document.createElement('label');
+      label.dataset.timeLabelTest = 'true';
+      label.htmlFor = picker.id;
+      label.textContent = 'Moved time';
+      first.append(label, picker as HTMLElement);
+      await (picker as any).ready;
+
+      second.append(label, picker as HTMLElement);
+      await settle();
+      (picker as any).labelAssociation.sync();
+      label.click();
+
+      expect(picker.shadowRoot?.activeElement).toBe(getInput());
+      expect(Array.from(picker.labels || [])).toEqual([label]);
     });
   });
 

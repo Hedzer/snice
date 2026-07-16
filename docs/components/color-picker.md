@@ -2,7 +2,7 @@
 
 # Color Picker Component
 
-A color selection interface with format conversion, preset colors, and form integration.
+A form-associated color selection interface with format conversion, preset colors, and live native label association.
 
 ## Table of Contents
 - [Properties](#properties)
@@ -31,13 +31,14 @@ A color selection interface with format conversion, preset colors, and form inte
 | `showPresets` (attr: `show-presets`) | `boolean` | `false` | Show preset color swatches |
 | `presets` | `string[]` | `[...]` | Array of preset color values |
 | `loading` | `boolean` | `false` | Loading state with spinner |
+| `labels` | `NodeList \| null` | — | Read-only live associated labels |
 
 ## Methods
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `focus()` | -- | Focus the color picker input |
-| `blur()` | -- | Remove focus from the color picker input |
+| `focus()` | -- | Focus the text input, or the swatch when `showInput` is false, if interaction is allowed |
+| `blur()` | -- | Remove focus from the text input or swatch |
 
 ## Events
 
@@ -155,7 +156,10 @@ picker.addEventListener('color-picker-input', (e) => {
 
 ## Accessibility
 
-- Form-associated custom element with native form integration
-- Label association for screen readers
-- Keyboard accessible color input
-- Error and helper text announced to assistive technology
+The picker accepts explicit `<label for="picker-id">`, wrapping labels, and multiple labels. Multiple labels form one accessible name in document order. The read-only `labels` property stays current when labels are added, removed, reordered, retargeted, or edited. If there is no associated label, the `label` property is used; the final fallback accessible name is `Color`.
+
+Activating an associated or internal label focuses the text input when `showInput` is true, or the visible swatch when it is false. Disabled, disabled-fieldset, and loading pickers are inert. Inert controls cannot be reached through label activation, keyboard activation, presets, the swatch, or the hidden native color input.
+
+The primary text input or swatch owns the base field name. Related controls have distinct names: the companion swatch is `<field name> color chooser`, and every preset is `Set <field name> to <color>`. The hidden native color input is only the browser color-dialog mechanism: it is unnamed, removed from the tab order, hidden from assistive technology, and never creates a duplicate form field. ElementInternals supplies the picker’s single form value.
+
+Helper or error text is connected to the primary target through one stable `aria-describedby` reference. Error text replaces helper text, uses `role="alert"`, and `invalid` is exposed with `aria-invalid`. Keyboard users can activate the swatch and presets with Enter or Space.
