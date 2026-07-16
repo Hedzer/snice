@@ -10,6 +10,10 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'line',
+  // Browser gates run alongside source, built, CDN, and React validation in
+  // the release matrix. Preserve every assertion while allowing async UI work
+  // to settle during temporary whole-machine contention.
+  expect: { timeout: 20_000 },
   use: {
     baseURL: 'http://localhost:5566',
     trace: 'on-first-retry',

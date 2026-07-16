@@ -101,7 +101,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <div class="grid">
   <snice-time-picker label="Midnight" value="00:00"></snice-time-picker>
   <snice-time-picker label="Noon" value="12:00"></snice-time-picker>
-  <snice-time-picker label="End of day" value="23:59"></snice-time-picker>
+  <snice-time-picker label="End of day" value="23:59" step="1"></snice-time-picker>
   <snice-time-picker label="With seconds" value="08:30:15" show-seconds></snice-time-picker>
 </div>
 
@@ -116,6 +116,55 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     <snice-time-picker name="start_time" label="Start Time" value="09:00" required></snice-time-picker>
     <snice-time-picker name="end_time" label="End Time" value="17:00" required></snice-time-picker>
   </div>
+</form>
+
+<h2>Native form lifecycle</h2>
+<form id="time-picker-showcase-form" style="display:flex;flex-direction:column;gap:.75rem;max-width:40rem">
+  <snice-time-picker
+    id="time-picker-showcase-appointment"
+    name="appointment"
+    label="Appointment"
+    value="14:05:10"
+    format="12h"
+    step="5"
+    min-time="09:00:00"
+    max-time="17:00:00"
+    helper-text="Displayed as 12-hour time; submitted as HH:mm:ss"
+    show-seconds
+    clearable
+    required
+  ></snice-time-picker>
+  <snice-time-picker
+    id="time-picker-showcase-readonly"
+    name="confirmed"
+    label="Confirmed time"
+    value="16:30"
+    format="12h"
+    step="1"
+    readonly
+  ></snice-time-picker>
+  <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border);border-radius:.5rem;padding:.75rem">
+    <legend>
+      Disabled fieldset
+      <snice-time-picker
+        id="time-picker-showcase-legend"
+        name="legend-time"
+        label="First legend remains enabled"
+        value="11:00"
+      ></snice-time-picker>
+    </legend>
+    <snice-time-picker
+      id="time-picker-showcase-fieldset"
+      name="disabled-time"
+      label="Descendant is effectively disabled"
+      value="12:00"
+    ></snice-time-picker>
+  </fieldset>
+  <div class="row">
+    <button type="submit">Submit canonical time</button>
+    <button type="reset">Reset defaults</button>
+  </div>
+  <output id="time-picker-form-output" aria-live="polite">Ready</output>
 </form>
 
 <h2>Combination: 12h + seconds + step 5 + inline</h2>
@@ -149,6 +198,22 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <script type="module">
   import '../../../packages/components/src/time-picker/snice-time-picker.ts';
+</script>
+<script>
+  (() => {
+    const form = document.getElementById('time-picker-showcase-form');
+    const output = document.getElementById('time-picker-form-output');
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+  })();
 </script>
 </body>
 </html>

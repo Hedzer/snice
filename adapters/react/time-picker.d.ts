@@ -3,7 +3,7 @@ import type { SniceFormProps } from './types';
  * Props for the TimePicker component
  */
 export interface TimePickerProps extends SniceFormProps {
-    value?: any;
+    defaultValue?: any;
     format?: any;
     step?: any;
     minTime?: any;
@@ -22,6 +22,7 @@ export interface TimePickerProps extends SniceFormProps {
     size?: any;
     loading?: any;
     clearable?: any;
+    value?: any;
     onTimeChange?: (event: any) => void;
     onTimepickerFocus?: (event: any) => void;
     onTimepickerBlur?: (event: any) => void;

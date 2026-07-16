@@ -4,7 +4,10 @@ export type TimePickerVariant = 'dropdown' | 'inline';
 export type TimePickerSize = 'small' | 'medium' | 'large';
 
 export interface SniceTimePickerElement extends HTMLElement {
+  /** Live canonical time value. */
   value: string;
+  /** Reset default represented by the `value` content attribute. */
+  defaultValue: string;
   format: TimePickerFormat;
   step: TimePickerStep;
   minTime: string;
@@ -23,6 +26,12 @@ export interface SniceTimePickerElement extends HTMLElement {
   size: TimePickerSize;
   loading: boolean;
   clearable: boolean;
+  readonly type: 'time';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   // Methods
   open(): void;

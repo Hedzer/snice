@@ -55,6 +55,7 @@ async function main() {
       || target === 'tests/live/components/date-picker/date-picker-storybook.spec.ts'
       || target === 'tests/live/components/date-range-picker/date-range-picker-storybook.spec.ts'
       || target === 'tests/live/components/date-time-picker/date-time-picker-storybook.spec.ts'
+      || target === 'tests/live/components/time-picker/time-picker-storybook.spec.ts'
       || target === 'tests/live/components/radio/radio-storybook.spec.ts'
       || target === 'tests/live/components/location/location-storybook.spec.ts'
   );

@@ -4,6 +4,7 @@ import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSiz
 
 type Args = {
   value?: string;
+  defaultValue?: string;
   format?: TimePickerFormat;
   step?: TimePickerStep;
   minTime?: string;
@@ -51,6 +52,7 @@ const meta: Meta<Args> = {
   tags: ['autodocs'],
   argTypes: {
     value:       { control: 'text' },
+    defaultValue:{ control: 'text', description: 'Authored value attribute / form-reset default' },
     format:      { control: 'select', options: FORMATS },
     step:        { control: 'select', options: STEPS },
     minTime:     { control: 'text' },
@@ -73,6 +75,7 @@ const meta: Meta<Args> = {
   render: (args) => {
     const el = document.createElement('snice-time-picker');
     if (args.value       !== undefined) el.setAttribute('value',        String(args.value));
+    if (args.defaultValue !== undefined) (el as any).defaultValue =     String(args.defaultValue);
     if (args.format      !== undefined) el.setAttribute('format',       String(args.format));
     if (args.step        !== undefined) el.setAttribute('step',         String(args.step));
     if (args.minTime     !== undefined) el.setAttribute('min-time',     String(args.minTime));
@@ -207,6 +210,74 @@ export const NameFormIntegration: Story = {
   ),
 };
 
+// h2: Native form lifecycle
+export const FormIntegration: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.id = 'time-picker-story-form';
+    form.style.cssText = 'display:flex;flex-direction:column;gap:.875rem;max-width:40rem;';
+    form.innerHTML = `
+      <snice-time-picker
+        id="time-picker-story-appointment"
+        name="appointment"
+        value="14:05:10"
+        format="12h"
+        step="5"
+        min-time="09:00:00"
+        max-time="17:00:00"
+        label="Appointment"
+        helper-text="Displayed as 12-hour time; submitted as canonical 24-hour time"
+        show-seconds
+        clearable
+        required
+      ></snice-time-picker>
+      <snice-time-picker
+        id="time-picker-story-readonly"
+        name="confirmed"
+        value="16:30"
+        format="12h"
+        step="1"
+        label="Confirmed time"
+        readonly
+      ></snice-time-picker>
+      <fieldset disabled style="display:flex;flex-direction:column;gap:.75rem;border:1px solid var(--snice-color-border, rgb(226 226 226));border-radius:.5rem;padding:.75rem;">
+        <legend>
+          Disabled fieldset
+          <snice-time-picker
+            id="time-picker-story-legend"
+            name="legend-time"
+            value="11:00"
+            label="First legend remains enabled"
+          ></snice-time-picker>
+        </legend>
+        <snice-time-picker
+          id="time-picker-story-fieldset"
+          name="disabled-time"
+          value="12:00"
+          label="Descendant is effectively disabled"
+        ></snice-time-picker>
+      </fieldset>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button type="submit">Submit</button>
+        <button type="reset">Reset defaults</button>
+      </div>
+      <output aria-live="polite">Ready</output>
+    `;
+    const output = form.querySelector('output')!;
+    const describeData = () => Array.from(new FormData(form).entries())
+      .map(([name, value]) => `${name}=${String(value)}`)
+      .join(', ') || '(empty)';
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted: ${describeData()}`;
+    });
+    form.addEventListener('reset', () => {
+      requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+    });
+    return form;
+  },
+};
+
 // h2: Combination: 12h + seconds + step 5 + inline
 export const Combination12hSecondsStep5Inline: Story = {
   render: () => row(
@@ -233,7 +304,7 @@ export const Clearable: Story = {
 export const EdgeCases: Story = {
   render: () => row(
     makePicker({ value: '00:00', label: 'Midnight (00:00)' }),
-    makePicker({ value: '23:59', label: 'Late night (23:59)' }),
+    makePicker({ value: '23:59', step: 1, label: 'Late night (23:59)' }),
     makePicker({ value: '12:00', format: '12h', label: 'Noon 12h' }),
   ),
 };

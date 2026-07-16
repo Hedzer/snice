@@ -8,7 +8,7 @@ import type { SniceFormProps } from './types';
  * Props for the TimePicker component
  */
 export interface TimePickerProps extends SniceFormProps {
-  value?: any;
+  defaultValue?: any;
   format?: any;
   step?: any;
   minTime?: any;
@@ -27,6 +27,7 @@ export interface TimePickerProps extends SniceFormProps {
   size?: any;
   loading?: any;
   clearable?: any;
+  value?: any;
   onTimeChange?: (event: any) => void;
   onTimepickerFocus?: (event: any) => void;
   onTimepickerBlur?: (event: any) => void;
@@ -53,7 +54,7 @@ export interface TimePickerProps extends SniceFormProps {
  */
 export const TimePicker = createReactAdapter<TimePickerProps>({
   tagName: 'snice-time-picker',
-  properties: ["value","format","step","minTime","maxTime","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","size","loading","clearable"],
+  properties: ["defaultValue","format","step","minTime","maxTime","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","size","loading","clearable","value"],
   events: {"time-change":"onTimeChange","timepicker-focus":"onTimepickerFocus","timepicker-blur":"onTimepickerBlur","timepicker-open":"onTimepickerOpen","timepicker-close":"onTimepickerClose","timepicker-clear":"onTimepickerClear"},
   formAssociated: true
 });

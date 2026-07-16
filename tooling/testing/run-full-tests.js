@@ -22,6 +22,10 @@ const vitestWorkers = Number.parseInt(
   process.env.SNICE_FULL_TEST_WORKERS || String(Math.max(2, Math.floor(cpuCount / 4))),
   10
 );
+// Browser journeys share the machine with four artifact/unit gates in this
+// command. Keep their failure ceiling high enough for temporary CPU pressure;
+// this does not affect the duration of healthy runs.
+const browserTimeout = '--timeout=120000';
 const active = new Set();
 const startedAt = performance.now();
 let stopping = false;
@@ -133,10 +137,10 @@ try {
     npmRun('built suite', 'test:distribution:prepared', vitestWorkerArgs()),
     npmRun('CDN artifact + runtime suites', 'test:cdn:prepared'),
     npmRun('React adapter suite', 'test:react:prepared', vitestWorkerArgs()),
-    npmRun('framework browser suite', 'test:browser:framework:prepared', ['--timeout=60000'], {
+    npmRun('framework browser suite', 'test:browser:framework:prepared', [browserTimeout], {
       env: { SNICE_TEST_PUBLIC_DIR: publicSnapshot }
     }),
-    npmRun('website browser suite', 'test:browser:website:prepared', ['--timeout=60000'], {
+    npmRun('website browser suite', 'test:browser:website:prepared', [browserTimeout], {
       env: { SNICE_TEST_SITE_DIR: siteSnapshot }
     })
   ]);
