@@ -229,7 +229,12 @@ export class FormLabelAssociation {
     if (event.composedPath()[0] !== this.host) return;
     this.currentLabels = this.resolveLabels();
     if (this.currentLabels.length === 0) return;
-    this.getTarget()?.focus();
+    const target = this.getTarget();
+    if (!target) {
+      event.preventDefault();
+      return;
+    }
+    target.focus();
   };
 
   private handleLabelActivation = (event: MouseEvent) => {
@@ -249,7 +254,14 @@ export class FormLabelAssociation {
     if (interactiveDescendant) return;
 
     const target = this.getTarget();
-    target?.focus();
+    if (!target) {
+      // Prevent the browser's FACE label default action from focusing a
+      // delegatesFocus shadow descendant when this component is disabled,
+      // loading, or otherwise has no eligible interaction target.
+      event.preventDefault();
+      return;
+    }
+    target.focus();
     // WebKit may run its FACE label default action after the bubbling click and
     // move focus back to the host. Re-assert the shadow target after that
     // default action while retaining the browser's normal activation event.

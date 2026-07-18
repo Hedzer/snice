@@ -12,6 +12,18 @@ export interface SniceRangeSliderElement extends HTMLElement {
   showTooltip: boolean;
   showLabels: boolean;
   orientation: RangeSliderOrientation;
+  name: string;
+  readonly type: 'range';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
+  focus(): void;
+  blur(): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  setCustomValidity(message: string): void;
 }
 
 export interface RangeChangeDetail {

@@ -2,11 +2,14 @@ import { element, property, state, query, watch, dispatch, ready, reconnect, dis
 import cssContent from './snice-color-picker.css?inline';
 import type { ColorPickerSize, ColorPickerFormat, SniceColorPickerElement } from './snice-color-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
-@element('snice-color-picker', { formAssociated: true })
+@element('snice-color-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceColorPicker extends HTMLElement implements SniceColorPickerElement {
   internals!: ElementInternals;
   private dirtyValue = false;
+  private customValidationMessage = '';
+  private validationInput?: HTMLInputElement;
   private readonly descriptionId = `snice-color-picker-desc-${Math.random().toString(36).slice(2, 10)}`;
   private readonly labelAssociation: FormLabelAssociation;
 
@@ -44,7 +47,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   defaultValue = '#000000';
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -55,6 +58,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   formDisabledCallback(disabled: boolean) {
     // Inherited fieldset state must not rewrite the authored `disabled` state.
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -63,6 +67,9 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
 
   @property({  })
   size: ColorPickerSize = 'medium';
@@ -122,19 +129,20 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const interactionDisabled = this.interactionDisabled;
     const wrapperClasses = ['color-picker-wrapper'].filter(Boolean).join(' ');
     const swatchClasses = [
       'color-swatch',
       `color-swatch--${this.size}`,
       interactionDisabled ? 'color-swatch--disabled' : '',
-      this.invalid ? 'color-swatch--invalid' : '',
+      displayedInvalid ? 'color-swatch--invalid' : '',
       this.loading ? 'color-swatch--loading' : ''
     ].filter(Boolean).join(' ');
     const inputClasses = [
       'color-input',
       `color-input--${this.size}`,
-      this.invalid ? 'color-input--invalid' : '',
+      displayedInvalid ? 'color-input--invalid' : '',
       this.loading ? 'color-input--loading' : ''
     ].filter(Boolean).join(' ');
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
@@ -160,6 +168,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
             aria-label="${this.showInput ? `${accessibleName} color chooser` : accessibleName}"
             aria-describedby="${this.showInput ? '' : describedBy}"
             aria-disabled="${interactionDisabled ? 'true' : 'false'}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             @keydown=${this.handleSwatchKeyDown}
             @focus=${this.handleFocus}
             @blur=${this.handleBlur}
@@ -180,7 +189,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
                 ?required="${this.required}"
                 aria-label="${accessibleName}"
                 aria-describedby="${describedBy}"
-                aria-invalid="${this.invalid ? 'true' : 'false'}"
+                aria-invalid="${displayedInvalid ? 'true' : 'false'}"
                 placeholder="${this.format === 'hex' ? '#000000' : this.format === 'rgb' ? 'rgb(0,0,0)' : 'hsl(0,0%,0%)'}"
                 @input=${this.handleInputChange}
                 @change=${this.handleInputChange}
@@ -224,7 +233,9 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   private renderPreset(color: string) {
-    const isSelected = this.toHex(this.value).toLowerCase() === this.toHex(color).toLowerCase();
+    const currentColor = this.parseColor(this.value);
+    const presetColor = this.parseColor(color);
+    const isSelected = Boolean(currentColor && presetColor && currentColor.toLowerCase() === presetColor.toLowerCase());
     const classes = [
       'preset',
       isSelected ? 'preset--selected' : '',
@@ -261,7 +272,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     } else if (!this.dirtyValue) {
       this.applyDefaultValue();
     }
-    this.syncFormValue();
+    this.syncFormState();
     this.labelAssociation.connect();
   }
 
@@ -299,12 +310,12 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   private handleInputChange(e: Event) {
     if (this.interactionDisabled) return;
     const input = e.target as HTMLInputElement;
-    const color = this.parseColor(input.value);
-    if (color) {
-      this.value = color;
-      this.dispatchInputEvent();
-      this.dispatchChangeEvent();
-    }
+    // Preserve malformed editable text so badInput, FormData, and correction
+    // all describe the same customer-visible value. Valid RGB/HSL text is
+    // canonicalized to hex by setValue().
+    this.value = input.value;
+    this.dispatchInputEvent();
+    this.dispatchChangeEvent();
   }
 
   private handlePresetClick(color: string) {
@@ -336,10 +347,10 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   private setValue(value: unknown, dirty: boolean) {
     if (dirty) this.dirtyValue = true;
-    const candidate = String(value ?? '');
-    this.valueState = candidate.startsWith('#') ? candidate : '#000000';
+    const candidate = String(value ?? '').trim();
+    this.valueState = this.parseColor(candidate) ?? candidate;
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncRenderedValue() {
@@ -351,21 +362,49 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     this.internals?.setFormValue(this.value, this.value);
   }
 
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const barred = this.interactionDisabled;
+    const badInput = !barred && this.value !== '' && this.parseColor(this.value) === null;
+    const valueMissing = !barred && this.required && this.value === '';
+    const flags: ValidityStateFlags = barred ? {} : {
+      badInput,
+      customError: Boolean(this.customValidationMessage),
+      valueMissing
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage ||
+      (valueMissing ? 'Please select a color.' : '') ||
+      (badInput ? 'Please enter a valid color.' : '');
+    this.constraintInvalid = hasError;
+    this.validationProxy.setCustomValidity(hasError ? message : '');
+    const displayedInvalid = this.invalid || hasError;
+    const anchor = this.showInput ? this.input : this.swatch;
+
+    this.input?.setCustomValidity(hasError ? message : '');
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.input?.classList.toggle('color-input--invalid', displayedInvalid);
+    this.swatch?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.swatch?.classList.toggle('color-swatch--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, anchor);
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) this.validationInput = document.createElement('input');
+    return this.validationInput;
+  }
+
   private toHex(color: string): string {
-    if (color.startsWith('#')) {
-      return color;
-    }
-    if (color.startsWith('rgb')) {
-      return this.rgbToHex(color);
-    }
-    if (color.startsWith('hsl')) {
-      return this.hslToHex(color);
-    }
-    return color;
+    return this.parseColor(color) ?? '#000000';
   }
 
   private formatColor(color: string, format: ColorPickerFormat): string {
-    const hex = this.toHex(color);
+    const hex = this.parseColor(color);
+    if (!hex) return color;
 
     switch (format) {
       case 'hex':
@@ -391,12 +430,12 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     }
 
     // RGB color
-    if (value.startsWith('rgb')) {
+    if (/^rgb\(/i.test(value)) {
       return this.rgbToHex(value);
     }
 
     // HSL color
-    if (value.startsWith('hsl')) {
+    if (/^hsl\(/i.test(value)) {
       return this.hslToHex(value);
     }
 
@@ -410,15 +449,12 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     return `rgb(${r}, ${g}, ${b})`;
   }
 
-  private rgbToHex(rgb: string): string {
-    const match = rgb.match(/\d+/g);
-    if (!match || match.length < 3) return '#000000';
-
-    const r = parseInt(match[0]).toString(16).padStart(2, '0');
-    const g = parseInt(match[1]).toString(16).padStart(2, '0');
-    const b = parseInt(match[2]).toString(16).padStart(2, '0');
-
-    return `#${r}${g}${b}`;
+  private rgbToHex(rgb: string): string | null {
+    const match = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i.exec(rgb);
+    if (!match) return null;
+    const channels = match.slice(1).map(Number);
+    if (channels.some(channel => channel < 0 || channel > 255)) return null;
+    return `#${channels.map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
   }
 
   private hexToHsl(hex: string): string {
@@ -446,13 +482,25 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
   }
 
-  private hslToHex(hsl: string): string {
-    const match = hsl.match(/\d+/g);
-    if (!match || match.length < 3) return '#000000';
+  private hslToHex(hsl: string): string | null {
+    const number = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)';
+    const match = new RegExp(
+      `^hsl\\(\\s*(${number})\\s*,\\s*(${number})%\\s*,\\s*(${number})%\\s*\\)$`,
+      'i'
+    ).exec(hsl);
+    if (!match) return null;
 
-    const h = parseInt(match[0]) / 360;
-    const s = parseInt(match[1]) / 100;
-    const l = parseInt(match[2]) / 100;
+    const rawHue = Number(match[1]);
+    const saturation = Number(match[2]);
+    const lightness = Number(match[3]);
+    if (![rawHue, saturation, lightness].every(Number.isFinite) ||
+        saturation < 0 || saturation > 100 || lightness < 0 || lightness > 100) {
+      return null;
+    }
+
+    const h = ((rawHue % 360) + 360) % 360 / 360;
+    const s = saturation / 100;
+    const l = lightness / 100;
 
     let r: number, g: number, b: number;
 
@@ -483,7 +531,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   @watch('valueState')
   handleValueChange() {
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   @watch('defaultValue')
@@ -496,6 +544,18 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     this.syncRenderedValue();
   }
 
+  @watch('showInput')
+  handlePrimaryTargetChange() {
+    queueMicrotask(() => {
+      const rendered = (this as unknown as { readonly rendered: Promise<void> }).rendered;
+      void rendered.then(() => {
+        if (!this.isConnected) return;
+        this.syncValidity();
+        this.labelAssociation.sync();
+      });
+    });
+  }
+
   @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
     if (this.input) {
@@ -504,6 +564,22 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     if (this.nativeInput) {
       this.nativeInput.disabled = this.interactionDisabled;
     }
+    this.syncValidity();
+  }
+
+  @watch('required')
+  handleRequiredChange() {
+    if (this.input) this.input.required = this.required;
+    this.syncValidity();
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.input?.classList.toggle('color-input--invalid', displayedInvalid);
+    this.swatch?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.swatch?.classList.toggle('color-swatch--invalid', displayedInvalid);
   }
 
   private syncCompositeAccessibleNames(name: string) {
@@ -549,8 +625,49 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     this.swatch?.blur();
   }
 
+  /** Native-compatible control type. @public */
+  get type(): 'color' {
+    return 'color';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this color picker currently participates in validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled) return false;
+    return this.internals?.willValidate ?? this.input?.willValidate ?? true;
+  }
+
   /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
   get labels(): NodeList | null {
     return this.labelAssociation.labels;
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.validationProxy.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 }

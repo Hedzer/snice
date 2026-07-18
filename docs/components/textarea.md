@@ -38,6 +38,12 @@ A multi-line text input with validation, character counting, and optional auto-g
 | `name` | `string` | `''` | Form field name |
 | `autoGrow` (attr: `auto-grow`) | `boolean` | `false` | Auto-expand height |
 | `loading` | `boolean` | `false` | Show loading spinner |
+| `type` (read-only) | `'textarea'` | `'textarea'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Owning form, including `form="id"` association |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
 
 ## Methods
 
@@ -141,11 +147,18 @@ Set the `invalid` attribute with `error-text` to show validation errors.
 
 ### In a Form
 
-The textarea is form-associated and participates in form submission.
+The textarea is a listed form-associated control. It participates in `FormData`, `form.elements`, validated submission, external `form="id"` ownership, native labels, reset, restoration, and disabled fieldsets. `required`, `minlength`, `maxlength`, and custom validity map to `valueMissing`, `tooShort`, `tooLong`, and `customError`. Length flags follow native behavior: they arise from user editing, not direct `value` assignment. Disabled, loading, and readonly states are barred from validation; readonly and loading values remain successful. `invalid` changes presentation/ARIA only, while calculated failures also activate invalid styling automatically.
 
 ```html
 <form id="feedback-form">
   <snice-textarea name="feedback" label="Your Feedback" required minlength="10" maxlength="1000" helper-text="At least 10 characters"></snice-textarea>
   <button type="submit">Submit</button>
 </form>
+```
+
+```js
+const feedback = document.querySelector('snice-textarea');
+feedback.setCustomValidity('Please remove private information.');
+feedback.reportValidity();
+feedback.setCustomValidity('');
 ```

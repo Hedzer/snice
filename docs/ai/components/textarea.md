@@ -26,6 +26,13 @@ autocomplete: string = '';
 name: string = '';
 autoGrow: boolean = false;    // attr: auto-grow
 loading: boolean = false;
+
+readonly type: 'textarea';
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList | null;
 ```
 
 ## Value and form lifecycle
@@ -33,6 +40,14 @@ loading: boolean = false;
 - `value` is live and `defaultValue`/the `value` attribute is authored reset state.
 - Pristine live state follows default mutations. Input, browser restore, or any `value` assignment (even unchanged) dirties it.
 - Reset restores the latest default silently and clears dirtiness. Repeated reset, reconnect, form moves, and disabled fieldsets preserve the native-style contract.
+
+## Form and validation contract
+
+- Listed in `form.elements`; supports `FormData`, explicit `form="id"`, external/wrapping labels, reset, browser restoration, and disabled fieldsets.
+- Enabled + non-empty `name` contributes the exact live value. Disabled controls are omitted. `readonly` remains successful but is barred. `loading` is inert and barred while preserving the successful value.
+- `required` maps to `valueMissing`. `minlength`/`maxlength` map to `tooShort`/`tooLong` only after customer editing, matching native textarea behavior; programmatic assignment does not manufacture length errors.
+- Dynamic values and constraints clear or replace validity immediately. `setCustomValidity(message)` controls `customError`; pass `''` to clear it.
+- Calculated errors drive styling, `aria-invalid`, form reporting, and submission blocking. `invalid`/`errorText` are presentation only.
 
 ## Methods
 
@@ -67,3 +82,9 @@ loading: boolean = false;
 <snice-textarea resize="both"></snice-textarea>
 <snice-textarea invalid error-text="Required field"></snice-textarea>
 ```
+
+## Accessibility
+
+- External and wrapping labels name/focus the real textarea; `labels` remains live as associations change.
+- Helper/error text has one stable `aria-describedby` target; error replaces helper and is announced once.
+- `aria-invalid` reflects authored or calculated invalid state.

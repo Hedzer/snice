@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const RangeSlider = createReactAdapter({
     tagName: 'snice-range-slider',
-    properties: ["defaultValueLow", "defaultValueHigh", "min", "max", "step", "disabled", "showTooltip", "showLabels", "orientation", "valueLow", "valueHigh"],
+    properties: ["defaultValueLow", "defaultValueHigh", "min", "max", "step", "disabled", "showTooltip", "showLabels", "orientation", "name", "valueLow", "valueHigh"],
     events: { "range-change": "onRangeChange" },
     formAssociated: true
 });

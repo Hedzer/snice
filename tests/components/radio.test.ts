@@ -487,6 +487,7 @@ describe('form value and group validity', () => {
     expect(peer.validity.valueMissing).toBe(true);
     expect(required.willValidate).toBe(false);
     expect(required.checkValidity()).toBe(true);
+    expect(inputFor(required).getAttribute('aria-invalid')).toBe('false');
     expect(peer.checkValidity()).toBe(false);
   });
 
@@ -518,6 +519,14 @@ describe('form value and group validity', () => {
     expect(first.validationMessage).toBe('Choose another option');
     expect(second.validity.valid).toBe(true);
     expect(internalsFor(first).anchor).toBe(inputFor(first));
+
+    first.loading = true;
+    expect(first.validity.customError).toBe(true);
+    expect(first.willValidate).toBe(true);
+    expect(first.checkValidity()).toBe(false);
+    expect(inputFor(first).getAttribute('aria-invalid')).toBe('true');
+    first.loading = false;
+    expect(first.validity.customError).toBe(true);
 
     first.setCustomValidity('');
     expect(first.validity.valid).toBe(true);

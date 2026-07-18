@@ -37,6 +37,11 @@ placeholder: string = 'Select an option';
 maxHeight: string = '200px';        // attr: max-height
 options: SelectOption[] = [];       // JS only, works alongside <snice-option> children
 readonly labels: NodeList | null;   // Current explicit/wrapping external labels
+readonly type: 'select-one' | 'select-multiple';
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
 ```
 
 ### snice-option
@@ -61,6 +66,8 @@ icon: string = '';        // Icon URL
 - `clear()` - Clear selection
 - `openDropdown()` / `closeDropdown()` / `toggleDropdown()` - Dropdown control
 - `selectOption(value)` - Select by value
+- `checkValidity()` / `reportValidity()` - Check/report current constraint validity
+- `setCustomValidity(message)` - Set `customError`; pass `''` to clear it
 
 ## Events
 
@@ -124,12 +131,17 @@ Contract:
 - Dynamic label text, `aria-label`, `aria-labelledby`, `for`, host `id`, DOM moves, and standard/editable mode update the shadow focus target.
 - A label click focuses the standard button without opening it. In editable mode it focuses the input, preserving the existing focus-to-open behavior. Disabled controls do not receive focus.
 - `labels` exposes the current associated elements.
-- `helperText` and `errorText` use exactly one `aria-describedby` target. `errorText` wins; `invalid` controls `aria-invalid`.
+- `helperText` and `errorText` use exactly one `aria-describedby` target. `errorText` wins; authored or calculated invalid state controls `aria-invalid`.
 
 ## Form Integration
 
 - The host submits through `ElementInternals.setFormValue()`; there is no hidden native `<select>`.
-- Set `name` for `FormData` participation.
+- Set `name` for `FormData` participation. The host is listed in `form.elements` and supports explicit `form="id"`, reset/restoration, labels, and disabled fieldsets.
+- Single select submits one string. Multiple select submits its established comma-separated `value` contract as one entry.
+- Empty `required` single or multiple selection reports `valueMissing`, updates styling/`aria-invalid`, and blocks validated submission.
+- `setCustomValidity()` supplies application errors. Constraint and custom errors recalculate immediately and survive temporary barred states.
+- Disabled controls are omitted and barred. `readonly` remains successful but is barred. `loading` is inert and barred while preserving the successful value.
+- `invalid` and `errorText` control presentation only; they do not change native validity.
 
 ## Accessibility
 

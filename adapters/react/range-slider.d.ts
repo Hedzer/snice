@@ -12,6 +12,7 @@ export interface RangeSliderProps extends SniceFormProps {
     showTooltip?: any;
     showLabels?: any;
     orientation?: any;
+    name?: any;
     valueLow?: any;
     valueHigh?: any;
     onRangeChange?: (event: any) => void;

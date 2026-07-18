@@ -1,11 +1,14 @@
-import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-textarea.css?inline';
 import type { TextareaSize, TextareaVariant, TextareaResize, SniceTextareaElement } from './snice-textarea.types';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
+import { FormLabelAssociation } from '../form-label-association';
 
-@element('snice-textarea', { formAssociated: true })
+@element('snice-textarea', { formAssociated: true, delegatesFocus: true })
 export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   internals!: ElementInternals;
   private dirtyValue = false;
+  private userEditedValue = false;
 
   @state()
   private valueState = '';
@@ -13,11 +16,23 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.textarea,
+      () => this.label || 'Textarea'
+    );
   }
 
   /**
@@ -37,7 +52,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   defaultValue = '';
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -47,6 +62,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -122,12 +138,14 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    const accessibleName = this.labelAssociation.accessibleName;
     const textareaClasses = [
       'textarea',
       `textarea--${this.size}`,
       `textarea--${this.variant}`,
       `textarea--resize-${this.resize}`,
-      this.invalid ? 'textarea--invalid' : '',
+      displayedInvalid ? 'textarea--invalid' : '',
       this.loading ? 'textarea--loading' : ''
     ].filter(Boolean).join(' ');
 
@@ -155,12 +173,13 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
             ?disabled="${this.interactionDisabled}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
-            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-label="${accessibleName}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
             rows="${this.rows}"
-            cols="${this.cols > 0 ? this.cols : ''}"
-            maxlength="${this.maxlength > 0 ? this.maxlength : ''}"
-            minlength="${this.minlength > 0 ? this.minlength : ''}"
+            cols=${this.cols > 0 ? this.cols : null}
+            maxlength=${this.maxlength > 0 ? this.maxlength : null}
+            minlength=${this.minlength > 0 ? this.minlength : null}
             autocomplete="${this.autocomplete || ''}"
             name="${this.name || ''}"
             part="textarea"
@@ -228,25 +247,79 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
         this.adjustHeight();
       }
     }
+    this.syncValidity();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private applyDefaultValue() {
     this.setValue(this.defaultValue, false);
   }
 
-  private setValue(value: unknown, dirty: boolean) {
+  private setValue(value: unknown, dirty: boolean, userEdited = false) {
     if (dirty) this.dirtyValue = true;
+    this.userEditedValue = userEdited;
     this.valueState = String(value ?? '');
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncFormValue() {
     this.internals?.setFormValue(this.value, this.value);
   }
 
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const textarea = this.textarea;
+    if (!textarea) {
+      const flags: ValidityStateFlags = this.interactionDisabled || this.readonly
+        ? {}
+        : { customError: Boolean(this.customValidationMessage), valueMissing: this.required && !this.value };
+      const hasError = hasValidityError(flags);
+      this.constraintInvalid = hasError;
+      applyElementInternalsValidity(
+        this.internals,
+        flags,
+        this.customValidationMessage || (hasError ? 'Please enter a valid value.' : '')
+      );
+      return;
+    }
+
+    if (textarea.value !== this.value) textarea.value = this.value;
+    textarea.disabled = this.interactionDisabled;
+    textarea.readOnly = this.readonly;
+    textarea.required = this.required;
+    if (this.maxlength > 0) textarea.maxLength = this.maxlength;
+    else textarea.removeAttribute('maxlength');
+    if (this.minlength > 0) textarea.minLength = this.minlength;
+    else textarea.removeAttribute('minlength');
+    textarea.setCustomValidity(this.customValidationMessage);
+
+    const barred = this.interactionDisabled || this.readonly;
+    const flags = barred ? {} : validityFlagsFrom(textarea.validity, {
+      tooLong: this.userEditedValue && this.maxlength > 0 && this.value.length > this.maxlength,
+      tooShort: this.userEditedValue && this.minlength > 0 && this.value.length > 0 && this.value.length < this.minlength
+    });
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage || textarea.validationMessage ||
+      (hasError ? 'Please enter a valid value.' : '');
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
+    textarea.setAttribute('aria-invalid', String(displayedInvalid));
+    textarea.classList.toggle('textarea--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, textarea);
+  }
+
   handleInput(e: Event) {
     const textarea = e.target as HTMLTextAreaElement;
-    this.value = textarea.value;
+    this.setValue(textarea.value, true, true);
 
     if (this.autoGrow) {
       this.adjustHeight();
@@ -257,7 +330,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
 
   handleChange(e: Event) {
     const textarea = e.target as HTMLTextAreaElement;
-    this.value = textarea.value;
+    this.setValue(textarea.value, true, true);
     this.dispatchChangeEvent();
   }
 
@@ -286,18 +359,15 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
       }
     }
 
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   @watch('invalid')
   handleInvalidChange() {
     if (this.textarea) {
-      this.textarea.setAttribute('aria-invalid', String(this.invalid));
-      if (this.invalid) {
-        this.textarea.classList.add('textarea--invalid');
-      } else {
-        this.textarea.classList.remove('textarea--invalid');
-      }
+      const displayedInvalid = this.invalid || this.constraintInvalid;
+      this.textarea.setAttribute('aria-invalid', String(displayedInvalid));
+      this.textarea.classList.toggle('textarea--invalid', displayedInvalid);
     }
   }
 
@@ -306,6 +376,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     if (this.textarea) {
       this.textarea.disabled = this.interactionDisabled;
     }
+    this.syncValidity();
   }
 
   @watch('readonly')
@@ -313,6 +384,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     if (this.textarea) {
       this.textarea.readOnly = this.readonly;
     }
+    this.syncValidity();
   }
 
   @watch('placeholder')
@@ -322,18 +394,27 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     }
   }
 
+  @watch('label')
+  handleLabelChange() {
+    this.labelAssociation.sync();
+  }
+
   @watch('maxlength')
   handleMaxLengthChange() {
-    if (this.textarea && this.maxlength > 0) {
-      this.textarea.maxLength = this.maxlength;
+    if (this.textarea) {
+      if (this.maxlength > 0) this.textarea.maxLength = this.maxlength;
+      else this.textarea.removeAttribute('maxlength');
     }
+    this.syncValidity();
   }
 
   @watch('minlength')
   handleMinLengthChange() {
-    if (this.textarea && this.minlength > 0) {
-      this.textarea.minLength = this.minlength;
+    if (this.textarea) {
+      if (this.minlength > 0) this.textarea.minLength = this.minlength;
+      else this.textarea.removeAttribute('minlength');
     }
+    this.syncValidity();
   }
 
   @watch('rows')
@@ -341,6 +422,12 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     if (this.textarea) {
       this.textarea.rows = this.rows;
     }
+  }
+
+  @watch('required')
+  handleRequiredChange() {
+    if (this.textarea) this.textarea.required = this.required;
+    this.syncValidity();
   }
 
   @watch('autoGrow')
@@ -388,15 +475,54 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
     this.textarea?.select();
   }
 
+  /** Native-compatible control type. @public */
+  get type(): 'textarea' {
+    return 'textarea';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current native constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.textarea!.validity;
+  }
+
+  /** Current localized validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.textarea?.validationMessage ?? '';
+  }
+
+  /** Whether this textarea currently participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.textarea?.willValidate ?? false;
+  }
+
+  /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
   checkValidity() {
-    return this.textarea?.checkValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.textarea?.checkValidity() ?? true;
   }
 
   reportValidity() {
-    return this.textarea?.reportValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.textarea?.reportValidity() ?? true;
   }
 
   setCustomValidity(message: string) {
-    this.textarea?.setCustomValidity(message);
+    this.customValidationMessage = String(message);
+    this.syncValidity();
+  }
+
+  @dispose()
+  private cleanup() {
+    this.labelAssociation.disconnect();
   }
 }

@@ -15,7 +15,7 @@ test('select full showcase renders and exercises its external-label lifecycle', 
   await page.goto(showcaseUrl, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => {
     const selects = Array.from(document.querySelectorAll('snice-select'));
-    return selects.length === 41 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
+    return selects.length === 42 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
   });
 
   await expect(page.getByRole('heading', { name: 'External Label Lifecycle', exact: true })).toBeVisible();
@@ -76,6 +76,12 @@ test('select full showcase renders and exercises its external-label lifecycle', 
   await expect(page.locator('#select-label-lifecycle')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth))
     .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
+
+  await page.setViewportSize({ width: 194, height: 844 });
+  expect(await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    scroll: document.documentElement.scrollWidth,
+  }))).toEqual({ viewport: 194, scroll: 194 });
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
 });

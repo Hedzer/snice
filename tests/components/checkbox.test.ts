@@ -448,6 +448,36 @@ describe('form value, restoration, and validity', () => {
     expect(checkbox.validity.valid).toBe(true);
   });
 
+  it('retains disabled flags and keeps loading validation-participating', async () => {
+    const checkbox = await createCheckbox({ attributes: { required: true, disabled: true } });
+    const internals = internalsFor(checkbox);
+    internals.willValidate = false;
+
+    expect(checkbox.validity.valueMissing).toBe(true);
+    expect(checkbox.willValidate).toBe(false);
+    expect(checkbox.checkValidity()).toBe(true);
+    expect(inputFor(checkbox).getAttribute('aria-invalid')).toBe('false');
+
+    checkbox.setCustomValidity('Retained while disabled');
+    expect(checkbox.validity.customError).toBe(true);
+    expect(inputFor(checkbox).getAttribute('aria-invalid')).toBe('false');
+
+    checkbox.disabled = false;
+    internals.willValidate = true;
+    expect(checkbox.checkValidity()).toBe(false);
+    expect(inputFor(checkbox).getAttribute('aria-invalid')).toBe('true');
+
+    checkbox.loading = true;
+    expect(checkbox.validity.valueMissing).toBe(true);
+    expect(checkbox.validity.customError).toBe(true);
+    expect(checkbox.willValidate).toBe(true);
+    expect(checkbox.checkValidity()).toBe(false);
+    expect(inputFor(checkbox).getAttribute('aria-invalid')).toBe('true');
+    checkbox.loading = false;
+    expect(checkbox.validity.valueMissing).toBe(true);
+    expect(checkbox.validity.customError).toBe(true);
+  });
+
   it('proxies form, labels, willValidate, checkValidity, and reportValidity', async () => {
     const checkbox = await createCheckbox();
     const internals = internalsFor(checkbox);

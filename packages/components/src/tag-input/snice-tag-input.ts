@@ -1,12 +1,17 @@
 import { element, property, state, render, styles, dispatch, ready, dispose, reconnect, watch, query, html, css } from 'snice';
 import type { SniceTagInputElement } from './snice-tag-input.types';
 import tagInputStyles from './snice-tag-input.css?inline';
+import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
-@element('snice-tag-input', { formAssociated: true })
+@element('snice-tag-input', { formAssociated: true, delegatesFocus: true })
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   internals!: ElementInternals;
   private dirtyValue = false;
   private suppressValueEvent = false;
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
+  private validationInput?: HTMLInputElement;
 
   @state()
   private valueState: string[] = [];
@@ -14,11 +19,20 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.validationAnchor,
+      () => this.label || 'Tags'
+    );
   }
 
   /**
@@ -38,7 +52,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   defaultValue: string[] = [];
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -49,6 +63,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -96,6 +111,12 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   @query('.tag-input-field')
   private inputElement?: HTMLInputElement;
 
+  @query('.tag-remove')
+  private firstRemoveButton?: HTMLButtonElement;
+
+  @query('.tag-input-container')
+  private containerElement?: HTMLElement;
+
   @styles()
   componentStyles() {
     return css/*css*/`${tagInputStyles}`;
@@ -110,18 +131,21 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     } else if (!this.dirtyValue) {
       this.applyDefaultValue();
     }
-    this.syncFormValue();
+    this.syncFormState();
     this.attachOutsideClickListener();
+    this.labelAssociation.connect();
   }
 
   @reconnect()
   onReconnect() {
     this.attachOutsideClickListener();
+    this.labelAssociation.connect();
   }
 
   @dispose()
   cleanup() {
     document.removeEventListener('click', this.handleDocumentClick);
+    this.labelAssociation.disconnect();
   }
 
   private attachOutsideClickListener() {
@@ -145,12 +169,60 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     } finally {
       this.suppressValueEvent = false;
     }
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncFormValue() {
     const value = JSON.stringify(this.value);
     this.internals?.setFormValue(value, value);
+  }
+
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private get validationAnchor(): HTMLElement | undefined {
+    return this.inputElement ?? this.firstRemoveButton;
+  }
+
+  private syncValidityAfterRender() {
+    // @watch handlers run before the batched render. Re-read conditional
+    // targets after it commits so ElementInternals never retains a detached
+    // draft input when the tag limit hides that input.
+    queueMicrotask(() => {
+      const rendered = (this as unknown as { readonly rendered: Promise<void> }).rendered;
+      void rendered.then(() => {
+        if (this.isConnected) this.syncValidity();
+      });
+    });
+  }
+
+  private syncValidity() {
+    const barred = this.interactionDisabled || this.readonly;
+    const tooLong = !barred && this.maxTags > 0 && this.value.length > this.maxTags;
+    const duplicateValue = !barred && !this.allowDuplicates &&
+      new Set(this.value).size !== this.value.length;
+    const flags: ValidityStateFlags = barred ? {} : {
+      customError: Boolean(this.customValidationMessage) || duplicateValue,
+      tooLong
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage ||
+      (tooLong ? `Use no more than ${this.maxTags} tags.` : '') ||
+      (duplicateValue ? 'Duplicate tags are not allowed.' : '');
+    this.constraintInvalid = hasError;
+    this.validationProxy.setCustomValidity(hasError ? message : '');
+    this.inputElement?.setCustomValidity(hasError ? message : '');
+    this.inputElement?.setAttribute('aria-invalid', String(hasError));
+    this.containerElement?.setAttribute('aria-invalid', String(hasError));
+    this.containerElement?.classList.toggle('tag-input-container--invalid', hasError);
+    applyElementInternalsValidity(this.internals, flags, message, this.validationAnchor);
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) this.validationInput = document.createElement('input');
+    return this.validationInput;
   }
 
   private clearDraft() {
@@ -168,7 +240,8 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
   @watch('valueState', { immediate: false })
   handleValueChange() {
-    this.syncFormValue();
+    this.syncFormState();
+    this.syncValidityAfterRender();
     if (!this.suppressValueEvent) this.emitChange();
   }
 
@@ -177,11 +250,17 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     if (!this.dirtyValue) this.applyDefaultValue();
   }
 
+  @watch('maxTags', 'allowDuplicates', 'disabled', 'readonly', 'formDisabled', { immediate: false })
+  handleValidationConfigurationChange() {
+    this.syncValidity();
+    this.syncValidityAfterRender();
+  }
+
   @render()
   renderTagInput() {
     const isDisabled = this.interactionDisabled;
     const isReadonly = this.readonly;
-    const canAdd = !isDisabled && !isReadonly && (this.maxTags === 0 || this.value.length < this.maxTags);
+    const canAdd = !isDisabled && !isReadonly && (this.maxTags <= 0 || this.value.length < this.maxTags);
     const hasLabel = !!this.label;
     const hasSuggestions = this.showSuggestions && this.filteredSuggestions.length > 0;
 
@@ -193,7 +272,8 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
         <div
           part="container"
-          class="tag-input-container ${isDisabled ? 'tag-input-container--disabled' : ''}"
+          class="tag-input-container ${isDisabled ? 'tag-input-container--disabled' : ''} ${this.constraintInvalid ? 'tag-input-container--invalid' : ''}"
+          aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
           @click=${() => this.focus()}
         >
           ${this.value.map((tag, index) => html/*html*/`
@@ -223,6 +303,8 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
               placeholder="${this.value.length === 0 ? this.placeholder : ''}"
               ?disabled=${isDisabled}
               ?readonly=${isReadonly}
+              aria-label="${this.labelAssociation.accessibleName}"
+              aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
               @input=${(e: Event) => this.handleInput(e)}
               @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e)}
               @focus=${() => this.handleFocus()}
@@ -271,7 +353,57 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   }
 
   focus(): void {
-    this.inputElement?.focus();
+    if (!this.interactionDisabled) this.validationAnchor?.focus();
+  }
+
+  blur(): void {
+    this.validationAnchor?.blur();
+  }
+
+  /** Native-compatible control type. @public */
+  get type(): 'text' {
+    return 'text';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this tag input currently participates in validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.inputElement?.willValidate ?? true;
+  }
+
+  /** Labels associated with the host. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.validationProxy.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 
   // --- Private Methods ---

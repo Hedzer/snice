@@ -8,7 +8,7 @@ Form-associated native-style radio with group coordination, reset defaults, requ
 checked: boolean = false;         // live, property-only, direct assignments are silent
 defaultChecked: boolean = false;  // reflected by the checked attribute; form-reset default
 disabled: boolean = false;        // authored disabled state
-loading: boolean = false;         // blocks interaction; does not disable form participation
+loading: boolean = false;         // blocks interaction; submission and validation still participate
 required: boolean = false;        // applies to the whole group
 invalid: boolean = false;         // visual/ARIA state only; not a validation error
 variant: 'default'|'block' = 'default';

@@ -1,11 +1,20 @@
-import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-step-input.css?inline';
 import type { StepInputSize, SniceStepInputElement } from './snice-step-input.types';
+import { FormLabelAssociation } from '../form-label-association';
+import {
+  applyElementInternalsValidity,
+  findFormOwner,
+  hasValidityError,
+  normalizeSteppedValue
+} from '../form-control-validity';
 
-@element('snice-step-input', { formAssociated: true })
+@element('snice-step-input', { formAssociated: true, delegatesFocus: true })
 export class SniceStepInput extends HTMLElement implements SniceStepInputElement {
   internals!: ElementInternals;
   private dirtyValue = false;
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
 
   @state()
   private valueState = 0;
@@ -13,11 +22,20 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.input,
+      () => 'Number input'
+    );
   }
 
   /**
@@ -37,7 +55,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   defaultValue = 0;
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -47,6 +65,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -76,6 +95,9 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @property({ type: Boolean })
   wrap = false;
 
+  @property()
+  name = '';
+
   @query('.step-input__input')
   input?: HTMLInputElement;
 
@@ -85,7 +107,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   @render()
   renderContent() {
-    const classes = `step-input step-input--${this.size}`;
+    const classes = `step-input step-input--${this.size}${this.constraintInvalid ? ' step-input--invalid' : ''}`;
     const isMinBound = !this.wrap && this.value <= this.min;
     const isMaxBound = !this.wrap && this.value >= this.max;
     const disableDec = this.interactionDisabled || (!this.wrap && isMinBound);
@@ -114,13 +136,15 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
           .value="${String(this.value)}"
           min="${this.min === -Infinity ? '' : this.min}"
           max="${this.max === Infinity ? '' : this.max}"
-          step="${this.step}"
+          step="${this.effectiveStep}"
+          name="${this.name}"
           ?disabled="${this.interactionDisabled}"
           ?readonly="${this.readonly}"
           role="spinbutton"
           aria-valuenow="${this.value}"
           aria-valuemin="${this.min === -Infinity ? '' : this.min}"
           aria-valuemax="${this.max === Infinity ? '' : this.max}"
+          aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
           @change=${this.handleInputChange}
           @keydown=${this.handleKeyDown}
         />
@@ -158,7 +182,13 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
       this.applyDefaultValue();
     }
     this.clampValue(false);
-    this.syncFormValue();
+    this.syncFormState();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private applyDefaultValue() {
@@ -168,10 +198,10 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   private setValue(value: unknown, dirty: boolean) {
     if (dirty) this.dirtyValue = true;
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) return;
+    if (!Number.isFinite(parsed)) return;
     this.valueState = this.normalizeValue(parsed);
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncRenderedValue() {
@@ -181,10 +211,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   }
 
   private normalizeValue(value: number): number {
-    let normalized = value;
-    if (this.min !== -Infinity) normalized = Math.max(this.min, normalized);
-    if (this.max !== Infinity) normalized = Math.min(this.max, normalized);
-    return this.roundToStep(normalized);
+    return normalizeSteppedValue(value, this.min, this.max, this.effectiveStep);
   }
 
   private clampValue(dirty = this.dirtyValue) {
@@ -196,18 +223,54 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     this.internals?.setFormValue(value, value);
   }
 
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const input = this.input;
+    if (input) {
+      input.value = String(this.value);
+      input.min = this.min === -Infinity ? '' : String(this.min);
+      input.max = this.max === Infinity ? '' : String(this.max);
+      input.step = String(this.effectiveStep);
+      input.disabled = this.interactionDisabled;
+      input.readOnly = this.readonly;
+      input.setCustomValidity(this.customValidationMessage);
+    }
+    const barred = this.interactionDisabled || this.readonly;
+    // Direct entry and property assignment are normalized before becoming the
+    // component value, so min/max/step cannot leave a latent native mismatch.
+    const flags: ValidityStateFlags = barred ? {} : {
+      customError: Boolean(this.customValidationMessage)
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage || input?.validationMessage ||
+      (hasError ? 'Please enter a valid number.' : '');
+    this.constraintInvalid = hasError;
+    input?.setAttribute('aria-invalid', String(hasError));
+    applyElementInternalsValidity(this.internals, flags, message, input);
+  }
+
+  private get effectiveStep(): number {
+    return Number.isFinite(this.step) && this.step > 0 ? this.step : 1;
+  }
+
   private roundToStep(val: number): number {
-    const inv = 1 / this.step;
-    return Math.round(val * inv) / inv;
+    return normalizeSteppedValue(val, this.min, this.max, this.effectiveStep);
   }
 
   increment() {
     if (this.interactionDisabled || this.readonly) return;
     const oldValue = this.value;
-    let newValue = this.roundToStep(this.value + this.step);
+    const candidate = this.value + this.effectiveStep;
+    let newValue: number;
 
-    if (this.max !== Infinity && newValue > this.max) {
+    if (this.max !== Infinity && candidate > this.max) {
       newValue = this.wrap && this.min !== -Infinity ? this.min : this.max;
+    } else {
+      newValue = this.roundToStep(candidate);
     }
 
     if (newValue !== oldValue) {
@@ -219,10 +282,13 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   decrement() {
     if (this.interactionDisabled || this.readonly) return;
     const oldValue = this.value;
-    let newValue = this.roundToStep(this.value - this.step);
+    const candidate = this.value - this.effectiveStep;
+    let newValue: number;
 
-    if (this.min !== -Infinity && newValue < this.min) {
+    if (this.min !== -Infinity && candidate < this.min) {
       newValue = this.wrap && this.max !== Infinity ? this.max : this.min;
+    } else {
+      newValue = this.roundToStep(candidate);
     }
 
     if (newValue !== oldValue) {
@@ -232,7 +298,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   }
 
   focus() {
-    this.input?.focus();
+    if (!this.interactionDisabled) this.input?.focus();
   }
 
   blur() {
@@ -282,7 +348,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @watch('valueState')
   handleValueChange() {
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   @watch('defaultValue')
@@ -293,10 +359,72 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
   @watch('min', 'max', 'step')
   handleConstraintsChange() {
     this.clampValue(this.dirtyValue);
+    this.syncValidity();
+  }
+
+  @watch('disabled', 'readonly', 'formDisabled')
+  handleValidationEligibilityChange() {
+    this.syncValidity();
+  }
+
+  @watch('name')
+  handleNameChange() {
+    if (this.input) this.input.name = this.name;
   }
 
   @dispatch('value-change', { bubbles: true, composed: true })
   private emitValueChange(oldValue: number) {
     return { value: this.value, oldValue, component: this };
+  }
+
+  /** Native-compatible control type. @public */
+  get type(): 'number' {
+    return 'number';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input!.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this number input currently participates in validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated with the host. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
+  }
+
+  @dispose()
+  private cleanup() {
+    this.labelAssociation.disconnect();
   }
 }

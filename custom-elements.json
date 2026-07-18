@@ -4257,6 +4257,15 @@
             },
             {
               "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
+              "kind": "field",
               "name": "href",
               "type": {
                 "text": "string"
@@ -4286,6 +4295,15 @@
                 "text": "'start' | 'center' | 'end'"
               },
               "default": "'center'"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the form-associated host. @public"
             },
             {
               "kind": "field",
@@ -8912,6 +8930,16 @@
               }
             },
             {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "defaultValue",
               "type": {
@@ -8945,6 +8973,15 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -9038,6 +9075,36 @@
             },
             {
               "kind": "method",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handlePrimaryTargetChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleRequiredChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleValueChange",
               "parameters": [],
               "return": {
@@ -9114,12 +9181,38 @@
               "default": "[\n    '#000000', '#ffffff', '#f87171', '#fb923c', '#fbbf24',\n    '#a3e635', '#34d399', '#22d3ee', '#60a5fa', '#a78bfa',\n    '#f472b6', '#fb7185'\n  ]"
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "required",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -9147,11 +9240,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'color'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
               "description": "Live color. Assignments do not rewrite the authored reset default."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this color picker currently participates in validation. @public"
             }
           ],
           "attributes": [
@@ -16127,6 +16256,26 @@
             },
             {
               "kind": "method",
+              "name": "blur",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "clear",
               "parameters": [],
               "return": {
@@ -16167,6 +16316,25 @@
               },
               "readonly": true,
               "description": "The current live file selection. Files cannot be authored as a reset default."
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -16241,6 +16409,26 @@
               }
             },
             {
+              "kind": "method",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleValidationConfigurationChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "helperText",
               "type": {
@@ -16273,6 +16461,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
             },
             {
               "kind": "field",
@@ -16323,12 +16520,38 @@
               }
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "required",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -16348,11 +16571,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'file'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "type": {
                 "text": "'outlined' | 'filled'"
               },
               "default": "'outlined'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this upload currently participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -18947,6 +19206,15 @@
               }
             },
             {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
               "kind": "method",
               "name": "formAssociatedCallback",
               "parameters": [],
@@ -19207,6 +19475,16 @@
             },
             {
               "kind": "method",
+              "name": "handleRequiredChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleStepChange",
               "parameters": [],
               "return": {
@@ -19276,6 +19554,15 @@
                 "text": "'left' | 'center' | 'right'"
               },
               "default": "'left'"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated through wrapping `<label>` or explicit `for`/`id`. @public"
             },
             {
               "kind": "field",
@@ -19451,6 +19738,24 @@
             },
             {
               "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current native constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
@@ -19464,6 +19769,15 @@
                 "text": "'outlined' | 'filled' | 'underlined'"
               },
               "default": "'outlined'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this input currently participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -31865,6 +32179,26 @@
           "members": [
             {
               "kind": "method",
+              "name": "blur",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "cleanup",
               "parameters": [],
               "return": {
@@ -31908,6 +32242,25 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -31993,6 +32346,16 @@
             },
             {
               "kind": "method",
+              "name": "handleNameChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleValuesChange",
               "parameters": [],
               "return": {
@@ -32013,6 +32376,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
+            },
+            {
+              "kind": "field",
               "name": "max",
               "type": {
                 "text": "number"
@@ -32029,6 +32401,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "type": {
                 "text": "'horizontal' | 'vertical'"
@@ -32042,6 +32422,32 @@
               "return": {
                 "type": {
                   "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
                 }
               }
             },
@@ -32071,6 +32477,33 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'range'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "valueHigh",
               "type": {
                 "text": "number"
@@ -32084,6 +32517,15 @@
                 "text": "number"
               },
               "description": "Live lower value. Assignments do not rewrite the authored default."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this range currently participates in validation. @public"
             }
           ],
           "attributes": [
@@ -32108,6 +32550,14 @@
               "fieldName": "min",
               "type": {
                 "text": "number"
+              },
+              "reflects": true
+            },
+            {
+              "name": "name",
+              "fieldName": "name",
+              "type": {
+                "text": "string"
               },
               "reflects": true
             },
@@ -33871,6 +34321,16 @@
             },
             {
               "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "cleanup",
               "parameters": [],
               "return": {
@@ -33951,6 +34411,15 @@
               }
             },
             {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
               "kind": "method",
               "name": "formAssociatedCallback",
               "parameters": [],
@@ -34024,6 +34493,16 @@
             },
             {
               "kind": "method",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleOpenChange",
               "parameters": [],
               "return": {
@@ -34035,6 +34514,26 @@
             {
               "kind": "method",
               "name": "handleOptionsPropertyChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleValidationAnchorChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleValidationConfigurationChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34205,6 +34704,16 @@
               "default": "false"
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "required",
               "type": {
@@ -34245,6 +34754,22 @@
               }
             },
             {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "size",
               "type": {
@@ -34264,11 +34789,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'select-one' | 'select-multiple'"
+              },
+              "readonly": true,
+              "description": "Native-compatible select type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
               "description": "Live selected value(s). Assignments do not rewrite the reset default."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this select currently participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -34745,6 +35306,15 @@
               }
             },
             {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
               "kind": "method",
               "name": "formAssociatedCallback",
               "parameters": [],
@@ -34828,7 +35398,37 @@
             },
             {
               "kind": "method",
+              "name": "handleInvalidChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleLabelChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleReadonlyChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleRequiredChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34879,6 +35479,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
             },
             {
               "kind": "field",
@@ -34988,6 +35597,33 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'range'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current native constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "number"
@@ -35009,6 +35645,15 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this slider currently participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -36608,6 +37253,16 @@
             },
             {
               "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "componentStyles",
               "parameters": [],
               "return": {
@@ -36652,6 +37307,15 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -36727,6 +37391,26 @@
             },
             {
               "kind": "method",
+              "name": "handleNameChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleValidationEligibilityChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleValueChange",
               "parameters": [],
               "return": {
@@ -36757,6 +37441,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
+            },
+            {
+              "kind": "field",
               "name": "max",
               "type": {
                 "text": "number"
@@ -36773,6 +37466,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
               "name": "readonly",
               "type": {
                 "text": "boolean"
@@ -36786,6 +37487,32 @@
               "return": {
                 "type": {
                   "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
                 }
               }
             },
@@ -36807,11 +37534,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'number'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "number"
               },
               "description": "Live numeric value. Assignments do not rewrite the authored default."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this number input currently participates in validation. @public"
             },
             {
               "kind": "field",
@@ -36844,6 +37607,14 @@
               "fieldName": "min",
               "type": {
                 "text": "number"
+              },
+              "reflects": true
+            },
+            {
+              "name": "name",
+              "fieldName": "name",
+              "type": {
+                "text": "string"
               },
               "reflects": true
             },
@@ -37191,6 +37962,16 @@
             },
             {
               "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "click",
               "parameters": [],
               "return": {
@@ -37225,6 +38006,15 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -37444,6 +38234,15 @@
             },
             {
               "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "type": {
                 "text": "boolean"
@@ -37459,12 +38258,38 @@
               "default": "''"
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "required",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "field",
@@ -37486,11 +38311,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'checkbox'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current native constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
               },
               "default": "'on'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this switch currently participates in constraint validation. @public"
             }
           ],
           "attributes": [
@@ -45788,6 +46649,26 @@
             },
             {
               "kind": "method",
+              "name": "blur",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "cleanup",
               "parameters": [],
               "return": {
@@ -45842,6 +46723,15 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
             },
             {
               "kind": "method",
@@ -45907,6 +46797,16 @@
             },
             {
               "kind": "method",
+              "name": "handleValidationConfigurationChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleValueChange",
               "parameters": [],
               "return": {
@@ -45932,6 +46832,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated with the host. @public"
             },
             {
               "kind": "field",
@@ -46002,6 +46911,32 @@
               }
             },
             {
+              "kind": "method",
+              "name": "reportValidity",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "suggestions",
               "type": {
@@ -46011,11 +46946,47 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'text'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string[]"
               },
               "description": "Live tags. Assignments do not rewrite the authored reset default."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this tag input currently participates in validation. @public"
             }
           ],
           "attributes": [
@@ -46924,6 +47895,15 @@
               }
             },
             {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true,
+              "description": "Owning form, including association through a `form` attribute. @public"
+            },
+            {
               "kind": "method",
               "name": "formAssociatedCallback",
               "parameters": [],
@@ -47081,6 +48061,16 @@
             },
             {
               "kind": "method",
+              "name": "handleLabelChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleMaxLengthChange",
               "parameters": [],
               "return": {
@@ -47112,6 +48102,16 @@
             {
               "kind": "method",
               "name": "handleReadonlyChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleRequiredChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -47172,6 +48172,15 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "NodeList | null"
+              },
+              "readonly": true,
+              "description": "Labels associated through wrapping `<label>` or explicit `for`/`id`. @public"
             },
             {
               "kind": "field",
@@ -47291,6 +48300,33 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'textarea'"
+              },
+              "readonly": true,
+              "description": "Native-compatible control type. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "description": "Current localized validation message. @public"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true,
+              "description": "Current native constraint-validation state. @public"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string"
@@ -47304,6 +48340,15 @@
                 "text": "'outlined' | 'filled' | 'underlined'"
               },
               "default": "'outlined'"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true,
+              "description": "Whether this textarea currently participates in constraint validation. @public"
             }
           ],
           "attributes": [

@@ -42,7 +42,8 @@ describe('Select documentation alignment', () => {
     expect(source).toContain('get labels(): NodeList | null');
     expect(source).toContain('aria-label="${accessibleName}"');
     expect(source.match(/aria-describedby="\$\{\(this\.errorText \|\| this\.helperText\)/g)).toHaveLength(2);
-    expect(source.match(/aria-invalid="\$\{this\.invalid/g)).toHaveLength(2);
+    expect(source).toContain('const displayedInvalid = this.invalid || this.constraintInvalid;');
+    expect(source.match(/aria-invalid="\$\{displayedInvalid/g)).toHaveLength(2);
   });
 
   it.each([

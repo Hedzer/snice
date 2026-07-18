@@ -2,7 +2,7 @@ import { element, property, state, query, on, watch, dispatch, ready, render, st
 import cssContent from './snice-radio.css?inline';
 import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
 
-@element('snice-radio', { formAssociated: true })
+@element('snice-radio', { formAssociated: true, delegatesFocus: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
   internals!: ElementInternals;
 
@@ -19,6 +19,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
 
   @state()
   private keyboardFocused = false;
@@ -94,10 +97,11 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   render() {
     const isBlock = this.variant === 'block';
     const interactionDisabled = this.interactionDisabled;
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const group = this.findGroupRadios();
     const groupRequired = group.some(radio => radio.required);
     const wrapperClasses = `radio-wrapper${isBlock ? ' radio-wrapper--block' : ''}${interactionDisabled ? ' radio-wrapper--disabled' : ''}${this.loading ? ' radio-wrapper--loading' : ''}`;
-    const radioClasses = `radio radio--${this.size}${this.invalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}${this.keyboardFocused ? ' radio--keyboard-focus' : ''}`;
+    const radioClasses = `radio radio--${this.size}${displayedInvalid ? ' radio--invalid' : ''}${this.loading ? ' radio--loading' : ''}${this.keyboardFocused ? ' radio--keyboard-focus' : ''}`;
     const labelClasses = `radio-label radio-label--${this.size}${this.required ? ' radio-label--required' : ''}`;
 
     return html/*html*/`
@@ -111,7 +115,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
           .name=${this.name}
           .value=${this.formValue}
           .tabIndex=${this.tabIndexFor(group)}
-          aria-invalid="${this.invalid ? 'true' : 'false'}"
+          aria-invalid="${displayedInvalid ? 'true' : 'false'}"
           aria-checked="${this.checked}"
           part="input"
           @click=${this.handleInternalClick}
@@ -331,7 +335,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   @watch('invalid', { immediate: false })
   handleInvalidChange() {
-    this.input?.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.radio?.classList.toggle('radio--invalid', displayedInvalid);
   }
 
   private get interactionDisabled() {
@@ -423,7 +429,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     this.input.value = this.formValue;
     this.input.tabIndex = this.tabIndexFor(group);
     this.input.setCustomValidity(this.customValidationMessage);
-    this.input.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
+    this.input.setAttribute('aria-invalid', String(this.invalid || this.constraintInvalid));
     this.input.setAttribute('aria-checked', String(this.checked));
   }
 
@@ -438,6 +444,9 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   }
 
   private syncValidity(group = this.findGroupRadios()) {
+    const barred = this.disabled || this.formDisabled;
+    // Loading blocks interaction only. It intentionally retains the radio's
+    // established form-submission and constraint-validation participation.
     const valueMissing = group.some(radio => radio.required)
       && !group.some(radio => radio.checked);
     const customError = this.customValidationMessage.length > 0;
@@ -447,17 +456,19 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
       this.input.required = group.some(radio => radio.required);
       this.input.setCustomValidity(this.customValidationMessage);
     }
-    if (!this.internals) return;
-
-    if (!valueMissing && !customError) {
-      this.internals.setValidity({});
-      return;
-    }
+    const hasError = valueMissing || customError;
 
     const message = this.customValidationMessage
       || this.input?.validationMessage
       || 'Please select an option.';
-    if (this.input) {
+    this.constraintInvalid = !barred && hasError;
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.radio?.classList.toggle('radio--invalid', displayedInvalid);
+    if (!this.internals) return;
+    if (!hasError) {
+      this.internals.setValidity({});
+    } else if (this.input) {
       this.internals.setValidity({ valueMissing, customError }, message, this.input);
     } else {
       this.internals.setValidity({ valueMissing, customError }, message);
@@ -563,6 +574,7 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
 
   /** Whether this radio participates in constraint validation. @public */
   get willValidate(): boolean {
+    if (this.disabled || this.formDisabled) return false;
     return this.internals?.willValidate ?? this.input?.willValidate ?? false;
   }
 

@@ -2,10 +2,11 @@ import { element, property, state, query, queryAll, watch, dispatch, request, re
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import './snice-option';
 
-@element('snice-select', { formAssociated: true })
+@element('snice-select', { formAssociated: true, delegatesFocus: true })
 export class SniceSelect extends HTMLElement implements SniceSelectElement {
   internals!: ElementInternals;
   private dirtyValue = false;
@@ -16,6 +17,12 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
+
+  private customValidationMessage = '';
+  private validationInput?: HTMLInputElement;
 
   constructor() {
     super();
@@ -47,7 +54,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   defaultValue = '';
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -59,6 +66,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
     if (disabled && this.isOpen) this.closeDropdown();
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -225,6 +233,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const labelClasses = `select-label select-label--${this.size} ${this.required ? 'select-label--required' : ''}`;
     const triggerClasses = `select-trigger select-trigger--${this.size} ${this.loading ? 'select-trigger--loading' : ''} ${this.editable ? 'select-trigger--editable' : ''}`;
     const searchHidden = !this.searchable || this.editable;
@@ -251,7 +260,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
               aria-autocomplete="list"
               aria-label="${accessibleName}"
               aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
-              aria-invalid="${this.invalid ? 'true' : 'false'}"
+              aria-invalid="${displayedInvalid ? 'true' : 'false'}"
               part="input"
               @input="${(e: Event) => this.handleEditableInput(e)}"
               @focus="${() => this.handleEditableFocus()}"
@@ -277,7 +286,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
             aria-expanded="${this.isOpen ? 'true' : 'false'}"
             aria-label="${accessibleName}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
-            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             part="trigger"
             @keydown="${(e: KeyboardEvent) => this.handleTriggerOpen(e)}"
             @click="${(e: MouseEvent) => this.handleTriggerClick(e)}">
@@ -459,7 +468,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.filteredOptions = [...this.mergedOptions];
 
     // Set initial form value
-    this.syncFormValue();
+    this.syncFormState();
 
     if (this.editable) {
       this.syncEditableInputToValue();
@@ -489,7 +498,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (dirty) this.dirtyValue = true;
     this.valueState = String(value ?? '');
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncRenderedValue() {
@@ -516,6 +525,41 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   private syncFormValue() {
     this.internals?.setFormValue(this.value, this.value);
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) this.validationInput = document.createElement('input');
+    return this.validationInput;
+  }
+
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const barred = this.interactionDisabled || this.readonly;
+    const valueMissing = !barred && this.required && (
+      this.multiple ? this.selectedValues.size === 0 : this.value === ''
+    );
+    const flags: ValidityStateFlags = barred ? {} : {
+      customError: Boolean(this.customValidationMessage),
+      valueMissing
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage ||
+      (valueMissing ? 'Please select an option.' : '') ||
+      (hasError ? 'Please select a valid option.' : '');
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
+    const anchor = this.editable ? this.editableInput : this.trigger;
+
+    this.validationProxy.setCustomValidity(hasError ? message : '');
+    this.trigger?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.trigger?.classList.toggle('select-trigger--invalid', displayedInvalid);
+    this.editableInput?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.editableInput?.classList.toggle('select-editable-input--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, anchor);
   }
 
   @reconnect()
@@ -835,6 +879,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (!this.editableInput) return;
     this.editableInput.setAttribute('aria-expanded', String(this.isOpen));
     this.editableInput.classList.toggle('select-editable-input--open', this.isOpen);
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.editableInput.setAttribute('aria-invalid', String(displayedInvalid));
+    this.editableInput.classList.toggle('select-editable-input--invalid', displayedInvalid);
   }
 
   // ── Dropdown mousedown (prevents blur in editable mode) ──
@@ -1039,7 +1086,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   @watch('valueState')
   handleValueChange() {
     this.syncRenderedValue();
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   @watch('defaultValue')
@@ -1066,6 +1113,35 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.interactionDisabled && this.isOpen && !this.remote) {
       this.closeDropdown();
     }
+    this.syncValidity();
+  }
+
+  @watch('required', 'readonly', 'multiple')
+  handleValidationConfigurationChange() {
+    this.syncRenderedValue();
+    this.syncValidity();
+  }
+
+  @watch('editable')
+  handleValidationAnchorChange() {
+    queueMicrotask(() => {
+      const rendered = (this as unknown as { readonly rendered: Promise<void> }).rendered;
+      void rendered.then(() => {
+        if (!this.isConnected) return;
+        this.syncRenderedValue();
+        this.syncValidity();
+        this.labelAssociation.sync();
+      });
+    });
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.trigger?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.trigger?.classList.toggle('select-trigger--invalid', displayedInvalid);
+    this.editableInput?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.editableInput?.classList.toggle('select-editable-input--invalid', displayedInvalid);
   }
 
   @watch('open')
@@ -1213,6 +1289,32 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     }
   }
 
+  /** Native-compatible select type. @public */
+  get type(): 'select-one' | 'select-multiple' {
+    return this.multiple ? 'select-multiple' : 'select-one';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this select currently participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? true;
+  }
+
   /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
   get labels(): NodeList | null {
     return this.labelAssociation.labels;
@@ -1227,6 +1329,21 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (this.isOpen) {
       this.closeDropdown();
     }
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.validationProxy.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 
   clear() {
@@ -1286,7 +1403,9 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     this.trigger.classList.toggle('select-trigger--open', this.isOpen);
     this.trigger.classList.toggle('select-trigger--disabled', this.interactionDisabled);
     this.trigger.classList.toggle('select-trigger--readonly', this.readonly);
-    this.trigger.classList.toggle('select-trigger--invalid', this.invalid);
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.trigger.classList.toggle('select-trigger--invalid', displayedInvalid);
+    this.trigger.setAttribute('aria-invalid', String(displayedInvalid));
     this.trigger.classList.toggle('select-trigger--loading', this.loading);
     this.trigger.setAttribute('aria-expanded', String(this.isOpen));
     this.trigger.disabled = this.interactionDisabled;

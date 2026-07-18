@@ -3,7 +3,7 @@ import cssContent from './snice-key-value.css?inline';
 import './snice-kv-pair';
 import type { KeyValueItem, KeyValueVariant, KeyValueMode, SniceKeyValueElement, SniceKvPairElement } from './snice-key-value.types';
 
-@element('snice-key-value', { formAssociated: true })
+@element('snice-key-value', { formAssociated: true, delegatesFocus: true })
 export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   internals!: ElementInternals;
 

@@ -48,6 +48,11 @@ Text input field with validation, icons, and form association.
 | `align` | `align` | `'top' \| 'center' \| 'bottom' \| ''` | `''` | Vertical alignment when host has explicit height |
 | `labelAlign` | `label-align` | `'left' \| 'center' \| 'right'` | `'left'` | Label text alignment |
 | `stretch` | `stretch` | `boolean` | `false` | Input fills the full host height |
+| `form` | — | `HTMLFormElement \| null` | — | Read-only owning form, including `form="id"` association |
+| `validity` | — | `ValidityState` | — | Read-only native constraint flags |
+| `validationMessage` | — | `string` | `''` | Read-only current validation message |
+| `willValidate` | — | `boolean` | — | Whether the control is currently eligible for validation |
+| `labels` | — | `NodeList \| null` | — | Read-only wrapping and explicit labels associated with the host |
 
 ## Methods
 
@@ -238,6 +243,10 @@ Use `required`, `pattern`, `minlength`, and `maxlength` for built-in validation.
 <snice-input minlength="3" maxlength="20" label="Username"></snice-input>
 ```
 
+The host exposes the same constraint surface as a native input: `validity`, `validationMessage`, `willValidate`, `checkValidity()`, `reportValidity()`, and `setCustomValidity(message)`. `required` maps to `valueMissing`; email/URL checks map to `typeMismatch`; `pattern` maps to `patternMismatch`; numeric/date/time `min`/`max`/`step` map to their native range/step flags; and trusted-user `minlength`/`maxlength` state maps to `tooShort`/`tooLong`. As with native text fields, programmatic `value` assignments do not create length errors; the limits still constrain customer typing. Passing `''` to `setCustomValidity()` clears a custom error.
+
+`invalid` is presentation and ARIA state only. Use constraints or `setCustomValidity()` when the form must be invalid. Calculated constraint errors also set `aria-invalid` and invalid styling automatically.
+
 ### Number Input
 
 Use `min`, `max`, and `step` for number inputs.
@@ -248,7 +257,7 @@ Use `min`, `max`, and `step` for number inputs.
 
 ### Form Integration
 
-Use `name` and `required` for native form participation.
+Use `name` and `required` for native form participation. The host is listed in `form.elements`, contributes its live value to `FormData`, supports external `form="id"` ownership and native labels, blocks validated submission while invalid, and restores `defaultValue` on reset. Disabled controls are omitted from submission. Disabled, loading, and readonly controls are barred from validation; loading and readonly values remain successful.
 
 ```html
 <form>
@@ -298,6 +307,6 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 
 - Form-associated custom element with `ElementInternals`
 - Label element linked to input
-- `aria-invalid` set when `invalid` is true
+- `aria-invalid` reflects authored `invalid` or calculated constraint failure
 - Required indicator (`*`) shown when `required` is set
 - Clear button and password toggle have `aria-label`

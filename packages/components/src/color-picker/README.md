@@ -19,4 +19,6 @@ The hidden native color input is unnamed and hidden from the accessibility tree.
 
 `value` is live state; `defaultValue` reflects the `value` content attribute and is the authored form-reset default. Pristine pickers follow default changes, while user selection, property assignment, and browser restoration dirty only live state. Reset/restoration are silent and survive reconnects and form moves.
 
+Six-digit hex, bounded RGB, and bounded HSL input canonicalize to hex. Malformed editable text remains visible and reports `badInput`; an empty `required` picker reports `valueMissing`. The host exposes `form`, `validity`, `validationMessage`, `willValidate`, `labels`, `checkValidity()`, `reportValidity()`, and `setCustomValidity()`. Calculated errors block validated submission and drive `aria-invalid`; the authored `invalid` property is presentation only.
+
 See [`docs/components/color-picker.md`](../../../../docs/components/color-picker.md) for the complete human reference. AI-oriented reference: [`docs/ai/components/color-picker.md`](../../../../docs/ai/components/color-picker.md).

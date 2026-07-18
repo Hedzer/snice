@@ -17,6 +17,10 @@
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
+.step-input--invalid {
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+}
+
 /* Buttons */
 .step-input__button {
   display: flex;

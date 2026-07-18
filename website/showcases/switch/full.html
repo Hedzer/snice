@@ -21,6 +21,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .state-matrix { display: grid; grid-template-columns: max-content repeat(3, max-content); gap: 0.75rem; align-items: center; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 28rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
+    @media (max-width: 40rem) {
+      .state-matrix { grid-template-columns: repeat(3, max-content); }
+      .state-matrix > span { grid-column: 1 / -1; }
+    }
   </style>
 </head>
 <body>
@@ -87,7 +96,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <h2>All States Matrix (Size x State)</h2>
-<div style="display: grid; grid-template-columns: repeat(4, auto); gap: 0.75rem; align-items: center;">
+<div class="state-matrix">
   <span style="font-size: 0.8rem; color: var(--snice-color-text-secondary);">Normal</span>
   <snice-switch size="small"></snice-switch>
   <snice-switch size="medium"></snice-switch>
@@ -130,8 +139,45 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-switch name="dark-mode" value="on" label="Dark Mode (name=dark-mode)"></snice-switch>
 </div>
 
+<h2>Validated Form Contract</h2>
+<form id="switch-contract-form" class="contract-form">
+  <snice-switch id="switch-contract-control" name="terms" value="accepted" label="Accept terms" required></snice-switch>
+  <div class="contract-actions">
+    <button type="submit">Submit</button>
+    <button id="switch-contract-error" type="button">Set server error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="switch-contract-output" aria-live="polite">Toggle the required switch, then submit.</output>
+</form>
+
 <script type="module">
   import '../../../packages/components/src/switch/snice-switch.ts';
+
+  const form = document.getElementById('switch-contract-form');
+  const control = document.getElementById('switch-contract-control');
+  const errorButton = document.getElementById('switch-contract-error');
+  const output = document.getElementById('switch-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted terms=${new FormData(form).get('terms')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    control.setCustomValidity('');
+    errorButton.textContent = 'Set server error';
+    output.textContent = `Reset checked=${control.checked}`;
+  }));
+  control.addEventListener('invalid', () => {
+    output.textContent = control.validationMessage;
+  });
+  control.addEventListener('change', () => {
+    output.textContent = `Changed checked=${control.checked}`;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = control.validity.customError;
+    control.setCustomValidity(clearing ? '' : 'The server could not record consent.');
+    errorButton.textContent = clearing ? 'Set server error' : 'Clear server error';
+    output.textContent = clearing ? `Validity restored: ${control.checkValidity()}` : control.validationMessage;
+  });
 </script>
 </body>
 </html>

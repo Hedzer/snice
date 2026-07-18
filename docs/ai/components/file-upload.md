@@ -21,12 +21,21 @@ name: string = '';
 dragDrop: boolean = true;      // attribute: drag-drop
 showPreview: boolean = true;   // attribute: show-preview
 files: FileList | null;        // read-only
+readonly type: 'file';
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList | null;
 ```
 
 ## Methods
 
 - `clear()` - Clear all files
 - `removeFile(index: number)` - Remove file by index
+- `focus()` / `blur()` - Focus/blur the native file chooser
+- `checkValidity()` / `reportValidity()` - Check/report current validity
+- `setCustomValidity(message)` - Set `customError`; pass `''` to clear it
 
 ## Events
 
@@ -70,3 +79,12 @@ Form-associated custom element. Works with native `<form>` and `FormData`.
 - Reset silently clears files, previews, and form value; restoration accepts one `File` or repeated `File` entries in `FormData` and is silent.
 - Multiple files submit as repeated entries under `name`; empty selection submits nothing.
 - Reconnect/form moves retain current files. Disabled fieldsets make choose/drop/remove paths inert without rewriting authored `disabled`.
+
+## Validation contract
+
+- Empty `required` selection reports `valueMissing`.
+- A customer selection rejected by `maxSize` or `maxFiles` remains an actionable `customError` with a useful filename/count message instead of silently disappearing as valid.
+- Tightening `maxSize` or `maxFiles` revalidates an existing programmatic/restored selection; relaxing the rule clears the generated error immediately.
+- `setCustomValidity()` supplies an independent application error. `invalid`/`errorText` are presentation only.
+- Calculated errors update the upload surface and input `aria-invalid`, block validated submission, and clear after a valid replacement or explicit clear.
+- Disabled controls are omitted and barred. The host supports `form.elements`, explicit `form="id"`, live labels, `FormData`/`formdata`, reset, restore, and disabled fieldsets.

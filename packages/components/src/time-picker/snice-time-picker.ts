@@ -9,7 +9,7 @@ interface TimeParts {
   seconds: number;
 }
 
-@element('snice-time-picker', { formAssociated: true })
+@element('snice-time-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceTimePicker extends HTMLElement implements SniceTimePickerElement {
   internals!: ElementInternals;
 

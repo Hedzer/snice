@@ -55,6 +55,8 @@ img[src=""] {
 
 /* Select trigger button */
 .select-trigger {
+  box-sizing: border-box;
+  min-width: 0;
   width: 100%;
   display: flex;
   align-items: center;
@@ -498,6 +500,10 @@ img[src=""] {
 
 .select-editable-input--open {
   border-color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.select-editable-input--invalid {
+  border-color: var(--snice-color-danger, rgb(220 38 38));
 }
 
 .select-editable-input:disabled {

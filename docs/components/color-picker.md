@@ -32,6 +32,11 @@ A form-associated color selection interface with format conversion, preset color
 | `showPresets` (attr: `show-presets`) | `boolean` | `false` | Show preset color swatches |
 | `presets` | `string[]` | `[...]` | Array of preset color values |
 | `loading` | `boolean` | `false` | Loading state with spinner |
+| `type` | `'color'` | `'color'` | Read-only native-compatible control type |
+| `form` | `HTMLFormElement \| null` | — | Read-only owning form |
+| `validity` | `ValidityState` | — | Read-only constraint-validation flags |
+| `validationMessage` | `string` | `''` | Read-only current validation message |
+| `willValidate` | `boolean` | — | Read-only validation eligibility |
 | `labels` | `NodeList \| null` | — | Read-only live associated labels |
 
 ## Methods
@@ -40,6 +45,9 @@ A form-associated color selection interface with format conversion, preset color
 |--------|-----------|-------------|
 | `focus()` | -- | Focus the text input, or the swatch when `showInput` is false, if interaction is allowed |
 | `blur()` | -- | Remove focus from the text input or swatch |
+| `checkValidity()` | -- | Check current constraint validity |
+| `reportValidity()` | -- | Report current validity |
+| `setCustomValidity(message)` | `string` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -73,7 +81,7 @@ snice-color-picker::part(error-text) {
 
 ### Live Color and Reset Default
 
-`value` is live color state. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Default changes update a pristine picker; typing, choosing a native color, selecting a preset, assigning `value` (even unchanged), or browser restoration makes it dirty. Reset and restoration do not emit color/input/change events. Reconnects and form moves preserve both values, while disabled fieldsets disable the text field, chooser, and presets without rewriting authored `disabled`.
+`value` is live color state. Valid hex, `rgb(r, g, b)`, and `hsl(h, s%, l%)` input is canonicalized to six-digit hex; malformed editable text remains observable and reports `badInput` so customers can correct it. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Default changes update a pristine picker; typing, choosing a native color, selecting a preset, assigning `value` (even unchanged), or browser restoration makes it dirty. Reset and restoration do not emit color/input/change events. Reconnects and form moves preserve both values, while disabled fieldsets disable the text field, chooser, and presets without rewriting authored `disabled`.
 
 ```typescript
 import 'snice/components/color-picker/snice-color-picker';
@@ -131,7 +139,7 @@ Set `show-input="false"` to hide the text input and show only the color swatch.
 
 ### Form Validation
 
-Use `required`, `invalid`, and `error-text` for form validation feedback.
+The host is listed in `form.elements`, participates in `FormData`, supports `form="id"`, labels, reset/restoration, and native validated submission. Empty `required` values report `valueMissing`; malformed color text reports `badInput`; `setCustomValidity()` supplies `customError`. The default `#000000` means `required` starts satisfied unless the live value is cleared. Disabled and loading pickers are barred from validation; disabled pickers are omitted, while loading preserves the successful value. `invalid` is presentation/ARIA only.
 
 ```html
 <snice-color-picker
@@ -167,4 +175,4 @@ Activating an associated or internal label focuses the text input when `showInpu
 
 The primary text input or swatch owns the base field name. Related controls have distinct names: the companion swatch is `<field name> color chooser`, and every preset is `Set <field name> to <color>`. The hidden native color input is only the browser color-dialog mechanism: it is unnamed, removed from the tab order, hidden from assistive technology, and never creates a duplicate form field. ElementInternals supplies the picker’s single form value.
 
-Helper or error text is connected to the primary target through one stable `aria-describedby` reference. Error text replaces helper text, uses `role="alert"`, and `invalid` is exposed with `aria-invalid`. Keyboard users can activate the swatch and presets with Enter or Space.
+Helper or error text is connected to the primary target through one stable `aria-describedby` reference. Error text replaces helper text and uses `role="alert"`. `aria-invalid` reflects authored `invalid` or calculated validity. Keyboard users can activate the swatch and presets with Enter or Space.

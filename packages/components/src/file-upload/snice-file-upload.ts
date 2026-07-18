@@ -1,34 +1,52 @@
-import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-file-upload.css?inline';
 import type { FileUploadSize, FileUploadVariant, SniceFileUploadElement } from './snice-file-upload.types';
+import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
-@element('snice-file-upload', { formAssociated: true })
+@element('snice-file-upload', { formAssociated: true, delegatesFocus: true })
 export class SniceFileUpload extends HTMLElement implements SniceFileUploadElement {
   internals!: ElementInternals;
+  private customValidationMessage = '';
+  private selectionValidationMessage = '';
+  private readonly descriptionId = `snice-file-upload-desc-${Math.random().toString(36).slice(2, 10)}`;
+  private readonly labelAssociation: FormLabelAssociation;
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
 
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.input,
+      () => this.label || 'File upload'
+    );
   }
 
   formAssociatedCallback() {
-    this.updateFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
+    this.selectionValidationMessage = '';
     this.replaceFiles([], false);
   }
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
+    this.selectionValidationMessage = '';
     if (state instanceof File) {
       this.replaceFiles([state], false);
       return;
@@ -111,6 +129,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const wrapperClasses = ['file-upload-wrapper'].filter(Boolean).join(' ');
     const uploadAreaClasses = [
       'upload-area',
@@ -118,7 +137,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       this.variant === 'filled' ? 'upload-area--filled' : '',
       this.interactionDisabled ? 'upload-area--disabled' : '',
       this.isDragOver ? 'upload-area--drag-over' : '',
-      this.invalid ? 'upload-area--invalid' : ''
+      displayedInvalid ? 'upload-area--invalid' : ''
     ].filter(Boolean).join(' ');
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const iconClasses = ['upload-icon', `upload-icon--${this.size}`].filter(Boolean).join(' ');
@@ -127,7 +146,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     return html/*html*/`
       <div class="${wrapperClasses}">
         <if ${this.label}>
-          <label class="${labelClasses}">
+          <label class="${labelClasses}" @click=${() => this.focus()}>
             ${this.label}
           </label>
         </if>
@@ -163,6 +182,9 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
             ?disabled="${this.interactionDisabled}"
             ?required="${this.required}"
             name="${this.name || ''}"
+            aria-label="${this.labelAssociation.accessibleName}"
+            aria-describedby="${(this.errorText || this.helperText) ? this.descriptionId : ''}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             @change=${this.handleFileChange}
             part="input"
           />
@@ -176,10 +198,10 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
         <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
-            <span class="error-text" part="error-text">${this.errorText}</span>
+            <span id="${this.descriptionId}" class="error-text" part="error-text" role="alert">${this.errorText}</span>
           </when>
           <when value="helper">
-            <span class="helper-text" part="helper-text">${this.helperText}</span>
+            <span id="${this.descriptionId}" class="helper-text" part="helper-text">${this.helperText}</span>
           </when>
           <default>
             <span class="helper-text" part="helper-text">&nbsp;</span>
@@ -250,9 +272,13 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   @ready()
   init() {
-    if (this.internals) {
-      this.updateFormValue();
-    }
+    this.syncFormState();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private handleAreaClick(e: MouseEvent) {
@@ -302,11 +328,25 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   private processFiles(files: File[]) {
     let validFiles = files;
+    // A single-file chooser replaces its prior selection. Only a multiple
+    // chooser accumulates files when applying maxFiles.
+    const existingCount = this.multiple ? this.selectedFiles.length : 0;
+    const exceedsCount = this.maxFiles > 0 && existingCount + files.length > this.maxFiles;
+    const oversizedFiles = this.maxSize > 0 ? files.filter(file => file.size > this.maxSize) : [];
+
+    this.selectionValidationMessage = oversizedFiles.length > 0
+      ? oversizedFiles.length === 1
+        ? `File "${oversizedFiles[0].name}" exceeds the maximum size.`
+        : `${oversizedFiles.length} files exceed the maximum size.`
+      : exceedsCount
+        ? `Select no more than ${this.maxFiles} files.`
+        : '';
 
     // Apply max files limit
     if (this.maxFiles > 0) {
-      const available = this.maxFiles - this.selectedFiles.length;
+      const available = Math.max(0, this.maxFiles - existingCount);
       validFiles = validFiles.slice(0, available);
+      if (exceedsCount) this.dispatchErrorEvent(`Select no more than ${this.maxFiles} files`);
     }
 
     // Validate file size
@@ -364,6 +404,42 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     this.internals.setFormValue(formData, formData);
   }
 
+  private syncFormState() {
+    this.updateFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    if (this.input) {
+      this.input.required = this.required;
+      this.input.disabled = this.interactionDisabled;
+    }
+
+    const barred = this.interactionDisabled;
+    const valueMissing = !barred && this.required && this.selectedFiles.length === 0;
+    const oversized = !barred && this.maxSize > 0 &&
+      this.selectedFiles.some(file => file.size > this.maxSize);
+    const tooMany = !barred && this.maxFiles > 0 && this.selectedFiles.length > this.maxFiles;
+    const generatedError = oversized || tooMany;
+    const flags: ValidityStateFlags = barred ? {} : {
+      customError: Boolean(this.customValidationMessage) || Boolean(this.selectionValidationMessage) || generatedError,
+      valueMissing
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage ||
+      this.selectionValidationMessage ||
+      (valueMissing ? 'Please select a file.' : '') ||
+      (oversized ? 'One or more files exceed the maximum size.' : '') ||
+      (tooMany ? 'Too many files are selected.' : '');
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
+
+    this.input?.setCustomValidity(hasError ? message : '');
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.uploadArea?.classList.toggle('upload-area--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, this.input);
+  }
+
   private replaceFiles(files: File[], emit: boolean) {
     const nextFiles = this.multiple ? [...files] : files.slice(0, 1);
     for (const file of this.selectedFiles) {
@@ -378,7 +454,7 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
       if (nextFiles.length === 0) this.input.value = '';
     }
 
-    this.updateFormValue();
+    this.syncFormState();
     if (emit) this.dispatchChangeEvent();
   }
 
@@ -387,11 +463,25 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
     if (this.input) {
       this.input.disabled = this.interactionDisabled;
     }
+    this.syncValidity();
   }
 
   @watch('name', 'multiple')
   handleFormConfigurationChange() {
-    this.updateFormValue();
+    this.syncFormState();
+  }
+
+  @watch('required', 'maxSize', 'maxFiles')
+  handleValidationConfigurationChange() {
+    this.selectionValidationMessage = '';
+    this.syncValidity();
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.uploadArea?.classList.toggle('upload-area--invalid', displayedInvalid);
   }
 
   @dispatch('file-upload-change', { bubbles: true, composed: true })
@@ -406,17 +496,74 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
 
   // Public API
   clear() {
+    this.selectionValidationMessage = '';
     this.replaceFiles([], false);
   }
 
   removeFile(index: number) {
     if (index >= 0 && index < this.selectedFiles.length) {
+      this.selectionValidationMessage = '';
       this.replaceFiles(this.selectedFiles.filter((_, current) => current !== index), true);
     }
+  }
+
+  focus() {
+    if (!this.interactionDisabled) this.input?.focus();
+  }
+
+  blur() {
+    this.input?.blur();
+  }
+
+  /** Native-compatible control type. @public */
+  get type(): 'file' {
+    return 'file';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input!.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this upload currently participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled) return false;
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated with the host. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 
   @dispose()
   private cleanupPreviews() {
     for (const file of this.selectedFiles) this.revokePreviewUrl(file);
+    this.labelAssociation.disconnect();
   }
 }

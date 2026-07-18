@@ -7,6 +7,7 @@ A two-handle slider for selecting a numeric range, with a highlighted track betw
 ## Table of Contents
 
 - [Properties](#properties)
+- [Methods](#methods)
 - [Events](#events)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
@@ -29,6 +30,23 @@ A two-handle slider for selecting a numeric range, with a highlighted track betw
 | `showTooltip` (attr: `show-tooltip`) | `boolean` | `false` | Show value tooltip on hover/drag |
 | `showLabels` (attr: `show-labels`) | `boolean` | `false` | Show min/max labels below the track |
 | `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Slider orientation |
+| `name` | `string` | `''` | Form field name |
+| `type` (read-only) | `'range'` | `'range'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
+
+## Methods
+
+| Method | Arguments | Description |
+|--------|-----------|-------------|
+| `focus()` | — | Focus the low thumb when enabled |
+| `blur()` | — | Remove focus from both thumbs |
+| `checkValidity()` | — | Check current constraint validity |
+| `reportValidity()` | — | Report current validity |
+| `setCustomValidity(message)` | `string` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -59,7 +77,9 @@ import 'snice/components/range-slider/snice-range-slider';
 
 ### Live Range and Reset Defaults
 
-`valueLow`/`valueHigh` are live endpoints. `defaultValueLow`/`defaultValueHigh` reflect `value-low`/`value-high` and are independently tracked reset defaults. A pristine endpoint follows its default; pointer/keyboard input, property assignment (including the same value), or browser restoration dirties that endpoint. `form.reset()` silently restores both current defaults as one ordered, clamped range. The form/restoration value is `"low,high"`. Form moves, reconnects, repeated resets, and fieldset disabledness preserve authored defaults and never rewrite `disabled`.
+`valueLow`/`valueHigh` are live endpoints. Values are ordered, clamped, and normalized on a `min`-based step lattice; zero, negative, or non-finite steps fall back to `1`. `defaultValueLow`/`defaultValueHigh` reflect `value-low`/`value-high` and are independently tracked reset defaults. A pristine endpoint follows its default; pointer/keyboard input, property assignment (including the same value), or browser restoration dirties that endpoint. `form.reset()` silently restores both current defaults as one ordered, clamped range. A named control contributes one `"low,high"` value to `FormData`. Form moves, reconnects, repeated resets, and fieldset disabledness preserve authored defaults and never rewrite `disabled`.
+
+The normalized range is intrinsically valid; call `setCustomValidity()` for application rules. Custom errors update both thumbs' `aria-invalid`, invalid styling, `validationMessage`, form reporting, and submission blocking. Disabled controls are omitted and barred from validation. External labels name the thumbs as `<label> minimum` and `<label> maximum`.
 
 ## Examples
 

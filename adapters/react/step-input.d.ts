@@ -11,6 +11,7 @@ export interface StepInputProps extends SniceFormProps {
     readonly?: any;
     size?: any;
     wrap?: any;
+    name?: any;
     value?: any;
     onValueChange?: (event: any) => void;
 }

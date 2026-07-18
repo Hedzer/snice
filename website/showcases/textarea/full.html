@@ -23,6 +23,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .col { display: flex; flex-direction: column; gap: 1rem; max-width: 500px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 34rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -178,11 +182,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <h2>Form Integration</h2>
-<form id="demo-form">
-  <div class="col">
-    <snice-textarea name="comments" label="Comments" required minlength="10" maxlength="500" placeholder="Enter comments (min 10, max 500 chars)" helper-text="Form-associated element"></snice-textarea>
-    <button type="submit" style="align-self: flex-start; padding: 0.5rem 1rem;">Submit</button>
-  </div>
+<form id="textarea-contract-form" class="contract-form">
+    <snice-textarea id="textarea-contract-control" name="comments" label="Comments" required minlength="10" maxlength="500" placeholder="Enter comments (min 10, max 500 chars)" helper-text="Length validity follows native user-input semantics."></snice-textarea>
+    <div class="contract-actions">
+      <button type="submit">Submit</button>
+      <button id="textarea-contract-error" type="button">Set moderation error</button>
+      <button type="reset">Reset</button>
+    </div>
+    <output id="textarea-contract-output" aria-live="polite">Enter at least 10 characters, then submit.</output>
 </form>
 
 <h2>Edge Cases</h2>
@@ -195,6 +202,31 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <script type="module">
   import '../../../packages/components/src/textarea/snice-textarea.ts';
+
+  const form = document.getElementById('textarea-contract-form');
+  const textarea = document.getElementById('textarea-contract-control');
+  const errorButton = document.getElementById('textarea-contract-error');
+  const output = document.getElementById('textarea-contract-output');
+  let moderationError = false;
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted comments=${new FormData(form).get('comments')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    moderationError = false;
+    textarea.setCustomValidity('');
+    errorButton.textContent = 'Set moderation error';
+    output.textContent = `Reset value=${JSON.stringify(textarea.value)}`;
+  }));
+  textarea.addEventListener('invalid', () => {
+    output.textContent = textarea.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    moderationError = !moderationError;
+    textarea.setCustomValidity(moderationError ? 'This comment is awaiting moderation.' : '');
+    errorButton.textContent = moderationError ? 'Clear moderation error' : 'Set moderation error';
+    output.textContent = moderationError ? textarea.validationMessage : `Current validity: ${textarea.checkValidity()}`;
+  });
 </script>
 </body>
 </html>

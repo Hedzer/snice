@@ -32,6 +32,12 @@ The `<snice-file-upload>` component provides a file upload interface with drag-a
 | `dragDrop` (attr: `drag-drop`) | `boolean` | `true` | Enable drag-and-drop |
 | `showPreview` (attr: `show-preview`) | `boolean` | `true` | Show image previews |
 | `files` | `FileList \| null` | `null` | Selected files (read-only) |
+| `type` | `'file'` | `'file'` | Read-only native-compatible control type |
+| `form` | `HTMLFormElement \| null` | — | Read-only owning form |
+| `validity` | `ValidityState` | — | Read-only constraint-validation flags |
+| `validationMessage` | `string` | `''` | Read-only current validation message |
+| `willValidate` | `boolean` | — | Read-only validation eligibility |
+| `labels` | `NodeList \| null` | — | Read-only wrapping and explicit labels |
 
 ## Methods
 
@@ -39,6 +45,11 @@ The `<snice-file-upload>` component provides a file upload interface with drag-a
 |--------|-----------|-------------|
 | `clear()` | -- | Remove all selected files |
 | `removeFile(index)` | `index: number` | Remove a specific file by index |
+| `focus()` | -- | Focus the native file input when enabled |
+| `blur()` | -- | Remove focus |
+| `checkValidity()` | -- | Check current constraint validity |
+| `reportValidity()` | -- | Report current validity |
+| `setCustomValidity(message)` | `string` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -81,6 +92,8 @@ upload.addEventListener('file-upload-change', (e) => {
 ### Form Reset and Browser Restoration
 
 Like native `<input type="file">`, file upload has no authorable non-empty default: browsers do not allow markup to preselect local files. `form.reset()` silently clears the current `FileList`, previews, and successful form value. Browser restoration accepts one `File` or a `FormData` containing repeated files and is also silent. Multiple selected files submit as repeated entries under `name`; an empty selection contributes no entry. Disconnect/reconnect and moving between forms preserve the current selection, while disabled fieldsets make choosing, dropping, and removing files inert without changing the authored `disabled` property or attribute.
+
+`required` maps to `valueMissing`. A rejected selection that exceeds `max-size` or `max-files` maps to `customError` with an actionable message instead of silently leaving the host valid. Tightening either limit revalidates the current selection; a valid selection, removal, clear, reset, restoration, or relaxed limit clears the generated error when appropriate. `setCustomValidity()` is independent and persists until cleared. Authored `invalid` is visual/ARIA state only. Disabled uploads are omitted and barred from validation.
 
 ## Examples
 

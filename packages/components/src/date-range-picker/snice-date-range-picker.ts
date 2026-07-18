@@ -9,7 +9,7 @@ import type {
 } from './snice-date-range-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
 
-@element('snice-date-range-picker', { formAssociated: true })
+@element('snice-date-range-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceDateRangePicker extends HTMLElement implements SniceDateRangePickerElement {
   internals!: ElementInternals;
 
@@ -40,6 +40,9 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
 
   /**
    * Live start value. Canonical and configured display-format strings are
@@ -176,13 +179,14 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @render()
   template() {
     const interactionDisabled = this.interactionDisabled;
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const showClear = Boolean(this.start || this.end) && this.clearable && !interactionDisabled && !this.readonly;
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const inputClasses = [
       'input',
       `input--${this.size}`,
       `input--${this.variant}`,
-      this.invalid ? 'input--invalid' : '',
+      displayedInvalid ? 'input--invalid' : '',
       this.clearable ? 'input--clearable' : '',
       this.loading ? 'input--loading' : ''
     ].filter(Boolean).join(' ');
@@ -213,7 +217,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
             .name=${this.name || ''}
             aria-label="${accessibleName}"
             aria-describedby="${describedBy}"
-            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             part="input"
             autocomplete="off"
             @click=${(e: Event) => this.handleInputClick(e)}
@@ -1046,11 +1050,15 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       (flags.rangeOverflow && maxDate ? `Dates must be on or before ${this.toCanonicalDate(maxDate)}.` : '') ||
       (hasError ? 'Please select a valid date range.' : '');
 
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
     const proxy = this.validationProxy;
     proxy.disabled = barred;
     proxy.value = complete ? `${this.toCanonicalDate(this.startDate!)} / ${this.toCanonicalDate(this.endDate!)}` : '';
     proxy.setCustomValidity(hasError ? message : '');
     this.input?.setCustomValidity(hasError ? message : '');
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.input?.classList.toggle('input--invalid', displayedInvalid);
 
     if (!this.internals) return;
     if (!hasError) {
@@ -1168,8 +1176,9 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
   @watch('invalid')
   handleInvalidChange() {
     if (this.input) {
-      this.input.setAttribute('aria-invalid', String(this.invalid));
-      this.input.classList.toggle('input--invalid', this.invalid);
+      const displayedInvalid = this.invalid || this.constraintInvalid;
+      this.input.setAttribute('aria-invalid', String(displayedInvalid));
+      this.input.classList.toggle('input--invalid', displayedInvalid);
     }
   }
 

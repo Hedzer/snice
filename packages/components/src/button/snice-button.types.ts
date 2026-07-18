@@ -19,6 +19,8 @@ export interface SniceButtonElement extends HTMLElement {
   icon: string;
   iconPlacement: IconPlacement;
   justifyText: ButtonJustify;
+  readonly form: HTMLFormElement | null;
+  readonly labels: NodeList | null;
   focus(options?: FocusOptions): void;
   blur(): void;
   click(): void;

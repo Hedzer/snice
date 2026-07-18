@@ -18,6 +18,8 @@ target: string = '';
 download: string = '';
 icon: string = '';                        // emoji, URL, image file
 iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
+readonly form: HTMLFormElement | null;
+readonly labels: NodeList | null;
 ```
 
 ## Methods
@@ -146,3 +148,4 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 - Keyboard accessible (Enter, Space)
 - Focus ring on `:focus-visible`
 - Form-associated (`formAssociated: true`), including disabled fieldsets and the first-legend exception
+- `form` and live `labels` expose native form ownership and explicit/wrapping label association

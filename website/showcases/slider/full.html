@@ -21,7 +21,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    snice-slider { width: 280px; }
+    snice-slider { width: min(100%, 280px); }
+    .variant-size-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 0.75rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
   </style>
 </head>
 <body>
@@ -43,7 +48,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </div>
 
 <h2>Variant x Size Matrix</h2>
-<div style="display: grid; grid-template-columns: repeat(3, 280px); gap: 0.75rem;">
+<div class="variant-size-matrix">
   <snice-slider variant="default" size="small" value="30" label="default + small"></snice-slider>
   <snice-slider variant="default" size="medium" value="30" label="default + medium"></snice-slider>
   <snice-slider variant="default" size="large" value="30" label="default + large"></snice-slider>
@@ -135,8 +140,54 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-slider name="volume" value="75" label="Volume (name=volume)" show-value></snice-slider>
 </div>
 
+<h2>Validated Form Contract</h2>
+<form id="slider-contract-form" class="contract-form">
+  <snice-slider
+    id="slider-contract-control"
+    name="rating"
+    label="Rating"
+    min="1"
+    max="9"
+    step="2"
+    value="2"
+    show-value
+    helper-text="Values snap to the min-based lattice: 1, 3, 5, 7, 9."
+    error-text="This rating is unavailable."
+    required
+  ></snice-slider>
+  <div class="contract-actions">
+    <button type="submit">Submit normalized value</button>
+    <button id="slider-contract-error" type="button">Set business-rule error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="slider-contract-output" aria-live="polite">Current normalized value: 3</output>
+</form>
+
 <script type="module">
   import '../../../packages/components/src/slider/snice-slider.ts';
+
+  const form = document.getElementById('slider-contract-form');
+  const slider = document.getElementById('slider-contract-control');
+  const errorButton = document.getElementById('slider-contract-error');
+  const output = document.getElementById('slider-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted rating=${new FormData(form).get('rating')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    slider.setCustomValidity('');
+    errorButton.textContent = 'Set business-rule error';
+    output.textContent = `Reset rating=${slider.value}`;
+  }));
+  slider.addEventListener('invalid', () => {
+    output.textContent = slider.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = !slider.validity.valid;
+    slider.setCustomValidity(clearing ? '' : 'This rating is unavailable.');
+    errorButton.textContent = clearing ? 'Set business-rule error' : 'Clear business-rule error';
+    output.textContent = clearing ? `Valid rating=${slider.value}` : slider.validationMessage;
+  });
 </script>
 </body>
 </html>

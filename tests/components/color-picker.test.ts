@@ -285,11 +285,13 @@ describe('snice-color-picker', () => {
       let nativeClicks = 0;
       native.addEventListener('click', () => nativeClicks++);
 
-      label.click();
+      const labelClick = new MouseEvent('click', { bubbles: true, cancelable: true });
+      label.dispatchEvent(labelClick);
       colorPicker.focus();
       queryShadow<HTMLElement>(colorPicker as HTMLElement, '.color-swatch')!.click();
       queryShadow<HTMLElement>(colorPicker as HTMLElement, '[data-color]')!.click();
 
+      expect(labelClick.defaultPrevented).toBe(true);
       expect(colorPicker.shadowRoot?.activeElement).toBeNull();
       expect(nativeClicks).toBe(0);
       expect(native.disabled).toBe(true);

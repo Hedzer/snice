@@ -54,6 +54,31 @@ describe('generated custom-element metadata', () => {
     ]));
   });
 
+  it('publishes the complete native validation surface for every validating form control', () => {
+    const formControls = [
+      'snice-checkbox', 'snice-color-picker', 'snice-date-picker',
+      'snice-date-range-picker', 'snice-date-time-picker', 'snice-file-upload',
+      'snice-input', 'snice-key-value', 'snice-radio', 'snice-range-slider',
+      'snice-select', 'snice-slider', 'snice-step-input', 'snice-switch',
+      'snice-tag-input', 'snice-textarea', 'snice-time-picker'
+    ];
+    const nativeSurface = [
+      'form', 'validity', 'validationMessage', 'willValidate', 'labels',
+      'checkValidity', 'reportValidity', 'setCustomValidity'
+    ];
+
+    for (const tagName of formControls) {
+      const declaration = declarations.find(candidate => candidate.tagName === tagName)!;
+      expect(declaration, tagName).toBeDefined();
+      expect(declaration.members.map(member => member.name), tagName)
+        .toEqual(expect.arrayContaining(nativeSurface));
+    }
+
+    const button = declarations.find(candidate => candidate.tagName === 'snice-button')!;
+    expect(button.members.map(member => member.name))
+      .toEqual(expect.arrayContaining(['form', 'labels']));
+  });
+
   it('emits a deterministic Custom Elements Manifest with publishable module paths', () => {
     const manifest = createCustomElementsManifest(declarations);
     expect(manifest.schemaVersion).toBe('2.1.0');

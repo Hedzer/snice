@@ -177,6 +177,8 @@ async function exerciseFormContract(page: Page) {
       matches: terms.matches(':disabled'),
       inputDisabled: (terms.shadowRoot!.querySelector('input') as HTMLInputElement).disabled,
       entries: entries(form),
+      valueMissing: terms.validity.valueMissing,
+      ariaInvalid: (terms.shadowRoot!.querySelector('input') as HTMLInputElement).getAttribute('aria-invalid'),
       willValidate: terms.willValidate,
       formValid: form.checkValidity()
     };
@@ -346,6 +348,8 @@ function assertFormContract(result: Awaited<ReturnType<typeof exerciseFormContra
       ['choices', 'b'],
       ['default-value', 'on']
     ],
+    valueMissing: true,
+    ariaInvalid: 'false',
     willValidate: false,
     formValid: true
   });

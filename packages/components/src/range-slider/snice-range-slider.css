@@ -41,6 +41,14 @@
   cursor: not-allowed;
 }
 
+.range-slider__track--invalid {
+  box-shadow: 0 0 0 1px var(--snice-color-danger, rgb(220 38 38));
+}
+
+.range-slider__thumb--invalid {
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+}
+
 /* Range highlight */
 .range-slider__range {
   position: absolute;

@@ -2,8 +2,9 @@ import { element, property, state, query, render, styles, html, css, isSafeUrl }
 import { renderIcon, strictStringAttributeConverter } from '../utils';
 import cssContent from './snice-button.css?inline';
 import type { ButtonVariant, ButtonSize, ButtonType, IconPlacement, ButtonJustify, SniceButtonElement } from './snice-button.types';
+import { findFormOwner } from '../form-control-validity';
 
-@element('snice-button', { formAssociated: true })
+@element('snice-button', { formAssociated: true, delegatesFocus: true })
 export class SniceButton extends HTMLElement implements SniceButtonElement {
   internals!: ElementInternals;
 
@@ -222,5 +223,15 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
   click() {
     if (this.effectiveDisabled) return;
     this.button?.click();
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Labels associated with the form-associated host. @public */
+  get labels(): NodeList | null {
+    return this.internals?.labels ?? null;
   }
 }

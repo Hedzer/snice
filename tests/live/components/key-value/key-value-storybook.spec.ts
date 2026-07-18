@@ -68,8 +68,11 @@ test('Storybook key-value form story is native, interactive, responsive, and the
   const values = main.locator('[part="value-input"]');
   const descriptions = main.locator('[part="description-input"]');
   await keys.nth(2).fill('Accept');
+  await expect.poll(() => main.evaluate((editor: any) => editor.getItems()[2]?.key)).toBe('Accept');
   await values.nth(2).fill('text/plain');
+  await expect.poll(() => main.evaluate((editor: any) => editor.getItems()[2]?.value)).toBe('text/plain');
   await descriptions.nth(2).fill('Third duplicate');
+  await expect.poll(() => main.evaluate((editor: any) => editor.getItems()[2]?.description)).toBe('Third duplicate');
   const edited = [...initial, { key: 'Accept', value: 'text/plain', description: 'Third duplicate' }];
   expect(await main.evaluate((editor: any) => ({
     value: editor.value,
@@ -84,6 +87,7 @@ test('Storybook key-value form story is native, interactive, responsive, and the
   await expect(keys.nth(2)).toHaveAttribute('aria-invalid', 'true');
 
   await keys.nth(2).fill('Accept');
+  await expect.poll(() => main.evaluate((editor: any) => editor.getItems()[2]?.key)).toBe('Accept');
   await form.getByRole('button', { name: 'Submit' }).click();
   await expect(output).toContainText(`headers=${canonical(edited)}`);
   await expect(output).toContainText(`response-headers=${canonical(readonly)}`);

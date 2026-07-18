@@ -34,6 +34,8 @@ The button component provides an interactive element for user actions. It suppor
 | `download` | `string` | `''` | Download filename; download behavior takes precedence over `target` |
 | `icon` | `string` | `''` | Icon (emoji, URL, image file). Use the `icon` slot for icon fonts. |
 | `iconPlacement` (attr: `icon-placement`) | `'start' \| 'end'` | `'start'` | Icon position relative to label |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form, including `form="id"` |
+| `labels` (read-only) | `NodeList \| null` | — | Labels associated with the form-associated host |
 
 ## Methods
 

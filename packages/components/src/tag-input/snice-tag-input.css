@@ -42,6 +42,10 @@
   background: var(--snice-color-surface-container-high, rgb(252 251 249));
 }
 
+.tag-input-container--invalid {
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+}
+
 /* Tags */
 .tag {
   display: inline-flex;

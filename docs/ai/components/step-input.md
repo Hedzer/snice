@@ -14,14 +14,24 @@ disabled: boolean = false;
 readonly: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
 wrap: boolean = false;              // wrap around at min/max boundaries
+name: string = '';
+readonly type: 'number';
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList | null;
 ```
 
 ## Value and form lifecycle
 
-- `value` is live normalized state; `defaultValue` reflects the `value` attribute.
+- `value` is live normalized state; `defaultValue` reflects the `value` attribute. Values clamp and snap to a `min`-based step lattice; zero, negative, or non-finite steps fall back to `1`.
 - Pristine state follows default mutations. Input, increment/decrement, restore, or any live assignment dirties it.
 - Reset silently restores the latest default under current min/max/step constraints.
 - Repeated reset, reconnect, form moves, and fieldset disabledness do not rewrite authored state.
+- A named host is listed in `form.elements` and contributes one normalized numeric string to `FormData`; explicit `form="id"`, labels, reset, restore, and fieldsets are supported.
+- Normalization leaves no residual min/max/step mismatch. Use `setCustomValidity()` for application rules; it drives `customError`, styling, `aria-invalid`, reporting, and submission blocking.
+- Disabled controls are omitted/barred. Readonly controls remain successful but are barred. Custom errors survive temporary barred states.
 
 ## Methods
 
@@ -29,6 +39,8 @@ wrap: boolean = false;              // wrap around at min/max boundaries
 - `decrement()` - Decrease value by step
 - `focus()` - Focus the input
 - `blur()` - Remove focus
+- `checkValidity()` / `reportValidity()` - Check/report current validity
+- `setCustomValidity(message)` - Set or clear `customError`
 
 ## Events
 

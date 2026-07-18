@@ -23,6 +23,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .label-lifecycle { display: grid; gap: 1rem; max-width: 42rem; }
     .label-row, .lifecycle-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: baseline; }
     .lifecycle-controls button { padding: 0.45rem 0.7rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 34rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
   </style>
   <script type="module">import '../../../packages/components/src/color-picker/snice-color-picker.ts';</script>
 </head>
@@ -161,6 +165,28 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </div>
 </section>
 
+<section>
+  <h2>Validated Form Contract</h2>
+  <form id="color-contract-form" class="contract-form">
+    <snice-color-picker
+      id="color-contract-control"
+      name="brand-color"
+      label="Brand color"
+      value=""
+      format="rgb"
+      required
+      helper-text="Enter strict hex, RGB, or HSL. Valid values submit as six-digit hex."
+    ></snice-color-picker>
+    <div class="contract-actions">
+      <button type="submit">Submit canonical color</button>
+      <button id="color-contract-malformed" type="button">Assign malformed text</button>
+      <button id="color-contract-error" type="button">Set contrast error</button>
+      <button type="reset">Reset</button>
+    </div>
+    <output id="color-contract-output" aria-live="polite">A color is required.</output>
+  </form>
+</section>
+
 <script>
   (() => {
     const picker = document.getElementById('color-showcase-labelled');
@@ -188,6 +214,37 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       secondary.htmlFor = labelsAttached ? picker.id : '';
       event.currentTarget.textContent = labelsAttached ? 'Remove external labels' : 'Restore external labels';
       updateOutput();
+    });
+  })();
+
+  (() => {
+    const form = document.getElementById('color-contract-form');
+    const picker = document.getElementById('color-contract-control');
+    const errorButton = document.getElementById('color-contract-error');
+    const output = document.getElementById('color-contract-output');
+    let contrastError = false;
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted brand-color=${new FormData(form).get('brand-color')}`;
+    });
+    form.addEventListener('reset', () => queueMicrotask(() => {
+      contrastError = false;
+      picker.setCustomValidity('');
+      errorButton.textContent = 'Set contrast error';
+      output.textContent = `Reset value=${JSON.stringify(picker.value)}`;
+    }));
+    picker.addEventListener('invalid', () => {
+      output.textContent = picker.validationMessage;
+    });
+    document.getElementById('color-contract-malformed').addEventListener('click', () => {
+      picker.value = 'rgb(300, 0, 0)';
+      output.textContent = picker.validationMessage;
+    });
+    errorButton.addEventListener('click', () => {
+      contrastError = !contrastError;
+      picker.setCustomValidity(contrastError ? 'This color does not meet the contrast requirement.' : '');
+      errorButton.textContent = contrastError ? 'Clear contrast error' : 'Set contrast error';
+      output.textContent = contrastError ? picker.validationMessage : `Current validity: ${picker.checkValidity()}`;
     });
   })();
 </script>

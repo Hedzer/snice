@@ -14,12 +14,19 @@ export interface SniceSliderElement extends HTMLElement {
   errorText: string;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   name: string;
   showValue: boolean;
   showTicks: boolean;
   vertical: boolean;
+  readonly type: 'range';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   focus(): void;
   blur(): void;

@@ -30,15 +30,24 @@ A toggle switch input for boolean selections. Supports on/off labels, form integ
 | `label` | `string` | `''` | Label text |
 | `labelOn` (attr: `label-on`) | `string` | `''` | Text on switch track when on |
 | `labelOff` (attr: `label-off`) | `string` | `''` | Text on switch track when off |
+| `type` (read-only) | `'checkbox'` | `'checkbox'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
 
 ## Methods
 
 | Method | Arguments | Returns | Description |
 |--------|-----------|---------|-------------|
 | `toggle()` | -- | `void` | Toggle the switch state |
-| `focus()` | `options?: FocusOptions` | `void` | Focus the switch |
+| `focus()` | -- | `void` | Focus the switch |
 | `blur()` | -- | `void` | Remove focus |
 | `click()` | -- | `void` | Programmatically click the switch |
+| `checkValidity()` | -- | `boolean` | Check current constraint validity |
+| `reportValidity()` | -- | `boolean` | Report current validity |
+| `setCustomValidity(message)` | `string` | `void` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -102,6 +111,8 @@ Use `label-on` and `label-off` for text inside the switch track.
 ### Form Integration
 
 The form-associated `<snice-switch>` host participates in submission through `ElementInternals` when `name` is set. Its internal checkbox drives native interaction and accessibility, but is unnamed and does not create a second form field.
+
+A checked, enabled switch contributes its configured `value`; an unchecked switch contributes nothing. An unchecked `required` switch reports `valueMissing`, blocks validated submission, and automatically receives invalid styling and `aria-invalid`. `setCustomValidity()` controls `customError`. The authored `invalid` property changes presentation/ARIA only. Disabled and loading switches are barred from validation; disabled switches are omitted from `FormData`, while loading preserves the current successful value. The host emits standard composed `input` and `change` events as well as `switch-change` for customer interaction.
 
 ```html
 <form id="settings-form">

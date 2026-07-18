@@ -96,6 +96,10 @@
   cursor: wait;
 }
 
+.slider-track--invalid {
+  box-shadow: 0 0 0 1px var(--snice-color-danger, rgb(220 38 38));
+}
+
 .slider-fill {
   position: absolute;
   top: 0;
@@ -149,6 +153,11 @@
   cursor: grab;
   transition: all var(--snice-transition-normal, 200ms);
   box-shadow: var(--snice-shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+}
+
+.slider-thumb--invalid {
+  border-color: var(--snice-color-danger, rgb(220 38 38));
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-color-danger-alpha, rgb(220 38 38 / 0.4));
 }
 
 .slider-thumb--vertical {

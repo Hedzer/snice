@@ -1,12 +1,22 @@
-import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-range-slider.css?inline';
 import type { RangeSliderOrientation, SniceRangeSliderElement } from './snice-range-slider.types';
+import { FormLabelAssociation } from '../form-label-association';
+import {
+  applyElementInternalsValidity,
+  findFormOwner,
+  hasValidityError,
+  normalizeSteppedValue
+} from '../form-control-validity';
 
-@element('snice-range-slider', { formAssociated: true })
+@element('snice-range-slider', { formAssociated: true, delegatesFocus: true })
 export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderElement {
   internals!: ElementInternals;
   private dirtyValueLow = false;
   private dirtyValueHigh = false;
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
+  private validationInput?: HTMLInputElement;
 
   @state()
   private valueLowState = 0;
@@ -17,11 +27,24 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.thumbLow,
+      () => 'Range',
+      name => {
+        this.thumbLow?.setAttribute('aria-label', `${name} minimum`);
+        this.thumbHigh?.setAttribute('aria-label', `${name} maximum`);
+      }
+    );
   }
 
   /**
@@ -57,7 +80,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   defaultValueHigh = 100;
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -69,6 +92,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
     if (disabled) this.stopDragging(false);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -101,6 +125,9 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   @property()
   orientation: RangeSliderOrientation = 'horizontal';
 
+  @property()
+  name = '';
+
   @query('.range-slider__track')
   track?: HTMLElement;
 
@@ -124,7 +151,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
     const range = this.max - this.min;
     const lowPct = range > 0 ? ((this.valueLow - this.min) / range) * 100 : 0;
-    const highPct = range > 0 ? ((this.valueHigh - this.min) / range) * 100 : 100;
+    const highPct = range > 0 ? ((this.valueHigh - this.min) / range) * 100 : 0;
 
     const rangeStyle = isVertical
       ? `bottom: ${lowPct}%; height: ${highPct - lowPct}%`
@@ -133,7 +160,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     const lowThumbStyle = isVertical ? `bottom: ${lowPct}%` : `left: ${lowPct}%`;
     const highThumbStyle = isVertical ? `bottom: ${highPct}%` : `left: ${highPct}%`;
 
-    const trackClasses = `range-slider__track${this.interactionDisabled ? ' range-slider__track--disabled' : ''}`;
+    const trackClasses = `range-slider__track${this.interactionDisabled ? ' range-slider__track--disabled' : ''}${this.constraintInvalid ? ' range-slider__track--invalid' : ''}`;
     const isDragging = this.draggingThumb !== null;
     const rangeClasses = `range-slider__range${isDragging ? ' range-slider__range--dragging' : ''}`;
 
@@ -141,6 +168,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
       'range-slider__thumb',
       'range-slider__thumb--low',
       this.interactionDisabled ? 'range-slider__thumb--disabled' : '',
+      this.constraintInvalid ? 'range-slider__thumb--invalid' : '',
       this.draggingThumb === 'low' ? 'range-slider__thumb--dragging' : ''
     ].filter(Boolean).join(' ');
 
@@ -148,6 +176,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
       'range-slider__thumb',
       'range-slider__thumb--high',
       this.interactionDisabled ? 'range-slider__thumb--disabled' : '',
+      this.constraintInvalid ? 'range-slider__thumb--invalid' : '',
       this.draggingThumb === 'high' ? 'range-slider__thumb--dragging' : ''
     ].filter(Boolean).join(' ');
 
@@ -172,6 +201,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               aria-valuenow="${this.valueLow}"
               aria-valuemin="${this.min}"
               aria-valuemax="${this.valueHigh}"
+              aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
               @mousedown=${this.handleLowThumbMouseDown}
               @touchstart=${this.handleLowThumbTouchStart}
               @keydown=${this.handleLowKeyDown}
@@ -191,6 +221,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
               aria-valuenow="${this.valueHigh}"
               aria-valuemin="${this.valueLow}"
               aria-valuemax="${this.max}"
+              aria-invalid="${this.constraintInvalid ? 'true' : 'false'}"
               @mousedown=${this.handleHighThumbMouseDown}
               @touchstart=${this.handleHighThumbTouchStart}
               @keydown=${this.handleHighKeyDown}
@@ -236,7 +267,13 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
       if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
     }
     this.clampValues();
-    this.syncFormValue();
+    this.syncFormState();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private applyDefaultValues() {
@@ -245,39 +282,37 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   private setValueLow(value: unknown, dirty: boolean) {
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) return;
+    if (!Number.isFinite(parsed)) return;
     if (dirty) this.dirtyValueLow = true;
     const normalized = this.normalizeValue(parsed);
     this.valueLowState = Math.min(normalized, this.valueHigh);
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private setValueHigh(value: unknown, dirty: boolean) {
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) return;
+    if (!Number.isFinite(parsed)) return;
     if (dirty) this.dirtyValueHigh = true;
     const normalized = this.normalizeValue(parsed);
     this.valueHighState = Math.max(normalized, this.valueLow);
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private setValues(low: unknown, high: unknown, dirtyLow: boolean, dirtyHigh: boolean) {
     const parsedLow = Number(low);
     const parsedHigh = Number(high);
-    if (Number.isNaN(parsedLow) || Number.isNaN(parsedHigh)) return;
+    if (!Number.isFinite(parsedLow) || !Number.isFinite(parsedHigh)) return;
     if (dirtyLow) this.dirtyValueLow = true;
     if (dirtyHigh) this.dirtyValueHigh = true;
     const normalizedLow = this.normalizeValue(parsedLow);
     const normalizedHigh = this.normalizeValue(parsedHigh);
     this.valueLowState = Math.min(normalizedLow, normalizedHigh);
     this.valueHighState = Math.max(normalizedLow, normalizedHigh);
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private normalizeValue(value: number): number {
-    const clamped = Math.max(this.min, Math.min(this.max, value));
-    const stepped = Math.round(clamped / this.step) * this.step;
-    return Math.max(this.min, Math.min(this.max, stepped));
+    return normalizeSteppedValue(value, this.min, this.max, this.effectiveStep);
   }
 
   private clampValues() {
@@ -287,6 +322,43 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   private syncFormValue() {
     const value = `${this.valueLow},${this.valueHigh}`;
     this.internals?.setFormValue(value, value);
+  }
+
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const barred = this.interactionDisabled;
+    const badInput = !barred && (!Number.isFinite(this.valueLow) || !Number.isFinite(this.valueHigh));
+    const flags: ValidityStateFlags = barred ? {} : {
+      badInput,
+      customError: Boolean(this.customValidationMessage),
+      rangeOverflow: !badInput && (this.valueLow > this.max || this.valueHigh > this.max),
+      rangeUnderflow: !badInput && (this.valueLow < this.min || this.valueHigh < this.min)
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage ||
+      (badInput ? 'Please select a valid range.' : '') ||
+      (flags.rangeUnderflow || flags.rangeOverflow ? 'Please select a range within the allowed limits.' : '');
+    this.constraintInvalid = hasError;
+    this.validationProxy.setCustomValidity(hasError ? message : '');
+    this.thumbLow?.setAttribute('aria-invalid', String(hasError));
+    this.thumbHigh?.setAttribute('aria-invalid', String(hasError));
+    this.track?.classList.toggle('range-slider__track--invalid', hasError);
+    this.thumbLow?.classList.toggle('range-slider__thumb--invalid', hasError);
+    this.thumbHigh?.classList.toggle('range-slider__thumb--invalid', hasError);
+    applyElementInternalsValidity(this.internals, flags, message, this.thumbLow);
+  }
+
+  private get validationProxy(): HTMLInputElement {
+    if (!this.validationInput) this.validationInput = document.createElement('input');
+    return this.validationInput;
+  }
+
+  private get effectiveStep(): number {
+    return Number.isFinite(this.step) && this.step > 0 ? this.step : 1;
   }
 
   private getPositionFromEvent(e: MouseEvent | TouchEvent): number {
@@ -308,7 +380,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   private positionToValue(position: number): number {
     const raw = this.min + position * (this.max - this.min);
-    return Math.round(raw / this.step) * this.step;
+    return this.normalizeValue(raw);
   }
 
   private handleTrackMouseDown(e: MouseEvent) {
@@ -443,12 +515,12 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     switch (e.key) {
       case 'ArrowLeft':
       case 'ArrowDown':
-        this.valueLow = Math.max(this.min, this.valueLow - this.step);
+        this.valueLow = Math.max(this.min, this.valueLow - this.effectiveStep);
         handled = true;
         break;
       case 'ArrowRight':
       case 'ArrowUp':
-        this.valueLow = Math.min(this.valueHigh, this.valueLow + this.step);
+        this.valueLow = Math.min(this.valueHigh, this.valueLow + this.effectiveStep);
         handled = true;
         break;
       case 'Home':
@@ -474,12 +546,12 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     switch (e.key) {
       case 'ArrowLeft':
       case 'ArrowDown':
-        this.valueHigh = Math.max(this.valueLow, this.valueHigh - this.step);
+        this.valueHigh = Math.max(this.valueLow, this.valueHigh - this.effectiveStep);
         handled = true;
         break;
       case 'ArrowRight':
       case 'ArrowUp':
-        this.valueHigh = Math.min(this.max, this.valueHigh + this.step);
+        this.valueHigh = Math.min(this.max, this.valueHigh + this.effectiveStep);
         handled = true;
         break;
       case 'Home':
@@ -500,7 +572,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   @watch('valueLowState', 'valueHighState')
   handleValuesChange() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   @watch('defaultValueLow', 'defaultValueHigh')
@@ -513,14 +585,21 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
   }
 
-  @watch('disabled')
+  @watch('disabled', 'formDisabled')
   handleDisabledChange() {
     if (this.interactionDisabled) this.stopDragging(false);
+    this.syncValidity();
   }
 
   @watch('min', 'max', 'step')
   handleConstraintsChange() {
     this.clampValues();
+    this.syncValidity();
+  }
+
+  @watch('name')
+  handleNameChange() {
+    this.syncFormState();
   }
 
   @dispatch('range-change', { bubbles: true, composed: true })
@@ -528,8 +607,64 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     return { valueLow: this.valueLow, valueHigh: this.valueHigh, component: this };
   }
 
+  /** Native-compatible control type. @public */
+  get type(): 'range' {
+    return 'range';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.validationProxy.validity;
+  }
+
+  /** Current validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.validationProxy.validationMessage;
+  }
+
+  /** Whether this range currently participates in validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled) return false;
+    return this.internals?.willValidate ?? true;
+  }
+
+  /** Labels associated with the host. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
+  focus(): void {
+    if (!this.interactionDisabled) this.thumbLow?.focus();
+  }
+
+  blur(): void {
+    this.thumbLow?.blur();
+    this.thumbHigh?.blur();
+  }
+
+  checkValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.validationProxy.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.validationProxy.reportValidity();
+  }
+
+  setCustomValidity(message: string): void {
+    this.customValidationMessage = String(message);
+    this.syncValidity();
+  }
+
   @dispose()
   cleanup() {
     this.stopDragging(false);
+    this.labelAssociation.disconnect();
   }
 }

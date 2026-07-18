@@ -14,6 +14,7 @@ export interface SniceTextareaElement extends HTMLElement {
   errorText: string;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   rows: number;
@@ -23,6 +24,12 @@ export interface SniceTextareaElement extends HTMLElement {
   name: string;
   autocomplete: string;
   autoGrow: boolean;
+  readonly type: 'textarea';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   focus(): void;
   blur(): void;

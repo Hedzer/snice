@@ -41,6 +41,11 @@ export interface SniceSelectElement extends HTMLElement {
   placeholder: string;
   maxHeight: string;
   options: SelectOption[];
+  readonly type: 'select-one' | 'select-multiple';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
   readonly labels: NodeList | null;
   focus(): void;
   blur(): void;
@@ -49,6 +54,9 @@ export interface SniceSelectElement extends HTMLElement {
   closeDropdown(): void;
   toggleDropdown(): void;
   selectOption(value: string): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  setCustomValidity(message: string): void;
 }
 
 export interface SelectChangeDetail {

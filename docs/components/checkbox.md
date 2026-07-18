@@ -246,4 +246,4 @@ for (const item of items) {
 - Associates the `label` text with the native control.
 - Supports association and activation through external `<label for="...">` elements.
 - Shows a visible keyboard focus indicator.
-- Exposes `aria-invalid` for explicit invalid presentation.
+- Exposes `aria-invalid` for explicit or calculated invalid presentation.

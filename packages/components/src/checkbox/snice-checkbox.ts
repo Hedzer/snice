@@ -2,7 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, render, styles
 import cssContent from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
 
-@element('snice-checkbox', { formAssociated: true })
+@element('snice-checkbox', { formAssociated: true, delegatesFocus: true })
 export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   internals!: ElementInternals;
 
@@ -16,6 +16,9 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
 
   @state()
   private formDisabled = false;
+
+  @state()
+  private constraintInvalid = false;
 
   constructor() {
     super();
@@ -84,8 +87,9 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   @render()
   render() {
     const interactionDisabled = this.disabled || this.formDisabled || this.loading;
+    const displayedInvalid = this.invalid || this.constraintInvalid;
     const wrapperClasses = `checkbox-wrapper${interactionDisabled ? ' checkbox-wrapper--disabled' : ''}${this.loading ? ' checkbox-wrapper--loading' : ''}`;
-    const checkboxClasses = `checkbox checkbox--${this.size}${this.invalid ? ' checkbox--invalid' : ''}${this.indeterminate ? ' checkbox--indeterminate' : ''}${this.loading ? ' checkbox--loading' : ''}`;
+    const checkboxClasses = `checkbox checkbox--${this.size}${displayedInvalid ? ' checkbox--invalid' : ''}${this.indeterminate ? ' checkbox--indeterminate' : ''}${this.loading ? ' checkbox--loading' : ''}`;
     const labelClasses = `checkbox-label checkbox-label--${this.size}${this.required ? ' checkbox-label--required' : ''}`;
 
     return html/*html*/`
@@ -99,7 +103,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
           .required=${this.required}
           .name=${this.name}
           .value=${this.value}
-          aria-invalid="${this.invalid ? 'true' : 'false'}"
+          aria-invalid="${displayedInvalid ? 'true' : 'false'}"
           aria-checked="${this.indeterminate ? 'mixed' : this.checked}"
           part="input"
           @click=${this.handleInternalClick}
@@ -277,11 +281,14 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     if (this.input) {
       this.input.disabled = this.disabled || this.formDisabled || this.loading;
     }
+    this.syncValidity();
   }
 
   @watch('invalid', { immediate: false })
   handleInvalidChange() {
-    this.input?.setAttribute('aria-invalid', this.invalid ? 'true' : 'false');
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.checkbox?.classList.toggle('checkbox--invalid', displayedInvalid);
   }
 
   private setCheckedness(checked: boolean, dirty: boolean) {
@@ -320,19 +327,24 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
       this.input.required = this.required;
       this.input.setCustomValidity(this.customValidationMessage);
     }
-    if (!this.internals) return;
-
+    const barred = this.disabled || this.formDisabled;
+    // Loading blocks interaction only. It intentionally retains the checkbox's
+    // established form-submission and constraint-validation participation.
     const valueMissing = this.required && !this.checked;
     const customError = this.customValidationMessage.length > 0;
-    if (!valueMissing && !customError) {
-      this.internals.setValidity({});
-      return;
-    }
+    const hasError = valueMissing || customError;
 
     const message = this.customValidationMessage
       || this.input?.validationMessage
       || 'Please check this box.';
-    if (this.input) {
+    this.constraintInvalid = !barred && hasError;
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.input?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.checkbox?.classList.toggle('checkbox--invalid', displayedInvalid);
+    if (!this.internals) return;
+    if (!hasError) {
+      this.internals.setValidity({});
+    } else if (this.input) {
       this.internals.setValidity({ valueMissing, customError }, message, this.input);
     } else {
       this.internals.setValidity({ valueMissing, customError }, message);
@@ -397,6 +409,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
 
   /** Whether this checkbox participates in constraint validation. @public */
   get willValidate(): boolean {
+    if (this.disabled || this.formDisabled) return false;
     return this.internals?.willValidate ?? this.input?.willValidate ?? false;
   }
 

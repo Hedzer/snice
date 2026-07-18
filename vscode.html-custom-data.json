@@ -6525,6 +6525,10 @@
           "description": "min: number"
         },
         {
+          "name": "name",
+          "description": "name: string"
+        },
+        {
           "name": "orientation",
           "description": "orientation: 'horizontal' | 'vertical'",
           "values": [
@@ -7490,6 +7494,10 @@
         {
           "name": "min",
           "description": "min: number"
+        },
+        {
+          "name": "name",
+          "description": "name: string"
         },
         {
           "name": "readonly",

@@ -28,6 +28,13 @@ A numeric stepper control with visible increment and decrement buttons flanking 
 | `readonly` | `boolean` | `false` | Prevents value changes (input remains focusable) |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
 | `wrap` | `boolean` | `false` | Wrap around at min/max boundaries |
+| `name` | `string` | `''` | Form field name |
+| `type` (read-only) | `'number'` | `'number'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
 
 ## Methods
 
@@ -35,8 +42,11 @@ A numeric stepper control with visible increment and decrement buttons flanking 
 |--------|-----------|---------|-------------|
 | `increment()` | -- | `void` | Increase value by step |
 | `decrement()` | -- | `void` | Decrease value by step |
-| `focus()` | `options?: FocusOptions` | `void` | Focus the input field |
+| `focus()` | -- | `void` | Focus the input field |
 | `blur()` | -- | `void` | Remove focus |
+| `checkValidity()` | -- | `boolean` | Check current constraint validity |
+| `reportValidity()` | -- | `boolean` | Report current validity |
+| `setCustomValidity(message)` | `string` | `void` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -65,7 +75,9 @@ import 'snice/components/step-input/snice-step-input';
 
 ### Live Value and Reset Default
 
-`value` is the live, normalized number; `defaultValue` reflects the `value` content attribute and is the reset default. A pristine control follows default mutations. Incrementing, decrementing, typing, assigning `value` (including the same value), or browser restoration makes it dirty; reset silently restores the latest default, clamped and stepped by the current constraints. Form moves, reconnects, repeated reset, and inherited fieldset disabledness preserve authored state.
+`value` is the live, normalized number. Values clamp to `min`/`max` and snap to a `min`-based step lattice; invalid zero, negative, or non-finite steps fall back to `1`. `defaultValue` reflects the `value` content attribute and is the reset default. A pristine control follows default mutations. Incrementing, decrementing, typing, assigning `value` (including the same value), or browser restoration makes it dirty; reset silently restores the latest default. Form moves, reconnects, repeated reset, and inherited fieldset disabledness preserve authored state.
+
+With `name`, the host is listed in `form.elements`, contributes its normalized number to `FormData`, supports `form="id"`, labels, reset/restoration, and disabled fieldsets. Normalization prevents residual min/max/step mismatches; use `setCustomValidity()` for application rules. Custom errors drive `aria-invalid`, styling, reporting, and submission blocking. Disabled controls are omitted and barred; readonly controls remain successful but are barred from validation.
 
 ## Examples
 

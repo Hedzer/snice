@@ -975,7 +975,7 @@ test.describe('Website Component Rendering', () => {
       viewport: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    expect(rendered).toEqual(expect.objectContaining({ total: 27, rendered: 27 }));
+    expect(rendered).toEqual(expect.objectContaining({ total: 28, rendered: 28 }));
     expect(rendered.scroll).toBeLessThanOrEqual(rendered.viewport);
 
     const labelled = showcase.locator('#color-showcase-labelled');
@@ -1043,7 +1043,7 @@ test.describe('Website Component Rendering', () => {
     await page.waitForFunction(() => {
       const iframe = document.querySelector('#help-drawer-iframe') as HTMLIFrameElement;
       const selects = Array.from(iframe.contentDocument?.querySelectorAll('snice-select') || []);
-      return selects.length === 41 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
+      return selects.length === 42 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
     });
 
     const standard = showcase.locator('#select-showcase-standard');
@@ -1089,7 +1089,7 @@ test.describe('Website Component Rendering', () => {
     await page.goto(`${websiteBase}/showcase/select.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => {
       const selects = Array.from(document.querySelectorAll('snice-select'));
-      return selects.length === 41 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
+      return selects.length === 42 && selects.every(select => select.shadowRoot?.querySelector('.select-trigger, .select-editable-input'));
     });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     const narrowLayout = await page.locator('body').evaluate(() => ({

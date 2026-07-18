@@ -12,7 +12,7 @@ interface DateTimeParts {
   seconds: number;
 }
 
-@element('snice-date-time-picker', { formAssociated: true })
+@element('snice-date-time-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePickerElement {
   internals!: ElementInternals;
 

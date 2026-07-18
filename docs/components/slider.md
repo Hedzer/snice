@@ -31,13 +31,19 @@ An interactive range slider for selecting numeric values with mouse, touch, and 
 | `errorText` (attr: `error-text`) | `string` | `''` | Error message (shown when invalid) |
 | `disabled` | `boolean` | `false` | Disables the slider |
 | `readonly` | `boolean` | `false` | Makes the slider read-only |
-| `required` | `boolean` | `false` | Makes the slider required |
-| `invalid` | `boolean` | `false` | Shows invalid state |
+| `required` | `boolean` | `false` | Shows the required marker; like native range, a value is always present |
+| `invalid` | `boolean` | `false` | Visual/ARIA invalid presentation only |
 | `loading` | `boolean` | `false` | Shows loading spinner |
 | `name` | `string` | `''` | Form field name |
 | `showValue` (attr: `show-value`) | `boolean` | `false` | Display current value |
 | `showTicks` (attr: `show-ticks`) | `boolean` | `false` | Show tick marks along the track |
 | `vertical` | `boolean` | `false` | Vertical orientation |
+| `type` (read-only) | `'range'` | `'range'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
 
 The `form-align` HTML attribute (CSS-only, no JS property) gives the track area `min-height: 2.5rem` to align with input/select fields in form rows.
 
@@ -45,7 +51,7 @@ The `form-align` HTML attribute (CSS-only, no JS property) gives the track area 
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `focus()` | `options?: FocusOptions` | Focus the slider thumb |
+| `focus()` | — | Focus the slider thumb |
 | `blur()` | — | Remove focus |
 | `checkValidity()` | — | Check validation, returns `boolean` |
 | `reportValidity()` | — | Report validation to user, returns `boolean` |
@@ -81,7 +87,7 @@ import 'snice/components/slider/snice-slider';
 
 ### Live Value and Reset Default
 
-`value` is live, clamped/stepped state. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Pristine sliders follow default changes; pointer, touch, keyboard, direct `value` assignment (even unchanged), or browser restoration makes the slider dirty. Reset/restoration are silent, repeated reset is stable, and disconnects/form moves retain both states. A disabled fieldset makes every thumb/input path inert without changing authored `disabled`.
+`value` is live, clamped/stepped state. Steps are based at `min`, matching native range controls; invalid zero, negative, or non-finite steps fall back to `1`. `defaultValue` reflects the `value` content attribute and is restored by `form.reset()`. Pristine sliders follow default changes; pointer, touch, keyboard, direct `value` assignment (even unchanged), or browser restoration makes the slider dirty. Reset/restoration are silent, repeated reset is stable, and disconnects/form moves retain both states. A disabled fieldset makes every thumb/input path inert without changing authored `disabled`.
 
 ## Examples
 
@@ -122,7 +128,7 @@ Set `vertical` for vertical orientation.
 
 ### Error State
 
-Set `invalid` with `error-text` to show validation errors.
+Set `invalid` with `error-text` for an application-owned visual error, or call `setCustomValidity()` when the slider must block form submission. Error text is active only while the slider has authored or calculated invalid presentation; otherwise helper text remains visible. The error is one `role="alert"`, not duplicated.
 
 ```html
 <snice-slider label="Age" invalid error-text="Value out of range"></snice-slider>
@@ -141,7 +147,7 @@ Use the `form-align` attribute to align the slider with adjacent form fields.
 
 ### Form Integration
 
-The slider is form-associated and participates in form submission.
+The slider is a listed form-associated control: it supports `FormData`, `form.elements`, external `form="id"`, native labels, reset/restoration, disabled fieldsets, and validated submission. Its numeric value is always normalized inside `min`/`max` on the `min`-based step lattice, so—as with native `<input type="range">`—`required` cannot produce `valueMissing`. Business rules use `setCustomValidity(message)`. Disabled, loading, and readonly states are barred from validation; disabled values are omitted, while loading/readonly values remain successful. Clearing a custom error restores validity and helper text.
 
 ```html
 <form>

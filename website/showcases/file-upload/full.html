@@ -20,6 +20,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 38rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
   </style>
   <script type="module">import '../../../packages/components/src/file-upload/snice-file-upload.ts';</script>
 </head>
@@ -129,6 +133,62 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Disabled + Filled + Large</h2>
 <snice-file-upload disabled variant="filled" size="large" label="Disabled Large Filled"></snice-file-upload>
+
+<h2>Validated Form Contract</h2>
+<form id="file-contract-form" class="contract-form">
+  <snice-file-upload
+    id="file-contract-control"
+    name="attachments"
+    label="Attachments"
+    multiple
+    required
+    max-files="2"
+    max-size="2048"
+    helper-text="Choose one or two files, no more than 2 KB each."
+  ></snice-file-upload>
+  <div class="contract-actions">
+    <button type="submit">Submit files</button>
+    <button id="file-contract-error" type="button">Set scanner error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="file-contract-output" aria-live="polite">Selection is required.</output>
+</form>
+
+<script>
+  (() => {
+    const form = document.getElementById('file-contract-form');
+    const upload = document.getElementById('file-contract-control');
+    const errorButton = document.getElementById('file-contract-error');
+    const output = document.getElementById('file-contract-output');
+    let scannerError = false;
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const files = new FormData(form).getAll('attachments');
+      output.textContent = `Submitted ${files.length} file(s): ${files.map(file => file.name).join(', ')}`;
+    });
+    form.addEventListener('reset', () => queueMicrotask(() => {
+      upload.setCustomValidity('');
+      scannerError = false;
+      errorButton.textContent = 'Set scanner error';
+      output.textContent = 'Reset: selection is required.';
+    }));
+    upload.addEventListener('invalid', () => {
+      output.textContent = upload.validationMessage;
+    });
+    upload.addEventListener('file-upload-error', event => {
+      output.textContent = event.detail.message;
+    });
+    upload.addEventListener('file-upload-change', event => {
+      output.textContent = `${event.detail.files.length} valid file(s) selected.`;
+    });
+    errorButton.addEventListener('click', () => {
+      scannerError = !scannerError;
+      upload.setCustomValidity(scannerError ? 'The file scanner is temporarily unavailable.' : '');
+      errorButton.textContent = scannerError ? 'Clear scanner error' : 'Set scanner error';
+      output.textContent = scannerError ? upload.validationMessage : `Current validity: ${upload.checkValidity()}`;
+    });
+  })();
+</script>
 
 </body>
 </html>

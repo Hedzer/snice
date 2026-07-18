@@ -34,6 +34,12 @@ name: string = '';
 align: 'top'|'center'|'bottom'|'' = '';  // vertical alignment when host has explicit height
 labelAlign: 'left'|'center'|'right' = 'left';  // attr: label-align
 stretch: boolean = false;                 // input fills full host height
+
+readonly form: HTMLFormElement | null;
+readonly validity: ValidityState;
+readonly validationMessage: string;
+readonly willValidate: boolean;
+readonly labels: NodeList | null;
 ```
 
 ## Value and form lifecycle
@@ -42,6 +48,16 @@ stretch: boolean = false;                 // input fills full host height
 - A default mutation updates live state only while pristine. Typing, clear, browser restore, or any `value` assignment (including the same value) dirties it.
 - `form.reset()` silently restores the current default. Restore/reset emit no native or component value events.
 - Reconnect/form moves retain both states; fieldset disabledness never rewrites authored `disabled`.
+
+## Form and validation contract
+
+- Listed in `form.elements`; supports nearest or explicit `form="id"` ownership, external/wrapping labels, `FormData`, reset, restore, and disabled fieldsets.
+- Enabled + non-empty `name` contributes the exact live string. Disabled controls are omitted. `readonly` remains successful but is barred from validation. `loading` is inert and barred while preserving its successful value.
+- Native flags are forwarded: `valueMissing`, `typeMismatch`, `patternMismatch`, `rangeUnderflow`, `rangeOverflow`, `stepMismatch`, `badInput`, and user-input-only `tooShort`/`tooLong`.
+- Invalid raw number/date/time/datetime-local input stays observable on the component and reports `badInput` even when the browser sanitizes the inner native input.
+- Changing a constraint or value recalculates immediately. Removing `min`, `max`, `step`, `pattern`, `minlength`, or `maxlength` removes it from the native proxy as well.
+- `setCustomValidity(message)` controls `customError`; pass `''` to clear it. Calculated validity drives styling and `aria-invalid` and blocks validated submission.
+- `invalid` and `errorText` are presentation only; they do not establish native constraint invalidity.
 
 ## Methods
 
@@ -125,6 +141,6 @@ inp.addEventListener('input-change', (e) => console.log('Change:', e.detail.valu
 ## Accessibility
 
 - Form-associated custom element (ElementInternals)
-- aria-invalid set when invalid
+- `aria-invalid` reflects authored or calculated invalid state
 - Required indicator shown
 - Clear button and password toggle have aria-label

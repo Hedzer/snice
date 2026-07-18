@@ -53,6 +53,11 @@ A customizable dropdown selection with single/multiple selection, search filteri
 | `placeholder` | `string` | `'Select an option'` | Placeholder text |
 | `maxHeight` (attr: `max-height`) | `string` | `'200px'` | Maximum dropdown height |
 | `options` | `SelectOption[]` | `[]` | Programmatic options array (JS only) |
+| `type` | `'select-one' \| 'select-multiple'` (read-only) | — | Native-compatible type derived from `multiple` |
+| `form` | `HTMLFormElement \| null` (read-only) | — | Current owning form |
+| `validity` | `ValidityState` (read-only) | — | Current constraint-validation flags |
+| `validationMessage` | `string` (read-only) | — | Current validation message |
+| `willValidate` | `boolean` (read-only) | — | Whether validation currently applies |
 | `labels` | `NodeList \| null` (read-only) | — | Current wrapping and explicit external labels associated with the host |
 
 ### Option Properties
@@ -76,6 +81,9 @@ A customizable dropdown selection with single/multiple selection, search filteri
 | `closeDropdown()` | — | Close the dropdown |
 | `toggleDropdown()` | — | Toggle the dropdown |
 | `selectOption()` | `value: string` | Select an option by value |
+| `checkValidity()` | — | Check current constraint validity |
+| `reportValidity()` | — | Report current validity and return the result |
+| `setCustomValidity()` | `message: string` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -252,6 +260,8 @@ Multiple external labels produce one combined name, not multiple descriptions. `
 ## Form Integration
 
 The host participates directly through `ElementInternals`; there is no hidden native `<select>`. With a `name`, its current value is contributed to `FormData`.
+
+An enabled empty `required` select reports `validity.valueMissing`, including multiple mode. Selecting a value clears the flag. `setCustomValidity(message)` supplies `customError`; `invalid` is visual/ARIA state only. Constraint failures automatically update the trigger/input styling and `aria-invalid`. Disabled controls are omitted and barred from validation. Loading and readonly controls retain their form value but are barred from validation.
 
 `value` is live state. `defaultValue` reflects the host's `value` content attribute and is the selection restored by `form.reset()`. Changing the default updates a pristine select; selecting, clearing, assigning `value` (even to the same value), editing free text, or browser restoration makes it dirty, so later default changes wait until reset. Reset/restoration are silent, repeated resets are stable, form moves and reconnects preserve both states, and disabled fieldsets do not rewrite authored `disabled`.
 

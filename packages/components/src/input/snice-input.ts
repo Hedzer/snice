@@ -1,12 +1,15 @@
-import { element, property, state, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import { renderIcon } from '../utils';
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
+import { applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
+import { FormLabelAssociation } from '../form-label-association';
 
-@element('snice-input', { formAssociated: true })
+@element('snice-input', { formAssociated: true, delegatesFocus: true })
 export class SniceInput extends HTMLElement implements SniceInputElement {
   internals!: ElementInternals;
   private dirtyValue = false;
+  private userEditedValue = false;
 
   @state()
   private valueState = '';
@@ -14,11 +17,23 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.input,
+      () => this.label || 'Input'
+    );
   }
 
   /**
@@ -38,7 +53,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   defaultValue = '';
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -52,6 +67,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
    */
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -159,11 +175,13 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    const accessibleName = this.labelAssociation.accessibleName;
     const inputClasses = [
       'input',
       `input--${this.size}`,
       `input--${this.variant}`,
-      this.invalid ? 'input--invalid' : '',
+      displayedInvalid ? 'input--invalid' : '',
       this.loading ? 'input--loading' : '',
       this.prefixIcon ? 'input--with-prefix-icon' : '',
       this.suffixIcon || (this.type === 'password' && this.password) || this.loading ? 'input--with-suffix-icon' : '',
@@ -199,14 +217,15 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
             ?disabled="${this.interactionDisabled}"
             ?readonly="${this.readonly}"
             ?required="${this.required}"
-            aria-invalid="${this.invalid ? 'true' : 'false'}"
+            aria-label="${accessibleName}"
+            aria-invalid="${displayedInvalid ? 'true' : 'false'}"
             aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
-            min="${this.min || ''}"
-            max="${this.max || ''}"
-            step="${this.step || ''}"
-            pattern="${this.pattern || ''}"
-            maxlength="${this.maxlength > 0 ? this.maxlength : ''}"
-            minlength="${this.minlength > 0 ? this.minlength : ''}"
+            min=${this.min || null}
+            max=${this.max || null}
+            step=${this.step || null}
+            pattern=${this.pattern || null}
+            maxlength=${this.maxlength > 0 ? this.maxlength : null}
+            minlength=${this.minlength > 0 ? this.minlength : null}
             autocomplete="${this.autocomplete || ''}"
             name="${this.name || ''}"
             part="input"
@@ -330,31 +349,98 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       this.input.readOnly = this.readonly;
       this.input.required = this.required;
     }
+    this.syncValidity();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private applyDefaultValue() {
     this.setValue(this.defaultValue, false);
   }
 
-  private setValue(value: unknown, dirty: boolean) {
+  private setValue(value: unknown, dirty: boolean, userEdited = false) {
     if (dirty) this.dirtyValue = true;
+    this.userEditedValue = userEdited;
     this.valueState = String(value ?? '');
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   private syncFormValue() {
     this.internals?.setFormValue(this.value, this.value);
   }
 
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const input = this.input;
+    if (!input) {
+      const flags: ValidityStateFlags = this.interactionDisabled || this.readonly
+        ? {}
+        : { customError: Boolean(this.customValidationMessage), valueMissing: this.required && !this.value };
+      const hasError = hasValidityError(flags);
+      this.constraintInvalid = hasError;
+      applyElementInternalsValidity(
+        this.internals,
+        flags,
+        this.customValidationMessage || (hasError ? 'Please enter a valid value.' : '')
+      );
+      return;
+    }
+
+    if (input.value !== this.value) input.value = this.value;
+    input.type = this.type === 'password' && this.showPassword ? 'text' : this.type;
+    input.disabled = this.interactionDisabled;
+    input.readOnly = this.readonly;
+    input.required = this.required;
+    if (this.min) input.min = this.min;
+    else input.removeAttribute('min');
+    if (this.max) input.max = this.max;
+    else input.removeAttribute('max');
+    if (this.step) input.step = this.step;
+    else input.removeAttribute('step');
+    if (this.pattern) input.pattern = this.pattern;
+    else input.removeAttribute('pattern');
+    if (this.maxlength > 0) input.maxLength = this.maxlength;
+    else input.removeAttribute('maxlength');
+    if (this.minlength > 0) input.minLength = this.minlength;
+    else input.removeAttribute('minlength');
+    input.setCustomValidity(this.customValidationMessage);
+
+    const barred = this.interactionDisabled || this.readonly;
+    const lengthConstrained = ['text', 'search', 'url', 'tel', 'email', 'password'].includes(this.type);
+    const valueSanitizedByNativeType = ['number', 'date', 'time', 'datetime-local'].includes(this.type) &&
+      this.value !== '' && input.value === '';
+    const flags = barred ? {} : validityFlagsFrom(input.validity, {
+      badInput: input.validity.badInput || valueSanitizedByNativeType,
+      tooLong: lengthConstrained && this.userEditedValue && this.maxlength > 0 && this.value.length > this.maxlength,
+      tooShort: lengthConstrained && this.userEditedValue && this.minlength > 0 && this.value.length > 0 && this.value.length < this.minlength
+    });
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage || input.validationMessage ||
+      (hasError ? 'Please enter a valid value.' : '');
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
+    input.setAttribute('aria-invalid', String(displayedInvalid));
+    input.classList.toggle('input--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, input);
+  }
+
   handleInput(e: Event) {
     const input = e.target as HTMLInputElement;
-    this.value = input.value;
+    this.setValue(input.value, true, true);
     this.dispatchInputEvent();
   }
 
   handleChange(e: Event) {
     const input = e.target as HTMLInputElement;
-    this.value = input.value;
+    this.setValue(input.value, true, true);
     this.dispatchChangeEvent();
   }
 
@@ -393,7 +479,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       this.input.value = this.value;
     }
     // Update form value
-    this.syncFormValue();
+    this.syncFormState();
     // Show/hide clear button based on value
     if (this.clearButton && this.clearable) {
       const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
@@ -405,12 +491,9 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   @watch('invalid')
   handleInvalidChange() {
     if (this.input) {
-      this.input.setAttribute('aria-invalid', String(this.invalid));
-      if (this.invalid) {
-        this.input.classList.add('input--invalid');
-      } else {
-        this.input.classList.remove('input--invalid');
-      }
+      const displayedInvalid = this.invalid || this.constraintInvalid;
+      this.input.setAttribute('aria-invalid', String(displayedInvalid));
+      this.input.classList.toggle('input--invalid', displayedInvalid);
     }
   }
 
@@ -419,6 +502,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     if (this.input) {
       this.input.disabled = this.interactionDisabled;
     }
+    this.syncValidity();
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
       const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
@@ -432,6 +516,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     if (this.input) {
       this.input.readOnly = this.readonly;
     }
+    this.syncValidity();
     // Update clear button visibility
     if (this.clearButton && this.clearable) {
       const shouldShow = this.value && !this.interactionDisabled && !this.readonly;
@@ -455,43 +540,55 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   @watch('min')
   handleMinChange() {
     if (this.input && this.type === 'number') {
-      this.input.min = this.min;
+      if (this.min) this.input.min = this.min;
+      else this.input.removeAttribute('min');
     }
+    this.syncValidity();
   }
 
   @watch('max')
   handleMaxChange() {
     if (this.input && this.type === 'number') {
-      this.input.max = this.max;
+      if (this.max) this.input.max = this.max;
+      else this.input.removeAttribute('max');
     }
+    this.syncValidity();
   }
 
   @watch('step')
   handleStepChange() {
     if (this.input && this.type === 'number') {
-      this.input.step = this.step;
+      if (this.step) this.input.step = this.step;
+      else this.input.removeAttribute('step');
     }
+    this.syncValidity();
   }
 
   @watch('maxlength')
   handleMaxLengthChange() {
-    if (this.input && this.maxlength > 0) {
-      this.input.maxLength = this.maxlength;
+    if (this.input) {
+      if (this.maxlength > 0) this.input.maxLength = this.maxlength;
+      else this.input.removeAttribute('maxlength');
     }
+    this.syncValidity();
   }
 
   @watch('minlength')
   handleMinLengthChange() {
-    if (this.input && this.minlength > 0) {
-      this.input.minLength = this.minlength;
+    if (this.input) {
+      if (this.minlength > 0) this.input.minLength = this.minlength;
+      else this.input.removeAttribute('minlength');
     }
+    this.syncValidity();
   }
 
   @watch('pattern')
   handlePatternChange() {
     if (this.input) {
-      this.input.pattern = this.pattern;
+      if (this.pattern) this.input.pattern = this.pattern;
+      else this.input.removeAttribute('pattern');
     }
+    this.syncValidity();
   }
 
   @watch('type')
@@ -500,6 +597,13 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
       // Don't change type for password fields (handled by toggle)
       this.input.type = this.type;
     }
+    this.syncValidity();
+  }
+
+  @watch('required')
+  handleRequiredChange() {
+    if (this.input) this.input.required = this.required;
+    this.syncValidity();
   }
 
   @watch('label')
@@ -513,6 +617,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
         wrapper.style.display = this.label ? '' : 'none';
       }
     }
+    this.labelAssociation.sync();
   }
 
   @dispatch('input-input', { bubbles: true, composed: true })
@@ -564,15 +669,49 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
     this.focus();
   }
 
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current native constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input!.validity;
+  }
+
+  /** Current localized validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this input currently participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated through wrapping `<label>` or explicit `for`/`id`. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
   checkValidity() {
-    return this.input?.checkValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
   }
 
   reportValidity() {
-    return this.input?.reportValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
   }
 
   setCustomValidity(message: string) {
-    this.input?.setCustomValidity(message);
+    this.customValidationMessage = String(message);
+    this.syncValidity();
+  }
+
+  @dispose()
+  private cleanup() {
+    this.labelAssociation.disconnect();
   }
 }

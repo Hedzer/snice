@@ -132,9 +132,11 @@ describe('snice-switch', () => {
     switchEl = await createComponent<SniceSwitchElement>('snice-switch');
 
     let eventDetail: any = null;
+    let standardChanges = 0;
     (switchEl as HTMLElement).addEventListener('switch-change', (e: Event) => {
       eventDetail = (e as CustomEvent).detail;
     });
+    (switchEl as HTMLElement).addEventListener('change', () => standardChanges++);
 
     const input = queryShadow(switchEl as HTMLElement, '.switch-input') as HTMLInputElement;
     input.click();
@@ -144,6 +146,7 @@ describe('snice-switch', () => {
     expect(eventDetail).toBeTruthy();
     expect(eventDetail.checked).toBe(true);
     expect(eventDetail.switch).toBe(switchEl);
+    expect(standardChanges).toBe(1);
   });
 
   it('should have toggle() method', async () => {
@@ -154,6 +157,25 @@ describe('snice-switch', () => {
 
     switchEl.toggle();
     expect(switchEl.checked).toBe(false);
+  });
+
+  it('keeps click and toggle inert while disabled or loading', async () => {
+    switchEl = await createComponent<SniceSwitchElement>('snice-switch', { disabled: true, checked: false });
+    let changes = 0;
+    (switchEl as HTMLElement).addEventListener('change', () => changes++);
+    (switchEl as HTMLElement).addEventListener('switch-change', () => changes++);
+
+    switchEl.click();
+    switchEl.toggle();
+    expect(switchEl.checked).toBe(false);
+    expect(changes).toBe(0);
+
+    switchEl.disabled = false;
+    switchEl.loading = true;
+    switchEl.click();
+    switchEl.toggle();
+    expect(switchEl.checked).toBe(false);
+    expect(changes).toBe(0);
   });
 
   it('should have focus() method', async () => {

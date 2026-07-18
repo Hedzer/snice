@@ -22,13 +22,19 @@ A chip/tag-style input field where users can add tags by typing and pressing Ent
 | `value` (property only) | `string[]` | `[]` | Live array of current tag values |
 | `defaultValue` (attr: `value`) | `string[]` | `[]` | JSON-backed authored tags restored by form reset |
 | `suggestions` | `string[]` | `[]` | Autocomplete suggestion list |
-| `maxTags` (attr: `max-tags`) | `number` | `0` | Maximum number of tags (0 = unlimited) |
+| `maxTags` (attr: `max-tags`) | `number` | `0` | Maximum number of tags (non-positive = unlimited) |
 | `allowDuplicates` (attr: `allow-duplicates`) | `boolean` | `false` | Whether to allow duplicate tags |
 | `placeholder` | `string` | `'Add a tag...'` | Input placeholder text |
 | `disabled` | `boolean` | `false` | Disable the input |
 | `readonly` | `boolean` | `false` | Make the input readonly |
 | `label` | `string` | `''` | Label text displayed above the input |
 | `name` | `string` | `''` | Form field name |
+| `type` (read-only) | `'text'` | `'text'` | Native-compatible control type |
+| `form` (read-only) | `HTMLFormElement \| null` | — | Current owning form |
+| `validity` (read-only) | `ValidityState` | — | Current constraint-validation flags |
+| `validationMessage` (read-only) | `string` | `''` | Current validation message |
+| `willValidate` (read-only) | `boolean` | — | Whether validation currently applies |
+| `labels` (read-only) | `NodeList \| null` | — | Current wrapping and explicit labels |
 
 ## Methods
 
@@ -37,7 +43,11 @@ A chip/tag-style input field where users can add tags by typing and pressing Ent
 | `addTag()` | `tag: string` | Add a tag programmatically |
 | `removeTag()` | `index: number` | Remove the tag at the specified index |
 | `clear()` | -- | Remove all tags |
-| `focus()` | -- | Focus the input field |
+| `focus()` | -- | Focus the draft field, or the first remove action when the draft is hidden at capacity |
+| `blur()` | -- | Remove focus from the current validation target |
+| `checkValidity()` | -- | Check current constraint validity |
+| `reportValidity()` | -- | Report current validity |
+| `setCustomValidity(message)` | `string` | Set a custom error; pass `''` to clear it |
 
 ## Events
 
@@ -71,7 +81,9 @@ import 'snice/components/tag-input/snice-tag-input';
 
 ### Live Tags, Submission, and Reset
 
-The live `value` array is separate from `defaultValue`. The `value` content attribute is JSON, for example `value='["JavaScript","CSS"]'`, and represents the authored reset default. While pristine, changing it updates the live tags. Adding/removing tags, assigning `value`, or restoring browser state makes the live state dirty; `form.reset()` silently restores a cloned copy of the current default. The successful form value and browser-restoration state are the JSON array, preserving commas and Unicode inside individual tags. Disabled fieldsets make the field inert without changing its authored `disabled` property.
+The live `value` array is separate from `defaultValue`. The `value` content attribute is JSON, for example `value='["JavaScript","CSS"]'`, and represents the authored reset default. While pristine, changing it updates the live tags. Adding/removing tags, assigning `value`, or restoring browser state makes the live state dirty; `form.reset()` silently restores a cloned copy of the current default. The successful form value and browser-restoration state are the JSON array, preserving commas and Unicode inside individual tags. The host supports `FormData`, `form.elements`, external `form="id"`, native labels, reset/restoration, and disabled fieldsets.
+
+More than a positive `maxTags` reports `tooLong`; duplicate values while `allowDuplicates` is false report `customError`; `setCustomValidity()` supplies an independent custom error. User methods prevent excess/duplicate insertion, while programmatic arrays remain observable and invalid for correction. Dynamic rules revalidate immediately. Errors drive the container/input `aria-invalid`, styling, reporting, and submission blocking—even when the draft input is hidden at the tag limit. In that state, reporting and `focus()` use the first remove action so the customer can correct the value. Disabled controls are omitted and barred; readonly controls remain successful but are barred.
 
 ## Examples
 

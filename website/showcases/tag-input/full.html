@@ -22,6 +22,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     snice-tag-input { max-width: 400px; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -71,6 +75,18 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Many Tags</h2>
 <snice-tag-input id="many-tags" label="Many tags"></snice-tag-input>
 
+<h2>Validated Form Contract</h2>
+<form id="tag-contract-form" class="contract-form">
+  <snice-tag-input id="tag-contract-control" name="skills" label="Skills" max-tags="2" placeholder="Add up to two unique skills"></snice-tag-input>
+  <div class="contract-actions">
+    <button type="submit">Submit JSON value</button>
+    <button id="tag-contract-overflow" type="button">Assign too many tags</button>
+    <button id="tag-contract-duplicates" type="button">Assign duplicates</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="tag-contract-output" aria-live="polite">Current value: []</output>
+</form>
+
 <script type="module">
   import '../../../packages/components/src/tag-input/snice-tag-input.ts';
 
@@ -109,6 +125,28 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     'Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo',
     'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet'
   ];
+
+  const contractForm = document.getElementById('tag-contract-form');
+  const contractTags = document.getElementById('tag-contract-control');
+  const contractOutput = document.getElementById('tag-contract-output');
+  contractForm.addEventListener('submit', event => {
+    event.preventDefault();
+    contractOutput.textContent = `Submitted skills=${new FormData(contractForm).get('skills')}`;
+  });
+  contractForm.addEventListener('reset', () => queueMicrotask(() => {
+    contractOutput.textContent = `Reset skills=${JSON.stringify(contractTags.value)}`;
+  }));
+  contractTags.addEventListener('invalid', () => {
+    contractOutput.textContent = contractTags.validationMessage;
+  });
+  document.getElementById('tag-contract-overflow').addEventListener('click', () => {
+    contractTags.value = ['HTML', 'CSS', 'TypeScript'];
+    contractOutput.textContent = contractTags.validationMessage;
+  });
+  document.getElementById('tag-contract-duplicates').addEventListener('click', () => {
+    contractTags.value = ['TypeScript', 'TypeScript'];
+    contractOutput.textContent = contractTags.validationMessage;
+  });
 </script>
 </body>
 </html>

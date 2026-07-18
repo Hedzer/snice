@@ -1,8 +1,15 @@
-import { element, property, state, query, watch, dispatch, ready, dispose, render, styles, html, css } from 'snice';
+import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-slider.css?inline';
 import type { SliderSize, SliderVariant, SniceSliderElement } from './snice-slider.types';
+import {
+  applyElementInternalsValidity,
+  findFormOwner,
+  hasValidityError,
+  normalizeSteppedValue
+} from '../form-control-validity';
+import { FormLabelAssociation } from '../form-label-association';
 
-@element('snice-slider', { formAssociated: true })
+@element('snice-slider', { formAssociated: true, delegatesFocus: true })
 export class SniceSlider extends HTMLElement implements SniceSliderElement {
   internals!: ElementInternals;
   private dirtyValue = false;
@@ -13,11 +20,23 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   @state()
   private formDisabled = false;
 
+  @state()
+  private constraintInvalid = false;
+
+  private customValidationMessage = '';
+  private readonly labelAssociation: FormLabelAssociation;
+
   constructor() {
     super();
     if (typeof this.attachInternals == 'function') {
       this.internals = this.attachInternals();
     }
+    this.labelAssociation = new FormLabelAssociation(
+      this,
+      () => this.internals,
+      () => this.interactionDisabled ? undefined : this.thumb,
+      () => this.label || 'Slider'
+    );
   }
 
   /**
@@ -37,7 +56,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   defaultValue = 0;
 
   formAssociatedCallback() {
-    this.syncFormValue();
+    this.syncFormState();
   }
 
   formResetCallback() {
@@ -48,6 +67,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
     if (disabled) this.stopDragging(false);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -129,6 +149,9 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @render()
   render() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    const showError = displayedInvalid && Boolean(this.errorText);
+    const accessibleName = this.labelAssociation.accessibleName;
     const wrapperClasses = ['slider-wrapper', this.vertical ? 'slider-wrapper--vertical' : ''].filter(Boolean).join(' ');
     const containerClasses = ['slider-container', this.vertical ? 'slider-container--vertical' : ''].filter(Boolean).join(' ');
     const trackClasses = [
@@ -136,6 +159,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       `slider-track--${this.size}`,
       this.vertical ? 'slider-track--vertical' : '',
       this.interactionDisabled ? 'slider-track--disabled' : '',
+      displayedInvalid ? 'slider-track--invalid' : '',
       this.loading ? 'slider-track--loading' : ''
     ].filter(Boolean).join(' ');
     const fillClasses = [
@@ -150,16 +174,18 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       `slider-thumb--${this.variant}`,
       this.vertical ? 'slider-thumb--vertical' : '',
       this.isDragging ? 'slider-thumb--dragging' : '',
-      this.loading ? 'slider-thumb--loading' : ''
+      this.loading ? 'slider-thumb--loading' : '',
+      displayedInvalid ? 'slider-thumb--invalid' : ''
     ].filter(Boolean).join(' ');
     const labelClasses = ['label', this.required ? 'label--required' : ''].filter(Boolean).join(' ');
     const ticksClasses = ['slider-ticks', this.vertical ? 'slider-ticks--vertical' : ''].filter(Boolean).join(' ');
 
-    const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
+    const valueRange = this.max - this.min;
+    const percentage = valueRange > 0 ? ((this.value - this.min) / valueRange) * 100 : 0;
     const fillStyle = this.vertical ? `height: ${percentage}%` : `width: ${percentage}%`;
     const thumbStyle = this.vertical ? `bottom: ${percentage}%` : `left: ${percentage}%`;
 
-    const tickCount = Math.floor((this.max - this.min) / this.step) + 1;
+    const tickCount = Math.max(0, Math.floor((this.max - this.min) / this.effectiveStep) + 1);
     const ticks = this.showTicks ? Array.from({ length: tickCount }, (_, i) => i) : [];
 
     return html/*html*/`
@@ -188,9 +214,9 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
               aria-valuemax="${this.max}"
               aria-valuenow="${this.value}"
               aria-disabled="${this.interactionDisabled}"
-              aria-labelledby="${this.label ? this.labelId : ''}"
-              aria-label="${this.label ? '' : 'Slider'}"
-              aria-describedby="${(this.errorText || this.helperText) ? this.descId : ''}"
+              aria-label="${accessibleName}"
+              aria-describedby="${(showError || this.helperText) ? this.descId : ''}"
+              aria-invalid="${displayedInvalid ? 'true' : 'false'}"
               @mousedown=${this.handleThumbMouseDown}
               @touchstart=${this.handleThumbTouchStart}
               @keydown=${this.handleKeyDown}
@@ -217,7 +243,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
             .value="${String(this.value)}"
             min="${this.min}"
             max="${this.max}"
-            step="${this.step}"
+            step="${this.effectiveStep}"
             name="${this.name || ''}"
             ?disabled="${this.interactionDisabled}"
             ?required="${this.required}"
@@ -226,7 +252,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
           />
         </div>
 
-        <case ${this.errorText ? 'error' : this.helperText ? 'helper' : 'empty'}>
+        <case ${showError ? 'error' : this.helperText ? 'helper' : 'empty'}>
           <when value="error">
             <span class="error-text" part="error-text" id="${this.descId}" role="alert">${this.errorText}</span>
           </when>
@@ -246,7 +272,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
    * at 3 digits.
    */
   private formatDisplayValue(value: number): string {
-    const stepStr = String(this.step);
+    const stepStr = String(this.effectiveStep);
     const dot = stepStr.indexOf('.');
     const decimals = dot === -1 ? 0 : Math.min(3, stepStr.length - dot - 1);
     return value.toFixed(decimals);
@@ -267,7 +293,13 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       this.applyDefaultValue();
     }
     this.clampValue(false);
-    this.syncFormValue();
+    this.syncFormState();
+    this.labelAssociation.connect();
+  }
+
+  @reconnect()
+  private onReconnect() {
+    this.labelAssociation.connect();
   }
 
   private applyDefaultValue() {
@@ -277,15 +309,17 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   private setValue(value: unknown, dirty: boolean) {
     if (dirty) this.dirtyValue = true;
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) return;
+    if (!Number.isFinite(parsed)) return;
     this.valueState = this.normalizeValue(parsed);
-    this.syncFormValue();
+    this.syncFormState();
+  }
+
+  private get effectiveStep(): number {
+    return Number.isFinite(this.step) && this.step > 0 ? this.step : 1;
   }
 
   private normalizeValue(value: number): number {
-    const clamped = Math.max(this.min, Math.min(this.max, value));
-    const stepped = Math.round(clamped / this.step) * this.step;
-    return Math.max(this.min, Math.min(this.max, stepped));
+    return normalizeSteppedValue(value, this.min, this.max, this.effectiveStep);
   }
 
   private clampValue(dirty = this.dirtyValue) {
@@ -295,6 +329,52 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   private syncFormValue() {
     const value = String(this.value);
     this.internals?.setFormValue(value, value);
+  }
+
+  private syncFormState() {
+    this.syncFormValue();
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    const input = this.input;
+    if (!input) {
+      const flags: ValidityStateFlags = this.interactionDisabled || this.readonly
+        ? {}
+        : { customError: Boolean(this.customValidationMessage) };
+      const hasError = hasValidityError(flags);
+      this.constraintInvalid = hasError;
+      applyElementInternalsValidity(
+        this.internals,
+        flags,
+        this.customValidationMessage || (hasError ? 'Please select a valid value.' : '')
+      );
+      return;
+    }
+
+    input.value = String(this.value);
+    input.min = String(this.min);
+    input.max = String(this.max);
+    input.step = String(this.effectiveStep);
+    input.disabled = this.interactionDisabled;
+    input.setCustomValidity(this.customValidationMessage);
+
+    const barred = this.interactionDisabled || this.readonly;
+    // A range value is always present and normalizeValue keeps it on the
+    // min-based step lattice inside the effective bounds. As with a native
+    // range input, only an explicit custom error can remain after sanitation.
+    const flags: ValidityStateFlags = barred ? {} : {
+      customError: Boolean(this.customValidationMessage)
+    };
+    const hasError = hasValidityError(flags);
+    const message = this.customValidationMessage || input.validationMessage ||
+      (hasError ? 'Please select a valid value.' : '');
+    this.constraintInvalid = hasError;
+    const displayedInvalid = this.invalid || hasError;
+    this.thumb?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.thumb?.classList.toggle('slider-thumb--invalid', displayedInvalid);
+    this.track?.classList.toggle('slider-track--invalid', displayedInvalid);
+    applyElementInternalsValidity(this.internals, flags, message, this.thumb ?? input);
   }
 
   private handleTrackMouseDown(e: MouseEvent) {
@@ -390,10 +470,9 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
     position = Math.max(0, Math.min(1, position));
     const rawValue = this.min + position * (this.max - this.min);
-    const steppedValue = Math.round(rawValue / this.step) * this.step;
 
-    if (steppedValue !== this.value) {
-      this.value = steppedValue;
+    if (this.normalizeValue(rawValue) !== this.value) {
+      this.value = rawValue;
       this.dispatchInputEvent();
     }
   }
@@ -402,17 +481,17 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     if (this.interactionDisabled || this.readonly) return;
 
     let handled = false;
-    const largeStep = this.step * 10;
+    const largeStep = this.effectiveStep * 10;
 
     switch (e.key) {
       case 'ArrowLeft':
       case 'ArrowDown':
-        this.value = Math.max(this.min, this.value - this.step);
+        this.value = Math.max(this.min, this.value - this.effectiveStep);
         handled = true;
         break;
       case 'ArrowRight':
       case 'ArrowUp':
-        this.value = Math.min(this.max, this.value + this.step);
+        this.value = Math.min(this.max, this.value + this.effectiveStep);
         handled = true;
         break;
       case 'Home':
@@ -446,10 +525,11 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
       this.input.value = String(this.value);
     }
 
-    this.syncFormValue();
+    this.syncFormState();
 
     if (this.thumb) {
-      const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
+      const valueRange = this.max - this.min;
+      const percentage = valueRange > 0 ? ((this.value - this.min) / valueRange) * 100 : 0;
       if (this.vertical) {
         this.thumb.style.bottom = `${percentage}%`;
       } else {
@@ -458,7 +538,8 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     }
 
     if (this.fill) {
-      const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
+      const valueRange = this.max - this.min;
+      const percentage = valueRange > 0 ? ((this.value - this.min) / valueRange) * 100 : 0;
       if (this.vertical) {
         this.fill.style.height = `${percentage}%`;
       } else {
@@ -473,11 +554,13 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     if (this.input) {
       this.input.disabled = this.interactionDisabled;
     }
+    this.syncValidity();
   }
 
   @watch('readonly')
   handleReadonlyChange() {
     if (this.readonly) this.stopDragging(false);
+    this.syncValidity();
   }
 
   @watch('defaultValue')
@@ -488,6 +571,26 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   @watch('min', 'max', 'step')
   handleConstraintsChange() {
     this.clampValue(this.dirtyValue);
+    this.syncValidity();
+  }
+
+  @watch('required')
+  handleRequiredChange() {
+    if (this.input) this.input.required = this.required;
+    this.syncValidity();
+  }
+
+  @watch('invalid')
+  handleInvalidChange() {
+    const displayedInvalid = this.invalid || this.constraintInvalid;
+    this.thumb?.setAttribute('aria-invalid', String(displayedInvalid));
+    this.thumb?.classList.toggle('slider-thumb--invalid', displayedInvalid);
+    this.track?.classList.toggle('slider-track--invalid', displayedInvalid);
+  }
+
+  @watch('label')
+  handleLabelChange() {
+    this.labelAssociation.sync();
   }
 
   @dispatch('slider-input', { bubbles: true, composed: true })
@@ -502,27 +605,62 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   // Public API
   focus() {
-    this.thumb?.focus();
+    if (!this.interactionDisabled) this.thumb?.focus();
   }
 
   blur() {
     this.thumb?.blur();
   }
 
+  /** Native-compatible control type. @public */
+  get type(): 'range' {
+    return 'range';
+  }
+
+  /** Owning form, including association through a `form` attribute. @public */
+  get form(): HTMLFormElement | null {
+    return findFormOwner(this, this.internals);
+  }
+
+  /** Current native constraint-validation state. @public */
+  get validity(): ValidityState {
+    return this.internals?.validity ?? this.input!.validity;
+  }
+
+  /** Current localized validation message. @public */
+  get validationMessage(): string {
+    return this.internals?.validationMessage ?? this.input?.validationMessage ?? '';
+  }
+
+  /** Whether this slider currently participates in constraint validation. @public */
+  get willValidate(): boolean {
+    if (this.interactionDisabled || this.readonly) return false;
+    return this.internals?.willValidate ?? this.input?.willValidate ?? false;
+  }
+
+  /** Labels associated with the host. @public */
+  get labels(): NodeList | null {
+    return this.labelAssociation.labels;
+  }
+
   checkValidity() {
-    return this.input?.checkValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.checkValidity() ?? this.input?.checkValidity() ?? true;
   }
 
   reportValidity() {
-    return this.input?.reportValidity() ?? true;
+    this.syncValidity();
+    return this.internals?.reportValidity() ?? this.input?.reportValidity() ?? true;
   }
 
   setCustomValidity(message: string) {
-    this.input?.setCustomValidity(message);
+    this.customValidationMessage = String(message);
+    this.syncValidity();
   }
 
   @dispose()
   cleanup() {
     this.stopDragging(false);
+    this.labelAssociation.disconnect();
   }
 }

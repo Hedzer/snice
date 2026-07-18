@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html-vite';
 import './snice-slider';
-import type { SliderSize, SliderVariant } from './snice-slider.types';
+import type { SliderSize, SliderVariant, SniceSliderElement } from './snice-slider.types';
 
 type Args = {
   size?: SliderSize;
@@ -230,6 +230,56 @@ export const NamedFormIntegration: Story = {
   render: () => row(
     makeSlider({ name: 'volume', value: 75, label: 'Volume (name=volume)', 'show-value': true }),
   ),
+};
+
+// h2: Native Form Validation
+export const NativeFormValidation: Story = {
+  render: () => {
+    const form = document.createElement('form');
+    form.style.cssText = 'display:grid;gap:var(--snice-spacing-sm,.75rem);width:min(100%,32rem);padding:var(--snice-spacing-md,1rem);border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-lg,.5rem);';
+    const slider = makeSlider({
+      name: 'rating', label: 'Rating', min: 1, max: 9, step: 2, value: 2,
+      required: true, 'show-value': true,
+      'helper-text': 'Values normalize to the min-based lattice: 1, 3, 5, 7, 9.',
+      'error-text': 'This rating is unavailable.'
+    }) as SniceSliderElement;
+    const submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.textContent = 'Submit normalized value';
+    const customError = document.createElement('button');
+    customError.type = 'button';
+    customError.textContent = 'Set business-rule error';
+    const reset = document.createElement('button');
+    reset.type = 'reset';
+    reset.textContent = 'Reset';
+    const output = document.createElement('output');
+    output.setAttribute('aria-live', 'polite');
+    output.textContent = 'Current normalized value: 3';
+    let errorActive = false;
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      output.textContent = `Submitted rating=${new FormData(form).get('rating')}`;
+    });
+    form.addEventListener('invalid', () => {
+      output.textContent = slider.validationMessage;
+    }, true);
+    form.addEventListener('reset', () => queueMicrotask(() => {
+      errorActive = false;
+      slider.setCustomValidity('');
+      customError.textContent = 'Set business-rule error';
+      output.textContent = `Reset rating=${slider.value}`;
+    }));
+    customError.addEventListener('click', () => {
+      errorActive = !errorActive;
+      slider.setCustomValidity(errorActive ? 'This rating is unavailable.' : '');
+      customError.textContent = errorActive ? 'Clear business-rule error' : 'Set business-rule error';
+      output.textContent = errorActive ? slider.validationMessage : `Valid rating=${slider.value}`;
+    });
+
+    form.append(slider, submit, customError, reset, output);
+    return form;
+  },
 };
 
 // h2: CSS Parts Styling

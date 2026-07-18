@@ -14,6 +14,7 @@ export interface SniceInputElement extends HTMLElement {
   errorText: string;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   required: boolean;
   invalid: boolean;
   clearable: boolean;
@@ -31,6 +32,11 @@ export interface SniceInputElement extends HTMLElement {
   stretch: boolean;
   prefixIcon: string;
   suffixIcon: string;
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
   focus(): void;
   blur(): void;
   select(): void;

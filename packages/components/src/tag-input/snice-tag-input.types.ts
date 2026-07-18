@@ -9,11 +9,21 @@ export interface SniceTagInputElement extends HTMLElement {
   readonly: boolean;
   label: string;
   name: string;
+  readonly type: 'text';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
+  readonly labels: NodeList | null;
 
   addTag(tag: string): void;
   removeTag(index: number): void;
   clear(): void;
   focus(): void;
+  blur(): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  setCustomValidity(message: string): void;
 }
 
 export interface SniceTagInputEventMap {

@@ -123,6 +123,25 @@ describe('snice-slider', () => {
 
       expect(slider.value).toBe(50);
     });
+
+    it('uses the min-based step lattice for pointer input', async () => {
+      slider = await createComponent<SniceSliderElement>('snice-slider', {
+        min: 1,
+        max: 9,
+        step: 4,
+        value: 9
+      });
+      const track = queryShadow(slider as HTMLElement, '.slider-track') as HTMLElement;
+      track.getBoundingClientRect = () => ({
+        x: 0, y: 0, left: 0, top: 0, right: 100, bottom: 10,
+        width: 100, height: 10, toJSON: () => ({})
+      });
+
+      // raw value 2.9 is closer to lattice point 1 than 5. A zero-based
+      // pre-round would incorrectly select 5 before normalization.
+      track.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 23.75, clientY: 5 }));
+      expect(slider.value).toBe(1);
+    });
   });
 
   describe('label', () => {
@@ -162,12 +181,25 @@ describe('snice-slider', () => {
 
     it('should show error text', async () => {
       slider = await createComponent<SniceSliderElement>('snice-slider', {
-        'error-text': 'Invalid value'
+        'error-text': 'Invalid value',
+        invalid: true
       });
       await wait(50);
 
       const errorEl = queryShadow(slider as HTMLElement, '.error-text');
       expect(errorEl?.textContent).toContain('Invalid value');
+    });
+
+    it('should not present error text as active while valid', async () => {
+      slider = await createComponent<SniceSliderElement>('snice-slider', {
+        'error-text': 'Invalid value',
+        'helper-text': 'Adjust the value'
+      });
+      await wait(50);
+
+      expect(queryShadow(slider as HTMLElement, '.error-text')).toBeNull();
+      expect(queryShadow(slider as HTMLElement, '.helper-text')?.textContent).toContain('Adjust the value');
+      expect(queryShadow(slider as HTMLElement, '.slider-thumb')?.getAttribute('aria-describedby')).toBeTruthy();
     });
   });
 

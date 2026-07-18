@@ -17,8 +17,16 @@ export interface SniceColorPickerElement extends HTMLElement {
   showInput: boolean;
   showPresets: boolean;
   presets: string[];
+  readonly type: 'color';
+  readonly form: HTMLFormElement | null;
+  readonly validity: ValidityState;
+  readonly validationMessage: string;
+  readonly willValidate: boolean;
   readonly labels: NodeList | null;
 
   focus(): void;
   blur(): void;
+  checkValidity(): boolean;
+  reportValidity(): boolean;
+  setCustomValidity(message: string): void;
 }

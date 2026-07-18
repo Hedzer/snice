@@ -24,6 +24,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     section { margin-bottom: 1.5rem; }
     snice-range-slider { display: block; width: 100%; max-width: 400px; }
     snice-range-slider[orientation="vertical"] { width: auto; height: 200px; }
+    .contract-form { box-sizing: border-box; display: grid; gap: var(--snice-spacing-sm, 0.75rem); max-width: 32rem; padding: var(--snice-spacing-md, 1rem); border: 1px solid var(--snice-color-border, rgb(226 226 226)); border-radius: var(--snice-border-radius-lg, 0.5rem); }
+    .contract-actions { display: flex; gap: var(--snice-spacing-xs, 0.5rem); flex-wrap: wrap; }
+    .contract-actions button { padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem); }
+    .contract-form output { color: var(--snice-color-text-secondary, rgb(82 82 82)); }
   </style>
 </head>
 <body>
@@ -91,8 +95,53 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <snice-range-slider orientation="vertical" show-labels value-low="10" value-high="90"></snice-range-slider>
 </section>
 
+<h2>Validated Form Contract</h2>
+<form id="range-contract-form" class="contract-form">
+  <label for="range-contract-control">Budget range</label>
+  <snice-range-slider
+    id="range-contract-control"
+    name="budget"
+    min="1"
+    max="9"
+    step="2"
+    value-low="2"
+    value-high="8"
+    show-labels
+    show-tooltip
+  ></snice-range-slider>
+  <div class="contract-actions">
+    <button type="submit">Submit normalized range</button>
+    <button id="range-contract-error" type="button">Set business-rule error</button>
+    <button type="reset">Reset</button>
+  </div>
+  <output id="range-contract-output" aria-live="polite">Current normalized range: 3,9</output>
+</form>
+
 <script type="module">
   import '../../../packages/components/src/range-slider/snice-range-slider.ts';
+
+  const form = document.getElementById('range-contract-form');
+  const range = document.getElementById('range-contract-control');
+  const errorButton = document.getElementById('range-contract-error');
+  const output = document.getElementById('range-contract-output');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    output.textContent = `Submitted budget=${new FormData(form).get('budget')}`;
+  });
+  form.addEventListener('reset', () => queueMicrotask(() => {
+    range.setCustomValidity('');
+    errorButton.textContent = 'Set business-rule error';
+    output.textContent = `Reset budget=${range.valueLow},${range.valueHigh}`;
+  }));
+  range.addEventListener('invalid', () => {
+    output.textContent = range.validationMessage;
+  });
+  errorButton.addEventListener('click', () => {
+    const clearing = !range.validity.valid;
+    range.setCustomValidity(clearing ? '' : 'This budget range needs approval.');
+    errorButton.textContent = clearing ? 'Set business-rule error' : 'Clear business-rule error';
+    output.textContent = clearing ? `Valid budget=${range.valueLow},${range.valueHigh}` : range.validationMessage;
+  });
 </script>
 </body>
 </html>

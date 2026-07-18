@@ -224,4 +224,4 @@ Internal label clicks, external `<label for="...">` clicks, Space, arrow navigat
 - Supports association, focus, activation, and cancellation through external `<label for="...">` elements.
 - Exposes required group validity and native form labels through `ElementInternals`.
 - Shows a visible keyboard focus indicator.
-- Exposes `aria-invalid` for explicit invalid presentation.
+- Exposes `aria-invalid` for explicit or calculated group invalid presentation.
