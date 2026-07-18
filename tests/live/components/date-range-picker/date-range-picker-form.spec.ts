@@ -528,6 +528,210 @@ function assertFormContract(result: Awaited<ReturnType<typeof exerciseFormContra
   });
 }
 
+async function exerciseStrictCalendarBoundaries(page: Page) {
+  const result = await page.evaluate(async () => {
+    const form = document.createElement('form');
+    const picker = document.createElement('snice-date-range-picker') as any;
+    picker.name = 'strict';
+    picker.required = true;
+    form.append(picker);
+    document.body.append(form);
+    await picker.ready;
+    await picker.rendered;
+    const input = picker.shadowRoot.querySelector('.input') as HTMLInputElement;
+    const entries = () => Array.from(new FormData(form).entries());
+
+    const accepted = [
+      '2026-01-31', '2026-02-28', '2024-02-29', '2000-02-29',
+      '2026-03-31', '2026-04-30', '2026-05-31', '2026-06-30',
+      '2026-07-31', '2026-08-31', '2026-09-30', '2026-10-31',
+      '2026-11-30', '2026-12-31'
+    ];
+    const rejected = [
+      '2026-01-32', '2026-02-29', '1900-02-29', '2024-02-30',
+      '2026-03-32', '2026-04-31', '2026-05-32', '2026-06-31',
+      '2026-07-32', '2026-08-32', '2026-09-31', '2026-10-32',
+      '2026-11-31', '2026-12-32', '2026-00-10', '2026-13-01',
+      '2026-01-00'
+    ];
+    const acceptedFailures: string[] = [];
+    const rejectedFailures: string[] = [];
+
+    for (const value of accepted) {
+      picker.start = value;
+      picker.end = value;
+      if (!picker.checkValidity() || input.value.includes('NaN') ||
+          JSON.stringify(entries()) !== JSON.stringify([
+            ['strict-start', value], ['strict-end', value]
+          ])) {
+        acceptedFailures.push(value);
+      }
+    }
+    for (const value of rejected) {
+      picker.start = value;
+      picker.end = '2026-12-31';
+      if (picker.start !== value || picker.end !== '2026-12-31' || input.value !== '' ||
+          picker.checkValidity() || !picker.validity.badInput ||
+          JSON.stringify(entries()) !== JSON.stringify([
+            ['strict-start', ''], ['strict-end', '2026-12-31']
+          ])) {
+        rejectedFailures.push(value);
+      }
+    }
+
+    const formatCases = [
+      ['mm/dd/yyyy', '02/29/2026', '02/29/2024'],
+      ['dd/mm/yyyy', '29/02/2026', '29/02/2024'],
+      ['yyyy/mm/dd', '2026/02/29', '2024/02/29'],
+      ['dd-mm-yyyy', '29-02-2026', '29-02-2024'],
+      ['mm-dd-yyyy', '02-29-2026', '02-29-2024'],
+      ['mmmm dd, yyyy', 'February 29, 2026', 'February 29, 2024']
+    ];
+    const formatFailures: string[] = [];
+    for (const [format, invalid, valid] of formatCases) {
+      picker.format = format;
+      picker.start = invalid;
+      picker.end = valid;
+      if (picker.checkValidity() || entries()[0]?.[1] !== '') {
+        formatFailures.push(`${format}:invalid`);
+      }
+      picker.start = valid;
+      if (!picker.checkValidity() || entries()[0]?.[1] !== '2024-02-29') {
+        formatFailures.push(`${format}:valid`);
+      }
+    }
+
+    picker.format = 'mm/dd/yyyy';
+    picker.start = '2026-03-10';
+    picker.end = '2026-02-31';
+    const endIsolation = {
+      start: picker.start,
+      end: picker.end,
+      entries: entries(),
+      badInput: picker.validity.badInput,
+      valid: picker.checkValidity()
+    };
+
+    picker.start = '2026-03-10';
+    picker.end = '2026-03-10';
+    const sameDay = { valid: picker.checkValidity(), entries: entries() };
+    picker.start = '2026-03-20';
+    picker.end = '2026-03-10';
+    const reversed = {
+      start: picker.start,
+      end: picker.end,
+      valid: picker.checkValidity(),
+      customError: picker.validity.customError
+    };
+
+    picker.setAttribute('start', '2026-02-31');
+    picker.setAttribute('end', '2026-03-10');
+    picker.start = '2026-04-01';
+    picker.end = '2026-04-10';
+    form.reset();
+    await picker.rendered;
+    const reset = {
+      start: picker.start,
+      end: picker.end,
+      display: input.value,
+      entries: entries(),
+      badInput: picker.validity.badInput,
+      valid: picker.checkValidity()
+    };
+
+    picker.formStateRestoreCallback(JSON.stringify(['2024-02-30', '2024-02-29']), 'restore');
+    const restored = {
+      start: picker.start,
+      end: picker.end,
+      entries: entries(),
+      badInput: picker.validity.badInput,
+      valid: picker.checkValidity()
+    };
+
+    picker.min = '2026-02-31';
+    picker.max = '2026-04-31';
+    picker.start = '2026-03-01';
+    picker.end = '2026-05-02';
+    const impossibleConstraints = {
+      valid: picker.checkValidity(),
+      underflow: picker.validity.rangeUnderflow,
+      overflow: picker.validity.rangeOverflow
+    };
+
+    picker.min = '';
+    picker.max = '';
+    picker.start = '2026-03-10';
+    picker.end = '2026-03-20';
+    picker.presets = [{ label: 'Impossible', start: '2026-02-31', end: '2026-03-20' }];
+    await picker.rendered;
+    const presetEvents: string[] = [];
+    picker.addEventListener('daterange-change', () => presetEvents.push('change'));
+    picker.addEventListener('daterange-preset', () => presetEvents.push('preset'));
+    picker.open();
+    await picker.rendered;
+    picker.shadowRoot.querySelector('[data-preset="0"]').click();
+    const impossiblePreset = {
+      start: picker.start,
+      end: picker.end,
+      open: picker.showCalendar,
+      events: presetEvents
+    };
+
+    form.remove();
+    return {
+      acceptedFailures,
+      rejectedFailures,
+      formatFailures,
+      endIsolation,
+      sameDay,
+      reversed,
+      reset,
+      restored,
+      impossibleConstraints,
+      impossiblePreset
+    };
+  });
+
+  expect(result).toEqual({
+    acceptedFailures: [],
+    rejectedFailures: [],
+    formatFailures: [],
+    endIsolation: {
+      start: '2026-03-10',
+      end: '2026-02-31',
+      entries: [['strict-start', '2026-03-10'], ['strict-end', '']],
+      badInput: true,
+      valid: false
+    },
+    sameDay: {
+      valid: true,
+      entries: [['strict-start', '2026-03-10'], ['strict-end', '2026-03-10']]
+    },
+    reversed: {
+      start: '2026-03-20', end: '2026-03-10', valid: false, customError: true
+    },
+    reset: {
+      start: '2026-02-31',
+      end: '2026-03-10',
+      display: '',
+      entries: [['strict-start', ''], ['strict-end', '2026-03-10']],
+      badInput: true,
+      valid: false
+    },
+    restored: {
+      start: '2024-02-30',
+      end: '2024-02-29',
+      entries: [['strict-start', ''], ['strict-end', '2024-02-29']],
+      badInput: true,
+      valid: false
+    },
+    impossibleConstraints: { valid: true, underflow: false, overflow: false },
+    impossiblePreset: {
+      start: '2026-03-10', end: '2026-03-20', open: true, events: []
+    }
+  });
+}
+
 async function exerciseCustomerInteractions(page: Page) {
   await page.evaluate(async () => {
     const fixture = document.createElement('div');
@@ -701,6 +905,7 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     });
     await loadDateRangePicker(page, build);
     assertFormContract(await exerciseFormContract(page));
+    await exerciseStrictCalendarBoundaries(page);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   });

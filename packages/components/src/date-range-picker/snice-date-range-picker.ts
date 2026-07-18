@@ -443,55 +443,82 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   // --- Date parsing/formatting (kept compatible with date-picker formats) ---
 
+  private createLocalDate(year: number, month: number, day: number): Date | null {
+    if (!Number.isInteger(year) || year < 1 ||
+        !Number.isInteger(month) || month < 1 || month > 12 ||
+        !Number.isInteger(day) || day < 1 || day > 31) {
+      return null;
+    }
+
+    // setFullYear avoids JavaScript's special 1900 offset for years 0-99.
+    // The field round trip rejects month/day rollover while keeping the value
+    // in local-calendar space rather than introducing a UTC date shift.
+    const date = new Date(0);
+    date.setHours(0, 0, 0, 0);
+    date.setFullYear(year, month - 1, day);
+    return date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+      ? date
+      : null;
+  }
+
+  private parseCanonicalDate(dateString: string): Date | null {
+    const match = dateString.match(/^(\d{4,})-(\d{2})-(\d{2})$/);
+    if (!match) return null;
+    return this.createLocalDate(Number(match[1]), Number(match[2]), Number(match[3]));
+  }
+
   private parseDate(dateString: string): Date | null {
     if (!dateString) return null;
 
-    // Always try ISO format first
-    const isoMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (isoMatch) {
-      const [, year, month, day] = isoMatch.map(Number);
-      const date = new Date(year, month - 1, day);
-      if (!isNaN(date.getTime())) return date;
-    }
+    // Canonical values are accepted regardless of the configured display
+    // format, just as they are by date-picker.
+    const canonicalDate = this.parseCanonicalDate(dateString);
+    if (canonicalDate) return canonicalDate;
 
     if (this.format === 'mmmm dd, yyyy') {
-      const match = dateString.match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})$/);
+      const match = dateString.match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4,})$/);
       if (match) {
         const [, monthName, day, year] = match;
         const monthIndex = this.monthNames.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
         if (monthIndex >= 0) {
-          const date = new Date(parseInt(year), monthIndex, parseInt(day));
-          if (!isNaN(date.getTime())) return date;
+          return this.createLocalDate(Number(year), monthIndex + 1, Number(day));
         }
       }
       return null;
     }
 
-    const parts = dateString.split(/[-\/]/);
-    if (parts.length === 3) {
-      let year: number, month: number, day: number;
-      switch (this.format) {
-        case 'mm/dd/yyyy':
-        case 'mm-dd-yyyy':
-          [month, day, year] = parts.map(Number);
-          break;
-        case 'dd/mm/yyyy':
-        case 'dd-mm-yyyy':
-          [day, month, year] = parts.map(Number);
-          break;
-        case 'yyyy-mm-dd':
-        case 'yyyy/mm/dd':
-          [year, month, day] = parts.map(Number);
-          break;
-        default:
-          return null;
-      }
-      if (year && month && day) {
-        const date = new Date(year, month - 1, day);
-        if (!isNaN(date.getTime())) return date;
-      }
+    let match: RegExpMatchArray | null = null;
+    let year = 0;
+    let month = 0;
+    let day = 0;
+    switch (this.format) {
+      case 'mm/dd/yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, month, day, year] = match.map(Number);
+        break;
+      case 'dd/mm/yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, day, month, year] = match.map(Number);
+        break;
+      case 'yyyy/mm/dd':
+        match = dateString.match(/^(\d{4,})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+        if (match) [, year, month, day] = match.map(Number);
+        break;
+      case 'dd-mm-yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, day, month, year] = match.map(Number);
+        break;
+      case 'mm-dd-yyyy':
+        match = dateString.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4,})$/);
+        if (match) [, month, day, year] = match.map(Number);
+        break;
+      case 'yyyy-mm-dd':
+        return null;
     }
-    return null;
+
+    return match ? this.createLocalDate(year, month, day) : null;
   }
 
   private formatDate(date: Date): string {

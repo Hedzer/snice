@@ -107,7 +107,7 @@ booking.reset();      // arrival.value === '2026-03-15'
 
 - `required` → `validity.valueMissing` when no valid date exists.
 - invalid/partial manual text → `validity.badInput`.
-- `min`/`max` → `rangeUnderflow`/`rangeOverflow`; boundaries are inclusive and out-of-range calendar days are disabled.
+- `min`/`max` → `rangeUnderflow`/`rangeOverflow`; boundaries are inclusive and out-of-range calendar days are disabled. Impossible constraints are ignored rather than rolled.
 - Canonical constraints are recommended. Configured display-format constraints remain accepted; malformed constraints are ignored.
 - `setCustomValidity(message)` sets `customError`; `setCustomValidity('')` clears it.
 - `invalid`/`errorText` are visual presentation only.

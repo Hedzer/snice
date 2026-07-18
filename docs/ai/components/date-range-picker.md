@@ -72,7 +72,9 @@ setCustomValidity(message: string): void;
 - `format` controls visible text and formatted-string parsing. Changing it never changes already parsed live/default state or submitted values.
 - Calendar and preset selection write live strings in the configured display format.
 - Direct reversed assignments remain reversed and invalid. `selectRange(Date, Date)` preserves its selection convenience and orders reversed valid arguments.
-- Invalid `Date` arguments/presets are ignored atomically.
+- Each endpoint is strict local-calendar data: month-length and Gregorian leap-year failures never roll into another month.
+- An impossible live/default/restored endpoint remains observable as its exact string, submits `''`, sets `badInput`, and never mutates its peer.
+- Invalid `Date` arguments and presets with an impossible endpoint are ignored atomically without preview, mutation, close, or events.
 
 ```html
 <form id="booking">
@@ -118,7 +120,7 @@ Array.from(new FormData(booking).entries());
 - Partial or unparseable endpoint: `badInput`.
 - Reversed parseable range: `customError`; values are not silently normalized.
 - `min`/`max`: inclusive bounds applied to both endpoints, using `rangeUnderflow`/`rangeOverflow`; out-of-range days are disabled.
-- Canonical constraints are recommended; configured display-format strings remain accepted.
+- Canonical constraints are recommended; configured display-format strings remain accepted. Impossible constraints are ignored rather than normalized.
 - `setCustomValidity(message)` sets `customError`; `setCustomValidity('')` clears it.
 - `invalid` and `errorText` are visual presentation only and do not establish constraint invalidity.
 

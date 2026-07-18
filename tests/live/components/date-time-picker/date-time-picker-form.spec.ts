@@ -454,6 +454,206 @@ function assertFormContract(result: Awaited<ReturnType<typeof exerciseFormContra
   });
 }
 
+async function exerciseStrictCalendarBoundaries(page: Page) {
+  const result = await page.evaluate(async () => {
+    const form = document.createElement('form');
+    const picker = document.createElement('snice-date-time-picker') as any;
+    picker.name = 'strict-date-time';
+    picker.required = true;
+    form.append(picker);
+    document.body.append(form);
+    await picker.ready;
+    await picker.rendered;
+    const input = picker.shadowRoot.querySelector('.input') as HTMLInputElement;
+    const submitted = () => new FormData(form).get('strict-date-time');
+
+    const acceptedDates = [
+      '2026-01-31', '2026-02-28', '2024-02-29', '2000-02-29',
+      '2026-03-31', '2026-04-30', '2026-05-31', '2026-06-30',
+      '2026-07-31', '2026-08-31', '2026-09-30', '2026-10-31',
+      '2026-11-30', '2026-12-31'
+    ];
+    const rejectedDates = [
+      '2026-01-32', '2026-02-29', '1900-02-29', '2024-02-30',
+      '2026-03-32', '2026-04-31', '2026-05-32', '2026-06-31',
+      '2026-07-32', '2026-08-32', '2026-09-31', '2026-10-32',
+      '2026-11-31', '2026-12-32', '2026-00-10', '2026-13-01',
+      '2026-01-00'
+    ];
+    const acceptedFailures: string[] = [];
+    const rejectedFailures: string[] = [];
+
+    for (const date of acceptedDates) {
+      const value = `${date}T23:59`;
+      picker.value = value;
+      if (picker.value !== value || !picker.checkValidity() || submitted() !== value) {
+        acceptedFailures.push(value);
+      }
+    }
+    for (const date of rejectedDates) {
+      const value = `${date}T10:15`;
+      picker.value = value;
+      if (picker.value !== value || input.value !== value || picker.checkValidity() ||
+          !picker.validity.badInput || submitted() !== '') {
+        rejectedFailures.push(value);
+      }
+    }
+
+    const formatCases = [
+      ['mm/dd/yyyy', '02/29/2026 10:15', '02/29/2024 10:15'],
+      ['dd/mm/yyyy', '29/02/2026 10:15', '29/02/2024 10:15'],
+      ['yyyy/mm/dd', '2026/02/29 10:15', '2024/02/29 10:15'],
+      ['dd-mm-yyyy', '29-02-2026 10:15', '29-02-2024 10:15'],
+      ['mm-dd-yyyy', '02-29-2026 10:15', '02-29-2024 10:15'],
+      ['mmmm dd, yyyy', 'February 29, 2026 10:15', 'February 29, 2024 10:15']
+    ];
+    const formatFailures: string[] = [];
+    for (const [format, invalid, valid] of formatCases) {
+      picker.dateFormat = format;
+      input.value = invalid;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true, inputType: 'insertText' }));
+      if (picker.checkValidity() || submitted() !== '') formatFailures.push(`${format}:invalid`);
+      input.value = valid;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true, inputType: 'insertText' }));
+      if (!picker.checkValidity() || picker.value !== '2024-02-29T10:15' ||
+          submitted() !== '2024-02-29T10:15') {
+        formatFailures.push(`${format}:valid`);
+      }
+    }
+
+    picker.dateFormat = 'yyyy-mm-dd';
+    picker.showSeconds = true;
+    await picker.rendered;
+    const acceptedTimeFailures: string[] = [];
+    const rejectedTimeFailures: string[] = [];
+    for (const value of ['2026-01-01T00:00:00', '2026-12-31T23:59:59']) {
+      picker.value = value;
+      if (!picker.checkValidity() || submitted() !== value) acceptedTimeFailures.push(value);
+    }
+    for (const value of [
+      '2026-01-01T24:00:00',
+      '2026-01-01T23:60:00',
+      '2026-01-01T23:59:60'
+    ]) {
+      picker.value = value;
+      if (picker.checkValidity() || submitted() !== '' || input.value !== value) {
+        rejectedTimeFailures.push(value);
+      }
+    }
+
+    picker.showSeconds = false;
+    picker.timeFormat = '12h';
+    picker.dateFormat = 'mm/dd/yyyy';
+    await picker.rendered;
+    const twelveHourCases = [
+      ['03/10/2026 12:00 AM', '2026-03-10T00:00'],
+      ['03/10/2026 12:00 PM', '2026-03-10T12:00'],
+      ['03/10/2026 11:59 PM', '2026-03-10T23:59']
+    ];
+    const twelveHourFailures: string[] = [];
+    for (const [display, canonical] of twelveHourCases) {
+      input.value = display;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true, inputType: 'insertText' }));
+      if (!picker.checkValidity() || picker.value !== canonical || submitted() !== canonical) {
+        twelveHourFailures.push(display);
+      }
+    }
+    for (const display of ['03/10/2026 00:00 PM', '03/10/2026 13:00 AM']) {
+      input.value = display;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true, inputType: 'insertText' }));
+      if (picker.checkValidity() || submitted() !== '') twelveHourFailures.push(display);
+    }
+
+    picker.timeFormat = '24h';
+    picker.dateFormat = 'yyyy-mm-dd';
+    const localWallTimes = ['2026-03-08T02:30', '2026-11-01T01:30'];
+    const wallTimeFailures: string[] = [];
+    for (const value of localWallTimes) {
+      picker.value = value;
+      if (!picker.checkValidity() || picker.value !== value || submitted() !== value) {
+        wallTimeFailures.push(value);
+      }
+    }
+
+    picker.formStateRestoreCallback('2026-02-31 10:15', 'restore');
+    const restored = {
+      raw: input.value,
+      value: picker.value,
+      badInput: picker.validity.badInput,
+      valid: picker.checkValidity(),
+      submitted: submitted()
+    };
+
+    picker.setAttribute('value', '2026-02-31T10:15');
+    picker.value = '2026-04-01T10:15';
+    form.reset();
+    await picker.rendered;
+    const reset = {
+      raw: input.value,
+      value: picker.value,
+      badInput: picker.validity.badInput,
+      valid: picker.checkValidity(),
+      submitted: submitted()
+    };
+
+    picker.min = '2026-02-31T00:00';
+    picker.max = '2026-04-31T23:59';
+    picker.value = '2026-05-02T10:15';
+    const impossibleConstraints = {
+      value: picker.value,
+      valid: picker.checkValidity(),
+      underflow: picker.validity.rangeUnderflow,
+      overflow: picker.validity.rangeOverflow,
+      submitted: submitted()
+    };
+
+    form.remove();
+    return {
+      acceptedFailures,
+      rejectedFailures,
+      formatFailures,
+      acceptedTimeFailures,
+      rejectedTimeFailures,
+      twelveHourFailures,
+      wallTimeFailures,
+      restored,
+      reset,
+      impossibleConstraints
+    };
+  });
+
+  expect(result).toEqual({
+    acceptedFailures: [],
+    rejectedFailures: [],
+    formatFailures: [],
+    acceptedTimeFailures: [],
+    rejectedTimeFailures: [],
+    twelveHourFailures: [],
+    wallTimeFailures: [],
+    restored: {
+      raw: '2026-02-31 10:15',
+      value: '2026-02-31 10:15',
+      badInput: true,
+      valid: false,
+      submitted: ''
+    },
+    reset: {
+      raw: '2026-02-31T10:15',
+      value: '2026-02-31T10:15',
+      badInput: true,
+      valid: false,
+      submitted: ''
+    },
+    impossibleConstraints: {
+      value: '2026-05-02T10:15',
+      valid: true,
+      underflow: false,
+      overflow: false,
+      submitted: '2026-05-02T10:15'
+    }
+  });
+}
+
 async function exerciseCustomerInteractions(page: Page) {
   await page.evaluate(async () => {
     const fixture = document.createElement('div');
@@ -585,6 +785,7 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     });
     await loadDateTimePicker(page, build);
     assertFormContract(await exerciseFormContract(page));
+    await exerciseStrictCalendarBoundaries(page);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   });

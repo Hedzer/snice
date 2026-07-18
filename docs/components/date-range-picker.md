@@ -224,12 +224,14 @@ The component exposes `validity`, `validationMessage`, `willValidate`, `checkVal
 - An optional completely empty range is valid.
 - `required` sets `valueMissing` until both endpoints are valid.
 - A missing endpoint or an unparseable non-empty endpoint sets `badInput`.
+- Each endpoint is parsed as a strict local calendar date before ordering or constraints are considered. Month lengths and Gregorian leap years round-trip exactly; impossible values such as `2026-02-29` and `2026-04-31` never roll into March or May.
+- Invalid text remains in its live endpoint string for correction and reset/restoration fidelity, but contributes `''` for that endpoint and never changes the other endpoint.
 - Directly authored or assigned reversed endpoints set `customError`; neither endpoint is silently reordered.
 - `selectRange(startDate, endDate)` retains its existing convenience behavior and orders reversed `Date` arguments before selecting.
-- Invalid `Date` arguments or presets are ignored atomically; they do not replace the current range or emit selection events.
+- Invalid `Date` arguments and presets with an impossible endpoint are ignored atomically; they do not preview, replace the current range, close the calendar, or emit selection events.
 - `min` and `max` apply inclusively to both endpoints and set `rangeUnderflow`/`rangeOverflow`.
 - Calendar days outside the constraints are disabled; boundary days remain selectable.
-- Canonical constraints are recommended. Strings in the configured display format remain accepted for compatibility.
+- Canonical constraints are recommended. Strings in the configured display format remain accepted for compatibility; an impossible constraint is ignored rather than normalized to a different day.
 - `setCustomValidity('message')` sets `customError`; call `setCustomValidity('')` to clear it.
 - `invalid` and `errorText` control presentation only.
 

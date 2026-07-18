@@ -9,7 +9,8 @@ Calendar-backed start/end selection with seven display formats, presets, single-
 - `format` changes visible text, never the canonical submitted fields.
 - A picker named `booking` contributes `booking-start` and `booking-end` to `FormData`, each as canonical local-calendar `YYYY-MM-DD` or `''`.
 - The visible UI remains one named range field: explicit, wrapping, and multiple labels are live, focus without opening, and name the calendar separately.
-- Partial, malformed, reversed, required-empty, and min/max-invalid ranges expose native validity without silently changing customer data.
+- Partial, malformed, impossible, reversed, required-empty, and min/max-invalid ranges expose native validity without silently changing customer data.
+- Every endpoint uses strict local-calendar parsing: month lengths and Gregorian leap years round-trip exactly, with no JavaScript `Date` rollover or UTC date shift.
 - Reset, restoration, explicit form ownership, disabled fieldsets, the first-legend exception, readonly/loading states, and custom validity are supported.
 
 ```html
@@ -85,8 +86,10 @@ Formats: `mm/dd/yyyy`, `dd/mm/yyyy`, `yyyy-mm-dd`, `yyyy/mm/dd`, `dd-mm-yyyy`, `
 
 - Optional empty is valid; a named optional empty range still contributes two empty form fields.
 - Required incomplete ranges use `valueMissing`; partial/unparseable endpoints use `badInput`.
+- Impossible live/default/restored endpoint strings are preserved exactly, submit `''`, and never mutate the other endpoint.
 - Reversed directly assigned values use `customError` and are preserved exactly.
 - Both endpoints are checked against inclusive `min`/`max`, producing `rangeUnderflow`/`rangeOverflow`.
+- Impossible constraints and presets are ignored rather than normalized to another calendar day.
 - `setCustomValidity()` participates in native validation. `invalid`/`errorText` are visual presentation only, not a validity API.
 - Disabled controls are omitted; readonly/loading controls retain `FormData` values. Disabled/readonly/loading controls are barred from validation.
 - Form reset restores both authored defaults silently. Browser restoration is atomic and silent. Dynamic name/constraints and reconnect preserve form state.

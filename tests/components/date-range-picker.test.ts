@@ -382,6 +382,36 @@ describe('snice-date-range-picker', () => {
       expect(picker.checkValidity()).toBe(false);
     });
 
+    it('preserves impossible authored and restored text without rolling or changing its valid peer', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        start: '2026-02-31',
+        end: '2026-03-10',
+        required: true
+      });
+
+      expect([picker.start, picker.end]).toEqual(['2026-02-31', '2026-03-10']);
+      expect([(picker as any).startDate, (picker as any).toCanonicalDate((picker as any).endDate)])
+        .toEqual([null, '2026-03-10']);
+      expect(getInput().value).toBe('');
+      expect(picker.checkValidity()).toBe(false);
+
+      picker.start = '2026-04-01';
+      picker.end = '2026-04-10';
+      (picker as any).formResetCallback();
+      expect([picker.start, picker.end]).toEqual(['2026-02-31', '2026-03-10']);
+      expect((picker as any).startDate).toBeNull();
+      expect((picker as any).toCanonicalDate((picker as any).endDate)).toBe('2026-03-10');
+
+      (picker as any).formStateRestoreCallback(
+        JSON.stringify(['2024-02-30', '2024-02-29']),
+        'restore'
+      );
+      expect([picker.start, picker.end]).toEqual(['2024-02-30', '2024-02-29']);
+      expect((picker as any).startDate).toBeNull();
+      expect((picker as any).toCanonicalDate((picker as any).endDate)).toBe('2024-02-29');
+      expect(picker.checkValidity()).toBe(false);
+    });
+
     it('submits the preserved two-field shape with canonical values', async () => {
       const { setFormValue } = installInternalsMock();
       const form = document.createElement('form');
@@ -506,6 +536,68 @@ describe('snice-date-range-picker', () => {
   });
 
   describe('range constraint validation', () => {
+    it('round-trips every month end and Gregorian leap-year boundary in local calendar space', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker');
+      const accepted = [
+        '2026-01-31', '2026-02-28', '2024-02-29', '2000-02-29',
+        '2026-03-31', '2026-04-30', '2026-05-31', '2026-06-30',
+        '2026-07-31', '2026-08-31', '2026-09-30', '2026-10-31',
+        '2026-11-30', '2026-12-31'
+      ];
+
+      for (const value of accepted) {
+        picker.start = value;
+        picker.end = value;
+        expect(picker.checkValidity(), value).toBe(true);
+        expect((picker as any).toCanonicalDate((picker as any).startDate), value).toBe(value);
+        expect((picker as any).toCanonicalDate((picker as any).endDate), value).toBe(value);
+      }
+    });
+
+    it('rejects every calendar rollover boundary without mutating the other endpoint', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker');
+      const rejected = [
+        '2026-01-32', '2026-02-29', '1900-02-29', '2024-02-30',
+        '2026-03-32', '2026-04-31', '2026-05-32', '2026-06-31',
+        '2026-07-32', '2026-08-32', '2026-09-31', '2026-10-32',
+        '2026-11-31', '2026-12-32', '2026-00-10', '2026-13-01',
+        '2026-01-00'
+      ];
+
+      for (const value of rejected) {
+        picker.start = value;
+        picker.end = '2026-12-31';
+
+        expect(picker.start, value).toBe(value);
+        expect(picker.end, value).toBe('2026-12-31');
+        expect((picker as any).startDate, value).toBeNull();
+        expect((picker as any).toCanonicalDate((picker as any).endDate), value).toBe('2026-12-31');
+        expect(picker.checkValidity(), value).toBe(false);
+        expect(picker.validity.badInput || picker.validity.customError, value).toBe(true);
+        expect(getInput().value, value).toBe('');
+      }
+    });
+
+    it.each([
+      ['mm/dd/yyyy', '02/29/2026', '02/29/2024'],
+      ['dd/mm/yyyy', '29/02/2026', '29/02/2024'],
+      ['yyyy/mm/dd', '2026/02/29', '2024/02/29'],
+      ['dd-mm-yyyy', '29-02-2026', '29-02-2024'],
+      ['mm-dd-yyyy', '02-29-2026', '02-29-2024'],
+      ['mmmm dd, yyyy', 'February 29, 2026', 'February 29, 2024']
+    ] as const)('validates leap days strictly in %s', async (format, rejected, accepted) => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', { format });
+      picker.start = rejected;
+      picker.end = accepted;
+      expect((picker as any).startDate).toBeNull();
+      expect((picker as any).endDate).not.toBeNull();
+      expect(picker.checkValidity()).toBe(false);
+
+      picker.start = accepted;
+      expect(picker.checkValidity()).toBe(true);
+      expect([picker.start, picker.end]).toEqual([accepted, accepted]);
+    });
+
     it('distinguishes optional empty, required empty, and partial ranges', async () => {
       picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker');
       expect(picker.checkValidity()).toBe(true);
@@ -576,6 +668,19 @@ describe('snice-date-range-picker', () => {
       expect(picker.checkValidity()).toBe(true);
       picker.end = '21/03/2026';
       expect(picker.checkValidity()).toBe(false);
+    });
+
+    it('ignores impossible min and max constraints instead of accepting their rolled dates', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        min: '2026-02-31',
+        max: '2026-04-31'
+      });
+      picker.start = '2026-03-01';
+      picker.end = '2026-05-02';
+
+      expect(picker.checkValidity()).toBe(true);
+      expect(picker.validity.rangeUnderflow).toBe(false);
+      expect(picker.validity.rangeOverflow).toBe(false);
     });
 
     it('reacts immediately when required, min, and max change', async () => {
@@ -761,6 +866,29 @@ describe('snice-date-range-picker', () => {
       presetButton.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
 
       expect([picker.start, picker.end]).toEqual(['', '']);
+      expect(picker.showCalendar).toBe(true);
+      expect(preset).not.toHaveBeenCalled();
+      expect(change).not.toHaveBeenCalled();
+    });
+
+    it('ignores presets containing impossible date strings without previewing, mutating, or emitting', async () => {
+      picker.start = '2026-03-10';
+      picker.end = '2026-03-20';
+      picker.presets = [{ label: 'Rolled', start: '2026-02-31', end: '2026-03-20' }];
+      const preset = vi.fn();
+      const change = vi.fn();
+      picker.addEventListener('daterange-preset', preset);
+      picker.addEventListener('daterange-change', change);
+      picker.open();
+      await settle();
+
+      const presetButton = queryShadow<HTMLButtonElement>(picker as HTMLElement, '[data-preset="0"]')!;
+      presetButton.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, composed: true }));
+      expect((picker as any).presetPreviewStart).toBeNull();
+      expect((picker as any).presetPreviewEnd).toBeNull();
+      presetButton.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+      expect([picker.start, picker.end]).toEqual(['2026-03-10', '2026-03-20']);
       expect(picker.showCalendar).toBe(true);
       expect(preset).not.toHaveBeenCalled();
       expect(change).not.toHaveBeenCalled();

@@ -379,6 +379,55 @@ describe('snice-date-picker', () => {
       datePicker.value = '1900-02-29';
       expect(datePicker.value).toBe('');
     });
+
+    it('round-trips every month end and Gregorian leap boundary', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const accepted = [
+        '2026-01-31', '2026-02-28', '2024-02-29', '2000-02-29',
+        '2026-03-31', '2026-04-30', '2026-05-31', '2026-06-30',
+        '2026-07-31', '2026-08-31', '2026-09-30', '2026-10-31',
+        '2026-11-30', '2026-12-31'
+      ];
+
+      for (const value of accepted) {
+        datePicker.value = value;
+        expect(datePicker.value, value).toBe(value);
+        expect(datePicker.checkValidity(), value).toBe(true);
+      }
+    });
+
+    it('rejects every calendar rollover boundary rather than normalizing it', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      const rejected = [
+        '2026-01-32', '2026-02-29', '1900-02-29', '2024-02-30',
+        '2026-03-32', '2026-04-31', '2026-05-32', '2026-06-31',
+        '2026-07-32', '2026-08-32', '2026-09-31', '2026-10-32',
+        '2026-11-31', '2026-12-32', '2026-00-10', '2026-13-01',
+        '2026-01-00'
+      ];
+
+      for (const value of rejected) {
+        datePicker.value = value;
+        expect(datePicker.value, value).toBe('');
+        expect(queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!.value, value).toBe('');
+      }
+    });
+
+    it.each([
+      ['mm/dd/yyyy', '02/29/2026', '02/29/2024'],
+      ['dd/mm/yyyy', '29/02/2026', '29/02/2024'],
+      ['yyyy/mm/dd', '2026/02/29', '2024/02/29'],
+      ['dd-mm-yyyy', '29-02-2026', '29-02-2024'],
+      ['mm-dd-yyyy', '02-29-2026', '02-29-2024'],
+      ['mmmm dd, yyyy', 'February 29, 2026', 'February 29, 2024']
+    ] as const)('validates leap days strictly in %s', async (format, rejected, accepted) => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', { format });
+      datePicker.value = rejected;
+      expect(datePicker.value).toBe('');
+      datePicker.value = accepted;
+      expect(datePicker.value).toBe('2024-02-29');
+      expect(datePicker.checkValidity()).toBe(true);
+    });
   });
 
   describe('manual entry and form lifecycle', () => {
@@ -441,6 +490,19 @@ describe('snice-date-picker', () => {
       expect(input.value).toBe('02/31/2026');
       expect(datePicker.value).toBe('');
       expect(datePicker.checkValidity()).toBe(false);
+    });
+
+    it('preserves impossible browser-restoration text as bad input without a canonical value', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        required: true
+      });
+      (datePicker as any).formStateRestoreCallback('02/31/2026', 'restore');
+
+      const input = queryShadow<HTMLInputElement>(datePicker as HTMLElement, '.input')!;
+      expect(input.value).toBe('02/31/2026');
+      expect(datePicker.value).toBe('');
+      expect(datePicker.checkValidity()).toBe(false);
+      expect(datePicker.validity.badInput || datePicker.validity.customError).toBe(true);
     });
 
     it('restores the authored default and keeps live assignment dirty', async () => {
@@ -589,6 +651,18 @@ describe('snice-date-picker', () => {
       datePicker.value = '2026-03-21';
       expect(datePicker.checkValidity()).toBe(false);
       expect(datePicker.validity.rangeOverflow || datePicker.validity.customError).toBe(true);
+    });
+
+    it('ignores impossible min and max constraints instead of using rolled dates', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', {
+        value: '2026-05-02',
+        min: '2026-02-31',
+        max: '2026-04-31'
+      });
+
+      expect(datePicker.checkValidity()).toBe(true);
+      expect(datePicker.validity.rangeUnderflow).toBe(false);
+      expect(datePicker.validity.rangeOverflow).toBe(false);
     });
   });
 

@@ -16,6 +16,6 @@ Explicit, wrapping, and multiple labels are live. They focus the dropdown field 
 
 Canonical form submission is `YYYY-MM-DDTHH:mm`, or `YYYY-MM-DDTHH:mm:ss` with `show-seconds`. Values are local wall times; no UTC conversion occurs.
 
-`value` is live state. `defaultValue` is the `value` content attribute and reset default. Malformed/partial input stays visible, sets `badInput`, and is not submitted as a valid datetime.
+`value` is live state. `defaultValue` is the `value` content attribute and reset default. Malformed, partial, or impossible input stays visible, sets `badInput`, and is not submitted as a valid datetime. Calendar and time fields are strict and never normalize overflow into another date or time.
 
 See [`docs/components/date-time-picker.md`](../../../../docs/components/date-time-picker.md) for the complete API, validation, form lifecycle, formats, events, and accessibility contract. AI-oriented reference: [`docs/ai/components/date-time-picker.md`](../../../../docs/ai/components/date-time-picker.md).

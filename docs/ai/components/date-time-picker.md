@@ -9,7 +9,7 @@ showSeconds=false -> YYYY-MM-DDTHH:mm
 showSeconds=true  -> YYYY-MM-DDTHH:mm:ss
 ```
 
-Malformed/partial text stays visible, sets `badInput`, and contributes an empty form value. DST gaps/repeated times remain unchanged local wall times.
+Malformed/partial/impossible text stays visible, sets `badInput`, and contributes an empty form value. Date and time parts are strict and never roll; DST gaps/repeated times remain unchanged local wall times.
 
 ```html
 <form>
@@ -62,7 +62,7 @@ variant: 'dropdown'|'inline' = 'dropdown';
 
 `dateFormat` and `timeFormat` control display/input presentation only; canonical form submission stays local ISO syntax.
 
-Date-only `min` starts at `00:00:00`; date-only `max` includes `23:59:59`.
+Date-only `min` starts at `00:00:00`; date-only `max` includes `23:59:59`. Impossible constraints are ignored rather than normalized.
 
 ## Native form API
 

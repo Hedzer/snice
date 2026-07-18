@@ -36,6 +36,7 @@ The picker represents a local wall-clock date and time. It has no time zone and 
 - With `show-seconds`, the successful form value is exactly `YYYY-MM-DDTHH:mm:ss`.
 - Display settings do not change that canonical form.
 - A malformed or partial field remains visible and invalid, but is never submitted as though it were a valid datetime.
+- Calendar fields, hours, minutes, and optional seconds are checked independently and strictly. Impossible dates and time overflows are never normalized.
 - DST gaps and repeated wall times remain the local values the customer entered; the picker does not silently shift them.
 
 ```html
@@ -135,7 +136,7 @@ The host exposes `validity`, `validationMessage`, `willValidate`, `checkValidity
 | Later than `max` | `rangeOverflow` |
 | Non-empty custom message | `customError` |
 
-`min` and `max` accept either a canonical local datetime or a date-only `YYYY-MM-DD` boundary. Date-only `min` means the start of that day; date-only `max` includes the complete day.
+`min` and `max` accept either a canonical local datetime or a date-only `YYYY-MM-DD` boundary. Date-only `min` means the start of that day; date-only `max` includes the complete day. An impossible constraint is ignored rather than rolled into a different datetime.
 
 ```html
 <snice-date-time-picker

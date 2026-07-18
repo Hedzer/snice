@@ -706,6 +706,44 @@ describe('snice-date-time-picker', () => {
   });
 
   describe('strict local datetime input and validation', () => {
+    it('round-trips every month end and Gregorian leap boundary as a local wall time', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      const accepted = [
+        '2026-01-31', '2026-02-28', '2024-02-29', '2000-02-29',
+        '2026-03-31', '2026-04-30', '2026-05-31', '2026-06-30',
+        '2026-07-31', '2026-08-31', '2026-09-30', '2026-10-31',
+        '2026-11-30', '2026-12-31'
+      ];
+
+      for (const date of accepted) {
+        const value = `${date}T23:59`;
+        picker.value = value;
+        expect(picker.value, value).toBe(value);
+        expect(picker.checkValidity(), value).toBe(true);
+        expect((picker as any).getISOValue(), value).toBe(value);
+      }
+    });
+
+    it('rejects every calendar rollover boundary without normalizing its date or time', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      const rejectedDates = [
+        '2026-01-32', '2026-02-29', '1900-02-29', '2024-02-30',
+        '2026-03-32', '2026-04-31', '2026-05-32', '2026-06-31',
+        '2026-07-32', '2026-08-32', '2026-09-31', '2026-10-32',
+        '2026-11-31', '2026-12-32', '2026-00-10', '2026-13-01',
+        '2026-01-00'
+      ];
+
+      for (const date of rejectedDates) {
+        const value = `${date}T10:15`;
+        picker.value = value;
+        expect(picker.value, value).toBe(value);
+        expect(getInput().value, value).toBe(value);
+        expect((picker as any).getISOValue(), value).toBe('');
+        expect(picker.checkValidity(), value).toBe(false);
+      }
+    });
+
     it('accepts keyboard entry in 24-hour, 12-hour, and long-date displays', async () => {
       picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
       getInput().value = '2026-03-10 14:05';
@@ -741,6 +779,51 @@ describe('snice-date-time-picker', () => {
       expect(picker.value).toBe(value);
       expect(picker.checkValidity()).toBe(false);
       expect(getInput().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it.each([
+      ['mm/dd/yyyy', '02/29/2026 10:15', '02/29/2024 10:15'],
+      ['dd/mm/yyyy', '29/02/2026 10:15', '29/02/2024 10:15'],
+      ['yyyy/mm/dd', '2026/02/29 10:15', '2024/02/29 10:15'],
+      ['dd-mm-yyyy', '29-02-2026 10:15', '29-02-2024 10:15'],
+      ['mm-dd-yyyy', '02-29-2026 10:15', '02-29-2024 10:15'],
+      ['mmmm dd, yyyy', 'February 29, 2026 10:15', 'February 29, 2024 10:15']
+    ] as const)('validates typed leap days strictly in %s', async (dateFormat, rejected, accepted) => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        'date-format': dateFormat
+      });
+      getInput().value = rejected;
+      getInput().dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      expect(picker.value).toBe(rejected);
+      expect((picker as any).getISOValue()).toBe('');
+      expect(picker.checkValidity()).toBe(false);
+
+      getInput().value = accepted;
+      getInput().dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      expect(picker.value).toBe('2024-02-29T10:15');
+      expect((picker as any).getISOValue()).toBe('2024-02-29T10:15');
+      expect(picker.checkValidity()).toBe(true);
+    });
+
+    it('accepts exact time boundaries and rejects every one-step overflow', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        'show-seconds': true
+      });
+      for (const value of ['2026-01-01T00:00:00', '2026-12-31T23:59:59']) {
+        picker.value = value;
+        expect(picker.checkValidity(), value).toBe(true);
+        expect((picker as any).getISOValue(), value).toBe(value);
+      }
+      for (const value of [
+        '2026-01-01T24:00:00',
+        '2026-01-01T23:60:00',
+        '2026-01-01T23:59:60'
+      ]) {
+        picker.value = value;
+        expect(picker.value, value).toBe(value);
+        expect((picker as any).getISOValue(), value).toBe('');
+        expect(picker.checkValidity(), value).toBe(false);
+      }
     });
 
     it('treats local wall-clock values without UTC or DST conversion', async () => {
@@ -783,6 +866,20 @@ describe('snice-date-time-picker', () => {
       expect(picker.value).toBe('2026-03-10T14:05:09');
     });
 
+    it('preserves impossible restored display text as bad input without a submitted datetime', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        'date-format': 'mm/dd/yyyy',
+        required: true
+      });
+      (picker as any).formStateRestoreCallback('02/31/2026 10:15', 'restore');
+
+      expect(picker.value).toBe('02/31/2026 10:15');
+      expect(getInput().value).toBe('02/31/2026 10:15');
+      expect((picker as any).getISOValue()).toBe('');
+      expect(picker.checkValidity()).toBe(false);
+      expect(picker.validity.badInput || picker.validity.customError).toBe(true);
+    });
+
     it('enforces exact datetime and date-only min/max boundaries', async () => {
       picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
         min: '2026-03-10T09:30',
@@ -801,6 +898,18 @@ describe('snice-date-time-picker', () => {
       picker.max = '2026-03-20';
       picker.value = '2026-03-20T23:59';
       expect(picker.checkValidity()).toBe(true);
+    });
+
+    it('ignores impossible min and max constraints instead of comparing rolled datetimes', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', {
+        value: '2026-05-02T10:15',
+        min: '2026-02-31T00:00',
+        max: '2026-04-31T23:59'
+      });
+
+      expect(picker.checkValidity()).toBe(true);
+      expect(picker.validity.rangeUnderflow).toBe(false);
+      expect(picker.validity.rangeOverflow).toBe(false);
     });
 
     it('reacts immediately to dynamic required, min, max, and custom validity', async () => {
