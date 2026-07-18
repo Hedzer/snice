@@ -161,18 +161,19 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
       } else {
         window.location.href = href;
       }
-    }
-
-    // Handle form submission/reset for form-associated buttons
-    const form = this.internals?.form || this.closest('form');
-    if (form) {
-      switch (this.type) {
-        case 'submit':
-          form.requestSubmit();
-          break;
-        case 'reset':
-          form.reset();
-          break;
+    } else {
+      // Form behavior is a separate activation mode. A safe, non-empty href
+      // takes precedence over type="submit" or type="reset".
+      const form = this.internals?.form || this.closest('form');
+      if (form) {
+        switch (this.type) {
+          case 'submit':
+            form.requestSubmit();
+            break;
+          case 'reset':
+            form.reset();
+            break;
+        }
       }
     }
 

@@ -601,6 +601,38 @@ describe('snice-button', () => {
       }
     });
 
+    it.each(['submit', 'reset'] as const)('treats a safe href as navigation instead of a %s action', async (type) => {
+      const form = document.createElement('form');
+      const input = document.createElement('input');
+      input.defaultValue = 'authored';
+      input.value = 'changed';
+      form.appendChild(input);
+      document.body.appendChild(form);
+      button = await createComponent<SniceButtonElement>('snice-button', {
+        href: '/safe-mixed-mode',
+        target: '_blank',
+        type
+      });
+      form.appendChild(button);
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const submit = vi.fn((event: Event) => event.preventDefault());
+      const reset = vi.fn();
+      form.addEventListener('submit', submit);
+      form.addEventListener('reset', reset);
+
+      try {
+        button.click();
+        await wait(10);
+
+        expect(open).toHaveBeenCalledWith('/safe-mixed-mode', '_blank', 'noopener');
+        expect(submit).not.toHaveBeenCalled();
+        expect(reset).not.toHaveBeenCalled();
+        expect(input.value).toBe('changed');
+      } finally {
+        form.remove();
+      }
+    });
+
     it.each(allowedNavigationUrls)(
       'opens an allowed URL through its requested target with opener isolation: %s (%s)',
       async (href, _description, target) => {

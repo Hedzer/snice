@@ -53,6 +53,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   formResetCallback() {
     this.dirtyValue = false;
     this.applyDefaultValue();
+    this.resetTransientState();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -61,7 +62,10 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
-    if (typeof state === 'string') this.setValue(state, true);
+    if (typeof state === 'string') {
+      this.setValue(state, true);
+      this.resetTransientState();
+    }
   }
 
   @property({ type: Boolean,  })
@@ -484,7 +488,30 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private setValue(value: unknown, dirty: boolean) {
     if (dirty) this.dirtyValue = true;
     this.valueState = String(value ?? '');
+    this.syncRenderedValue();
     this.syncFormValue();
+  }
+
+  private syncRenderedValue() {
+    if (this.multiple) {
+      this.selectedValues = new Set(this.value ? this.value.split(',').map(value => value.trim()) : []);
+    }
+    if (this.editable) {
+      this.syncEditableInputToValue();
+    } else {
+      this.updateValueDisplay();
+      this.updateClearButton();
+    }
+  }
+
+  private resetTransientState() {
+    clearTimeout(this.remoteSearchTimeout);
+    this.open = false;
+    this.focusedIndex = -1;
+    this.filteredOptions = [...this.mergedOptions];
+    if (this.searchInput) this.searchInput.value = '';
+    this.syncRenderedValue();
+    this.updateDropdownContent();
   }
 
   private syncFormValue() {
@@ -1011,15 +1038,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
 
   @watch('valueState')
   handleValueChange() {
-    if (this.multiple) {
-      this.selectedValues = new Set(this.value ? this.value.split(',').map(v => v.trim()) : []);
-    }
-    if (this.editable) {
-      this.syncEditableInputToValue();
-    } else {
-      this.updateValueDisplay();
-      this.updateClearButton();
-    }
+    this.syncRenderedValue();
     this.syncFormValue();
   }
 

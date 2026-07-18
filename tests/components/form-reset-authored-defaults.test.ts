@@ -264,6 +264,64 @@ describe('snice-tag-input authored reset defaults', () => {
   });
 });
 
+describe('form reset presentation state', () => {
+  it('clears uncommitted editor drafts even when the committed value is already the default', async () => {
+    const tags = await mount('snice-tag-input', { value: '["alpha"]' });
+    tags.suggestions = ['draft suggestion'];
+    const tagInput = tags.shadowRoot!.querySelector('.tag-input-field') as HTMLInputElement;
+    tagInput.value = 'draft';
+    tagInput.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+    const color = await mount('snice-color-picker', { value: '#112233' });
+    const colorInput = color.shadowRoot!.querySelector('.color-input') as HTMLInputElement;
+    colorInput.value = 'not-a-color';
+    colorInput.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+    const step = await mount('snice-step-input', { value: '2' });
+    const stepInput = step.shadowRoot!.querySelector('.step-input__input') as HTMLInputElement;
+    stepInput.value = '9';
+
+    const select = await mount('snice-select', {
+      value: 'alpha',
+      editable: '',
+      'allow-free-text': ''
+    });
+    select.options = [
+      { value: 'alpha', label: 'Alpha' },
+      { value: 'beta', label: 'Beta' }
+    ];
+    await settle(select);
+    const selectInput = select.shadowRoot!.querySelector('.select-editable-input') as HTMLInputElement;
+    selectInput.value = 'draft';
+    selectInput.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+    const controls = [tags, color, step, select];
+    const events: string[] = [];
+    for (const element of controls) {
+      for (const name of [
+        'input', 'change', 'tag-change', 'color-picker-input', 'color-picker-change',
+        'value-change', 'select-change', 'select-close'
+      ]) element.addEventListener(name, () => events.push(`${element.tagName}:${name}`));
+    }
+    for (const element of controls) element.formResetCallback();
+    await Promise.all(controls.map(settle));
+    for (const element of controls) element.formResetCallback();
+    await Promise.all(controls.map(settle));
+
+    expect((tags.shadowRoot!.querySelector('.tag-input-field') as HTMLInputElement).value).toBe('');
+    expect(tags.shadowRoot!.querySelector('.tag-suggestions')).toBeNull();
+    expect(colorInput.value).toBe('#112233');
+    expect((color.shadowRoot!.querySelector('.native-input') as HTMLInputElement).value).toBe('#112233');
+    expect(stepInput.value).toBe('2');
+    expect(selectInput.value).toBe('Alpha');
+    expect(select.isOpen).toBe(false);
+    expect(controls.map(element => element.value)).toEqual([
+      ['alpha'], '#112233', 2, 'alpha'
+    ]);
+    expect(events).toEqual([]);
+  });
+});
+
 describe('snice-range-slider authored reset defaults', () => {
   it('tracks each authored endpoint independently from live state', async () => {
     const element = await mount('snice-range-slider', { min: '0', max: '100', 'value-low': '20', 'value-high': '80' });
@@ -312,6 +370,21 @@ describe('snice-range-slider authored reset defaults', () => {
     element.formResetCallback();
     await settle(element);
     expect([element.valueLow, element.valueHigh]).toEqual([10, 90]);
+  });
+
+  it('applies paired pristine defaults atomically when they cross temporarily', async () => {
+    const element = await mount('snice-range-slider', {
+      min: '0', max: '500', 'value-low': '0', 'value-high': '100'
+    });
+
+    element.defaultValueLow = 200;
+    await settle(element);
+    expect([element.valueLow, element.valueHigh]).toEqual([100, 200]);
+
+    element.defaultValueHigh = 300;
+    await settle(element);
+    expect([element.valueLow, element.valueHigh]).toEqual([200, 300]);
+    expect([element.defaultValueLow, element.defaultValueHigh]).toEqual([200, 300]);
   });
 });
 

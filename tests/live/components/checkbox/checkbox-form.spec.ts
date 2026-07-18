@@ -444,6 +444,8 @@ async function setupEventFixture(page: Page) {
     await checkbox.rendered;
 
     (globalThis as any).__checkboxEvents = [];
+    (globalThis as any).__checkboxHostClicks = 0;
+    checkbox.addEventListener('click', () => (globalThis as any).__checkboxHostClicks++);
     for (const type of ['input', 'change', 'checkbox-change']) {
       checkbox.addEventListener(type, event => {
         const custom = event instanceof CustomEvent;
@@ -519,8 +521,10 @@ async function exerciseStateAndEvents(page: Page) {
   await checkbox.locator('.checkbox-label').evaluate((label: HTMLElement) => label.click());
   assertActivationEvents(await readAndClearEvents(page), false);
 
+  await page.evaluate(() => (globalThis as any).__checkboxHostClicks = 0);
   await page.locator('#external-event-label').click();
   assertActivationEvents(await readAndClearEvents(page), true);
+  expect(await page.evaluate(() => (globalThis as any).__checkboxHostClicks)).toBe(1);
   expect(await page.evaluate(() => {
     const checkbox = document.querySelector('#event-checkbox') as any;
     return document.activeElement === checkbox

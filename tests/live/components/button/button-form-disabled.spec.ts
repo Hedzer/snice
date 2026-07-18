@@ -283,6 +283,8 @@ async function exerciseCustomerActivation(page: Page) {
           <snice-button id="button-customer-submit" type="submit">Submit action</snice-button>
           <snice-button id="button-customer-reset" type="reset">Reset action</snice-button>
           <snice-button id="button-customer-nav" href="/guide.html#blocked-customer" target="_blank">Navigate action</snice-button>
+          <snice-button id="button-customer-nav-submit" href="/guide.html#nav-submit" target="_blank" type="submit">Navigate, not submit</snice-button>
+          <snice-button id="button-customer-nav-reset" href="/guide.html#nav-reset" target="_blank" type="reset">Navigate, not reset</snice-button>
         </fieldset>
       </form>
     `);
@@ -310,6 +312,8 @@ async function exerciseCustomerActivation(page: Page) {
     'button-customer-submit',
     'button-customer-reset',
     'button-customer-nav',
+    'button-customer-nav-submit',
+    'button-customer-nav-reset',
   ];
 
   for (const id of blockedIds) {
@@ -346,7 +350,7 @@ async function exerciseCustomerActivation(page: Page) {
     counters: (globalThis as any).__buttonCustomerCounters,
     input: (document.querySelector('#button-customer-input') as HTMLInputElement).value,
   }))).toEqual({
-    counters: { events: 7, submits: 1, resets: 1, opens: 1 },
+    counters: { events: 9, submits: 1, resets: 1, opens: 3 },
     input: 'authored',
   });
 }

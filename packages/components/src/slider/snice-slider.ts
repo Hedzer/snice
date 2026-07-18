@@ -47,6 +47,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    if (disabled) this.stopDragging(false);
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -334,18 +335,22 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
     document.addEventListener('touchend', this.handleTouchEnd);
   }
 
-  private stopDragging() {
+  private stopDragging(emit = true) {
     const wasDragging = this.isDragging;
     this.isDragging = false;
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     document.removeEventListener('touchmove', this.handleTouchMove);
     document.removeEventListener('touchend', this.handleTouchEnd);
-    if (wasDragging && this.isConnected) this.dispatchChangeEvent();
+    if (emit && wasDragging && this.isConnected) this.dispatchChangeEvent();
   }
 
   private handleMouseMove = (e: MouseEvent) => {
     if (!this.isDragging) return;
+    if (this.interactionDisabled || this.readonly) {
+      this.stopDragging(false);
+      return;
+    }
     this.updateValueFromEvent(e);
   };
 
@@ -355,6 +360,10 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   private handleTouchMove = (e: TouchEvent) => {
     if (!this.isDragging) return;
+    if (this.interactionDisabled || this.readonly) {
+      this.stopDragging(false);
+      return;
+    }
     this.updateValueFromEvent(e);
   };
 
@@ -363,7 +372,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
   };
 
   private updateValueFromEvent(e: MouseEvent | TouchEvent) {
-    if (!this.track) return;
+    if (!this.track || this.interactionDisabled || this.readonly) return;
 
     const rect = this.track.getBoundingClientRect();
     let position: number;
@@ -460,9 +469,15 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @watch('disabled', 'loading', 'formDisabled')
   handleDisabledChange() {
+    if (this.interactionDisabled) this.stopDragging(false);
     if (this.input) {
       this.input.disabled = this.interactionDisabled;
     }
+  }
+
+  @watch('readonly')
+  handleReadonlyChange() {
+    if (this.readonly) this.stopDragging(false);
   }
 
   @watch('defaultValue')
@@ -508,6 +523,6 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   @dispose()
   cleanup() {
-    this.stopDragging();
+    this.stopDragging(false);
   }
 }

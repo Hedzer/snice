@@ -44,6 +44,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   formResetCallback() {
     this.dirtyValue = false;
     this.applyDefaultValue();
+    this.clearDraft();
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -54,7 +55,10 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     if (typeof state !== 'string') return;
     try {
       const value = JSON.parse(state);
-      if (Array.isArray(value)) this.setValue(value.map(String), true, false);
+      if (Array.isArray(value)) {
+        this.setValue(value.map(String), true, false);
+        this.clearDraft();
+      }
     } catch {
       // Ignore malformed browser restoration state.
     }
@@ -147,6 +151,14 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   private syncFormValue() {
     const value = JSON.stringify(this.value);
     this.internals?.setFormValue(value, value);
+  }
+
+  private clearDraft() {
+    this.inputValue = '';
+    this.filteredSuggestions = [];
+    this.showSuggestions = false;
+    this.highlightedIndex = -1;
+    if (this.inputElement) this.inputElement.value = '';
   }
 
   private handleDocumentClick = (e: Event) => {

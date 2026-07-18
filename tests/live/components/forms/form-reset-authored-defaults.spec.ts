@@ -136,7 +136,7 @@ async function installForm(page: Page) {
     form.innerHTML = `
       <snice-input id="reset-input" name="input" value="alpha"></snice-input>
       <snice-textarea id="reset-textarea" name="textarea" value="alpha"></snice-textarea>
-      <snice-select id="reset-select" name="select" value="alpha">
+      <snice-select id="reset-select" name="select" value="alpha" editable allow-free-text>
         <snice-option value="alpha">Alpha</snice-option>
         <snice-option value="beta">Beta</snice-option>
       </snice-select>
@@ -304,6 +304,21 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
       checkbox: false, radio: false, switch: true, range: [10, 90], slider: 60
     });
 
+    await page.evaluate(() => {
+      const get = (id: string) => document.querySelector(`#reset-${id}`) as any;
+      get('tags').suggestions = ['draft suggestion'];
+      const drafts: Array<[HTMLInputElement, string, boolean]> = [
+        [get('tags').shadowRoot.querySelector('.tag-input-field'), 'draft', true],
+        [get('color').shadowRoot.querySelector('.color-input'), 'not-a-color', true],
+        [get('step').shadowRoot.querySelector('.step-input__input'), '9', false],
+        [get('select').shadowRoot.querySelector('.select-editable-input'), 'draft', true]
+      ];
+      for (const [input, value, dispatch] of drafts) {
+        input.value = value;
+        if (dispatch) input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      }
+    });
+
     const resetEvents = await page.evaluate(async () => {
       const events: string[] = [];
       const form = document.querySelector('#reset-contract') as HTMLFormElement;
@@ -311,7 +326,7 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
         for (const type of [
           'input', 'change', 'input-input', 'input-change', 'textarea-input', 'textarea-change', 'select-change',
           'tag-change', 'color-picker-input', 'color-picker-change', 'value-change', 'checkbox-change', 'radio-change',
-          'switch-change', 'range-change', 'slider-input', 'slider-change', 'file-upload-change'
+          'switch-change', 'range-change', 'slider-input', 'slider-change', 'file-upload-change', 'select-close'
         ]) control.addEventListener(type, () => events.push(`${control.id}:${type}`));
       }
       form.reset();
@@ -333,6 +348,21 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
       ['input', 'next input'], ['textarea', 'next textarea'], ['select', 'alpha'], ['tags', '["next"]'],
       ['color', '#778899'], ['step', '6'], ['switch', 'yes'], ['range', '10,90'], ['slider', '60']
     ]);
+    expect(await page.evaluate(() => {
+      const get = (id: string) => document.querySelector(`#reset-${id}`) as any;
+      return {
+        tags: get('tags').shadowRoot.querySelector('.tag-input-field')?.value,
+        tagSuggestions: Boolean(get('tags').shadowRoot.querySelector('.tag-suggestions')),
+        color: get('color').shadowRoot.querySelector('.color-input')?.value,
+        nativeColor: get('color').shadowRoot.querySelector('.native-input')?.value,
+        step: get('step').shadowRoot.querySelector('.step-input__input')?.value,
+        select: get('select').shadowRoot.querySelector('.select-editable-input')?.value,
+        selectOpen: get('select').isOpen
+      };
+    })).toEqual({
+      tags: '', tagSuggestions: false, color: '#778899', nativeColor: '#778899',
+      step: '6', select: 'Alpha', selectOpen: false
+    });
   });
 
   test(`keeps defaults across state restoration, disconnects, form moves, and fieldsets through ${build}`, async ({ page }) => {
@@ -411,5 +441,77 @@ for (const build of ['source', 'distribution', 'cdn'] as const) {
     const reset = await snapshot(page);
     expect(reset.values).toEqual(initialValues);
     expect(reset.defaults).toEqual(initialDefaults);
+  });
+
+  test(`interrupts active slider gestures when a fieldset disables them through ${build}`, async ({ page }) => {
+    await loadControls(page, build);
+    await installForm(page);
+    await page.evaluate(async () => {
+      const form = document.querySelector('#reset-contract') as HTMLFormElement;
+      const slider = document.querySelector('#reset-slider') as any;
+      const range = document.querySelector('#reset-range') as any;
+      const sliderFieldset = document.createElement('fieldset');
+      const rangeFieldset = document.createElement('fieldset');
+      sliderFieldset.id = 'active-slider-fieldset';
+      rangeFieldset.id = 'active-range-fieldset';
+      slider.before(sliderFieldset);
+      range.before(rangeFieldset);
+      sliderFieldset.append(slider);
+      rangeFieldset.append(range);
+      form.append(sliderFieldset, rangeFieldset);
+      await Promise.all([slider.rendered, range.rendered]);
+      (globalThis as any).__interruptedGestureEvents = [];
+      slider.addEventListener('slider-input', () => (globalThis as any).__interruptedGestureEvents.push('slider-input'));
+      slider.addEventListener('slider-change', () => (globalThis as any).__interruptedGestureEvents.push('slider-change'));
+      range.addEventListener('range-change', () => (globalThis as any).__interruptedGestureEvents.push('range-change'));
+    });
+
+    const sliderThumb = page.locator('#reset-slider').locator('.slider-thumb');
+    const sliderTrack = page.locator('#reset-slider').locator('.slider-track');
+    const sliderThumbBox = (await sliderThumb.boundingBox())!;
+    const sliderTrackBox = (await sliderTrack.boundingBox())!;
+    await page.mouse.move(
+      sliderThumbBox.x + sliderThumbBox.width / 2,
+      sliderThumbBox.y + sliderThumbBox.height / 2
+    );
+    await page.mouse.down();
+    await page.evaluate(() => {
+      (document.querySelector('#active-slider-fieldset') as HTMLFieldSetElement).disabled = true;
+    });
+    await page.mouse.move(sliderTrackBox.x + sliderTrackBox.width - 1, sliderTrackBox.y + sliderTrackBox.height / 2);
+    await page.mouse.up();
+
+    const rangeThumb = page.locator('#reset-range').locator('.range-slider__thumb--low');
+    const rangeTrack = page.locator('#reset-range').locator('.range-slider__track');
+    const rangeThumbBox = (await rangeThumb.boundingBox())!;
+    const rangeTrackBox = (await rangeTrack.boundingBox())!;
+    await page.mouse.move(
+      rangeThumbBox.x + rangeThumbBox.width / 2,
+      rangeThumbBox.y + rangeThumbBox.height / 2
+    );
+    await page.mouse.down();
+    await page.evaluate(() => {
+      (document.querySelector('#active-range-fieldset') as HTMLFieldSetElement).disabled = true;
+    });
+    await page.mouse.move(rangeTrackBox.x + rangeTrackBox.width - 1, rangeTrackBox.y + rangeTrackBox.height / 2);
+    await page.mouse.up();
+
+    expect(await page.evaluate(() => {
+      const slider = document.querySelector('#reset-slider') as any;
+      const range = document.querySelector('#reset-range') as any;
+      return {
+        slider: slider.value,
+        sliderDragging: slider.shadowRoot.querySelector('.slider-thumb--dragging') !== null,
+        range: [range.valueLow, range.valueHigh],
+        rangeDragging: range.shadowRoot.querySelector('.range-slider__thumb--dragging') !== null,
+        events: (globalThis as any).__interruptedGestureEvents
+      };
+    })).toEqual({
+      slider: 20,
+      sliderDragging: false,
+      range: [20, 80],
+      rangeDragging: false,
+      events: []
+    });
   });
 }

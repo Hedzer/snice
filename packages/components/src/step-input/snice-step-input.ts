@@ -170,7 +170,14 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
     const parsed = Number(value);
     if (Number.isNaN(parsed)) return;
     this.valueState = this.normalizeValue(parsed);
+    this.syncRenderedValue();
     this.syncFormValue();
+  }
+
+  private syncRenderedValue() {
+    if (this.input && this.input.value !== String(this.value)) {
+      this.input.value = String(this.value);
+    }
   }
 
   private normalizeValue(value: number): number {
@@ -274,9 +281,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   @watch('valueState')
   handleValueChange() {
-    if (this.input && this.input.value !== String(this.value)) {
-      this.input.value = String(this.value);
-    }
+    this.syncRenderedValue();
     this.syncFormValue();
   }
 

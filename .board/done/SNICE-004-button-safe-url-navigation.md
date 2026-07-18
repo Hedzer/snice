@@ -28,3 +28,4 @@ Ensure `snice-button` cannot execute script-bearing or otherwise forbidden URL s
 - 2026-07-15: verified source, built ESM, and CDN behavior in Chromium, Firefox, and WebKit; the standalone button showcase also passed 15/15 cross-browser tests.
 - 2026-07-15: updated human and AI references, the generated public docs, public full showcase, and Storybook; visually drove desktop/mobile Storybook and the real public website drawer with no clipping, overflow, execution, or console errors.
 - 2026-07-15: final release matrix passed in 199.36s: 7,378 source tests, 7,378 built tests, 1,220 React tests, 66 framework-browser tests, 18 website-browser tests, CDN/runtime suites, all builds, and 93.4% statement / 90.87% branch core coverage.
+- 2026-07-18: takeover audit found that a safe `href` could navigate and then fall through to submit/reset. Navigation is now an exclusive activation mode, with source/built/CDN browser regression coverage.

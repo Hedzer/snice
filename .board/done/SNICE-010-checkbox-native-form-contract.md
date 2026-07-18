@@ -26,3 +26,4 @@ Make checked checkbox values, required validity, reset defaults, and fieldset-di
 - 2026-07-15: implemented native form value/validity/reset/restore/fieldset behavior, live versus authored checked state, native event ordering, external-label activation, and safe pre-upgrade property adoption; kept tree checkbox interaction stable.
 - 2026-07-15: updated public types, React adapters, metadata, Storybook, public showcase, human/AI docs, and generated CDN/site artifacts.
 - 2026-07-15: verified source, built ESM, CDN, React, Storybook, public website, production site, and Chromium/Firefox/WebKit behavior. Full gate: 7,545 source + 7,545 built tests, 93.4% core statement coverage, all gates passed in 210.47s (210.99s wall).
+- 2026-07-18: takeover audit caught a duplicate host `click` from external-label forwarding; activation now exposes one host click while preserving native input/change ordering in every browser and build channel.

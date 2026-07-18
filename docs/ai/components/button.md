@@ -102,6 +102,7 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 ## URL Policy
 
 - `href` is trimmed, then checked with shared `isSafeUrl()`.
+- A non-empty safe `href` is navigation mode and takes precedence over `type="submit"` or `type="reset"`.
 - Allowed by default: relative/root/hash/query references, HTTP(S) network-path references, and explicit `http:`, `https:`, `mailto:`, `tel:` URLs.
 - Rejected: malformed URLs, raw ASCII controls, and every other explicit scheme (`javascript:`, `data:`, `vbscript:`, `file:`, custom, etc.).
 - HTML character references are decoded by the browser before validation; mixed-case, whitespace-prefixed, control-obfuscated, attribute, and property inputs follow the same policy.

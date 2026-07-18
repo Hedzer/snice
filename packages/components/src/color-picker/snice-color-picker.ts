@@ -338,7 +338,13 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
     if (dirty) this.dirtyValue = true;
     const candidate = String(value ?? '');
     this.valueState = candidate.startsWith('#') ? candidate : '#000000';
+    this.syncRenderedValue();
     this.syncFormValue();
+  }
+
+  private syncRenderedValue() {
+    if (this.input) this.input.value = this.formatColor(this.value, this.format);
+    if (this.nativeInput) this.nativeInput.value = this.toHex(this.value);
   }
 
   private syncFormValue() {
@@ -476,14 +482,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   @watch('valueState')
   handleValueChange() {
-    if (this.input) {
-      this.input.value = this.formatColor(this.value, this.format);
-    }
-
-    if (this.nativeInput) {
-      this.nativeInput.value = this.toHex(this.value);
-    }
-
+    this.syncRenderedValue();
     this.syncFormValue();
   }
 
@@ -494,9 +493,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
 
   @watch('format')
   handleFormatChange() {
-    if (this.input) {
-      this.input.value = this.formatColor(this.value, this.format);
-    }
+    this.syncRenderedValue();
   }
 
   @watch('disabled', 'loading', 'formDisabled')

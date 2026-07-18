@@ -26,3 +26,4 @@ Audit every form-associated component and make reset restore its authored defaul
 - 2026-07-16: implemented silent reset/state restoration, pre-upgrade property preservation, independent range endpoints, file/FormData restoration, form moves, and effective fieldset disabledness without rewriting authored state.
 - 2026-07-16: updated human and AI references, public metadata, editor data, React adapters, CDN artifacts, and the permanent browser release matrix.
 - 2026-07-16: release gate passed with 8,005 source tests, 8,005 built tests, 465 framework browser tests, 54 deployed-site tests, and 93.4% core statement coverage in 284.83 seconds.
+- 2026-07-18: takeover audit added adversarial coverage that the original matrix lacked and fixed stale tag/color/step/editable-select drafts after reset, atomic pristine range defaults, and active slider gestures surviving effective fieldset disabledness.

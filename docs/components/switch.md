@@ -101,7 +101,7 @@ Use `label-on` and `label-off` for text inside the switch track.
 
 ### Form Integration
 
-The switch contains an internal `<input type="checkbox">` that participates in form submission when `name` is set.
+The form-associated `<snice-switch>` host participates in submission through `ElementInternals` when `name` is set. Its internal checkbox drives native interaction and accessibility, but is unnamed and does not create a second form field.
 
 ```html
 <form id="settings-form">

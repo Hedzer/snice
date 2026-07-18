@@ -669,6 +669,10 @@ async function setupInteractionFixture(page: Page) {
 
     (globalThis as any).__radioEvents = [];
     for (const radio of radios) {
+      radio.addEventListener('click', () => {
+        const clicks = (globalThis as any).__radioHostClicks ??= {};
+        clicks[radio.id] = (clicks[radio.id] ?? 0) + 1;
+      });
       for (const type of ['input', 'change', 'radio-change']) {
         radio.addEventListener(type, event => {
           const custom = event instanceof CustomEvent;
@@ -759,8 +763,10 @@ async function exerciseInteractionContract(page: Page) {
   await page.keyboard.press('Space');
   assertActivationEvents(await readAndClearEvents(page), 'event-b', 'b');
 
+  await page.evaluate(() => (globalThis as any).__radioHostClicks = {});
   await page.locator('#external-radio-label').click();
   assertActivationEvents(await readAndClearEvents(page), 'event-a', 'a');
+  expect(await page.evaluate(() => (globalThis as any).__radioHostClicks)).toEqual({ 'event-a': 1 });
   expect(await page.evaluate(() => {
     const radio = document.querySelector('#event-a') as any;
     return document.activeElement === radio

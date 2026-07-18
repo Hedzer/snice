@@ -31973,7 +31973,7 @@
             },
             {
               "kind": "method",
-              "name": "handleDefaultValueHighChange",
+              "name": "handleDefaultValuesChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -31983,7 +31983,7 @@
             },
             {
               "kind": "method",
-              "name": "handleDefaultValueLowChange",
+              "name": "handleDisabledChange",
               "parameters": [],
               "return": {
                 "type": {
@@ -34819,6 +34819,16 @@
             {
               "kind": "method",
               "name": "handleDisabledChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleReadonlyChange",
               "parameters": [],
               "return": {
                 "type": {

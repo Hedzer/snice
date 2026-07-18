@@ -25,6 +25,7 @@ labelOff: string = '';             // attr: label-off
 - Any checked assignment/toggle, including the same value, dirties live checkedness. Pristine state follows default changes.
 - Reset silently restores `defaultChecked`; browser state uses `checked`/`unchecked`.
 - Only checked enabled switches submit `value`. Form moves/reconnect/fieldset state never rewrite authored defaults or `disabled`.
+- The form-associated host submits through `ElementInternals`; the unnamed shadow checkbox is the interaction control, not a second form field.
 
 ## Methods
 

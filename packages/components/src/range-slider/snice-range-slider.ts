@@ -68,6 +68,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   formDisabledCallback(disabled: boolean) {
     this.formDisabled = disabled;
+    if (disabled) this.stopDragging(false);
   }
 
   formStateRestoreCallback(state: File | string | FormData | null) {
@@ -386,18 +387,22 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     document.addEventListener('touchend', this.handleTouchEnd);
   }
 
-  private stopDragging() {
+  private stopDragging(emit = true) {
     const wasDragging = this.draggingThumb !== null;
     this.draggingThumb = null;
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     document.removeEventListener('touchmove', this.handleTouchMove);
     document.removeEventListener('touchend', this.handleTouchEnd);
-    if (wasDragging && this.isConnected) this.emitRangeChange();
+    if (emit && wasDragging && this.isConnected) this.emitRangeChange();
   }
 
   private handleMouseMove = (e: MouseEvent) => {
     if (!this.draggingThumb) return;
+    if (this.interactionDisabled) {
+      this.stopDragging(false);
+      return;
+    }
     this.updateFromEvent(e);
   };
 
@@ -407,6 +412,10 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   private handleTouchMove = (e: TouchEvent) => {
     if (!this.draggingThumb) return;
+    if (this.interactionDisabled) {
+      this.stopDragging(false);
+      return;
+    }
     this.updateFromEvent(e);
   };
 
@@ -415,6 +424,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
   };
 
   private updateFromEvent(e: MouseEvent | TouchEvent) {
+    if (this.interactionDisabled) return;
     const pos = this.getPositionFromEvent(e);
     const val = this.positionToValue(pos);
 
@@ -493,14 +503,19 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
     this.syncFormValue();
   }
 
-  @watch('defaultValueLow')
-  handleDefaultValueLowChange() {
+  @watch('defaultValueLow', 'defaultValueHigh')
+  handleDefaultValuesChange() {
+    if (!this.dirtyValueLow && !this.dirtyValueHigh) {
+      this.applyDefaultValues();
+      return;
+    }
     if (!this.dirtyValueLow) this.setValueLow(this.defaultValueLow, false);
+    if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
   }
 
-  @watch('defaultValueHigh')
-  handleDefaultValueHighChange() {
-    if (!this.dirtyValueHigh) this.setValueHigh(this.defaultValueHigh, false);
+  @watch('disabled')
+  handleDisabledChange() {
+    if (this.interactionDisabled) this.stopDragging(false);
   }
 
   @watch('min', 'max', 'step')
@@ -515,6 +530,6 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   @dispose()
   cleanup() {
-    this.stopDragging();
+    this.stopDragging(false);
   }
 }

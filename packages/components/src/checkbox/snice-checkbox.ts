@@ -8,6 +8,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
 
   private dirtyCheckedness = false;
   private pendingUserChange = false;
+  private forwardingHostActivation = false;
   private customValidationMessage = '';
 
   @state()
@@ -101,6 +102,7 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
           aria-invalid="${this.invalid ? 'true' : 'false'}"
           aria-checked="${this.indeterminate ? 'mixed' : this.checked}"
           part="input"
+          @click=${this.handleInternalClick}
           @input=${this.handleInternalInput}
           @change=${this.handleInternalChange}
         />
@@ -181,6 +183,13 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     this.indeterminate = target.indeterminate;
   }
 
+  private handleInternalClick(event: MouseEvent) {
+    // An associated external label has already delivered one click to the
+    // host. Keep the native input activation, but do not bubble the forwarded
+    // implementation click through the host a second time.
+    if (this.forwardingHostActivation) event.stopPropagation();
+  }
+
   private handleInternalChange() {
     if (!this.pendingUserChange) return;
     this.pendingUserChange = false;
@@ -209,7 +218,12 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     // can cancel activation before checkedness or events change.
     queueMicrotask(() => {
       if (event.defaultPrevented || this.disabled || this.formDisabled || this.loading) return;
-      this.input?.click();
+      this.forwardingHostActivation = true;
+      try {
+        this.input?.click();
+      } finally {
+        this.forwardingHostActivation = false;
+      }
     });
   }
 

@@ -193,6 +193,8 @@ The `icon` **property** is for emoji, image URLs, and image files:
 
 Use `href` to navigate on click.
 
+A non-empty safe `href` is the activation mode and takes precedence over `type="submit"` or `type="reset"`; one activation never both navigates and performs a form action.
+
 ```html
 <snice-button href="/page">Go to Page</snice-button>
 <snice-button href="https://example.com" target="_blank">Visit Site</snice-button>
