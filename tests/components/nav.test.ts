@@ -82,6 +82,13 @@ describe('snice-nav', () => {
     expect(nav.isTopLevel).toBe(true);
   });
 
+  it('accepts the documented is-top-level boolean attribute', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav', { 'is-top-level': true });
+
+    expect(nav.isTopLevel).toBe(true);
+    expect(nav.getAttribute('is-top-level')).toBe('true');
+  });
+
   it('should have shadow root', async () => {
     nav = await createComponent<SniceNavElement>('snice-nav');
     expect(nav.shadowRoot).toBeTruthy();

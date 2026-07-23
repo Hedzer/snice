@@ -100,6 +100,53 @@ describe('@property pre-upgrade value adoption', () => {
     el.remove();
   });
 
+  it('preserves an authored boolean attribute set before decorated fields initialize', async () => {
+    class AuthoredBooleanBeforeFields extends HTMLElement {
+      constructor() {
+        super();
+        this.setAttribute('is-top-level', '');
+      }
+    }
+
+    @element('test-pre-upgrade-authored-boolean')
+    class TestPreUpgradeAuthoredBoolean extends AuthoredBooleanBeforeFields {
+      @property({ type: Boolean, attribute: 'is-top-level' }) isTopLevel = false;
+    }
+
+    const el = document.createElement('test-pre-upgrade-authored-boolean') as TestPreUpgradeAuthoredBoolean;
+    document.body.append(el);
+    await el.ready;
+
+    expect(el.isTopLevel).toBe(true);
+    expect(el.hasAttribute('is-top-level')).toBe(true);
+    expect(Object.hasOwn(el, 'isTopLevel')).toBe(false);
+    el.remove();
+  });
+
+  it('gives an authored boolean attribute precedence over a conflicting pre-upgrade property', async () => {
+    class ConflictingBooleanBeforeFields extends HTMLElement {
+      constructor() {
+        super();
+        (this as any).isTopLevel = false;
+        this.setAttribute('is-top-level', '');
+      }
+    }
+
+    @element('test-pre-upgrade-authored-boolean-precedence')
+    class TestPreUpgradeAuthoredBooleanPrecedence extends ConflictingBooleanBeforeFields {
+      @property({ type: Boolean, attribute: 'is-top-level' }) isTopLevel = false;
+    }
+
+    const el = document.createElement('test-pre-upgrade-authored-boolean-precedence') as TestPreUpgradeAuthoredBooleanPrecedence;
+    document.body.append(el);
+    await el.ready;
+
+    expect(el.isTopLevel).toBe(true);
+    expect(el.hasAttribute('is-top-level')).toBe(true);
+    expect(Object.hasOwn(el, 'isTopLevel')).toBe(false);
+    el.remove();
+  });
+
   it('wraps adopted deep values and observes their later mutations', async () => {
     const watcher = vi.fn();
 

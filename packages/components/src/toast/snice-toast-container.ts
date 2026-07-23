@@ -190,7 +190,10 @@ export class Toast {
 
     // Create new container
     const container = document.createElement('snice-toast-container') as SniceToastContainer;
-    container.position = position;
+    // Author the reflected state before connection. A pre-connect property
+    // assignment is queued until @property initialization completes and does
+    // not create the attribute consumed by the host positioning selectors.
+    container.setAttribute('position', position);
     document.body.appendChild(container);
     return container;
   }

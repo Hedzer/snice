@@ -24,7 +24,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   @property({ attribute: 'active-style' })
   activeStyle: NavActiveStyle = 'fill';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'is-top-level' })
   isTopLevel = false;
 
   private placards: Placard[] = [];

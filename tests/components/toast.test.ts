@@ -494,6 +494,15 @@ describe('snice-toast-container', () => {
 });
 
 describe('Toast static API', () => {
+  const positions = [
+    'top-left',
+    'top-center',
+    'top-right',
+    'bottom-left',
+    'bottom-center',
+    'bottom-right'
+  ] as const;
+
   afterEach(async () => {
     Toast.clear();
     await new Promise(resolve => setTimeout(resolve, 400));
@@ -537,6 +546,29 @@ describe('Toast static API', () => {
 
     const container = document.querySelector('snice-toast-container');
     expect(container).toBeTruthy();
+  });
+
+  it.each(positions)('should reflect %s on an automatically created container', async position => {
+    await Toast.show(`Test ${position}`, { position, duration: 0 });
+
+    const container = document.querySelector('snice-toast-container') as SniceToastContainerElement;
+    expect(container.position).toBe(position);
+    expect(container.getAttribute('position')).toBe(position);
+  });
+
+  it('should reuse a declarative container and reflect a changed position', async () => {
+    const container = document.createElement('snice-toast-container') as SniceToastContainerElement;
+    container.setAttribute('position', 'bottom-left');
+    document.body.append(container as HTMLElement);
+    await (container as any).ready;
+
+    await Toast.show('Moved', { position: 'top-right', duration: 0 });
+
+    expect(document.querySelectorAll('snice-toast-container')).toHaveLength(1);
+    expect(document.querySelector('snice-toast-container')).toBe(container);
+    expect(container.position).toBe('top-right');
+    expect(container.getAttribute('position')).toBe('top-right');
+    expect(queryShadow(container as HTMLElement, '.toast-wrapper')?.querySelectorAll('snice-toast')).toHaveLength(1);
   });
 
   it('should show success toast', async () => {
