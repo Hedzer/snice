@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Paint component
  */
@@ -26,7 +27,7 @@ export interface PaintProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/paint';
+ * import 'snice/components/paint/snice-paint';
  * import { Paint } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,5 +35,5 @@ export interface PaintProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Paint: import("react").ForwardRefExoticComponent<Omit<PaintProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Paint: SniceReactComponent<PaintProps, SniceComponentRef>;
 //# sourceMappingURL=paint.d.ts.map

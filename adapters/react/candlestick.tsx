@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/candlestick/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Candlestick component
@@ -31,7 +32,7 @@ export interface CandlestickProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/candlestick';
+ * import 'snice/components/candlestick/snice-candlestick';
  * import { Candlestick } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface CandlestickProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Candlestick = createReactAdapter<CandlestickProps>({
+export const Candlestick: SniceReactComponent<CandlestickProps, SniceComponentRef> = createReactAdapter<CandlestickProps, false>({
   tagName: 'snice-candlestick',
   properties: ["data","showVolume","showGrid","showCrosshair","bullishColor","bearishColor","timeFormat","yAxisFormat","zoomEnabled","animation"],
   events: {"candle-click":"onCandleClick","candle-hover":"onCandleHover","crosshair-move":"onCrosshairMove"},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/time-range-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the TimeRangePicker component
@@ -30,7 +31,7 @@ export interface TimeRangePickerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/time-range-picker';
+ * import 'snice/components/time-range-picker/snice-time-range-picker';
  * import { TimeRangePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface TimeRangePickerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const TimeRangePicker = createReactAdapter<TimeRangePickerProps>({
+export const TimeRangePicker: SniceReactComponent<TimeRangePickerProps, SniceComponentRef> = createReactAdapter<TimeRangePickerProps, false>({
   tagName: 'snice-time-range-picker',
   properties: ["granularity","startTime","endTime","value","disabledRanges","format","multiple","readonly","disabled"],
   events: {"time-range-change":"onTimeRangeChange","time-range-select":"onTimeRangeSelect","time-range-complete":"onTimeRangeComplete"},

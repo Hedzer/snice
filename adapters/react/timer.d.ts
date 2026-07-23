@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Timer component
  */
@@ -19,7 +20,7 @@ export interface TimerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/timer';
+ * import 'snice/components/timer/snice-timer';
  * import { Timer } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface TimerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Timer: import("react").ForwardRefExoticComponent<Omit<TimerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Timer: SniceReactComponent<TimerProps, SniceComponentRef>;
 //# sourceMappingURL=timer.d.ts.map

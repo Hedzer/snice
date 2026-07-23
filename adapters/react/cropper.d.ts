@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Cropper component
  */
@@ -19,7 +20,7 @@ export interface CropperProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/cropper';
+ * import 'snice/components/cropper/snice-cropper';
  * import { Cropper } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface CropperProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Cropper: import("react").ForwardRefExoticComponent<Omit<CropperProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Cropper: SniceReactComponent<CropperProps, SniceComponentRef>;
 //# sourceMappingURL=cropper.d.ts.map

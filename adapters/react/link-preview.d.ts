@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the LinkPreview component
  */
@@ -21,7 +22,7 @@ export interface LinkPreviewProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/link-preview';
+ * import 'snice/components/link-preview/snice-link-preview';
  * import { LinkPreview } from 'snice/react';
  *
  * function MyComponent() {
@@ -29,5 +30,5 @@ export interface LinkPreviewProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const LinkPreview: import("react").ForwardRefExoticComponent<Omit<LinkPreviewProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const LinkPreview: SniceReactComponent<LinkPreviewProps, SniceComponentRef>;
 //# sourceMappingURL=link-preview.d.ts.map

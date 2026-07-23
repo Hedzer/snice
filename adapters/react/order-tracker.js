@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/order-tracker';
+ * import 'snice/components/order-tracker/snice-order-tracker';
  * import { OrderTracker } from 'snice/react';
  *
  * function MyComponent() {

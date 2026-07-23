@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/avatar-group/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the AvatarGroup component
@@ -24,7 +25,7 @@ export interface AvatarGroupProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/avatar-group';
+ * import 'snice/components/avatar-group/snice-avatar-group';
  * import { AvatarGroup } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface AvatarGroupProps extends SniceBaseProps {
  * }
  * ```
  */
-export const AvatarGroup = createReactAdapter<AvatarGroupProps>({
+export const AvatarGroup: SniceReactComponent<AvatarGroupProps, SniceComponentRef> = createReactAdapter<AvatarGroupProps, false>({
   tagName: 'snice-avatar-group',
   properties: ["avatars","max","size","overlap"],
   events: {"avatar-click":"onAvatarClick","overflow-click":"onOverflowClick"},

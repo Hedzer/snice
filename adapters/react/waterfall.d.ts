@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Waterfall component
  */
@@ -19,7 +20,7 @@ export interface WaterfallProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/waterfall';
+ * import 'snice/components/waterfall/snice-waterfall';
  * import { Waterfall } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface WaterfallProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Waterfall: import("react").ForwardRefExoticComponent<Omit<WaterfallProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Waterfall: SniceReactComponent<WaterfallProps, SniceComponentRef>;
 //# sourceMappingURL=waterfall.d.ts.map

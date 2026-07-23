@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "producer": "openai-terra-low-effort-distillation",
+  "sourceCorpus": ".local/hallucination-corpus/openai-terra",
+  "cases": [
+    {
+      "name": "invented-scoped-react-package-and-prefixed-exports",
+      "filename": "src/main.jsx",
+      "source": "import { SniceApp, SniceRouter, SniceRoute, SniceButton, SniceTabs, SniceTab, SniceDialog } from '@snice/react';",
+      "expectedRuleIds": ["snice/package-import", "snice/react-import-contract"]
+    },
+    {
+      "name": "valid-react-wrappers-can-use-central-registration",
+      "filename": "src/main.tsx",
+      "source": "import { Button, Input, Table } from 'snice/react';\nexport const View = () => <Button><Input /><Table /></Button>;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-router-contract",
+      "filename": "src/app.jsx",
+      "source": "import { Route, SniceRouter } from 'snice/react';\nconst app = <SniceRouter><Route path=\"/\" element={<Dashboard />} /></SniceRouter>;",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "react-form-event-contract",
+      "filename": "src/form.jsx",
+      "source": "import { Input, Select } from 'snice/react';\nconst form = <><Input onChange={(event) => save(event.target.value)} /><Select onChange={(event) => save(event.target.value)} /></>;",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "invented-table-tabs-modal-and-toast-props",
+      "filename": "src/dashboard.jsx",
+      "source": "import { Modal, Table, Tabs, Toast } from 'snice/react';\nconst view = <><Tabs value=\"queue\" /><Modal title=\"Edit\" onClose={close} /><Toast open={true} onClose={close} /><Table rows={people} /></>;",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract", "snice/react-prop-contract", "snice/react-prop-contract", "snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "invented-badge-and-navigation-models",
+      "filename": "src/sidebar.jsx",
+      "source": "import { Badge, Nav } from 'snice/react';\nconst view = <><Badge tone=\"warning\">Warn</Badge><Nav items={[{ label: 'Home' }]} /></>;",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "invented-npm-packages-and-cli-commands",
+      "filename": "package.json",
+      "source": "{\"scripts\":{\"dev\":\"snice dev\",\"build\":\"snice build\"},\"dependencies\":{\"@snice/core\":\"latest\",\"@snice/react\":\"latest\"}}",
+      "expectedRuleIds": ["snice/package-contract", "snice/package-contract", "snice/package-contract"]
+    },
+    {
+      "name": "terra-static-table-column-keys",
+      "filename": "src/queue.jsx",
+      "source": "import { Badge, Table } from 'snice/react';\nconst view = <Table columns={[{ key: 'id', header: 'ID' }, { key: 'status', header: 'Status', render: (row) => <Badge>{row.status}</Badge> }]} />;",
+      "expectedRuleIds": ["snice/component-prop-contract", "snice/component-prop-contract"]
+    },
+    {
+      "name": "terra-secondary-button-variant",
+      "filename": "src/queue.jsx",
+      "source": "import { Button } from 'snice/react';\nconst view = <Button variant=\"secondary\">Refresh</Button>;",
+      "expectedRuleIds": ["snice/component-prop-contract"]
+    }
+  ]
+}

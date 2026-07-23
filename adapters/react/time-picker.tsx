@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/time-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the TimePicker component
@@ -44,7 +45,7 @@ export interface TimePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/time-picker';
+ * import 'snice/components/time-picker/snice-time-picker';
  * import { TimePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -52,7 +53,7 @@ export interface TimePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export const TimePicker = createReactAdapter<TimePickerProps>({
+export const TimePicker: SniceReactComponent<TimePickerProps, SniceFormRef> = createReactAdapter<TimePickerProps, true>({
   tagName: 'snice-time-picker',
   properties: ["defaultValue","format","step","minTime","maxTime","showSeconds","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","size","loading","clearable","value"],
   events: {"time-change":"onTimeChange","timepicker-focus":"onTimepickerFocus","timepicker-blur":"onTimepickerBlur","timepicker-open":"onTimepickerOpen","timepicker-close":"onTimepickerClose","timepicker-clear":"onTimepickerClear"},

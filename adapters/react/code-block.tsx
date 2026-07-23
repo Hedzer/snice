@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/code-block/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the CodeBlock component
@@ -35,7 +36,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/code-block';
+ * import 'snice/components/code-block/snice-code-block';
  * import { CodeBlock } from 'snice/react';
  *
  * function MyComponent() {
@@ -43,7 +44,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  * }
  * ```
  */
-export const CodeBlock = createReactAdapter<CodeBlockProps>({
+export const CodeBlock: SniceReactComponent<CodeBlockProps, SniceComponentRef> = createReactAdapter<CodeBlockProps, false>({
   tagName: 'snice-code-block',
   properties: ["language","showLineNumbers","startLine","highlightLines","copyable","filename","grammar","fetchMode","format","theme"],
   events: {"code-copy":"onCodeCopy","code-before-highlight":"onCodeBeforeHighlight","code-after-highlight":"onCodeAfterHighlight","code-before-format":"onCodeBeforeFormat","code-after-format":"onCodeAfterFormat","grammar-request":"onGrammarRequest","grammar-loaded":"onGrammarLoaded"},

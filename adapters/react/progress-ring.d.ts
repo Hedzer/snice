@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the ProgressRing component
  */
@@ -20,7 +21,7 @@ export interface ProgressRingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/progress-ring';
+ * import 'snice/components/progress-ring/snice-progress-ring';
  * import { ProgressRing } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface ProgressRingProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const ProgressRing: import("react").ForwardRefExoticComponent<Omit<ProgressRingProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ProgressRing: SniceReactComponent<ProgressRingProps, SniceComponentRef>;
 //# sourceMappingURL=progress-ring.d.ts.map

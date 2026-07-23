@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Input component
  */
@@ -46,7 +47,7 @@ export interface InputProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/input';
+ * import 'snice/components/input/snice-input';
  * import { Input } from 'snice/react';
  *
  * function MyComponent() {
@@ -54,5 +55,5 @@ export interface InputProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Input: import("react").ForwardRefExoticComponent<Omit<InputProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Input: SniceReactComponent<InputProps, SniceFormRef>;
 //# sourceMappingURL=input.d.ts.map

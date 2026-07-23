@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/modal/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Modal component
@@ -29,7 +30,7 @@ export interface ModalProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/modal';
+ * import 'snice/components/modal/snice-modal';
  * import { Modal } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,7 +38,7 @@ export interface ModalProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Modal = createReactAdapter<ModalProps>({
+export const Modal: SniceReactComponent<ModalProps, SniceComponentRef> = createReactAdapter<ModalProps, false>({
   tagName: 'snice-modal',
   properties: ["open","size","noBackdropDismiss","noEscapeDismiss","noFocusTrap","noCloseButton","noHeader","noFooter","label"],
   events: {"modal-open":"onModalOpen","modal-close":"onModalClose"},

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Markdown component
  */
@@ -17,7 +18,7 @@ export interface MarkdownProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/markdown';
+ * import 'snice/components/markdown/snice-markdown';
  * import { Markdown } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface MarkdownProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Markdown: import("react").ForwardRefExoticComponent<Omit<MarkdownProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Markdown: SniceReactComponent<MarkdownProps, SniceComponentRef>;
 //# sourceMappingURL=markdown.d.ts.map

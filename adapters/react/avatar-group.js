@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/avatar-group';
+ * import 'snice/components/avatar-group/snice-avatar-group';
  * import { AvatarGroup } from 'snice/react';
  *
  * function MyComponent() {

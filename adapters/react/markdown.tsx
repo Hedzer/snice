@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/markdown/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Markdown component
@@ -23,7 +24,7 @@ export interface MarkdownProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/markdown';
+ * import 'snice/components/markdown/snice-markdown';
  * import { Markdown } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface MarkdownProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Markdown = createReactAdapter<MarkdownProps>({
+export const Markdown: SniceReactComponent<MarkdownProps, SniceComponentRef> = createReactAdapter<MarkdownProps, false>({
   tagName: 'snice-markdown',
   properties: ["content","sanitize","theme"],
   events: {"markdown-render":"onMarkdownRender","link-click":"onLinkClick"},

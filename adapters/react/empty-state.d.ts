@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the EmptyState component
  */
@@ -19,7 +20,7 @@ export interface EmptyStateProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/empty-state';
+ * import 'snice/components/empty-state/snice-empty-state';
  * import { EmptyState } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface EmptyStateProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const EmptyState: import("react").ForwardRefExoticComponent<Omit<EmptyStateProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const EmptyState: SniceReactComponent<EmptyStateProps, SniceComponentRef>;
 //# sourceMappingURL=empty-state.d.ts.map

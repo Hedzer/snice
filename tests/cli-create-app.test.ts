@@ -79,6 +79,17 @@ describe('CLI create-app command', () => {
       timeout: 120000
     });
     
+    await execAsync('npm run type-check', {
+      cwd: appPath,
+      timeout: 30000
+    });
+
+    const validation = await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
+      { cwd: appPath, timeout: 30000 }
+    );
+    expect(JSON.parse(validation.stdout).ok).toBe(true);
+
     // Build the app
     console.log('Building app...');
     const { stderr } = await execAsync('npm run build', { 
@@ -141,7 +152,7 @@ describe('CLI create-app command', () => {
     }
   });
 
-  it('should include CLAUDE.md in base template', async () => {
+  it('should include concise agent pointers and the version-matched skill', async () => {
     const appName = 'test-claude-base';
     const appPath = join(tempDir, appName);
 
@@ -150,17 +161,22 @@ describe('CLI create-app command', () => {
       { cwd: tempDir }
     );
 
-    // Verify CLAUDE.md exists
     expect(existsSync(join(appPath, 'CLAUDE.md'))).toBe(true);
+    expect(existsSync(join(appPath, 'AGENTS.md'))).toBe(true);
+    expect(existsSync(join(appPath, '.agents/skills/snice/SKILL.md'))).toBe(true);
+    expect(existsSync(join(appPath, '.agents/skills/snice/references/core-kitchen-sink.ts'))).toBe(true);
 
-    // Verify it has content
     const claudeMd = await readFile(join(appPath, 'CLAUDE.md'), 'utf-8');
-    expect(claudeMd).toContain('Snice Project - AI Assistant Guide');
+    const agentsMd = await readFile(join(appPath, 'AGENTS.md'), 'utf-8');
+    const skill = await readFile(join(appPath, '.agents/skills/snice/SKILL.md'), 'utf-8');
+    expect(claudeMd).toBe(agentsMd);
+    expect(claudeMd).toContain('.agents/skills/snice/SKILL.md');
     expect(claudeMd).toContain('node_modules/snice/docs/ai/');
-    expect(claudeMd).toContain('Decorators');
+    expect(claudeMd).not.toContain('No `@state()`');
+    expect(skill).toContain('references/core-kitchen-sink.ts');
   }, 30000);
 
-  it('should include CLAUDE.md in default template', async () => {
+  it('should support updating AI files explicitly', async () => {
     const appName = 'test-claude-default';
     const appPath = join(tempDir, appName);
 
@@ -169,14 +185,37 @@ describe('CLI create-app command', () => {
       { cwd: tempDir }
     );
 
-    // Verify CLAUDE.md exists
-    expect(existsSync(join(appPath, 'CLAUDE.md'))).toBe(true);
+    await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} init-ai . --force`,
+      { cwd: appPath }
+    );
 
-    // Verify it has content
     const claudeMd = await readFile(join(appPath, 'CLAUDE.md'), 'utf-8');
-    expect(claudeMd).toContain('Snice Project - AI Assistant Guide');
-    expect(claudeMd).toContain('node_modules/snice/docs/ai/');
-    expect(claudeMd).toContain('Decorators');
+    expect(claudeMd).toContain('Snice Project Agent Guide');
+  }, 30000);
+
+  it('should make the canonical check fail when a declared Snice install is missing', async () => {
+    const appName = 'unchecked-app';
+    const appPath = join(tempDir, appName);
+
+    await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`,
+      { cwd: tempDir }
+    );
+
+    try {
+      await execAsync(
+        `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
+        { cwd: appPath }
+      );
+      expect.fail('check should fail before dependencies are installed');
+    } catch (error: any) {
+      const result = JSON.parse(error.stdout);
+      expect(result.ok).toBe(false);
+      expect(result.findings).toEqual(expect.arrayContaining([
+        expect.objectContaining({ code: 'snice-install', severity: 'error' })
+      ]));
+    }
   }, 30000);
 
   it('should create a react app from template', async () => {
@@ -232,6 +271,17 @@ describe('CLI create-app command', () => {
       timeout: 120000
     });
 
+    await execAsync('npm run type-check', {
+      cwd: appPath,
+      timeout: 30000
+    });
+
+    const validation = await execAsync(
+      `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
+      { cwd: appPath, timeout: 30000 }
+    );
+    expect(JSON.parse(validation.stdout).ok).toBe(true);
+
     // Build the app
     const { stderr } = await execAsync('npm run build', {
       cwd: appPath,
@@ -247,7 +297,7 @@ describe('CLI create-app command', () => {
     expect(distFiles.stdout).toContain('.js');
   }, 240000);
 
-  it('should include CLAUDE.md in react template', async () => {
+  it('should include the skill in the react template', async () => {
     const appName = 'test-claude-react';
     const appPath = join(tempDir, appName);
 
@@ -256,14 +306,9 @@ describe('CLI create-app command', () => {
       { cwd: tempDir }
     );
 
-    // Verify CLAUDE.md exists
     expect(existsSync(join(appPath, 'CLAUDE.md'))).toBe(true);
-
-    // Verify it has content
-    const claudeMd = await readFile(join(appPath, 'CLAUDE.md'), 'utf-8');
-    expect(claudeMd).toContain('Snice Project - AI Assistant Guide');
-    expect(claudeMd).toContain('node_modules/snice/docs/ai/');
-    expect(claudeMd).toContain('Decorators');
+    expect(existsSync(join(appPath, 'AGENTS.md'))).toBe(true);
+    expect(existsSync(join(appPath, '.agents/skills/snice/SKILL.md'))).toBe(true);
   }, 30000);
 
   it('should include react-specific files in react template', async () => {

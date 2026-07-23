@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "producer": "synthetic-blind-agent-baseline",
+  "cases": [
+    {
+      "name": "lit-framework-confusion",
+      "filename": "src/card.ts",
+      "source": "import { LitElement, html } from 'lit';\nimport { customElement } from 'lit/decorators.js';\n@customElement('user-card')\nclass UserCard extends LitElement {}",
+      "expectedRuleIds": ["snice/no-lit-api"]
+    },
+    {
+      "name": "legacy-decorator-configuration",
+      "filename": "tsconfig.json",
+      "source": "{\"compilerOptions\":{\"experimentalDecorators\":true,\"useDefineForClassFields\":true}}",
+      "expectedRuleIds": ["snice/stage-3-decorators"]
+    },
+    {
+      "name": "html-element-super-lifecycle",
+      "filename": "src/user-list.ts",
+      "source": "class UserList extends HTMLElement {\n  connectedCallback() {\n    super.connectedCallback();\n  }\n}",
+      "expectedRuleIds": ["snice/no-nonexistent-lifecycle-super"]
+    },
+    {
+      "name": "lit-super-lifecycle",
+      "filename": "src/user-list.ts",
+      "source": "class UserList extends SniceElement {\n  updated() {\n    super.updated();\n  }\n}",
+      "expectedRuleIds": ["snice/no-nonexistent-lifecycle-super"]
+    },
+    {
+      "name": "shallow-component-import",
+      "filename": "src/main.ts",
+      "source": "import { Button } from 'snice/components/button';",
+      "expectedRuleIds": ["snice/component-import-path"]
+    },
+    {
+      "name": "extension-on-component-import",
+      "filename": "src/main.ts",
+      "source": "import 'snice/components/modal/snice-modal.js';",
+      "expectedRuleIds": ["snice/component-import-path"]
+    },
+    {
+      "name": "page-imported-from-package-root",
+      "filename": "src/page.ts",
+      "source": "import { element, page } from 'snice';\n@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}",
+      "expectedRuleIds": ["snice/router-page-source"]
+    },
+    {
+      "name": "router-react-options-used-in-web-component-router",
+      "filename": "src/router.ts",
+      "source": "import { Router } from 'snice';\nconst { page } = Router({ outlet: '#app', mode: 'hash' });",
+      "expectedRuleIds": ["snice/router-config", "snice/router-config"]
+    },
+    {
+      "name": "context-treated-as-generic-field-injection",
+      "filename": "src/shell.ts",
+      "source": "import { Context, context } from 'snice';\nclass Shell extends HTMLElement {\n  @context() app!: Context<MyApp>;\n}",
+      "expectedRuleIds": ["snice/context-contract", "snice/context-contract"]
+    },
+    {
+      "name": "array-through-component-attribute",
+      "filename": "src/users.ts",
+      "source": "const view = html`<snice-table columns=${columns} data=\"${rows}\"></snice-table>`;",
+      "expectedRuleIds": ["snice/object-property-binding", "snice/object-property-binding"]
+    },
+    {
+      "name": "custom-event-target-assumption",
+      "filename": "src/users.ts",
+      "source": "const select = document.querySelector('snice-select');\nselect.addEventListener('select-change', (event) => console.log(event.target.value));",
+      "expectedRuleIds": ["snice/custom-event-contract"]
+    },
+    {
+      "name": "event-detail-with-base-event-type",
+      "filename": "src/users.ts",
+      "source": "function changed(event: Event) {\n  console.log(event.detail.value);\n}",
+      "expectedRuleIds": ["snice/custom-event-contract"]
+    },
+    {
+      "name": "wrong-host-event-for-snice-input",
+      "filename": "src/form.ts",
+      "source": "const view = html`<snice-input @input=${handleInput}></snice-input>`;",
+      "expectedRuleIds": ["snice/custom-event-contract"]
+    },
+    {
+      "name": "dispatch-detail-double-wrapper",
+      "filename": "src/save-button.ts",
+      "source": "@dispatch('save')\nemitSave() {\n  return { detail: { id: 1 } };\n}",
+      "expectedRuleIds": ["snice/custom-event-contract"]
+    },
+    {
+      "name": "camel-case-dispatch",
+      "filename": "src/save-button.ts",
+      "source": "@dispatch('saveComplete')\nemitSave() { return { id: 1 }; }",
+      "expectedRuleIds": ["snice/event-kebab-case"]
+    },
+    {
+      "name": "invented-snice-icon",
+      "filename": "src/header.ts",
+      "source": "const view = html`<snice-icon name=\"home\"></snice-icon>`;",
+      "expectedRuleIds": ["snice/icon-contract"]
+    },
+    {
+      "name": "icon-name-treated-as-registry-key",
+      "filename": "src/header.ts",
+      "source": "const view = html`<snice-alert icon=\"home\">Welcome</snice-alert>`;",
+      "expectedRuleIds": ["snice/icon-contract"]
+    },
+    {
+      "name": "direct-host-inner-html",
+      "filename": "src/legacy-card.ts",
+      "source": "class LegacyCard extends HTMLElement {\n  update(markup) { this.innerHTML = markup; }\n}",
+      "expectedRuleIds": ["snice/no-inner-html"]
+    },
+    {
+      "name": "function-valued-observe-target",
+      "filename": "src/resize-card.ts",
+      "source": "class ResizeCard extends HTMLElement {\n  @observe(() => this.shadowRoot)\n  resized(entries) {}\n}",
+      "expectedRuleIds": ["snice/observe-target"]
+    },
+    {
+      "name": "controller-value-imports-component-implementation",
+      "filename": "src/controllers/search-controller.ts",
+      "source": "import { SniceInput } from 'snice/components/input/snice-input';\n@controller('search')\nclass SearchController {\n  input!: SniceInput;\n}",
+      "expectedRuleIds": ["snice/controller-type-import"]
+    },
+    {
+      "name": "hallucinated-snice-react-package",
+      "filename": "src/app.tsx",
+      "source": "import { Button } from 'snice-react';",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-subpath",
+      "filename": "src/app.tsx",
+      "source": "import { Modal } from 'snice-react/modal';",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-side-effect",
+      "filename": "src/index.ts",
+      "source": "import 'snice-react';",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-require",
+      "filename": "src/app.ts",
+      "source": "const { Button } = require('snice-react');",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-require-subpath",
+      "filename": "src/app.ts",
+      "source": "const modal = require('snice-react/modal');",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-dynamic-import",
+      "filename": "src/app.ts",
+      "source": "import('snice-react').then(mod => console.log(mod.Button));",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "hallucinated-snice-react-dynamic-import-subpath",
+      "filename": "src/app.ts",
+      "source": "import('snice-react/modal').then(mod => {});",
+      "expectedRuleIds": ["snice/hallucinated-react-package"]
+    },
+    {
+      "name": "react-create-element-with-snice-button",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst view = React.createElement('snice-button', { variant: 'primary' });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "react-create-element-with-snice-modal",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst dialog = React.createElement('snice-modal', { label: 'Dialog' });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "imported-create-element-with-snice-input",
+      "filename": "src/app.tsx",
+      "source": "import { createElement } from 'react';\nconst field = createElement('snice-input', { type: 'email' });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "aliased-create-element-with-snice-select",
+      "filename": "src/app.tsx",
+      "source": "import { createElement as h } from 'react';\nconst dropdown = h('snice-select', { options: [] });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "react-default-import-with-snice-button",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst btn = React.createElement('snice-button', { variant: 'primary' });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "react-namespace-import-with-snice-tabs",
+      "filename": "src/app.tsx",
+      "source": "import * as React from 'react';\nconst tabs = React.createElement('snice-tabs', { selected: 0 });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "nested-snice-tab-panel-in-createElement",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst panel = React.createElement('snice-tab-panel', { slot: 'panel' });",
+      "expectedRuleIds": ["snice/react-create-element"]
+    },
+    {
+      "name": "require-snice-react-in-string-literal-ignored",
+      "filename": "src/app.ts",
+      "source": "const msg = \"require('snice-react')\";\nconst msg2 = `import('snice-react')`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "require-snice-react-in-comment-ignored",
+      "filename": "src/app.ts",
+      "source": "// require('snice-react')\n/* import('snice-react') */\nconst x = 1;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "local-function-create-element-ignored",
+      "filename": "src/app.tsx",
+      "source": "function createElement(tag, props) { return null; }\nconst btn = createElement('snice-button', {});",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "local-react-object-ignored",
+      "filename": "src/app.tsx",
+      "source": "class React {\n  static createElement(tag, props) { return null; }\n}\nconst btn = React.createElement('snice-button', {});",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-create-element-native-html-ignored",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst div = React.createElement('div', { className: 'container' });",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-create-element-custom-element-ignored",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst custom = React.createElement('my-custom-element', {});",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-create-element-non-released-snice-component-ignored",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nconst elem = React.createElement('snice-nonexistent', {});",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "unrelated-wrapper-import-does-not-suppress-diagnostic",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nimport { Button as SniceButton } from 'snice/react';\nconst modal = React.createElement('snice-modal', { label: 'Test' });\nconst btn = <SniceButton />;",
+      "expectedRuleIds": ["snice/react-create-element"]
+    }
+  ]
+}

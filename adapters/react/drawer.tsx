@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/drawer/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Drawer component
@@ -34,7 +35,7 @@ export interface DrawerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/drawer';
+ * import 'snice/components/drawer/snice-drawer';
  * import { Drawer } from 'snice/react';
  *
  * function MyComponent() {
@@ -42,7 +43,7 @@ export interface DrawerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Drawer = createReactAdapter<DrawerProps>({
+export const Drawer: SniceReactComponent<DrawerProps, SniceComponentRef> = createReactAdapter<DrawerProps, false>({
   tagName: 'snice-drawer',
   properties: ["open","position","size","inline","breakpoint","noBackdrop","noBackdropDismiss","noEscapeDismiss","noFocusTrap","persistent","pushContent","contained","noHeader","noFooter"],
   events: {"drawer-open":"onDrawerOpen","drawer-close":"onDrawerClose"},

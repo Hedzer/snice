@@ -1,347 +1,407 @@
 #!/usr/bin/env node
 
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve, basename } from 'path';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, cpSync, statSync } from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync
+} from 'node:fs';
+import { execFile } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
+import { analyzeProject, findImports, isTypeOnlyImport, maskComments } from './project-analyzer.js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageRoot = join(__dirname, '..');
+const packageJson = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
+const argv = process.argv.slice(2);
+const command = argv[0];
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const args = process.argv.slice(2);
-const command = args[0];
-
-if (command === 'create-app') {
-  // Parse arguments - separate flags from positional arguments
-  const flags = {};
-  const positional = [];
-
-  for (let i = 1; i < args.length; i++) {
-    const arg = args[i];
-    if (arg.startsWith('--')) {
-      if (arg.includes('=')) {
-        const [key, value] = arg.split('=');
-        flags[key.slice(2)] = value;
-      } else {
-        flags[arg.slice(2)] = true;
-      }
-    } else {
-      positional.push(arg);
-    }
-  }
-
-  const projectPath = positional[0] || '.';
-  const template = flags.template || 'default';
-
-  createApp(projectPath, template);
-} else if (command === 'mcp') {
-  // Start MCP server
-  import('./mcp-server.js');
-} else if (command === 'validate') {
-  validateProject();
-} else if (command === 'build-component') {
-  // Parse arguments - separate flags from positional arguments
-  const flags = {};
-  const positional = [];
-
-  for (let i = 1; i < args.length; i++) {
-    const arg = args[i];
-    if (arg.startsWith('--')) {
-      if (arg.includes('=')) {
-        const [key, value] = arg.split('=');
-        flags[key.slice(2)] = value;
-      } else {
-        flags[arg.slice(2)] = true;
-      }
-    } else {
-      positional.push(arg);
-    }
-  }
-
-  const componentName = positional[0];
-  const outputDir = flags.output || './dist/cdn';
-  const formats = flags.format
-    ? flags.format.split(',')
-    : (componentName === 'table' ? ['iife', 'es'] : ['iife']);
-  // Accept `--minify=false`, `--no-minify`, etc. String 'false' must not be truthy.
-  const minify = flags.minify !== false && flags.minify !== 'false' && flags['no-minify'] !== true;
-  const withTheme = flags['with-theme'] === true;
-
-  if (!componentName) {
-    console.error('❌ Error: Component name is required\n');
-    console.log('Usage: snice build-component <component-name> [options]\n');
-    process.exit(1);
-  }
-
-  buildComponent(componentName, { outputDir, formats, minify, withTheme, copyToPublic: flags['copy-to-public'] === true });
-} else {
-  console.log(`
-Snice CLI
+function help() {
+  console.log(`Snice CLI ${packageJson.version}
 
 Usage:
-  snice create-app <project-name>                       Create a new Snice app
-  snice create-app .                                    Initialize in current directory
-  snice build-component <component-name> [options]      Build CDN component
-  snice validate                                        Check project for common issues
-  snice mcp                                             Start MCP server for AI assistants
-
-Create App Options:
-  --template=react                                      Use React template instead of default
-
-Build Component Options:
-  --output=<dir>                                        Output directory (default: ./dist/cdn)
-  --format=<formats>                                    Comma-separated formats: iife, es (default: iife; table: iife,es)
-  --minify                                              Minify output (default: true)
-  --with-theme                                          Include theme.css in output
-
-MCP Server:
-  Start a Model Context Protocol server for AI-assisted development.
-  Connect in Claude Code: claude mcp add snice -- npx snice mcp
-
-Examples:
-  snice create-app my-app
-  snice create-app my-app --template=react
-  snice build-component button
-  snice build-component button --output=./cdn --format=iife
+  snice create-app <path> [--template=default|react]
+  snice init-ai [path] [--force]
+  snice check [path] [--json]
+  snice doctor [path] [--json]
+  snice validate [path] [--json]
+  snice build-component <name> [options]
   snice mcp
+  snice --version
+
+Commands:
+  create-app       Create a complete Vanilla or React application.
+  init-ai          Install the version-matched Snice skill and agent pointers.
+  check             Run all package, configuration, and source checks.
+  doctor           Diagnose configuration, imports, dependencies, and AI setup.
+  validate         Run the source analyzer only.
+  build-component  Build a CDN component from a Snice source checkout.
+  mcp              Start the optional stdio MCP documentation server.
+
+Build options:
+  --output=<dir>       Output directory (default: ./dist/cdn)
+  --format=iife,es     Output formats (default: iife; table: iife,es)
+  --no-minify          Disable minification
+  --with-theme         Include theme.css
 `);
 }
 
-function createApp(projectPath, template = 'default') {
-  const targetDir = resolve(process.cwd(), projectPath);
-  const projectName = projectPath === '.' ? basename(process.cwd()) : basename(targetDir);
+function fail(message, showHelp = false) {
+  console.error(`Error: ${message}`);
+  if (showHelp) help();
+  process.exitCode = 1;
+}
 
-  console.log(`\n🚀 Creating Snice app in ${targetDir}...\n`);
-
-  // Check if directory exists and is empty
-  if (projectPath !== '.') {
-    if (existsSync(targetDir)) {
-      const files = readdirSync(targetDir);
-      if (files.length > 0 && !files.every(f => f.startsWith('.'))) {
-        console.error(`❌ Directory ${targetDir} is not empty!`);
-        process.exit(1);
-      }
-    } else {
-      mkdirSync(targetDir, { recursive: true });
+function parseArgs(input, allowed) {
+  const positional = [];
+  const options = {};
+  for (let index = 0; index < input.length; index++) {
+    const arg = input[index];
+    if (!arg.startsWith('--')) {
+      positional.push(arg);
+      continue;
     }
-  } else {
-    // Check current directory
-    const files = readdirSync(targetDir);
-    const hasNonDotFiles = files.some(f => !f.startsWith('.') && f !== 'node_modules');
-    if (hasNonDotFiles) {
-      console.error(`❌ Current directory is not empty!`);
-      process.exit(1);
+
+    const equals = arg.indexOf('=');
+    let key = arg.slice(2, equals === -1 ? undefined : equals);
+    let value = equals === -1 ? true : arg.slice(equals + 1);
+    if (key.startsWith('no-')) {
+      key = key.slice(3);
+      value = false;
+    } else if (equals === -1 && input[index + 1] && !input[index + 1].startsWith('-') && allowed.values?.has(key)) {
+      value = input[++index];
     }
+    if (!allowed.keys.has(key)) throw new TypeError(`unknown option --${key}`);
+    options[key] = value;
   }
-
-  // Path to templates
-  const templateDir = join(__dirname, 'templates', template);
-
-  // Check if template exists
-  if (!existsSync(templateDir)) {
-    console.error(`❌ Template "${template}" not found!`);
-    console.error(`Available templates: default, react`);
-    process.exit(1);
-  }
-
-  // Copy template files
-  copyTemplateFiles(templateDir, targetDir, projectName);
-
-  // Copy shared CLAUDE.md
-  const claudeMdPath = join(__dirname, 'templates', 'CLAUDE.md');
-  if (existsSync(claudeMdPath)) {
-    console.log(`  Creating CLAUDE.md...`);
-    const claudeMdContent = readFileSync(claudeMdPath, 'utf8');
-    writeFileSync(join(targetDir, 'CLAUDE.md'), claudeMdContent.replace(/\{\{projectName\}\}/g, projectName));
-  }
-
-  // Copy shared .gitignore
-  const gitignorePath = join(__dirname, 'templates', '.gitignore');
-  if (existsSync(gitignorePath)) {
-    console.log(`  Creating .gitignore...`);
-    const gitignoreContent = readFileSync(gitignorePath, 'utf8');
-    writeFileSync(join(targetDir, '.gitignore'), gitignoreContent);
-  }
-
-  console.log(`\n✨ Project created successfully!\n`);
-  console.log('Next steps:');
-
-  if (projectPath !== '.') {
-    console.log(`  cd ${projectPath}`);
-  }
-
-  console.log('  npm install');
-  console.log('  npm run dev\n');
-  console.log('Happy coding! 🎉\n');
+  return { positional, options };
 }
 
 function copyTemplateFiles(sourceDir, targetDir, projectName) {
-  const files = readdirSync(sourceDir, { withFileTypes: true });
+  for (const entry of readdirSync(sourceDir, { withFileTypes: true })) {
+    const source = join(sourceDir, entry.name);
+    const target = join(targetDir, entry.name);
+    if (entry.isDirectory()) {
+      mkdirSync(target, { recursive: true });
+      copyTemplateFiles(source, target, projectName);
+      continue;
+    }
+    const content = readFileSync(source, 'utf8').replace(/\{\{projectName\}\}/g, projectName);
+    writeFileSync(target, content);
+  }
+}
 
-  for (const file of files) {
-    const sourcePath = join(sourceDir, file.name);
-    const targetPath = join(targetDir, file.name);
+function installAiSupport(targetDir, force = false) {
+  const sourceSkill = join(packageRoot, '.agents', 'skills', 'snice');
+  const targetSkill = join(targetDir, '.agents', 'skills', 'snice');
+  if (!existsSync(sourceSkill)) throw new Error(`shipped Snice skill is missing: ${sourceSkill}`);
+  if (!existsSync(targetSkill) || force) {
+    mkdirSync(dirname(targetSkill), { recursive: true });
+    cpSync(sourceSkill, targetSkill, { recursive: true, force: true });
+    console.log('  installed .agents/skills/snice');
+  } else {
+    console.log('  kept existing .agents/skills/snice (use --force to replace)');
+  }
 
-    if (file.isDirectory()) {
-      // Create directory and recursively copy contents
-      if (!existsSync(targetPath)) {
-        mkdirSync(targetPath, { recursive: true });
-      }
-      copyTemplateFiles(sourcePath, targetPath, projectName);
+  const guidance = readFileSync(join(__dirname, 'templates', 'AI_GUIDANCE.md'), 'utf8');
+  for (const filename of ['AGENTS.md', 'CLAUDE.md']) {
+    const target = join(targetDir, filename);
+    if (!existsSync(target) || force) {
+      writeFileSync(target, guidance);
+      console.log(`  wrote ${filename}`);
     } else {
-      // Read file, replace placeholders, and write to target
-      console.log(`  Creating ${file.name}...`);
-
-      let content = readFileSync(sourcePath, 'utf8');
-
-      // Replace {{projectName}} placeholders
-      content = content.replace(/\{\{projectName\}\}/g, projectName);
-
-      writeFileSync(targetPath, content);
+      console.log(`  kept existing ${filename}`);
     }
   }
+}
+
+function createApp(projectPath, template) {
+  if (!projectPath) throw new TypeError('create-app requires a project path; use "." for the current directory');
+  if (projectPath.includes('\0')) throw new TypeError('project path contains a null byte');
+  if (!['default', 'react'].includes(template)) throw new TypeError(`unknown template "${template}"`);
+
+  const targetDir = resolve(process.cwd(), projectPath);
+  const projectName = projectPath === '.' ? basename(targetDir) : basename(projectPath);
+  if (!/^[a-z0-9][a-z0-9._-]*$/.test(projectName)) {
+    throw new TypeError(`"${projectName}" is not a valid npm package name`);
+  }
+
+  if (existsSync(targetDir)) {
+    const blocking = readdirSync(targetDir).filter(name => !name.startsWith('.') && name !== 'node_modules');
+    if (blocking.length) throw new Error(`directory is not empty: ${targetDir}`);
+  } else {
+    mkdirSync(targetDir, { recursive: true });
+  }
+
+  console.log(`Creating Snice app (${template === 'react' ? 'React' : 'Vanilla'}) in ${targetDir}`);
+  copyTemplateFiles(join(__dirname, 'templates', template), targetDir, projectName);
+  const gitignore = readFileSync(join(__dirname, 'templates', '.gitignore'), 'utf8');
+  writeFileSync(join(targetDir, '.gitignore'), gitignore);
+  installAiSupport(targetDir, true);
+  console.log(`\nNext:\n  ${projectPath === '.' ? '' : `cd ${projectPath}\n  `}npm install\n  npm run type-check\n  npm run dev`);
+}
+
+function walkSource(root) {
+  if (!existsSync(root)) return [];
+  const files = [];
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (entry.name.startsWith('.') || ['node_modules', 'dist', 'coverage'].includes(entry.name)) continue;
+    const path = join(root, entry.name);
+    if (entry.isDirectory()) files.push(...walkSource(path));
+    else if (/\.(?:[cm]?[jt]sx?|html)$/.test(entry.name)) files.push(path);
+  }
+  return files;
+}
+
+function validateProject(targetDir, json = false) {
+  const issues = collectValidationIssues(targetDir);
+  renderValidation(issues, json);
+  return issues;
+}
+
+function collectValidationIssues(targetDir) {
+  const sourceRoot = existsSync(join(targetDir, 'src')) ? join(targetDir, 'src') : targetDir;
+  const projectFiles = ['package.json', 'tsconfig.json', 'index.html']
+    .map(filename => join(targetDir, filename))
+    .filter(existsSync);
+  const files = [...new Set([...projectFiles, ...walkSource(sourceRoot)])].sort();
+  return analyzeProject(files.map(file => ({
+    filename: file,
+    source: readFileSync(file, 'utf8')
+  })));
+}
+
+function renderValidation(issues, json = false) {
+  if (json) console.log(JSON.stringify({ valid: !issues.some(issue => issue.severity === 'error'), issues }, null, 2));
+  else if (!issues.length) console.log('No Snice authoring issues found.');
+  else {
+    for (const issue of issues) {
+      console.log(
+        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.ruleId}\n` +
+        `  ${issue.message}\n  ${issue.fix}`
+      );
+    }
+  }
+  if (issues.some(issue => issue.severity === 'error')) process.exitCode = 1;
+  return issues;
+}
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function doctor(targetDir, json = false) {
+  const findings = collectDoctorFindings(targetDir);
+  renderDoctor(findings, json);
+  return findings;
+}
+
+function collectDoctorFindings(targetDir) {
+  const findings = [];
+  const add = (severity, code, message) => findings.push({ severity, code, message });
+  const projectPackage = readJson(join(targetDir, 'package.json'));
+  if (!projectPackage) add('error', 'package-json', 'package.json is missing or invalid');
+  else if (projectPackage.name !== 'snice' && !projectPackage.dependencies?.snice && !projectPackage.devDependencies?.snice) {
+    add('error', 'snice-dependency', 'snice is not declared as a project dependency');
+  }
+
+  const installedRoot = projectPackage?.name === 'snice' ? targetDir : join(targetDir, 'node_modules', 'snice');
+  const installedPackage = readJson(join(installedRoot, 'package.json'));
+  if (!installedPackage) add('error', 'snice-install', 'the declared Snice package is not installed');
+  else add('info', 'snice-version', `using snice ${installedPackage.version}`);
+
+  const tsconfig = readJson(join(targetDir, 'tsconfig.json'));
+  if (!tsconfig) add('warning', 'tsconfig', 'tsconfig.json is missing or invalid');
+  else {
+    const compiler = tsconfig.compilerOptions ?? {};
+    if (compiler.experimentalDecorators === true) add('error', 'decorators', 'experimentalDecorators must be false');
+    if (compiler.useDefineForClassFields !== false) {
+      add('warning', 'class-fields', 'set useDefineForClassFields to false for the documented Snice field semantics');
+    }
+  }
+
+  const sourceRoot = join(targetDir, 'src');
+  for (const file of walkSource(sourceRoot)) {
+    // Parse real imports from comment-masked source instead of scanning every
+    // quoted string: an `import type` is erased by TypeScript and cannot
+    // register a custom element, so it never receives the runtime .js check.
+    const code = maskComments(readFileSync(file, 'utf8'));
+    const specifiers = [];
+    for (const entry of findImports(code)) {
+      if (!entry.path.startsWith('snice/components/')) continue;
+      if (isTypeOnlyImport(entry)) continue;
+      specifiers.push({ index: entry.index, path: entry.path });
+    }
+    for (const match of code.matchAll(/\bimport\s*\(\s*(['"])(snice\/components\/[^'"]+)\1\s*\)/g)) {
+      specifiers.push({ index: match.index, path: match[2] });
+    }
+    specifiers.sort((left, right) => left.index - right.index);
+    for (const { path: specifier } of specifiers) {
+      const segments = specifier.slice('snice/components/'.length).split('/');
+      const component = segments[0];
+      const leaf = segments.length > 1 ? segments.slice(1).join('/') : undefined;
+      if (!leaf && component !== 'custom-elements') {
+        add('error', 'component-import', `${specifier} is incomplete; use the documented deep side-effect import`);
+        continue;
+      }
+      if (!installedPackage || component === 'theme') continue;
+      const expected = join(installedRoot, 'dist', 'components', component, `${leaf}.js`);
+      if (!existsSync(expected)) add('error', 'component-export', `${specifier} targets a missing package file`);
+    }
+  }
+
+  if (!existsSync(join(targetDir, '.agents', 'skills', 'snice', 'SKILL.md'))) {
+    add('warning', 'snice-skill', 'Snice skill is not installed; run npx snice init-ai');
+  }
+
+  return findings;
+}
+
+function renderDoctor(findings, json = false) {
+  const errors = findings.filter(item => item.severity === 'error').length;
+  const warnings = findings.filter(item => item.severity === 'warning').length;
+  if (json) console.log(JSON.stringify({ ok: errors === 0, findings }, null, 2));
+  else {
+    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.message}`);
+    console.log(`Doctor finished with ${errors} error(s) and ${warnings} warning(s).`);
+  }
+  if (errors) process.exitCode = 1;
+}
+
+function checkProject(targetDir, json = false) {
+  const findings = collectDoctorFindings(targetDir);
+  const issues = collectValidationIssues(targetDir);
+  const ok = !findings.some(item => item.severity === 'error') &&
+    !issues.some(item => item.severity === 'error');
+
+  if (json) {
+    console.log(JSON.stringify({ ok, findings, issues }, null, 2));
+  } else {
+    console.log('Project configuration:');
+    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.message}`);
+    console.log('\nSnice source:');
+    if (!issues.length) console.log('No Snice authoring issues found.');
+    for (const issue of issues) {
+      console.log(
+        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.ruleId}\n` +
+        `  ${issue.message}\n  ${issue.fix}`
+      );
+    }
+    console.log(`\nCheck ${ok ? 'passed' : 'failed'}.`);
+  }
+  if (!ok) process.exitCode = 1;
+  return { ok, findings, issues };
 }
 
 async function buildComponent(componentName, options) {
-  const { outputDir, formats, minify, withTheme, copyToPublic } = options;
-
-  console.log(`\n🔨 Building CDN component: ${componentName}\n`);
-
-  // Verify component exists
-  const packageComponentsDir = join(process.cwd(), 'packages', 'components', 'src');
-  const legacyComponentsDir = join(process.cwd(), 'components');
-  const componentsDir = existsSync(packageComponentsDir) ? packageComponentsDir : legacyComponentsDir;
+  if (!componentName || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(componentName)) {
+    throw new TypeError('build-component requires a kebab-case component name');
+  }
+  const componentsDir = join(process.cwd(), 'packages', 'components', 'src');
   const componentPath = join(componentsDir, componentName, `snice-${componentName}.ts`);
-  if (!existsSync(componentPath)) {
-    console.error(`❌ Component not found: ${componentPath}`);
-    console.error('Available components:');
-
-    if (existsSync(componentsDir)) {
-      const items = readdirSync(componentsDir);
-      for (const item of items) {
-        const itemPath = join(componentsDir, item);
-        if (statSync(itemPath).isDirectory() && item !== 'theme') {
-          const tsFile = join(itemPath, `snice-${item}.ts`);
-          if (existsSync(tsFile)) {
-            console.error(`  - ${item}`);
-          }
-        }
-      }
-    }
-    process.exit(1);
+  const rollupConfig = join(process.cwd(), 'rollup.config.cdn.js');
+  if (!existsSync(componentPath) || !existsSync(rollupConfig)) {
+    throw new Error('build-component must run from a Snice source checkout containing the component and rollup.config.cdn.js');
   }
 
-  const configContent = `
-import { createCdnBuild } from './rollup.config.cdn.js';
-
-export default createCdnBuild('${componentName}', {
-  minify: ${minify},
-  withTheme: ${withTheme},
-  formats: ${JSON.stringify(formats)}
+  const formats = String(options.format ?? (componentName === 'table' ? 'iife,es' : 'iife')).split(',');
+  if (formats.some(format => !['iife', 'es'].includes(format))) throw new TypeError('format must contain only iife or es');
+  const outputDir = resolve(process.cwd(), String(options.output ?? './dist/cdn'), componentName);
+  const temporaryDir = mkdtempSync(join(tmpdir(), 'snice-rollup-'));
+  const temporaryConfig = join(temporaryDir, 'rollup.config.mjs');
+  writeFileSync(temporaryConfig, `import { createCdnBuild } from ${JSON.stringify(pathToFileURL(rollupConfig).href)};
+export default createCdnBuild(${JSON.stringify(componentName)}, {
+  minify: ${options.minify !== false},
+  withTheme: ${options['with-theme'] === true},
+  formats: ${JSON.stringify(formats)},
+  outputDir: ${JSON.stringify(outputDir)}
 });
-`;
-
-  const tempConfigPath = join(process.cwd(), '.rollup.config.temp.js');
-  writeFileSync(tempConfigPath, configContent);
+`);
 
   try {
-    const { stdout, stderr } = await execAsync(`npx rollup -c ${tempConfigPath}`);
-    if (stdout) console.log(stdout);
-    if (stderr && !stderr.includes('created')) console.error(stderr);
-  } catch (error) {
-    console.error(`\n❌ Build failed:`, error.message);
-    if (error.stdout) console.log(error.stdout);
-    if (error.stderr) console.error(error.stderr);
-    process.exit(1);
+    const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    const { stdout, stderr } = await execFileAsync(npx, ['rollup', '-c', temporaryConfig], {
+      cwd: process.cwd(),
+      maxBuffer: 10 * 1024 * 1024
+    });
+    if (stdout) process.stdout.write(stdout);
+    if (stderr) process.stderr.write(stderr);
   } finally {
-    if (existsSync(tempConfigPath)) {
-      const { unlinkSync } = await import('fs');
-      unlinkSync(tempConfigPath);
-    }
-  }
-
-  const outputPath = join(process.cwd(), outputDir, componentName);
-
-  // Copy .min.js files into the repository website when present. Retain the
-  // legacy public/components fallback for older source checkouts.
-  const websiteComponentsDir = join(process.cwd(), 'website', 'public', 'components');
-  const legacyPublicDir = join(process.cwd(), 'public', 'components');
-  const publicDir = existsSync(websiteComponentsDir) ? websiteComponentsDir : legacyPublicDir;
-  if (existsSync(publicDir) && existsSync(outputPath)) {
-    const minFiles = readdirSync(outputPath).filter(f => f.endsWith('.min.js'));
-    for (const file of minFiles) {
-      const src = join(outputPath, file);
-      const dest = join(publicDir, file);
-      const { copyFileSync } = await import('fs');
-      copyFileSync(src, dest);
-    }
-    if (minFiles.length > 0) {
-      console.log(`📋 Copied ${minFiles.length} file(s) to ${publicDir}`);
-    }
-  }
-
-  console.log(`\n✨ Build complete!\n`);
-  console.log(`📁 Output: ${outputDir}/${componentName}/\n`);
-
-  // List generated files
-  if (existsSync(outputPath)) {
-    console.log('Generated files:');
-    const files = readdirSync(outputPath);
-    for (const file of files) {
-      const filePath = join(outputPath, file);
-      const stats = statSync(filePath);
-      const sizeKB = (stats.size / 1024).toFixed(2);
-      console.log(`  ${file} (${sizeKB} KB)`);
-    }
+    rmSync(temporaryDir, { recursive: true, force: true });
   }
 }
 
-function validateProject() {
-  console.log('\n🔍 Validating project...\n');
-
-  const warnings = [];
-  const controllersDir = join(process.cwd(), 'controllers');
-
-  if (existsSync(controllersDir)) {
-    const files = readdirSync(controllersDir, { recursive: true });
-
-    for (const file of files) {
-      if (typeof file === 'string' && file.endsWith('.ts')) {
-        const filePath = join(controllersDir, file);
-        const content = readFileSync(filePath, 'utf8');
-
-        // Check for imports from component files (not .types.ts)
-        const importRegex = /from\s+['"].*\/components\/[^'"]+\/snice-[^'"]+(?<!\.types)['"];?/g;
-        const matches = content.match(importRegex);
-
-        if (matches) {
-          for (const match of matches) {
-            // Skip if it's actually a .types import
-            if (!match.includes('.types')) {
-              warnings.push({
-                file: filePath,
-                message: `Controller imports from component file instead of .types.ts`,
-                match: match.trim()
-              });
-            }
-          }
-        }
-      }
+async function main() {
+  try {
+    if (!command || ['help', '--help', '-h'].includes(command)) {
+      help();
+      return;
     }
-  }
-
-  if (warnings.length === 0) {
-    console.log('✅ No issues found.\n');
-  } else {
-    console.log(`⚠️  Found ${warnings.length} warning(s):\n`);
-    for (const warning of warnings) {
-      console.log(`  ${warning.file}`);
-      console.log(`    ${warning.message}`);
-      console.log(`    ${warning.match}`);
-      console.log(`    → Use .types.ts imports to avoid circular dependencies\n`);
+    if (['--version', '-v', 'version'].includes(command)) {
+      console.log(packageJson.version);
+      return;
     }
+    if (command === 'mcp') {
+      if (argv.length > 1) throw new TypeError('mcp accepts no arguments');
+      await import('./mcp-server.js');
+      return;
+    }
+    if (command === 'create-app') {
+      const { positional, options } = parseArgs(argv.slice(1), {
+        keys: new Set(['template']),
+        values: new Set(['template'])
+      });
+      if (positional.length > 1) throw new TypeError('create-app accepts one project path');
+      createApp(positional[0], String(options.template ?? 'default'));
+      return;
+    }
+    if (command === 'init-ai') {
+      const { positional, options } = parseArgs(argv.slice(1), {
+        keys: new Set(['force']),
+        values: new Set()
+      });
+      if (positional.length > 1) throw new TypeError('init-ai accepts at most one path');
+      installAiSupport(resolve(process.cwd(), positional[0] ?? '.'), options.force === true);
+      return;
+    }
+    if (command === 'check' || command === 'doctor' || command === 'validate') {
+      const { positional, options } = parseArgs(argv.slice(1), {
+        keys: new Set(['json']),
+        values: new Set()
+      });
+      if (positional.length > 1) throw new TypeError(`${command} accepts at most one path`);
+      const target = resolve(process.cwd(), positional[0] ?? '.');
+      if (command === 'check') checkProject(target, options.json === true);
+      else if (command === 'doctor') doctor(target, options.json === true);
+      else validateProject(target, options.json === true);
+      return;
+    }
+    if (command === 'build-component') {
+      const { positional, options } = parseArgs(argv.slice(1), {
+        keys: new Set(['output', 'format', 'minify', 'with-theme']),
+        values: new Set(['output', 'format'])
+      });
+      if (positional.length !== 1) throw new TypeError('build-component accepts one component name');
+      await buildComponent(positional[0], options);
+      return;
+    }
+    throw new TypeError(`unknown command "${command}"`);
+  } catch (error) {
+    fail(error.message);
   }
 }
+
+await main();

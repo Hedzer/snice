@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/progress-ring/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the ProgressRing component
@@ -26,7 +27,7 @@ export interface ProgressRingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/progress-ring';
+ * import 'snice/components/progress-ring/snice-progress-ring';
  * import { ProgressRing } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface ProgressRingProps extends SniceBaseProps {
  * }
  * ```
  */
-export const ProgressRing = createReactAdapter<ProgressRingProps>({
+export const ProgressRing: SniceReactComponent<ProgressRingProps, SniceComponentRef> = createReactAdapter<ProgressRingProps, false>({
   tagName: 'snice-progress-ring',
   properties: ["value","max","size","thickness","color","showValue","label"],
   events: {"progress-complete":"onProgressComplete"},

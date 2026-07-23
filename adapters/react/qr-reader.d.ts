@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the QrReader component
  */
@@ -22,7 +23,7 @@ export interface QrReaderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/qr-reader';
+ * import 'snice/components/qr-reader/snice-qr-reader';
  * import { QrReader } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface QrReaderProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const QrReader: import("react").ForwardRefExoticComponent<Omit<QrReaderProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const QrReader: SniceReactComponent<QrReaderProps, SniceComponentRef>;
 //# sourceMappingURL=qr-reader.d.ts.map

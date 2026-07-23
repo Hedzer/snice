@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/avatar/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Avatar component
@@ -26,7 +27,7 @@ export interface AvatarProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/avatar';
+ * import 'snice/components/avatar/snice-avatar';
  * import { Avatar } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface AvatarProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Avatar = createReactAdapter<AvatarProps>({
+export const Avatar: SniceReactComponent<AvatarProps, SniceComponentRef> = createReactAdapter<AvatarProps, false>({
   tagName: 'snice-avatar',
   properties: ["src","alt","name","size","shape","fallbackColor","fallbackBackground"],
   events: {},

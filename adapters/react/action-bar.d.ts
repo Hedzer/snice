@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the ActionBar component
  */
@@ -20,7 +21,7 @@ export interface ActionBarProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/action-bar';
+ * import 'snice/components/action-bar/snice-action-bar';
  * import { ActionBar } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface ActionBarProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const ActionBar: import("react").ForwardRefExoticComponent<Omit<ActionBarProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ActionBar: SniceReactComponent<ActionBarProps, SniceComponentRef>;
 //# sourceMappingURL=action-bar.d.ts.map

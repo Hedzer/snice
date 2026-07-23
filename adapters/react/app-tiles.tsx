@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/app-tiles/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the AppTiles component
@@ -23,7 +24,7 @@ export interface AppTilesProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/app-tiles';
+ * import 'snice/components/app-tiles/snice-app-tiles';
  * import { AppTiles } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface AppTilesProps extends SniceBaseProps {
  * }
  * ```
  */
-export const AppTiles = createReactAdapter<AppTilesProps>({
+export const AppTiles: SniceReactComponent<AppTilesProps, SniceComponentRef> = createReactAdapter<AppTilesProps, false>({
   tagName: 'snice-app-tiles',
   properties: ["tiles","columns","size","variant"],
   events: {"tile-click":"onTileClick"},

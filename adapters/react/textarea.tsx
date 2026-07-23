@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/textarea/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Textarea component
@@ -43,7 +44,7 @@ export interface TextareaProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/textarea';
+ * import 'snice/components/textarea/snice-textarea';
  * import { Textarea } from 'snice/react';
  *
  * function MyComponent() {
@@ -51,7 +52,7 @@ export interface TextareaProps extends SniceFormProps {
  * }
  * ```
  */
-export const Textarea = createReactAdapter<TextareaProps>({
+export const Textarea: SniceReactComponent<TextareaProps, SniceFormRef> = createReactAdapter<TextareaProps, true>({
   tagName: 'snice-textarea',
   properties: ["defaultValue","size","variant","resize","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","rows","cols","maxlength","minlength","autocomplete","name","autoGrow","value"],
   events: {"textarea-input":"onTextareaInput","textarea-change":"onTextareaChange","textarea-focus":"onTextareaFocus","textarea-blur":"onTextareaBlur"},

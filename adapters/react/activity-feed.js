@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/activity-feed';
+ * import 'snice/components/activity-feed/snice-activity-feed';
  * import { ActivityFeed } from 'snice/react';
  *
  * function MyComponent() {

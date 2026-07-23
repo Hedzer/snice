@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Location component
  */
@@ -28,7 +29,7 @@ export interface LocationProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/location';
+ * import 'snice/components/location/snice-location';
  * import { Location } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,5 +37,5 @@ export interface LocationProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Location: import("react").ForwardRefExoticComponent<Omit<LocationProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Location: SniceReactComponent<LocationProps, SniceComponentRef>;
 //# sourceMappingURL=location.d.ts.map

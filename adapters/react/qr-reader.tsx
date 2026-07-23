@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/qr-reader/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the QrReader component
@@ -28,7 +29,7 @@ export interface QrReaderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/qr-reader';
+ * import 'snice/components/qr-reader/snice-qr-reader';
  * import { QrReader } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface QrReaderProps extends SniceBaseProps {
  * }
  * ```
  */
-export const QrReader = createReactAdapter<QrReaderProps>({
+export const QrReader: SniceReactComponent<QrReaderProps, SniceComponentRef> = createReactAdapter<QrReaderProps, false>({
   tagName: 'snice-qr-reader',
   properties: ["autoStart","camera","pickFirst","manualSnap","scanSpeed","tapStart"],
   events: {"qr-scan":"onQrScan","qr-error":"onQrError","camera-ready":"onCameraReady","camera-error":"onCameraError"},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/notification-center/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the NotificationCenter component
@@ -25,7 +26,7 @@ export interface NotificationCenterProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/notification-center';
+ * import 'snice/components/notification-center/snice-notification-center';
  * import { NotificationCenter } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface NotificationCenterProps extends SniceBaseProps {
  * }
  * ```
  */
-export const NotificationCenter = createReactAdapter<NotificationCenterProps>({
+export const NotificationCenter: SniceReactComponent<NotificationCenterProps, SniceComponentRef> = createReactAdapter<NotificationCenterProps, false>({
   tagName: 'snice-notification-center',
   properties: ["notifications","open","placement","icon"],
   events: {"notification-click":"onNotificationClick","notification-dismiss":"onNotificationDismiss","notification-read-all":"onNotificationReadAll"},

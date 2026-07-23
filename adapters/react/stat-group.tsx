@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/stat-group/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the StatGroup component
@@ -22,7 +23,7 @@ export interface StatGroupProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/stat-group';
+ * import 'snice/components/stat-group/snice-stat-group';
  * import { StatGroup } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface StatGroupProps extends SniceBaseProps {
  * }
  * ```
  */
-export const StatGroup = createReactAdapter<StatGroupProps>({
+export const StatGroup: SniceReactComponent<StatGroupProps, SniceComponentRef> = createReactAdapter<StatGroupProps, false>({
   tagName: 'snice-stat-group',
   properties: ["stats","columns","variant"],
   events: {"stat-click":"onStatClick"},

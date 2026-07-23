@@ -67,7 +67,7 @@ export function NotificationsPage() {
           </span>
         </div>
         {notifications.length > 0 && (
-          <Button variant="secondary" size="small" onClick={clearAll}>
+          <Button outline size="small" onClick={clearAll}>
             Clear All (Ctrl+Backspace)
           </Button>
         )}

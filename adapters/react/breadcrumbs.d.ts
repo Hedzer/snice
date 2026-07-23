@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Breadcrumbs component
  */
@@ -18,7 +19,7 @@ export interface BreadcrumbsProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/breadcrumbs';
+ * import 'snice/components/breadcrumbs/snice-breadcrumbs';
  * import { Breadcrumbs } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface BreadcrumbsProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Breadcrumbs: import("react").ForwardRefExoticComponent<Omit<BreadcrumbsProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Breadcrumbs: SniceReactComponent<BreadcrumbsProps, SniceComponentRef>;
 //# sourceMappingURL=breadcrumbs.d.ts.map

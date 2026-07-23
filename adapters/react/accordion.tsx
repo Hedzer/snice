@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/accordion/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Accordion component
@@ -22,7 +23,7 @@ export interface AccordionProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/accordion';
+ * import 'snice/components/accordion/snice-accordion';
  * import { Accordion } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface AccordionProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Accordion = createReactAdapter<AccordionProps>({
+export const Accordion: SniceReactComponent<AccordionProps, SniceComponentRef> = createReactAdapter<AccordionProps, false>({
   tagName: 'snice-accordion',
   properties: ["multiple","variant"],
   events: {"accordion-open":"onAccordionOpen","accordion-close":"onAccordionClose"},

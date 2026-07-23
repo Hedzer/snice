@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/availability/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Availability component
@@ -25,7 +26,7 @@ export interface AvailabilityProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/availability';
+ * import 'snice/components/availability/snice-availability';
  * import { Availability } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface AvailabilityProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Availability = createReactAdapter<AvailabilityProps>({
+export const Availability: SniceReactComponent<AvailabilityProps, SniceComponentRef> = createReactAdapter<AvailabilityProps, false>({
   tagName: 'snice-availability',
   properties: ["value","granularity","startHour","endHour","format","readonly"],
   events: {"availability-change":"onAvailabilityChange"},

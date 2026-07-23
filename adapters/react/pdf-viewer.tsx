@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/pdf-viewer/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the PdfViewer component
@@ -25,7 +26,7 @@ export interface PdfViewerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/pdf-viewer';
+ * import 'snice/components/pdf-viewer/snice-pdf-viewer';
  * import { PdfViewer } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface PdfViewerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const PdfViewer = createReactAdapter<PdfViewerProps>({
+export const PdfViewer: SniceReactComponent<PdfViewerProps, SniceComponentRef> = createReactAdapter<PdfViewerProps, false>({
   tagName: 'snice-pdf-viewer',
   properties: ["src","page","zoom","fit"],
   events: {"page-change":"onPageChange","pdf-loaded":"onPdfLoaded","pdf-error":"onPdfError"},

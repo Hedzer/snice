@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Weather component
  */
@@ -15,7 +16,7 @@ export interface WeatherProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/weather';
+ * import 'snice/components/weather/snice-weather';
  * import { Weather } from 'snice/react';
  *
  * function MyComponent() {
@@ -23,5 +24,5 @@ export interface WeatherProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Weather: import("react").ForwardRefExoticComponent<Omit<WeatherProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Weather: SniceReactComponent<WeatherProps, SniceComponentRef>;
 //# sourceMappingURL=weather.d.ts.map

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the VirtualScroller component
  */
@@ -17,7 +18,7 @@ export interface VirtualScrollerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/virtual-scroller';
+ * import 'snice/components/virtual-scroller/snice-virtual-scroller';
  * import { VirtualScroller } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface VirtualScrollerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const VirtualScroller: import("react").ForwardRefExoticComponent<Omit<VirtualScrollerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const VirtualScroller: SniceReactComponent<VirtualScrollerProps, SniceComponentRef>;
 //# sourceMappingURL=virtual-scroller.d.ts.map

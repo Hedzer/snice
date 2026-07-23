@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/tree/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Tree component
@@ -31,7 +32,7 @@ export interface TreeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tree';
+ * import 'snice/components/tree/snice-tree';
  * import { Tree } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface TreeProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Tree = createReactAdapter<TreeProps>({
+export const Tree: SniceReactComponent<TreeProps, SniceComponentRef> = createReactAdapter<TreeProps, false>({
   tagName: 'snice-tree',
   properties: ["selectable","selectionMode","showCheckboxes","showIcons","expandOnClick","nodes","selectedNodes","checkedNodes"],
   events: {"tree-node-expand":"onTreeNodeExpand","tree-node-collapse":"onTreeNodeCollapse","tree-node-select":"onTreeNodeSelect","tree-node-check":"onTreeNodeCheck","tree-node-lazy-load":"onTreeNodeLazyLoad"},

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/availability';
+ * import 'snice/components/availability/snice-availability';
  * import { Availability } from 'snice/react';
  *
  * function MyComponent() {

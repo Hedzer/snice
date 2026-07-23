@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/countdown/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Countdown component
@@ -23,7 +24,7 @@ export interface CountdownProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/countdown';
+ * import 'snice/components/countdown/snice-countdown';
  * import { Countdown } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface CountdownProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Countdown = createReactAdapter<CountdownProps>({
+export const Countdown: SniceReactComponent<CountdownProps, SniceComponentRef> = createReactAdapter<CountdownProps, false>({
   tagName: 'snice-countdown',
   properties: ["target","format","variant"],
   events: {"countdown-complete":"onCountdownComplete","countdown-tick":"onCountdownTick"},

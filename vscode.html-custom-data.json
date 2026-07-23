@@ -5656,7 +5656,7 @@
           ]
         },
         {
-          "name": "istoplevel",
+          "name": "is-top-level",
           "description": "isTopLevel: boolean"
         },
         {

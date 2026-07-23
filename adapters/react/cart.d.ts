@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Cart component
  */
@@ -22,7 +23,7 @@ export interface CartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/cart';
+ * import 'snice/components/cart/snice-cart';
  * import { Cart } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface CartProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Cart: import("react").ForwardRefExoticComponent<Omit<CartProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Cart: SniceReactComponent<CartProps, SniceComponentRef>;
 //# sourceMappingURL=cart.d.ts.map

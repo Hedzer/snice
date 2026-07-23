@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Tree component
  */
@@ -25,7 +26,7 @@ export interface TreeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tree';
+ * import 'snice/components/tree/snice-tree';
  * import { Tree } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface TreeProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Tree: import("react").ForwardRefExoticComponent<Omit<TreeProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Tree: SniceReactComponent<TreeProps, SniceComponentRef>;
 //# sourceMappingURL=tree.d.ts.map

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/calendar';
+ * import 'snice/components/calendar/snice-calendar';
  * import { Calendar } from 'snice/react';
  *
  * function MyComponent() {

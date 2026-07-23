@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/grid/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Grid component
@@ -32,7 +33,7 @@ export interface GridProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/grid';
+ * import 'snice/components/grid/snice-grid';
  * import { Grid } from 'snice/react';
  *
  * function MyComponent() {
@@ -40,7 +41,7 @@ export interface GridProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Grid = createReactAdapter<GridProps>({
+export const Grid: SniceReactComponent<GridProps, SniceComponentRef> = createReactAdapter<GridProps, false>({
   tagName: 'snice-grid',
   properties: ["gap","columnWidth","rowHeight","columns","rows","originLeft","originTop","transitionDuration","stagger","resize","draggable","dragThrottle"],
   events: {"grid-layout-complete":"onGridLayoutComplete","grid-drag-item-positioned":"onGridDragItemPositioned"},

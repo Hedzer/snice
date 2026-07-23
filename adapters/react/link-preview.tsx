@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/link-preview/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the LinkPreview component
@@ -27,7 +28,7 @@ export interface LinkPreviewProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/link-preview';
+ * import 'snice/components/link-preview/snice-link-preview';
  * import { LinkPreview } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface LinkPreviewProps extends SniceBaseProps {
  * }
  * ```
  */
-export const LinkPreview = createReactAdapter<LinkPreviewProps>({
+export const LinkPreview: SniceReactComponent<LinkPreviewProps, SniceComponentRef> = createReactAdapter<LinkPreviewProps, false>({
   tagName: 'snice-link-preview',
   properties: ["url","title","description","image","siteName","favicon","variant","size"],
   events: {"link-click":"onLinkClick"},

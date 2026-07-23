@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the KeyValue component
  */
@@ -61,7 +62,7 @@ export interface KeyValueProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/key-value';
+ * import 'snice/components/key-value/snice-key-value';
  * import { KeyValue } from 'snice/react';
  *
  * function MyComponent() {
@@ -69,5 +70,5 @@ export interface KeyValueProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const KeyValue: import("react").ForwardRefExoticComponent<Omit<KeyValueProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const KeyValue: SniceReactComponent<KeyValueProps, SniceFormRef>;
 //# sourceMappingURL=key-value.d.ts.map

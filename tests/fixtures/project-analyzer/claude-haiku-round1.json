@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "producer": "claude-haiku-round1",
+  "cases": [
+    {
+      "name": "custom-modal-implementation-is-recommended",
+      "filename": "src/components/Modal.tsx",
+      "source": "export default function Modal() {\n  return (\n    <div className=\"modal-backdrop\" role=\"presentation\">\n      <div className=\"modal-content\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-title\">\n        <button className=\"modal-close\" aria-label=\"Close modal\">x</button>\n      </div>\n    </div>\n  );\n}",
+      "expectedRuleIds": ["snice/recommend-modal"]
+    },
+    {
+      "name": "state-driven-nav-buttons-are-not-a-violation",
+      "filename": "src/components/Navigation.tsx",
+      "source": "export default function Navigation({ onNavigate }) {\n  return (\n    <nav className=\"navigation\">\n      <ul className=\"nav-links\">\n        <li><button className=\"nav-link\" aria-current=\"page\" onClick={() => onNavigate('jobs')}>Jobs</button></li>\n      </ul>\n    </nav>\n  );\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "native-custom-event-dispatch-is-not-a-violation",
+      "filename": "src/pages/Schedule.tsx",
+      "source": "function handleAssignJob(jobId, technicianId) {\n  window.dispatchEvent(new CustomEvent('job-assigned', { detail: { jobId, technicianId } }));\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-router-usage-is-not-a-violation",
+      "filename": "src/router.tsx",
+      "source": "import { Route, Routes } from 'react-router-dom';\nexport const routes = <Routes><Route path=\"/jobs\" element={<div />} /></Routes>;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "css-grid-layout-is-not-a-violation",
+      "filename": "src/styles.ts",
+      "source": "export const styles = css`.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "native-form-submit-is-not-a-violation",
+      "filename": "src/pages/Settings.tsx",
+      "source": "export const view = html`<form><button type=\"submit\">Save</button></form>`;",
+      "expectedRuleIds": []
+    }
+  ]
+}

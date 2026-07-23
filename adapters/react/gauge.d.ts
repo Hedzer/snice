@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Gauge component
  */
@@ -20,7 +21,7 @@ export interface GaugeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/gauge';
+ * import 'snice/components/gauge/snice-gauge';
  * import { Gauge } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface GaugeProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Gauge: import("react").ForwardRefExoticComponent<Omit<GaugeProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Gauge: SniceReactComponent<GaugeProps, SniceComponentRef>;
 //# sourceMappingURL=gauge.d.ts.map

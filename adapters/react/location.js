@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/location';
+ * import 'snice/components/location/snice-location';
  * import { Location } from 'snice/react';
  *
  * function MyComponent() {

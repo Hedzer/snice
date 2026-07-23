@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/file-gallery/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the FileGallery component
@@ -39,7 +40,7 @@ export interface FileGalleryProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/file-gallery';
+ * import 'snice/components/file-gallery/snice-file-gallery';
  * import { FileGallery } from 'snice/react';
  *
  * function MyComponent() {
@@ -47,7 +48,7 @@ export interface FileGalleryProps extends SniceBaseProps {
  * }
  * ```
  */
-export const FileGallery = createReactAdapter<FileGalleryProps>({
+export const FileGallery: SniceReactComponent<FileGalleryProps, SniceComponentRef> = createReactAdapter<FileGalleryProps, false>({
   tagName: 'snice-file-gallery',
   properties: ["accept","multiple","disabled","maxSize","maxFiles","view","showProgress","allowPause","allowDelete","autoUpload","showDropzone","showAddButton","showHeader"],
   events: {"files-change":"onFilesChange","file-remove":"onFileRemove","upload-progress":"onUploadProgress","upload-complete":"onUploadComplete","upload-error":"onUploadError","upload-pause":"onUploadPause","gallery-error":"onGalleryError","custom-action-click":"onCustomActionClick"},

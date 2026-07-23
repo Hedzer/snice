@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/treemap';
+ * import 'snice/components/treemap/snice-treemap';
  * import { Treemap } from 'snice/react';
  *
  * function MyComponent() {

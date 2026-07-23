@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Candlestick component
  */
@@ -25,7 +26,7 @@ export interface CandlestickProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/candlestick';
+ * import 'snice/components/candlestick/snice-candlestick';
  * import { Candlestick } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface CandlestickProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Candlestick: import("react").ForwardRefExoticComponent<Omit<CandlestickProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Candlestick: SniceReactComponent<CandlestickProps, SniceComponentRef>;
 //# sourceMappingURL=candlestick.d.ts.map

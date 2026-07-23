@@ -795,7 +795,7 @@ function MyForm() {
     <form>
       <Input
         value={value}
-        onChange={(e) => setValue(e.detail.value)}
+        onInputInput={(e) => setValue(e.detail.value)}
         placeholder="Enter text"
       />
       <Button

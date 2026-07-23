@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Leaderboard component
  */
@@ -16,7 +17,7 @@ export interface LeaderboardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/leaderboard';
+ * import 'snice/components/leaderboard/snice-leaderboard';
  * import { Leaderboard } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface LeaderboardProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Leaderboard: import("react").ForwardRefExoticComponent<Omit<LeaderboardProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Leaderboard: SniceReactComponent<LeaderboardProps, SniceComponentRef>;
 //# sourceMappingURL=leaderboard.d.ts.map

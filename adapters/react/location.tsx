@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/location/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Location component
@@ -34,7 +35,7 @@ export interface LocationProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/location';
+ * import 'snice/components/location/snice-location';
  * import { Location } from 'snice/react';
  *
  * function MyComponent() {
@@ -42,7 +43,7 @@ export interface LocationProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Location = createReactAdapter<LocationProps>({
+export const Location: SniceReactComponent<LocationProps, SniceComponentRef> = createReactAdapter<LocationProps, false>({
   tagName: 'snice-location',
   properties: ["mode","name","address","city","state","country","zipCode","latitude","longitude","showMap","showIcon","icon","iconImage","mapUrl","clickable"],
   events: {"location-click":"onLocationClick"},

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the AvatarGroup component
  */
@@ -18,7 +19,7 @@ export interface AvatarGroupProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/avatar-group';
+ * import 'snice/components/avatar-group/snice-avatar-group';
  * import { AvatarGroup } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface AvatarGroupProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const AvatarGroup: import("react").ForwardRefExoticComponent<Omit<AvatarGroupProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const AvatarGroup: SniceReactComponent<AvatarGroupProps, SniceComponentRef>;
 //# sourceMappingURL=avatar-group.d.ts.map

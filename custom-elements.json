@@ -26856,7 +26856,7 @@
               "reflects": true
             },
             {
-              "name": "istoplevel",
+              "name": "is-top-level",
               "fieldName": "isTopLevel",
               "type": {
                 "text": "boolean"

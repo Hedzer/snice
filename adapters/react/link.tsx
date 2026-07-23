@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/link/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Link component
@@ -26,7 +27,7 @@ export interface LinkProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/link';
+ * import 'snice/components/link/snice-link';
  * import { Link } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface LinkProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Link = createReactAdapter<LinkProps>({
+export const Link: SniceReactComponent<LinkProps, SniceComponentRef> = createReactAdapter<LinkProps, false>({
   tagName: 'snice-link',
   properties: ["href","target","variant","disabled","external","underline","hash"],
   events: {},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/stepper/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Stepper component
@@ -23,7 +24,7 @@ export interface StepperProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/stepper';
+ * import 'snice/components/stepper/snice-stepper';
  * import { Stepper } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface StepperProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Stepper = createReactAdapter<StepperProps>({
+export const Stepper: SniceReactComponent<StepperProps, SniceComponentRef> = createReactAdapter<StepperProps, false>({
   tagName: 'snice-stepper',
   properties: ["steps","currentStep","orientation","clickable"],
   events: {},

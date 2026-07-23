@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/weather/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Weather component
@@ -22,7 +23,7 @@ export interface WeatherProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/weather';
+ * import 'snice/components/weather/snice-weather';
  * import { Weather } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface WeatherProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Weather = createReactAdapter<WeatherProps>({
+export const Weather: SniceReactComponent<WeatherProps, SniceComponentRef> = createReactAdapter<WeatherProps, false>({
   tagName: 'snice-weather',
   properties: ["data","unit","variant"],
   events: {},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/select/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Select component
@@ -44,7 +45,7 @@ export interface SelectProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/select';
+ * import 'snice/components/select/snice-select';
  * import { Select } from 'snice/react';
  *
  * function MyComponent() {
@@ -52,7 +53,7 @@ export interface SelectProps extends SniceFormProps {
  * }
  * ```
  */
-export const Select = createReactAdapter<SelectProps>({
+export const Select: SniceReactComponent<SelectProps, SniceFormRef> = createReactAdapter<SelectProps, true>({
   tagName: 'snice-select',
   properties: ["defaultValue","disabled","required","invalid","readonly","loading","multiple","searchable","clearable","allowFreeText","editable","remote","searchDebounce","open","size","name","label","helperText","errorText","placeholder","maxHeight","options","value"],
   events: {"select-change":"onSelectChange","select-open":"onSelectOpen","select-close":"onSelectClose"},

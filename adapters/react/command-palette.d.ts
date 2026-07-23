@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the CommandPalette component
  */
@@ -25,7 +26,7 @@ export interface CommandPaletteProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/command-palette';
+ * import 'snice/components/command-palette/snice-command-palette';
  * import { CommandPalette } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface CommandPaletteProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const CommandPalette: import("react").ForwardRefExoticComponent<Omit<CommandPaletteProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const CommandPalette: SniceReactComponent<CommandPaletteProps, SniceComponentRef>;
 //# sourceMappingURL=command-palette.d.ts.map

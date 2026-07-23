@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/checkbox/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Checkbox component
@@ -30,7 +31,7 @@ export interface CheckboxProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/checkbox';
+ * import 'snice/components/checkbox/snice-checkbox';
  * import { Checkbox } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface CheckboxProps extends SniceFormProps {
  * }
  * ```
  */
-export const Checkbox = createReactAdapter<CheckboxProps>({
+export const Checkbox: SniceReactComponent<CheckboxProps, SniceFormRef> = createReactAdapter<CheckboxProps, true>({
   tagName: 'snice-checkbox',
   properties: ["defaultChecked","indeterminate","disabled","loading","required","invalid","size","name","value","label","checked"],
   events: {"checkbox-change":"onCheckboxChange"},

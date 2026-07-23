@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/gantt/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Gantt component
@@ -25,7 +26,7 @@ export interface GanttProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/gantt';
+ * import 'snice/components/gantt/snice-gantt';
  * import { Gantt } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface GanttProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Gantt = createReactAdapter<GanttProps>({
+export const Gantt: SniceReactComponent<GanttProps, SniceComponentRef> = createReactAdapter<GanttProps, false>({
   tagName: 'snice-gantt',
   properties: ["tasks","zoom","showDependencies"],
   events: {"task-click":"onTaskClick","task-resize":"onTaskResize","task-move":"onTaskMove","task-link":"onTaskLink"},

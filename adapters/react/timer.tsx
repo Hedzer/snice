@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/timer/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Timer component
@@ -25,7 +26,7 @@ export interface TimerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/timer';
+ * import 'snice/components/timer/snice-timer';
  * import { Timer } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface TimerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Timer = createReactAdapter<TimerProps>({
+export const Timer: SniceReactComponent<TimerProps, SniceComponentRef> = createReactAdapter<TimerProps, false>({
   tagName: 'snice-timer',
   properties: ["mode","initialTime","running"],
   events: {"timer-start":"onTimerStart","timer-stop":"onTimerStop","timer-reset":"onTimerReset","timer-complete":"onTimerComplete"},

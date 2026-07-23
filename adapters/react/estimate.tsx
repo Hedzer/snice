@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/estimate/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Estimate component
@@ -37,7 +38,7 @@ export interface EstimateProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/estimate';
+ * import 'snice/components/estimate/snice-estimate';
  * import { Estimate } from 'snice/react';
  *
  * function MyComponent() {
@@ -45,7 +46,7 @@ export interface EstimateProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Estimate = createReactAdapter<EstimateProps>({
+export const Estimate: SniceReactComponent<EstimateProps, SniceComponentRef> = createReactAdapter<EstimateProps, false>({
   tagName: 'snice-estimate',
   properties: ["estimateNumber","date","expiryDate","status","from","to","items","currency","taxRate","discount","notes","terms","variant","showQr","qrData","qrPosition"],
   events: {"estimate-accept":"onEstimateAccept","estimate-decline":"onEstimateDecline","item-toggle":"onItemToggle"},

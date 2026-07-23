@@ -1,8 +1,8 @@
 import { page } from '../router';
 import { render, styles, html, css, context, dispose, watch, on } from 'snice';
 import type { Placard, Context } from 'snice';
+import type { ApplicationContext } from '../context';
 import { isAuthenticated } from '../guards/auth';
-import type { NotificationsDaemon } from '../daemons/notifications';
 import type { Notification, NotificationType } from '../types/notifications';
 
 const placard: Placard = {
@@ -22,9 +22,9 @@ export class NotificationsPage extends HTMLElement {
 
   @context()
   handleContext(ctx: Context) {
-    const daemon = ctx.application.notifications as NotificationsDaemon;
-    if (daemon && !this.unsubscribe) {
-      this.unsubscribe = daemon.subscribe((notification) => {
+    const { notifications } = ctx.application as ApplicationContext;
+    if (notifications && !this.unsubscribe) {
+      this.unsubscribe = notifications.subscribe((notification) => {
         this.notifications = [notification, ...this.notifications];
       });
     }
@@ -48,16 +48,6 @@ export class NotificationsPage extends HTMLElement {
     return this.notifications.filter(n => n.type === this.filter);
   }
 
-  getVariant(type: string): string {
-    const variants: Record<string, string> = {
-      info: 'info',
-      success: 'success',
-      warning: 'warning',
-      error: 'danger'
-    };
-    return variants[type] || 'info';
-  }
-
   @on('keydown:ctrl+Backspace')
   clearAll() {
     this.notifications = [];
@@ -74,7 +64,6 @@ export class NotificationsPage extends HTMLElement {
   @render()
   renderContent() {
     const filtered = this.filteredNotifications;
-    const hasNotifications = filtered.length > 0;
     const isEmpty = filtered.length === 0;
 
     return html`
@@ -86,7 +75,7 @@ export class NotificationsPage extends HTMLElement {
           </div>
           <if ${this.notifications.length > 0}>
             <snice-button
-              variant="secondary"
+              outline
               size="small"
               @click=${this.clearAll}
             >
@@ -133,7 +122,7 @@ export class NotificationsPage extends HTMLElement {
               ${filtered.map(notification => html`
                 <snice-alert
                   key=${notification.id}
-                  variant="${this.getVariant(notification.type)}"
+                  .variant=${notification.type}
                   dismissible
                   @dismiss=${() => this.removeNotification(notification.id)}
                 >

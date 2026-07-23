@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/slider/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Slider component
@@ -39,7 +40,7 @@ export interface SliderProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/slider';
+ * import 'snice/components/slider/snice-slider';
  * import { Slider } from 'snice/react';
  *
  * function MyComponent() {
@@ -47,7 +48,7 @@ export interface SliderProps extends SniceFormProps {
  * }
  * ```
  */
-export const Slider = createReactAdapter<SliderProps>({
+export const Slider: SniceReactComponent<SliderProps, SniceFormRef> = createReactAdapter<SliderProps, true>({
   tagName: 'snice-slider',
   properties: ["defaultValue","size","variant","min","max","step","label","helperText","errorText","disabled","readonly","loading","required","invalid","name","showValue","showTicks","vertical","value"],
   events: {"slider-input":"onSliderInput","slider-change":"onSliderChange"},

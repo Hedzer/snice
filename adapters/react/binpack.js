@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/binpack';
+ * import 'snice/components/binpack/snice-binpack';
  * import { Binpack } from 'snice/react';
  *
  * function MyComponent() {

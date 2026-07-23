@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/kpi';
+ * import 'snice/components/kpi/snice-kpi';
  * import { Kpi } from 'snice/react';
  *
  * function MyComponent() {

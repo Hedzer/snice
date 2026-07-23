@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/radio/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Radio component
@@ -31,7 +32,7 @@ export interface RadioProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/radio';
+ * import 'snice/components/radio/snice-radio';
  * import { Radio } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface RadioProps extends SniceFormProps {
  * }
  * ```
  */
-export const Radio = createReactAdapter<RadioProps>({
+export const Radio: SniceReactComponent<RadioProps, SniceFormRef> = createReactAdapter<RadioProps, true>({
   tagName: 'snice-radio',
   properties: ["defaultChecked","disabled","loading","required","invalid","variant","size","name","value","label","description","checked"],
   events: {"radio-change":"onRadioChange"},

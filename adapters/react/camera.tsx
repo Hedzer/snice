@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/camera/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Camera component
@@ -31,7 +32,7 @@ export interface CameraProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/camera';
+ * import 'snice/components/camera/snice-camera';
  * import { Camera } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface CameraProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Camera = createReactAdapter<CameraProps>({
+export const Camera: SniceReactComponent<CameraProps, SniceComponentRef> = createReactAdapter<CameraProps, false>({
   tagName: 'snice-camera',
   properties: ["autoStart","facingMode","mirror","controlsPosition","showControls","width","height","aspectRatio","objectFit"],
   events: {"camera-start":"onCameraStart","camera-error":"onCameraError","camera-stop":"onCameraStop","camera-capture":"onCameraCapture"},

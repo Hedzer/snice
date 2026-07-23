@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/masonry/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Masonry component
@@ -22,7 +23,7 @@ export interface MasonryProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/masonry';
+ * import 'snice/components/masonry/snice-masonry';
  * import { Masonry } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface MasonryProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Masonry = createReactAdapter<MasonryProps>({
+export const Masonry: SniceReactComponent<MasonryProps, SniceComponentRef> = createReactAdapter<MasonryProps, false>({
   tagName: 'snice-masonry',
   properties: ["columns","gap","minColumnWidth"],
   events: {},

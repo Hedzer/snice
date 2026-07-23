@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Gantt component
  */
@@ -19,7 +20,7 @@ export interface GanttProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/gantt';
+ * import 'snice/components/gantt/snice-gantt';
  * import { Gantt } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface GanttProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Gantt: import("react").ForwardRefExoticComponent<Omit<GanttProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Gantt: SniceReactComponent<GanttProps, SniceComponentRef>;
 //# sourceMappingURL=gantt.d.ts.map

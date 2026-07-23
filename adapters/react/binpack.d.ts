@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Binpack component
  */
@@ -26,7 +27,7 @@ export interface BinpackProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/binpack';
+ * import 'snice/components/binpack/snice-binpack';
  * import { Binpack } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,5 +35,5 @@ export interface BinpackProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Binpack: import("react").ForwardRefExoticComponent<Omit<BinpackProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Binpack: SniceReactComponent<BinpackProps, SniceComponentRef>;
 //# sourceMappingURL=binpack.d.ts.map

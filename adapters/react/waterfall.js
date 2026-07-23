@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/waterfall';
+ * import 'snice/components/waterfall/snice-waterfall';
  * import { Waterfall } from 'snice/react';
  *
  * function MyComponent() {

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Modal component
  */
@@ -23,7 +24,7 @@ export interface ModalProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/modal';
+ * import 'snice/components/modal/snice-modal';
  * import { Modal } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,5 +32,5 @@ export interface ModalProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Modal: import("react").ForwardRefExoticComponent<Omit<ModalProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Modal: SniceReactComponent<ModalProps, SniceComponentRef>;
 //# sourceMappingURL=modal.d.ts.map

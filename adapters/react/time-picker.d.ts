@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the TimePicker component
  */
@@ -38,7 +39,7 @@ export interface TimePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/time-picker';
+ * import 'snice/components/time-picker/snice-time-picker';
  * import { TimePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -46,5 +47,5 @@ export interface TimePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const TimePicker: import("react").ForwardRefExoticComponent<Omit<TimePickerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const TimePicker: SniceReactComponent<TimePickerProps, SniceFormRef>;
 //# sourceMappingURL=time-picker.d.ts.map

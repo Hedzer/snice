@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Tooltip component
  */
@@ -23,7 +24,7 @@ export interface TooltipProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tooltip';
+ * import 'snice/components/tooltip/snice-tooltip';
  * import { Tooltip } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,5 +32,5 @@ export interface TooltipProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Tooltip: import("react").ForwardRefExoticComponent<Omit<TooltipProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Tooltip: SniceReactComponent<TooltipProps, SniceComponentRef>;
 //# sourceMappingURL=tooltip.d.ts.map

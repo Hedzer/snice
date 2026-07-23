@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/org-chart';
+ * import 'snice/components/org-chart/snice-org-chart';
  * import { OrgChart } from 'snice/react';
  *
  * function MyComponent() {

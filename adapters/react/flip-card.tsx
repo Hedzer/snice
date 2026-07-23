@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/flip-card/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the FlipCard component
@@ -23,7 +24,7 @@ export interface FlipCardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/flip-card';
+ * import 'snice/components/flip-card/snice-flip-card';
  * import { FlipCard } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface FlipCardProps extends SniceBaseProps {
  * }
  * ```
  */
-export const FlipCard = createReactAdapter<FlipCardProps>({
+export const FlipCard: SniceReactComponent<FlipCardProps, SniceComponentRef> = createReactAdapter<FlipCardProps, false>({
   tagName: 'snice-flip-card',
   properties: ["flipped","clickToFlip","direction","duration"],
   events: {"flip-change":"onFlipChange"},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/toast/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Toast component
@@ -23,7 +24,7 @@ export interface ToastProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/toast';
+ * import 'snice/components/toast/snice-toast';
  * import { Toast } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface ToastProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Toast = createReactAdapter<ToastProps>({
+export const Toast: SniceReactComponent<ToastProps, SniceComponentRef> = createReactAdapter<ToastProps, false>({
   tagName: 'snice-toast',
   properties: ["type","message","closable","icon"],
   events: {"close-toast":"onCloseToast"},

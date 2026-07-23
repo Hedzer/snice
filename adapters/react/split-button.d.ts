@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the SplitButton component
  */
@@ -24,7 +25,7 @@ export interface SplitButtonProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/split-button';
+ * import 'snice/components/split-button/snice-split-button';
  * import { SplitButton } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface SplitButtonProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const SplitButton: import("react").ForwardRefExoticComponent<Omit<SplitButtonProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const SplitButton: SniceReactComponent<SplitButtonProps, SniceComponentRef>;
 //# sourceMappingURL=split-button.d.ts.map

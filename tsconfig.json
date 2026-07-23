@@ -16,5 +16,6 @@
     "emitDecoratorMetadata": false,
     "useDefineForClassFields": false
   },
-  "include": ["packages/core/src", "packages/components/src", "packages/react/src", "examples/app", "tests"]
+  "include": ["packages/core/src", "packages/components/src", "packages/react/src", "examples/app", "tests"],
+  "exclude": ["tests/fixtures/react-ref-contract"]
 }

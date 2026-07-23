@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/command-palette';
+ * import 'snice/components/command-palette/snice-command-palette';
  * import { CommandPalette } from 'snice/react';
  *
  * function MyComponent() {

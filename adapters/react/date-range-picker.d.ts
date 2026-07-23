@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the DateRangePicker component
  */
@@ -43,7 +44,7 @@ export interface DateRangePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/date-range-picker';
+ * import 'snice/components/date-range-picker/snice-date-range-picker';
  * import { DateRangePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -51,5 +52,5 @@ export interface DateRangePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const DateRangePicker: import("react").ForwardRefExoticComponent<Omit<DateRangePickerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const DateRangePicker: SniceReactComponent<DateRangePickerProps, SniceFormRef>;
 //# sourceMappingURL=date-range-picker.d.ts.map

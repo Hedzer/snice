@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Treemap component
  */
@@ -21,7 +22,7 @@ export interface TreemapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/treemap';
+ * import 'snice/components/treemap/snice-treemap';
  * import { Treemap } from 'snice/react';
  *
  * function MyComponent() {
@@ -29,5 +30,5 @@ export interface TreemapProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Treemap: import("react").ForwardRefExoticComponent<Omit<TreemapProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Treemap: SniceReactComponent<TreemapProps, SniceComponentRef>;
 //# sourceMappingURL=treemap.d.ts.map

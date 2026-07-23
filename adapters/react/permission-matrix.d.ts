@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the PermissionMatrix component
  */
@@ -18,7 +19,7 @@ export interface PermissionMatrixProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/permission-matrix';
+ * import 'snice/components/permission-matrix/snice-permission-matrix';
  * import { PermissionMatrix } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface PermissionMatrixProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const PermissionMatrix: import("react").ForwardRefExoticComponent<Omit<PermissionMatrixProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const PermissionMatrix: SniceReactComponent<PermissionMatrixProps, SniceComponentRef>;
 //# sourceMappingURL=permission-matrix.d.ts.map

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/range-slider';
+ * import 'snice/components/range-slider/snice-range-slider';
  * import { RangeSlider } from 'snice/react';
  *
  * function MyComponent() {

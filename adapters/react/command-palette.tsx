@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/command-palette/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the CommandPalette component
@@ -31,7 +32,7 @@ export interface CommandPaletteProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/command-palette';
+ * import 'snice/components/command-palette/snice-command-palette';
  * import { CommandPalette } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface CommandPaletteProps extends SniceBaseProps {
  * }
  * ```
  */
-export const CommandPalette = createReactAdapter<CommandPaletteProps>({
+export const CommandPalette: SniceReactComponent<CommandPaletteProps, SniceComponentRef> = createReactAdapter<CommandPaletteProps, false>({
   tagName: 'snice-command-palette',
   properties: ["open","commands","placeholder","noResultsText","maxResults","showRecentCommands","recentCommandsLimit","caseSensitive"],
   events: {"command-palette-open":"onCommandPaletteOpen","command-palette-close":"onCommandPaletteClose","command-select":"onCommandSelect","command-execute":"onCommandExecute","command-search":"onCommandSearch"},

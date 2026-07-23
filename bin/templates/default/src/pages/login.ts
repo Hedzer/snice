@@ -2,7 +2,6 @@ import { page } from '../router';
 import { render, styles, respond, context, html, css } from 'snice';
 import type { Placard, Context } from 'snice';
 import { login } from '../services/auth';
-import type { Principal } from '../types/auth';
 import 'snice/components/login/snice-login';
 
 const placard: Placard = {

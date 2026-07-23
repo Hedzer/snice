@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Divider component
  */
@@ -20,7 +21,7 @@ export interface DividerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/divider';
+ * import 'snice/components/divider/snice-divider';
  * import { Divider } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface DividerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Divider: import("react").ForwardRefExoticComponent<Omit<DividerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Divider: SniceReactComponent<DividerProps, SniceComponentRef>;
 //# sourceMappingURL=divider.d.ts.map

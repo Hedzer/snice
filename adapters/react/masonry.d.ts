@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Masonry component
  */
@@ -15,7 +16,7 @@ export interface MasonryProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/masonry';
+ * import 'snice/components/masonry/snice-masonry';
  * import { Masonry } from 'snice/react';
  *
  * function MyComponent() {
@@ -23,5 +24,5 @@ export interface MasonryProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Masonry: import("react").ForwardRefExoticComponent<Omit<MasonryProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Masonry: SniceReactComponent<MasonryProps, SniceComponentRef>;
 //# sourceMappingURL=masonry.d.ts.map

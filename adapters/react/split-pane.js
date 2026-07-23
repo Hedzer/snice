@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/split-pane';
+ * import 'snice/components/split-pane/snice-split-pane';
  * import { SplitPane } from 'snice/react';
  *
  * function MyComponent() {

@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Select component
  */
@@ -38,7 +39,7 @@ export interface SelectProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/select';
+ * import 'snice/components/select/snice-select';
  * import { Select } from 'snice/react';
  *
  * function MyComponent() {
@@ -46,5 +47,5 @@ export interface SelectProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Select: import("react").ForwardRefExoticComponent<Omit<SelectProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Select: SniceReactComponent<SelectProps, SniceFormRef>;
 //# sourceMappingURL=select.d.ts.map

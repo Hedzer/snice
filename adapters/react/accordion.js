@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/accordion';
+ * import 'snice/components/accordion/snice-accordion';
  * import { Accordion } from 'snice/react';
  *
  * function MyComponent() {

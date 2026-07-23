@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/button/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the Button component
@@ -33,7 +34,7 @@ export interface ButtonProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/button';
+ * import 'snice/components/button/snice-button';
  * import { Button } from 'snice/react';
  *
  * function MyComponent() {
@@ -41,7 +42,7 @@ export interface ButtonProps extends SniceFormProps {
  * }
  * ```
  */
-export const Button = createReactAdapter<ButtonProps>({
+export const Button: SniceReactComponent<ButtonProps, SniceFormRef> = createReactAdapter<ButtonProps, true>({
   tagName: 'snice-button',
   properties: ["variant","size","type","disabled","loading","outline","pill","circle","href","target","download","icon","iconPlacement","justifyText"],
   events: {"button-click":"onButtonClick"},

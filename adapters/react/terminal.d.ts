@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Terminal component
  */
@@ -20,7 +21,7 @@ export interface TerminalProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/terminal';
+ * import 'snice/components/terminal/snice-terminal';
  * import { Terminal } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface TerminalProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Terminal: import("react").ForwardRefExoticComponent<Omit<TerminalProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Terminal: SniceReactComponent<TerminalProps, SniceComponentRef>;
 //# sourceMappingURL=terminal.d.ts.map

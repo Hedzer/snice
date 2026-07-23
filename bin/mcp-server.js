@@ -1,543 +1,383 @@
 #!/usr/bin/env node
-/**
- * Snice MCP Server
- * Local Model Context Protocol server for AI-assisted snice development
- *
- * Usage: npx snice mcp
- *
- * Connect in Claude Code via: claude mcp add snice -- npx snice mcp
- */
 
-import { createServer } from 'http';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { readFileSync, existsSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { generateComponentSource } from './component-scaffold.js';
+import { analyzeSource } from './project-analyzer.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageRoot = join(__dirname, '..');
+const packageJson = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
+const docsRoot = join(packageRoot, 'docs', 'ai');
 
-// Load component docs from docs/ai/components
-function loadComponentDocs() {
-  const docsDir = join(__dirname, '..', 'docs', 'ai', 'components');
-  const components = {};
+const JSONRPC_PARSE_ERROR = -32700;
+const JSONRPC_INVALID_REQUEST = -32600;
+const JSONRPC_METHOD_NOT_FOUND = -32601;
+const JSONRPC_INVALID_PARAMS = -32602;
 
-  if (existsSync(docsDir)) {
-    for (const file of readdirSync(docsDir)) {
-      if (file.endsWith('.md')) {
-        const name = file.replace('.md', '');
-        const content = readFileSync(join(docsDir, file), 'utf-8');
-        components[name] = content;
-      }
+function text(path) {
+  return existsSync(path) ? readFileSync(path, 'utf8') : '';
+}
+
+function builtComponentNames() {
+  const manifest = JSON.parse(text(join(packageRoot, 'custom-elements.json')) || '{"modules":[]}');
+  const names = new Set();
+  for (const module of manifest.modules ?? []) {
+    for (const declaration of module.declarations ?? []) {
+      if (declaration.tagName?.startsWith('snice-')) names.add(declaration.tagName.slice(6));
     }
   }
-  return components;
+  names.add('icons');
+  return names;
 }
 
-// Load decorator docs
-function loadDecoratorDocs() {
-  const docsPath = join(__dirname, '..', 'docs', 'ai', 'decorators.md');
-  if (existsSync(docsPath)) {
-    return readFileSync(docsPath, 'utf-8');
-  }
-  return null;
+function loadComponentDocs() {
+  const directory = join(docsRoot, 'components');
+  const allowed = builtComponentNames();
+  return Object.fromEntries(
+    readdirSync(directory)
+      .filter(filename => filename.endsWith('.md'))
+      .map(filename => filename.slice(0, -3))
+      .filter(name => allowed.has(name))
+      .sort()
+      .map(name => [name, text(join(directory, `${name}.md`))])
+  );
 }
 
-// Load README
-function loadReadme() {
-  const readmePath = join(__dirname, '..', 'docs', 'ai', 'README.md');
-  if (existsSync(readmePath)) {
-    return readFileSync(readmePath, 'utf-8');
-  }
-  return null;
-}
+const componentDocs = loadComponentDocs();
+const overview = text(join(docsRoot, 'README.md'));
+const decoratorDocs = text(join(docsRoot, 'decorators.md'));
 
-const COMPONENT_DOCS = loadComponentDocs();
-const DECORATOR_DOCS = loadDecoratorDocs();
-const README = loadReadme();
-
-// MCP Tools
-const TOOLS = [
+const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+const tools = [
   {
     name: 'list_components',
-    description: 'List all available snice UI components with brief descriptions',
-    inputSchema: { type: 'object', properties: {}, required: [] }
+    description: 'List released Snice UI components. WIP components are excluded.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: readOnly
   },
   {
     name: 'get_component_docs',
-    description: 'Get full documentation for a specific snice component including properties, methods, events, and examples',
+    description: 'Get version-matched documentation for one released Snice component.',
     inputSchema: {
       type: 'object',
-      properties: {
-        name: { type: 'string', description: 'Component name (e.g., button, input, modal, alert, card)' }
-      },
-      required: ['name']
-    }
+      properties: { name: { type: 'string', description: 'Name with or without the snice- prefix.' } },
+      required: ['name'],
+      additionalProperties: false
+    },
+    annotations: readOnly
   },
   {
     name: 'get_decorator_docs',
-    description: 'Get documentation for snice decorators (@element, @property, @render, @on, etc.)',
-    inputSchema: { type: 'object', properties: {}, required: [] }
+    description: 'Get the version-matched Snice decorator reference.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: readOnly
   },
   {
     name: 'get_overview',
-    description: 'Get an overview of the snice framework - what it is, how it works, key concepts',
-    inputSchema: { type: 'object', properties: {}, required: [] }
+    description: 'Get the version-matched Snice framework and documentation overview.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    annotations: readOnly
   },
   {
-    name: 'generate_component',
-    description: 'Generate a snice component scaffold with the specified name and properties',
+    name: 'search_docs',
+    description: 'Search released component and core AI documentation.',
+    inputSchema: {
+      type: 'object',
+      properties: { query: { type: 'string', minLength: 2 } },
+      required: ['query'],
+      additionalProperties: false
+    },
+    annotations: readOnly
+  },
+  {
+    name: 'validate_code',
+    description: 'Return structured, conservative diagnostics for common Snice authoring mistakes.',
     inputSchema: {
       type: 'object',
       properties: {
-        name: { type: 'string', description: 'Component name in kebab-case (e.g., user-card, product-list)' },
+        code: { type: 'string' },
+        filename: { type: 'string' }
+      },
+      required: ['code'],
+      additionalProperties: false
+    },
+    annotations: readOnly
+  },
+  {
+    name: 'generate_component',
+    description: 'Return a current Snice custom-element scaffold without writing files.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', pattern: '^[a-z][a-z0-9]*(?:-[a-z0-9]+)+$' },
         properties: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
               name: { type: 'string' },
-              type: { type: 'string', enum: ['string', 'number', 'boolean', 'array', 'object'] },
+              type: { enum: ['string', 'number', 'boolean', 'array', 'object'] },
               default: { type: 'string' }
             },
-            required: ['name']
-          },
-          description: 'Component properties'
+            required: ['name'],
+            additionalProperties: false
+          }
         },
-        withStyles: { type: 'boolean', description: 'Include @styles decorator', default: true },
-        withEvents: { type: 'array', items: { type: 'string' }, description: 'Custom events to dispatch' }
+        withStyles: { type: 'boolean', default: true },
+        withEvents: { type: 'array', items: { type: 'string' } }
       },
-      required: ['name']
-    }
-  },
-  {
-    name: 'search_docs',
-    description: 'Search snice documentation for a keyword or concept',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        query: { type: 'string', description: 'Search query' }
-      },
-      required: ['query']
-    }
-  },
-  {
-    name: 'validate_code',
-    description: 'Validate snice component code for common mistakes and pitfalls',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        code: { type: 'string', description: 'TypeScript/JavaScript component code to validate' }
-      },
-      required: ['code']
-    }
+      required: ['name'],
+      additionalProperties: false
+    },
+    annotations: readOnly
   }
 ];
+const toolsByName = new Map(tools.map(tool => [tool.name, tool]));
 
-// Tool handlers
-function handleTool(name, args) {
-  switch (name) {
-    case 'list_components': {
-      const list = Object.keys(COMPONENT_DOCS).map(name => {
-        const doc = COMPONENT_DOCS[name];
-        const firstLine = doc.split('\n').find(l => l.startsWith('#'))?.replace(/^#+\s*/, '') || name;
-        return `- snice-${name}: ${firstLine}`;
-      }).join('\n');
-      return { content: [{ type: 'text', text: `# Available Snice Components\n\n${list}\n\nUse get_component_docs to get full documentation for any component.` }] };
-    }
-
-    case 'get_component_docs': {
-      const name = args.name?.toLowerCase().replace('snice-', '');
-      const doc = COMPONENT_DOCS[name];
-      if (!doc) {
-        const available = Object.keys(COMPONENT_DOCS).join(', ');
-        return { content: [{ type: 'text', text: `Component "${name}" not found.\n\nAvailable: ${available}` }] };
-      }
-      return { content: [{ type: 'text', text: doc }] };
-    }
-
-    case 'get_decorator_docs': {
-      if (!DECORATOR_DOCS) {
-        return { content: [{ type: 'text', text: 'Decorator documentation not found.' }] };
-      }
-      return { content: [{ type: 'text', text: DECORATOR_DOCS }] };
-    }
-
-    case 'get_overview': {
-      if (!README) {
-        return { content: [{ type: 'text', text: 'Overview documentation not found.' }] };
-      }
-      return { content: [{ type: 'text', text: README }] };
-    }
-
-    case 'generate_component': {
-      const { name, properties = [], withStyles = true, withEvents = [] } = args;
-      const className = name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('');
-
-      const propLines = properties.map(p => {
-        const type = p.type || 'string';
-        const typeMap = { string: 'String', number: 'Number', boolean: 'Boolean', array: 'Array', object: 'Object' };
-        const defaultVal = p.default ?? (type === 'string' ? "''" : type === 'number' ? '0' : type === 'boolean' ? 'false' : type === 'array' ? '[]' : '{}');
-        return `  @property({ type: ${typeMap[type] || 'String'} }) ${p.name} = ${defaultVal};`;
-      }).join('\n');
-
-      const eventMethods = withEvents.map(event => {
-        const methodName = 'emit' + event.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('');
-        return `
-  @dispatch('${event}')
-  ${methodName}(data?: unknown) {
-    return data;
-  }`;
-      }).join('\n');
-
-      const code = `import { element, property, render, html${withStyles ? ', css, styles' : ''}${withEvents.length ? ', dispatch' : ''} } from 'snice';
-
-@element('${name}')
-export class ${className} extends HTMLElement {
-${propLines}
-${withStyles ? `
-  @styles()
-  componentStyles() {
-    return css\`
-      :host {
-        display: block;
-      }
-
-      .${name} {
-        /* Component styles */
-      }
-    \`;
-  }
-` : ''}
-  @render()
-  template() {
-    return html\`
-      <div class="${name}">
-        <!-- Component template -->
-      </div>
-    \`;
-  }${eventMethods}
-}`;
-      return { content: [{ type: 'text', text: code }] };
-    }
-
-    case 'search_docs': {
-      const query = args.query.toLowerCase();
-      const results = [];
-
-      // Search components
-      for (const [name, doc] of Object.entries(COMPONENT_DOCS)) {
-        if (doc.toLowerCase().includes(query)) {
-          const lines = doc.split('\n');
-          const matchingLines = lines.filter(l => l.toLowerCase().includes(query)).slice(0, 3);
-          results.push(`## snice-${name}\n${matchingLines.join('\n')}`);
-        }
-      }
-
-      // Search decorators
-      if (DECORATOR_DOCS?.toLowerCase().includes(query)) {
-        const lines = DECORATOR_DOCS.split('\n');
-        const matchingLines = lines.filter(l => l.toLowerCase().includes(query)).slice(0, 5);
-        results.push(`## Decorators\n${matchingLines.join('\n')}`);
-      }
-
-      if (results.length === 0) {
-        return { content: [{ type: 'text', text: `No results found for "${args.query}"` }] };
-      }
-      return { content: [{ type: 'text', text: `# Search Results for "${args.query}"\n\n${results.join('\n\n')}` }] };
-    }
-
-    case 'validate_code': {
-      const code = args.code;
-      const issues = [];
-
-      // Check for camelCase event names in @dispatch
-      const dispatchMatch = code.match(/@dispatch\s*\(\s*['"]([^'"]+)['"]\s*\)/g);
-      if (dispatchMatch) {
-        for (const match of dispatchMatch) {
-          const eventName = match.match(/['"]([^'"]+)['"]/)?.[1];
-          if (eventName && /[A-Z]/.test(eventName)) {
-            issues.push({
-              severity: 'warning',
-              message: `Event "${eventName}" uses camelCase. Use kebab-case instead.`,
-              fix: `Change to "${eventName.replace(/([A-Z])/g, '-$1').toLowerCase()}"`
-            });
-          }
-        }
-      }
-
-      // Check for wrong import syntax
-      if (/import\s*\{\s*\w+\s*\}\s*from\s*['"]snice\/components/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'Wrong import syntax for built-in components. Use side-effect import.',
-          fix: "Use: import 'snice/components/button/snice-button' (no curly braces)"
-        });
-      }
-
-      // Check for experimentalDecorators in tsconfig reference
-      if (/experimentalDecorators.*true/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'experimentalDecorators must be false. Snice uses TC39 stage 3 decorators.',
-          fix: 'Set experimentalDecorators: false in tsconfig.json'
-        });
-      }
-
-      // Check for missing type in @property for non-strings
-      const propMatches = code.match(/@property\s*\(\s*\)\s*\w+\s*[=:]\s*(\d+|true|false|\[|\{)/g);
-      if (propMatches) {
-        issues.push({
-          severity: 'warning',
-          message: 'Non-string property without type hint. Add { type: Number/Boolean/Array/Object }.',
-          fix: '@property({ type: Number }) count = 0'
-        });
-      }
-
-      // Check for direct DOM manipulation that should use templates
-      if (/this\.innerHTML\s*=/.test(code) || /this\.shadowRoot\.innerHTML\s*=/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: 'Avoid direct innerHTML assignment. Use @render() with html`` template.',
-          fix: 'Use @render() template() { return html`...`; }'
-        });
-      }
-
-      // Check for connectedCallback without super
-      if (/connectedCallback\s*\(\s*\)\s*\{(?![^}]*super\.connectedCallback)/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: 'connectedCallback should call super.connectedCallback() or use @ready() instead.',
-          fix: 'Use @ready() decorator for initialization logic'
-        });
-      }
-
-      // Check for .addEventListener instead of @on
-      if (/this\.addEventListener\s*\(/.test(code)) {
-        issues.push({
-          severity: 'info',
-          message: 'Consider using @on() decorator for event delegation instead of addEventListener.',
-          fix: "@on('click', 'button') handleClick(e) {}"
-        });
-      }
-
-      // Check for Event type instead of CustomEvent in handlers
-      if (/:\s*Event\s*\)/.test(code) && /@on|@event|handle|Handler/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: 'Use CustomEvent type for snice event handlers, not Event.',
-          fix: 'Change (e: Event) to (e: CustomEvent) to access e.detail'
-        });
-      }
-
-      // Check for @customElement (Lit syntax)
-      if (/@customElement\s*\(/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: '@customElement() is Lit syntax. Use @element() in snice.',
-          fix: "Replace @customElement('my-el') with @element('my-el')"
-        });
-      }
-
-      // Check for LitElement extends
-      if (/extends\s+LitElement/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'Do not extend LitElement. Snice components extend HTMLElement.',
-          fix: 'Change extends LitElement to extends HTMLElement'
-        });
-      }
-
-      // Check for imports from 'lit'
-      if (/from\s+['"]lit['"]/.test(code) || /from\s+['"]lit\//.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'Do not import from lit. Snice is NOT Lit.',
-          fix: "Import from 'snice' instead: import { element, property, render, html, css } from 'snice'"
-        });
-      }
-
-      // Check for importing page from 'snice'
-      if (/import\s*\{[^}]*\bpage\b[^}]*\}\s*from\s*['"]snice['"]/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: "page decorator is NOT exported from 'snice'. It comes from Router().",
-          fix: "Create router.ts with: export const { page } = Router({...}); then import { page } from './router'"
-        });
-      }
-
-      // Check for Router() without type property
-      if (/Router\s*\(\s*\{/.test(code) && !/type\s*:\s*['"](?:hash|pushstate)['"]/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: "Router() requires type: 'hash' | 'pushstate' property.",
-          fix: "Add type: 'hash' or type: 'pushstate' to Router config"
-        });
-      }
-
-      // Check for Context<T> generic usage (Context is not generic)
-      if (/Context\s*</.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'Context class is NOT generic. Use type casting instead.',
-          fix: 'Change Context<MyApp> to Context, then cast: ctx.application as MyApp'
-        });
-      }
-
-      // Check for function-based @observe syntax (old/wrong)
-      if (/@observe\s*\(\s*\(\s*\)\s*=>/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: '@observe uses string-based targets, not function syntax.',
-          fix: "@observe('mutation:childList', '.content') not @observe(() => this.content, {...})"
-        });
-      }
-
-      // Check for importing Context from router file (Router doesn't export Context)
-      if (/import\s*\{[^}]*\bContext\b[^}]*\}\s*from\s*['"]\.\/router['"]/.test(code)) {
-        issues.push({
-          severity: 'error',
-          message: 'Router() does not export Context. Context is received via @context() decorator.',
-          fix: "import type { Context } from 'snice'; then use @context() handleContext(ctx: Context) {}"
-        });
-      }
-
-      // Check for fetch() in @element (elements should be purely visual)
-      if (/@element\s*\(/.test(code) && /\bfetch\s*\(/.test(code) && !/@page\s*\(/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: 'Elements should be purely visual. Avoid fetch() in @element components.',
-          fix: 'Move API calls to pages, controllers, or services. Elements receive data via properties.'
-        });
-      }
-
-      // Check for property() without @ (Lit syntax)
-      if (/\bproperty\s*\(\s*\{/.test(code) && !/@property/.test(code)) {
-        issues.push({
-          severity: 'warning',
-          message: 'Missing @ on property decorator.',
-          fix: 'Use @property({ type: ... }) not property({ type: ... })'
-        });
-      }
-
-      // Check for icon property with plain text that looks like a Material icon name
-      // icon="home" renders as plain text, NOT as a Material icon. Use a slot instead.
-      const iconAttrPattern = /\b(?:icon|prefix-icon|suffix-icon|prefixIcon|suffixIcon)\s*(?:=\s*["']|:\s*["']|=\s*\{?\s*["'])([^"']+)["']/g;
-      let iconMatch;
-      const materialIconNames = [
-        'home', 'search', 'settings', 'menu', 'close', 'delete', 'edit', 'add',
-        'check', 'arrow_back', 'arrow_forward', 'favorite', 'star', 'person',
-        'visibility', 'lock', 'mail', 'phone', 'save', 'share', 'download',
-        'upload', 'refresh', 'info', 'warning', 'error', 'help', 'logout',
-        'login', 'notifications', 'shopping_cart', 'account_circle', 'more_vert',
-        'more_horiz', 'filter_list', 'sort', 'expand_more', 'expand_less',
-        'chevron_right', 'chevron_left', 'calendar_today', 'schedule', 'place',
-        'attach_file', 'link', 'image', 'camera', 'mic', 'send', 'print',
-        'content_copy', 'content_paste', 'undo', 'redo', 'format_bold',
-        'dashboard', 'inventory', 'folder', 'description', 'cloud'
-      ];
-      while ((iconMatch = iconAttrPattern.exec(code)) !== null) {
-        const value = iconMatch[1].trim();
-        // Skip URLs, file paths, emojis, scheme overrides, and single characters
-        if (/^(https?:\/\/|\/|\.\/|\.\.\/|data:|img:\/\/|text:\/\/)/.test(value)) continue;
-        if (/\.\w{2,4}$/.test(value)) continue; // file extension
-        if (value.length <= 2) continue; // emoji or single char like "×" or "→"
-        // Check if it matches a known Material icon name or looks like one (snake_case word)
-        if (materialIconNames.includes(value) || /^[a-z][a-z0-9]*(_[a-z0-9]+)+$/.test(value)) {
-          issues.push({
-            severity: 'error',
-            message: `icon="${value}" renders as plain text, not a Material icon. Snice does not bundle Material Symbols. Use a slot instead.`,
-            fix: `<span slot="icon" class="material-symbols-outlined">${value}</span>\n  Or use an emoji: icon="🏠", a URL: icon="/icons/${value}.svg", or scheme override: icon="img://${value}.svg"\n  See component docs for slot examples.`
-          });
-        }
-      }
-
-      // Check for controller importing from component file instead of .types.ts
-      if (/@controller\s*\(/.test(code) || /class\s+\w+Controller/.test(code)) {
-        const importMatches = code.match(/from\s+['"].*\/components\/[^'"]+\/snice-[^'"]+(?<!\.types)['"]/g);
-        if (importMatches) {
-          for (const match of importMatches) {
-            if (!match.includes('.types')) {
-              issues.push({
-                severity: 'warning',
-                message: `Controller imports from component file instead of .types.ts: ${match}`,
-                fix: 'Import types from .types.ts to avoid circular dependencies. E.g., import type { ... } from "./snice-comp.types"'
-              });
-            }
-          }
-        }
-      }
-
-      if (issues.length === 0) {
-        return { content: [{ type: 'text', text: '✓ No issues found. Code looks good!' }] };
-      }
-
-      const report = issues.map(i => `[${i.severity.toUpperCase()}] ${i.message}\n  Fix: ${i.fix}`).join('\n\n');
-      return { content: [{ type: 'text', text: `# Validation Results\n\nFound ${issues.length} issue(s):\n\n${report}` }] };
-    }
-
-    default:
-      return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true };
-  }
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// MCP Protocol Handler (stdio)
-async function runStdioServer() {
-  const readline = await import('readline');
+function schemaTypeOf(value) {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  return typeof value;
+}
 
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-  });
+/**
+ * Minimal validator covering exactly the JSON Schema subset the published tool
+ * input schemas use: type, properties, required, additionalProperties: false,
+ * items, enum, pattern, minLength. Returns a problem string or null.
+ */
+function validateValue(schema, value, path) {
+  if (schema.enum !== undefined) {
+    return schema.enum.includes(value)
+      ? null
+      : `${path} must be one of: ${schema.enum.join(', ')}`;
+  }
+  if (schema.type !== undefined && schemaTypeOf(value) !== schema.type) {
+    return `${path} must be of type ${schema.type}, got ${schemaTypeOf(value)}`;
+  }
+  if (schema.type === 'string') {
+    if (schema.minLength !== undefined && value.length < schema.minLength) {
+      return `${path} must contain at least ${schema.minLength} characters`;
+    }
+    if (schema.pattern !== undefined && !new RegExp(schema.pattern).test(value)) {
+      return `${path} must match pattern ${schema.pattern}`;
+    }
+  }
+  if (schema.type === 'array' && schema.items !== undefined) {
+    for (let index = 0; index < value.length; index++) {
+      const problem = validateValue(schema.items, value[index], `${path}[${index}]`);
+      if (problem) return problem;
+    }
+  }
+  if (schema.type === 'object') {
+    const properties = schema.properties ?? {};
+    for (const required of schema.required ?? []) {
+      if (!(required in value)) return `${path}.${required} is required`;
+    }
+    if (schema.additionalProperties === false) {
+      for (const key of Object.keys(value)) {
+        if (!(key in properties)) return `${path}.${key} is not an accepted property`;
+      }
+    }
+    for (const [key, propertySchema] of Object.entries(properties)) {
+      if (key in value) {
+        const problem = validateValue(propertySchema, value[key], `${path}.${key}`);
+        if (problem) return problem;
+      }
+    }
+  }
+  return null;
+}
 
-  const write = (obj) => {
-    process.stdout.write(JSON.stringify(obj) + '\n');
-  };
+const toolText = (value, structuredContent) => ({
+  content: [{ type: 'text', text: value }],
+  ...(structuredContent ? { structuredContent } : {})
+});
 
-  rl.on('line', (line) => {
+function normalizeName(value) {
+  return String(value ?? '').toLowerCase().replace(/^snice-/, '');
+}
+
+function summary(name, doc) {
+  const line = doc.split('\n').find(value => value.trim() && !value.startsWith('#'));
+  return { name, tagName: name === 'icons' ? null : `snice-${name}`, summary: line?.trim() ?? '' };
+}
+
+function callTool(name, args = {}) {
+  const tool = toolsByName.get(name);
+  if (!tool) throw new RangeError(`unknown tool: ${name}`);
+  const problem = validateValue(tool.inputSchema, args, 'arguments');
+  if (problem) throw new TypeError(`invalid arguments for ${name}: ${problem}`);
+
+  if (name === 'list_components') {
+    const components = Object.entries(componentDocs).map(([component, doc]) => summary(component, doc));
+    return toolText(components.map(item => `- ${item.tagName ?? item.name}: ${item.summary}`).join('\n'), { components });
+  }
+  if (name === 'get_component_docs') {
+    const component = normalizeName(args.name);
+    const documentation = componentDocs[component];
+    if (!documentation) throw new RangeError(`released component not found: ${component}`);
+    return toolText(documentation, { name: component, tagName: component === 'icons' ? null : `snice-${component}` });
+  }
+  if (name === 'get_decorator_docs') return toolText(decoratorDocs, { version: packageJson.version });
+  if (name === 'get_overview') return toolText(overview, { version: packageJson.version });
+  if (name === 'search_docs') {
+    const query = String(args.query ?? '').trim();
+    if (query.length < 2) throw new TypeError('query must contain at least two characters');
+    const matches = [];
+    for (const [component, documentation] of Object.entries(componentDocs)) {
+      const lines = documentation.split('\n')
+        .map((line, index) => ({ line: index + 1, text: line }))
+        .filter(item => item.text.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 3);
+      if (lines.length) matches.push({ document: `components/${component}.md`, lines });
+    }
+    for (const [document, documentation] of [['README.md', overview], ['decorators.md', decoratorDocs]]) {
+      const lines = documentation.split('\n')
+        .map((line, index) => ({ line: index + 1, text: line }))
+        .filter(item => item.text.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 5);
+      if (lines.length) matches.push({ document, lines });
+    }
+    const rendered = matches.flatMap(match => [
+      `## ${match.document}`,
+      ...match.lines.map(line => `${line.line}: ${line.text}`)
+    ]).join('\n');
+    return toolText(rendered || `No results found for "${query}".`, { query, matches });
+  }
+  if (name === 'validate_code') {
+    const issues = analyzeSource(String(args.code ?? ''), String(args.filename ?? ''));
+    const rendered = issues.length
+      ? issues.map(issue =>
+        `[${issue.severity.toUpperCase()}] ${issue.ruleId} (${issue.line}:${issue.column}): ${issue.message}\n  ${issue.fix}`
+      ).join('\n\n')
+      : 'No Snice authoring issues found.';
+    return toolText(rendered, { valid: !issues.some(issue => issue.severity === 'error'), issues });
+  }
+  if (name === 'generate_component') {
+    const code = generateComponentSource(args);
+    return toolText(code, { name: args.name, code });
+  }
+  throw new RangeError(`unknown tool: ${name}`);
+}
+
+function resources() {
+  return [
+    { uri: 'snice://overview', name: 'Snice overview', mimeType: 'text/markdown' },
+    { uri: 'snice://decorators', name: 'Snice decorators', mimeType: 'text/markdown' },
+    ...Object.keys(componentDocs).map(name => ({
+      uri: `snice://components/${name}`,
+      name: `snice-${name}`,
+      mimeType: 'text/markdown'
+    }))
+  ];
+}
+
+function readResource(uri) {
+  if (uri === 'snice://overview') return overview;
+  if (uri === 'snice://decorators') return decoratorDocs;
+  const match = /^snice:\/\/components\/([a-z0-9-]+)$/.exec(uri);
+  if (match && componentDocs[match[1]]) return componentDocs[match[1]];
+  throw new RangeError(`unknown resource: ${uri}`);
+}
+
+/**
+ * A message is a valid JSON-RPC 2.0 envelope when it is an object with
+ * jsonrpc "2.0", a non-empty string method, and (if present) a string,
+ * number, or null id. Anything else is an Invalid Request, not a notification.
+ */
+function envelopeProblem(message) {
+  if (!isPlainObject(message)) return 'request must be a JSON object';
+  if (message.jsonrpc !== '2.0') return 'jsonrpc must be the string "2.0"';
+  if (typeof message.method !== 'string' || message.method.length === 0) {
+    return 'method must be a non-empty string';
+  }
+  if ('id' in message
+    && typeof message.id !== 'string'
+    && typeof message.id !== 'number'
+    && message.id !== null) {
+    return 'id must be a string, number, or null';
+  }
+  return null;
+}
+
+async function run() {
+  const readline = await import('node:readline');
+  const input = readline.createInterface({ input: process.stdin, terminal: false });
+  const write = message => process.stdout.write(`${JSON.stringify(message)}\n`);
+
+  input.on('line', line => {
+    if (!line.trim()) return;
+
+    let message;
     try {
-      const msg = JSON.parse(line);
-      const { id, method, params } = msg;
+      message = JSON.parse(line);
+    } catch (error) {
+      // Malformed JSON is never a notification: always answer with id null.
+      write({ jsonrpc: '2.0', id: null, error: { code: JSONRPC_PARSE_ERROR, message: `Parse error: ${error.message}` } });
+      return;
+    }
 
-      if (method === 'initialize') {
-        write({
-          jsonrpc: '2.0',
-          id,
-          result: {
-            protocolVersion: '2024-11-05',
-            capabilities: { tools: {} },
-            serverInfo: { name: 'snice-mcp', version: '1.0.0' }
-          }
-        });
-      } else if (method === 'notifications/initialized') {
-        // No response needed
-      } else if (method === 'tools/list') {
-        write({
-          jsonrpc: '2.0',
-          id,
-          result: { tools: TOOLS }
-        });
-      } else if (method === 'tools/call') {
-        const result = handleTool(params.name, params.arguments || {});
-        write({
-          jsonrpc: '2.0',
-          id,
-          result
-        });
-      } else {
-        write({
-          jsonrpc: '2.0',
-          id,
-          error: { code: -32601, message: `Method not found: ${method}` }
-        });
+    const badEnvelope = envelopeProblem(message);
+    if (badEnvelope) {
+      const id = isPlainObject(message)
+        && (typeof message.id === 'string' || typeof message.id === 'number')
+        ? message.id
+        : null;
+      write({ jsonrpc: '2.0', id, error: { code: JSONRPC_INVALID_REQUEST, message: `Invalid Request: ${badEnvelope}` } });
+      return;
+    }
+
+    const { id, method } = message;
+    const isNotification = !('id' in message);
+    const respond = payload => {
+      if (!isNotification) write({ jsonrpc: '2.0', id, ...payload });
+    };
+
+    if (method.startsWith('notifications/')) return;
+
+    try {
+      if ('params' in message && !isPlainObject(message.params)) {
+        throw new TypeError('params must be an object');
       }
-    } catch (e) {
-      process.stderr.write(`Error: ${e.message}\n`);
+      const params = message.params ?? {};
+
+      let result;
+      if (method === 'initialize') {
+        result = {
+          protocolVersion: '2024-11-05',
+          capabilities: { tools: {}, resources: {} },
+          serverInfo: { name: 'snice-mcp', version: packageJson.version },
+          instructions: 'Use the Snice skill for workflows. Use this server for version-matched structured lookup and conservative validation.'
+        };
+      } else if (method === 'ping') result = {};
+      else if (method === 'tools/list') result = { tools };
+      else if (method === 'tools/call') {
+        if (typeof params.name !== 'string') throw new TypeError('params.name must be a string');
+        if ('arguments' in params && params.arguments !== undefined && !isPlainObject(params.arguments)) {
+          throw new TypeError('params.arguments must be an object');
+        }
+        result = callTool(params.name, params.arguments ?? {});
+      } else if (method === 'resources/list') result = { resources: resources() };
+      else if (method === 'resources/read') {
+        if (typeof params.uri !== 'string') throw new TypeError('params.uri must be a string');
+        result = { contents: [{ uri: params.uri, mimeType: 'text/markdown', text: readResource(params.uri) }] };
+      } else {
+        respond({ error: { code: JSONRPC_METHOD_NOT_FOUND, message: `Method not found: ${method}` } });
+        return;
+      }
+      respond({ result });
+    } catch (error) {
+      respond({ error: { code: JSONRPC_INVALID_PARAMS, message: error.message } });
+      if (isNotification) process.stderr.write(`Snice MCP error: ${error.message}\n`);
     }
   });
-
-  process.stderr.write('Snice MCP Server running on stdio\n');
+  process.stderr.write(`Snice MCP ${packageJson.version} running on stdio\n`);
 }
 
-// Start server
-runStdioServer();
+await run();

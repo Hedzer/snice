@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/permission-matrix/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the PermissionMatrix component
@@ -24,7 +25,7 @@ export interface PermissionMatrixProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/permission-matrix';
+ * import 'snice/components/permission-matrix/snice-permission-matrix';
  * import { PermissionMatrix } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface PermissionMatrixProps extends SniceBaseProps {
  * }
  * ```
  */
-export const PermissionMatrix = createReactAdapter<PermissionMatrixProps>({
+export const PermissionMatrix: SniceReactComponent<PermissionMatrixProps, SniceComponentRef> = createReactAdapter<PermissionMatrixProps, false>({
   tagName: 'snice-permission-matrix',
   properties: ["roles","permissions","matrix","readonly"],
   events: {"permission-toggle":"onPermissionToggle","matrix-change":"onMatrixChange"},

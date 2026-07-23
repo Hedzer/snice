@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/kanban';
+ * import 'snice/components/kanban/snice-kanban';
  * import { Kanban } from 'snice/react';
  *
  * function MyComponent() {

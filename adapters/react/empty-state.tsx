@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/empty-state/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the EmptyState component
@@ -25,7 +26,7 @@ export interface EmptyStateProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/empty-state';
+ * import 'snice/components/empty-state/snice-empty-state';
  * import { EmptyState } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface EmptyStateProps extends SniceBaseProps {
  * }
  * ```
  */
-export const EmptyState = createReactAdapter<EmptyStateProps>({
+export const EmptyState: SniceReactComponent<EmptyStateProps, SniceComponentRef> = createReactAdapter<EmptyStateProps, false>({
   tagName: 'snice-empty-state',
   properties: ["size","icon","title","description","actionText","actionHref"],
   events: {"empty-state-action":"onEmptyStateAction"},

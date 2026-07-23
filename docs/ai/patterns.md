@@ -32,12 +32,12 @@ import { SniceInput } from 'snice/components/input/snice-input';
 @element('currency-input')
 class CurrencyInput extends SniceInput {
   @property() currency = 'USD';
-  connectedCallback() { super.connectedCallback(); this.updatePrefix(); }
+  @ready() initializePrefix() { this.updatePrefix(); }
   @watch('currency') updatePrefix() {
     this.prefixIcon = { USD:'$', EUR:'€', GBP:'£', JPY:'¥' }[this.currency] || this.currency;
   }
   @on('input','input') restrictNumeric(e: InputEvent) {
-    const input = e.target as HTMLInputElement;
+    const input = e.currentTarget as HTMLInputElement;
     input.value = input.value.replace(/[^\d.]/g, '');
     this.value = input.value;
   }

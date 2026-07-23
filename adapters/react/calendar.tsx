@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/calendar/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Calendar component
@@ -30,7 +31,7 @@ export interface CalendarProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/calendar';
+ * import 'snice/components/calendar/snice-calendar';
  * import { Calendar } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface CalendarProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Calendar = createReactAdapter<CalendarProps>({
+export const Calendar: SniceReactComponent<CalendarProps, SniceComponentRef> = createReactAdapter<CalendarProps, false>({
   tagName: 'snice-calendar',
   properties: ["value","view","events","minDate","maxDate","disabledDates","highlightToday","showWeekNumbers","firstDayOfWeek","locale"],
   events: {"calendar-change":"onCalendarChange","calendar-event-click":"onCalendarEventClick"},

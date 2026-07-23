@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the CodeBlock component
  */
@@ -29,7 +30,7 @@ export interface CodeBlockProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/code-block';
+ * import 'snice/components/code-block/snice-code-block';
  * import { CodeBlock } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,5 +38,5 @@ export interface CodeBlockProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const CodeBlock: import("react").ForwardRefExoticComponent<Omit<CodeBlockProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const CodeBlock: SniceReactComponent<CodeBlockProps, SniceComponentRef>;
 //# sourceMappingURL=code-block.d.ts.map

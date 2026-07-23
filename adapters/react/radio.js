@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/radio';
+ * import 'snice/components/radio/snice-radio';
  * import { Radio } from 'snice/react';
  *
  * function MyComponent() {

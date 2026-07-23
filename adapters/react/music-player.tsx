@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/music-player/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the MusicPlayer component
@@ -46,7 +47,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/music-player';
+ * import 'snice/components/music-player/snice-music-player';
  * import { MusicPlayer } from 'snice/react';
  *
  * function MyComponent() {
@@ -54,7 +55,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const MusicPlayer = createReactAdapter<MusicPlayerProps>({
+export const MusicPlayer: SniceReactComponent<MusicPlayerProps, SniceComponentRef> = createReactAdapter<MusicPlayerProps, false>({
   tagName: 'snice-music-player',
   properties: ["tracks","currentTrackIndex","currentTrack","currentTime","duration","volume","muted","shuffle","repeat","state","autoplay","showPlaylist","showControls","showVolume","showArtwork","showTrackInfo","compact"],
   events: {"player-play":"onPlayerPlay","player-pause":"onPlayerPause","player-stop":"onPlayerStop","player-track-change":"onPlayerTrackChange","player-track-ended":"onPlayerTrackEnded","player-seek":"onPlayerSeek","player-volume-change":"onPlayerVolumeChange","player-shuffle-change":"onPlayerShuffleChange","player-repeat-change":"onPlayerRepeatChange","player-time-update":"onPlayerTimeUpdate","player-error":"onPlayerError"},

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "producer": "react-prop-contract-generalization",
+  "cases": [
+    {
+      "name": "unsupported-semantic-prop-on-button",
+      "filename": "src/form.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton() {\n  return <Button form=\"ticket-form\">Save</Button>;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "invented-property-on-card",
+      "filename": "src/card.tsx",
+      "source": "import { Card } from 'snice/react';\nexport function Panel() {\n  return <Card frobnicate={true} />;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "invented-event-prop-on-button",
+      "filename": "src/events.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ handler }) {\n  return <Button onImaginaryChange={handler}>Save</Button>;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "targeted-input-onchange-produces-exactly-one-diagnostic",
+      "filename": "src/form.tsx",
+      "source": "import { Input } from 'snice/react';\nexport function Search({ handler }) {\n  return <Input onChange={handler} />;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "targeted-modal-props-produce-one-diagnostic-each",
+      "filename": "src/dialog.tsx",
+      "source": "import { Modal } from 'snice/react';\nexport function Dialog({ onClose }) {\n  return <Modal title=\"Details\" onClose={onClose}>Body</Modal>;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "wrapper-contract-props-and-events-are-clean",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ onClick }) {\n  return <Button variant=\"primary\" size=\"large\" loading onButtonClick={onClick}>Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "standard-react-html-props-are-clean",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton() {\n  return <Button id=\"save\" className=\"primary\" style={{ margin: 0 }} role=\"button\" tabIndex={0} title=\"Save\" slot=\"actions\">Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "native-react-event-props-are-clean",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ onClick, onFocus }) {\n  return <Button onClick={onClick} onFocus={onFocus} onClickCapture={onClick}>Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "aria-and-data-attributes-are-clean",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton() {\n  return <Button aria-label=\"Save\" aria-describedby=\"hint\" data-testid=\"save-button\">Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "children-key-and-ref-are-clean",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ buttonRef }) {\n  return <Button key=\"save\" ref={buttonRef}>Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "jsx-spread-is-ignored",
+      "filename": "src/button.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ props }) {\n  return <Button {...props}>Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "props-on-unrelated-components-are-clean",
+      "filename": "src/widgets.tsx",
+      "source": "export function Panel() {\n  return <div form=\"ticket-form\"><MyWidget frobnicate={true} /></div>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "invented-valueless-boolean-prop-on-card",
+      "filename": "src/card.tsx",
+      "source": "import { Card } from 'snice/react';\nexport function Panel() {\n  return <Card frobnicate />;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "flagged-prop-alongside-spread",
+      "filename": "src/form.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function SaveButton({ props }) {\n  return <Button variant=\"primary\" {...props} form=\"ticket-form\">Save</Button>;\n}",
+      "expectedRuleIds": ["snice/react-prop-contract"]
+    },
+    {
+      "name": "declarative-attribute-overrides-are-clean",
+      "filename": "src/pricing.tsx",
+      "source": "import { Plan } from 'snice/react';\nexport function Pricing() {\n  return <Plan name=\"Pro\" annual-price=\"99\" highlighted badge=\"Popular\" cta=\"Upgrade\" />;\n}",
+      "expectedRuleIds": []
+    }
+  ]
+}

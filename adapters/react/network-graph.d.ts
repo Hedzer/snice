@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the NetworkGraph component
  */
@@ -24,7 +25,7 @@ export interface NetworkGraphProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/network-graph';
+ * import 'snice/components/network-graph/snice-network-graph';
  * import { NetworkGraph } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface NetworkGraphProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const NetworkGraph: import("react").ForwardRefExoticComponent<Omit<NetworkGraphProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const NetworkGraph: SniceReactComponent<NetworkGraphProps, SniceComponentRef>;
 //# sourceMappingURL=network-graph.d.ts.map

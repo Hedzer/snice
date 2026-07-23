@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/color-display';
+ * import 'snice/components/color-display/snice-color-display';
  * import { ColorDisplay } from 'snice/react';
  *
  * function MyComponent() {

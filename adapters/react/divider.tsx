@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/divider/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Divider component
@@ -27,7 +28,7 @@ export interface DividerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/divider';
+ * import 'snice/components/divider/snice-divider';
  * import { Divider } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface DividerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Divider = createReactAdapter<DividerProps>({
+export const Divider: SniceReactComponent<DividerProps, SniceComponentRef> = createReactAdapter<DividerProps, false>({
   tagName: 'snice-divider',
   properties: ["orientation","variant","spacing","align","text","textBackground","color","capped"],
   events: {},

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/time-range-picker';
+ * import 'snice/components/time-range-picker/snice-time-range-picker';
  * import { TimeRangePicker } from 'snice/react';
  *
  * function MyComponent() {

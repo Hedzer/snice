@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the StepInput component
  */
@@ -23,7 +24,7 @@ export interface StepInputProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/step-input';
+ * import 'snice/components/step-input/snice-step-input';
  * import { StepInput } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,5 +32,5 @@ export interface StepInputProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const StepInput: import("react").ForwardRefExoticComponent<Omit<StepInputProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const StepInput: SniceReactComponent<StepInputProps, SniceFormRef>;
 //# sourceMappingURL=step-input.d.ts.map

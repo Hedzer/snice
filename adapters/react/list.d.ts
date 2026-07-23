@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the List component
  */
@@ -20,7 +21,7 @@ export interface ListProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/list';
+ * import 'snice/components/list/snice-list';
  * import { List } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface ListProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const List: import("react").ForwardRefExoticComponent<Omit<ListProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const List: SniceReactComponent<ListProps, SniceComponentRef>;
 //# sourceMappingURL=list.d.ts.map

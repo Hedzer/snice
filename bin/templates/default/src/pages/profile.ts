@@ -66,7 +66,7 @@ export class ProfilePage extends HTMLElement {
                 <p class="email">${this.user?.email}</p>
                 <div class="header-actions">
                   <a href="#/settings">
-                    <snice-button variant="secondary" size="small">Edit Profile</snice-button>
+                    <snice-button outline size="small">Edit Profile</snice-button>
                   </a>
                 </div>
               </div>

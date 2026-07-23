@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Calendar component
  */
@@ -24,7 +25,7 @@ export interface CalendarProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/calendar';
+ * import 'snice/components/calendar/snice-calendar';
  * import { Calendar } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface CalendarProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Calendar: import("react").ForwardRefExoticComponent<Omit<CalendarProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Calendar: SniceReactComponent<CalendarProps, SniceComponentRef>;
 //# sourceMappingURL=calendar.d.ts.map

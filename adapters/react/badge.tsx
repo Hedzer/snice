@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/badge/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Badge component
@@ -29,7 +30,7 @@ export interface BadgeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/badge';
+ * import 'snice/components/badge/snice-badge';
  * import { Badge } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,7 +38,7 @@ export interface BadgeProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Badge = createReactAdapter<BadgeProps>({
+export const Badge: SniceReactComponent<BadgeProps, SniceComponentRef> = createReactAdapter<BadgeProps, false>({
   tagName: 'snice-badge',
   properties: ["content","count","max","dot","variant","position","inline","size","pulse","offset"],
   events: {},

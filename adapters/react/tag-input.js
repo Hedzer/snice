@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/tag-input';
+ * import 'snice/components/tag-input/snice-tag-input';
  * import { TagInput } from 'snice/react';
  *
  * function MyComponent() {

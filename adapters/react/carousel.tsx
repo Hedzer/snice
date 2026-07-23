@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/carousel/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Carousel component
@@ -28,7 +29,7 @@ export interface CarouselProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/carousel';
+ * import 'snice/components/carousel/snice-carousel';
  * import { Carousel } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface CarouselProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Carousel = createReactAdapter<CarouselProps>({
+export const Carousel: SniceReactComponent<CarouselProps, SniceComponentRef> = createReactAdapter<CarouselProps, false>({
   tagName: 'snice-carousel',
   properties: ["activeIndex","autoplay","autoplayInterval","autoplayDirection","loop","showControls","showIndicators","slidesPerView","spaceBetween"],
   events: {"carousel-slide-change":"onCarouselSlideChange"},

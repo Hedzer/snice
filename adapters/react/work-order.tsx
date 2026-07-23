@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/work-order/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the WorkOrder component
@@ -37,7 +38,7 @@ export interface WorkOrderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/work-order';
+ * import 'snice/components/work-order/snice-work-order';
  * import { WorkOrder } from 'snice/react';
  *
  * function MyComponent() {
@@ -45,7 +46,7 @@ export interface WorkOrderProps extends SniceBaseProps {
  * }
  * ```
  */
-export const WorkOrder = createReactAdapter<WorkOrderProps>({
+export const WorkOrder: SniceReactComponent<WorkOrderProps, SniceComponentRef> = createReactAdapter<WorkOrderProps, false>({
   tagName: 'snice-work-order',
   properties: ["woNumber","date","dueDate","priority","status","customer","description","tasks","parts","asset","laborRate","notes","variant","showQr","qrData","qrPosition"],
   events: {"task-toggle":"onTaskToggle","status-change":"onStatusChange","wo-sign":"onWoSign"},

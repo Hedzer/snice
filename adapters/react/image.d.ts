@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Image component
  */
@@ -24,7 +25,7 @@ export interface ImageProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/image';
+ * import 'snice/components/image/snice-image';
  * import { Image } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface ImageProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Image: import("react").ForwardRefExoticComponent<Omit<ImageProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Image: SniceReactComponent<ImageProps, SniceComponentRef>;
 //# sourceMappingURL=image.d.ts.map

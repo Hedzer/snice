@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/podcast-player';
+ * import 'snice/components/podcast-player/snice-podcast-player';
  * import { PodcastPlayer } from 'snice/react';
  *
  * function MyComponent() {

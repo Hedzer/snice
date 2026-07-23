@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/recipe/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Recipe component
@@ -35,7 +36,7 @@ export interface RecipeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/recipe';
+ * import 'snice/components/recipe/snice-recipe';
  * import { Recipe } from 'snice/react';
  *
  * function MyComponent() {
@@ -43,7 +44,7 @@ export interface RecipeProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Recipe = createReactAdapter<RecipeProps>({
+export const Recipe: SniceReactComponent<RecipeProps, SniceComponentRef> = createReactAdapter<RecipeProps, false>({
   tagName: 'snice-recipe',
   properties: ["title","description","image","author","prepTime","cookTime","servings","difficulty","cuisine","variant","ingredients","steps","nutrition","tags"],
   events: {"recipe-serving-change":"onRecipeServingChange","recipe-step-complete":"onRecipeStepComplete","recipe-ingredient-check":"onRecipeIngredientCheck"},

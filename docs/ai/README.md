@@ -2,6 +2,20 @@
 
 Token-efficient reference docs for AI assistants. Same content as human docs, minimal verbosity.
 
+## Snice Skill (Recommended)
+
+Load `.agents/skills/snice/SKILL.md` for better Snice implementation,
+component-selection, debugging, and verification workflows. Apps created by the
+Snice CLI include the skill. In an existing app, install it with:
+
+```bash
+npx snice init-ai
+```
+
+The skill points back to these version-matched AI docs and loads only the
+topical and component references needed for the current task. The MCP server is
+optional structured lookup; it is not a replacement for the workflow skill.
+
 **Format:**
 - Type signatures over prose
 - Bullet points over paragraphs
@@ -28,6 +42,9 @@ Read these instead of `/docs/*.md` for faster context loading.
 # Create project
 npx snice create-app my-app
 npx snice create-app my-app --template=react
+
+# Check package, configuration, and Snice source together
+npx snice check
 
 # Run MCP server
 npx snice mcp

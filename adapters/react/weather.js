@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/weather';
+ * import 'snice/components/weather/snice-weather';
  * import { Weather } from 'snice/react';
  *
  * function MyComponent() {

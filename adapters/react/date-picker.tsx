@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/date-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the DatePicker component
@@ -46,7 +47,7 @@ export interface DatePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/date-picker';
+ * import 'snice/components/date-picker/snice-date-picker';
  * import { DatePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -54,7 +55,7 @@ export interface DatePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export const DatePicker = createReactAdapter<DatePickerProps>({
+export const DatePicker: SniceReactComponent<DatePickerProps, SniceFormRef> = createReactAdapter<DatePickerProps, true>({
   tagName: 'snice-date-picker',
   properties: ["size","variant","defaultValue","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","open","firstDayOfWeek","value"],
   events: {"datepicker-input":"onDatepickerInput","datepicker-change":"onDatepickerChange","datepicker-focus":"onDatepickerFocus","datepicker-blur":"onDatepickerBlur","datepicker-open":"onDatepickerOpen","datepicker-close":"onDatepickerClose","datepicker-clear":"onDatepickerClear","datepicker-select":"onDatepickerSelect"},

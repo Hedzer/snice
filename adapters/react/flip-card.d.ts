@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the FlipCard component
  */
@@ -17,7 +18,7 @@ export interface FlipCardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/flip-card';
+ * import 'snice/components/flip-card/snice-flip-card';
  * import { FlipCard } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface FlipCardProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const FlipCard: import("react").ForwardRefExoticComponent<Omit<FlipCardProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const FlipCard: SniceReactComponent<FlipCardProps, SniceComponentRef>;
 //# sourceMappingURL=flip-card.d.ts.map

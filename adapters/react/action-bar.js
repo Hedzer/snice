@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/action-bar';
+ * import 'snice/components/action-bar/snice-action-bar';
  * import { ActionBar } from 'snice/react';
  *
  * function MyComponent() {

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/user-card/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the UserCard component
@@ -30,7 +31,7 @@ export interface UserCardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/user-card';
+ * import 'snice/components/user-card/snice-user-card';
  * import { UserCard } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface UserCardProps extends SniceBaseProps {
  * }
  * ```
  */
-export const UserCard = createReactAdapter<UserCardProps>({
+export const UserCard: SniceReactComponent<UserCardProps, SniceComponentRef> = createReactAdapter<UserCardProps, false>({
   tagName: 'snice-user-card',
   properties: ["name","avatar","role","company","email","phone","location","social","status","variant"],
   events: {"social-click":"onSocialClick","action-click":"onActionClick"},

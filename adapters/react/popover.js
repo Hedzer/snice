@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/popover';
+ * import 'snice/components/popover/snice-popover';
  * import { Popover } from 'snice/react';
  *
  * function MyComponent() {

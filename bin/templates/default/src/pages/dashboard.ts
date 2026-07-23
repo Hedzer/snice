@@ -1,9 +1,8 @@
 import { page } from '../router';
 import { render, styles, html, css, context, observe, dispose } from 'snice';
 import type { Placard, Context } from 'snice';
-import type { Principal } from '../types/auth';
+import type { ApplicationContext } from '../context';
 import { isAuthenticated } from '../guards/auth';
-import type { NotificationsDaemon } from '../daemons/notifications';
 
 const placard: Placard = {
   name: 'dashboard',
@@ -23,12 +22,11 @@ export class DashboardPage extends HTMLElement {
 
   @context()
   handleContext(ctx: Context) {
-    const principal = ctx.application.principal as Principal | undefined;
+    const { principal, notifications } = ctx.application as ApplicationContext;
     this.userName = principal?.user?.name || 'User';
 
-    const daemon = ctx.application.notifications as NotificationsDaemon;
-    if (daemon && !this.unsubscribe) {
-      this.unsubscribe = daemon.subscribe(() => {
+    if (notifications && !this.unsubscribe) {
+      this.unsubscribe = notifications.subscribe(() => {
         this.notificationCount++;
       });
     }
@@ -118,13 +116,13 @@ export class DashboardPage extends HTMLElement {
             <p>Check out the other pages:</p>
             <div class="links">
               <a href="#/data">
-                <snice-button variant="secondary">Browse Data</snice-button>
+                <snice-button outline>Browse Data</snice-button>
               </a>
               <a href="#/settings">
-                <snice-button variant="secondary">Settings</snice-button>
+                <snice-button outline>Settings</snice-button>
               </a>
               <a href="#/notifications">
-                <snice-button variant="secondary">Notifications</snice-button>
+                <snice-button outline>Notifications</snice-button>
               </a>
             </div>
           </snice-card>

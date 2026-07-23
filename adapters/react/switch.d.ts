@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Switch component
  */
@@ -25,7 +26,7 @@ export interface SwitchProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/switch';
+ * import 'snice/components/switch/snice-switch';
  * import { Switch } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface SwitchProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Switch: import("react").ForwardRefExoticComponent<Omit<SwitchProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Switch: SniceReactComponent<SwitchProps, SniceFormRef>;
 //# sourceMappingURL=switch.d.ts.map

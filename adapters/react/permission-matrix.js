@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/permission-matrix';
+ * import 'snice/components/permission-matrix/snice-permission-matrix';
  * import { PermissionMatrix } from 'snice/react';
  *
  * function MyComponent() {

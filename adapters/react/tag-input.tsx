@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/tag-input/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the TagInput component
@@ -31,7 +32,7 @@ export interface TagInputProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tag-input';
+ * import 'snice/components/tag-input/snice-tag-input';
  * import { TagInput } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface TagInputProps extends SniceFormProps {
  * }
  * ```
  */
-export const TagInput = createReactAdapter<TagInputProps>({
+export const TagInput: SniceReactComponent<TagInputProps, SniceFormRef> = createReactAdapter<TagInputProps, true>({
   tagName: 'snice-tag-input',
   properties: ["defaultValue","suggestions","maxTags","allowDuplicates","placeholder","disabled","readonly","label","name","value"],
   events: {"tag-add":"onTagAdd","tag-remove":"onTagRemove","tag-change":"onTagChange"},

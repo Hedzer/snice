@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/receipt/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Receipt component
@@ -41,7 +42,7 @@ export interface ReceiptProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/receipt';
+ * import 'snice/components/receipt/snice-receipt';
  * import { Receipt } from 'snice/react';
  *
  * function MyComponent() {
@@ -49,7 +50,7 @@ export interface ReceiptProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Receipt = createReactAdapter<ReceiptProps>({
+export const Receipt: SniceReactComponent<ReceiptProps, SniceComponentRef> = createReactAdapter<ReceiptProps, false>({
   tagName: 'snice-receipt',
   properties: ["receiptNumber","date","currency","locale","merchant","items","tax","taxes","subtotal","total","tip","discount","discountLabel","paymentMethod","paymentDetails","variant","showQr","qrData","qrPosition","thankYou","cashier","terminalId"],
   events: {},

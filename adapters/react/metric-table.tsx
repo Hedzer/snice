@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/metric-table/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the MetricTable component
@@ -24,7 +25,7 @@ export interface MetricTableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/metric-table';
+ * import 'snice/components/metric-table/snice-metric-table';
  * import { MetricTable } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface MetricTableProps extends SniceBaseProps {
  * }
  * ```
  */
-export const MetricTable = createReactAdapter<MetricTableProps>({
+export const MetricTable: SniceReactComponent<MetricTableProps, SniceComponentRef> = createReactAdapter<MetricTableProps, false>({
   tagName: 'snice-metric-table',
   properties: ["columns","data","sortBy","sortDirection"],
   events: {"sort-change":"onSortChange","row-click":"onRowClick"},

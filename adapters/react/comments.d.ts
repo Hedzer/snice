@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Comments component
  */
@@ -21,7 +22,7 @@ export interface CommentsProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/comments';
+ * import 'snice/components/comments/snice-comments';
  * import { Comments } from 'snice/react';
  *
  * function MyComponent() {
@@ -29,5 +30,5 @@ export interface CommentsProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Comments: import("react").ForwardRefExoticComponent<Omit<CommentsProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Comments: SniceReactComponent<CommentsProps, SniceComponentRef>;
 //# sourceMappingURL=comments.d.ts.map

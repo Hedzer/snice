@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Spotlight component
  */
@@ -18,7 +19,7 @@ export interface SpotlightProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/spotlight';
+ * import 'snice/components/spotlight/snice-spotlight';
  * import { Spotlight } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface SpotlightProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Spotlight: import("react").ForwardRefExoticComponent<Omit<SpotlightProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Spotlight: SniceReactComponent<SpotlightProps, SniceComponentRef>;
 //# sourceMappingURL=spotlight.d.ts.map

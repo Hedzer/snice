@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Kanban component
  */
@@ -17,7 +18,7 @@ export interface KanbanProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/kanban';
+ * import 'snice/components/kanban/snice-kanban';
  * import { Kanban } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface KanbanProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Kanban: import("react").ForwardRefExoticComponent<Omit<KanbanProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Kanban: SniceReactComponent<KanbanProps, SniceComponentRef>;
 //# sourceMappingURL=kanban.d.ts.map

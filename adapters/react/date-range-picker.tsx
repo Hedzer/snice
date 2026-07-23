@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/date-range-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the DateRangePicker component
@@ -49,7 +50,7 @@ export interface DateRangePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/date-range-picker';
+ * import 'snice/components/date-range-picker/snice-date-range-picker';
  * import { DateRangePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -57,7 +58,7 @@ export interface DateRangePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export const DateRangePicker = createReactAdapter<DateRangePickerProps>({
+export const DateRangePicker: SniceReactComponent<DateRangePickerProps, SniceFormRef> = createReactAdapter<DateRangePickerProps, true>({
   tagName: 'snice-date-range-picker',
   properties: ["defaultStart","defaultEnd","size","variant","format","placeholder","label","helperText","errorText","disabled","readonly","loading","required","invalid","clearable","min","max","name","columns","firstDayOfWeek","presets","showCalendar","start","end"],
   events: {"daterange-change":"onDaterangeChange","daterange-open":"onDaterangeOpen","daterange-close":"onDaterangeClose","daterange-clear":"onDaterangeClear","daterange-preset":"onDaterangePreset","daterange-focus":"onDaterangeFocus","daterange-blur":"onDaterangeBlur"},

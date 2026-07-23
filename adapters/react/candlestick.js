@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/candlestick';
+ * import 'snice/components/candlestick/snice-candlestick';
  * import { Candlestick } from 'snice/react';
  *
  * function MyComponent() {

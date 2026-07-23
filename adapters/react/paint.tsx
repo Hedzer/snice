@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/paint/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Paint component
@@ -32,7 +33,7 @@ export interface PaintProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/paint';
+ * import 'snice/components/paint/snice-paint';
  * import { Paint } from 'snice/react';
  *
  * function MyComponent() {
@@ -40,7 +41,7 @@ export interface PaintProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Paint = createReactAdapter<PaintProps>({
+export const Paint: SniceReactComponent<PaintProps, SniceComponentRef> = createReactAdapter<PaintProps, false>({
   tagName: 'snice-paint',
   properties: ["color","strokeWidth","minStrokeWidth","maxStrokeWidth","controls","backgroundColor","colorSelects","disabled"],
   events: {"color-select":"onColorSelect","paint-start":"onPaintStart","paint-end":"onPaintEnd","paint-clear":"onPaintClear","paint-undo":"onPaintUndo","paint-redo":"onPaintRedo"},

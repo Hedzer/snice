@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the AppTiles component
  */
@@ -17,7 +18,7 @@ export interface AppTilesProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/app-tiles';
+ * import 'snice/components/app-tiles/snice-app-tiles';
  * import { AppTiles } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface AppTilesProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const AppTiles: import("react").ForwardRefExoticComponent<Omit<AppTilesProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const AppTiles: SniceReactComponent<AppTilesProps, SniceComponentRef>;
 //# sourceMappingURL=app-tiles.d.ts.map

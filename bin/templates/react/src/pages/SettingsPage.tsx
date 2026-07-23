@@ -84,7 +84,7 @@ export function SettingsPage() {
           }}>Display Name</label>
           <Input
             value={displayName}
-            onInput={(e: any) => setDisplayName(e.target.value)}
+            onInputInput={(e: CustomEvent<{ value: string }>) => setDisplayName(e.detail.value)}
             placeholder="Your name"
             style={{ width: '100%' }}
           />
@@ -99,7 +99,7 @@ export function SettingsPage() {
           }}>Email</label>
           <Input
             value={email}
-            onInput={(e: any) => setEmail(e.target.value)}
+            onInputInput={(e: CustomEvent<{ value: string }>) => setEmail(e.detail.value)}
             placeholder="your@email.com"
             style={{ width: '100%' }}
           />

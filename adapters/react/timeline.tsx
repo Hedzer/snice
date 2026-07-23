@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/timeline/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Timeline component
@@ -23,7 +24,7 @@ export interface TimelineProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/timeline';
+ * import 'snice/components/timeline/snice-timeline';
  * import { Timeline } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface TimelineProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Timeline = createReactAdapter<TimelineProps>({
+export const Timeline: SniceReactComponent<TimelineProps, SniceComponentRef> = createReactAdapter<TimelineProps, false>({
   tagName: 'snice-timeline',
   properties: ["orientation","position","items","reverse"],
   events: {},

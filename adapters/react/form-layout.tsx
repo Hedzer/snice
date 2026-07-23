@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/form-layout/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the FormLayout component
@@ -24,7 +25,7 @@ export interface FormLayoutProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/form-layout';
+ * import 'snice/components/form-layout/snice-form-layout';
  * import { FormLayout } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface FormLayoutProps extends SniceBaseProps {
  * }
  * ```
  */
-export const FormLayout = createReactAdapter<FormLayoutProps>({
+export const FormLayout: SniceReactComponent<FormLayoutProps, SniceComponentRef> = createReactAdapter<FormLayoutProps, false>({
   tagName: 'snice-form-layout',
   properties: ["columns","labelPosition","labelWidth","gap","variant"],
   events: {},

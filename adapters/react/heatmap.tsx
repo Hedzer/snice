@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/heatmap/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Heatmap component
@@ -26,7 +27,7 @@ export interface HeatmapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/heatmap';
+ * import 'snice/components/heatmap/snice-heatmap';
  * import { Heatmap } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface HeatmapProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Heatmap = createReactAdapter<HeatmapProps>({
+export const Heatmap: SniceReactComponent<HeatmapProps, SniceComponentRef> = createReactAdapter<HeatmapProps, false>({
   tagName: 'snice-heatmap',
   properties: ["data","colorScheme","showLabels","cellSize","cellGap","showTooltip","weeks"],
   events: {"cell-click":"onCellClick"},

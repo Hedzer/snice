@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the ActivityFeed component
  */
@@ -17,7 +18,7 @@ export interface ActivityFeedProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/activity-feed';
+ * import 'snice/components/activity-feed/snice-activity-feed';
  * import { ActivityFeed } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface ActivityFeedProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const ActivityFeed: import("react").ForwardRefExoticComponent<Omit<ActivityFeedProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ActivityFeed: SniceReactComponent<ActivityFeedProps, SniceComponentRef>;
 //# sourceMappingURL=activity-feed.d.ts.map

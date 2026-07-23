@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/key-value/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the KeyValue component
@@ -38,7 +39,7 @@ export interface KeyValueProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/key-value';
+ * import 'snice/components/key-value/snice-key-value';
  * import { KeyValue } from 'snice/react';
  *
  * function MyComponent() {
@@ -46,7 +47,7 @@ export interface KeyValueProps extends SniceFormProps {
  * }
  * ```
  */
-export const KeyValue = createReactAdapter<KeyValueProps>({
+export const KeyValue: SniceReactComponent<KeyValueProps, SniceFormRef> = createReactAdapter<KeyValueProps, true>({
   tagName: 'snice-key-value',
   properties: ["label","autoExpand","rows","showDescription","keyPlaceholder","valuePlaceholder","disabled","readonly","required","name","variant","mode","showCopy","defaultValue","placeholders","value"],
   events: {"kv-add":"onKvAdd","kv-remove":"onKvRemove","kv-change":"onKvChange","kv-copy":"onKvCopy"},

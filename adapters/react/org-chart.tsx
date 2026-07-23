@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/org-chart/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the OrgChart component
@@ -24,7 +25,7 @@ export interface OrgChartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/org-chart';
+ * import 'snice/components/org-chart/snice-org-chart';
  * import { OrgChart } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface OrgChartProps extends SniceBaseProps {
  * }
  * ```
  */
-export const OrgChart = createReactAdapter<OrgChartProps>({
+export const OrgChart: SniceReactComponent<OrgChartProps, SniceComponentRef> = createReactAdapter<OrgChartProps, false>({
   tagName: 'snice-org-chart',
   properties: ["data","direction","compact"],
   events: {"node-click":"onNodeClick","node-expand":"onNodeExpand","node-collapse":"onNodeCollapse"},

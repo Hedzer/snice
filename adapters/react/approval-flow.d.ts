@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the ApprovalFlow component
  */
@@ -18,7 +19,7 @@ export interface ApprovalFlowProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/approval-flow';
+ * import 'snice/components/approval-flow/snice-approval-flow';
  * import { ApprovalFlow } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface ApprovalFlowProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const ApprovalFlow: import("react").ForwardRefExoticComponent<Omit<ApprovalFlowProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ApprovalFlow: SniceReactComponent<ApprovalFlowProps, SniceComponentRef>;
 //# sourceMappingURL=approval-flow.d.ts.map

@@ -1,3 +1,6 @@
+import { vi } from 'vitest';
+import type { Mock } from 'vitest';
+
 /**
  * Wait for a specified number of milliseconds
  */
@@ -43,10 +46,10 @@ export function cleanup(): void {
  * Mock localStorage for tests
  */
 export function mockLocalStorage(): {
-  getItem: ReturnType<typeof vi.fn>;
-  setItem: ReturnType<typeof vi.fn>;
-  removeItem: ReturnType<typeof vi.fn>;
-  clear: ReturnType<typeof vi.fn>;
+  getItem: Mock<[string], string | null>;
+  setItem: Mock<[string, string], void>;
+  removeItem: Mock<[string], void>;
+  clear: Mock<[], void>;
 } {
   const store: Record<string, string> = {};
 
@@ -71,7 +74,7 @@ export function mockFetch(
   response: unknown = {},
   status = 200,
   ok = true
-): ReturnType<typeof vi.fn> {
+): Mock<[], Promise<Response>> {
   return vi.fn(() =>
     Promise.resolve({
       ok,

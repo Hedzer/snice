@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/pdf-viewer';
+ * import 'snice/components/pdf-viewer/snice-pdf-viewer';
  * import { PdfViewer } from 'snice/react';
  *
  * function MyComponent() {

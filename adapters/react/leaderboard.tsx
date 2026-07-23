@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/leaderboard/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Leaderboard component
@@ -22,7 +23,7 @@ export interface LeaderboardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/leaderboard';
+ * import 'snice/components/leaderboard/snice-leaderboard';
  * import { Leaderboard } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface LeaderboardProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Leaderboard = createReactAdapter<LeaderboardProps>({
+export const Leaderboard: SniceReactComponent<LeaderboardProps, SniceComponentRef> = createReactAdapter<LeaderboardProps, false>({
   tagName: 'snice-leaderboard',
   properties: ["variant","size","title"],
   events: {"entry-click":"onEntryClick"},

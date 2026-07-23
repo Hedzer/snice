@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/kanban/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Kanban component
@@ -23,7 +24,7 @@ export interface KanbanProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/kanban';
+ * import 'snice/components/kanban/snice-kanban';
  * import { Kanban } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface KanbanProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Kanban = createReactAdapter<KanbanProps>({
+export const Kanban: SniceReactComponent<KanbanProps, SniceComponentRef> = createReactAdapter<KanbanProps, false>({
   tagName: 'snice-kanban',
   properties: ["columns","allowDragDrop","showCardCount"],
   events: {"kanban-card-move":"onKanbanCardMove","kanban-card-click":"onKanbanCardClick"},

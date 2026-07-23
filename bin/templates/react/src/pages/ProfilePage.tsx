@@ -33,7 +33,7 @@ export function ProfilePage() {
           <h1 style={{ margin: '0 0 0.5rem 0', color: 'var(--snice-color-primary)' }}>{user.name}</h1>
           <p style={{ margin: '0 0 1rem 0', color: 'var(--snice-color-text-secondary)' }}>{user.email}</p>
           <a href="#/settings" style={{ textDecoration: 'none' }}>
-            <Button variant="secondary" size="small">Edit Profile</Button>
+            <Button outline size="small">Edit Profile</Button>
           </a>
         </div>
 

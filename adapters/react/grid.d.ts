@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Grid component
  */
@@ -26,7 +27,7 @@ export interface GridProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/grid';
+ * import 'snice/components/grid/snice-grid';
  * import { Grid } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,5 +35,5 @@ export interface GridProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Grid: import("react").ForwardRefExoticComponent<Omit<GridProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Grid: SniceReactComponent<GridProps, SniceComponentRef>;
 //# sourceMappingURL=grid.d.ts.map

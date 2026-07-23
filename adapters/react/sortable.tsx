@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/sortable/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Sortable component
@@ -25,7 +26,7 @@ export interface SortableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sortable';
+ * import 'snice/components/sortable/snice-sortable';
  * import { Sortable } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface SortableProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Sortable = createReactAdapter<SortableProps>({
+export const Sortable: SniceReactComponent<SortableProps, SniceComponentRef> = createReactAdapter<SortableProps, false>({
   tagName: 'snice-sortable',
   properties: ["direction","handle","disabled","group"],
   events: {"sort-start":"onSortStart","sort-end":"onSortEnd","sort-change":"onSortChange"},

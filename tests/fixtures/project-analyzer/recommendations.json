@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "producer": "synthetic-component-selection-baseline",
+  "cases": [
+    {
+      "name": "native-dialog",
+      "filename": "src/confirm.ts",
+      "source": "const view = html`<dialog aria-label=\"Confirm\">Delete?</dialog>`;",
+      "expectedRuleIds": ["snice/recommend-modal"]
+    },
+    {
+      "name": "custom-modal-role-aria",
+      "filename": "src/modal.ts",
+      "source": "const view = html`<div class=\"modal-backdrop\"><div role=\"dialog\" aria-modal=\"true\">Body</div></div>`;",
+      "expectedRuleIds": ["snice/recommend-modal"]
+    },
+    {
+      "name": "custom-modal-backdrop-content",
+      "filename": "src/overlay.ts",
+      "source": "const view = html`<div class=\"modal-overlay\"><div class=\"modal-content\">Body</div></div>`;",
+      "expectedRuleIds": ["snice/recommend-modal"]
+    },
+    {
+      "name": "modal-word-only-not-flagged",
+      "filename": "src/copy.ts",
+      "source": "const label = 'Close the modal window';",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "released-snice-modal-tag-not-flagged",
+      "filename": "src/dialog.ts",
+      "source": "const view = html`<snice-modal label=\"Confirm\"><p>Body</p></snice-modal>`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "released-snice-react-modal-wrapper-not-flagged",
+      "filename": "src/dialog.tsx",
+      "source": "import { Modal } from 'snice/react';\nconst view = <Modal label=\"Confirm\"><p>Body</p></Modal>;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "native-table",
+      "filename": "src/report.ts",
+      "source": "const view = html`<table><thead></thead><tbody></tbody></table>`;",
+      "expectedRuleIds": ["snice/recommend-table"]
+    },
+    {
+      "name": "custom-toast",
+      "filename": "src/toast.ts",
+      "source": "export function showToast(message) { return html`<div class=\"toast\">${message}</div>`; }",
+      "expectedRuleIds": ["snice/recommend-toast"]
+    },
+    {
+      "name": "notification-center-behavior",
+      "filename": "src/notifications.ts",
+      "source": "let unreadCount = notifications.length;\nfunction markAllAsRead() {}",
+      "expectedRuleIds": ["snice/recommend-notification-center"]
+    },
+    {
+      "name": "native-text-form-controls",
+      "filename": "src/form.ts",
+      "source": "const view = html`<input type=\"email\"><textarea></textarea><select><option>A</option></select>`;",
+      "expectedRuleIds": ["snice/recommend-input", "snice/recommend-textarea", "snice/recommend-select"]
+    },
+    {
+      "name": "native-choice-controls",
+      "filename": "src/form.ts",
+      "source": "const view = html`<input type=\"checkbox\"><input type=\"radio\">`;",
+      "expectedRuleIds": ["snice/recommend-checkbox", "snice/recommend-radio"]
+    },
+    {
+      "name": "aria-tabs",
+      "filename": "src/profile.ts",
+      "source": "const view = html`<div role=\"tablist\"><button role=\"tab\">Profile</button></div>`;",
+      "expectedRuleIds": ["snice/recommend-tabs"]
+    },
+    {
+      "name": "pagination-navigation",
+      "filename": "src/results.ts",
+      "source": "const view = html`<nav aria-label=\"Pagination\"><button>Next</button></nav>`;",
+      "expectedRuleIds": ["snice/recommend-pagination"]
+    }
+  ]
+}

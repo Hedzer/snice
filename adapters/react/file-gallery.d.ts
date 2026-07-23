@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the FileGallery component
  */
@@ -33,7 +34,7 @@ export interface FileGalleryProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/file-gallery';
+ * import 'snice/components/file-gallery/snice-file-gallery';
  * import { FileGallery } from 'snice/react';
  *
  * function MyComponent() {
@@ -41,5 +42,5 @@ export interface FileGalleryProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const FileGallery: import("react").ForwardRefExoticComponent<Omit<FileGalleryProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const FileGallery: SniceReactComponent<FileGalleryProps, SniceComponentRef>;
 //# sourceMappingURL=file-gallery.d.ts.map

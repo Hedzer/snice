@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/progress/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Progress component
@@ -30,7 +31,7 @@ export interface ProgressProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/progress';
+ * import 'snice/components/progress/snice-progress';
  * import { Progress } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface ProgressProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Progress = createReactAdapter<ProgressProps>({
+export const Progress: SniceReactComponent<ProgressProps, SniceComponentRef> = createReactAdapter<ProgressProps, false>({
   tagName: 'snice-progress',
   properties: ["value","max","variant","size","color","indeterminate","showLabel","label","striped","animated","thickness"],
   events: {"progress-change":"onProgressChange"},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/spinner/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Spinner component
@@ -24,7 +25,7 @@ export interface SpinnerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/spinner';
+ * import 'snice/components/spinner/snice-spinner';
  * import { Spinner } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface SpinnerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Spinner = createReactAdapter<SpinnerProps>({
+export const Spinner: SniceReactComponent<SpinnerProps, SniceComponentRef> = createReactAdapter<SpinnerProps, false>({
   tagName: 'snice-spinner',
   properties: ["size","color","label","thickness","variant"],
   events: {},

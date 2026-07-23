@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/diff';
+ * import 'snice/components/diff/snice-diff';
  * import { Diff } from 'snice/react';
  *
  * function MyComponent() {

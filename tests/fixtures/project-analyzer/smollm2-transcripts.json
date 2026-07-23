@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "producer": "smollm2-round1-distilled",
+  "cases": [
+    {
+      "name": "chat-transcript-with-markdown-fence-saved-as-tsx",
+      "filename": "src/app.tsx",
+      "source": "User:\nWrite a Snice React inventory app. Output TypeScript only with no Markdown.\n\nAssistant:\n```typescript\nimport React, { Component } from 'react';\nexport default class App extends Component {\n  render() {\n    return <table><tbody><tr><td>Item</td></tr></tbody></table>;\n  }\n}\n```",
+      "expectedRuleIds": ["snice/non-source-content"]
+    },
+    {
+      "name": "leading-markdown-code-fence-without-chat-labels",
+      "filename": "src/widget.ts",
+      "source": "```ts\nimport { element } from 'snice';\n@element('my-widget')\nexport class MyWidget extends HTMLElement {}\n```",
+      "expectedRuleIds": ["snice/non-source-content"]
+    },
+    {
+      "name": "user-and-assistant-labels-without-fences",
+      "filename": "src/main.ts",
+      "source": "User: build me a form\nAssistant: here is the code\nexport const form = null;",
+      "expectedRuleIds": ["snice/non-source-content"]
+    },
+    {
+      "name": "human-and-ai-transcript-labels",
+      "filename": "src/reply.tsx",
+      "source": "Human:\nmake a dialog\n\nAI:\nSure, here is a native dialog element for you.\nexport const view = null;",
+      "expectedRuleIds": ["snice/non-source-content"]
+    }
+  ]
+}

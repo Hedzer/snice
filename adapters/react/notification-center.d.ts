@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the NotificationCenter component
  */
@@ -19,7 +20,7 @@ export interface NotificationCenterProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/notification-center';
+ * import 'snice/components/notification-center/snice-notification-center';
  * import { NotificationCenter } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface NotificationCenterProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const NotificationCenter: import("react").ForwardRefExoticComponent<Omit<NotificationCenterProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const NotificationCenter: SniceReactComponent<NotificationCenterProps, SniceComponentRef>;
 //# sourceMappingURL=notification-center.d.ts.map

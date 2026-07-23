@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/progress-ring';
+ * import 'snice/components/progress-ring/snice-progress-ring';
  * import { ProgressRing } from 'snice/react';
  *
  * function MyComponent() {

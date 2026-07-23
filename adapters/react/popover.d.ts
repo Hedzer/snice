@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Popover component
  */
@@ -19,7 +20,7 @@ export interface PopoverProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/popover';
+ * import 'snice/components/popover/snice-popover';
  * import { Popover } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface PopoverProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Popover: import("react").ForwardRefExoticComponent<Omit<PopoverProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Popover: SniceReactComponent<PopoverProps, SniceComponentRef>;
 //# sourceMappingURL=popover.d.ts.map

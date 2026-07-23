@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/work-order';
+ * import 'snice/components/work-order/snice-work-order';
  * import { WorkOrder } from 'snice/react';
  *
  * function MyComponent() {

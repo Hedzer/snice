@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Map component
  */
@@ -22,7 +23,7 @@ export interface MapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/map';
+ * import 'snice/components/map/snice-map';
  * import { Map } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface MapProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Map: import("react").ForwardRefExoticComponent<Omit<MapProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Map: SniceReactComponent<MapProps, SniceComponentRef>;
 //# sourceMappingURL=map.d.ts.map

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the MessageStrip component
  */
@@ -16,7 +17,7 @@ export interface MessageStripProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/message-strip';
+ * import 'snice/components/message-strip/snice-message-strip';
  * import { MessageStrip } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface MessageStripProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const MessageStrip: import("react").ForwardRefExoticComponent<Omit<MessageStripProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const MessageStrip: SniceReactComponent<MessageStripProps, SniceComponentRef>;
 //# sourceMappingURL=message-strip.d.ts.map

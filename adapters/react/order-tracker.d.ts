@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the OrderTracker component
  */
@@ -17,7 +18,7 @@ export interface OrderTrackerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/order-tracker';
+ * import 'snice/components/order-tracker/snice-order-tracker';
  * import { OrderTracker } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface OrderTrackerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const OrderTracker: import("react").ForwardRefExoticComponent<Omit<OrderTrackerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const OrderTracker: SniceReactComponent<OrderTrackerProps, SniceComponentRef>;
 //# sourceMappingURL=order-tracker.d.ts.map

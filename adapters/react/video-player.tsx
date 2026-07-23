@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/video-player/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the VideoPlayer component
@@ -35,7 +36,7 @@ export interface VideoPlayerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/video-player';
+ * import 'snice/components/video-player/snice-video-player';
  * import { VideoPlayer } from 'snice/react';
  *
  * function MyComponent() {
@@ -43,7 +44,7 @@ export interface VideoPlayerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const VideoPlayer = createReactAdapter<VideoPlayerProps>({
+export const VideoPlayer: SniceReactComponent<VideoPlayerProps, SniceComponentRef> = createReactAdapter<VideoPlayerProps, false>({
   tagName: 'snice-video-player',
   properties: ["src","poster","autoplay","muted","loop","controls","playbackRate","currentTime","volume","variant","duration"],
   events: {"video-play":"onVideoPlay","video-pause":"onVideoPause","video-ended":"onVideoEnded","video-time-update":"onVideoTimeUpdate","video-fullscreen-change":"onVideoFullscreenChange","video-volume-change":"onVideoVolumeChange"},

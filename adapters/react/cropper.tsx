@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/cropper/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Cropper component
@@ -25,7 +26,7 @@ export interface CropperProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/cropper';
+ * import 'snice/components/cropper/snice-cropper';
  * import { Cropper } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface CropperProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Cropper = createReactAdapter<CropperProps>({
+export const Cropper: SniceReactComponent<CropperProps, SniceComponentRef> = createReactAdapter<CropperProps, false>({
   tagName: 'snice-cropper',
   properties: ["src","aspectRatio","minWidth","minHeight","outputType"],
   events: {"crop-change":"onCropChange","crop-complete":"onCropComplete"},

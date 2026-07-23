@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the OrgChart component
  */
@@ -18,7 +19,7 @@ export interface OrgChartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/org-chart';
+ * import 'snice/components/org-chart/snice-org-chart';
  * import { OrgChart } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface OrgChartProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const OrgChart: import("react").ForwardRefExoticComponent<Omit<OrgChartProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const OrgChart: SniceReactComponent<OrgChartProps, SniceComponentRef>;
 //# sourceMappingURL=org-chart.d.ts.map

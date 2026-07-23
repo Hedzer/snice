@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/cropper';
+ * import 'snice/components/cropper/snice-cropper';
  * import { Cropper } from 'snice/react';
  *
  * function MyComponent() {

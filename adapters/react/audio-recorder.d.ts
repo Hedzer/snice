@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the AudioRecorder component
  */
@@ -27,7 +28,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/audio-recorder';
+ * import 'snice/components/audio-recorder/snice-audio-recorder';
  * import { AudioRecorder } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,5 +36,5 @@ export interface AudioRecorderProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const AudioRecorder: import("react").ForwardRefExoticComponent<Omit<AudioRecorderProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const AudioRecorder: SniceReactComponent<AudioRecorderProps, SniceComponentRef>;
 //# sourceMappingURL=audio-recorder.d.ts.map

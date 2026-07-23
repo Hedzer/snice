@@ -1,0 +1,204 @@
+// @vitest-environment node
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+/**
+ * Doctor (bin/snice.js) runtime-import contract: the component-export check
+ * ensures a deep runtime/side-effect import resolves to executable JavaScript.
+ * An `import type` is erased by TypeScript and can never register a custom
+ * element, so declaration-only modules must be clean for type imports while
+ * the same specifier used at runtime stays an error.
+ *
+ * Each case builds a temporary project with a package-shaped Snice tree so no
+ * global or repository installation is required.
+ */
+
+const CLI = resolve(__dirname, '..', 'bin', 'snice.js');
+const RUNTIME_CODES = new Set(['component-export', 'component-import']);
+
+let projectDir: string;
+
+function write(relative: string, contents: string) {
+  const target = join(projectDir, relative);
+  mkdirSync(join(target, '..'), { recursive: true });
+  writeFileSync(target, contents);
+}
+
+function runDoctor(source: string) {
+  write('src/main.ts', source);
+  let stdout = '';
+  try {
+    stdout = execFileSync(process.execPath, [CLI, 'doctor', projectDir, '--json'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+  } catch (error: any) {
+    stdout = error.stdout ?? '';
+  }
+  const report = JSON.parse(stdout);
+  return (report.findings as Array<{ severity: string; code: string; message: string }>)
+    .filter(finding => RUNTIME_CODES.has(finding.code));
+}
+
+beforeEach(() => {
+  projectDir = mkdtempSync(join(tmpdir(), 'snice-doctor-'));
+  write('package.json', JSON.stringify({
+    name: 'doctor-fixture',
+    version: '0.0.1',
+    dependencies: { snice: '^6.0.0' }
+  }));
+  write('tsconfig.json', JSON.stringify({
+    compilerOptions: { useDefineForClassFields: false }
+  }));
+  write('node_modules/snice/package.json', JSON.stringify({
+    name: 'snice',
+    version: '6.1.0'
+  }));
+  // Runtime module: ships executable JavaScript.
+  write('node_modules/snice/dist/components/table/snice-table.js', 'export {};\n');
+  // Declaration-only module: exposed through the package types condition and
+  // intentionally has no corresponding .js file.
+  write('node_modules/snice/dist/components/table/snice-table.types.d.ts', 'export interface ColumnDefinition { key: string }\n');
+});
+
+afterEach(() => {
+  rmSync(projectDir, { recursive: true, force: true });
+});
+
+describe('snice doctor component import checks', () => {
+  it('accepts a valid type-only deep import that ships only a .d.ts', () => {
+    const findings = runDoctor(
+      "import type { ColumnDefinition } from 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('accepts a multiline import type', () => {
+    const findings = runDoctor(
+      "import type {\n  ColumnDefinition\n} from 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('rejects the same declaration-only specifier used as a runtime side-effect import', () => {
+    const findings = runDoctor(
+      "import 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({
+        severity: 'error',
+        code: 'component-export',
+        message: 'snice/components/table/snice-table.types targets a missing package file'
+      })
+    ]);
+  });
+
+  it('treats a mixed type/value import as a runtime import', () => {
+    const findings = runDoctor(
+      "import { type ColumnDefinition, TableController } from 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({ severity: 'error', code: 'component-export' })
+    ]);
+  });
+
+  it('treats an inline type-only specifier list as erased', () => {
+    const findings = runDoctor(
+      "import { type ColumnDefinition } from 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('accepts a valid runtime component side-effect import with shipped JavaScript', () => {
+    const findings = runDoctor(
+      "import 'snice/components/table/snice-table';\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('rejects an incomplete runtime component import', () => {
+    const findings = runDoctor(
+      "import 'snice/components/table';\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({
+        severity: 'error',
+        code: 'component-import',
+        message: 'snice/components/table is incomplete; use the documented deep side-effect import'
+      })
+    ]);
+  });
+
+  it('rejects a dynamic runtime import of a declaration-only specifier', () => {
+    const findings = runDoctor(
+      "export async function load() {\n  return import('snice/components/table/snice-table.types');\n}\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({
+        severity: 'error',
+        code: 'component-export',
+        message: 'snice/components/table/snice-table.types targets a missing package file'
+      })
+    ]);
+  });
+
+  it('accepts a dynamic import of a shipped runtime module', () => {
+    const findings = runDoctor(
+      "export async function load() {\n  return import('snice/components/table/snice-table');\n}\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('rejects a plain value import of a declaration-only module', () => {
+    const findings = runDoctor(
+      "import { ColumnDefinition } from 'snice/components/table/snice-table.types';\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({ severity: 'error', code: 'component-export' })
+    ]);
+  });
+
+  it('rejects an invented runtime component import', () => {
+    const findings = runDoctor(
+      "import 'snice/components/widget/snice-widget';\n"
+    );
+    expect(findings).toEqual([
+      expect.objectContaining({
+        severity: 'error',
+        code: 'component-export',
+        message: 'snice/components/widget/snice-widget targets a missing package file'
+      })
+    ]);
+  });
+
+  it('accepts the theme stylesheet import', () => {
+    const findings = runDoctor(
+      "import 'snice/components/theme/theme.css';\n"
+    );
+    expect(findings).toEqual([]);
+  });
+
+  it('treats the declaration-only custom-elements module like any other: clean for type imports, an error at runtime', () => {
+    const typeOnly = runDoctor(
+      "import type { SniceButton } from 'snice/components/custom-elements';\n"
+    );
+    expect(typeOnly).toEqual([]);
+
+    const runtime = runDoctor(
+      "import 'snice/components/custom-elements';\n"
+    );
+    expect(runtime).toEqual([
+      expect.objectContaining({ severity: 'error', code: 'component-export' })
+    ]);
+  });
+
+  it('ignores imports that only appear in comments', () => {
+    const findings = runDoctor(
+      "// import 'snice/components/table/snice-table.types';\n/* import 'snice/components/table'; */\n"
+    );
+    expect(findings).toEqual([]);
+  });
+});

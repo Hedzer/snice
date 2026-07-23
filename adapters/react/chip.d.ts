@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Chip component
  */
@@ -24,7 +25,7 @@ export interface ChipProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chip';
+ * import 'snice/components/chip/snice-chip';
  * import { Chip } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface ChipProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Chip: import("react").ForwardRefExoticComponent<Omit<ChipProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Chip: SniceReactComponent<ChipProps, SniceComponentRef>;
 //# sourceMappingURL=chip.d.ts.map

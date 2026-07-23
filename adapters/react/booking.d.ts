@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Booking component
  */
@@ -23,7 +24,7 @@ export interface BookingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/booking';
+ * import 'snice/components/booking/snice-booking';
  * import { Booking } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,5 +32,5 @@ export interface BookingProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Booking: import("react").ForwardRefExoticComponent<Omit<BookingProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Booking: SniceReactComponent<BookingProps, SniceComponentRef>;
 //# sourceMappingURL=booking.d.ts.map

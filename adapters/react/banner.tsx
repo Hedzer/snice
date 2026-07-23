@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/banner/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Banner component
@@ -28,7 +29,7 @@ export interface BannerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/banner';
+ * import 'snice/components/banner/snice-banner';
  * import { Banner } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface BannerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Banner = createReactAdapter<BannerProps>({
+export const Banner: SniceReactComponent<BannerProps, SniceComponentRef> = createReactAdapter<BannerProps, false>({
   tagName: 'snice-banner',
   properties: ["variant","position","message","dismissible","icon","actionText","open"],
   events: {"banner-open":"onBannerOpen","banner-close":"onBannerClose","banner-action":"onBannerAction"},

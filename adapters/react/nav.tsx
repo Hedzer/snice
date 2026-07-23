@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/nav/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Nav component
@@ -23,7 +24,7 @@ export interface NavProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/nav';
+ * import 'snice/components/nav/snice-nav';
  * import { Nav } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface NavProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Nav = createReactAdapter<NavProps>({
+export const Nav: SniceReactComponent<NavProps, SniceComponentRef> = createReactAdapter<NavProps, false>({
   tagName: 'snice-nav',
   properties: ["variant","orientation","activeStyle","isTopLevel"],
   events: {},

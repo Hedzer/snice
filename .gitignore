@@ -22,6 +22,11 @@ out/
 !rollup.config.*.js
 !tooling/**/*.js
 !bin/**/*.js
+# Generated React adapter artifacts are committed alongside their .tsx sources
+!adapters/react/*.js
+!adapters/react/*.js.map
+!adapters/react/*.d.ts
+!adapters/react/*.d.ts.map
 
 # IDE
 .vscode/

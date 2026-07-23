@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/spotlight/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Spotlight component
@@ -24,7 +25,7 @@ export interface SpotlightProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/spotlight';
+ * import 'snice/components/spotlight/snice-spotlight';
  * import { Spotlight } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface SpotlightProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Spotlight = createReactAdapter<SpotlightProps>({
+export const Spotlight: SniceReactComponent<SpotlightProps, SniceComponentRef> = createReactAdapter<SpotlightProps, false>({
   tagName: 'snice-spotlight',
   properties: ["steps"],
   events: {"spotlight-start":"onSpotlightStart","spotlight-step":"onSpotlightStep","spotlight-end":"onSpotlightEnd","spotlight-skip":"onSpotlightSkip","spotlight-target-missing":"onSpotlightTargetMissing"},

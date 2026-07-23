@@ -17,7 +17,7 @@
  *     <div>
  *       <Input
  *         value={value}
- *         onChange={(e) => setValue(e.detail.value)}
+ *         onInputInput={(event) => setValue(event.detail.value)}
  *         placeholder="Enter text..."
  *       />
  *       <Button variant="primary" onClick={() => alert('Clicked!')}>

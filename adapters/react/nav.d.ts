@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Nav component
  */
@@ -16,7 +17,7 @@ export interface NavProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/nav';
+ * import 'snice/components/nav/snice-nav';
  * import { Nav } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface NavProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Nav: import("react").ForwardRefExoticComponent<Omit<NavProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Nav: SniceReactComponent<NavProps, SniceComponentRef>;
 //# sourceMappingURL=nav.d.ts.map

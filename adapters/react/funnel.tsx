@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/funnel/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Funnel component
@@ -27,7 +28,7 @@ export interface FunnelProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/funnel';
+ * import 'snice/components/funnel/snice-funnel';
  * import { Funnel } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface FunnelProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Funnel = createReactAdapter<FunnelProps>({
+export const Funnel: SniceReactComponent<FunnelProps, SniceComponentRef> = createReactAdapter<FunnelProps, false>({
   tagName: 'snice-funnel',
   properties: ["data","variant","orientation","showLabels","showValues","showPercentages","animation"],
   events: {"funnel-click":"onFunnelClick","funnel-hover":"onFunnelHover"},

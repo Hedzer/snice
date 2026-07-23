@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/virtual-scroller/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the VirtualScroller component
@@ -24,7 +25,7 @@ export interface VirtualScrollerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/virtual-scroller';
+ * import 'snice/components/virtual-scroller/snice-virtual-scroller';
  * import { VirtualScroller } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface VirtualScrollerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const VirtualScroller = createReactAdapter<VirtualScrollerProps>({
+export const VirtualScroller: SniceReactComponent<VirtualScrollerProps, SniceComponentRef> = createReactAdapter<VirtualScrollerProps, false>({
   tagName: 'snice-virtual-scroller',
   properties: ["items","itemHeight","bufferSize","estimatedItemHeight","renderItem"],
   events: {},

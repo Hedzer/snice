@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/popover/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Popover component
@@ -25,7 +26,7 @@ export interface PopoverProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/popover';
+ * import 'snice/components/popover/snice-popover';
  * import { Popover } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface PopoverProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Popover = createReactAdapter<PopoverProps>({
+export const Popover: SniceReactComponent<PopoverProps, SniceComponentRef> = createReactAdapter<PopoverProps, false>({
   tagName: 'snice-popover',
   properties: ["open","placement","distance","noOutsideDismiss","noEscapeDismiss"],
   events: {"popover-open":"onPopoverOpen","popover-close":"onPopoverClose"},

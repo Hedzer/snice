@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the StatGroup component
  */
@@ -16,7 +17,7 @@ export interface StatGroupProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/stat-group';
+ * import 'snice/components/stat-group/snice-stat-group';
  * import { StatGroup } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface StatGroupProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const StatGroup: import("react").ForwardRefExoticComponent<Omit<StatGroupProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const StatGroup: SniceReactComponent<StatGroupProps, SniceComponentRef>;
 //# sourceMappingURL=stat-group.d.ts.map

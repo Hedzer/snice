@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the TagInput component
  */
@@ -25,7 +26,7 @@ export interface TagInputProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tag-input';
+ * import 'snice/components/tag-input/snice-tag-input';
  * import { TagInput } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface TagInputProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const TagInput: import("react").ForwardRefExoticComponent<Omit<TagInputProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const TagInput: SniceReactComponent<TagInputProps, SniceFormRef>;
 //# sourceMappingURL=tag-input.d.ts.map

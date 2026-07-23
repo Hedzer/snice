@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/activity-feed/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the ActivityFeed component
@@ -23,7 +24,7 @@ export interface ActivityFeedProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/activity-feed';
+ * import 'snice/components/activity-feed/snice-activity-feed';
  * import { ActivityFeed } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface ActivityFeedProps extends SniceBaseProps {
  * }
  * ```
  */
-export const ActivityFeed = createReactAdapter<ActivityFeedProps>({
+export const ActivityFeed: SniceReactComponent<ActivityFeedProps, SniceComponentRef> = createReactAdapter<ActivityFeedProps, false>({
   tagName: 'snice-activity-feed',
   properties: ["activities","filter","groupBy"],
   events: {"activity-click":"onActivityClick","load-more":"onLoadMore"},

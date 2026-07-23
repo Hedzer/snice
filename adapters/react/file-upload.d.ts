@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the FileUpload component
  */
@@ -29,7 +30,7 @@ export interface FileUploadProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/file-upload';
+ * import 'snice/components/file-upload/snice-file-upload';
  * import { FileUpload } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,5 +38,5 @@ export interface FileUploadProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const FileUpload: import("react").ForwardRefExoticComponent<Omit<FileUploadProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const FileUpload: SniceReactComponent<FileUploadProps, SniceFormRef>;
 //# sourceMappingURL=file-upload.d.ts.map

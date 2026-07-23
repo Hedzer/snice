@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/comments/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Comments component
@@ -27,7 +28,7 @@ export interface CommentsProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/comments';
+ * import 'snice/components/comments/snice-comments';
  * import { Comments } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface CommentsProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Comments = createReactAdapter<CommentsProps>({
+export const Comments: SniceReactComponent<CommentsProps, SniceComponentRef> = createReactAdapter<CommentsProps, false>({
   tagName: 'snice-comments',
   properties: ["comments","currentUser","allowReplies","allowLikes","maxDepth"],
   events: {"comment-add":"onCommentAdd","comment-reply":"onCommentReply","comment-delete":"onCommentDelete","comment-like":"onCommentLike"},

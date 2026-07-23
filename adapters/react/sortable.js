@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/sortable';
+ * import 'snice/components/sortable/snice-sortable';
  * import { Sortable } from 'snice/react';
  *
  * function MyComponent() {

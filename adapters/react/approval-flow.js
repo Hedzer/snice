@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/approval-flow';
+ * import 'snice/components/approval-flow/snice-approval-flow';
  * import { ApprovalFlow } from 'snice/react';
  *
  * function MyComponent() {

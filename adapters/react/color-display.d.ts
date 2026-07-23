@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the ColorDisplay component
  */
@@ -18,7 +19,7 @@ export interface ColorDisplayProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/color-display';
+ * import 'snice/components/color-display/snice-color-display';
  * import { ColorDisplay } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface ColorDisplayProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const ColorDisplay: import("react").ForwardRefExoticComponent<Omit<ColorDisplayProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ColorDisplay: SniceReactComponent<ColorDisplayProps, SniceComponentRef>;
 //# sourceMappingURL=color-display.d.ts.map

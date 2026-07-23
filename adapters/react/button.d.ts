@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Button component
  */
@@ -27,7 +28,7 @@ export interface ButtonProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/button';
+ * import 'snice/components/button/snice-button';
  * import { Button } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,5 +36,5 @@ export interface ButtonProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Button: import("react").ForwardRefExoticComponent<Omit<ButtonProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Button: SniceReactComponent<ButtonProps, SniceFormRef>;
 //# sourceMappingURL=button.d.ts.map

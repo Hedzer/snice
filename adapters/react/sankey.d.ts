@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Sankey component
  */
@@ -22,7 +23,7 @@ export interface SankeyProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sankey';
+ * import 'snice/components/sankey/snice-sankey';
  * import { Sankey } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface SankeyProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Sankey: import("react").ForwardRefExoticComponent<Omit<SankeyProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Sankey: SniceReactComponent<SankeyProps, SniceComponentRef>;
 //# sourceMappingURL=sankey.d.ts.map

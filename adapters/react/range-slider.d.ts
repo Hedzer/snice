@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the RangeSlider component
  */
@@ -25,7 +26,7 @@ export interface RangeSliderProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/range-slider';
+ * import 'snice/components/range-slider/snice-range-slider';
  * import { RangeSlider } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface RangeSliderProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const RangeSlider: import("react").ForwardRefExoticComponent<Omit<RangeSliderProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const RangeSlider: SniceReactComponent<RangeSliderProps, SniceFormRef>;
 //# sourceMappingURL=range-slider.d.ts.map

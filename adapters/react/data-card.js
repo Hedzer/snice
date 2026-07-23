@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/data-card';
+ * import 'snice/components/data-card/snice-data-card';
  * import { DataCard } from 'snice/react';
  *
  * function MyComponent() {

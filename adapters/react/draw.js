@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/draw';
+ * import 'snice/components/draw/snice-draw';
  * import { Draw } from 'snice/react';
  *
  * function MyComponent() {

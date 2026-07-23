@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/login/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Login component
@@ -32,7 +33,7 @@ export interface LoginProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/login';
+ * import 'snice/components/login/snice-login';
  * import { Login } from 'snice/react';
  *
  * function MyComponent() {
@@ -40,7 +41,7 @@ export interface LoginProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Login = createReactAdapter<LoginProps>({
+export const Login: SniceReactComponent<LoginProps, SniceComponentRef> = createReactAdapter<LoginProps, false>({
   tagName: 'snice-login',
   properties: ["variant","size","title","disabled","loading","showRememberMe","showForgotPassword","actionText","alertMessage","alertVariant"],
   events: {"login-attempt":"onLoginAttempt","login-forgot-password":"onLoginForgotPassword","login-success":"onLoginSuccess","login-error":"onLoginError"},

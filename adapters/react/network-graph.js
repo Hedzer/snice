@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/network-graph';
+ * import 'snice/components/network-graph/snice-network-graph';
  * import { NetworkGraph } from 'snice/react';
  *
  * function MyComponent() {

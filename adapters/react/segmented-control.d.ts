@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the SegmentedControl component
  */
@@ -17,7 +18,7 @@ export interface SegmentedControlProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/segmented-control';
+ * import 'snice/components/segmented-control/snice-segmented-control';
  * import { SegmentedControl } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface SegmentedControlProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const SegmentedControl: import("react").ForwardRefExoticComponent<Omit<SegmentedControlProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const SegmentedControl: SniceReactComponent<SegmentedControlProps, SniceComponentRef>;
 //# sourceMappingURL=segmented-control.d.ts.map

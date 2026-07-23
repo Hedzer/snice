@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Countdown component
  */
@@ -17,7 +18,7 @@ export interface CountdownProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/countdown';
+ * import 'snice/components/countdown/snice-countdown';
  * import { Countdown } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface CountdownProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Countdown: import("react").ForwardRefExoticComponent<Omit<CountdownProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Countdown: SniceReactComponent<CountdownProps, SniceComponentRef>;
 //# sourceMappingURL=countdown.d.ts.map

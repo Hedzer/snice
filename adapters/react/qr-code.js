@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/qr-code';
+ * import 'snice/components/qr-code/snice-qr-code';
  * import { QrCode } from 'snice/react';
  *
  * function MyComponent() {

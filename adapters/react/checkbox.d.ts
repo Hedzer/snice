@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Checkbox component
  */
@@ -24,7 +25,7 @@ export interface CheckboxProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/checkbox';
+ * import 'snice/components/checkbox/snice-checkbox';
  * import { Checkbox } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface CheckboxProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Checkbox: import("react").ForwardRefExoticComponent<Omit<CheckboxProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Checkbox: SniceReactComponent<CheckboxProps, SniceFormRef>;
 //# sourceMappingURL=checkbox.d.ts.map

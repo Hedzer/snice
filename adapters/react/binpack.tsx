@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/binpack/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Binpack component
@@ -32,7 +33,7 @@ export interface BinpackProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/binpack';
+ * import 'snice/components/binpack/snice-binpack';
  * import { Binpack } from 'snice/react';
  *
  * function MyComponent() {
@@ -40,7 +41,7 @@ export interface BinpackProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Binpack = createReactAdapter<BinpackProps>({
+export const Binpack: SniceReactComponent<BinpackProps, SniceComponentRef> = createReactAdapter<BinpackProps, false>({
   tagName: 'snice-binpack',
   properties: ["gap","columnWidth","rowHeight","horizontal","originLeft","originTop","transitionDuration","stagger","resize","draggable","dragThrottle"],
   events: {"binpack-layout-complete":"onBinpackLayoutComplete","binpack-fit-complete":"onBinpackFitComplete","binpack-drag-item-positioned":"onBinpackDragItemPositioned"},

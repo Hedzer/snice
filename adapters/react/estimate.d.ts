@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Estimate component
  */
@@ -31,7 +32,7 @@ export interface EstimateProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/estimate';
+ * import 'snice/components/estimate/snice-estimate';
  * import { Estimate } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,5 +40,5 @@ export interface EstimateProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Estimate: import("react").ForwardRefExoticComponent<Omit<EstimateProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Estimate: SniceReactComponent<EstimateProps, SniceComponentRef>;
 //# sourceMappingURL=estimate.d.ts.map

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/terminal/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Terminal component
@@ -26,7 +27,7 @@ export interface TerminalProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/terminal';
+ * import 'snice/components/terminal/snice-terminal';
  * import { Terminal } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface TerminalProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Terminal = createReactAdapter<TerminalProps>({
+export const Terminal: SniceReactComponent<TerminalProps, SniceComponentRef> = createReactAdapter<TerminalProps, false>({
   tagName: 'snice-terminal',
   properties: ["prompt","cwd","readonly","maxLines","showTimestamps"],
   events: {"terminal-command":"onTerminalCommand","terminal-clear":"onTerminalClear","terminal-ready":"onTerminalReady"},

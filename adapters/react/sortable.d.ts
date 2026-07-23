@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Sortable component
  */
@@ -19,7 +20,7 @@ export interface SortableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sortable';
+ * import 'snice/components/sortable/snice-sortable';
  * import { Sortable } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface SortableProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Sortable: import("react").ForwardRefExoticComponent<Omit<SortableProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Sortable: SniceReactComponent<SortableProps, SniceComponentRef>;
 //# sourceMappingURL=sortable.d.ts.map

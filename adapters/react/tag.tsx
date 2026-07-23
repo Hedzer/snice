@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/tag/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Tag component
@@ -24,7 +25,7 @@ export interface TagProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tag';
+ * import 'snice/components/tag/snice-tag';
  * import { Tag } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface TagProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Tag = createReactAdapter<TagProps>({
+export const Tag: SniceReactComponent<TagProps, SniceComponentRef> = createReactAdapter<TagProps, false>({
   tagName: 'snice-tag',
   properties: ["variant","size","removable","outline","pill"],
   events: {"tag-remove":"onTagRemove"},

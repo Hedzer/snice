@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/camera-annotate';
+ * import 'snice/components/camera-annotate/snice-camera-annotate';
  * import { CameraAnnotate } from 'snice/react';
  *
  * function MyComponent() {

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Sparkline component
  */
@@ -24,7 +25,7 @@ export interface SparklineProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sparkline';
+ * import 'snice/components/sparkline/snice-sparkline';
  * import { Sparkline } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface SparklineProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Sparkline: import("react").ForwardRefExoticComponent<Omit<SparklineProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Sparkline: SniceReactComponent<SparklineProps, SniceComponentRef>;
 //# sourceMappingURL=sparkline.d.ts.map

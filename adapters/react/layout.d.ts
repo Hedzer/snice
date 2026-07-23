@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Layout component
  */
@@ -12,7 +13,7 @@ export interface LayoutProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/layout';
+ * import 'snice/components/layout/snice-layout';
  * import { Layout } from 'snice/react';
  *
  * function MyComponent() {
@@ -20,5 +21,5 @@ export interface LayoutProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Layout: import("react").ForwardRefExoticComponent<Omit<LayoutProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Layout: SniceReactComponent<LayoutProps, SniceComponentRef>;
 //# sourceMappingURL=layout.d.ts.map

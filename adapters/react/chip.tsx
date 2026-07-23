@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/chip/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Chip component
@@ -30,7 +31,7 @@ export interface ChipProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chip';
+ * import 'snice/components/chip/snice-chip';
  * import { Chip } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface ChipProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Chip = createReactAdapter<ChipProps>({
+export const Chip: SniceReactComponent<ChipProps, SniceComponentRef> = createReactAdapter<ChipProps, false>({
   tagName: 'snice-chip',
   properties: ["label","variant","size","shape","removable","selectable","selected","disabled","icon","avatar"],
   events: {"chip-click":"onChipClick","chip-remove":"onChipRemove"},

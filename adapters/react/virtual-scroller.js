@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/virtual-scroller';
+ * import 'snice/components/virtual-scroller/snice-virtual-scroller';
  * import { VirtualScroller } from 'snice/react';
  *
  * function MyComponent() {

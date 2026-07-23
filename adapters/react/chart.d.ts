@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Chart component
  */
@@ -18,7 +19,7 @@ export interface ChartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chart';
+ * import 'snice/components/chart/snice-chart';
  * import { Chart } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface ChartProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Chart: import("react").ForwardRefExoticComponent<Omit<ChartProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Chart: SniceReactComponent<ChartProps, SniceComponentRef>;
 //# sourceMappingURL=chart.d.ts.map

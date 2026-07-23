@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the VideoPlayer component
  */
@@ -29,7 +30,7 @@ export interface VideoPlayerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/video-player';
+ * import 'snice/components/video-player/snice-video-player';
  * import { VideoPlayer } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,5 +38,5 @@ export interface VideoPlayerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const VideoPlayer: import("react").ForwardRefExoticComponent<Omit<VideoPlayerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const VideoPlayer: SniceReactComponent<VideoPlayerProps, SniceComponentRef>;
 //# sourceMappingURL=video-player.d.ts.map

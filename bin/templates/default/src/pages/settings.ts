@@ -2,7 +2,7 @@ import { page } from '../router';
 import { render, styles, context, dispatch, on, html, css } from 'snice';
 import type { Placard, Context } from 'snice';
 import { isAuthenticated } from '../guards/auth';
-import type { Principal } from '../types/auth';
+import type { Principal, User } from '../types/auth';
 import { getUser, setUser } from '../services/storage';
 
 const placard: Placard = {
@@ -73,7 +73,7 @@ export class SettingsPage extends HTMLElement {
   @dispatch('settings-saved')
   saveSettings() {
     if (this.ctx) {
-      const user = getUser();
+      const user = getUser<User>();
       if (user) {
         user.name = this.displayName;
         user.email = this.email;
@@ -107,7 +107,7 @@ export class SettingsPage extends HTMLElement {
             <label>Display Name</label>
             <snice-input
               .value=${this.displayName}
-              @input=${this.handleNameInput}
+              @input-input=${this.handleNameInput}
               placeholder="Your name"
             ></snice-input>
           </div>
@@ -115,7 +115,7 @@ export class SettingsPage extends HTMLElement {
             <label>Email</label>
             <snice-input
               .value=${this.email}
-              @input=${this.handleEmailInput}
+              @input-input=${this.handleEmailInput}
               placeholder="your@email.com"
             ></snice-input>
           </div>

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Carousel component
  */
@@ -22,7 +23,7 @@ export interface CarouselProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/carousel';
+ * import 'snice/components/carousel/snice-carousel';
  * import { Carousel } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface CarouselProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Carousel: import("react").ForwardRefExoticComponent<Omit<CarouselProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Carousel: SniceReactComponent<CarouselProps, SniceComponentRef>;
 //# sourceMappingURL=carousel.d.ts.map

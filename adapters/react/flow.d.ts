@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Flow component
  */
@@ -25,7 +26,7 @@ export interface FlowProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/flow';
+ * import 'snice/components/flow/snice-flow';
  * import { Flow } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface FlowProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Flow: import("react").ForwardRefExoticComponent<Omit<FlowProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Flow: SniceReactComponent<FlowProps, SniceComponentRef>;
 //# sourceMappingURL=flow.d.ts.map

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/skeleton/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Skeleton component
@@ -25,7 +26,7 @@ export interface SkeletonProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/skeleton';
+ * import 'snice/components/skeleton/snice-skeleton';
  * import { Skeleton } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface SkeletonProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Skeleton = createReactAdapter<SkeletonProps>({
+export const Skeleton: SniceReactComponent<SkeletonProps, SniceComponentRef> = createReactAdapter<SkeletonProps, false>({
   tagName: 'snice-skeleton',
   properties: ["variant","width","height","animation","count","spacing"],
   events: {},

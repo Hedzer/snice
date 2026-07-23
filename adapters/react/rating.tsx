@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/rating/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Rating component
@@ -26,7 +27,7 @@ export interface RatingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/rating';
+ * import 'snice/components/rating/snice-rating';
  * import { Rating } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface RatingProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Rating = createReactAdapter<RatingProps>({
+export const Rating: SniceReactComponent<RatingProps, SniceComponentRef> = createReactAdapter<RatingProps, false>({
   tagName: 'snice-rating',
   properties: ["value","max","icon","emptyIcon","size","readonly","precision"],
   events: {"rating-change":"onRatingChange"},

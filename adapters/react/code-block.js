@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/code-block';
+ * import 'snice/components/code-block/snice-code-block';
  * import { CodeBlock } from 'snice/react';
  *
  * function MyComponent() {

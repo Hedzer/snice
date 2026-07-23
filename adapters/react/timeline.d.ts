@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Timeline component
  */
@@ -16,7 +17,7 @@ export interface TimelineProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/timeline';
+ * import 'snice/components/timeline/snice-timeline';
  * import { Timeline } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface TimelineProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Timeline: import("react").ForwardRefExoticComponent<Omit<TimelineProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Timeline: SniceReactComponent<TimelineProps, SniceComponentRef>;
 //# sourceMappingURL=timeline.d.ts.map

@@ -3,7 +3,9 @@ import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react
  * Create a React adapter for a Snice web component
  *
  * @param config - Configuration object defining the component's interface
- * @returns A React component that wraps the Snice web component
+ * @returns A React component that wraps the Snice web component. Its ref
+ * receives an imperative handle — use `ref.current?.element` to reach the
+ * underlying custom element, never the handle itself.
  *
  * @example
  * ```tsx
@@ -79,28 +81,31 @@ export function createReactAdapter(config) {
                 eventHandlersRef.current.clear();
             };
         }, [props]);
-        // Expose methods via ref
+        // Expose the imperative handle via ref. The handle always carries the
+        // `element` key: React attaches the element ref before running this, so a
+        // null element is only a defensive case that React code cannot observe
+        // (the forwarded ref itself is still null at that point).
         useImperativeHandle(ref, () => {
             const element = elementRef.current;
-            if (!element)
-                return {};
-            const exposedMethods = { element };
-            // Expose specified methods
-            methods.forEach((methodName) => {
-                if (typeof element[methodName] === 'function') {
-                    exposedMethods[methodName] = (...args) => element[methodName](...args);
-                }
-            });
-            // For form-associated components, expose form-related properties
-            if (formAssociated) {
-                Object.defineProperty(exposedMethods, 'value', {
-                    get: () => element.value,
-                    set: (value) => {
-                        element.value = value;
+            const handle = { element };
+            if (element) {
+                // Expose specified methods
+                methods.forEach((methodName) => {
+                    if (typeof element[methodName] === 'function') {
+                        handle[methodName] = (...args) => element[methodName](...args);
                     }
                 });
+                // For form-associated components, expose form-related properties
+                if (formAssociated) {
+                    Object.defineProperty(handle, 'value', {
+                        get: () => element.value,
+                        set: (value) => {
+                            element.value = value;
+                        }
+                    });
+                }
             }
-            return exposedMethods;
+            return handle;
         }, []);
         // Filter out custom props to avoid React warnings
         const nativeProps = {};
@@ -124,12 +129,12 @@ export function createReactAdapter(config) {
 /**
  * Hook to access form value from a Snice form component
  *
- * @param ref - Ref to the component
+ * @param ref - Ref to the component (`SniceFormRef` handle)
  * @returns The current form value
  *
  * @example
  * ```tsx
- * const inputRef = useRef();
+ * const inputRef = useRef<SniceFormRef>(null);
  * const value = useSniceFormValue(inputRef);
  * ```
  */

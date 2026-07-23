@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/empty-state';
+ * import 'snice/components/empty-state/snice-empty-state';
  * import { EmptyState } from 'snice/react';
  *
  * function MyComponent() {

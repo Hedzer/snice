@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Tag component
  */
@@ -18,7 +19,7 @@ export interface TagProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/tag';
+ * import 'snice/components/tag/snice-tag';
  * import { Tag } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface TagProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Tag: import("react").ForwardRefExoticComponent<Omit<TagProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Tag: SniceReactComponent<TagProps, SniceComponentRef>;
 //# sourceMappingURL=tag.d.ts.map

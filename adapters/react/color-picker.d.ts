@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the ColorPicker component
  */
@@ -31,7 +32,7 @@ export interface ColorPickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/color-picker';
+ * import 'snice/components/color-picker/snice-color-picker';
  * import { ColorPicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,5 +40,5 @@ export interface ColorPickerProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const ColorPicker: import("react").ForwardRefExoticComponent<Omit<ColorPickerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const ColorPicker: SniceReactComponent<ColorPickerProps, SniceFormRef>;
 //# sourceMappingURL=color-picker.d.ts.map

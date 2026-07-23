@@ -1,6 +1,6 @@
 # Snice
 
-<!-- AI: For token-efficient documentation, read docs/ai/ instead of docs/. Same content, 70% fewer tokens. Start with docs/ai/README.md -->
+<!-- AI: Load .agents/skills/snice/SKILL.md first, then follow its selective docs/ai/README.md guidance. -->
 
 A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.
 
@@ -11,6 +11,18 @@ npx snice create-app my-app
 cd my-app
 npm run dev
 ```
+
+Generated apps include the Snice agent skill plus matching `AGENTS.md` and
+`CLAUDE.md` pointers. Add them to an existing app with:
+
+```bash
+npx snice init-ai
+npx snice check
+```
+
+`check` verifies installation and TypeScript configuration, catches common
+generated-code mistakes, and recommends existing Snice components when an app
+reimplements them. `doctor` and `validate` expose its focused halves.
 
 ### Templates
 
@@ -893,7 +905,7 @@ function MyComponent() {
     <div>
       <Input
         value={value}
-        onChange={(e) => setValue(e.detail.value)}
+        onInputInput={(e) => setValue(e.detail.value)}
       />
       <Button variant="primary" onClick={() => alert('Clicked!')}>
         Submit

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the TimeRangePicker component
  */
@@ -24,7 +25,7 @@ export interface TimeRangePickerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/time-range-picker';
+ * import 'snice/components/time-range-picker/snice-time-range-picker';
  * import { TimeRangePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface TimeRangePickerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const TimeRangePicker: import("react").ForwardRefExoticComponent<Omit<TimeRangePickerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const TimeRangePicker: SniceReactComponent<TimeRangePickerProps, SniceComponentRef>;
 //# sourceMappingURL=time-range-picker.d.ts.map

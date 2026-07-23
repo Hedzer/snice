@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Radio component
  */
@@ -25,7 +26,7 @@ export interface RadioProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/radio';
+ * import 'snice/components/radio/snice-radio';
  * import { Radio } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface RadioProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Radio: import("react").ForwardRefExoticComponent<Omit<RadioProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Radio: SniceReactComponent<RadioProps, SniceFormRef>;
 //# sourceMappingURL=radio.d.ts.map

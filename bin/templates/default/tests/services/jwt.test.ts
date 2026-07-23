@@ -6,7 +6,7 @@ describe('JWT Service', () => {
     // decodeJWT logs a console.error when a token can't be parsed; several
     // cases below feed intentionally-invalid tokens. Silence that expected
     // log for this block — the assertions verify the null return, not the log.
-    let errorSpy: ReturnType<typeof vi.spyOn>;
+    let errorSpy: { mockRestore(): void };
     beforeEach(() => { errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {}); });
     afterEach(() => { errorSpy.mockRestore(); });
 

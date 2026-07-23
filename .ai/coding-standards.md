@@ -52,7 +52,7 @@ disconnectedCallback() { /* manual cleanup */ }
 ### Mutation Observers
 ```typescript
 // ✅ USE
-@observe(() => this.container, { childList: true })
+@observe('mutation:childList', '.container')
 handleMutation(mutations: MutationRecord[]) {}
 
 // ❌ NEVER

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/split-pane/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the SplitPane component
@@ -25,7 +26,7 @@ export interface SplitPaneProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/split-pane';
+ * import 'snice/components/split-pane/snice-split-pane';
  * import { SplitPane } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface SplitPaneProps extends SniceBaseProps {
  * }
  * ```
  */
-export const SplitPane = createReactAdapter<SplitPaneProps>({
+export const SplitPane: SniceReactComponent<SplitPaneProps, SniceComponentRef> = createReactAdapter<SplitPaneProps, false>({
   tagName: 'snice-split-pane',
   properties: ["direction","primarySize","minPrimarySize","minSecondarySize","snapSize","disabled"],
   events: {"pane-resize":"onPaneResize"},

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/stat-group';
+ * import 'snice/components/stat-group/snice-stat-group';
  * import { StatGroup } from 'snice/react';
  *
  * function MyComponent() {

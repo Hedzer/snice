@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/action-bar/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the ActionBar component
@@ -26,7 +27,7 @@ export interface ActionBarProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/action-bar';
+ * import 'snice/components/action-bar/snice-action-bar';
  * import { ActionBar } from 'snice/react';
  *
  * function MyComponent() {
@@ -34,7 +35,7 @@ export interface ActionBarProps extends SniceBaseProps {
  * }
  * ```
  */
-export const ActionBar = createReactAdapter<ActionBarProps>({
+export const ActionBar: SniceReactComponent<ActionBarProps, SniceComponentRef> = createReactAdapter<ActionBarProps, false>({
   tagName: 'snice-action-bar',
   properties: ["open","position","size","variant","noAnimation","noEscapeDismiss"],
   events: {"action-bar-open":"onActionBarOpen","action-bar-close":"onActionBarClose"},

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/chip';
+ * import 'snice/components/chip/snice-chip';
  * import { Chip } from 'snice/react';
  *
  * function MyComponent() {

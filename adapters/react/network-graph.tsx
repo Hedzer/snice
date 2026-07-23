@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/network-graph/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the NetworkGraph component
@@ -30,7 +31,7 @@ export interface NetworkGraphProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/network-graph';
+ * import 'snice/components/network-graph/snice-network-graph';
  * import { NetworkGraph } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,7 +39,7 @@ export interface NetworkGraphProps extends SniceBaseProps {
  * }
  * ```
  */
-export const NetworkGraph = createReactAdapter<NetworkGraphProps>({
+export const NetworkGraph: SniceReactComponent<NetworkGraphProps, SniceComponentRef> = createReactAdapter<NetworkGraphProps, false>({
   tagName: 'snice-network-graph',
   properties: ["data","layout","chargeStrength","linkDistance","zoomEnabled","dragEnabled","showLabels","animation"],
   events: {"node-click":"onNodeClick","edge-click":"onEdgeClick","node-drag":"onNodeDrag","graph-zoom":"onGraphZoom"},

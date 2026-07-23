@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/audio-recorder/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the AudioRecorder component
@@ -33,7 +34,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/audio-recorder';
+ * import 'snice/components/audio-recorder/snice-audio-recorder';
  * import { AudioRecorder } from 'snice/react';
  *
  * function MyComponent() {
@@ -41,7 +42,7 @@ export interface AudioRecorderProps extends SniceBaseProps {
  * }
  * ```
  */
-export const AudioRecorder = createReactAdapter<AudioRecorderProps>({
+export const AudioRecorder: SniceReactComponent<AudioRecorderProps, SniceComponentRef> = createReactAdapter<AudioRecorderProps, false>({
   tagName: 'snice-audio-recorder',
   properties: ["autoStart","format","bitrate","showControls","showVisualizer","maxDuration","showTimer","showPlayback","recordedUrl"],
   events: {"recorder-start":"onRecorderStart","recorder-error":"onRecorderError","recorder-pause":"onRecorderPause","recorder-resume":"onRecorderResume","recorder-cancel":"onRecorderCancel","recorder-stop":"onRecorderStop"},

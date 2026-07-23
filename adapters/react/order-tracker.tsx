@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/order-tracker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the OrderTracker component
@@ -23,7 +24,7 @@ export interface OrderTrackerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/order-tracker';
+ * import 'snice/components/order-tracker/snice-order-tracker';
  * import { OrderTracker } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface OrderTrackerProps extends SniceBaseProps {
  * }
  * ```
  */
-export const OrderTracker = createReactAdapter<OrderTrackerProps>({
+export const OrderTracker: SniceReactComponent<OrderTrackerProps, SniceComponentRef> = createReactAdapter<OrderTrackerProps, false>({
   tagName: 'snice-order-tracker',
   properties: ["steps","trackingNumber","carrier","variant"],
   events: {"step-click":"onStepClick"},

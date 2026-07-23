@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/chat/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Chat component
@@ -36,7 +37,7 @@ export interface ChatProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chat';
+ * import 'snice/components/chat/snice-chat';
  * import { Chat } from 'snice/react';
  *
  * function MyComponent() {
@@ -44,7 +45,7 @@ export interface ChatProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Chat = createReactAdapter<ChatProps>({
+export const Chat: SniceReactComponent<ChatProps, SniceComponentRef> = createReactAdapter<ChatProps, false>({
   tagName: 'snice-chat',
   properties: ["messages","currentUser","currentAvatar","placeholder","allowFiles","showTyping","showAvatars","showTimestamps","authorColors","colorAuthors","markdown","layout"],
   events: {"message-send":"onMessageSend","message-edit":"onMessageEdit","message-delete":"onMessageDelete","message-react":"onMessageReact","typing-start":"onTypingStart","typing-stop":"onTypingStop"},

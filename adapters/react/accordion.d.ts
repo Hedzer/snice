@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Accordion component
  */
@@ -16,7 +17,7 @@ export interface AccordionProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/accordion';
+ * import 'snice/components/accordion/snice-accordion';
  * import { Accordion } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface AccordionProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Accordion: import("react").ForwardRefExoticComponent<Omit<AccordionProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Accordion: SniceReactComponent<AccordionProps, SniceComponentRef>;
 //# sourceMappingURL=accordion.d.ts.map

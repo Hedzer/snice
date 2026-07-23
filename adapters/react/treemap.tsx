@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/treemap/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Treemap component
@@ -27,7 +28,7 @@ export interface TreemapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/treemap';
+ * import 'snice/components/treemap/snice-treemap';
  * import { Treemap } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface TreemapProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Treemap = createReactAdapter<TreemapProps>({
+export const Treemap: SniceReactComponent<TreemapProps, SniceComponentRef> = createReactAdapter<TreemapProps, false>({
   tagName: 'snice-treemap',
   properties: ["data","showLabels","showValues","colorScheme","padding","animation"],
   events: {"treemap-click":"onTreemapClick","treemap-hover":"onTreemapHover","treemap-drill":"onTreemapDrill"},

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Rating component
  */
@@ -20,7 +21,7 @@ export interface RatingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/rating';
+ * import 'snice/components/rating/snice-rating';
  * import { Rating } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface RatingProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Rating: import("react").ForwardRefExoticComponent<Omit<RatingProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Rating: SniceReactComponent<RatingProps, SniceComponentRef>;
 //# sourceMappingURL=rating.d.ts.map

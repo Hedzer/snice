@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/textarea';
+ * import 'snice/components/textarea/snice-textarea';
  * import { Textarea } from 'snice/react';
  *
  * function MyComponent() {

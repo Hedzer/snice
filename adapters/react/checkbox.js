@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/checkbox';
+ * import 'snice/components/checkbox/snice-checkbox';
  * import { Checkbox } from 'snice/react';
  *
  * function MyComponent() {

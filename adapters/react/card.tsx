@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/card/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Card component
@@ -24,7 +25,7 @@ export interface CardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/card';
+ * import 'snice/components/card/snice-card';
  * import { Card } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface CardProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Card = createReactAdapter<CardProps>({
+export const Card: SniceReactComponent<CardProps, SniceComponentRef> = createReactAdapter<CardProps, false>({
   tagName: 'snice-card',
   properties: ["variant","size","clickable","selected","disabled"],
   events: {"card-click":"onCardClick"},

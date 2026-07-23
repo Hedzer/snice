@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/invoice/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Invoice component
@@ -35,7 +36,7 @@ export interface InvoiceProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/invoice';
+ * import 'snice/components/invoice/snice-invoice';
  * import { Invoice } from 'snice/react';
  *
  * function MyComponent() {
@@ -43,7 +44,7 @@ export interface InvoiceProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Invoice = createReactAdapter<InvoiceProps>({
+export const Invoice: SniceReactComponent<InvoiceProps, SniceComponentRef> = createReactAdapter<InvoiceProps, false>({
   tagName: 'snice-invoice',
   properties: ["invoiceNumber","date","dueDate","status","currency","taxRate","discount","from","to","items","notes","variant","showQr","qrData","qrPosition"],
   events: {"invoice-item-change":"onInvoiceItemChange","invoice-status-change":"onInvoiceStatusChange"},

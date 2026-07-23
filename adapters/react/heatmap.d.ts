@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Heatmap component
  */
@@ -20,7 +21,7 @@ export interface HeatmapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/heatmap';
+ * import 'snice/components/heatmap/snice-heatmap';
  * import { Heatmap } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface HeatmapProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Heatmap: import("react").ForwardRefExoticComponent<Omit<HeatmapProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Heatmap: SniceReactComponent<HeatmapProps, SniceComponentRef>;
 //# sourceMappingURL=heatmap.d.ts.map

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Banner component
  */
@@ -22,7 +23,7 @@ export interface BannerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/banner';
+ * import 'snice/components/banner/snice-banner';
  * import { Banner } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface BannerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Banner: import("react").ForwardRefExoticComponent<Omit<BannerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Banner: SniceReactComponent<BannerProps, SniceComponentRef>;
 //# sourceMappingURL=banner.d.ts.map

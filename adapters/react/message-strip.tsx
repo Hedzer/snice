@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/message-strip/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the MessageStrip component
@@ -22,7 +23,7 @@ export interface MessageStripProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/message-strip';
+ * import 'snice/components/message-strip/snice-message-strip';
  * import { MessageStrip } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface MessageStripProps extends SniceBaseProps {
  * }
  * ```
  */
-export const MessageStrip = createReactAdapter<MessageStripProps>({
+export const MessageStrip: SniceReactComponent<MessageStripProps, SniceComponentRef> = createReactAdapter<MessageStripProps, false>({
   tagName: 'snice-message-strip',
   properties: ["variant","dismissible","icon"],
   events: {"dismiss":"onDismiss"},

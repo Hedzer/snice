@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Slider component
  */
@@ -33,7 +34,7 @@ export interface SliderProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/slider';
+ * import 'snice/components/slider/snice-slider';
  * import { Slider } from 'snice/react';
  *
  * function MyComponent() {
@@ -41,5 +42,5 @@ export interface SliderProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Slider: import("react").ForwardRefExoticComponent<Omit<SliderProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Slider: SniceReactComponent<SliderProps, SniceFormRef>;
 //# sourceMappingURL=slider.d.ts.map

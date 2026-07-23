@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Kpi component
  */
@@ -20,7 +21,7 @@ export interface KpiProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/kpi';
+ * import 'snice/components/kpi/snice-kpi';
  * import { Kpi } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface KpiProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Kpi: import("react").ForwardRefExoticComponent<Omit<KpiProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Kpi: SniceReactComponent<KpiProps, SniceComponentRef>;
 //# sourceMappingURL=kpi.d.ts.map

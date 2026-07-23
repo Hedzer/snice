@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/date-time-picker/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceFormProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
+
 
 /**
  * Props for the DateTimePicker component
@@ -44,7 +45,7 @@ export interface DateTimePickerProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/date-time-picker';
+ * import 'snice/components/date-time-picker/snice-date-time-picker';
  * import { DateTimePicker } from 'snice/react';
  *
  * function MyComponent() {
@@ -52,7 +53,7 @@ export interface DateTimePickerProps extends SniceFormProps {
  * }
  * ```
  */
-export const DateTimePicker = createReactAdapter<DateTimePickerProps>({
+export const DateTimePicker: SniceReactComponent<DateTimePickerProps, SniceFormRef> = createReactAdapter<DateTimePickerProps, true>({
   tagName: 'snice-date-time-picker',
   properties: ["size","defaultValue","dateFormat","timeFormat","min","max","showSeconds","loading","clearable","disabled","readonly","placeholder","label","helperText","errorText","required","invalid","name","variant","value"],
   events: {"datetimepicker-clear":"onDatetimepickerClear","datetime-change":"onDatetimeChange","datetimepicker-focus":"onDatetimepickerFocus","datetimepicker-blur":"onDatetimepickerBlur","datetimepicker-open":"onDatetimepickerOpen","datetimepicker-close":"onDatetimepickerClose"},

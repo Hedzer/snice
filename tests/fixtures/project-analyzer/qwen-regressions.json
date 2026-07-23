@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "producer": "qwen-local-low-effort-distillation",
+  "sourceCorpus": ".local/local-model/raw-generation-typescript.ts",
+  "cases": [
+    {
+      "name": "invented-package-root-decorators",
+      "filename": "src/inventory.ts",
+      "source": "import { Component, ComponentMethod, ComponentEvent } from 'snice';\n@Component({ name: 'InventoryApp' })\nclass InventoryApp {\n  @ComponentMethod({ name: 'list' }) renderList() {}\n}",
+      "expectedRuleIds": ["snice/root-api-contract"]
+    },
+    {
+      "name": "invented-scoped-component-packages",
+      "filename": "src/inventory.tsx",
+      "source": "import { Tabs } from '@snice/tabs';\nimport { Table } from '@snice/table';\nimport { ModalForm } from '@snice/modal-form';\nimport { Toast } from '@snice/toast';",
+      "expectedRuleIds": ["snice/package-import", "snice/package-import", "snice/package-import", "snice/package-import"]
+    },
+    {
+      "name": "button-outline-is-a-boolean-not-a-variant",
+      "filename": "src/actions.tsx",
+      "source": "import { Button } from 'snice/react';\nconst actions = <><Button variant=\"outline\">Cancel</Button><snice-button variant=\"secondary\">Save</snice-button></>;",
+      "expectedRuleIds": ["snice/component-prop-contract", "snice/component-prop-contract"]
+    },
+    {
+      "name": "web-component-static-table-column-keys",
+      "filename": "src/inventory.ts",
+      "source": "const view = html`<snice-table .columns=${[{ key: 'sku', header: 'SKU' }, { key: 'qty', render: (value) => String(value) }]}></snice-table>`;",
+      "expectedRuleIds": ["snice/component-prop-contract", "snice/component-prop-contract"]
+    },
+    {
+      "name": "dynamic-table-columns-remain-unjudged",
+      "filename": "src/inventory.tsx",
+      "source": "const view = <Table columns={columns} data={rows} />;",
+      "expectedRuleIds": []
+    }
+  ]
+}

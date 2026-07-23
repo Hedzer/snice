@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/map/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Map component
@@ -28,7 +29,7 @@ export interface MapProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/map';
+ * import 'snice/components/map/snice-map';
  * import { Map } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface MapProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Map = createReactAdapter<MapProps>({
+export const Map: SniceReactComponent<MapProps, SniceComponentRef> = createReactAdapter<MapProps, false>({
   tagName: 'snice-map',
   properties: ["center","zoom","minZoom","maxZoom","markers","tileUrl"],
   events: {"map-click":"onMapClick","marker-click":"onMarkerClick","map-move":"onMapMove","map-zoom":"onMapZoom"},

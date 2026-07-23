@@ -1,6 +1,6 @@
 import { page } from '../router';
-import { render, styles, context, observe, property, html, css } from 'snice';
-import type { Placard, Context } from 'snice';
+import { render, styles, observe, property, ready, html, css } from 'snice';
+import type { Placard } from 'snice';
 import { isAuthenticated } from '../guards/auth';
 
 interface DataItem {
@@ -34,17 +34,11 @@ const MOCK_ITEMS: DataItem[] = [
 
 @page({ tag: 'data-page', routes: ['/data'], guards: [isAuthenticated], placard })
 export class DataPage extends HTMLElement {
-  private ctx?: Context;
   allItems: DataItem[] = [];
   filteredItems: DataItem[] = [];
   searchQuery = '';
   statusFilter: 'all' | 'active' | 'pending' | 'archived' = 'all';
   @property({ type: Boolean }) loading = true;
-
-  @context()
-  handleContext(ctx: Context) {
-    this.ctx = ctx;
-  }
 
   @observe('resize')
   handleResize(entries: ResizeObserverEntry[]) {
@@ -55,7 +49,8 @@ export class DataPage extends HTMLElement {
     }
   }
 
-  connectedCallback() {
+  @ready()
+  loadData() {
     // Simulate loading data
     setTimeout(() => {
       this.allItems = [...MOCK_ITEMS];

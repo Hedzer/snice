@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/gauge';
+ * import 'snice/components/gauge/snice-gauge';
  * import { Gauge } from 'snice/react';
  *
  * function MyComponent() {

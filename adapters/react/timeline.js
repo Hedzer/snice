@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/timeline';
+ * import 'snice/components/timeline/snice-timeline';
  * import { Timeline } from 'snice/react';
  *
  * function MyComponent() {

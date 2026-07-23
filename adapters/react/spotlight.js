@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/spotlight';
+ * import 'snice/components/spotlight/snice-spotlight';
  * import { Spotlight } from 'snice/react';
  *
  * function MyComponent() {

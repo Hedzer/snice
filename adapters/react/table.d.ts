@@ -1,4 +1,6 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+import type { ColumnDefinition } from '../../dist/components/table/snice-table.types';
 /**
  * Props for the Table component
  */
@@ -18,7 +20,7 @@ export interface TableProps extends SniceBaseProps {
     totalItems?: any;
     pageSizes?: number[];
     searchDebounce?: any;
-    columns?: any[];
+    columns?: ColumnDefinition[];
     data?: any[];
     mode?: any;
     currentSort?: Array<{
@@ -78,7 +80,7 @@ export interface TableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/table';
+ * import 'snice/components/table/snice-table';
  * import { Table } from 'snice/react';
  *
  * function MyComponent() {
@@ -86,5 +88,5 @@ export interface TableProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Table: import("react").ForwardRefExoticComponent<Omit<TableProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Table: SniceReactComponent<TableProps, SniceComponentRef>;
 //# sourceMappingURL=table.d.ts.map

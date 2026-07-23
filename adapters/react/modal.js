@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/modal';
+ * import 'snice/components/modal/snice-modal';
  * import { Modal } from 'snice/react';
  *
  * function MyComponent() {

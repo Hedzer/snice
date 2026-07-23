@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the MetricTable component
  */
@@ -18,7 +19,7 @@ export interface MetricTableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/metric-table';
+ * import 'snice/components/metric-table/snice-metric-table';
  * import { MetricTable } from 'snice/react';
  *
  * function MyComponent() {
@@ -26,5 +27,5 @@ export interface MetricTableProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const MetricTable: import("react").ForwardRefExoticComponent<Omit<MetricTableProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const MetricTable: SniceReactComponent<MetricTableProps, SniceComponentRef>;
 //# sourceMappingURL=metric-table.d.ts.map

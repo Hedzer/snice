@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/pagination';
+ * import 'snice/components/pagination/snice-pagination';
  * import { Pagination } from 'snice/react';
  *
  * function MyComponent() {

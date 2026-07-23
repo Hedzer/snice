@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Badge component
  */
@@ -22,7 +23,7 @@ export interface BadgeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/badge';
+ * import 'snice/components/badge/snice-badge';
  * import { Badge } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface BadgeProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Badge: import("react").ForwardRefExoticComponent<Omit<BadgeProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Badge: SniceReactComponent<BadgeProps, SniceComponentRef>;
 //# sourceMappingURL=badge.d.ts.map

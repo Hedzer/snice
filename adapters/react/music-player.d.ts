@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the MusicPlayer component
  */
@@ -40,7 +41,7 @@ export interface MusicPlayerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/music-player';
+ * import 'snice/components/music-player/snice-music-player';
  * import { MusicPlayer } from 'snice/react';
  *
  * function MyComponent() {
@@ -48,5 +49,5 @@ export interface MusicPlayerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const MusicPlayer: import("react").ForwardRefExoticComponent<Omit<MusicPlayerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const MusicPlayer: SniceReactComponent<MusicPlayerProps, SniceComponentRef>;
 //# sourceMappingURL=music-player.d.ts.map

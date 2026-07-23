@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/book/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Book component
@@ -25,7 +26,7 @@ export interface BookProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/book';
+ * import 'snice/components/book/snice-book';
  * import { Book } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface BookProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Book = createReactAdapter<BookProps>({
+export const Book: SniceReactComponent<BookProps, SniceComponentRef> = createReactAdapter<BookProps, false>({
   tagName: 'snice-book',
   properties: ["currentPage","coverImage","title","author"],
   events: {"page-turn":"onPageTurn","page-flip-start":"onPageFlipStart","page-flip-end":"onPageFlipEnd"},

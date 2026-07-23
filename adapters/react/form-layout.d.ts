@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the FormLayout component
  */
@@ -17,7 +18,7 @@ export interface FormLayoutProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/form-layout';
+ * import 'snice/components/form-layout/snice-form-layout';
  * import { FormLayout } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface FormLayoutProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const FormLayout: import("react").ForwardRefExoticComponent<Omit<FormLayoutProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const FormLayout: SniceReactComponent<FormLayoutProps, SniceComponentRef>;
 //# sourceMappingURL=form-layout.d.ts.map

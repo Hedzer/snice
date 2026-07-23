@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/draw/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Draw component
@@ -38,7 +39,7 @@ export interface DrawProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/draw';
+ * import 'snice/components/draw/snice-draw';
  * import { Draw } from 'snice/react';
  *
  * function MyComponent() {
@@ -46,7 +47,7 @@ export interface DrawProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Draw = createReactAdapter<DrawProps>({
+export const Draw: SniceReactComponent<DrawProps, SniceComponentRef> = createReactAdapter<DrawProps, false>({
   tagName: 'snice-draw',
   properties: ["width","height","tool","color","strokeWidth","backgroundColor","lazy","lazyRadius","friction","smoothing","autoPolygon","polygonCurvePoints","autoCircle","circlePoints","disabled"],
   events: {"draw-start":"onDrawStart","draw-end":"onDrawEnd","draw-clear":"onDrawClear","draw-undo":"onDrawUndo","draw-redo":"onDrawRedo"},

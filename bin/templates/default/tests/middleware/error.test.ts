@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { Context } from 'snice';
 import { errorMiddleware } from '../../src/middleware/error';
 import * as storage from '../../src/services/storage';
@@ -6,19 +7,21 @@ import type { Principal } from '../../src/types/auth';
 
 describe('Error Middleware', () => {
   let mockContext: Context;
-  let mockNext: ReturnType<typeof vi.fn>;
-  let originalLocation: Location;
+  let mockNext: Mock<[], Promise<Response>>;
+  let originalLocation: PropertyDescriptor | undefined;
 
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
 
     // Save original location
-    originalLocation = window.location;
+    originalLocation = Object.getOwnPropertyDescriptor(window, 'location');
 
     // Mock window.location
-    delete (window as any).location;
-    window.location = { href: '' } as Location;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { href: '' },
+    });
 
     // Seed storage so the derived principal starts authenticated.
     storage.setUser({ id: '1', name: 'Test', email: 'test@example.com' });
@@ -49,7 +52,9 @@ describe('Error Middleware', () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
+    if (originalLocation) {
+      Object.defineProperty(window, 'location', originalLocation);
+    }
   });
 
   it('should pass through successful responses', async () => {

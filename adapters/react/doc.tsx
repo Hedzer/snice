@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/doc/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Doc component
@@ -22,7 +23,7 @@ export interface DocProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/doc';
+ * import 'snice/components/doc/snice-doc';
  * import { Doc } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface DocProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Doc = createReactAdapter<DocProps>({
+export const Doc: SniceReactComponent<DocProps, SniceComponentRef> = createReactAdapter<DocProps, false>({
   tagName: 'snice-doc',
   properties: ["placeholder","readonly","icons"],
   events: {},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/booking/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Booking component
@@ -29,7 +30,7 @@ export interface BookingProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/booking';
+ * import 'snice/components/booking/snice-booking';
  * import { Booking } from 'snice/react';
  *
  * function MyComponent() {
@@ -37,7 +38,7 @@ export interface BookingProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Booking = createReactAdapter<BookingProps>({
+export const Booking: SniceReactComponent<BookingProps, SniceComponentRef> = createReactAdapter<BookingProps, false>({
   tagName: 'snice-booking',
   properties: ["availableDates","availableSlots","duration","minDate","maxDate","fields","variant"],
   events: {"date-select":"onDateSelect","slot-select":"onSlotSelect","booking-confirm":"onBookingConfirm","booking-cancel":"onBookingCancel"},

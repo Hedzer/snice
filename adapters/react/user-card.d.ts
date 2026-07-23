@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the UserCard component
  */
@@ -24,7 +25,7 @@ export interface UserCardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/user-card';
+ * import 'snice/components/user-card/snice-user-card';
  * import { UserCard } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,5 +33,5 @@ export interface UserCardProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const UserCard: import("react").ForwardRefExoticComponent<Omit<UserCardProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const UserCard: SniceReactComponent<UserCardProps, SniceComponentRef>;
 //# sourceMappingURL=user-card.d.ts.map

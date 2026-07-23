@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/sankey';
+ * import 'snice/components/sankey/snice-sankey';
  * import { Sankey } from 'snice/react';
  *
  * function MyComponent() {

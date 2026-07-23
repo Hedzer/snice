@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Funnel component
  */
@@ -21,7 +22,7 @@ export interface FunnelProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/funnel';
+ * import 'snice/components/funnel/snice-funnel';
  * import { Funnel } from 'snice/react';
  *
  * function MyComponent() {
@@ -29,5 +30,5 @@ export interface FunnelProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Funnel: import("react").ForwardRefExoticComponent<Omit<FunnelProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Funnel: SniceReactComponent<FunnelProps, SniceComponentRef>;
 //# sourceMappingURL=funnel.d.ts.map

@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the PricingTable component
  */
@@ -16,7 +17,7 @@ export interface PricingTableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/pricing-table';
+ * import 'snice/components/pricing-table/snice-pricing-table';
  * import { PricingTable } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface PricingTableProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const PricingTable: import("react").ForwardRefExoticComponent<Omit<PricingTableProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const PricingTable: SniceReactComponent<PricingTableProps, SniceComponentRef>;
 //# sourceMappingURL=pricing-table.d.ts.map

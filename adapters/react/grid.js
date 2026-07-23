@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/grid';
+ * import 'snice/components/grid/snice-grid';
  * import { Grid } from 'snice/react';
  *
  * function MyComponent() {

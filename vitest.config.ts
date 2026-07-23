@@ -43,6 +43,7 @@ export default defineConfig({
       'tests/website-render.test.ts',
       'rollup.config.test.js',
       '.debug',
+      '.local',
       '.claude/worktrees'
     ],
   },

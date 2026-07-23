@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Spinner component
  */
@@ -17,7 +18,7 @@ export interface SpinnerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/spinner';
+ * import 'snice/components/spinner/snice-spinner';
  * import { Spinner } from 'snice/react';
  *
  * function MyComponent() {
@@ -25,5 +26,5 @@ export interface SpinnerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Spinner: import("react").ForwardRefExoticComponent<Omit<SpinnerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Spinner: SniceReactComponent<SpinnerProps, SniceComponentRef>;
 //# sourceMappingURL=spinner.d.ts.map

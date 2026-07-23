@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Pagination component
  */
@@ -22,7 +23,7 @@ export interface PaginationProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/pagination';
+ * import 'snice/components/pagination/snice-pagination';
  * import { Pagination } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,5 +31,5 @@ export interface PaginationProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Pagination: import("react").ForwardRefExoticComponent<Omit<PaginationProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Pagination: SniceReactComponent<PaginationProps, SniceComponentRef>;
 //# sourceMappingURL=pagination.d.ts.map

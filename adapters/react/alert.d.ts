@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Alert component
  */
@@ -21,7 +22,7 @@ export interface AlertProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/alert';
+ * import 'snice/components/alert/snice-alert';
  * import { Alert } from 'snice/react';
  *
  * function MyComponent() {
@@ -29,5 +30,5 @@ export interface AlertProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Alert: import("react").ForwardRefExoticComponent<Omit<AlertProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Alert: SniceReactComponent<AlertProps, SniceComponentRef>;
 //# sourceMappingURL=alert.d.ts.map

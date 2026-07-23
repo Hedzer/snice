@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Chat component
  */
@@ -30,7 +31,7 @@ export interface ChatProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chat';
+ * import 'snice/components/chat/snice-chat';
  * import { Chat } from 'snice/react';
  *
  * function MyComponent() {
@@ -38,5 +39,5 @@ export interface ChatProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Chat: import("react").ForwardRefExoticComponent<Omit<ChatProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Chat: SniceReactComponent<ChatProps, SniceComponentRef>;
 //# sourceMappingURL=chat.d.ts.map

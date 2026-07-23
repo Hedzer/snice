@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/approval-flow/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the ApprovalFlow component
@@ -24,7 +25,7 @@ export interface ApprovalFlowProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/approval-flow';
+ * import 'snice/components/approval-flow/snice-approval-flow';
  * import { ApprovalFlow } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface ApprovalFlowProps extends SniceBaseProps {
  * }
  * ```
  */
-export const ApprovalFlow = createReactAdapter<ApprovalFlowProps>({
+export const ApprovalFlow: SniceReactComponent<ApprovalFlowProps, SniceComponentRef> = createReactAdapter<ApprovalFlowProps, false>({
   tagName: 'snice-approval-flow',
   properties: ["steps","orientation","currentStep"],
   events: {"step-approve":"onStepApprove","step-reject":"onStepReject","step-comment":"onStepComment"},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/breadcrumbs/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Breadcrumbs component
@@ -24,7 +25,7 @@ export interface BreadcrumbsProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/breadcrumbs';
+ * import 'snice/components/breadcrumbs/snice-breadcrumbs';
  * import { Breadcrumbs } from 'snice/react';
  *
  * function MyComponent() {
@@ -32,7 +33,7 @@ export interface BreadcrumbsProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Breadcrumbs = createReactAdapter<BreadcrumbsProps>({
+export const Breadcrumbs: SniceReactComponent<BreadcrumbsProps, SniceComponentRef> = createReactAdapter<BreadcrumbsProps, false>({
   tagName: 'snice-breadcrumbs',
   properties: ["items","separator","size","maxItems","collapsed"],
   events: {"breadcrumb-click":"onBreadcrumbClick"},

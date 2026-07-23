@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/date-time-picker';
+ * import 'snice/components/date-time-picker/snice-date-time-picker';
  * import { DateTimePicker } from 'snice/react';
  *
  * function MyComponent() {

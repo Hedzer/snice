@@ -95,13 +95,13 @@ export function DashboardPage() {
           <p style={{ color: 'var(--snice-color-text-secondary)', margin: '0 0 0.5rem 0' }}>Check out the other pages:</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem' }}>
             <a href="#/data" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" style={{ width: '100%' }}>Browse Data</Button>
+              <Button outline style={{ width: '100%' }}>Browse Data</Button>
             </a>
             <a href="#/settings" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" style={{ width: '100%' }}>Settings</Button>
+              <Button outline style={{ width: '100%' }}>Settings</Button>
             </a>
             <a href="#/notifications" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary" style={{ width: '100%' }}>Notifications</Button>
+              <Button outline style={{ width: '100%' }}>Notifications</Button>
             </a>
           </div>
         </Card>

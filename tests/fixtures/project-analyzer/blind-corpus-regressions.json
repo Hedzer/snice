@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "producer": "blind-corpus-analyzer-regressions",
+  "cases": [
+    {
+      "name": "react-input-handler-with-change-event-type",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nfunction Form() {\n  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {\n    console.log(event.target.value);\n  };\n  return <Input onInputChange={handleInputChange} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-select-handler-reads-event-target",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Select } from 'snice/react';\n\nfunction FilterForm() {\n  const handleChange = (event) => {\n    const value = event.currentTarget.value;\n    console.log(value);\n  };\n  return <Select onSelectChange={handleChange} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-input-handler-with-synthetic-event",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nconst handleChange = (e: React.SyntheticEvent) => {\n  console.log(e.currentTarget);\n};\n\nexport default function App() {\n  return <Input onInputChange={handleChange} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-input-handler-correctly-uses-detail",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nfunction Form() {\n  const handleInputChange = (event) => {\n    console.log(event.detail.value);\n  };\n  return <Input onInputChange={handleInputChange} />;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-input-handler-correctly-typed-and-uses-detail",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nfunction Form() {\n  const handleInputChange = (event: React.SyntheticEvent<HTMLElement, CustomEvent>) => {\n    console.log(event.detail.value);\n  };\n  return <Input onInputChange={handleInputChange} />;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-button-handler-not-snice-event",
+      "filename": "src/app.tsx",
+      "source": "import React from 'react';\nimport { Button } from 'snice/react';\n\nfunction App() {\n  const handleClick = (event: React.MouseEvent) => {\n    console.log(event.currentTarget);\n  };\n  return <Button onClick={handleClick} />;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-handler-function-declaration_reads_detail",
+      "filename": "src/handlers.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nfunction handleInputChange(event: CustomEvent) {\n  console.log(event.detail.value);\n}\n\nexport function Form() {\n  return <Input onInputChange={handleInputChange} />;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-handler-function_misreads_target",
+      "filename": "src/handlers.tsx",
+      "source": "import React from 'react';\nimport { Select } from 'snice/react';\n\nfunction handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {\n  console.log(event.target.value);\n}\n\nexport function Dropdown() {\n  return <Select onSelectChange={handleSelectChange} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-handler-inline_with_change_event",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nexport default function Form() {\n  return <Input onInputChange={(e: React.ChangeEvent) => console.log(e.target.value)} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-handler_synthetic_event_and_target_reads",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Textarea } from 'snice/react';\n\nfunction Form() {\n  const handleTextChange = (event: React.SyntheticEvent) => {\n    const val = event.target.value;\n    return val;\n  };\n  return <Textarea onTextareaChange={handleTextChange} />;\n}",
+      "expectedRuleIds": ["snice/react-event-handler-type-mismatch"]
+    },
+    {
+      "name": "react-handler-unrelated-target-read-is-ignored",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\n\nfunction Form() {\n  const handleInput = (event: CustomEvent) => {\n    console.log(otherEvent.target.value);\n    console.log(event.detail.value);\n  };\n  return <Input onInputInput={handleInput} />;\n}\n",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-handler-unresolved-identifier-is-ignored",
+      "filename": "src/form.tsx",
+      "source": "import React from 'react';\nimport { Input } from 'snice/react';\nimport { handleInput } from './handlers';\n\nexport function Form() {\n  return <Input onInputInput={handleInput} />;\n}\n",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "snice-table-with-native-thead",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <thead>\n        <tr><th>Name</th></tr>\n      </thead>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-native-tbody",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <tbody>\n        <tr><td>John</td></tr>\n      </tbody>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-native-tr",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <tr><td>Row</td></tr>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-native-th",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <th>Header</th>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-native-td",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table columns={cols}>\n      <td>Cell</td>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-multiple-native-elements",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <thead><tr><th>Col</th></tr></thead>\n      <tbody><tr><td>Data</td></tr></tbody>\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/table-native-elements"]
+    },
+    {
+      "name": "snice-table-with-columns-prop_no_native_elements",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  const columns = [\n    { label: 'Name', renderCell: (value) => value.name }\n  ];\n  return <Table columns={columns} data={users} />;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "snice-table-with-snice-column-wrappers",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table, Column } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <Column label=\"Name\" renderCell={(v) => v.name} />\n      <Column label=\"Email\" renderCell={(v) => v.email} />\n    </Table>\n  );\n}",
+      "expectedRuleIds": ["snice/react-prop-contract", "snice/react-prop-contract"]
+    },
+    {
+      "name": "snice-table-column-wrapper-supported-props",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table, Column } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <Column key=\"name\" label=\"Name\" sortable filterable />\n      <Column key=\"email\" label=\"Email\" align=\"left\" width=\"12rem\" />\n    </Table>\n  );\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "native-table_not_snice_table_ignored",
+      "filename": "src/users.tsx",
+      "source": "export function UserList() {\n  return (\n    <table>\n      <thead>\n        <tr><th>Name</th></tr>\n      </thead>\n      <tbody>\n        <tr><td>John</td></tr>\n      </tbody>\n    </table>\n  );\n}",
+      "expectedRuleIds": ["snice/recommend-table"]
+    },
+    {
+      "name": "snice-table-with-unrelated-div_not_native_table_elements",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return (\n    <Table data={users}>\n      <div className=\"header\">Header</div>\n      <div className=\"content\">Content</div>\n    </Table>\n  );\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "snice-table_self_closing_no_children",
+      "filename": "src/users.tsx",
+      "source": "import React from 'react';\nimport { Table } from 'snice/react';\n\nexport function UserList() {\n  return <Table data={users} />;\n}",
+      "expectedRuleIds": []
+    }
+  ]
+}

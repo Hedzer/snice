@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Stepper component
  */
@@ -16,7 +17,7 @@ export interface StepperProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/stepper';
+ * import 'snice/components/stepper/snice-stepper';
  * import { Stepper } from 'snice/react';
  *
  * function MyComponent() {
@@ -24,5 +25,5 @@ export interface StepperProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Stepper: import("react").ForwardRefExoticComponent<Omit<StepperProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Stepper: SniceReactComponent<StepperProps, SniceComponentRef>;
 //# sourceMappingURL=stepper.d.ts.map

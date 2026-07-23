@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the PdfViewer component
  */
@@ -19,7 +20,7 @@ export interface PdfViewerProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/pdf-viewer';
+ * import 'snice/components/pdf-viewer/snice-pdf-viewer';
  * import { PdfViewer } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface PdfViewerProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const PdfViewer: import("react").ForwardRefExoticComponent<Omit<PdfViewerProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const PdfViewer: SniceReactComponent<PdfViewerProps, SniceComponentRef>;
 //# sourceMappingURL=pdf-viewer.d.ts.map

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/funnel';
+ * import 'snice/components/funnel/snice-funnel';
  * import { Funnel } from 'snice/react';
  *
  * function MyComponent() {

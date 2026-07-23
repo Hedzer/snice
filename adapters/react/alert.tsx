@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/alert/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Alert component
@@ -27,7 +28,7 @@ export interface AlertProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/alert';
+ * import 'snice/components/alert/snice-alert';
  * import { Alert } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface AlertProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Alert = createReactAdapter<AlertProps>({
+export const Alert: SniceReactComponent<AlertProps, SniceComponentRef> = createReactAdapter<AlertProps, false>({
   tagName: 'snice-alert',
   properties: ["variant","size","appearance","title","dismissible","icon"],
   events: {"alert-dismiss":"onAlertDismiss","alert-hidden":"onAlertHidden","alert-shown":"onAlertShown"},

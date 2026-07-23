@@ -1541,7 +1541,7 @@ class MyComponent extends HTMLElement {
       &lt;Input
         label=<span class="s">"Email"</span>
         value={email}
-        onChange={(e) =&gt; setEmail(e.detail.value)}
+        onInputInput={(e) =&gt; setEmail(e.detail.value)}
       /&gt;
       &lt;Button variant=<span class="s">"primary"</span> onClick={handleSubmit}&gt;
         Sign In

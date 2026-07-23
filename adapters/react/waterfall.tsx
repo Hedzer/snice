@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/waterfall/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Waterfall component
@@ -25,7 +26,7 @@ export interface WaterfallProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/waterfall';
+ * import 'snice/components/waterfall/snice-waterfall';
  * import { Waterfall } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface WaterfallProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Waterfall = createReactAdapter<WaterfallProps>({
+export const Waterfall: SniceReactComponent<WaterfallProps, SniceComponentRef> = createReactAdapter<WaterfallProps, false>({
   tagName: 'snice-waterfall',
   properties: ["data","orientation","showValues","showConnectors","animated"],
   events: {"bar-click":"onBarClick","bar-hover":"onBarHover"},

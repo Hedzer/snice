@@ -1,4 +1,5 @@
-import type { SniceFormProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceFormProps, SniceFormRef } from './types';
 /**
  * Props for the Textarea component
  */
@@ -37,7 +38,7 @@ export interface TextareaProps extends SniceFormProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/textarea';
+ * import 'snice/components/textarea/snice-textarea';
  * import { Textarea } from 'snice/react';
  *
  * function MyComponent() {
@@ -45,5 +46,5 @@ export interface TextareaProps extends SniceFormProps {
  * }
  * ```
  */
-export declare const Textarea: import("react").ForwardRefExoticComponent<Omit<TextareaProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Textarea: SniceReactComponent<TextareaProps, SniceFormRef>;
 //# sourceMappingURL=textarea.d.ts.map

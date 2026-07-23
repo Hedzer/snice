@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "producer": "hand-authored-reference",
+  "cases": [
+    {
+      "name": "page-router-context-and-structured-bindings",
+      "filename": "src/pages/users-page.ts",
+      "source": "import { Context, Router, SniceElement, context, element, html, property, render, state } from 'snice';\nimport { page } from '../router';\nimport 'snice/components/table/snice-table';\nimport 'snice/components/input/snice-input';\n\nexport const { initialize, navigate } = Router({\n  target: '#app',\n  type: 'hash',\n  context: { user: null }\n});\n\n@page({ tag: 'users-page', routes: ['/users'] })\n@element('users-page')\nclass UsersPage extends SniceElement {\n  @property() title = 'Users';\n  @state() rows = [{ id: '1', name: 'Ada' }];\n  columns = [{ key: 'name', label: 'Name' }];\n\n  @context()\n  handleContext(ctx: Context) {\n    void ctx.application;\n  }\n\n  @render()\n  template() {\n    return html`<snice-input @input-input=${this.handleInput}></snice-input>\n      <snice-table .columns=${this.columns} .data=${this.rows} @row-click=${this.handleRow}></snice-table>`;\n  }\n\n  handleInput(event: CustomEvent<{ value: string }>) {\n    console.log(event.detail.value);\n  }\n\n  handleRow(event: CustomEvent<{ data: unknown }>) {\n    console.log(event.detail.data);\n  }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "documented-icon-slot",
+      "filename": "src/status.ts",
+      "source": "import 'snice/components/alert/snice-alert';\nconst view = html`<snice-alert><span slot=\"icon\" class=\"material-symbols-outlined\">home</span>Ready</snice-alert>`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "framework-component-native-internals-do-not-get-recommendations",
+      "filename": "packages/components/src/input/snice-input.ts",
+      "source": "export class InternalInput extends HTMLElement { render() { return html`<input><textarea></textarea><select></select>`; } }",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "documented-react-router-wrappers-and-component-registrations",
+      "filename": "src/app.tsx",
+      "source": "import 'snice/components/input/snice-input';\nimport 'snice/components/table/snice-table';\nimport { Input, Route, SniceRouter, Table } from 'snice/react';\n\nfunction Dashboard() {\n  return <><Input onInputChange={(event) => console.log(event.detail.value)} /><Table data={[]} columns={[]} /></>;\n}\n\nexport const App = () => <SniceRouter mode=\"hash\"><Route path=\"/\" page={Dashboard} /></SniceRouter>;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "react-page-with-components-registered-in-central-entry-point",
+      "filename": "src/pages/report.tsx",
+      "source": "import { Button, Table } from 'snice/react';\nexport function Report({ rows }) {\n  return <><Button variant=\"primary\" outline>Export</Button><Table data={rows} columns={[{ key: 'name', label: 'Name', renderCell: (value) => String(value) }]} /></>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "documented-web-component-button-and-static-table-columns",
+      "filename": "src/report.ts",
+      "source": "const view = html`<snice-button variant=\"default\" outline>Export</snice-button><snice-table .columns=${[{ key: 'name', label: 'Name', renderCell: (value) => String(value) }]} .data=${rows}></snice-table>`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "declarative-rendering-and-string-observer-target",
+      "filename": "src/responsive-panel.ts",
+      "source": "@element('responsive-panel')\nclass ResponsivePanel extends HTMLElement {\n  @observe('resize', '.panel') resized(entries: ResizeObserverEntry[]) {}\n  @render() template() { return html`<section class=\"panel\">${this.content}</section>`; }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "controller-type-import-and-central-side-effect-registration",
+      "filename": "src/controllers/search-controller.ts",
+      "source": "import type { SniceInput } from 'snice/components/input/snice-input.types';\nimport 'snice/components/button/snice-button';\n@controller('search')\nclass SearchController {\n  input!: SniceInput;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "valid-snice-react-import-does-not-trigger-hallucination-error",
+      "filename": "src/app.tsx",
+      "source": "import { Button, Input } from 'snice/react';",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "snice-react-in-comment-does-not-trigger-error",
+      "filename": "src/app.tsx",
+      "source": "// Use snice/react instead of snice-react\nimport { Button } from 'snice/react';",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "snice-react-in-string-literal-does-not-trigger-error",
+      "filename": "src/app.tsx",
+      "source": "const docString = 'Import from snice/react, not snice-react';\nimport { Button } from 'snice/react';",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "local-path-with-snice-react-suffix-does-not-trigger-error",
+      "filename": "src/app.tsx",
+      "source": "import { LocalButton } from './snice-react';\nimport { Button } from 'snice/react';",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "scoped-package-containing-snice-react-does-not-trigger-error",
+      "filename": "src/app.tsx",
+      "source": "import { Button } from '@company/snice-react';\nimport { Input } from 'snice/react';",
+      "expectedRuleIds": []
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/key-value';
+ * import 'snice/components/key-value/snice-key-value';
  * import { KeyValue } from 'snice/react';
  *
  * function MyComponent() {

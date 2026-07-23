@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/kpi/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Kpi component
@@ -27,7 +28,7 @@ export interface KpiProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/kpi';
+ * import 'snice/components/kpi/snice-kpi';
  * import { Kpi } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface KpiProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Kpi = createReactAdapter<KpiProps>({
+export const Kpi: SniceReactComponent<KpiProps, SniceComponentRef> = createReactAdapter<KpiProps, false>({
   tagName: 'snice-kpi',
   properties: ["label","value","trendValue","trendData","sentiment","size","showSparkline","colorValue"],
   events: {},

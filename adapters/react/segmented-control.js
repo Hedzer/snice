@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/segmented-control';
+ * import 'snice/components/segmented-control/snice-segmented-control';
  * import { SegmentedControl } from 'snice/react';
  *
  * function MyComponent() {

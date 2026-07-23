@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/list/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the List component
@@ -27,7 +28,7 @@ export interface ListProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/list';
+ * import 'snice/components/list/snice-list';
  * import { List } from 'snice/react';
  *
  * function MyComponent() {
@@ -35,7 +36,7 @@ export interface ListProps extends SniceBaseProps {
  * }
  * ```
  */
-export const List = createReactAdapter<ListProps>({
+export const List: SniceReactComponent<ListProps, SniceComponentRef> = createReactAdapter<ListProps, false>({
   tagName: 'snice-list',
   properties: ["dividers","searchable","search","infinite","loading","noResults","threshold","skeletonCount"],
   events: {},

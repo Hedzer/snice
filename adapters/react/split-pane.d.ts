@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the SplitPane component
  */
@@ -19,7 +20,7 @@ export interface SplitPaneProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/split-pane';
+ * import 'snice/components/split-pane/snice-split-pane';
  * import { SplitPane } from 'snice/react';
  *
  * function MyComponent() {
@@ -27,5 +28,5 @@ export interface SplitPaneProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const SplitPane: import("react").ForwardRefExoticComponent<Omit<SplitPaneProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const SplitPane: SniceReactComponent<SplitPaneProps, SniceComponentRef>;
 //# sourceMappingURL=split-pane.d.ts.map

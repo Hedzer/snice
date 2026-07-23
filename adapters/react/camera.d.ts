@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Camera component
  */
@@ -25,7 +26,7 @@ export interface CameraProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/camera';
+ * import 'snice/components/camera/snice-camera';
  * import { Camera } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,5 +34,5 @@ export interface CameraProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Camera: import("react").ForwardRefExoticComponent<Omit<CameraProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Camera: SniceReactComponent<CameraProps, SniceComponentRef>;
 //# sourceMappingURL=camera.d.ts.map

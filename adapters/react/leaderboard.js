@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/leaderboard';
+ * import 'snice/components/leaderboard/snice-leaderboard';
  * import { Leaderboard } from 'snice/react';
  *
  * function MyComponent() {

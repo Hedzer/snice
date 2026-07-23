@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/qr-code/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the QrCode component
@@ -34,7 +35,7 @@ export interface QrCodeProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/qr-code';
+ * import 'snice/components/qr-code/snice-qr-code';
  * import { QrCode } from 'snice/react';
  *
  * function MyComponent() {
@@ -42,7 +43,7 @@ export interface QrCodeProps extends SniceBaseProps {
  * }
  * ```
  */
-export const QrCode = createReactAdapter<QrCodeProps>({
+export const QrCode: SniceReactComponent<QrCodeProps, SniceComponentRef> = createReactAdapter<QrCodeProps, false>({
   tagName: 'snice-qr-code',
   properties: ["value","size","errorCorrectionLevel","renderMode","dotStyle","margin","fgColor","bgColor","includeImage","imageUrl","imageSize","centerText","centerTextSize","textFillColor","textOutlineColor"],
   events: {},

@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/markdown';
+ * import 'snice/components/markdown/snice-markdown';
  * import { Markdown } from 'snice/react';
  *
  * function MyComponent() {

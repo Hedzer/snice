@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the WorkOrder component
  */
@@ -31,7 +32,7 @@ export interface WorkOrderProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/work-order';
+ * import 'snice/components/work-order/snice-work-order';
  * import { WorkOrder } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,5 +40,5 @@ export interface WorkOrderProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const WorkOrder: import("react").ForwardRefExoticComponent<Omit<WorkOrderProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const WorkOrder: SniceReactComponent<WorkOrderProps, SniceComponentRef>;
 //# sourceMappingURL=work-order.d.ts.map

@@ -17,7 +17,7 @@
  *     <div>
  *       <Input
  *         value={value}
- *         onChange={(e) => setValue(e.detail.value)}
+ *         onInputInput={(event) => setValue(event.detail.value)}
  *         placeholder="Enter text..."
  *       />
  *       <Button variant="primary" onClick={() => alert('Clicked!')}>
@@ -38,12 +38,14 @@ export type { SniceRouterProps, RouteProps } from './SniceRouter';
 export { useRequestHandler } from './useRequestHandler';
 
 export { createReactAdapter, useSniceFormValue } from './wrapper';
-export type { AdapterConfig, SniceComponentProps } from './wrapper';
+export type { AdapterConfig, AdapterHandle, SniceComponentProps, SniceReactComponent } from './wrapper';
 export type {
   SniceBaseProps,
   SniceFormProps,
   SniceComponentRef,
   SniceFormRef,
+  SniceAdapterRef,
+  SniceMethodHandle,
   SniceCustomEvent
 } from './types';
 export {

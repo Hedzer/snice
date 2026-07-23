@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/camera-annotate/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the CameraAnnotate component
@@ -25,7 +26,7 @@ export interface CameraAnnotateProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/camera-annotate';
+ * import 'snice/components/camera-annotate/snice-camera-annotate';
  * import { CameraAnnotate } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface CameraAnnotateProps extends SniceBaseProps {
  * }
  * ```
  */
-export const CameraAnnotate = createReactAdapter<CameraAnnotateProps>({
+export const CameraAnnotate: SniceReactComponent<CameraAnnotateProps, SniceComponentRef> = createReactAdapter<CameraAnnotateProps, false>({
   tagName: 'snice-camera-annotate',
   properties: ["mode","autoStart","autoRotateColors","showLabelsPanel"],
   events: {"capture":"onCapture","annotate":"onAnnotate","annotation-change":"onAnnotationChange"},

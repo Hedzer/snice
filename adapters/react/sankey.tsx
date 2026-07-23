@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/sankey/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Sankey component
@@ -28,7 +29,7 @@ export interface SankeyProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sankey';
+ * import 'snice/components/sankey/snice-sankey';
  * import { Sankey } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface SankeyProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Sankey = createReactAdapter<SankeyProps>({
+export const Sankey: SniceReactComponent<SankeyProps, SniceComponentRef> = createReactAdapter<SankeyProps, false>({
   tagName: 'snice-sankey',
   properties: ["data","nodeWidth","nodePadding","alignment","showLabels","showValues","animation"],
   events: {"sankey-node-click":"onSankeyNodeClick","sankey-link-click":"onSankeyLinkClick","sankey-hover":"onSankeyHover"},

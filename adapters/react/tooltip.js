@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/tooltip';
+ * import 'snice/components/tooltip/snice-tooltip';
  * import { Tooltip } from 'snice/react';
  *
  * function MyComponent() {

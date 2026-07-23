@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/chart/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Chart component
@@ -25,7 +26,7 @@ export interface ChartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/chart';
+ * import 'snice/components/chart/snice-chart';
  * import { Chart } from 'snice/react';
  *
  * function MyComponent() {
@@ -33,7 +34,7 @@ export interface ChartProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Chart = createReactAdapter<ChartProps>({
+export const Chart: SniceReactComponent<ChartProps, SniceComponentRef> = createReactAdapter<ChartProps, false>({
   tagName: 'snice-chart',
   properties: ["type","datasets","labels","options","width","height"],
   events: {},

@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/flow/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Flow component
@@ -31,7 +32,7 @@ export interface FlowProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/flow';
+ * import 'snice/components/flow/snice-flow';
  * import { Flow } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface FlowProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Flow = createReactAdapter<FlowProps>({
+export const Flow: SniceReactComponent<FlowProps, SniceComponentRef> = createReactAdapter<FlowProps, false>({
   tagName: 'snice-flow',
   properties: ["nodes","edges","snapToGrid","gridSize","zoomEnabled","panEnabled","minimap","editable"],
   events: {"node-drag":"onNodeDrag","node-select":"onNodeSelect","edge-connect":"onEdgeConnect","edge-disconnect":"onEdgeDisconnect","canvas-click":"onCanvasClick"},

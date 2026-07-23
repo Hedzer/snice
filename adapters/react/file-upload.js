@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/file-upload';
+ * import 'snice/components/file-upload/snice-file-upload';
  * import { FileUpload } from 'snice/react';
  *
  * function MyComponent() {

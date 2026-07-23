@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/data-card/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the DataCard component
@@ -23,7 +24,7 @@ export interface DataCardProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/data-card';
+ * import 'snice/components/data-card/snice-data-card';
  * import { DataCard } from 'snice/react';
  *
  * function MyComponent() {
@@ -31,7 +32,7 @@ export interface DataCardProps extends SniceBaseProps {
  * }
  * ```
  */
-export const DataCard = createReactAdapter<DataCardProps>({
+export const DataCard: SniceReactComponent<DataCardProps, SniceComponentRef> = createReactAdapter<DataCardProps, false>({
   tagName: 'snice-data-card',
   properties: ["fields","editable","variant"],
   events: {"field-change":"onFieldChange","field-save":"onFieldSave"},

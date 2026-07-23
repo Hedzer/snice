@@ -1,4 +1,5 @@
-import type { SniceBaseProps } from './types';
+import { type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
 /**
  * Props for the Diff component
  */
@@ -20,7 +21,7 @@ export interface DiffProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/diff';
+ * import 'snice/components/diff/snice-diff';
  * import { Diff } from 'snice/react';
  *
  * function MyComponent() {
@@ -28,5 +29,5 @@ export interface DiffProps extends SniceBaseProps {
  * }
  * ```
  */
-export declare const Diff: import("react").ForwardRefExoticComponent<Omit<DiffProps, "ref"> & import("react").RefAttributes<any>>;
+export declare const Diff: SniceReactComponent<DiffProps, SniceComponentRef>;
 //# sourceMappingURL=diff.d.ts.map

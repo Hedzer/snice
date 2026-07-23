@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/countdown';
+ * import 'snice/components/countdown/snice-countdown';
  * import { Countdown } from 'snice/react';
  *
  * function MyComponent() {

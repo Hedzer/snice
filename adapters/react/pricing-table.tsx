@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/pricing-table/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the PricingTable component
@@ -22,7 +23,7 @@ export interface PricingTableProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/pricing-table';
+ * import 'snice/components/pricing-table/snice-pricing-table';
  * import { PricingTable } from 'snice/react';
  *
  * function MyComponent() {
@@ -30,7 +31,7 @@ export interface PricingTableProps extends SniceBaseProps {
  * }
  * ```
  */
-export const PricingTable = createReactAdapter<PricingTableProps>({
+export const PricingTable: SniceReactComponent<PricingTableProps, SniceComponentRef> = createReactAdapter<PricingTableProps, false>({
   tagName: 'snice-pricing-table',
   properties: ["plans","variant","annual"],
   events: {"plan-select":"onPlanSelect"},

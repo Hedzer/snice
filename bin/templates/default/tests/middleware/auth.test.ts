@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { Mock } from 'vitest';
 import { Context } from 'snice';
 import { authMiddleware } from '../../src/middleware/auth';
 import * as storage from '../../src/services/storage';
@@ -6,7 +7,7 @@ import * as storage from '../../src/services/storage';
 describe('Auth Middleware', () => {
   let mockContext: Context;
   let mockRequest: Request;
-  let mockNext: ReturnType<typeof vi.fn>;
+  let mockNext: Mock<[], Promise<Response>>;
 
   beforeEach(() => {
     localStorage.clear();

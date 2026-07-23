@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/message-strip';
+ * import 'snice/components/message-strip/snice-message-strip';
  * import { MessageStrip } from 'snice/react';
  *
  * function MyComponent() {

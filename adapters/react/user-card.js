@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/user-card';
+ * import 'snice/components/user-card/snice-user-card';
  * import { UserCard } from 'snice/react';
  *
  * function MyComponent() {

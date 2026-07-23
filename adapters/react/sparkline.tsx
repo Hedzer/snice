@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/sparkline/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Sparkline component
@@ -31,7 +32,7 @@ export interface SparklineProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/sparkline';
+ * import 'snice/components/sparkline/snice-sparkline';
  * import { Sparkline } from 'snice/react';
  *
  * function MyComponent() {
@@ -39,7 +40,7 @@ export interface SparklineProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Sparkline = createReactAdapter<SparklineProps>({
+export const Sparkline: SniceReactComponent<SparklineProps, SniceComponentRef> = createReactAdapter<SparklineProps, false>({
   tagName: 'snice-sparkline',
   properties: ["data","type","color","customColor","width","height","strokeWidth","showDots","showArea","smooth","min","max"],
   events: {},

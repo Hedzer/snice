@@ -70,6 +70,7 @@ export function createCdnBuild(componentName, options = {}) {
     minify = true,
     withTheme = false,
     formats = defaultFormats,
+    outputDir = `dist/cdn/${componentName}`,
   } = options;
 
   // Use pre-compiled JS from dist/components (avoids TypeScript parsing issues)
@@ -78,8 +79,6 @@ export function createCdnBuild(componentName, options = {}) {
   if (!fs.existsSync(componentPath)) {
     throw new Error(`Component not found: ${componentPath}. Run build:distribution first.`);
   }
-
-  const outputDir = `dist/cdn/${componentName}`;
 
   // Convert component name to valid JS identifier (camelCase)
   const jsIdentifier = 'Snice' + componentName

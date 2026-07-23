@@ -10,7 +10,7 @@ import { createReactAdapter } from './wrapper';
  *
  * @example
  * ```tsx
- * import 'snice/components/alert';
+ * import 'snice/components/alert/snice-alert';
  * import { Alert } from 'snice/react';
  *
  * function MyComponent() {

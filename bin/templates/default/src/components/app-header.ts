@@ -1,7 +1,6 @@
 import { element, property, render, styles, context, on, dispatch, dispose, html, css, watch, query } from 'snice';
 import type { Context } from 'snice';
-import type { Principal, User } from '../types/auth';
-import type { NotificationsDaemon } from '../daemons/notifications';
+import type { ApplicationContext } from '../context';
 import { logout } from '../services/auth';
 
 @element('app-header')
@@ -17,15 +16,14 @@ export class AppHeader extends HTMLElement {
 
   @context()
   handleContext(ctx: Context) {
-    const principal = ctx.application.principal as Principal | undefined;
+    const { principal, notifications } = ctx.application as ApplicationContext;
     const user = principal?.user;
     this.authenticated = principal?.isAuthenticated || false;
     this.userName = user?.name || '';
     this.userAvatar = user?.avatar || '';
 
-    const daemon = ctx.application.notifications as NotificationsDaemon;
-    if (daemon && !this.unsubscribeNotifications) {
-      this.unsubscribeNotifications = daemon.subscribe(() => {
+    if (notifications && !this.unsubscribeNotifications) {
+      this.unsubscribeNotifications = notifications.subscribe(() => {
         this.notificationCount++;
       });
     }

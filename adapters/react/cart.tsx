@@ -1,8 +1,9 @@
 // GENERATED FILE — DO NOT EDIT.
 // Source: components/cart/ + scripts/generate-react-adapters.js
 // Rebuild: npm run generate:react-adapters
-import { createReactAdapter } from './wrapper';
-import type { SniceBaseProps } from './types';
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
 
 /**
  * Props for the Cart component
@@ -28,7 +29,7 @@ export interface CartProps extends SniceBaseProps {
  *
  * @example
  * ```tsx
- * import 'snice/components/cart';
+ * import 'snice/components/cart/snice-cart';
  * import { Cart } from 'snice/react';
  *
  * function MyComponent() {
@@ -36,7 +37,7 @@ export interface CartProps extends SniceBaseProps {
  * }
  * ```
  */
-export const Cart = createReactAdapter<CartProps>({
+export const Cart: SniceReactComponent<CartProps, SniceComponentRef> = createReactAdapter<CartProps, false>({
   tagName: 'snice-cart',
   properties: ["items","currency","taxRate","discount","couponCode"],
   events: {"item-add":"onItemAdd","item-remove":"onItemRemove","quantity-change":"onQuantityChange","coupon-apply":"onCouponApply","checkout":"onCheckout"},
