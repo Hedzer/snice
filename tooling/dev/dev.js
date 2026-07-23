@@ -50,13 +50,13 @@ function spawnChild(label, color, command, args) {
   return child;
 }
 
-// Build the public website first.
-console.log('\x1b[36m[dev]\x1b[0m Running build:website...');
+// Build the public website and its generated CDN assets first.
+console.log('\x1b[36m[dev]\x1b[0m Running build:website:full...');
 try {
-  execSync('npm run build:website', { stdio: 'inherit', cwd: ROOT, env: { ...process.env, FORCE_COLOR: '1' } });
-  console.log('\x1b[36m[dev]\x1b[0m build:website complete\n');
+  execSync('npm run build:website:full', { stdio: 'inherit', cwd: ROOT, env: { ...process.env, FORCE_COLOR: '1' } });
+  console.log('\x1b[36m[dev]\x1b[0m build:website:full complete\n');
 } catch {
-  console.error('\x1b[36m[dev]\x1b[0m build:website failed');
+  console.error('\x1b[36m[dev]\x1b[0m build:website:full failed');
   process.exit(1);
 }
 
