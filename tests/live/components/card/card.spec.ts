@@ -4,8 +4,8 @@ const demoPath = 'http://localhost:5566/components/card/demo.html';
 
 test.describe('Snice Card', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
+    await page.locator('snice-card').first().waitFor();
   });
 
   test('should render card components', async ({ page }) => {

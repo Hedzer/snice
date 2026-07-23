@@ -4,8 +4,8 @@ const demoPath = 'http://localhost:5566/components/table/full-showcase.html';
 
 test.describe('Snice Cell Image', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
+    await page.locator('#cell-type-grid snice-cell-image').waitFor();
   });
 
   test('should change variant when attribute is updated', async ({ page }) => {

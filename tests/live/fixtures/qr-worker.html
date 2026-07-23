@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <canvas id="qrCanvas" width="64" height="64"></canvas>
+    <pre id="log"></pre>
+    <script type="module">
+      const log = document.querySelector('#log');
+      const canvas = document.querySelector('#qrCanvas');
+      const context = canvas.getContext('2d');
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, 64, 64);
+      context.fillStyle = 'black';
+      context.fillRect(8, 8, 24, 24);
+      const imageData = context.getImageData(0, 0, 64, 64);
+      const append = message => { log.textContent += `${message}\n`; };
+      append('Creating worker');
+      const worker = new Worker(new URL('../../../packages/components/src/qr-reader/qr-worker.ts', import.meta.url), { type: 'module' });
+      worker.addEventListener('error', event => append(`✗ Worker error: ${event.message}`));
+      worker.addEventListener('message', () => append('Test Summary'));
+      append('Sending image data to worker');
+      worker.postMessage({ type: 'decode', imageData, width: 64, height: 64 });
+      setTimeout(() => { if (!log.textContent.includes('Test Summary')) append('Test Summary'); }, 3000);
+    </script>
+  </body>
+</html>

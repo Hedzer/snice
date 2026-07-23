@@ -1,248 +1,140 @@
-import { test, expect } from '@playwright/test';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { mkdtemp, rm } from 'fs/promises';
-import { tmpdir } from 'os';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { test, expect, type Page } from '@playwright/test';
+import { exec, spawn, type ChildProcess } from 'node:child_process';
+import { promisify } from 'node:util';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 
 const execAsync = promisify(exec);
 
 test.describe('CLI Created App - Runtime Tests', () => {
+  test.describe.configure({ mode: 'serial' });
   let tempDir: string;
   let appPath: string;
-  let devServerProcess: any;
-  const testPort = 5567;
+  let devServerProcess: ChildProcess | undefined;
+  let testPort: number;
 
-  test.beforeAll(async () => {
-    // Create temporary directory
+  test.beforeAll(async ({ browserName }, testInfo) => {
+    testInfo.setTimeout(180_000);
+    testPort = 20_000 + (process.pid % 20_000);
     tempDir = await mkdtemp(join(tmpdir(), 'snice-runtime-test-'));
     const appName = 'test-runtime-app';
     appPath = join(tempDir, appName);
 
-    // Pack the local snice package like a real user would download from npm
-    const { stdout: packOutput } = await execAsync('npm pack', {
+    const { stdout: packOutput } = await execAsync(`npm pack --pack-destination ${tempDir}`, {
       cwd: process.cwd(),
-      timeout: 30000
+      timeout: 30_000,
     });
-    const tarballName = packOutput.trim().split('\n').pop()!;
-    const tarballPath = join(process.cwd(), tarballName);
+    const tarballPath = join(tempDir, packOutput.trim().split('\n').pop()!);
 
-    // Create the app
-    await execAsync(
-      `node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`,
-      { cwd: tempDir, timeout: 30000 }
-    );
-
-    // Install dependencies with the packed tarball instead of linking
-    await execAsync('npm install', {
-      cwd: appPath,
-      timeout: 60000
+    await execAsync(`node ${join(process.cwd(), 'bin/snice.js')} create-app ${appName}`, {
+      cwd: tempDir,
+      timeout: 30_000,
     });
 
-    // Install the local snice package from tarball (like a real user)
+    // A single install resolves the template dependencies and replaces its
+    // published snice range with the exact package under test.
     await execAsync(`npm install ${tarballPath}`, {
       cwd: appPath,
-      timeout: 30000
+      timeout: 120_000,
     });
 
-    // Start dev server on custom port
-    devServerProcess = exec(
-      `npx vite --port ${testPort} --strictPort`,
-      { cwd: appPath }
-    );
-
-    // Wait for dev server to be ready
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    // Clean up tarball
-    try {
-      await rm(tarballPath);
-    } catch (e) {
-      // Ignore cleanup errors
+    devServerProcess = spawn('npx', ['vite', '--port', String(testPort), '--strictPort'], {
+      cwd: appPath,
+      detached: process.platform !== 'win32',
+      stdio: 'ignore',
+    });
+    const deadline = Date.now() + 30_000;
+    while (Date.now() < deadline) {
+      try {
+        if ((await fetch(`http://localhost:${testPort}`)).ok) break;
+      } catch {}
+      await new Promise(resolve => setTimeout(resolve, 250));
     }
-  }, 180000); // 3 minute timeout for setup
+    if (Date.now() >= deadline) throw new Error(`CLI app did not start on port ${testPort}`);
+
+    await rm(tarballPath, { force: true });
+  }, 180_000);
 
   test.afterAll(async () => {
-    // Kill dev server
-    if (devServerProcess && devServerProcess.pid) {
+    if (devServerProcess?.pid) {
       try {
-        process.kill(devServerProcess.pid);
-      } catch (e) {
-        // Ignore errors when killing process
-      }
+        if (process.platform === 'win32') devServerProcess.kill('SIGTERM');
+        else process.kill(-devServerProcess.pid, 'SIGTERM');
+      } catch {}
     }
-
-    // Clean up temp directory
     if (tempDir && existsSync(tempDir)) {
-      await rm(tempDir, { recursive: true, force: true });
+      await rm(tempDir, { recursive: true, force: true, maxRetries: 3 });
     }
-  }, 30000);
+  }, 30_000);
 
-  test('should load and render the app', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
+  async function openLogin(page: Page) {
+    await page.goto(`http://localhost:${testPort}/#/login`);
+    await page.locator('login-page').waitFor();
+  }
 
-    // Wait for app container
-    await page.waitForSelector('#app', { timeout: 10000 });
+  async function signIn(page: Page) {
+    await openLogin(page);
+    await page.getByRole('textbox', { name: 'Username' }).fill('demo@example.com');
+    await page.getByRole('textbox', { name: 'Password' }).fill('demo');
+    await page.getByRole('button', { name: 'Sign In' }).click();
+    await page.locator('dashboard-page').waitFor();
+  }
 
-    // Verify app is not empty
-    const appContent = await page.locator('#app').innerHTML();
-    expect(appContent.length).toBeGreaterThan(0);
+  test('loads the generated application', async ({ page }) => {
+    await openLogin(page);
+    await expect(page.locator('login-page')).toBeVisible();
   });
 
-  test('should render layout element with shadow DOM', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
+  test('renders the generated login page with shadow DOM', async ({ page }) => {
+    await openLogin(page);
+    const loginPage = page.locator('login-page');
+    await expect(loginPage).toBeVisible();
+    expect(await loginPage.evaluate(element => !!element.shadowRoot)).toBe(true);
+  });
 
-    // Verify layout element exists
+  test('renders the generated login component with shadow DOM', async ({ page }) => {
+    await openLogin(page);
+    const login = page.locator('snice-login');
+    await expect(login).toBeVisible();
+    expect(await login.evaluate(element => !!element.shadowRoot?.querySelector('form'))).toBe(true);
+  });
+
+  test('authenticates with the documented demo credentials', async ({ page }) => {
+    await signIn(page);
+    await expect(page.locator('dashboard-page')).toBeVisible();
+  });
+
+  test('preserves the application layout during navigation', async ({ page }) => {
+    await signIn(page);
     const layout = page.locator('snice-layout');
     await expect(layout).toBeVisible();
-
-    // Verify shadow DOM is created
-    const hasShadowRoot = await layout.evaluate(el => !!el.shadowRoot);
-    expect(hasShadowRoot).toBe(true);
-
-    // Verify shadow DOM has content
-    const shadowContent = await layout.evaluate(el => {
-      const shadow = el.shadowRoot;
-      return shadow ? shadow.innerHTML.length : 0;
-    });
-    expect(shadowContent).toBeGreaterThan(0);
+    await page.evaluate(() => { location.hash = '#/settings'; });
+    await expect(page.locator('settings-page')).toBeVisible();
+    await expect(layout).toBeVisible();
   });
 
-  test('should render home page on initial load', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Verify home page element exists
-    const homePage = page.locator('home-page');
-    await expect(homePage).toBeVisible();
-
-    // Verify home page has shadow DOM
-    const hasShadowRoot = await homePage.evaluate(el => !!el.shadowRoot);
-    expect(hasShadowRoot).toBe(true);
-
-    // Verify home page content
-    const pageContent = await homePage.evaluate(el => {
-      const shadow = el.shadowRoot;
-      return shadow ? shadow.textContent : '';
-    });
-    expect(pageContent).toContain('Welcome');
-  });
-
-  test('should navigate to about page', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Verify home page is visible
-    await expect(page.locator('home-page')).toBeVisible();
-
-    // Navigate to about page
-    await page.click('a[href="#/about"]');
-    await page.waitForTimeout(500); // Wait for transition
-
-    // Verify about page is visible
-    const aboutPage = page.locator('about-page');
-    await expect(aboutPage).toBeVisible();
-
-    // Verify about page has shadow DOM
-    const hasShadowRoot = await aboutPage.evaluate(el => !!el.shadowRoot);
-    expect(hasShadowRoot).toBe(true);
-
-    // Verify about page content
-    const pageContent = await aboutPage.evaluate(el => {
-      const shadow = el.shadowRoot;
-      return shadow ? shadow.textContent : '';
-    });
-    expect(pageContent).toContain('About');
-  });
-
-  test('should maintain layout during navigation', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Get layout reference
+  test('renders the generated application header', async ({ page }) => {
+    await signIn(page);
     const layout = page.locator('snice-layout');
     await expect(layout).toBeVisible();
-
-    // Navigate to about
-    await page.click('a[href="#/about"]');
-    await page.waitForTimeout(500);
-
-    // Layout should still be visible
-    await expect(layout).toBeVisible();
-
-    // Navigate back to home
-    await page.click('a[href="#/"]');
-    await page.waitForTimeout(500);
-
-    // Layout should still be visible
-    await expect(layout).toBeVisible();
+    expect(await layout.evaluate(element => !!element.shadowRoot?.querySelector('header'))).toBe(true);
   });
 
-  test('should render counter component with shadow DOM', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Verify counter button exists
-    const counterButton = page.locator('counter-button');
-    await expect(counterButton).toBeVisible();
-
-    // Verify counter has shadow DOM
-    const hasShadowRoot = await counterButton.evaluate(el => !!el.shadowRoot);
-    expect(hasShadowRoot).toBe(true);
-
-    // Verify counter content
-    const counterContent = await counterButton.evaluate(el => {
-      const shadow = el.shadowRoot;
-      return shadow ? shadow.innerHTML.length : 0;
-    });
-    expect(counterContent).toBeGreaterThan(0);
+  test('replaces routed pages instead of stacking them', async ({ page }) => {
+    await signIn(page);
+    await page.evaluate(() => { location.hash = '#/settings'; });
+    await expect(page.locator('settings-page')).toBeVisible();
+    await page.evaluate(() => { location.hash = '#/dashboard'; });
+    await expect(page.locator('dashboard-page')).toBeVisible();
+    await expect(page.locator('[slot="page"]')).toHaveCount(1);
   });
 
-  test('should handle page transitions without stacking', async ({ page }) => {
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Navigate through pages
-    await page.click('a[href="#/about"]');
-    await page.waitForTimeout(500);
-
-    await page.click('a[href="#/"]');
-    await page.waitForTimeout(500);
-
-    // Should only have one visible page
-    const visiblePages = page.locator('home-page, about-page').filter({ hasNot: page.locator('[hidden]') });
-    const count = await visiblePages.count();
-
-    // Should be exactly 1 visible page
-    expect(count).toBeLessThanOrEqual(1);
-  });
-
-  test('should not have console errors', async ({ page }) => {
+  test('runs the generated login workflow without page errors', async ({ page }) => {
     const errors: string[] = [];
-    page.on('console', msg => {
-      if (msg.type() === 'error') {
-        errors.push(msg.text());
-      }
-    });
-
-    await page.goto(`http://localhost:${testPort}`);
-    await page.waitForSelector('#app', { timeout: 10000 });
-
-    // Navigate to trigger all page loads
-    await page.click('a[href="#/about"]');
-    await page.waitForTimeout(500);
-
-    await page.click('a[href="#/"]');
-    await page.waitForTimeout(500);
-
-    // Filter out known safe errors (if any)
-    const criticalErrors = errors.filter(err =>
-      !err.includes('favicon') &&
-      !err.includes('vite.svg')
-    );
-
-    expect(criticalErrors).toEqual([]);
+    page.on('pageerror', error => errors.push(error.message));
+    await signIn(page);
+    expect(errors).toEqual([]);
   });
 });

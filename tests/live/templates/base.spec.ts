@@ -15,9 +15,11 @@ test.describe('Base Template Functional Tests', () => {
   let tempDir: string;
   let devServer: ChildProcess | null = null;
   let appPath: string;
-  const port = 5598;
+  let port: number;
 
-  test.beforeAll(async () => {
+  test.beforeAll(async ({ browserName }, testInfo) => {
+    testInfo.setTimeout(300_000);
+    port = 5598 + ['chromium', 'firefox', 'webkit'].indexOf(browserName) * 2;
     // Create temp directory and scaffold base template
     tempDir = await mkdtemp(join(tmpdir(), 'snice-base-test-'));
     const appName = 'test-base';
@@ -44,32 +46,20 @@ test.describe('Base Template Functional Tests', () => {
 
     console.log('Starting dev server...');
     // Start dev server
-    devServer = spawn('npm', ['run', 'dev', '--', '--port', String(port)], {
+    devServer = spawn('npm', ['run', 'dev', '--', '--port', String(port), '--strictPort'], {
       cwd: appPath,
-      stdio: 'pipe',
-      shell: true
+      stdio: 'ignore',
+      detached: process.platform !== 'win32'
     });
 
-    // Wait for server to be ready
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Dev server timeout')), 60000);
-
-      devServer!.stdout?.on('data', (data) => {
-        const output = data.toString();
-        if (output.includes('Local:') || output.includes('localhost')) {
-          clearTimeout(timeout);
-          setTimeout(resolve, 1000); // Give it a moment to stabilize
-        }
-      });
-
-      devServer!.stderr?.on('data', (data) => {
-        const err = data.toString();
-        if (err.includes('Error:')) {
-          clearTimeout(timeout);
-          reject(new Error(err));
-        }
-      });
-    });
+    const deadline = Date.now() + 60_000;
+    while (Date.now() < deadline) {
+      try {
+        if ((await fetch(`http://localhost:${port}/`)).ok) break;
+      } catch {}
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    if (Date.now() >= deadline) throw new Error('Dev server HTTP readiness timeout');
 
     console.log('Dev server ready on port', port);
   }, 300000);
@@ -77,8 +67,10 @@ test.describe('Base Template Functional Tests', () => {
   test.afterAll(async () => {
     // Kill dev server
     if (devServer) {
-      devServer.kill('SIGTERM');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      try {
+        if (process.platform === 'win32') devServer.kill('SIGTERM');
+        else process.kill(-devServer.pid!, 'SIGTERM');
+      } catch {}
     }
 
     // Clean up temp directory
@@ -92,8 +84,7 @@ test.describe('Base Template Functional Tests', () => {
   });
 
   test('should render home page', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`http://localhost:${port}/`, { waitUntil: 'domcontentloaded' });
 
     // Check page is rendered
     const body = page.locator('body');
@@ -101,8 +92,7 @@ test.describe('Base Template Functional Tests', () => {
   });
 
   test('should have counter button that works', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`http://localhost:${port}/`, { waitUntil: 'domcontentloaded' });
 
     // Find counter button
     const counterButton = page.locator('counter-button');
@@ -120,8 +110,7 @@ test.describe('Base Template Functional Tests', () => {
   });
 
   test('should navigate to about page', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/#/about`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`http://localhost:${port}/#/about`, { waitUntil: 'domcontentloaded' });
 
     // Check about page content
     const aboutPage = page.locator('about-page');
@@ -131,8 +120,7 @@ test.describe('Base Template Functional Tests', () => {
   });
 
   test('should show 404 for unknown routes', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/#/nonexistent-route`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`http://localhost:${port}/#/nonexistent-route`, { waitUntil: 'domcontentloaded' });
 
     // Check not found page is shown
     const notFoundPage = page.locator('not-found-page');

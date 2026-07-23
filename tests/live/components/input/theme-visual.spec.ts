@@ -99,7 +99,7 @@ test.describe('Input Theme Visual Tests', () => {
     await page.goto(demoPath);
     await page.waitForLoadState('networkidle');
 
-    const regularInput = page.locator('snice-input[type="text"]').first();
+    const regularInput = page.locator('snice-input').first();
     const inputElement = regularInput.locator('input');
 
     const bgColor = await inputElement.evaluate(el =>
@@ -115,30 +115,27 @@ test.describe('Input Theme Visual Tests', () => {
     // Background should be pure white
     expect(bgColor).toBe('rgb(255, 255, 255)');
 
-    // Border should be visible (gray-300 = rgb(209, 213, 219))
-    expect(borderColor).toContain('rgb(209, 213, 219)');
+    expect(borderColor).toBe('rgb(209, 209, 209)');
   });
 
   test('should have proper input background contrast in dark mode', async ({ page }) => {
     await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
-
-    // Enable dark mode
     await page.evaluate(() => {
       document.documentElement.setAttribute('data-theme', 'dark');
     });
 
-    await page.waitForTimeout(500);
-
-    const regularInput = page.locator('snice-input[type="text"]').first();
+    const regularInput = page.locator('snice-input').first();
     const inputElement = regularInput.locator('input');
+    await expect(inputElement).toBeVisible();
+    await expect.poll(() => inputElement.evaluate(el => {
+      const style = window.getComputedStyle(el);
+      return [style.backgroundColor, style.borderColor];
+    })).toEqual(['rgb(38, 38, 38)', 'rgb(89, 89, 89)']);
 
-    const bgColor = await inputElement.evaluate(el =>
-      window.getComputedStyle(el).backgroundColor
-    );
-    const borderColor = await inputElement.evaluate(el =>
-      window.getComputedStyle(el).borderColor
-    );
+    const [bgColor, borderColor] = await inputElement.evaluate(el => {
+      const style = window.getComputedStyle(el);
+      return [style.backgroundColor, style.borderColor];
+    });
 
     console.log('Dark mode input background:', bgColor);
     console.log('Dark mode input border:', borderColor);

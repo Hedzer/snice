@@ -3,11 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe('Tree Demo Page', () => {
   test('should render demo page correctly', async ({ page }) => {
     await page.goto('http://localhost:5566/components/tree/demo.html');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
-
-    // Take screenshot
-    await page.screenshot({ path: '/tmp/tree-demo-full.png', fullPage: true });
+    await page.waitForFunction(() => {
+      const tree = document.querySelector('#tree-single');
+      const imageTree = document.querySelector('#tree-image-icons');
+      const first = tree?.shadowRoot?.querySelector('snice-tree-item') as any;
+      const image = imageTree?.shadowRoot?.querySelector('snice-tree-item') as any;
+      return first?.shadowRoot?.querySelector('.tree-item__label')?.textContent === 'src'
+        && image?.shadowRoot?.querySelector('.tree-item__icon-image')?.getAttribute('src') === '/images/snice-logo.png';
+    });
 
     // Check representative text, image, and nested tree showcases exist.
     const tree1 = page.locator('#tree-single');

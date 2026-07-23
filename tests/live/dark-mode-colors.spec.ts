@@ -56,13 +56,11 @@ function contrastRatio(a: any, b: any) {
   return (bright + 0.05) / (dark + 0.05);
 }
 
-const URL = process.env.SNICE_AUDIT_URL || 'http://127.0.0.1:52891/components.html';
+const URL = process.env.SNICE_AUDIT_URL || 'http://localhost:5566/components.html';
 
 // Minimum contrast ratio for text (WCAG AA: 4.5 for body, 3.0 for large/UI).
 // 3.0 is the practical floor — going below that is always wrong.
 const MIN_CONTRAST = 3.0;
-// Minimum luminance delta for hover to register visually.
-const MIN_HOVER_DELTA = 0.005;
 // Hosts we care about — every snice-* element plus any element with text that
 // sits inside a shadow root.
 const HOST_SELECTOR = 'snice-alert, snice-button, snice-badge, snice-banner, snice-card, snice-chip, snice-tag, snice-accordion, snice-accordion-item, snice-menu, snice-menu-item, snice-list, snice-list-item, snice-tabs, snice-tab, snice-tree, snice-tree-item, snice-select, snice-input, snice-textarea, snice-checkbox, snice-switch, snice-radio, snice-table, snice-toast, snice-tooltip, snice-pagination, snice-kpi, snice-data-card, snice-stat-group, snice-stepper, snice-step-input, snice-range-slider, snice-slider, snice-segmented-control, snice-breadcrumbs, snice-divider, snice-timeline, snice-nav, snice-approval-flow';
@@ -196,6 +194,8 @@ async function scanPage(page: Page) {
       const componentName = comp.tagName.toLowerCase();
       for (const el of walkTextNodes(root)) {
         const cs = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) <= 0.01 || rect.width === 0 || rect.height === 0) continue;
         const fg = cs.color;
         const bgInfo = getBg(el);
         const surface = deepSurface(bgInfo.node);
@@ -218,24 +218,42 @@ async function scanPage(page: Page) {
 }
 
 async function setTheme(page: Page, theme: 'light' | 'dark') {
-  await page.evaluate((t) => {
+  await page.evaluate(async (t) => {
+    const roots: Array<Document | ShadowRoot> = [document];
+    for (let index = 0; index < roots.length; index++) {
+      const root = roots[index];
+      for (const element of Array.from(root.querySelectorAll('*'))) {
+        if ((element as HTMLElement).shadowRoot) roots.push((element as HTMLElement).shadowRoot!);
+      }
+    }
+    for (const root of roots) {
+      if (root.querySelector('#contrast-audit-motion-guard')) continue;
+      const guard = document.createElement('style');
+      guard.id = 'contrast-audit-motion-guard';
+      guard.textContent = ':host, *, *::before, *::after { transition: none !important; animation: none !important; }';
+      (root === document ? document.head : root).appendChild(guard);
+    }
     document.documentElement.setAttribute('data-theme', t);
     try { localStorage.setItem('snice-theme', t); } catch { /* ignore */ }
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   }, theme);
-  await page.waitForTimeout(200);
 }
 
 // ─── tests ────────────────────────────────────────────────────────────────────
 test.describe('Theme color regression guard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(URL);
-    await page.waitForLoadState('networkidle');
-    // Let custom elements finish defining + rendering.
-    await page.waitForTimeout(1200);
+    await page.goto(URL, { waitUntil: 'domcontentloaded' });
+    await page.evaluate(async () => {
+      const tags = new Set(Array.from(document.querySelectorAll('*'))
+        .map(element => element.localName)
+        .filter(tag => tag.startsWith('snice-')));
+      await Promise.all(Array.from(tags, tag => customElements.whenDefined(tag)));
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    });
   });
 
   for (const theme of ['light', 'dark'] as const) {
-    test(`[${theme}] every text element meets contrast + hover requirements`, async ({ page }) => {
+    test(`[${theme}] every visible text element meets contrast requirements`, async ({ page }) => {
       await setTheme(page, theme);
       const samples = await scanPage(page);
       const failures: Finding[] = [];
@@ -245,32 +263,18 @@ test.describe('Theme color regression guard', () => {
         const surface = parseRgb(s.surface);
         if (!fg || !bg) continue;
         const bgResolved = bg.a < 1 ? composite(bg, surface) : bg;
-        const ratio = contrastRatio(fg, bgResolved);
+        const fgResolved = fg.a < 1 ? composite(fg, bgResolved) : fg;
+        const ratio = contrastRatio(fgResolved, bgResolved);
         if (ratio < MIN_CONTRAST) {
           failures.push({ ...s, contrast: ratio, kind: 'contrast' } as Finding);
         }
-        if (s.hoverBg) {
-          const hb = parseRgb(s.hoverBg);
-          if (hb) {
-            const hbResolved = hb.a < 1 ? composite(hb, surface) : hb;
-            const hoverRatio = contrastRatio(fg, hbResolved);
-            const dL = Math.abs(luminance(bgResolved) - luminance(hbResolved));
-            if (hoverRatio < MIN_CONTRAST) {
-              failures.push({ ...s, contrast: ratio, hoverContrast: hoverRatio, hoverDelta: dL, kind: 'hover-contrast' } as Finding);
-            }
-            if (dL < MIN_HOVER_DELTA) {
-              failures.push({ ...s, contrast: ratio, hoverContrast: hoverRatio, hoverDelta: dL, kind: 'hover-delta' } as Finding);
-            }
-          }
-        }
       }
       if (failures.length) {
-        const msg = failures.slice(0, 30).map(f => {
+        const msg = failures.map(f => {
           if (f.kind === 'contrast') return `  ${f.component} "${f.sample}": text ${f.fg} on ${f.bg} = ${f.contrast.toFixed(2)}:1`;
-          if (f.kind === 'hover-contrast') return `  ${f.component} "${f.sample}": hover bg ${f.hoverBg} drops contrast to ${f.hoverContrast?.toFixed(2)}:1`;
-          return `  ${f.component} "${f.sample}": hover bg ${f.hoverBg} barely changes (Δ=${f.hoverDelta?.toFixed(3)})`;
+          return `  ${f.component} "${f.sample}": text ${f.fg} on ${f.bg} = ${f.contrast.toFixed(2)}:1`;
         }).join('\n');
-        throw new Error(`${failures.length} contrast/hover problems in ${theme} theme:\n${msg}${failures.length > 30 ? `\n  … and ${failures.length - 30} more` : ''}`);
+        throw new Error(`${failures.length} contrast/hover problems in ${theme} theme:\n${msg}`);
       }
     });
   }

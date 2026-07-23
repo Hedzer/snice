@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('debug: setAttribute should update property and trigger render', async ({ page }) => {
-  await page.goto('http://localhost:5566/.debug/test-attr.html');
+test('setAttribute updates the property and triggers render', async ({ page }) => {
+  await page.goto('/tests/live/fixtures/property-attribute-render.html');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(600);
 
@@ -11,9 +11,6 @@ test('debug: setAttribute should update property and trigger render', async ({ p
   // Check initial state
   const initialVariant = await el.evaluate((node: any) => node.variant);
   const initialHTML = await el.evaluate((node: any) => node.shadowRoot?.innerHTML);
-
-  console.log('Initial variant:', initialVariant);
-  console.log('Initial HTML:', initialHTML);
 
   expect(initialVariant).toBe('default');
   expect(initialHTML).toContain('variant-default');
@@ -28,9 +25,6 @@ test('debug: setAttribute should update property and trigger render', async ({ p
   // Check after setAttribute
   const afterVariant = await el.evaluate((node: any) => node.variant);
   const afterHTML = await el.evaluate((node: any) => node.shadowRoot?.innerHTML);
-
-  console.log('After variant:', afterVariant);
-  console.log('After HTML:', afterHTML);
 
   expect(afterVariant).toBe('circle');
   expect(afterHTML).toContain('variant-circle');

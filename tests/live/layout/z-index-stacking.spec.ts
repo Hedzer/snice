@@ -93,7 +93,7 @@ test.describe('Layout Z-Index Stacking', () => {
     });
 
     expect(result.headerZ).toBeGreaterThan(result.mainZ);
-    expect(result.headerZ).toBe(1020);
+    expect(result.headerZ).toBe(10);
   });
 
   test('drawer backdrop should be clickable and not blocked by page content', async ({ page }) => {

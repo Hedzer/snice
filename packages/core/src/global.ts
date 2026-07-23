@@ -9,9 +9,13 @@ import { SniceGlobal } from './types/snice-global';
 if (!(globalThis as any).snice) {
   (globalThis as any).snice = {
     controllerRegistry: new Map(),
+    pendingControllerAttachments: new Map(),
     controllerIdCounter: 0
   };
 }
+
+// Multiple copies of Snice can share a global created by an older build.
+(globalThis as any).snice.pendingControllerAttachments ??= new Map();
 
 // Export direct reference to globalThis.snice
 export const snice: SniceGlobal = (globalThis as any).snice;
@@ -21,4 +25,3 @@ export const snice: SniceGlobal = (globalThis as any).snice;
 export function getSymbol(name: string): symbol {
   return Symbol.for(`snice:${name}`);
 }
-

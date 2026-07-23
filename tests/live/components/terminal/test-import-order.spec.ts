@@ -30,7 +30,7 @@ test('controller works with correct import order (controller first)', async ({ p
   expect(hasHelpOutput).toBe(true);
 });
 
-test('controller should work regardless of import order (BUG - currently fails)', async ({ page }) => {
+test('controller works when the component imports before the controller', async ({ page }) => {
   // Capture all console output
   const logs: string[] = [];
   page.on('console', msg => {
@@ -64,10 +64,6 @@ test('controller should work regardless of import order (BUG - currently fails)'
     return output.includes('Available commands');
   });
 
-  // BUG: This test FAILS - timing issue, not registry issue
-  // ROOT CAUSE: Controller hasn't registered yet when component's connectedCallback runs
-  // Symbols are now shared via Symbol.for(), controllerRegistry is on globalThis
-  // Still fails because controller registration happens after component connects
   expect(commandExecuted).toBe(true);
-  expect(hasHelpOutput).toBe(true); // Currently false - FAILS until bug is fixed
+  expect(hasHelpOutput).toBe(true);
 });

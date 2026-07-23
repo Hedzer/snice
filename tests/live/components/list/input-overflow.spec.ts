@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('List Input Overflow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/.debug/test-list-input-overflow.html');
+    await page.goto('/tests/live/fixtures/list-input-overflow.html');
     await page.waitForLoadState('networkidle');
     // Wait for components to be defined
     await page.waitForFunction(() => {
@@ -29,8 +29,6 @@ test.describe('List Input Overflow', () => {
     const input1RightEdge = input1Box!.x + input1Box!.width;
     const input2RightEdge = input2Box!.x + input2Box!.width;
 
-    console.log('Standard list:', { listRightEdge, input1RightEdge, input2RightEdge });
-
     expect(input1RightEdge).toBeLessThanOrEqual(listRightEdge);
     expect(input2RightEdge).toBeLessThanOrEqual(listRightEdge);
   });
@@ -51,8 +49,6 @@ test.describe('List Input Overflow', () => {
     const listRightEdge = listBox!.x + listBox!.width;
     const input1RightEdge = input1Box!.x + input1Box!.width;
     const input2RightEdge = input2Box!.x + input2Box!.width;
-
-    console.log('Wide list:', { listRightEdge, input1RightEdge, input2RightEdge });
 
     expect(input1RightEdge).toBeLessThanOrEqual(listRightEdge);
     expect(input2RightEdge).toBeLessThanOrEqual(listRightEdge);
@@ -75,16 +71,11 @@ test.describe('List Input Overflow', () => {
     const input1RightEdge = input1Box!.x + input1Box!.width;
     const input2RightEdge = input2Box!.x + input2Box!.width;
 
-    console.log('Full width list:', { listRightEdge, input1RightEdge, input2RightEdge });
-
     expect(input1RightEdge).toBeLessThanOrEqual(listRightEdge);
     expect(input2RightEdge).toBeLessThanOrEqual(listRightEdge);
   });
 
-  test('visual inspection of all list variations', async ({ page }) => {
-    await page.screenshot({
-      path: '/home/hedzer/Dropbox/Projects/snice/.debug/list-input-overflow.png',
-      fullPage: true
-    });
+  test('all list variations render', async ({ page }) => {
+    await expect(page.locator('snice-list')).toHaveCount(3);
   });
 });

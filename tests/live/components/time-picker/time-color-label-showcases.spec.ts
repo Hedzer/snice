@@ -46,7 +46,10 @@ for (const showcase of showcases) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(showcase.url, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(({ host, target }) =>
-      Boolean(document.querySelector(host)?.shadowRoot?.querySelector(target)), showcase);
+      Boolean(
+        document.querySelector(host)?.shadowRoot?.querySelector(target)
+        && (document.querySelector(host) as any).labels?.length === 2
+      ), showcase);
 
     await expect(page.locator(showcase.section).getByRole('heading', { name: 'External Label Lifecycle' })).toBeVisible();
     const host = page.locator(showcase.host);
@@ -86,14 +89,21 @@ for (const showcase of showcases) {
       await expect(swatchOnly.locator('.color-input')).toHaveCount(0);
     }
 
-    expect(await page.evaluate(() => document.documentElement.scrollWidth))
-      .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
+    await expect.poll(() => page.evaluate(() =>
+      document.documentElement.scrollWidth <= document.documentElement.clientWidth
+    )).toBe(true);
     await page.evaluate(() => localStorage.setItem('snice-theme', 'light'));
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light');
+    await page.waitForFunction(({ host, target }) =>
+      document.documentElement.getAttribute('data-theme') === 'light'
+      && Boolean(
+        document.querySelector(host)?.shadowRoot?.querySelector(target)
+        && (document.querySelector(host) as any).labels?.length === 2
+      ), showcase);
     await expect(page.locator(showcase.section)).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth))
-      .toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
+    await expect.poll(() => page.evaluate(() =>
+      document.documentElement.scrollWidth <= document.documentElement.clientWidth
+    )).toBe(true);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   });

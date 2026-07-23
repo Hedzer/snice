@@ -1,4 +1,4 @@
-import { attachController, detachController } from './controller';
+import { attachController, deferControllerAttachment, detachController } from './controller';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
@@ -6,7 +6,7 @@ import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
@@ -153,6 +153,10 @@ export function applyElementFunctionality(constructor: any) {
             // Detached before ready — designed teardown, not a failure
             if (error?.name === 'ControllerAttachAborted') {
               console.debug(`Controller "${value}" attach aborted (element detached before ready)`);
+              return;
+            }
+            if (error?.message === `Controller "${value}" not found in registry`) {
+              deferControllerAttachment(this, value);
               return;
             }
             console.error(`Failed to attach controller "${value}":`, error);
@@ -620,6 +624,20 @@ export function layout(tagName: string) {
 // @property pushes entries; @element pops them. Works because field decorators
 // run synchronously before the class decorator in the same static block.
 const _pendingProperties: Map<string, PropertyOptions>[] = [];
+const nativeOwnPropertyDefaults = new WeakMap<Document, Map<PropertyKey, unknown>>();
+
+function isNativeOwnPropertyDefault(instance: any, propertyKey: PropertyKey, value: unknown): boolean {
+  const ownerDocument = instance?.ownerDocument as Document | undefined;
+  if (!ownerDocument?.createElement) return false;
+  let defaults = nativeOwnPropertyDefaults.get(ownerDocument);
+  if (!defaults) {
+    const nativeElement = ownerDocument.createElement('div') as any;
+    defaults = new Map<PropertyKey, unknown>();
+    for (const key of Reflect.ownKeys(nativeElement)) defaults.set(key, nativeElement[key]);
+    nativeOwnPropertyDefaults.set(ownerDocument, defaults);
+  }
+  return defaults.has(propertyKey) && Object.is(defaults.get(propertyKey), value);
+}
 
 export function property(options?: PropertyOptions) {
   return function (_value: any, context: ClassFieldDecoratorContext) {
@@ -638,6 +656,20 @@ export function property(options?: PropertyOptions) {
 
 
     return function(this: any, initialValue: any) {
+      // A property binding can run while this is still an unupgraded custom
+      // element, creating an own data property. Preserve that value across the
+      // upgrade, but remove the expando before the decorated field initializer
+      // is assigned so the assignment replays through the reactive accessor.
+      const markedBindings = this[PRE_UPGRADE_PROPERTY_BINDINGS] as Set<string> | undefined;
+      const wasTemplateBoundBeforeUpgrade = markedBindings?.delete(propertyKey) === true;
+      if (markedBindings?.size === 0) delete this[PRE_UPGRADE_PROPERTY_BINDINGS];
+      const hasOwnValue = Object.prototype.hasOwnProperty.call(this, propertyKey);
+      const hadPreUpgradeValue = hasOwnValue && (
+        wasTemplateBoundBeforeUpgrade || !isNativeOwnPropertyDefault(this, propertyKey, this[propertyKey])
+      );
+      const preUpgradeValue = hadPreUpgradeValue ? this[propertyKey] : initialValue;
+      if (hasOwnValue) delete this[propertyKey];
+
       const constructor = this.constructor as any;
       if (!constructor[PROPERTIES]) constructor[PROPERTIES] = new Map();
 
@@ -758,7 +790,7 @@ export function property(options?: PropertyOptions) {
       const wrappedInitialValue = wrap(initialValue);
       ensureObj(this, PROPERTY_VALUES)[propertyKey] = wrappedInitialValue;
       ensureObj(this, PROPERTY_DEFAULTS)[propertyKey] = wrappedInitialValue;
-      return wrappedInitialValue;
+      return hadPreUpgradeValue ? preUpgradeValue : wrappedInitialValue;
     };
   };
 }

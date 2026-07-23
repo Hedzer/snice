@@ -4,10 +4,8 @@ const demoPath = 'http://localhost:5566/components/audio-recorder/demo.html';
 
 test.describe('Snice Audio Recorder', () => {
   test.beforeEach(async ({ page }) => {
-    // Grant microphone permissions
-    await page.context().grantPermissions(['microphone']);
     await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+    await page.locator('snice-audio-recorder#recorder').waitFor();
   });
 
   test('should render audio recorder component', async ({ page }) => {
@@ -16,45 +14,45 @@ test.describe('Snice Audio Recorder', () => {
   });
 
   test('should have recorder container', async ({ page }) => {
-    const container = page.locator('snice-audio-recorder .recorder-container');
+    const container = page.locator('#recorder .recorder-container');
     expect(await container.count()).toBe(1);
   });
 
   test('should have status display', async ({ page }) => {
-    const status = page.locator('snice-audio-recorder .recorder-status');
+    const status = page.locator('#recorder .recorder-status');
     expect(await status.count()).toBe(1);
   });
 
   test('should show ready state initially', async ({ page }) => {
-    const state = page.locator('snice-audio-recorder .recorder-state');
+    const state = page.locator('#recorder .recorder-state');
     const text = await state.textContent();
     expect(text).toContain('Ready');
   });
 
   test('should have timer', async ({ page }) => {
-    const timer = page.locator('snice-audio-recorder .recorder-timer');
+    const timer = page.locator('#recorder .recorder-timer');
     expect(await timer.count()).toBe(1);
     const timerText = await timer.textContent();
     expect(timerText).toMatch(/\d{2}:\d{2}/);
   });
 
   test('should have visualizer', async ({ page }) => {
-    const visualizer = page.locator('snice-audio-recorder .recorder-visualizer');
+    const visualizer = page.locator('#recorder .recorder-visualizer');
     expect(await visualizer.count()).toBe(1);
   });
 
   test('should have visualizer bars', async ({ page }) => {
-    const bars = page.locator('snice-audio-recorder .visualizer-bar');
+    const bars = page.locator('#recorder .visualizer-bar');
     expect(await bars.count()).toBe(32);
   });
 
   test('should have controls', async ({ page }) => {
-    const controls = page.locator('snice-audio-recorder .recorder-controls');
+    const controls = page.locator('#recorder .recorder-controls');
     expect(await controls.count()).toBe(1);
   });
 
   test('should have record button', async ({ page }) => {
-    const recordBtn = page.locator('snice-audio-recorder .recorder-btn.record');
+    const recordBtn = page.locator('#recorder .recorder-btn.record');
     expect(await recordBtn.count()).toBe(1);
   });
 });

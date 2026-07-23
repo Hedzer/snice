@@ -18,7 +18,8 @@ test('public website key-value card, docs, and full showcase preserve every majo
     const section = document.querySelector('#comp-key-value');
     const editor = section?.querySelector('#demo-kv-declarative') as any;
     const imperative = section?.querySelector('#demo-kv-imperative') as any;
-    return editor?.shadowRoot && imperative?.getItems?.().length === 3;
+    return document.documentElement.dataset.componentsPageReady === 'true'
+      && editor?.shadowRoot && imperative?.getItems?.().length === 3;
   });
 
   const cardState = await page.locator('#comp-key-value').evaluate(section => {

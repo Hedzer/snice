@@ -6,8 +6,7 @@ test.describe('snice-table grouping and aggregation', () => {
   test.beforeEach(async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));
-    await page.goto(showcaseUrl);
-    await page.waitForLoadState('networkidle');
+    await page.goto(showcaseUrl, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => {
       const table = document.querySelector('#grouping-demo') as any;
       return table?.shadowRoot?.querySelectorAll('tr.group-header-row').length === 3;

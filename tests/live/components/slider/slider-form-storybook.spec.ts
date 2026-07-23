@@ -31,6 +31,7 @@ test('Storybook slider validation story works as a customer form in both themes'
   }))).toEqual({ value: 3, entry: '3', valid: true, alerts: 0 });
 
   await page.getByRole('button', { name: 'Set business-rule error' }).click();
+  await expect(page.getByRole('button', { name: 'Clear business-rule error' })).toBeVisible();
   await expect(output).toHaveText('This rating is unavailable.');
   expect(await slider.evaluate((element: any) => ({
     customError: element.validity.customError,
@@ -46,6 +47,8 @@ test('Storybook slider validation story works as a customer form in both themes'
   }))).toEqual({ hostFocused: true, thumbFocused: true });
 
   await page.getByRole('button', { name: 'Clear business-rule error' }).click();
+  await expect(page.getByRole('button', { name: 'Set business-rule error' })).toBeVisible();
+  await expect.poll(() => slider.evaluate((element: any) => element.validity.customError)).toBe(false);
   await page.getByRole('button', { name: 'Submit normalized value' }).click();
   await expect(output).toHaveText('Submitted rating=3');
   expect(await slider.evaluate((element: any) => ({

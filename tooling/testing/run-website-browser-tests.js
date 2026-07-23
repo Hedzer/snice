@@ -126,6 +126,7 @@ async function main() {
     'tests/live/components/key-value/key-value-website-showcase.spec.ts',
     'tests/live/components/table/table-website-showcase.spec.ts',
     '--config=tests/playwright.config.ts',
+    '--output=test-results/website',
     ...passthrough
   ], {
     stdio: 'inherit',

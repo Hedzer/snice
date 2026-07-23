@@ -446,18 +446,27 @@ test.describe('snice-spreadsheet — basic interactions', () => {
 
   test('frozen pane: Region column stays visible after horizontal scroll', async ({ page }) => {
     const sheet = await gotoStory(page, 'spreadsheet--frozen-panes');
-    const result = await sheet.evaluate((el: any) => {
+    const readFrozenPane = () => sheet.evaluate((el: any) => {
       const sr = el.shadowRoot;
       const wrapper = sr.querySelector('.spreadsheet') as HTMLElement;
-      // Scroll to the maximum so the test doesn't depend on absolute table width
       wrapper.scrollLeft = wrapper.scrollWidth;
-      return new Promise(r => setTimeout(() => {
-        const cell = sr.querySelector('.spreadsheet-td--fixed-col[data-row="0"]') as HTMLElement;
-        const rect = cell.getBoundingClientRect();
-        const wrap = wrapper.getBoundingClientRect();
-        r({ scrollLeft: wrapper.scrollLeft, scrollMax: wrapper.scrollWidth - wrapper.clientWidth, offsetFromWrapperLeft: rect.left - wrap.left });
-      }, 200));
-    }) as any;
+      const cell = sr.querySelector('.spreadsheet-td--fixed-col[data-row="0"]') as HTMLElement;
+      const rect = cell.getBoundingClientRect();
+      const wrap = wrapper.getBoundingClientRect();
+      return { scrollLeft: wrapper.scrollLeft, scrollMax: wrapper.scrollWidth - wrapper.clientWidth, offsetFromWrapperLeft: rect.left - wrap.left };
+    }) as Promise<any>;
+    await expect.poll(readFrozenPane).toMatchObject({
+      scrollLeft: expect.any(Number),
+      scrollMax: expect.any(Number),
+      offsetFromWrapperLeft: expect.any(Number),
+    });
+    await expect.poll(async () => {
+      const value = await readFrozenPane();
+      return value.scrollLeft > 0
+        && value.scrollLeft >= value.scrollMax
+        && value.offsetFromWrapperLeft < 80;
+    }).toBe(true);
+    const result = await readFrozenPane();
     expect(result.scrollLeft).toBeGreaterThan(0);
     expect(result.scrollLeft).toBeGreaterThanOrEqual(result.scrollMax);
     expect(result.offsetFromWrapperLeft).toBeLessThan(80);

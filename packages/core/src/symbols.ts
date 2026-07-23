@@ -45,6 +45,7 @@ export const PROPERTY_VALUES = getSymbol('property-values');
 export const PROPERTY_DEFAULTS = getSymbol('property-defaults');
 export const PROPERTY_WRAPPERS = getSymbol('property-wrappers');
 export const PRE_INIT_PROPERTY_VALUES = getSymbol('pre-init-property-values');
+export const PRE_UPGRADE_PROPERTY_BINDINGS = getSymbol('pre-upgrade-property-bindings');
 export const PROPERTIES_INITIALIZED = getSymbol('properties-initialized');
 export const PROPERTY_WATCHERS = getSymbol('property-watchers');
 export const EXPLICITLY_SET_PROPERTIES = getSymbol('explicitly-set-properties');

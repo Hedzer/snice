@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <style>
+      body { margin: 16px; }
+      snice-list { display: block; border: 1px solid; margin: 12px 0; width: 320px; }
+      snice-list.wide { width: 640px; }
+      snice-list.full { width: 100%; }
+      snice-list-item, snice-input { min-width: 0; max-width: 100%; }
+    </style>
+  </head>
+  <body>
+    <snice-list>
+      <snice-list-item><snice-input label="First"></snice-input></snice-list-item>
+      <snice-list-item><snice-input label="Second"></snice-input></snice-list-item>
+    </snice-list>
+    <snice-list class="wide">
+      <snice-list-item><snice-input label="First"></snice-input></snice-list-item>
+      <snice-list-item><snice-input label="Second"></snice-input></snice-list-item>
+    </snice-list>
+    <snice-list class="full">
+      <snice-list-item><snice-input label="First"></snice-input></snice-list-item>
+      <snice-list-item><snice-input label="Second"></snice-input></snice-list-item>
+    </snice-list>
+    <script type="module">
+      import '../../../packages/components/src/list/snice-list.ts';
+      import '../../../packages/components/src/list/snice-list-item.ts';
+      import '../../../packages/components/src/input/snice-input.ts';
+    </script>
+  </body>
+</html>

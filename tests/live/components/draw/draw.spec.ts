@@ -22,18 +22,20 @@ test.describe('Snice Draw', () => {
     expect(hasCanvas).toBe(true);
   });
 
-  test('should have correct canvas dimensions', async ({ page }) => {
+  test('should size the canvas backing store to its rendered dimensions', async ({ page }) => {
     await page.waitForTimeout(100); // Wait for @ready
     const dims = await page.evaluate(() => {
       const draw = document.querySelector('snice-draw');
       const canvas = draw?.shadowRoot?.querySelector('canvas');
       return {
-        width: canvas?.getAttribute('width'),
-        height: canvas?.getAttribute('height')
+        width: canvas?.width,
+        height: canvas?.height,
+        clientWidth: canvas?.clientWidth,
+        clientHeight: canvas?.clientHeight
       };
     });
-    expect(dims.width).toBe('800');
-    expect(dims.height).toBe('600');
+    expect(dims.width).toBe(dims.clientWidth);
+    expect(dims.height).toBe(dims.clientHeight);
   });
 
   test('should have toolbar', async ({ page }) => {

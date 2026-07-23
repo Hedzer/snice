@@ -2,6 +2,7 @@
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
 import { isRepeatResult } from './repeat';
 import { findRenderHost } from './render-root';
+import { PRE_UPGRADE_PROPERTY_BINDINGS } from './symbols';
 
 // Unique marker for dynamic parts
 // This parses as a comment node but doesn't get escaped in attributes
@@ -20,6 +21,16 @@ const templateCache = new WeakMap<TemplateStringsArray, Template>();
 
 // Sentinel for "not yet set" - distinct from undefined/null
 const NOT_COMMITTED = Symbol('not-committed');
+
+function markPreUpgradePropertyBinding(element: Element, propertyName: string): void {
+  const tagName = element.localName;
+  if (!tagName?.includes('-')) return;
+  const registry = element.ownerDocument?.defaultView?.customElements ?? globalThis.customElements;
+  if (registry?.get(tagName)) return;
+  const target = element as any;
+  if (!target[PRE_UPGRADE_PROPERTY_BINDINGS]) target[PRE_UPGRADE_PROPERTY_BINDINGS] = new Set<string>();
+  target[PRE_UPGRADE_PROPERTY_BINDINGS].add(propertyName);
+}
 
 // noChange sentinel - preserves the currently committed value
 export const noChange = Symbol.for('snice:no-change');
@@ -1764,10 +1775,14 @@ export class SpreadPart extends Part {
 
   private commitProperties(next: Record<string, unknown>): void {
     for (const key of Object.keys(this.committed)) {
-      if (!Object.prototype.hasOwnProperty.call(next, key)) (this.element as any)[key] = undefined;
+      if (!Object.prototype.hasOwnProperty.call(next, key)) {
+        markPreUpgradePropertyBinding(this.element, key);
+        (this.element as any)[key] = undefined;
+      }
     }
     for (const [key, value] of Object.entries(next)) {
       if (Object.is(this.committed[key], value)) continue;
+      markPreUpgradePropertyBinding(this.element, key);
       (this.element as any)[key] = value === nothing ? undefined : value;
     }
   }
@@ -1892,6 +1907,7 @@ export class PropertyPart extends Part {
     }
 
     this._committedValue = value;
+    markPreUpgradePropertyBinding(this.element, this.name);
     (this.element as any)[this.name] = value === nothing ? undefined : value;
   }
 

@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -66,8 +66,68 @@ export function controller(name: string) {
     registry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
+
+    const pending = snice.pendingControllerAttachments.get(name);
+    if (pending) {
+      snice.pendingControllerAttachments.delete(name);
+      queueMicrotask(() => {
+        for (const element of pending) {
+          const nativeName = (element as any)[NATIVE_CONTROLLER];
+          const desiredName = nativeName === undefined
+            ? (element as any)[CONTROLLER]
+            : nativeName;
+          if (desiredName !== name) continue;
+
+          attachController(element, name).catch(error => {
+            if (error?.name !== 'ControllerAttachAborted') {
+              console.error(`Failed to attach controller "${name}":`, error);
+            }
+          });
+        }
+      });
+    }
     return constructor;
   };
+}
+
+/** Queue an element until its controller module finishes registering. */
+export function deferControllerAttachment(element: HTMLElement, controllerName: string): void {
+  // Registration can win the microtask race between attachController's
+  // rejected promise and this recovery path. Retry immediately in that case.
+  if (snice.controllerRegistry.has(controllerName)) {
+    queueMicrotask(() => {
+      const nativeName = (element as any)[NATIVE_CONTROLLER];
+      const desiredName = nativeName === undefined
+        ? (element as any)[CONTROLLER]
+        : nativeName;
+      if (desiredName !== controllerName) return;
+
+      attachController(element, controllerName).catch(error => {
+        if (error?.name !== 'ControllerAttachAborted') {
+          console.error(`Failed to attach controller "${controllerName}":`, error);
+        }
+      });
+    });
+    return;
+  }
+
+  let pending = snice.pendingControllerAttachments.get(controllerName);
+  if (!pending) {
+    pending = new Set();
+    snice.pendingControllerAttachments.set(controllerName, pending);
+  }
+  pending.add(element);
+
+  // Give synchronously evaluated and microtask-delayed controller modules a
+  // chance to register, while keeping genuinely missing controllers loud.
+  queueMicrotask(() => {
+    if (snice.pendingControllerAttachments.get(controllerName)?.has(element)) {
+      console.error(
+        `Failed to attach controller "${controllerName}":`,
+        new Error(`Controller "${controllerName}" not found in registry`)
+      );
+    }
+  });
 }
 
 /**
@@ -104,8 +164,6 @@ export async function attachController(element: HTMLElement, controllerName: str
 
   const ControllerClass = registry.get(controllerName);
   if (!ControllerClass) {
-    // Debug: log what's actually in the registry
-    console.error(`Controller "${controllerName}" not found. Available:`, Array.from(registry.keys()));
     throw new Error(`Controller "${controllerName}" not found in registry`);
   }
   
@@ -333,6 +391,10 @@ export function useNativeElementControllers() {
       // Detached before ready — designed teardown, not a failure
       if (error?.name === 'ControllerAttachAborted') {
         console.debug(`Controller "${controllerName}" attach aborted (element detached before ready)`);
+        return;
+      }
+      if (error?.message === `Controller "${controllerName}" not found in registry`) {
+        deferControllerAttachment(element as HTMLElement, controllerName);
         return;
       }
       console.error(`Failed to attach controller "${controllerName}" to native element:`, error);

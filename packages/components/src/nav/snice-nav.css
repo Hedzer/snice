@@ -54,7 +54,7 @@
 
 .nav__link--active {
   background-color: var(--snice-color-surface-container, rgb(243 244 246));
-  color: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-primary-hover, rgb(96 165 250));
 }
 
 .nav__link--active:hover {
@@ -76,7 +76,7 @@
 }
 
 :host([active-style="text"]) .nav__link--active {
-  color: var(--snice-color-primary, rgb(37 99 235));
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 :host([active-style="text"]) .nav__link--active:hover {

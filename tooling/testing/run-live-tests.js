@@ -42,6 +42,24 @@ async function waitForPort(port, timeoutMs) {
   return false;
 }
 
+async function probeUrl(url, timeoutMs = 2_000) {
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function waitForUrl(url, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await probeUrl(url)) return true;
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  }
+  return false;
+}
+
 async function main() {
   const passthrough = process.argv.slice(2);
   const targeted = passthrough.includes('--targeted');
@@ -67,8 +85,10 @@ async function main() {
   );
   const managedChildren = [];
 
-  const ensureServer = async ({ port, label, command, args }) => {
+  const ensureServer = async ({ port, label, command, args, readyUrl }) => {
     if (await probeEither(port)) {
+      const ready = !readyUrl || await waitForUrl(readyUrl, STARTUP_TIMEOUT_MS);
+      if (!ready) throw new Error(`${label} did not become HTTP-ready within ${STARTUP_TIMEOUT_MS}ms`);
       console.log(`✓ ${label} already listening on :${port}, reusing it.`);
       return;
     }
@@ -85,6 +105,9 @@ async function main() {
       console.error(`✗ ${label} did not start within ${STARTUP_TIMEOUT_MS}ms`);
       throw new Error(`${label} startup timed out`);
     }
+    if (readyUrl && !(await waitForUrl(readyUrl, STARTUP_TIMEOUT_MS))) {
+      throw new Error(`${label} did not become HTTP-ready within ${STARTUP_TIMEOUT_MS}ms`);
+    }
     console.log(`✓ ${label} up on :${port}`);
   };
 
@@ -100,6 +123,7 @@ async function main() {
       label: 'Storybook',
       command: 'npm',
       args: ['run', 'dev:storybook'],
+      readyUrl: `http://${HOST}:${STORYBOOK_PORT}/iframe.html`,
     });
   }
 
@@ -117,6 +141,7 @@ async function main() {
     'test',
     ...targets,
     '--config=tests/playwright.config.ts',
+    '--output=test-results/framework',
     ...forwarded
   ];
   const playwright = spawn('npx', args, { stdio: 'inherit' });

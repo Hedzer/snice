@@ -139,7 +139,8 @@ test.describe('Website Component Rendering', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-link')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-link'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await page.locator('.more-link[data-slug="link"]').click();
 
     const docs = page.locator('#help-drawer-body');
@@ -181,7 +182,8 @@ test.describe('Website Component Rendering', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-button')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-button'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await page.locator('.more-link[data-slug="button"]').click();
 
     const docs = page.locator('#help-drawer-body');
@@ -303,7 +305,8 @@ test.describe('Website Component Rendering', () => {
     }));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-location')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-location'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await page.locator('.more-link[data-slug="location"]').click();
 
     const docs = page.locator('#help-drawer-body');
@@ -381,7 +384,8 @@ test.describe('Website Component Rendering', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-checkbox')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-checkbox'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await page.locator('.more-link[data-slug="checkbox"]').click();
 
     const docs = page.locator('#help-drawer-body');
@@ -450,7 +454,8 @@ test.describe('Website Component Rendering', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-radio')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-radio'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await page.locator('.more-link[data-slug="radio"]').click();
 
     const docs = page.locator('#help-drawer-body');
@@ -519,7 +524,8 @@ test.describe('Website Component Rendering', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-date-picker')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-picker'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
 
     const cardForm = page.locator('#date-card-form');
     const cardPicker = page.locator('#date-card-delivery');
@@ -633,7 +639,8 @@ test.describe('Website Component Rendering', () => {
     });
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-date-range-picker')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-range-picker'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
 
     const cardForm = page.locator('#showcase-range-form');
     const cardPicker = page.locator('#showcase-range-form-picker');
@@ -709,7 +716,8 @@ test.describe('Website Component Rendering', () => {
     });
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-date-time-picker')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-date-time-picker'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
 
     const cardForm = page.locator('#showcase-date-time-form');
     const cardPicker = page.locator('#showcase-date-time-form-picker');
@@ -827,7 +835,8 @@ test.describe('Website Component Rendering', () => {
     });
 
     await page.goto(`${websiteBase}/components.html`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-time-picker')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-time-picker'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
 
     const cardForm = page.locator('#showcase-time-form');
     const cardPicker = page.locator('#showcase-time-form-picker');
@@ -953,7 +962,8 @@ test.describe('Website Component Rendering', () => {
     });
 
     await page.goto(`${websiteBase}/components.html#comp-color-picker`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-color-picker')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-color-picker'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await expect(page.locator('#comp-color-picker snice-color-picker').first()).toBeVisible();
 
     await page.locator('#comp-color-picker .more-link[data-slug="color-picker"]').click();
@@ -1027,7 +1037,8 @@ test.describe('Website Component Rendering', () => {
     });
 
     await page.goto(`${websiteBase}/components.html#comp-select`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => Boolean(customElements.get('snice-select')));
+    await page.waitForFunction(() => Boolean(customElements.get('snice-select'))
+      && document.documentElement.dataset.componentsPageReady === 'true');
     await expect(page.locator('#comp-select snice-select').first()).toBeVisible();
 
     await page.locator('#comp-select .more-link[data-slug="select"]').click();

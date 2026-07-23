@@ -55,6 +55,36 @@ describe('@controller decorator', () => {
     expect(attachSpy).toHaveBeenCalledWith(el);
   });
 
+  it('attaches when the controller registers after the element connects', async () => {
+    const attachSpy = vi.fn();
+
+    @element('test-late-controller-registration')
+    class TestLateControllerRegistration extends HTMLElement {}
+
+    const el = document.createElement('test-late-controller-registration') as any;
+    el.controller = 'late-controller-registration';
+    document.body.appendChild(el);
+    await Promise.resolve();
+
+    @controller('late-controller-registration')
+    class LateControllerRegistration {
+      element: HTMLElement | null = null;
+
+      async attach(element: HTMLElement) {
+        this.element = element;
+        attachSpy(element);
+      }
+
+      async detach() {
+        this.element = null;
+      }
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(attachSpy).toHaveBeenCalledTimes(1);
+    expect(attachSpy).toHaveBeenCalledWith(el);
+  });
+
   it('should handle events in controller', async () => {
     const eventHandler = vi.fn();
     

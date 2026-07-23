@@ -104,11 +104,24 @@ function legacyShowcaseRoutes() {
         const [, component, requestedFile] = match;
         // The long-standing live-test/customer URLs use both demo.html and
         // full-showcase.html for the same standalone showcase document.
-        const file = requestedFile === 'demo.html' || requestedFile === 'full-showcase.html'
-          ? 'full.html'
-          : requestedFile;
+        const legacyDemo = join(server.config.root, 'website', 'showcases', component, 'demo.html');
+        const file = requestedFile === 'demo.html' && existsSync(legacyDemo)
+          ? 'demo.html'
+          : requestedFile === 'demo.html' || requestedFile === 'full-showcase.html'
+            ? 'full.html'
+            : requestedFile;
         const source = join(server.config.root, 'website', 'showcases', component, file);
         if (existsSync(source)) req.url = `/website/showcases/${component}/${file}`;
+        next();
+      });
+
+      server.middlewares.use((req: any, _res: any, next: any) => {
+        const url = req.url?.split('?', 1)[0] ?? '';
+        const match = url.match(/^\/components\/([^/]+)\/(.+\.(?:ts|css))$/);
+        if (!match) return next();
+        const [, component, file] = match;
+        const source = join(server.config.root, 'packages', 'components', 'src', component, file);
+        if (existsSync(source)) req.url = `/packages/components/src/${component}/${file}`;
         next();
       });
     },

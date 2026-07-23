@@ -3,9 +3,8 @@ import { test, expect } from '@playwright/test';
 const demoPath = 'http://localhost:5566/components/login/demo.html';
 
 test.describe('Login Theme Visual Tests', () => {
-  test('login inputs should match theme in light mode', async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+  test('login inputs should match theme in light mode', async ({ page }, testInfo) => {
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
 
     const login = page.locator('snice-login').first();
     await expect(login).toBeVisible();
@@ -25,16 +24,14 @@ test.describe('Login Theme Visual Tests', () => {
     // Should match input theme - pure white background
     expect(bgColor).toBe('rgb(255, 255, 255)');
 
-    // Border should match theme (gray-300)
-    expect(borderColor).toContain('rgb(209, 213, 219)');
+    expect(borderColor).toBe('rgb(209, 209, 209)');
 
     // Take screenshot
-    await login.screenshot({ path: 'test-results/login-light.png' });
+    await login.screenshot({ path: testInfo.outputPath('login-light.png') });
   });
 
-  test('login inputs should match theme in dark mode', async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+  test('login inputs should match theme in dark mode', async ({ page }, testInfo) => {
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
 
     // Enable dark mode
     await page.evaluate(() => {
@@ -65,22 +62,20 @@ test.describe('Login Theme Visual Tests', () => {
     expect(borderColor).toContain('rgb(89, 89, 89)');
 
     // Take screenshot
-    await login.screenshot({ path: 'test-results/login-dark.png' });
+    await login.screenshot({ path: testInfo.outputPath('login-dark.png') });
   });
 
-  test('full login demo - light mode', async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+  test('full login demo - light mode', async ({ page }, testInfo) => {
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
 
     await page.screenshot({
-      path: 'test-results/login-demo-light-full.png',
+      path: testInfo.outputPath('login-demo-light-full.png'),
       fullPage: true
     });
   });
 
-  test('full login demo - dark mode', async ({ page }) => {
-    await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+  test('full login demo - dark mode', async ({ page }, testInfo) => {
+    await page.goto(demoPath, { waitUntil: 'domcontentloaded' });
 
     // Enable dark mode
     await page.evaluate(() => {
@@ -90,7 +85,7 @@ test.describe('Login Theme Visual Tests', () => {
     await page.waitForTimeout(500);
 
     await page.screenshot({
-      path: 'test-results/login-demo-dark-full.png',
+      path: testInfo.outputPath('login-demo-dark-full.png'),
       fullPage: true
     });
   });

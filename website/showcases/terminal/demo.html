@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Demo</title>
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
+  <style>
+    body {
+      font-family: var(--snice-font-family);
+      padding: 40px;
+      margin: 0;
+      background: var(--snice-color-background);
+      color: var(--snice-color-text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--snice-color-text);
+      border-bottom: 2px solid var(--snice-color-border);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: var(--snice-color-text);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .example {
+      margin: 30px 0;
+    }
+
+    .example h3 {
+      color: var(--snice-color-text);
+      margin-bottom: 10px;
+    }
+
+    .terminal-wrapper {
+      border: 1px solid var(--snice-color-border);
+      border-radius: var(--snice-border-radius-md);
+      overflow: hidden;
+    }
+
+    .controls {
+      margin: 10px 0;
+      display: flex;
+      gap: var(--snice-spacing-sm);
+    }
+
+    button {
+      padding: var(--snice-spacing-sm) var(--snice-spacing-md);
+      background: var(--snice-color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--snice-border-radius-sm);
+      cursor: pointer;
+      font-size: var(--snice-font-size-sm);
+      font-weight: var(--snice-font-weight-medium);
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+  <script type="module">
+    // Import the controller first, then the terminal component
+    import './demo-terminal-controller.ts';
+    import '../../../packages/components/src/terminal/snice-terminal.ts';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Basic terminal
+      const term1 = document.getElementById('terminal-1');
+      term1.writeln('Welcome to snice-terminal!', 'success');
+      term1.writeln('Type "help" to see available commands.', 'info');
+
+      // Terminal with timestamps
+      const term2 = document.getElementById('terminal-2');
+      term2.writeln('Server started on port 3000', 'success');
+      term2.writeln('Watching for file changes...', 'info');
+
+      // Read-only terminal (log viewer)
+      const term3 = document.getElementById('terminal-3');
+      term3.writeln('[INFO] Application starting...', 'info');
+      term3.writeln('[SUCCESS] Database connected', 'success');
+      term3.writeln('[WARNING] Deprecated API usage detected', 'warning');
+      term3.writeln('[ERROR] Failed to connect to cache server', 'error');
+
+      // Interactive demo terminal
+      const term4 = document.getElementById('terminal-4');
+      term4.writeln('Interactive terminal ready!', 'success');
+      term4.writeln('Try: help, ls, cat demo.txt, date, whoami', 'info');
+
+      // Listen to command events
+      term4.addEventListener('terminal-command', (e) => {
+        // Event listener for command execution
+      });
+
+      // Control buttons - demonstrate streaming API
+      document.getElementById('write-line').addEventListener('click', () => {
+        term4.writeln('This is a custom message!', 'output');
+      });
+
+      document.getElementById('write-error').addEventListener('click', () => {
+        term4.writeError('This is an error message!');
+      });
+
+      document.getElementById('write-success').addEventListener('click', () => {
+        term4.writeln('Operation completed successfully!', 'success');
+      });
+
+      document.getElementById('clear-terminal').addEventListener('click', () => {
+        term4.clear();
+      });
+
+      document.getElementById('focus-terminal').addEventListener('click', () => {
+        term4.focus();
+      });
+
+      // Demo: Streaming lines (bulk write)
+      document.getElementById('stream-lines')?.addEventListener('click', () => {
+        term4.writeLines([
+          { content: 'Processing batch operation...', type: 'info' },
+          { content: 'Step 1: Initializing...', type: 'output' },
+          { content: 'Step 2: Processing data...', type: 'output' },
+          { content: 'Step 3: Finalizing...', type: 'output' },
+          { content: 'Batch operation complete!', type: 'success' }
+        ]);
+      });
+
+      document.getElementById('ansi-colors')?.addEventListener('click', () => {
+        term4.writeln('\x1b[31mRed text\x1b[0m');
+        term4.writeln('\x1b[32mGreen text\x1b[0m');
+        term4.writeln('\x1b[33mYellow text\x1b[0m');
+        term4.writeln('\x1b[34mBlue text\x1b[0m');
+        term4.writeln('\x1b[35mMagenta text\x1b[0m');
+        term4.writeln('\x1b[36mCyan text\x1b[0m');
+        term4.writeln('\x1b[91m\x1b[1mBright red bold text\x1b[0m');
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Terminal Component Demo</h1>
+    <p>Interactive terminal emulator with command handling, history, and custom styling.</p>
+
+    <div class="example">
+      <h3>Basic Terminal</h3>
+      <div class="terminal-wrapper">
+        <snice-terminal id="terminal-1" controller="demo-terminal-controller"></snice-terminal>
+      </div>
+    </div>
+
+    <div class="example">
+      <h3>With Timestamps</h3>
+      <div class="terminal-wrapper">
+        <snice-terminal id="terminal-2" show-timestamps controller="demo-terminal-controller"></snice-terminal>
+      </div>
+    </div>
+
+    <div class="example">
+      <h3>Read-only (Log Viewer)</h3>
+      <div class="terminal-wrapper">
+        <snice-terminal id="terminal-3" readonly></snice-terminal>
+      </div>
+    </div>
+
+    <div class="example">
+      <h3>Interactive Terminal with Commands & Streaming</h3>
+      <div class="controls">
+        <button id="write-line">Write Line</button>
+        <button id="write-error">Write Error</button>
+        <button id="write-success">Write Success</button>
+        <button id="stream-lines">Stream Lines</button>
+        <button id="ansi-colors">ANSI Colors</button>
+        <button id="clear-terminal">Clear</button>
+        <button id="focus-terminal">Focus</button>
+      </div>
+      <div class="terminal-wrapper">
+        <snice-terminal id="terminal-4" prompt="demo $ " controller="demo-terminal-controller"></snice-terminal>
+      </div>
+    </div>
+
+    <div class="example">
+      <h3>Custom Styling</h3>
+      <div class="terminal-wrapper">
+        <snice-terminal
+          id="terminal-5"
+          prompt="λ "
+          controller="demo-terminal-controller"
+          style="
+            --snice-terminal-height: 300px;
+            --snice-terminal-background: #0a0e27;
+            --snice-terminal-foreground: #8be9fd;
+            --snice-terminal-prompt-color: #50fa7b;
+            --snice-terminal-error-color: #ff5555;
+            --snice-terminal-success-color: #50fa7b;
+          "></snice-terminal>
+      </div>
+    </div>
+
+    <script type="module">
+      const term5 = document.getElementById('terminal-5');
+      term5.writeln('Custom styled terminal', 'success');
+      term5.writeln('Try typing "help" or "echo hello world"', 'info');
+    </script>
+  </div>
+</body>
+</html>

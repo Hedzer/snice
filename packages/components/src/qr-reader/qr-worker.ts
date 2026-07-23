@@ -9,27 +9,14 @@ import { readBarcodesFromImageData } from './zxing-reader.mjs';
 
 console.log('[QR Worker] Starting...');
 
-interface DecodeMessage {
-  type: 'decode';
-  buffer?: SharedArrayBuffer;
-  imageData?: ImageData;
-  width: number;
-  height: number;
-}
-
-interface DecodeResponse {
-  type: 'result';
-  text: string | null;
-}
-
 // Listen for messages from main thread
-self.onmessage = async (event: MessageEvent<DecodeMessage>) => {
+self.onmessage = async (event) => {
   console.log('[QR Worker] Received message:', event.data.type);
   const { type, buffer, imageData, width, height } = event.data;
 
   if (type === 'decode') {
     try {
-      let processImageData: ImageData;
+      let processImageData;
 
       // Use SharedArrayBuffer if available (zero-copy)
       if (buffer) {
@@ -46,7 +33,7 @@ self.onmessage = async (event: MessageEvent<DecodeMessage>) => {
         } else {
           // Otherwise assume it's already an ImageData object
           console.log('[QR Worker] Using ImageData directly');
-          processImageData = imageData as ImageData;
+          processImageData = imageData;
         }
       } else {
         console.error('[QR Worker] No image data provided');
@@ -62,7 +49,7 @@ self.onmessage = async (event: MessageEvent<DecodeMessage>) => {
 
       console.log('[QR Worker] Decode complete, found:', results.length);
 
-      const response: DecodeResponse = {
+      const response = {
         type: 'result',
         text: results.length > 0 ? results[0].text : null
       };
@@ -70,7 +57,7 @@ self.onmessage = async (event: MessageEvent<DecodeMessage>) => {
       self.postMessage(response);
     } catch (error) {
       console.error('[QR Worker] Decode error:', error);
-      const response: DecodeResponse = {
+      const response = {
         type: 'result',
         text: null
       };

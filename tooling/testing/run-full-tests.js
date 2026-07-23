@@ -6,9 +6,9 @@
  * The coverage run is also the source-suite run: it executes the same Vitest
  * files against source while collecting the core-engine coverage gate. The
  * built suite still runs separately against a freshly generated testing
- * bundle. Once every artifact is prepared, the independent validation gates
- * run concurrently to keep the aggregate command close to the historical
- * source+built wall time.
+ * bundle. Once every artifact is prepared, each validation gate runs in
+ * sequence so its output, resource usage, and exit status cannot be obscured
+ * by another gate.
  */
 import { spawn } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
@@ -107,12 +107,9 @@ try {
   // Distribution is the root dependency for CDN, React, and browser artifacts.
   await npmRun('distribution build', 'build:distribution');
 
-  // These write to separate outputs and can be prepared safely in parallel.
-  await Promise.all([
-    npmRun('built-test bundle', 'build:testing'),
-    npmRun('CDN bundles', 'build:cdn'),
-    npmRun('React adapters', 'build:react')
-  ]);
+  await npmRun('built-test bundle', 'build:testing');
+  await npmRun('CDN bundles', 'build:cdn');
+  await npmRun('React adapters', 'build:react');
 
   // Generate the public and deploy sites once, after the CDN files are final.
   await npmRun('website', 'build:website');
@@ -129,21 +126,19 @@ try {
   cpSync(join(process.cwd(), 'website', 'public'), publicSnapshot, { recursive: true });
   cpSync(join(process.cwd(), 'dist', 'site'), siteSnapshot, { recursive: true });
 
-  // Every gate below is read-only with respect to the artifacts it validates.
-  // Vite ignores coverage report output, so HTML report generation cannot
-  // reload Playwright pages while these independent gates run concurrently.
-  await Promise.all([
-    npmRun('source suite + core coverage', 'test:coverage:core', vitestWorkerArgs()),
-    npmRun('built suite', 'test:distribution:prepared', vitestWorkerArgs()),
-    npmRun('CDN artifact + runtime suites', 'test:cdn:prepared'),
-    npmRun('React adapter suite', 'test:react:prepared', vitestWorkerArgs()),
-    npmRun('framework browser suite', 'test:browser:framework:prepared', [browserTimeout], {
-      env: { SNICE_TEST_PUBLIC_DIR: publicSnapshot }
-    }),
-    npmRun('website browser suite', 'test:browser:website:prepared', [browserTimeout], {
-      env: { SNICE_TEST_SITE_DIR: siteSnapshot }
-    })
-  ]);
+  // Keep validation sequential. Running two Vitest matrices and two browser
+  // matrices together can exhaust CPU or browser processes, and their
+  // interleaved reporters hide which assertion actually failed.
+  await npmRun('source suite + core coverage', 'test:coverage:core', vitestWorkerArgs());
+  await npmRun('built suite', 'test:distribution:prepared', vitestWorkerArgs());
+  await npmRun('CDN artifact + runtime suites', 'test:cdn:prepared');
+  await npmRun('React adapter suite', 'test:react:prepared', vitestWorkerArgs());
+  await npmRun('framework browser suite', 'test:browser:framework:prepared', [browserTimeout], {
+    env: { SNICE_TEST_PUBLIC_DIR: publicSnapshot }
+  });
+  await npmRun('website browser suite', 'test:browser:website:prepared', [browserTimeout], {
+    env: { SNICE_TEST_SITE_DIR: siteSnapshot }
+  });
 
   removeSnapshot();
   console.log(`\n[full] All gates passed in ${elapsed(startedAt)}.`);

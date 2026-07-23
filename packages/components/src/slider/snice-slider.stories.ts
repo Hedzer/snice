@@ -236,7 +236,7 @@ export const NamedFormIntegration: Story = {
 export const NativeFormValidation: Story = {
   render: () => {
     const form = document.createElement('form');
-    form.style.cssText = 'display:grid;gap:var(--snice-spacing-sm,.75rem);width:min(100%,32rem);padding:var(--snice-spacing-md,1rem);border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-lg,.5rem);';
+    form.style.cssText = 'box-sizing:border-box;display:grid;gap:var(--snice-spacing-sm,.75rem);width:min(100%,32rem);padding:var(--snice-spacing-md,1rem);border:1px solid var(--snice-color-border,rgb(226 226 226));border-radius:var(--snice-border-radius-lg,.5rem);';
     const slider = makeSlider({
       name: 'rating', label: 'Rating', min: 1, max: 9, step: 2, value: 2,
       required: true, 'show-value': true,

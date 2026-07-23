@@ -221,7 +221,7 @@
 
 .step--approved .step__status {
   background: rgb(22 163 74 / 0.1);
-  color: var(--snice-color-success, rgb(22 163 74));
+  color: color-mix(in srgb, var(--snice-color-success, rgb(22 163 74)) 88%, var(--snice-color-text, rgb(23 23 23)) 12%);
 }
 
 .step--approved .step__connector {

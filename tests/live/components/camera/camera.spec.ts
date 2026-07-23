@@ -4,10 +4,8 @@ const demoPath = 'http://localhost:5566/components/camera/demo.html';
 
 test.describe('Snice Camera', () => {
   test.beforeEach(async ({ page }) => {
-    // Grant camera permissions
-    await page.context().grantPermissions(['camera']);
     await page.goto(demoPath);
-    await page.waitForLoadState('networkidle');
+    await page.locator('snice-camera#main-camera').waitFor();
   });
 
   test('should render camera component', async ({ page }) => {
@@ -39,13 +37,13 @@ test.describe('Snice Camera', () => {
     expect(hasCaptureBtn).toBe(true);
   });
 
-  test('autoStart is true by default (camera permissions are flaky in headless,'
+  test('autoStart is false by default (camera permissions are flaky in headless,'
     + ' so we verify the property contract instead of the actual stream start)', async ({ page }) => {
     const autoStart = await page.evaluate(() => {
       const camera = document.querySelector('snice-camera') as any;
       return camera?.autoStart;
     });
-    expect(autoStart).toBe(true);
+    expect(autoStart).toBe(false);
   });
 
   test('should support different control positions', async ({ page }) => {

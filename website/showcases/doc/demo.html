@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snice Doc - Document Editor</title>
+    <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--snice-color-background);
+        transition: background-color var(--snice-transition-medium) ease, color var(--snice-transition-medium) ease;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 20px auto;
+        background: var(--snice-color-background);
+        border-radius: 8px;
+        box-shadow: var(--snice-shadow-md);
+        height: calc(100vh - 40px);
+        display: flex;
+        flex-direction: column;
+      }
+
+      h1 {
+        margin: 0;
+        padding: 20px;
+        color: var(--snice-color-text);
+        border-bottom: 1px solid var(--snice-color-border);
+      }
+
+      snice-doc {
+        flex: 1;
+        --snice-doc-background: #fff;
+        --snice-doc-text-color: #24292f;
+        --snice-doc-muted-color: #57606a;
+        --snice-doc-placeholder-color: #8c959f;
+        --snice-doc-primary-color: #0969da;
+        --snice-doc-border: #d0d7de;
+        --snice-doc-sidebar-background: #f6f8fa;
+        --snice-doc-menu-hover: #e8eaed;
+        --snice-doc-link-color: #0969da;
+        --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Document Editor</h1>
+      <snice-doc id="editor"></snice-doc>
+    </div>
+
+    <script type="module">
+      import '../../../packages/components/src/doc/snice-doc.ts';
+      import '../../../packages/components/src/modal/snice-modal.ts';
+      import '../../../packages/components/src/input/snice-input.ts';
+      import '../../../packages/components/src/button/snice-button.ts';
+
+      await customElements.whenDefined('snice-doc');
+
+      const editor = document.getElementById('editor');
+
+      // Set some initial content
+      editor.setHTML(`
+        <h1>Welcome to the Document Editor!</h1>
+        <p>This is a simple document editor with:</p>
+        <ul>
+          <li><b>Bold</b>, <i>italic</i>, <u>underline</u> formatting</li>
+          <li>Headings (H1, H2, H3)</li>
+          <li>Bullet and numbered lists</li>
+          <li>Images and links</li>
+          <li>Tables</li>
+        </ul>
+        <p>Try typing with <b>bold</b> and hitting Enter - the formatting continues naturally!</p>
+        <h2>Features</h2>
+        <p>Use the toolbar at the top to format your text or insert elements. The sidebar lets you quickly insert images, tables, and dividers.</p>
+        <p>Just start typing anywhere to edit...</p>
+      `);
+    </script>
+  </body>
+</html>

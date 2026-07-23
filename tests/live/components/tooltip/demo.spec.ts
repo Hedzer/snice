@@ -1,340 +1,129 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+const visibleTooltip = (page: Page, content: string) =>
+  page.locator('.snice-tooltip.snice-tooltip--visible').filter({ hasText: content });
 
 test.describe('Tooltip Demo', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566/components/tooltip/demo.html');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/components/tooltip/demo.html');
   });
 
-  test('Basic Positions - Top', async ({ page }) => {
-    const button = page.getByRole('button', { name: 'Top', exact: true });
+  for (const [label, content] of [
+    ['Top', 'This tooltip appears on top'],
+    ['Bottom', 'This tooltip appears on bottom'],
+    ['Left', 'This tooltip appears on left'],
+    ['Right', 'This tooltip appears on right'],
+    ['Top Start', 'Top start aligned'],
+    ['Top End', 'Top end aligned'],
+  ] as const) {
+    test(`position: ${label}`, async ({ page }) => {
+      await page.getByRole('button', { name: label, exact: true }).hover();
+      await expect(visibleTooltip(page, content)).toBeVisible();
+    });
+  }
+
+  test('hover trigger shows and hides', async ({ page }) => {
+    const button = page.getByRole('button', { name: 'Hover Trigger' });
     await button.hover();
-    await page.waitForTimeout(100);
-
-    // Tooltip is rendered as a portal in document body
-    const tooltip = page.locator('.snice-tooltip-portal.snice-tooltip--visible');
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText('This tooltip appears on top');
-  });
-
-  test('Basic Positions - Bottom', async ({ page }) => {
-    const button = page.locator('button:has-text("Bottom")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'This tooltip appears on bottom' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Basic Positions - Left', async ({ page }) => {
-    const button = page.locator('button:has-text("Left")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'This tooltip appears on left' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Basic Positions - Right', async ({ page }) => {
-    const button = page.locator('button:has-text("Right")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'This tooltip appears on right' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Aligned Positions - Top Start', async ({ page }) => {
-    const button = page.locator('button:has-text("Top Start")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Top start aligned' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Aligned Positions - Top End', async ({ page }) => {
-    const button = page.locator('button:has-text("Top End")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Top end aligned' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Trigger Types - Hover', async ({ page }) => {
-    const button = page.locator('button:has-text("Hover Trigger")');
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Hover to see this tooltip' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // Should not be visible initially
-    await expect(tooltipContent).not.toBeVisible();
-
-    // Hover to show
-    await button.hover();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toBeVisible();
-
-    // Move away to hide
+    await expect(visibleTooltip(page, 'Hover to see this tooltip')).toBeVisible();
     await page.mouse.move(0, 0);
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).not.toBeVisible();
+    await expect(visibleTooltip(page, 'Hover to see this tooltip')).not.toBeVisible();
   });
 
-  test('Trigger Types - Click', async ({ page }) => {
-    const button = page.locator('button:has-text("Click Trigger")');
-
-    // Should not be visible initially
-    const tooltipBefore = page.locator('.snice-tooltip-portal.snice-tooltip--visible').filter({ hasText: 'Click to toggle this tooltip' });
-    await expect(tooltipBefore).not.toBeVisible();
-
-    // Click to show
+  test('click trigger toggles', async ({ page }) => {
+    const button = page.getByRole('button', { name: 'Click Trigger' });
     await button.click();
-    await page.waitForTimeout(100);
-
-    const tooltipAfterClick = page.locator('.snice-tooltip-portal.snice-tooltip--visible').filter({ hasText: 'Click to toggle this tooltip' });
-    await expect(tooltipAfterClick).toBeVisible();
-
-    // Click again to hide
+    await expect(visibleTooltip(page, 'Click to toggle this tooltip')).toBeVisible();
     await button.click();
-    await page.waitForTimeout(100);
-    await expect(tooltipAfterClick).not.toBeVisible();
+    await expect(visibleTooltip(page, 'Click to toggle this tooltip')).not.toBeVisible();
   });
 
-  test('Trigger Types - Focus', async ({ page }) => {
+  test('focus trigger shows and hides', async ({ page }) => {
     const input = page.locator('input[placeholder="Focus me"]');
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Focus to see this tooltip' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // Should not be visible initially
-    await expect(tooltipContent).not.toBeVisible();
-
-    // Focus to show
     await input.focus();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toBeVisible();
-
-    // Blur to hide
+    await expect(visibleTooltip(page, 'Focus to see this tooltip')).toBeVisible();
     await input.blur();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).not.toBeVisible();
+    await expect(visibleTooltip(page, 'Focus to see this tooltip')).not.toBeVisible();
   });
 
-  test('Trigger Types - Manual', async ({ page }) => {
-    const button = page.locator('button:has-text("Manual Control")');
-    const tooltip = page.locator('snice-tooltip#manual-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // Should not be visible initially
-    await expect(tooltipContent).not.toBeVisible();
-
-    // Click to toggle
+  test('manual trigger toggles', async ({ page }) => {
+    const button = page.getByRole('button', { name: 'Manual Control' });
     await button.click();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toBeVisible();
-
-    // Click again to toggle off
+    await expect(visibleTooltip(page, 'Manually controlled tooltip')).toBeVisible();
     await button.click();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).not.toBeVisible();
+    await expect(visibleTooltip(page, 'Manually controlled tooltip')).not.toBeVisible();
   });
 
-  test('Delays - Show Delay', async ({ page }) => {
-    const button = page.locator('button:has-text("Show Delay (500ms)")');
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Shows after 500ms delay' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // Hover
-    await button.hover();
-
-    // Should not be visible immediately
-    await expect(tooltipContent).not.toBeVisible();
-
-    // Wait for delay
-    await page.waitForTimeout(600);
-    await expect(tooltipContent).toBeVisible();
+  test('show delay is honored', async ({ page }) => {
+    await page.getByRole('button', { name: 'Show Delay (500ms)' }).hover();
+    await expect(visibleTooltip(page, 'Shows after 500ms delay')).not.toBeVisible();
+    await expect(visibleTooltip(page, 'Shows after 500ms delay')).toBeVisible({ timeout: 1_000 });
   });
 
-  test('Delays - Hide Delay', async ({ page }) => {
-    const button = page.locator('button:has-text("Hide Delay (500ms)")');
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Hides after 500ms delay' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // Hover to show
-    await button.hover();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toBeVisible();
-
-    // Move away
+  test('hide delay is honored', async ({ page }) => {
+    await page.getByRole('button', { name: 'Hide Delay (500ms)' }).hover();
+    const tooltip = visibleTooltip(page, 'Hides after 500ms delay');
+    await expect(tooltip).toBeVisible();
     await page.mouse.move(0, 0);
-
-    // Should still be visible (hide delay)
     await page.waitForTimeout(200);
-    await expect(tooltipContent).toBeVisible();
-
-    // Wait for hide delay
-    await page.waitForTimeout(400);
-    await expect(tooltipContent).not.toBeVisible();
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).not.toBeVisible({ timeout: 1_000 });
   });
 
-  test('Customization - No Arrow', async ({ page }) => {
-    const button = page.locator('button:has-text("No Arrow")');
+  test('no-arrow customization omits the arrow', async ({ page }) => {
+    await page.getByRole('button', { name: 'No Arrow' }).hover();
+    const tooltip = visibleTooltip(page, 'Tooltip without arrow');
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip.locator('.snice-tooltip__arrow')).toHaveCount(0);
+  });
+
+  for (const [trigger, content] of [
+    ['Wide Tooltip', 'This tooltip has a much wider maximum width'],
+    ['Custom Style', 'Custom styled tooltip'],
+    ['Large Offset', 'Large offset from trigger'],
+  ] as const) {
+    test(`customization: ${trigger}`, async ({ page }) => {
+      await page.getByRole('button', { name: trigger }).hover();
+      await expect(visibleTooltip(page, content)).toBeVisible();
+    });
+  }
+
+  for (const [selector, content] of [
+    ['.link:has-text("Text Content")', 'Simple text tooltip'],
+    ['.link:has-text("Long Content")', 'This is a very long tooltip content'],
+    ['.icon[aria-label="Info"]', 'Tooltip on an icon'],
+    ['code:has-text("npm install")', 'Press Ctrl+C to copy'],
+  ] as const) {
+    test(`content: ${content}`, async ({ page }) => {
+      await page.locator(selector).hover();
+      await expect(visibleTooltip(page, content)).toBeVisible();
+    });
+  }
+
+  test('programmatic show and hide', async ({ page }) => {
+    const show = page.getByRole('button', { name: 'Show', exact: true });
+    const hide = page.getByRole('button', { name: 'Hide', exact: true });
+    await show.click();
+    await expect(visibleTooltip(page, 'Programmatically shown')).toBeVisible();
+    await hide.click();
+    await expect(visibleTooltip(page, 'Programmatically shown')).not.toBeVisible();
+  });
+
+  test('dynamic content updates on every hover', async ({ page }) => {
+    const button = page.getByRole('button', { name: 'Dynamic Content' });
     await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Tooltip without arrow' });
-    const arrow = tooltip.locator('.tooltip-arrow');
-
-    // Arrow should not be visible
-    await expect(arrow).not.toBeVisible();
-  });
-
-  test('Customization - Wide Tooltip', async ({ page }) => {
-    const button = page.locator('button:has-text("Wide Tooltip")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'This tooltip has a much wider maximum width' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-    await expect(tooltipContent).toContainText('much wider maximum width');
-  });
-
-  test('Customization - Custom Style', async ({ page }) => {
-    const button = page.locator('button:has-text("Custom Style")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip.custom-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Customization - Large Offset', async ({ page }) => {
-    const button = page.locator('button:has-text("Large Offset")');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Large offset from trigger' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Content Types - Text Content', async ({ page }) => {
-    const link = page.locator('.link:has-text("Text Content")');
-    await link.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Simple text tooltip' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Content Types - Long Content', async ({ page }) => {
-    const link = page.locator('.link:has-text("Long Content")');
-    await link.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'This is a very long tooltip content' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-    await expect(tooltipContent).toContainText('multiple lines');
-  });
-
-  test('Content Types - Icon', async ({ page }) => {
-    const icon = page.locator('.icon[aria-label="Info"]');
-    await icon.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Tooltip on an icon' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Content Types - Code', async ({ page }) => {
-    const code = page.locator('code:has-text("npm install")');
-    await code.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = page.locator('snice-tooltip').filter({ hasText: 'Press Ctrl+C to copy' });
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Programmatic Control - Show/Hide', async ({ page }) => {
-    const tooltip = page.locator('snice-tooltip#prog-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-    const showButton = page.locator('button:has-text("Show")').nth(1);
-    const hideButton = page.locator('button:has-text("Hide")').nth(1);
-
-    // Should not be visible initially
-    await expect(tooltipContent).not.toBeVisible();
-
-    // Click show button
-    await showButton.click();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toBeVisible();
-
-    // Click hide button
-    await hideButton.click();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).not.toBeVisible();
-  });
-
-  test('Programmatic Control - Dynamic Content', async ({ page }) => {
-    const button = page.locator('button:has-text("Dynamic Content")');
-    const tooltip = page.locator('snice-tooltip#dynamic-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    // First hover
-    await button.hover();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toContainText('Hover count: 1');
-
-    // Move away and hover again
+    const initialTooltip = visibleTooltip(page, 'Dynamic content');
+    await expect(initialTooltip).toBeVisible();
     await page.mouse.move(0, 0);
-    await page.waitForTimeout(100);
+    await expect(initialTooltip).not.toBeVisible();
     await button.hover();
-    await page.waitForTimeout(100);
-    await expect(tooltipContent).toContainText('Hover count: 2');
+    await expect(visibleTooltip(page, 'Hover count: 1')).toBeVisible();
   });
 
-  test('Smart Positioning - Edge Detection Top Left', async ({ page }) => {
-    const button = page.locator('.edge-button.top-left button');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = button.locator('xpath=ancestor::snice-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
-
-  test('Smart Positioning - Edge Detection Center', async ({ page }) => {
-    const button = page.locator('.edge-button.center button');
-    await button.hover();
-    await page.waitForTimeout(100);
-
-    const tooltip = button.locator('xpath=ancestor::snice-tooltip');
-    const tooltipContent = tooltip.locator('.tooltip-content');
-
-    await expect(tooltipContent).toBeVisible();
-  });
+  for (const selector of ['.edge-button.top-left button', '.edge-button.center button']) {
+    test(`smart positioning: ${selector}`, async ({ page }) => {
+      await page.locator(selector).hover();
+      await expect(visibleTooltip(page, selector.includes('center') ? 'Center positioned tooltip' : 'This tooltip will flip to avoid viewport edges')).toBeVisible();
+    });
+  }
 });

@@ -612,6 +612,7 @@ async function exerciseCustomerInteractions(page: Page) {
   const input = picker.locator('.input');
   await input.fill('03/18/2026');
   await input.press('Tab');
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('2026-03-18');
   const typed = await page.evaluate(() => {
     const picker = document.querySelector('#interaction-date') as any;
     const form = document.querySelector('#date-interaction-form') as HTMLFormElement;
@@ -627,6 +628,7 @@ async function exerciseCustomerInteractions(page: Page) {
   expect(typed.events.map((event: any) => event.type)).toContain('datepicker-change');
 
   await picker.locator('.clear-button').click();
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('');
   const cleared = await page.evaluate(() => {
     const picker = document.querySelector('#interaction-date') as any;
     const form = document.querySelector('#date-interaction-form') as HTMLFormElement;
@@ -650,6 +652,7 @@ async function exerciseCustomerInteractions(page: Page) {
 
   await picker.locator('.calendar-toggle').click();
   await picker.locator('[data-date="2026-03-20"]').click();
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('2026-03-20');
   const selected = await page.evaluate(() => {
     const picker = document.querySelector('#interaction-date') as any;
     return {
@@ -672,23 +675,28 @@ async function exerciseCustomerInteractions(page: Page) {
   await input.focus();
   await input.press('Escape');
   await page.locator('#date-reset').click();
-  expect(await page.evaluate(() => (document.querySelector('#interaction-date') as any).value)).toBe('2026-03-15');
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('2026-03-15');
 
   await picker.locator('.clear-button').click();
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('');
   await page.evaluate(() => (document.querySelector('#date-interaction-form') as HTMLFormElement).requestSubmit());
   expect(await page.evaluate(() => (globalThis as any).__dateSubmits)).toBe(0);
   await picker.locator('.calendar-toggle').click();
   await picker.locator('[data-date="2026-03-19"]').click();
+  await expect.poll(() => picker.evaluate((element: any) => element.value)).toBe('2026-03-19');
   await page.evaluate(() => (document.querySelector('#date-interaction-form') as HTMLFormElement).requestSubmit());
-  expect(await page.evaluate(() => (globalThis as any).__dateSubmits)).toBe(1);
+  await expect.poll(() => page.evaluate(() => (globalThis as any).__dateSubmits)).toBe(1);
 
-  const fieldsetState = await page.evaluate(async () => {
+  await page.evaluate(async () => {
     const picker = document.querySelector('#interaction-date') as any;
     const fieldset = document.createElement('fieldset');
     picker.parentElement.insertBefore(fieldset, picker);
     fieldset.appendChild(picker);
     fieldset.disabled = true;
     await picker.rendered;
+  });
+  await expect.poll(() => page.evaluate(() => {
+    const picker = document.querySelector('#interaction-date') as any;
     return {
       property: picker.disabled,
       attribute: picker.hasAttribute('disabled'),
@@ -696,8 +704,7 @@ async function exerciseCustomerInteractions(page: Page) {
       toggleDisabled: picker.shadowRoot.querySelector('.calendar-toggle').disabled,
       open: picker.open
     };
-  });
-  expect(fieldsetState).toEqual({
+  })).toEqual({
     property: false,
     attribute: false,
     inputDisabled: true,

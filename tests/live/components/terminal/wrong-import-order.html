@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="/components/theme/theme.css">
   <script type="module">
     // Component BEFORE controller (wrong order - tests if bug is fixed)
-    import '/components/terminal/snice-terminal.ts';
-    import '/components/terminal/demo-terminal-controller.ts';
+    import '/packages/components/src/terminal/snice-terminal.ts';
+    import '/website/showcases/terminal/demo-terminal-controller.ts';
 
     document.addEventListener('DOMContentLoaded', () => {
       const term = document.getElementById('test-term');

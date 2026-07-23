@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Layout Navigation', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5566');
+    await page.goto('/tests/live/fixtures/layout-navigation.html');
     await page.waitForSelector('#app');
   });
 
@@ -56,7 +56,7 @@ test.describe('Layout Navigation', () => {
     
     // Get initial layout element reference
     await expect(layout).toBeVisible();
-    const initialLayoutHTML = await layout.innerHTML();
+    await layout.evaluate((element: any) => { element.__layoutIdentity = 'preserved'; });
     
     // Navigate to different page
     await page.click('a[href="#/todos"]');
@@ -64,11 +64,9 @@ test.describe('Layout Navigation', () => {
     
     // Layout should still exist and be the same element
     await expect(layout).toBeVisible();
-    const afterNavigationHTML = await layout.innerHTML();
-    
-    // Layout structure should be preserved (nav, main, etc.)
-    expect(afterNavigationHTML).toContain('nav class="navbar"');
-    expect(afterNavigationHTML).toContain('main class="main-content"');
+    expect(await layout.evaluate((element: any) => element.__layoutIdentity)).toBe('preserved');
+    await expect(layout.locator('.navbar')).toBeVisible();
+    await expect(layout.locator('.main-content')).toBeVisible();
   });
 
   test('should handle rapid navigation without errors', async ({ page }) => {
@@ -130,10 +128,10 @@ test.describe('Layout Navigation', () => {
     
     // Check that transition styles are cleaned up
     const position = await todoPage.evaluate(el => getComputedStyle(el).position);
-    const transition = await todoPage.evaluate(el => getComputedStyle(el).transition);
+    const transitionDuration = await todoPage.evaluate(el => getComputedStyle(el).transitionDuration);
     
     // Should not have transition positioning styles
     expect(position).not.toBe('absolute');
-    expect(transition).toBe('all 0s ease 0s'); // Default transition value
+    expect(transitionDuration).toBe('0s');
   });
 });

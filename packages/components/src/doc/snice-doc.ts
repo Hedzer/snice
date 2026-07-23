@@ -53,6 +53,13 @@ export class SniceDoc extends HTMLElement {
   private formatToolbarPosition: { top: number; left: number } | null = null;
   private savedSelection: Range | null = null;
 
+  private getEditorSelection(): Selection | null {
+    const shadowSelection = (this.shadowRoot as (ShadowRoot & {
+      getSelection?: () => Selection | null;
+    }) | null)?.getSelection?.();
+    return shadowSelection ?? window.getSelection();
+  }
+
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
@@ -304,6 +311,7 @@ export class SniceDoc extends HTMLElement {
   }
 
   private showImageDialog() {
+    const insertionRange = this.savedSelection?.cloneRange() ?? null;
     const dialog = document.createElement('snice-modal');
     dialog.setAttribute('title', 'Insert Image');
 
@@ -335,7 +343,7 @@ export class SniceDoc extends HTMLElement {
     insertBtn.addEventListener('click', () => {
       const url = input.value;
       if (url) {
-        this.doInsertImage(url);
+        this.doInsertImage(url, insertionRange);
       }
       dialog.remove();
     });
@@ -354,10 +362,7 @@ export class SniceDoc extends HTMLElement {
     });
   }
 
-  private doInsertImage(url: string) {
-    this.restoreSelection();
-    this.editor.focus();
-
+  private doInsertImage(url: string, insertionRange: Range | null = this.savedSelection) {
     const img = document.createElement('img');
     img.src = url;
     img.style.maxWidth = '100%';
@@ -365,22 +370,7 @@ export class SniceDoc extends HTMLElement {
     img.style.display = 'block';
     img.style.margin = '10px 0';
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-
-      if (!this.editor.contains(range.commonAncestorContainer)) {
-        this.editor.appendChild(img);
-      } else {
-        range.insertNode(img);
-        range.setStartAfter(img);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    } else {
-      this.editor.appendChild(img);
-    }
+    this.insertNodeAtSelection(img, insertionRange);
   }
 
   private insertTable() {
@@ -388,6 +378,7 @@ export class SniceDoc extends HTMLElement {
   }
 
   private showTableDialog() {
+    const insertionRange = this.savedSelection?.cloneRange() ?? null;
     const dialog = document.createElement('snice-modal');
     dialog.setAttribute('title', 'Insert Table');
 
@@ -428,7 +419,7 @@ export class SniceDoc extends HTMLElement {
     insertBtn.addEventListener('click', () => {
       const rows = parseInt(rowsInput.value) || 3;
       const cols = parseInt(colsInput.value) || 3;
-      this.doInsertTable(rows, cols);
+      this.doInsertTable(rows, cols, insertionRange);
       dialog.remove();
     });
     actions.appendChild(insertBtn);
@@ -446,10 +437,7 @@ export class SniceDoc extends HTMLElement {
     });
   }
 
-  private doInsertTable(rows: number, cols: number) {
-    this.restoreSelection();
-    this.editor.focus();
-
+  private doInsertTable(rows: number, cols: number, insertionRange: Range | null = this.savedSelection) {
     const table = document.createElement('table');
     table.style.borderCollapse = 'collapse';
     table.style.width = '100%';
@@ -467,49 +455,44 @@ export class SniceDoc extends HTMLElement {
       table.appendChild(tr);
     }
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-
-      if (!this.editor.contains(range.commonAncestorContainer)) {
-        this.editor.appendChild(table);
-      } else {
-        range.insertNode(table);
-        range.setStartAfter(table);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    } else {
-      this.editor.appendChild(table);
-    }
+    this.insertNodeAtSelection(table, insertionRange);
   }
 
   private insertDivider() {
-    this.restoreSelection();
-    this.editor.focus();
-
     const hr = document.createElement('hr');
     hr.style.margin = '20px 0';
     hr.style.border = 'none';
     hr.style.borderTop = '1px solid #e1e4e8';
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
+    this.insertNodeAtSelection(hr);
+  }
 
-      if (!this.editor.contains(range.commonAncestorContainer)) {
-        this.editor.appendChild(hr);
-      } else {
-        range.insertNode(hr);
-        range.setStartAfter(hr);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    } else {
-      this.editor.appendChild(hr);
+  private insertNodeAtSelection(node: Node, insertionRange: Range | null = this.savedSelection) {
+    const selection = this.getEditorSelection();
+    let range = insertionRange;
+
+    if (!range || !this.editor.contains(range.commonAncestorContainer)) {
+      const currentRange = selection?.rangeCount ? selection.getRangeAt(0) : null;
+      range = currentRange && this.editor.contains(currentRange.commonAncestorContainer)
+        ? currentRange
+        : null;
     }
+
+    if (!range) {
+      this.editor.appendChild(node);
+      return;
+    }
+
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.collapse(true);
+    this.savedSelection = range.cloneRange();
+
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    this.editor.focus();
   }
 
   private handlePaste = (e: ClipboardEvent) => {
@@ -531,7 +514,7 @@ export class SniceDoc extends HTMLElement {
               img.style.maxWidth = '100%';
               img.style.height = 'auto';
 
-              const selection = window.getSelection();
+              const selection = this.getEditorSelection();
               if (selection && selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 range.insertNode(img);
@@ -550,10 +533,12 @@ export class SniceDoc extends HTMLElement {
   };
 
   private saveCurrentSelection = () => {
-    const selection = window.getSelection();
+    const selection = this.getEditorSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      this.savedSelection = range.cloneRange();
+      if (this.editor.contains(range.commonAncestorContainer)) {
+        this.savedSelection = range.cloneRange();
+      }
     }
   };
 
@@ -563,7 +548,7 @@ export class SniceDoc extends HTMLElement {
 
   private restoreSelection() {
     if (this.savedSelection) {
-      const selection = window.getSelection();
+      const selection = this.getEditorSelection();
       if (selection) {
         selection.removeAllRanges();
         selection.addRange(this.savedSelection);
@@ -572,8 +557,14 @@ export class SniceDoc extends HTMLElement {
   }
 
   private handleSelectionChange = () => {
-    const selection = window.getSelection();
-    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+    // Ignore selection churn caused by toolbar and modal controls. The last
+    // editor range is the insertion point those actions must preserve.
+    if (document.querySelector('snice-modal[open]') || this.shadowRoot?.activeElement !== this.editor) {
+      return;
+    }
+
+    const selection = this.getEditorSelection();
+    if (!selection || selection.rangeCount === 0) {
       return;
     }
 
@@ -581,6 +572,8 @@ export class SniceDoc extends HTMLElement {
     if (!this.editor.contains(range.commonAncestorContainer)) {
       return;
     }
+
+    this.savedSelection = range.cloneRange();
   };
 
   /**

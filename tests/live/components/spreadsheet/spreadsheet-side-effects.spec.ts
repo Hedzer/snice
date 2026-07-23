@@ -241,17 +241,13 @@ test.describe('snice-spreadsheet — side-effects guard', () => {
     const beforeFind = await fullState(sheet);
     expect(beforeFind.findBarVisible).toBe(true);
     // Click into a body cell to defocus the find input
-    const r = await cellRect(sheet, 0, 0);
-    await page.mouse.dblclick(r!.x, r!.y);
-    await sheet.evaluate((el: any) => {
-      const input = el.shadowRoot.querySelector('.spreadsheet-input') as HTMLInputElement;
-      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
-    });
-    await page.waitForTimeout(50);
+    await sheet.locator('.spreadsheet-td[data-row="0"][data-col="0"]').dblclick();
+    await expect.poll(async () => (await fullState(sheet)).editing).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect.poll(async () => (await fullState(sheet)).editing).toBe(false);
     const after = await fullState(sheet);
     expect(after.editing).toBe(false);
-    // Find bar may have been deactivated by the edit click, that's fine — just
-    // confirm it isn't *more* visible than it was before, and no error state.
+    expect(after.findBarVisible).toBe(true);
   });
 
   // ─── Keyboard nav must not leak past the host ──────────────────────────
