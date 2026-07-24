@@ -19,7 +19,7 @@ An animated loading indicator with configurable size, color, and optional label.
 | `size` | `'small' \| 'medium' \| 'large' \| 'xl'` | `'medium'` | Spinner size |
 | `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'primary'` | Color variant |
 | `variant` | `'arc' \| 'dots' \| 'pulse' \| 'orbit' \| 'bars'` | `'arc'` | Loader shape |
-| `label` | `string` | `''` | Accessible label text displayed below the spinner. Slotted text content renders in the same spot. |
+| `label` | `string` | `''` | Accessible label text displayed below the spinner. Text placed inside the element is intentionally not rendered — use this attribute. |
 | `thickness` | `number` | `4` | Stroke thickness in pixels (applies to `arc` variant only) |
 
 ## CSS Parts

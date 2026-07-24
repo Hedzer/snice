@@ -32,7 +32,9 @@ export class SniceSpinner extends HTMLElement implements SniceSpinnerElement {
     const shell = (content: any) => html/*html*/`
       <div part="base" class="spinner spinner--${this.variant}" role="status" aria-label="${this.label || 'Loading'}">
         ${content}
-        <span part="label" class="spinner__label"><slot>${this.label}</slot></span>
+        <if ${this.label}>
+          <span part="label" class="spinner__label">${this.label}</span>
+        </if>
       </div>
     `;
 

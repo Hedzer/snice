@@ -546,10 +546,23 @@ class WeatherController {
   detach(el) {
     // Cleanup when controller is removed
   }
+}
+
+// Attach the class directly — import it, bind it, done
+@render()
+dashboard() {
+  return html`
+    &lt;stat-card controller=${WeatherController}&gt;&lt;/stat-card&gt;
+
+    &lt;!-- swap behavior: same card, different logic --&gt;
+    &lt;stat-card controller=${StocksController}&gt;&lt;/stat-card&gt;
+
+    &lt;!-- works on plain HTML elements too --&gt;
+    &lt;div controller=${WeatherController}&gt;&lt;/div&gt;
+  `;
 }</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">Attach by class in a template (preferred): <span class="h">html`&lt;stat-card <span class="a">controller</span>=<span class="s">${WeatherController}</span>&gt;&lt;/stat-card&gt;`</span></p>
-          <p class="desc">Or by name in raw HTML: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
-          <p class="desc">Swap at runtime: bind a different class (or change the attribute) and the element gets new behavior, same UI.</p>
+          <p class="desc" style="margin-top:0.75rem">Binding the same class again is a no-op; binding a different one detaches the old controller first.</p>
+          <p class="desc">In raw HTML, attach by the registered name instead: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
         </div>
 
         <div class="dec-section" id="full">

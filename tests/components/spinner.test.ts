@@ -133,20 +133,22 @@ describe('snice-spinner', () => {
       expect(spinnerDiv?.getAttribute('aria-label')).toBe('Processing');
     });
   });
-  describe('slotted text', () => {
-    it('renders slotted text as the below-ring label instead of swallowing it', async () => {
+  describe('stray text content', () => {
+    it('swallows stray light-DOM text instead of rendering it into the ring', async () => {
+      // Deliberate design: the spinner has NO slot. Text dropped inside
+      // <snice-spinner> must never render — the label attribute is the only
+      // way to caption a spinner.
       const el = document.createElement('snice-spinner');
       el.textContent = 'Crunching numbers…';
       document.body.appendChild(el);
       await new Promise(r => setTimeout(r, 50));
 
-      const slot = el.shadowRoot!.querySelector('.spinner__label slot') as HTMLSlotElement;
-      expect(slot).toBeTruthy();
-      expect(slot.assignedNodes().map(n => n.textContent).join('')).toContain('Crunching numbers…');
+      expect(el.shadowRoot!.querySelector('slot')).toBeNull();
+      expect(el.shadowRoot!.textContent).not.toContain('Crunching numbers…');
       el.remove();
     });
 
-    it('falls back to the label attribute when nothing is slotted', async () => {
+    it('captions via the label attribute only', async () => {
       const el = document.createElement('snice-spinner');
       el.setAttribute('label', 'Loading files');
       document.body.appendChild(el);
