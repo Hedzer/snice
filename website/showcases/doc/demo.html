@@ -32,18 +32,10 @@
         border-bottom: 1px solid var(--snice-color-border);
       }
 
+      /* No hardcoded --snice-doc-* overrides here: the component resolves
+         them from theme tokens, which is what keeps dark mode working. */
       snice-doc {
         flex: 1;
-        --snice-doc-background: #fff;
-        --snice-doc-text-color: #24292f;
-        --snice-doc-muted-color: #57606a;
-        --snice-doc-placeholder-color: #8c959f;
-        --snice-doc-primary-color: #0969da;
-        --snice-doc-border: #d0d7de;
-        --snice-doc-sidebar-background: #f6f8fa;
-        --snice-doc-menu-hover: #e8eaed;
-        --snice-doc-link-color: #0969da;
-        --snice-doc-inline-code-background: rgba(175, 184, 193, 0.2);
       }
     </style>
   </head>

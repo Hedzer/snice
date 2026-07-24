@@ -50,6 +50,7 @@
 
 .toolbar-btn:active {
   transform: translateY(1px);
+  background: var(--snice-doc-active-background, var(--snice-color-surface-active, rgb(227 227 227)));
 }
 
 .toolbar-divider {

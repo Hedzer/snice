@@ -293,4 +293,12 @@ describe('snice-doc', () => {
       el.remove();
     });
   });
+
+  describe('toolbar pressed state', () => {
+    it('should give toolbar buttons a pressed background, not just a nudge', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/doc/snice-doc.css'), 'utf8');
+      const active = css.match(/\.toolbar-btn:active\s*\{[^}]*\}/);
+      expect(active?.[0] ?? '').toContain('background');
+    });
+  });
 });
