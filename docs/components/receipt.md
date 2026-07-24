@@ -34,7 +34,7 @@ A transaction receipt component for displaying purchase details with merchant in
 | `discountLabel` (attr: `discount-label`) | `string` | `'Discount'` | Label for discount line |
 | `paymentMethod` (attr: `payment-method`) | `string` | `''` | Payment method text |
 | `paymentDetails` (attr: `payment-details`) | `string` | `''` | Additional payment info |
-| `variant` | `'standard' \| 'thermal' \| 'modern' \| 'minimal' \| 'detailed' \| 'paper'` | `'standard'` | Visual style variant. `paper` renders a textural certificate template |
+| `variant` | `'standard' \| 'thermal' \| 'modern' \| 'minimal' \| 'detailed' \| 'paper' \| 'ink' \| 'ledger' \| 'ticket'` | `'standard'` | Visual style variant. `paper`/`ink`/`ledger`/`ticket` render the document template family (certificate frame, masthead band, typewriter ledger, stub ticket) |
 | `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code slot |
 | `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
 | `qrPosition` (attr: `qr-position`) | `'top' \| 'bottom' \| 'footer'` | `'bottom'` | QR code placement |

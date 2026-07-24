@@ -31,7 +31,7 @@ A service work order component with task checklists, parts/materials tracking, t
 | `asset` | `WorkOrderAsset \| null` | `null` | Equipment/asset information |
 | `laborRate` (attr: `labor-rate`) | `number` | `0` | Hourly labor rate for calculations |
 | `notes` | `string` | `''` | Additional notes |
-| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed' \| 'paper'` | `'standard'` | Visual style variant. `paper` renders a textural shop-ticket template |
+| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed' \| 'paper' \| 'ink' \| 'ledger' \| 'ticket'` | `'standard'` | Visual style variant. `paper`/`ink`/`ledger`/`ticket` render the document template family (certificate frame, masthead band, typewriter ledger, stub ticket) |
 | `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code placeholder |
 | `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
 | `qrPosition` (attr: `qr-position`) | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |
