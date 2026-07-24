@@ -307,3 +307,12 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+.icon--svg {
+  display: flex;
+}
+
+.icon--svg svg {
+  width: 1rem;
+  height: 1rem;
+}

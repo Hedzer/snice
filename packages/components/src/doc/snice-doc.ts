@@ -1,5 +1,6 @@
 import { element, property, styles, ready, dispose, reconnect, css } from 'snice';
 import cssContent from './snice-doc.css?inline';
+import { ICONS } from '../icons';
 import type { DocIconSet, DocDownloadFormat } from './snice-doc.types.js';
 
 type IconSet = DocIconSet;
@@ -10,6 +11,12 @@ interface ToolDef {
   icon?: string;
   title?: string;
 }
+
+// Pictographic buttons in the default set render embedded registry SVGs;
+// letter glyphs (B, I, H1…) stay text — they are the editor convention.
+const DEFAULT_SVG_ICONS: Record<string, string> = {
+  link: 'link', image: 'photo', table: 'table-cells', divider: 'minus', download: 'arrow-down-tray',
+};
 
 const ICON_MAP: Record<IconSet, Record<string, string>> = {
   default: {
@@ -138,7 +145,18 @@ export class SniceDoc extends HTMLElement {
       i.setAttribute('part', 'icon');
       btn.appendChild(i);
     } else {
-      btn.textContent = iconValue;
+      const registryName = DEFAULT_SVG_ICONS[icon];
+      const svg = registryName ? (ICONS as Record<string, string>)[registryName] : undefined;
+      if (svg) {
+        const span = document.createElement('span');
+        span.className = 'icon--svg';
+        span.setAttribute('part', 'icon');
+        // Registry values are our own static SVG constants — safe to inject.
+        span.innerHTML = svg;
+        btn.appendChild(span);
+      } else {
+        btn.textContent = iconValue;
+      }
     }
 
     return btn;

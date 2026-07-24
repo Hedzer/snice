@@ -45,7 +45,7 @@ describe('registry covers the showcase icon vocabulary', () => {
     'user', 'clipboard', 'bug-ant', 'calendar-days', 'sparkles', 'bell-alert',
     'cube', 'banknotes', 'cake', 'paint-brush', 'gift',
     'folder', 'document-text', 'bell', 'link', 'phone', 'computer-desktop',
-    'musical-note', 'lock-closed',
+    'musical-note', 'lock-closed', 'table-cells', 'minus',
   ];
 
   it('resolves every required icon name to an SVG', async () => {

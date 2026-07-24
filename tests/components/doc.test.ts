@@ -265,4 +265,32 @@ describe('snice-doc', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('toolbar icons', () => {
+    it('should render svg icons in the default set, not emoji', async () => {
+      const el = document.createElement('snice-doc') as any;
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 80));
+
+      const imageBtn = el.shadowRoot.querySelector('button[title="Insert Image"]');
+      expect(imageBtn?.querySelector('svg')).toBeTruthy();
+      expect(imageBtn?.textContent).not.toContain('\u{1F5BC}');
+
+      const downloadBtn = el.shadowRoot.querySelector('button[title="Download"]');
+      expect(downloadBtn?.querySelector('svg')).toBeTruthy();
+      el.remove();
+    });
+
+    it('should keep letter glyphs for text-format buttons', async () => {
+      const el = document.createElement('snice-doc') as any;
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 80));
+
+      const boldBtn = el.shadowRoot.querySelector('button[title^="Bold"]');
+      expect(boldBtn?.textContent?.trim()).toBe('B');
+      el.remove();
+    });
+  });
 });
