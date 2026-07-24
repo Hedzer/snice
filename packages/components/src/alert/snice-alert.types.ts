@@ -9,6 +9,7 @@ export interface SniceAlertElement extends HTMLElement {
   title: string;
   dismissible: boolean;
   icon: string;
+  duration: number;
   show(): void;
   hide(): void;
 }

@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/alert/snice-alert';
 import type { SniceAlertElement } from '../../packages/components/src/alert/snice-alert.types';
@@ -259,6 +261,76 @@ describe('snice-alert', () => {
 
       const dismissBtn = queryShadow(alert as HTMLElement, '.alert-dismiss');
       expect(dismissBtn).toBeTruthy();
+    });
+  });
+
+  describe('native tooltip suppression', () => {
+    it('should not leave a title attribute on the host after upgrade', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert', { title: 'Heads up' });
+      await wait(50);
+
+      expect((alert as HTMLElement).hasAttribute('title')).toBe(false);
+      expect(queryShadow(alert as HTMLElement, '.alert-title')?.textContent?.trim()).toBe('Heads up');
+    });
+
+    it('should not reflect a title attribute when the property is set from JS', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert');
+      alert.title = 'Programmatic';
+      await wait(50);
+
+      expect((alert as HTMLElement).hasAttribute('title')).toBe(false);
+      expect(queryShadow(alert as HTMLElement, '.alert-title')?.textContent?.trim()).toBe('Programmatic');
+    });
+  });
+
+  describe('auto-dismiss duration', () => {
+    it('should start hiding after the configured duration', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert', { duration: 80 });
+      await wait(400);
+
+      const el = queryShadow(alert as HTMLElement, '.alert');
+      const classes = el?.className ?? '';
+      expect(classes.includes('alert--hiding') || classes.includes('alert--hidden')).toBe(true);
+    });
+
+    it('should not auto-dismiss when duration is 0', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert');
+      await wait(300);
+
+      const classes = queryShadow(alert as HTMLElement, '.alert')?.className ?? '';
+      expect(classes.includes('alert--hiding')).toBe(false);
+      expect(classes.includes('alert--hidden')).toBe(false);
+    });
+
+    it('should pause the countdown while hovered', async () => {
+      alert = await createComponent<SniceAlertElement>('snice-alert', { duration: 120 });
+      await wait(30);
+      (alert as HTMLElement).dispatchEvent(new Event('mouseenter'));
+      await wait(400);
+
+      let classes = queryShadow(alert as HTMLElement, '.alert')?.className ?? '';
+      expect(classes.includes('alert--hiding')).toBe(false);
+
+      (alert as HTMLElement).dispatchEvent(new Event('mouseleave'));
+      await wait(400);
+
+      classes = queryShadow(alert as HTMLElement, '.alert')?.className ?? '';
+      expect(classes.includes('alert--hiding') || classes.includes('alert--hidden')).toBe(true);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/alert/snice-alert.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

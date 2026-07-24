@@ -22,8 +22,9 @@ Displays notification messages to provide user feedback for informational, succe
 | `variant` | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'` | Visual style variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Alert size |
 | `appearance` | `'filled' \| 'accent'` | `'filled'` | `'accent'` uses a neutral background + colored left bar (editorial, Notion/Linear-style) |
-| `title` | `string` | `''` | Optional title text |
+| `title` | `string` | `''` | Optional title text (consumed from the host so no native tooltip appears) |
 | `dismissible` | `boolean` | `false` | Show dismiss button |
+| `duration` | `number` | `0` | Auto-dismiss after this many milliseconds; `0` disables. The countdown pauses while hovered |
 | `icon` | `string` | `''` | Custom icon (URL, image file, emoji) or `'none'` to hide. Use slot for icon fonts. |
 
 ## Methods

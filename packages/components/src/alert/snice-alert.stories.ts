@@ -80,6 +80,23 @@ export const AllVariants: Story = {
   ),
 };
 
+// h2: Accent appearance (neutral background, colored left bar)
+export const AccentAppearance: Story = {
+  render: () => col(
+    makeAlert('info',    'Accent info alert.',    { appearance: 'accent', title: 'Heads up' }),
+    makeAlert('success', 'Accent success alert.', { appearance: 'accent', title: 'Deployed' }),
+    makeAlert('warning', 'Accent warning alert.', { appearance: 'accent', title: 'Disk space low' }),
+    makeAlert('error',   'Accent error alert.',   { appearance: 'accent', title: 'Build failed' }),
+  ),
+};
+
+// h2: Auto-dismiss with duration (hover to pause)
+export const AutoDismissWithDuration: Story = {
+  render: () => col(
+    makeAlert('success', 'Dismisses itself in 5 seconds — hover to pause.', { duration: '5000', dismissible: true, title: 'Saved' }),
+  ),
+};
+
 // h2: All sizes
 export const AllSizes: Story = {
   render: () => col(

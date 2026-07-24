@@ -1,4 +1,4 @@
-import { element, property, query, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, query, watch, ready, dispose, on, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
 import { renderIcon } from '../utils';
 import { INFO_CIRCLE_SOLID, CHECK_CIRCLE_SOLID, EXCLAMATION_TRIANGLE_SOLID, X_CIRCLE_SOLID } from '../icons';
 import cssContent from './snice-alert.css?inline';
@@ -15,7 +15,9 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   @property({  })
   appearance: AlertAppearance = 'filled';
 
-  @property({  })
+  // No reflection: a `title` attribute on the host would double as a native
+  // browser tooltip over the whole alert.
+  @property({ reflect: false })
   title = '';
 
   @property({ type: Boolean,  })
@@ -24,10 +26,18 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   @property({  })
   icon = '';
 
+  // Auto-dismiss after this many milliseconds; 0 disables. The countdown
+  // pauses while the pointer is over the alert.
+  @property({ type: Number })
+  duration = 0;
+
   @query('.alert')
   alertElement?: HTMLElement;
 
   private isHidden = false;
+  private dismissTimer: ReturnType<typeof setTimeout> | null = null;
+  private countdownStartedAt = 0;
+  private countdownRemaining = 0;
 
   @render()
   render() {
@@ -80,6 +90,79 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
   private shouldShowDefaultIcon(): boolean {
     // Show default icons for variants unless explicitly disabled
     return this.icon !== 'none';
+  }
+
+  @ready()
+  init() {
+    this.stripNativeTooltip();
+    this.startCountdown();
+  }
+
+  @dispose()
+  cleanup() {
+    this.clearCountdown();
+  }
+
+  // A `title` attribute on the host paints a native tooltip over the whole
+  // alert. Accept it as input, then remove it — the property keeps the value.
+  @watch('title')
+  handleTitleChange() {
+    this.stripNativeTooltip();
+  }
+
+  private stripNativeTooltip() {
+    if (!this.hasAttribute('title')) return;
+
+    const value = this.title || this.getAttribute('title') || '';
+    this.removeAttribute('title');
+    if (this.title !== value) {
+      this.title = value;
+    }
+  }
+
+  @watch('duration', { immediate: false })
+  handleDurationChange() {
+    this.startCountdown();
+  }
+
+  @on('mouseenter')
+  pauseCountdown() {
+    if (this.dismissTimer === null) return;
+
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = null;
+    this.countdownRemaining = Math.max(0, this.countdownRemaining - (Date.now() - this.countdownStartedAt));
+  }
+
+  @on('mouseleave')
+  resumeCountdown() {
+    if (this.duration > 0 && !this.isHidden && this.countdownRemaining > 0) {
+      this.armCountdown(this.countdownRemaining);
+    }
+  }
+
+  private startCountdown() {
+    this.clearCountdown();
+    if (this.duration > 0 && !this.isHidden) {
+      this.armCountdown(this.duration);
+    }
+  }
+
+  private armCountdown(ms: number) {
+    this.countdownStartedAt = Date.now();
+    this.countdownRemaining = ms;
+    this.dismissTimer = setTimeout(() => {
+      this.dismissTimer = null;
+      this.hide();
+    }, ms);
+  }
+
+  private clearCountdown() {
+    if (this.dismissTimer !== null) {
+      clearTimeout(this.dismissTimer);
+      this.dismissTimer = null;
+    }
+    this.countdownRemaining = 0;
   }
 
   /**
@@ -139,10 +222,12 @@ export class SniceAlert extends HTMLElement implements SniceAlertElement {
     if (this.alertElement) {
       this.alertElement.classList.remove('alert--hidden', 'alert--hiding');
     }
+    this.startCountdown();
     this.dispatchAlertShown();
   }
 
   hide() {
+    this.clearCountdown();
     if (this.alertElement && !this.isHidden) {
       this.alertElement.classList.add('alert--hiding');
     }

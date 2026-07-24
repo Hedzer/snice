@@ -10,6 +10,7 @@ size: 'small'|'medium'|'large' = 'medium';
 appearance: 'filled'|'accent' = 'filled';  // 'accent' = neutral bg + colored left bar (editorial)
 title: string = '';
 dismissible: boolean = false;
+duration: number = 0;                      // ms until auto-dismiss, 0 = off; countdown pauses on hover
 icon: string = '';   // URL, emoji, or 'none'. Use icon slot for icon fonts.
 ```
 

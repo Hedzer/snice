@@ -75,6 +75,24 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <section>
+    <h2>Accent appearance (neutral background, colored left bar)</h2>
+    <div class="stack">
+      <snice-alert appearance="accent" variant="info" title="Heads up">Accent info alert.</snice-alert>
+      <snice-alert appearance="accent" variant="success" title="Deployed">Accent success alert.</snice-alert>
+      <snice-alert appearance="accent" variant="warning" title="Disk space low">Accent warning alert.</snice-alert>
+      <snice-alert appearance="accent" variant="error" title="Build failed">Accent error alert.</snice-alert>
+    </div>
+  </section>
+
+  <section>
+    <h2>Auto-dismiss with duration (hover to pause)</h2>
+    <div class="stack">
+      <button id="spawn-timed-alert" style="align-self:flex-start">Show a 5s alert</button>
+      <div id="timed-alert-slot"></div>
+    </div>
+  </section>
+
+  <section>
     <h2>All sizes</h2>
     <div class="stack">
       <snice-alert variant="info" size="small">Small alert.</snice-alert>
@@ -191,6 +209,18 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <script type="module">
     import '../../../packages/components/src/alert/snice-alert.ts';
+
+    document.getElementById('spawn-timed-alert').addEventListener('click', () => {
+      const slot = document.getElementById('timed-alert-slot');
+      slot.innerHTML = '';
+      const el = document.createElement('snice-alert');
+      el.setAttribute('variant', 'success');
+      el.setAttribute('duration', '5000');
+      el.setAttribute('dismissible', '');
+      el.setAttribute('title', 'Saved');
+      el.textContent = 'This alert dismisses itself in 5 seconds — hover it to pause the countdown.';
+      slot.appendChild(el);
+    });
   </script>
 </body>
 </html>
