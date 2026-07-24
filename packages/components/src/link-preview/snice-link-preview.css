@@ -58,7 +58,7 @@
 }
 
 .link-preview__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--snice-color-text, rgb(23 23 23));
   line-height: var(--snice-line-height-normal, 1.5);
@@ -147,7 +147,7 @@
 /* ── Size: small ── */
 
 :host([size="small"]) .link-preview__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-xs, 0.875rem);
   -webkit-line-clamp: 1;
 }
@@ -190,7 +190,7 @@
 
 :host([size="medium"]) .link-preview__title,
 :host(:not([size])) .link-preview__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-sm, 1rem);
 }
 
@@ -202,7 +202,7 @@
 /* ── Size: large ── */
 
 :host([size="large"]) .link-preview__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-md, 1.125rem);
 }
 
@@ -226,4 +226,11 @@
 .link-preview:focus-visible {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
