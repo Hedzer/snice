@@ -3,6 +3,7 @@ import type { PodcastEpisode, PodcastChapter, RSSFeedData, PodcastPlayerState, S
 import playerStyles from './snice-podcast-player.css?inline';
 
 const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const SEEK_STEP_SECONDS = 5;
 const SLEEP_OPTIONS = [0, 5, 10, 15, 30, 45, 60]; // minutes
 const STORAGE_KEY_PREFIX = 'snice-podcast-position-';
 
@@ -13,7 +14,7 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
   @property({ attribute: 'from-rss' })
   fromRss: string = '';
 
-  @property({ attribute: false }) title: string = '';
+  @property({ attribute: 'episode-title' }) title: string = '';
   @property() show: string = '';
   @property() artwork: string = '';
   @property() description: string = '';
@@ -282,63 +283,71 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
 
           <div class="podcast-progress-container">
             <span class="podcast-time podcast-time-current">${this.formatTime(this.currentTime)}</span>
-            <div class="podcast-progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
+            <div class="podcast-progress"
+                 role="slider"
+                 tabindex="0"
+                 aria-label="Seek"
+                 aria-valuemin="0"
+                 aria-valuemax="${Math.floor(this.duration)}"
+                 aria-valuenow="${Math.floor(this.currentTime)}"
+                 aria-valuetext="${this.formatTime(this.currentTime)} of ${this.formatTime(this.duration)}"
+                 @click=${(e: MouseEvent) => this.handleSeek(e)}
+                 @keydown=${(e: KeyboardEvent) => this.handleSeekKeydown(e)}>
               <div class="podcast-progress-bar" style="width: ${progress}%"></div>
             </div>
             <span class="podcast-time podcast-time-remaining">-${this.formatTime(this.duration - this.currentTime)}</span>
+            <div class="podcast-volume">
+              <button
+                class="podcast-btn"
+                @click=${() => this.toggleVolumeSlider()}
+                aria-label="Volume"                title="Volume"
+              >
+                <if ${isMutedOrZero}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <line x1="23" y1="9" x2="17" y2="15"/>
+                    <line x1="17" y1="9" x2="23" y2="15"/>
+                  </svg>
+                </if>
+                <if ${isHighVolume}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  </svg>
+                </if>
+                <if ${!isMutedOrZero && !isHighVolume}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  </svg>
+                </if>
+              </button>
+              <if ${showVolSlider}>
+                <div class="podcast-volume-slider-container">
+                  <input
+                    class="podcast-volume-slider"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    .value=${this.volume.toString()}
+                    style="--volume-percent: ${this.volume * 100}%"
+                    @input=${(e: Event) => this.handleVolumeInput(e)}
+                  />
+                </div>
+              </if>
+            </div>
           </div>
         </div>
 
-        <div class="podcast-bottom-bar">
-          <div class="podcast-volume">
-            <button
-              class="podcast-btn"
-              @click=${() => this.toggleVolumeSlider()}
-              aria-label="Volume"              title="Volume"
-            >
-              <if ${isMutedOrZero}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <line x1="23" y1="9" x2="17" y2="15"/>
-                  <line x1="17" y1="9" x2="23" y2="15"/>
-                </svg>
-              </if>
-              <if ${isHighVolume}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                </svg>
-              </if>
-              <if ${!isMutedOrZero && !isHighVolume}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                </svg>
-              </if>
-            </button>
-            <if ${showVolSlider}>
-              <div class="podcast-volume-slider-container">
-                <input
-                  class="podcast-volume-slider"
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  .value=${this.volume.toString()}
-                  style="--volume-percent: ${this.volume * 100}%"
-                  @input=${(e: Event) => this.handleVolumeInput(e)}
-                />
-              </div>
-            </if>
-          </div>
-
-          <if ${hasSleepTimer}>
+        <if ${hasSleepTimer}>
+          <div class="podcast-bottom-bar">
             <div class="podcast-sleep">
               <span class="podcast-sleep-label">Sleep in</span>
               <span class="podcast-sleep-time">${this.formatTime(this.sleepTimerRemaining)}</span>
             </div>
-          </if>
-        </div>
+          </div>
+        </if>
 
         <if ${hasChapters}>
           <div class="podcast-chapters">
@@ -605,6 +614,34 @@ export class SnicePodcastPlayer extends HTMLElement implements SnicePodcastPlaye
       this.sleepTimerInterval = null;
     }
     this.sleepTimerRemaining = 0;
+  }
+
+  private handleSeekKeydown(e: KeyboardEvent): void {
+    let target: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        target = this.currentTime + SEEK_STEP_SECONDS;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        target = this.currentTime - SEEK_STEP_SECONDS;
+        break;
+      case 'Home':
+        target = 0;
+        break;
+      case 'End':
+        target = this.duration;
+        break;
+    }
+
+    if (target === null) return;
+
+    e.preventDefault();
+    if (target < 0) target = 0;
+    if (this.duration > 0 && target > this.duration) target = this.duration;
+    this.seekTo(target);
   }
 
   private handleSeek(e: MouseEvent): void {

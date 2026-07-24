@@ -21,7 +21,7 @@ A full-featured podcast player with playback controls, playback speed adjustment
 |----------|------|---------|-------------|
 | `src` | `string` | `''` | Audio source URL for direct playback |
 | `fromRss` (attr: `from-rss`) | `string` | `''` | RSS feed URL. Fetches and displays episode list automatically |
-| `title` | `string` | `''` | Episode title |
+| `title` (attr: `episode-title`) | `string` | `''` | Episode title |
 | `show` | `string` | `''` | Show or podcast name |
 | `artwork` | `string` | `''` | Artwork image URL |
 | `description` | `string` | `''` | Episode description |
@@ -87,7 +87,7 @@ import 'snice/components/podcast-player/snice-podcast-player';
 ```html
 <snice-podcast-player
   src="/audio/episode.mp3"
-  title="Episode 1"
+  episode-title="Episode 1"
   show="My Podcast"
   artwork="/images/cover.jpg"
 ></snice-podcast-player>

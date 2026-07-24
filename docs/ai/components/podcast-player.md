@@ -7,7 +7,7 @@ Full-featured podcast player with playback controls, episode list, chapters, RSS
 ```typescript
 src: string = '';                                    // Audio source URL
 fromRss: string = '';                                // RSS feed URL (attr: from-rss)
-title: string = '';                                  // Episode title
+title: string = '';                                  // Episode title (attr: episode-title)
 show: string = '';                                   // Show/podcast name
 artwork: string = '';                                // Artwork image URL
 description: string = '';                            // Episode description
@@ -52,7 +52,7 @@ sleepTimer: number = 0;                              // Sleep timer minutes (att
 ## Basic Usage
 
 ```html
-<snice-podcast-player src="/audio/episode.mp3" title="Episode 1" show="My Podcast"></snice-podcast-player>
+<snice-podcast-player src="/audio/episode.mp3" episode-title="Episode 1" show="My Podcast"></snice-podcast-player>
 ```
 
 ```typescript
