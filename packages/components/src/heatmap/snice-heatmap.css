@@ -12,31 +12,31 @@
    * distinct step on the hue's brightness axis. These auto-invert in dark
    * mode because the primitives themselves are theme-aware if overridden
    * by presets, but default primitives are shared. */
-  --heatmap-green-1: hsl(var(--snice-color-green-100));
-  --heatmap-green-2: hsl(var(--snice-color-green-300));
-  --heatmap-green-3: hsl(var(--snice-color-green-500));
-  --heatmap-green-4: hsl(var(--snice-color-green-700));
+  --heatmap-green-1: hsl(var(--snice-color-green-100, 141 84% 93%));
+  --heatmap-green-2: hsl(var(--snice-color-green-300, 142 77% 73%));
+  --heatmap-green-3: hsl(var(--snice-color-green-500, 142 71% 45%));
+  --heatmap-green-4: hsl(var(--snice-color-green-700, 142 72% 29%));
 
-  --heatmap-blue-1: hsl(var(--snice-color-blue-100));
-  --heatmap-blue-2: hsl(var(--snice-color-blue-300));
-  --heatmap-blue-3: hsl(var(--snice-color-blue-500));
-  --heatmap-blue-4: hsl(var(--snice-color-blue-700));
+  --heatmap-blue-1: hsl(var(--snice-color-blue-100, 214 95% 93%));
+  --heatmap-blue-2: hsl(var(--snice-color-blue-300, 212 96% 78%));
+  --heatmap-blue-3: hsl(var(--snice-color-blue-500, 217 91% 60%));
+  --heatmap-blue-4: hsl(var(--snice-color-blue-700, 217 77% 48%));
 
   /* Purple scheme (falls back to blue if no purple primitives shipped) */
-  --heatmap-purple-1: hsl(var(--snice-color-blue-100));
-  --heatmap-purple-2: hsl(var(--snice-color-blue-400));
-  --heatmap-purple-3: hsl(var(--snice-color-blue-600));
-  --heatmap-purple-4: hsl(var(--snice-color-blue-800));
+  --heatmap-purple-1: hsl(var(--snice-color-blue-100, 214 95% 93%));
+  --heatmap-purple-2: hsl(var(--snice-color-blue-400, 213 94% 68%));
+  --heatmap-purple-3: hsl(var(--snice-color-blue-600, 217 83% 53%));
+  --heatmap-purple-4: hsl(var(--snice-color-blue-800, 217 71% 40%));
 
-  --heatmap-orange-1: hsl(var(--snice-color-yellow-100));
-  --heatmap-orange-2: hsl(var(--snice-color-yellow-300));
-  --heatmap-orange-3: hsl(var(--snice-color-yellow-500));
-  --heatmap-orange-4: hsl(var(--snice-color-yellow-700));
+  --heatmap-orange-1: hsl(var(--snice-color-yellow-100, 55 97% 88%));
+  --heatmap-orange-2: hsl(var(--snice-color-yellow-300, 50 98% 64%));
+  --heatmap-orange-3: hsl(var(--snice-color-yellow-500, 45 93% 47%));
+  --heatmap-orange-4: hsl(var(--snice-color-yellow-700, 36 88% 33%));
 
-  --heatmap-red-1: hsl(var(--snice-color-red-100));
-  --heatmap-red-2: hsl(var(--snice-color-red-300));
-  --heatmap-red-3: hsl(var(--snice-color-red-500));
-  --heatmap-red-4: hsl(var(--snice-color-red-700));
+  --heatmap-red-1: hsl(var(--snice-color-red-100, 0 93% 94%));
+  --heatmap-red-2: hsl(var(--snice-color-red-300, 0 94% 82%));
+  --heatmap-red-3: hsl(var(--snice-color-red-500, 0 84% 60%));
+  --heatmap-red-4: hsl(var(--snice-color-red-700, 0 74% 42%));
 }
 
 .heatmap {
@@ -208,4 +208,11 @@
   pointer-events: none;
   box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
   line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
