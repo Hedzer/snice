@@ -22,13 +22,13 @@
 }
 
 .drop-zone:hover:not(.drop-zone--disabled) {
-  border-color: var(--snice-color-primary);
-  background: var(--snice-color-surface-hover);
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-surface-hover, rgb(242 242 242));
 }
 
 .drop-zone--drag-over {
-  border-color: var(--snice-color-primary);
-  background: var(--snice-color-primary-subtle);
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
 }
 
 .drop-zone--disabled {
@@ -82,7 +82,7 @@
 
 /* Gallery Header */
 .gallery-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,7 +90,7 @@
 }
 
 .gallery-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-sm, 1rem);
   font-weight: var(--snice-font-weight-medium, 500);
   color: var(--snice-color-text, rgb(23 23 23));
@@ -116,8 +116,8 @@
 }
 
 .gallery-action-button:hover {
-  background: var(--snice-color-surface-hover);
-  border-color: var(--snice-color-border-hover);
+  background: var(--snice-color-surface-hover, rgb(242 242 242));
+  border-color: var(--snice-color-border-hover, hsl(0 0% 64%));
 }
 
 .gallery-action-button svg {
@@ -176,7 +176,7 @@
 .gallery-item-preview {
   position: relative;
   aspect-ratio: 1;
-  background: var(--snice-color-surface-container-low);
+  background: var(--snice-color-surface-container-low, hsl(0 0% 98%));
   overflow: hidden;
 }
 
@@ -213,7 +213,7 @@
   left: 0;
   right: 0;
   height: 0.25rem;
-  background: var(--snice-color-surface-container);
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
 }
 
 .gallery-item-progress-bar {
@@ -364,7 +364,7 @@
 }
 
 .gallery-item-action:hover {
-  background: var(--snice-color-surface-hover);
+  background: var(--snice-color-surface-hover, rgb(242 242 242));
 }
 
 .gallery-item-action--delete {
@@ -372,7 +372,7 @@
 }
 
 .gallery-item-action--delete:hover {
-  background: var(--snice-color-danger-subtle);
+  background: var(--snice-color-danger-subtle, hsl(0 86% 97%));
 }
 
 .gallery-item-action svg {
@@ -389,8 +389,8 @@
 }
 
 .gallery-item--add-button:hover:not(.gallery-item--disabled) {
-  border-color: var(--snice-color-primary);
-  background: var(--snice-color-primary-subtle);
+  border-color: var(--snice-color-primary, rgb(37 99 235));
+  background: var(--snice-color-primary-subtle, hsl(214 100% 97%));
 }
 
 .gallery-item--add-button.gallery-item--disabled {
@@ -405,4 +405,11 @@
 .gallery-item--add-button .gallery-item-name {
   color: var(--snice-color-primary, rgb(37 99 235));
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
