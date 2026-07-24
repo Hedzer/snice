@@ -499,6 +499,57 @@ describe('element recommendation docs pointers', () => {
   });
 });
 
+describe('snice/request-respond-pairing', () => {
+  const rule = (files: Record<string, string>) =>
+    analyzeProject(files).filter(diagnostic => diagnostic.ruleId === 'snice/request-respond-pairing');
+
+  it('rejects a request with no responder anywhere in the project', () => {
+    const diagnostics = rule({
+      'src/pages/plants.ts': [
+        "import { element, request } from 'snice';",
+        "@element('plants-page')",
+        'class PlantsPage extends HTMLElement {',
+        "  @request('get-plants')",
+        '  async fetchPlants() {}',
+        '}'
+      ].join('\n')
+    });
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain("get-plants");
+    expect(diagnostics[0].message).toContain('50ms');
+    expect(diagnostics[0].fix).toContain('docs/ai/decorators.md');
+  });
+
+  it('accepts a request paired with a responder in another file', () => {
+    const diagnostics = rule({
+      'src/pages/plants.ts': "@element('plants-page')\nclass PlantsPage extends HTMLElement {\n  @request('get-plants')\n  async fetchPlants() {}\n}",
+      'src/controllers/plants.ts': "@controller('plants')\nclass PlantController {\n  @respond('get-plants')\n  async handlePlants() {}\n}"
+    });
+    expect(diagnostics).toEqual([]);
+  });
+
+  it('accepts an explicitly optional request without a responder', () => {
+    const diagnostics = rule({
+      'src/pages/plants.ts': "@element('plants-page')\nclass PlantsPage extends HTMLElement {\n  @request('get-plants', { optional: true })\n  async fetchPlants() {}\n}"
+    });
+    expect(diagnostics).toEqual([]);
+  });
+
+  it('ignores dynamically named requests', () => {
+    const diagnostics = rule({
+      'src/pages/plants.ts': "@element('plants-page')\nclass PlantsPage extends HTMLElement {\n  @request(channel)\n  async fetch() {}\n}"
+    });
+    expect(diagnostics).toEqual([]);
+  });
+
+  it('reports once per channel per file', () => {
+    const diagnostics = rule({
+      'src/pages/plants.ts': "@element('plants-page')\nclass PlantsPage extends HTMLElement {\n  @request('get-plants')\n  async one() {}\n  @request('get-plants')\n  async two() {}\n  @request('get-history')\n  async three() {}\n}"
+    });
+    expect(diagnostics).toHaveLength(2);
+  });
+});
+
 describe('non-source content detection', () => {
   it('reports only the non-source error and suppresses other rules', () => {
     const transcript = "User:\nWrite a modal.\n\nAssistant:\n```typescript\nexport const view = html`<dialog>Hi</dialog>`;\n```";

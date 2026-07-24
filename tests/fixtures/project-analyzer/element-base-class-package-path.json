@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "producer": "element-base-class-and-package-path",
+  "cases": [
+    {
+      "name": "element-class-without-extends",
+      "filename": "src/plant-card.ts",
+      "source": "import { element } from 'snice';\n@element('plant-card')\nexport class PlantCard {\n  render() { return null; }\n}",
+      "expectedRuleIds": ["snice/element-base-class"]
+    },
+    {
+      "name": "element-class-with-options-and-no-extends",
+      "filename": "src/waterer.ts",
+      "source": "import { element } from 'snice';\n@element('watering-waterer', { formAssociated: true })\nexport class WateringWaterer {\n  name = '';\n}",
+      "expectedRuleIds": ["snice/element-base-class"]
+    },
+    {
+      "name": "element-class-extending-html-element-is-clean",
+      "filename": "src/plant-card.ts",
+      "source": "import { element } from 'snice';\n@element('plant-card')\nexport class PlantCard extends HTMLElement {\n  render() { return null; }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "element-class-extending-snice-element-is-clean",
+      "filename": "src/plant-card.ts",
+      "source": "import { element, SniceElement } from 'snice';\n@element('plant-card')\nexport class PlantCard extends SniceElement {\n  render() { return null; }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "element-subclass-is-clean",
+      "filename": "src/fancy-input.ts",
+      "source": "import { element } from 'snice';\nimport { SniceInput } from 'snice/components/input/snice-input';\n@element('fancy-input')\nexport class FancyInput extends SniceInput {}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "invented-decorators-deep-path",
+      "filename": "src/app.ts",
+      "source": "import { customElement } from 'snice/decorators';\nexport const x = 1;",
+      "expectedRuleIds": ["snice/package-path"]
+    },
+    {
+      "name": "invented-react-deep-module",
+      "filename": "src/app.tsx",
+      "source": "import { Magic } from 'snice/react/magic';\nexport const x = 1;",
+      "expectedRuleIds": ["snice/package-path"]
+    },
+    {
+      "name": "released-package-paths-are-clean",
+      "filename": "src/app.ts",
+      "source": "import { html } from 'snice';\nimport { symbols } from 'snice/symbols';\nimport { transitions } from 'snice/transitions';\nimport { useRequestHandler } from 'snice/react/useRequestHandler';\nimport { Button } from 'snice/react/button';\nimport 'snice/components/button/snice-button';\nexport const x = 1;",
+      "expectedRuleIds": []
+    }
+  ]
+}

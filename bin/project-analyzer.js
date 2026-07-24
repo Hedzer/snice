@@ -17,6 +17,7 @@ const REACT_WRAPPERS = ANALYZER_CONTRACTS.react.wrappers;
 const ROOT_EXPORTS = new Set(ANALYZER_CONTRACTS.rootExports);
 const REACT_EXPORTS = new Set(ANALYZER_CONTRACTS.react.exports);
 const REACT_TYPE_EXPORTS = new Set(ANALYZER_CONTRACTS.react.typeExports ?? []);
+const REACT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.react.modulePaths ?? []);
 const COMPONENT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentModulePaths);
 const COMPONENT_TYPE_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentTypeModulePaths);
 const COMPONENT_RECOMMENDATIONS = Object.freeze({
@@ -240,6 +241,22 @@ const RULE_DEFINITIONS = [
             fix: `Use @${binding.local}('snice-tag') directly above a class that extends HTMLElement (or SniceElement). Review docs/ai/decorators.md.`
           });
         }
+      }
+    }
+  },
+  {
+    id: 'snice/element-base-class',
+    severity: 'error',
+    category: 'framework',
+    description: 'Require @element/@layout classes to extend HTMLElement (or a Snice element subclass).',
+    check(context) {
+      const pattern = /@(?:element|layout)\s*\(\s*['"][^'"]+['"](?:\s*,[\s\S]*?)?\)\s*(?:export\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)\s*([^{]*)\{/g;
+      for (const match of context.source.matchAll(pattern)) {
+        if (/\bextends\b/.test(match[2])) continue;
+        context.report(match.index, {
+          message: `@element-decorated class ${match[1]} does not extend a base element class.`,
+          fix: 'Extend HTMLElement (or SniceElement, or another Snice element); Snice registers and renders only element subclasses. Review docs/ai/decorators.md.'
+        });
       }
     }
   },
@@ -728,6 +745,24 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/package-path',
+    severity: 'error',
+    category: 'imports',
+    description: 'Reject invented deep snice/* module paths outside the released package export surface.',
+    check(context) {
+      for (const entry of findImports(context.source)) {
+        const path = entry.path;
+        if (!path.startsWith('snice/') || path.startsWith('snice/components/')) continue;
+        if (path === 'snice/symbols' || path === 'snice/transitions') continue;
+        if (REACT_MODULE_PATHS.has(path)) continue;
+        context.report(entry.index, {
+          message: `The module "${path}" is not a released Snice package path.`,
+          fix: "Use an exact package export: 'snice', 'snice/symbols', 'snice/transitions', 'snice/react' or a documented snice/react/<module> deep import, or a snice/components/<name>/<module> path."
+        });
+      }
+    }
+  },
+  {
     id: 'snice/package-import',
     severity: 'error',
     category: 'imports',
@@ -1059,6 +1094,14 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
+    id: 'snice/request-respond-pairing',
+    severity: 'error',
+    category: 'framework',
+    description: 'Require every non-optional @request channel to have a matching @respond in the project.',
+    projectOnly: true,
+    check() {}
+  },
+  {
     id: 'snice/unused-dependency',
     severity: 'error',
     category: 'configuration',
@@ -1168,6 +1211,8 @@ export function analyzeProject(files) {
   const nestedReactUses = [];
   const rawJsxUses = [];
   const snicePackageManifests = [];
+  const requestChannels = [];
+  const respondChannels = new Set();
   let usesSnice = false;
 
   for (const file of normalized) {
@@ -1178,6 +1223,17 @@ export function analyzeProject(files) {
     }
     const analyzable = maskComments(file.source);
     const provenance = buildSourceProvenance(analyzable);
+    for (const match of analyzable.matchAll(/@request\(\s*['"]([^'"]+)['"]\s*(?:,\s*\{([^}]*)\})?/g)) {
+      requestChannels.push({
+        file,
+        index: match.index,
+        channel: match[1],
+        optional: match[2] ? /optional\s*:\s*true/.test(match[2]) : false
+      });
+    }
+    for (const match of analyzable.matchAll(/@respond\(\s*['"]([^'"]+)['"]/g)) {
+      respondChannels.add(match[1]);
+    }
     for (const entry of provenance.imports) {
       // A type-only import is erased by TypeScript; it can never register a
       // custom element, so it must not satisfy project-level registration.
@@ -1284,8 +1340,7 @@ export function analyzeProject(files) {
 
   const nestedCovered = new Set(
     nestedReactUses.map(use => `${use.file.filename}:${use.index}`)
-  );
-  const seenRawJsx = new Set();
+  );  const seenRawJsx = new Set();
   for (const use of rawJsxUses) {
     if (nestedCovered.has(`${use.file.filename}:${use.index}`)) continue;
     const component = COMPONENT_CONTRACTS[use.tagName];
@@ -1331,6 +1386,24 @@ export function analyzeProject(files) {
       line: location.line,
       column: location.column,
       recommendation
+    });
+  }
+
+  const seenUnpairedRequest = new Set();
+  for (const request of requestChannels) {
+    if (request.optional || respondChannels.has(request.channel)) continue;
+    const key = `${request.file.filename}:${request.channel}`;
+    if (seenUnpairedRequest.has(key)) continue;
+    seenUnpairedRequest.add(key);
+    const location = sourceLocation(request.file.source, request.index);
+    diagnostics.push({
+      severity: 'error',
+      ruleId: 'snice/request-respond-pairing',
+      message: `@request('${request.channel}') has no matching @respond('${request.channel}') in the project; it fails with a 50ms discovery timeout at runtime.`,
+      fix: `Attach a controller or element with @respond('${request.channel}') before the request fires, or pass { optional: true } if an unhandled request is acceptable. Review docs/ai/decorators.md.`,
+      file: request.file.filename,
+      line: location.line,
+      column: location.column
     });
   }
 

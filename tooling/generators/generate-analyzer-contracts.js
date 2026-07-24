@@ -103,6 +103,11 @@ export function buildAnalyzerContracts(root = projectRoot) {
   const reactWrappers = collectReactWrappers(reactComponentsPath, reactDirectory, components);
   const reactExports = collectReactExports(reactIndexPath, reactComponentsPath, Object.keys(reactWrappers));
   const reactTypeExports = collectReactTypeExports(reactIndexPath, reactComponentsPath);
+  // Every module the package exposes through ./react/* (deep per-adapter imports).
+  const reactModulePaths = ['snice/react', ...readdirSync(reactDirectory)
+    .filter(name => name.endsWith('.d.ts'))
+    .map(name => `snice/react/${name.slice(0, -'.d.ts'.length)}`)]
+    .sort();
   const componentModulePaths = [...new Set(Object.values(components).map(component => component.modulePath))].sort();
   const componentTypeModulePaths = walkFiles(componentSourcePath)
     .filter(path => path.endsWith('.types.ts'))
@@ -137,6 +142,7 @@ export function buildAnalyzerContracts(root = projectRoot) {
     react: {
       exports: reactExports,
       typeExports: reactTypeExports,
+      modulePaths: reactModulePaths,
       wrappers: sortObject(reactWrappers)
     }
   };

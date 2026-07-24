@@ -18,7 +18,7 @@ export const ANALYZER_CONTRACTS = {
     "componentFamilies": 134,
     "componentModules": 185,
     "reactWrappers": 190,
-    "rootExports": 107
+    "rootExports": 110
   },
   "rootExports": [
     "AdoptedOptions",
@@ -73,6 +73,7 @@ export const ANALYZER_CONTRACTS = {
     "WatchOptions",
     "adopted",
     "applyElementFunctionality",
+    "attachController",
     "classMap",
     "clearDebounceTimers",
     "clearMemoizeCache",
@@ -83,12 +84,14 @@ export const ANALYZER_CONTRACTS = {
     "createRequestHandler",
     "css",
     "debounce",
+    "detachController",
     "dispatch",
     "dispose",
     "element",
     "escapeAttr",
     "escapeHtml",
     "getBodyScrollLockCount",
+    "getController",
     "getSymbol",
     "html",
     "isSafeUrl",
@@ -10739,12 +10742,12 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
-        "duedate": {
+        "due-date": {
           "property": "dueDate",
           "type": "string",
           "literals": []
         },
-        "invoicenumber": {
+        "invoice-number": {
           "property": "invoiceNumber",
           "type": "string",
           "literals": []
@@ -10785,20 +10788,24 @@ export const ANALYZER_CONTRACTS = {
             "cancelled"
           ]
         },
-        "taxrate": {
+        "tax-rate": {
           "property": "taxRate",
           "type": "number",
           "literals": []
         },
         "variant": {
           "property": "variant",
-          "type": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'",
+          "type": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "literals": [
             "standard",
             "modern",
             "classic",
             "minimal",
-            "detailed"
+            "detailed",
+            "paper",
+            "ink",
+            "ledger",
+            "ticket"
           ]
         }
       },
@@ -10820,7 +10827,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "dueDate": {
           "type": "string",
-          "attribute": "duedate",
+          "attribute": "due-date",
           "structured": false
         },
         "from": {
@@ -10830,7 +10837,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "invoiceNumber": {
           "type": "string",
-          "attribute": "invoicenumber",
+          "attribute": "invoice-number",
           "structured": false
         },
         "items": {
@@ -10865,7 +10872,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "taxRate": {
           "type": "number",
-          "attribute": "taxrate",
+          "attribute": "tax-rate",
           "structured": false
         },
         "to": {
@@ -10874,7 +10881,7 @@ export const ANALYZER_CONTRACTS = {
           "structured": true
         },
         "variant": {
-          "type": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'",
+          "type": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "attribute": "variant",
           "structured": false
         }
@@ -15501,13 +15508,17 @@ export const ANALYZER_CONTRACTS = {
         },
         "variant": {
           "property": "variant",
-          "type": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed'",
+          "type": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "literals": [
             "standard",
             "thermal",
             "modern",
             "minimal",
-            "detailed"
+            "detailed",
+            "paper",
+            "ink",
+            "ledger",
+            "ticket"
           ]
         }
       },
@@ -15618,7 +15629,7 @@ export const ANALYZER_CONTRACTS = {
           "structured": false
         },
         "variant": {
-          "type": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed'",
+          "type": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "attribute": "variant",
           "structured": false
         }
@@ -16954,9 +16965,7 @@ export const ANALYZER_CONTRACTS = {
       },
       "structuredProperties": [],
       "events": [],
-      "slots": [
-        ""
-      ]
+      "slots": []
     },
     "snice-split-button": {
       "tagName": "snice-split-button",
@@ -19831,7 +19840,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
-        "selectionmode": {
+        "selection-mode": {
           "property": "selectionMode",
           "type": "'single' | 'multiple' | 'none'",
           "literals": [
@@ -19879,7 +19888,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "selectionMode": {
           "type": "'single' | 'multiple' | 'none'",
-          "attribute": "selectionmode",
+          "attribute": "selection-mode",
           "structured": false
         },
         "showCheckboxes": {
@@ -20590,7 +20599,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "duedate": {
+        "due-date": {
           "property": "dueDate",
           "type": "string",
           "literals": []
@@ -20615,12 +20624,12 @@ export const ANALYZER_CONTRACTS = {
             "urgent"
           ]
         },
-        "qrdata": {
+        "qr-data": {
           "property": "qrData",
           "type": "string",
           "literals": []
         },
-        "qrposition": {
+        "qr-position": {
           "property": "qrPosition",
           "type": "'top-right' | 'header' | 'footer'",
           "literals": [
@@ -20646,16 +20655,20 @@ export const ANALYZER_CONTRACTS = {
         },
         "variant": {
           "property": "variant",
-          "type": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed'",
+          "type": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "literals": [
             "standard",
             "compact",
             "field-service",
             "maintenance",
-            "detailed"
+            "detailed",
+            "paper",
+            "ink",
+            "ledger",
+            "ticket"
           ]
         },
-        "wonumber": {
+        "wo-number": {
           "property": "woNumber",
           "type": "string",
           "literals": []
@@ -20684,7 +20697,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "dueDate": {
           "type": "string",
-          "attribute": "duedate",
+          "attribute": "due-date",
           "structured": false
         },
         "laborRate": {
@@ -20709,12 +20722,12 @@ export const ANALYZER_CONTRACTS = {
         },
         "qrData": {
           "type": "string",
-          "attribute": "qrdata",
+          "attribute": "qr-data",
           "structured": false
         },
         "qrPosition": {
           "type": "'top-right' | 'header' | 'footer'",
-          "attribute": "qrposition",
+          "attribute": "qr-position",
           "structured": false
         },
         "showQr": {
@@ -20733,13 +20746,13 @@ export const ANALYZER_CONTRACTS = {
           "structured": true
         },
         "variant": {
-          "type": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed'",
+          "type": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "attribute": "variant",
           "structured": false
         },
         "woNumber": {
           "type": "string",
-          "attribute": "wonumber",
+          "attribute": "wo-number",
           "structured": false
         }
       },

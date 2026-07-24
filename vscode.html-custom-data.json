@@ -4606,11 +4606,11 @@
           "description": "discount: number"
         },
         {
-          "name": "duedate",
+          "name": "due-date",
           "description": "dueDate: string"
         },
         {
-          "name": "invoicenumber",
+          "name": "invoice-number",
           "description": "invoiceNumber: string"
         },
         {
@@ -4665,12 +4665,12 @@
           ]
         },
         {
-          "name": "taxrate",
+          "name": "tax-rate",
           "description": "taxRate: number"
         },
         {
           "name": "variant",
-          "description": "variant: 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'",
+          "description": "variant: 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "values": [
             {
               "name": "standard"
@@ -4686,6 +4686,18 @@
             },
             {
               "name": "detailed"
+            },
+            {
+              "name": "paper"
+            },
+            {
+              "name": "ink"
+            },
+            {
+              "name": "ledger"
+            },
+            {
+              "name": "ticket"
             }
           ]
         }
@@ -6768,7 +6780,7 @@
         },
         {
           "name": "variant",
-          "description": "variant: 'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed'",
+          "description": "variant: 'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "values": [
             {
               "name": "standard"
@@ -6784,6 +6796,18 @@
             },
             {
               "name": "detailed"
+            },
+            {
+              "name": "paper"
+            },
+            {
+              "name": "ink"
+            },
+            {
+              "name": "ledger"
+            },
+            {
+              "name": "ticket"
             }
           ]
         }
@@ -8654,7 +8678,7 @@
           "description": "selectable: boolean"
         },
         {
-          "name": "selectionmode",
+          "name": "selection-mode",
           "description": "selectionMode: 'single' | 'multiple' | 'none'",
           "values": [
             {
@@ -8979,7 +9003,7 @@
           "description": "description: string"
         },
         {
-          "name": "duedate",
+          "name": "due-date",
           "description": "dueDate: string"
         },
         {
@@ -9009,11 +9033,11 @@
           ]
         },
         {
-          "name": "qrdata",
+          "name": "qr-data",
           "description": "qrData: string"
         },
         {
-          "name": "qrposition",
+          "name": "qr-position",
           "description": "qrPosition: 'top-right' | 'header' | 'footer'",
           "values": [
             {
@@ -9051,7 +9075,7 @@
         },
         {
           "name": "variant",
-          "description": "variant: 'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed'",
+          "description": "variant: 'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'",
           "values": [
             {
               "name": "standard"
@@ -9067,11 +9091,23 @@
             },
             {
               "name": "detailed"
+            },
+            {
+              "name": "paper"
+            },
+            {
+              "name": "ink"
+            },
+            {
+              "name": "ledger"
+            },
+            {
+              "name": "ticket"
             }
           ]
         },
         {
-          "name": "wonumber",
+          "name": "wo-number",
           "description": "woNumber: string"
         }
       ]

@@ -20883,7 +20883,7 @@
               "kind": "field",
               "name": "variant",
               "type": {
-                "text": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'"
+                "text": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "default": "'standard'"
             }
@@ -20914,7 +20914,7 @@
               "reflects": true
             },
             {
-              "name": "duedate",
+              "name": "due-date",
               "fieldName": "dueDate",
               "type": {
                 "text": "string"
@@ -20922,7 +20922,7 @@
               "reflects": true
             },
             {
-              "name": "invoicenumber",
+              "name": "invoice-number",
               "fieldName": "invoiceNumber",
               "type": {
                 "text": "string"
@@ -20970,7 +20970,7 @@
               "reflects": true
             },
             {
-              "name": "taxrate",
+              "name": "tax-rate",
               "fieldName": "taxRate",
               "type": {
                 "text": "number"
@@ -20981,7 +20981,7 @@
               "name": "variant",
               "fieldName": "variant",
               "type": {
-                "text": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed'"
+                "text": "'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "reflects": true
             }
@@ -21134,6 +21134,9 @@
               "name": "--invoice-header-text"
             },
             {
+              "name": "--invoice-ink"
+            },
+            {
               "name": "--invoice-label-font-size"
             },
             {
@@ -21150,6 +21153,12 @@
             },
             {
               "name": "--invoice-padding"
+            },
+            {
+              "name": "--invoice-paper-accent"
+            },
+            {
+              "name": "--invoice-paper-ink"
             },
             {
               "name": "--invoice-qr-border"
@@ -33470,7 +33479,7 @@
               "kind": "field",
               "name": "variant",
               "type": {
-                "text": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed'"
+                "text": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "default": "'standard'"
             }
@@ -33624,7 +33633,7 @@
               "name": "variant",
               "fieldName": "variant",
               "type": {
-                "text": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed'"
+                "text": "'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "reflects": true
             }
@@ -33735,6 +33744,9 @@
           ],
           "cssProperties": [
             {
+              "name": "--grand"
+            },
+            {
               "name": "--receipt-accent"
             },
             {
@@ -33771,6 +33783,9 @@
               "name": "--receipt-header-bg"
             },
             {
+              "name": "--receipt-ink"
+            },
+            {
               "name": "--receipt-item-font-size"
             },
             {
@@ -33796,6 +33811,12 @@
             },
             {
               "name": "--receipt-padding"
+            },
+            {
+              "name": "--receipt-paper-accent"
+            },
+            {
+              "name": "--receipt-paper-ink"
             },
             {
               "name": "--receipt-qr-size"
@@ -36756,11 +36777,7 @@
             }
           ],
           "events": [],
-          "slots": [
-            {
-              "name": ""
-            }
-          ],
+          "slots": [],
           "cssParts": [
             {
               "name": "bars"
@@ -51688,7 +51705,7 @@
               "reflects": true
             },
             {
-              "name": "selectionmode",
+              "name": "selection-mode",
               "fieldName": "selectionMode",
               "type": {
                 "text": "'single' | 'multiple' | 'none'"
@@ -53528,7 +53545,7 @@
               "kind": "field",
               "name": "variant",
               "type": {
-                "text": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed'"
+                "text": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "default": "'standard'"
             },
@@ -53559,7 +53576,7 @@
               "reflects": true
             },
             {
-              "name": "duedate",
+              "name": "due-date",
               "fieldName": "dueDate",
               "type": {
                 "text": "string"
@@ -53591,7 +53608,7 @@
               "reflects": true
             },
             {
-              "name": "qrdata",
+              "name": "qr-data",
               "fieldName": "qrData",
               "type": {
                 "text": "string"
@@ -53599,7 +53616,7 @@
               "reflects": true
             },
             {
-              "name": "qrposition",
+              "name": "qr-position",
               "fieldName": "qrPosition",
               "type": {
                 "text": "'top-right' | 'header' | 'footer'"
@@ -53626,12 +53643,12 @@
               "name": "variant",
               "fieldName": "variant",
               "type": {
-                "text": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed'"
+                "text": "'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink' | 'ledger' | 'ticket'"
               },
               "reflects": true
             },
             {
-              "name": "wonumber",
+              "name": "wo-number",
               "fieldName": "woNumber",
               "type": {
                 "text": "string"
@@ -53824,7 +53841,16 @@
               "name": "--wo-danger"
             },
             {
+              "name": "--wo-ink"
+            },
+            {
               "name": "--wo-max-width"
+            },
+            {
+              "name": "--wo-paper-accent"
+            },
+            {
+              "name": "--wo-paper-ink"
             },
             {
               "name": "--wo-priority-high-bg"
