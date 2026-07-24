@@ -1,0 +1,38 @@
+    <!-- ── Popover ── -->
+    <div class="comp-section">
+      <h3>Popover</h3>
+      <p class="comp-desc">Click-triggered interactive panel anchored to a trigger</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-center" style="gap:1.5rem;min-height:14rem">
+          <snice-popover placement="bottom-start">
+            <snice-button variant="default" slot="trigger">Open popover</snice-button>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;min-width:12rem">
+              <strong style="font-size:0.875rem">Popover panel</strong>
+              <span style="font-size:0.8rem;opacity:0.75">Interactive content lives here. Click outside or press Escape to dismiss.</span>
+            </div>
+          </snice-popover>
+          <snice-popover placement="bottom">
+            <snice-button variant="primary" slot="trigger">Placement: bottom</snice-button>
+            <div style="min-width:9rem;font-size:0.8rem">Centered under the trigger.</div>
+          </snice-popover>
+          <snice-popover placement="right" no-outside-dismiss>
+            <snice-button variant="default" slot="trigger">No outside dismiss</snice-button>
+            <div style="min-width:9rem;font-size:0.8rem">Only Escape or the trigger closes this.</div>
+          </snice-popover>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-popover placement="bottom-start"&gt;
+  &lt;snice-button slot="trigger"&gt;
+    Open popover
+  &lt;/snice-button&gt;
+
+  &lt;div&gt;Interactive panel content&lt;/div&gt;
+&lt;/snice-popover&gt;
+
+&lt;snice-popover placement="right" no-outside-dismiss&gt;
+  ...
+&lt;/snice-popover&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

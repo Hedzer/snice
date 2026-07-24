@@ -6677,6 +6677,22 @@
             },
             {
               "kind": "method",
+              "name": "handleKeydown",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": "KeyboardEvent",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleSlotChange",
               "parameters": [],
               "return": {
@@ -6744,6 +6760,26 @@
               }
             },
             {
+              "kind": "method",
+              "name": "resumeAutoplayAfterFocus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resumeAutoplayAfterHover",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "showControls",
               "type": {
@@ -6774,6 +6810,26 @@
                 "text": "number"
               },
               "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "suspendAutoplayOnFocus",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "suspendAutoplayOnHover",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
           "attributes": [
@@ -26185,9 +26241,6 @@
           ],
           "cssProperties": [
             {
-              "name": "--default"
-            },
-            {
               "name": "--strip-bg"
             },
             {
@@ -26318,7 +26371,7 @@
           ],
           "attributes": [
             {
-              "name": "sortby",
+              "name": "sort-by",
               "fieldName": "sortBy",
               "type": {
                 "text": "string"
@@ -26326,7 +26379,7 @@
               "reflects": true
             },
             {
-              "name": "sortdirection",
+              "name": "sort-direction",
               "fieldName": "sortDirection",
               "type": {
                 "text": "'asc' | 'desc'"
@@ -26434,7 +26487,13 @@
             {
               "kind": "method",
               "name": "handleOpenChange",
-              "parameters": [],
+              "parameters": [
+                {
+                  "name": "oldValue",
+                  "type": "boolean",
+                  "optional": true
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"

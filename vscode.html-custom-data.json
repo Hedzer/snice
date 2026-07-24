@@ -5586,11 +5586,11 @@
       "description": "SniceMetricTable custom element.",
       "attributes": [
         {
-          "name": "sortby",
+          "name": "sort-by",
           "description": "sortBy: string"
         },
         {
-          "name": "sortdirection",
+          "name": "sort-direction",
           "description": "sortDirection: 'asc' | 'desc'",
           "values": [
             {

@@ -80,6 +80,12 @@ export class SnicePopover extends HTMLElement implements SnicePopoverElement {
   init() {
     document.addEventListener('mousedown', this.boundOutsideClick, true);
     document.addEventListener('keydown', this.boundEscape, true);
+
+    // @watch('open') fires before the panel exists on upgrade, so an authored
+    // open attribute would otherwise never show the panel.
+    if (this.open) {
+      this.handleOpenChange();
+    }
   }
 
   @reconnect()
