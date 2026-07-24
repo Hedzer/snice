@@ -71,7 +71,7 @@ span.bell-icon-img {
 }
 
 .panel-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -80,7 +80,7 @@ span.bell-icon-img {
 }
 
 .panel-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-weight: var(--snice-font-weight-semibold, 600);
   font-size: var(--snice-heading-sm, 1rem);
 }
@@ -154,7 +154,7 @@ span.notification-icon-img {
 }
 
 .notification-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-weight: var(--snice-font-weight-medium, 500);
   font-size: var(--snice-heading-xs, 0.875rem);
   margin-bottom: var(--snice-spacing-3xs, 0.125rem);
@@ -197,3 +197,43 @@ span.notification-icon-img {
 }
 
 
+
+.bell-icon-img svg,
+.notification-icon-img svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+}
+
+.dismiss-icon {
+  display: inline-flex;
+}
+
+.dismiss-icon svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.notification-icon--info {
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.notification-icon--success {
+  color: var(--snice-color-success, rgb(22 163 74));
+}
+
+.notification-icon--warning {
+  color: var(--snice-color-warning, rgb(202 138 4));
+}
+
+.notification-icon--error {
+  color: var(--snice-color-danger, rgb(220 38 38));
+}

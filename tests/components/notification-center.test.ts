@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, queryShadow } from './test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/notification-center/snice-notification-center.css');
 import '../../packages/components/src/notification-center/snice-notification-center';
 import type { SniceNotificationCenterElement } from '../../packages/components/src/notification-center/snice-notification-center.types';
 
@@ -10,11 +14,11 @@ describe('snice-notification-center', () => {
     if (el) removeComponent(el as HTMLElement);
   });
 
-  it('renders with default bell emoji', async () => {
+  it('renders with a default bell icon', async () => {
     el = await createComponent<SniceNotificationCenterElement>('snice-notification-center');
     const bellIcon = queryShadow(el as HTMLElement, '.bell-icon');
     expect(bellIcon).toBeTruthy();
-    expect(bellIcon!.textContent).toContain('\uD83D\uDD14');
+    expect(bellIcon!.querySelector('svg')).toBeTruthy();
   });
 
   it('renders icon attribute as image when given a URL', async () => {
@@ -85,5 +89,55 @@ describe('snice-notification-center', () => {
     );
     expect(cssText).not.toContain('rgb(229 236 255)');
     expect(cssText).toContain('--snice-color-primary-subtle-hover');
+  });
+
+  describe('registry icons', () => {
+    it('renders the default bell as a registry SVG, not an emoji', async () => {
+      el = await createComponent<SniceNotificationCenterElement>('snice-notification-center');
+      await wait(50);
+
+      const bell = queryShadow(el as HTMLElement, '.bell-icon');
+      expect(bell?.querySelector('svg')).toBeTruthy();
+      expect(bell?.textContent).not.toContain('🔔');
+    });
+
+    it.each([
+      ['success'],
+      ['warning'],
+      ['error'],
+      ['info'],
+    ])('renders a registry SVG default icon for %s notifications', async (type) => {
+      el = await createComponent<SniceNotificationCenterElement>('snice-notification-center');
+      el.notifications = [{ id: '1', title: 'T', message: 'M', timestamp: 'now', type: type as any }];
+      el.open = true;
+      await wait(50);
+
+      const icon = queryShadow(el as HTMLElement, '.notification-icon');
+      expect(icon?.querySelector('svg')).toBeTruthy();
+    });
+
+    it('renders the dismiss control as a registry SVG, not a text glyph', async () => {
+      el = await createComponent<SniceNotificationCenterElement>('snice-notification-center');
+      el.notifications = [{ id: '1', title: 'T', message: 'M', timestamp: 'now' }];
+      el.open = true;
+      await wait(50);
+
+      const dismiss = queryShadow(el as HTMLElement, '.dismiss-btn');
+      expect(dismiss?.querySelector('svg')).toBeTruthy();
+      expect(dismiss?.textContent).not.toContain('✕');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

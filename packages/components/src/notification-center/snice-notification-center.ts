@@ -4,6 +4,13 @@ import '../empty-state/snice-empty-state';
 import cssContent from './snice-notification-center.css?inline';
 import type { NotificationItem, SniceNotificationCenterElement } from './snice-notification-center.types';
 
+const DEFAULT_TYPE_ICONS: Record<string, string> = {
+  success: 'check-circle',
+  warning: 'exclamation-triangle',
+  error: 'x-circle',
+  info: 'info-circle',
+};
+
 @element('snice-notification-center')
 export class SniceNotificationCenter extends HTMLElement implements SniceNotificationCenterElement {
   @property({ type: Array, attribute: false })
@@ -70,12 +77,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
   }
 
   private getDefaultIcon(type?: string): string {
-    switch (type) {
-      case 'success': return '\u2705';
-      case 'warning': return '\u26A0\uFE0F';
-      case 'error': return '\u274C';
-      default: return '\u2139\uFE0F';
-    }
+    return DEFAULT_TYPE_ICONS[type ?? 'info'] ?? DEFAULT_TYPE_ICONS.info;
   }
 
   @render()
@@ -85,7 +87,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
     const items = this.notifications.map(n => html`
       <li class="notification-item ${n.read ? '' : 'unread'}"
           @click=${() => this.handleItemClick(n)}>
-        <span class="notification-icon">${n.icon ? renderIcon(n.icon, 'notification-icon-img') : this.getDefaultIcon(n.type)}</span>
+        <span class="notification-icon notification-icon--${n.type || 'info'}">${renderIcon(n.icon || this.getDefaultIcon(n.type), 'notification-icon-img')}</span>
         <div class="notification-content">
           <div class="notification-title">${n.title}</div>
           <div class="notification-message">${n.message}</div>
@@ -93,7 +95,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
         </div>
         <button class="dismiss-btn"
                 aria-label="Dismiss"
-                @click=${(e: Event) => this.handleDismiss(e, n.id)}>\u2715</button>
+                @click=${(e: Event) => this.handleDismiss(e, n.id)}>${renderIcon('x-mark', 'dismiss-icon')}</button>
       </li>
     `);
 
@@ -107,12 +109,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
         <snice-badge count=${unread} variant="error" size="small" position="top-right">
           <span class="bell-icon" part="icon">
             <slot name="icon">
-              <if ${this.icon}>
-                ${renderIcon(this.icon, 'bell-icon-img')}
-              </if>
-              <if ${!this.icon}>
-                \uD83D\uDD14
-              </if>
+              ${renderIcon(this.icon || 'bell', 'bell-icon-img')}
             </slot>
           </span>
         </snice-badge>
@@ -126,7 +123,7 @@ export class SniceNotificationCenter extends HTMLElement implements SniceNotific
         </div>
         ${this.notifications.length > 0
           ? html`<ul class="notification-list">${items}</ul>`
-          : html`<snice-empty-state icon="📭" title="No notifications" size="small" style="padding: 2rem 1rem;"></snice-empty-state>`
+          : html`<snice-empty-state icon="bell" title="No notifications" size="small" style="padding: 2rem 1rem;"></snice-empty-state>`
         }
       </div>
     `;
