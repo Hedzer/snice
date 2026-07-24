@@ -162,3 +162,10 @@
   color: var(--snice-color-primary, rgb(37 99 235));
   text-decoration: none;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
