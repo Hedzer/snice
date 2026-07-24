@@ -1,5 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createComponent, removeComponent, queryShadow, queryShadowAll, triggerMouseEvent, trackRenders } from './test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { createComponent, removeComponent, queryShadow, queryShadowAll, triggerMouseEvent, trackRenders, wait } from './test-utils';
 import '../../packages/components/src/breadcrumbs/snice-breadcrumbs';
 import type { SniceBreadcrumbsElement, BreadcrumbItem } from '../../packages/components/src/breadcrumbs/snice-breadcrumbs.types';
 
@@ -237,5 +239,62 @@ describe('snice-breadcrumbs', () => {
     const iconImage = queryShadow(breadcrumbs as HTMLElement, 'img.breadcrumb-icon') as HTMLImageElement;
     expect(iconImage).toBeTruthy();
     expect(iconImage?.getAttribute('src')).toBe('/home.png');
+  });
+
+  describe('collapse ellipsis', () => {
+    async function collapsedCrumbs() {
+      const el = await createComponent<SniceBreadcrumbsElement>('snice-breadcrumbs', { 'max-items': 3 });
+      el.items = [
+        { label: 'Home', href: '/' },
+        { label: 'Docs', href: '/docs' },
+        { label: 'Components', href: '/docs/components' },
+        { label: 'Breadcrumbs', href: '/docs/components/breadcrumbs' },
+        { label: 'API', active: true },
+      ];
+      await wait(80);
+      return el;
+    }
+
+    it('should render the ellipsis as a registry SVG, not bullet characters', async () => {
+      breadcrumbs = await collapsedCrumbs();
+
+      const ellipsis = queryShadow(breadcrumbs as HTMLElement, '.breadcrumb-ellipsis');
+      expect(ellipsis).toBeTruthy();
+      expect(ellipsis?.querySelector('svg')).toBeTruthy();
+      expect(ellipsis?.textContent).not.toContain('\u2022');
+    });
+
+    it('should expose aria-expanded=false on the ellipsis while collapsed', async () => {
+      breadcrumbs = await collapsedCrumbs();
+
+      expect(queryShadow(breadcrumbs as HTMLElement, '.breadcrumb-ellipsis')?.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('should move focus to the first revealed crumb after expanding', async () => {
+      breadcrumbs = await collapsedCrumbs();
+
+      const ellipsis = queryShadow<HTMLButtonElement>(breadcrumbs as HTMLElement, '.breadcrumb-ellipsis');
+      ellipsis!.focus();
+      ellipsis!.click();
+      await wait(100);
+
+      const active = (breadcrumbs as HTMLElement).shadowRoot!.activeElement;
+      expect(active?.classList.contains('breadcrumb-link')).toBe(true);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/breadcrumbs/snice-breadcrumbs.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

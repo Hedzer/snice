@@ -154,3 +154,18 @@ case, when, default, if {
     font-size: calc(var(--breadcrumb-font-size) * 0.9);
   }
 }
+.breadcrumb-ellipsis-icon {
+  display: flex;
+}
+
+.breadcrumb-ellipsis-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

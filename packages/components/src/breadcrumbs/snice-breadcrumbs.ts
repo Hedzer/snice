@@ -1,5 +1,6 @@
-import { element, property, watch, query, ready, render, styles, html, css as cssTag } from 'snice';
+import { element, property, watch, query, ready, dispatch, render, styles, html, css as cssTag, unsafeHTML } from 'snice';
 import { renderIcon } from '../utils';
+import { ELLIPSIS_HORIZONTAL } from '../icons';
 import cssContent from './snice-breadcrumbs.css?inline';
 import type { BreadcrumbItem, BreadcrumbSeparator, BreadcrumbSize, SniceBreadcrumbsElement } from './snice-breadcrumbs.types';
 import type { SniceCrumbElement } from './snice-breadcrumbs.types';
@@ -83,8 +84,9 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
                 <li class="breadcrumb-item">
                   <button part="ellipsis" class="breadcrumb-ellipsis"
                           aria-label="Show all breadcrumbs"
+                          aria-expanded="false"
                           tabindex="0">
-                    •••
+                    <span class="breadcrumb-ellipsis-icon" aria-hidden="true">${unsafeHTML(ELLIPSIS_HORIZONTAL)}</span>
                   </button>
                   <span class="breadcrumb-separator" aria-hidden="true">
                     ${this.separator}
@@ -123,8 +125,14 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
     const target = event.target as HTMLElement;
 
     // Handle ellipsis click
-    if (target.matches('.breadcrumb-ellipsis')) {
+    if (target.closest('.breadcrumb-ellipsis')) {
       this.collapsed = false;
+      // The ellipsis button disappears on expand; move focus to the first
+      // newly revealed crumb so keyboard users aren't dropped to the body.
+      (this as any).rendered?.then?.(() => {
+        const firstRevealed = this.shadowRoot?.querySelectorAll('.breadcrumb-link')[1] as HTMLElement | undefined;
+        (firstRevealed ?? this.shadowRoot?.querySelector('.breadcrumb-link') as HTMLElement | undefined)?.focus();
+      });
       return;
     }
 
@@ -138,17 +146,13 @@ export class SniceBreadcrumbs extends HTMLElement implements SniceBreadcrumbsEle
       const item = index >= 0 && index < allItems.length ? allItems[index] : undefined;
       const label = item?.label ?? link.textContent?.trim() ?? '';
 
-      this.dispatchEvent(new CustomEvent('breadcrumb-click', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          item,
-          index,
-          href,
-          label
-        }
-      }));
+      this.emitBreadcrumbClick({ item, index, href, label });
     }
+  }
+
+  @dispatch('breadcrumb-click', { bubbles: true, composed: true })
+  private emitBreadcrumbClick(detail: { item: BreadcrumbItem | undefined; index: number; href: string; label: string }) {
+    return detail;
   }
 
   private handleSlotChange() {
