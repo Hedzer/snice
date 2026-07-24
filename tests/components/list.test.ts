@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../packages/components/src/list/snice-list';
 import type { SniceListElement } from '../../packages/components/src/list/snice-list.types';
@@ -88,5 +90,20 @@ describe('snice-list', () => {
     await wait(50);
     const skeletons = list.shadowRoot?.querySelectorAll('snice-skeleton');
     expect(skeletons?.length).toBe(3);
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/list/snice-list.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\\(\\s*--snice-[a-z0-9-]+\\s*\\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
