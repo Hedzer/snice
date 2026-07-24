@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import '../../packages/components/src/checkbox/snice-checkbox';
 import type { SniceCheckboxElement } from '../../packages/components/src/checkbox/snice-checkbox.types';
 
@@ -725,5 +727,20 @@ describe('imperative API and lifecycle', () => {
     document.body.appendChild(checkbox);
     expect(checkbox.checked).toBe(true);
     expect(internalsFor(checkbox).formValue).toBe('yes');
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/checkbox/snice-checkbox.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
