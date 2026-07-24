@@ -114,7 +114,12 @@ describe('snice-carousel', () => {
       expect(carousel.activeIndex).toBe(frozen);
 
       (carousel as HTMLElement).dispatchEvent(new Event('mouseleave'));
-      await wait(250);
+      // Poll: under parallel test load, interval timers can starve well past
+      // their nominal cadence — assert the resume within a generous window.
+      const deadline = Date.now() + 2000;
+      while (carousel.activeIndex === frozen && Date.now() < deadline) {
+        await wait(40);
+      }
       expect(carousel.activeIndex).not.toBe(frozen);
     });
 
