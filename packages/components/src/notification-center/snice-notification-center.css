@@ -23,6 +23,11 @@
   background: var(--snice-color-surface-hover, rgb(241 241 241));
 }
 
+.bell-button:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: 2px;
+}
+
 .bell-icon {
   display: inline-flex;
   align-items: center;
@@ -47,15 +52,28 @@ span.bell-icon-img {
 .panel {
   position: absolute;
   top: 100%;
-  margin-top: var(--snice-spacing-2xs, 0.25rem);
+  margin-top: var(--snice-spacing-xs, 0.5rem);
   width: 22rem;
   max-height: 25rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--snice-color-surface, rgb(255 255 255));
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
-  border-radius: var(--snice-border-radius-lg, 0.5rem);
-  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  border-radius: var(--snice-border-radius-xl, 0.75rem);
+  box-shadow: var(--snice-shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.12), 0 8px 10px -6px rgb(0 0 0 / 0.1));
   z-index: 1000;
+  animation: panel-pop var(--snice-transition-fast, 150ms) ease;
+}
+
+@keyframes panel-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .panel--end {
@@ -90,13 +108,21 @@ span.bell-icon-img {
   border: none;
   cursor: pointer;
   color: var(--snice-color-primary, rgb(37 99 235));
-  font-size: var(--snice-font-size-sm, 0.875rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-medium, 500);
   font-family: inherit;
-  padding: 0;
+  padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-full, 9999px);
+  transition: background var(--snice-transition-fast, 150ms);
 }
 
 .mark-all-btn:hover {
-  text-decoration: underline;
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 12%, transparent);
+}
+
+.mark-all-btn:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: 1px;
 }
 
 .notification-list {
@@ -106,12 +132,16 @@ span.bell-icon-img {
 }
 
 .notification-item {
+  position: relative;
   display: flex;
+  align-items: flex-start;
   gap: var(--snice-spacing-sm, 0.75rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
   cursor: pointer;
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-  transition: background var(--snice-transition-fast, 150ms);
+  box-shadow: inset 2px 0 0 transparent;
+  transition: background var(--snice-transition-fast, 150ms),
+              box-shadow var(--snice-transition-fast, 150ms);
 }
 
 .notification-item:last-child {
@@ -123,24 +153,39 @@ span.bell-icon-img {
 }
 
 .notification-item.unread {
-  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+  background: color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 5%, transparent);
+  box-shadow: inset 2px 0 0 var(--snice-color-primary, rgb(37 99 235));
 }
 
 .notification-item.unread:hover {
-  background: var(--snice-color-primary-subtle-hover, rgb(219 234 254));
+  background: color-mix(in srgb, var(--snice-color-primary-subtle-hover, rgb(219 234 254)) 35%, transparent);
+}
+
+.notification-item.unread .notification-title::after {
+  content: '';
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--snice-border-radius-full, 9999px);
+  background: var(--snice-color-primary, rgb(37 99 235));
+  margin-left: var(--snice-spacing-2xs, 0.375rem);
+  vertical-align: middle;
 }
 
 .notification-icon {
   flex-shrink: 0;
-  font-size: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--snice-border-radius-full, 9999px);
+  background: color-mix(in srgb, currentColor 12%, transparent);
   line-height: 1;
-  margin-top: 0.125rem;
 }
 
 .notification-icon-img {
-  width: 1.25em;
-  height: 1.25em;
-  display: block;
+  display: inline-flex;
 }
 
 span.notification-icon-img {
@@ -181,27 +226,44 @@ span.notification-icon-img {
   border: none;
   cursor: pointer;
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
-  font-size: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   line-height: 1;
+  border-radius: var(--snice-border-radius-full, 9999px);
   opacity: 0;
-  transition: opacity var(--snice-transition-fast, 150ms);
+  transition: opacity var(--snice-transition-fast, 150ms),
+              background var(--snice-transition-fast, 150ms);
 }
 
-.notification-item:hover .dismiss-btn {
+.notification-item:hover .dismiss-btn,
+.dismiss-btn:focus-visible {
   opacity: 1;
 }
 
 .dismiss-btn:hover {
   color: var(--snice-color-danger, rgb(220 38 38));
+  background: color-mix(in srgb, var(--snice-color-danger, rgb(220 38 38)) 12%, transparent);
+}
+
+.dismiss-btn:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 
 
-.bell-icon-img svg,
-.notification-icon-img svg {
+.bell-icon-img svg {
   width: 1.25rem;
   height: 1.25rem;
+  display: block;
+}
+
+.notification-icon-img svg {
+  width: 1.125rem;
+  height: 1.125rem;
   display: block;
 }
 
