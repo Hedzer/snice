@@ -35,7 +35,7 @@
 
 /* Header / Stats */
 .diff-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
@@ -213,4 +213,11 @@
 .diff-content::-webkit-scrollbar-thumb {
   background: var(--snice-color-border, rgb(226 226 226));
   border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
