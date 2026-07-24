@@ -37,12 +37,12 @@
 }
 
 .terminal-output::-webkit-scrollbar-thumb {
-  background: var(--snice-terminal-scrollbar-color, var(--snice-color-border));
+  background: var(--snice-terminal-scrollbar-color, var(--snice-color-border, rgb(226 226 226)));
   border-radius: var(--snice-border-radius-sm, 0.125rem);
 }
 
 .terminal-output::-webkit-scrollbar-thumb:hover {
-  background: var(--snice-terminal-scrollbar-hover-color, var(--snice-color-border-hover));
+  background: var(--snice-terminal-scrollbar-hover-color, var(--snice-color-border-hover, rgb(209 213 219)));
 }
 
 .terminal-line {
@@ -217,4 +217,11 @@
   color: var(--snice-terminal-hint-color, hsl(0 0% 40%));
   font-style: italic;
   margin-bottom: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

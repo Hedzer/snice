@@ -161,3 +161,10 @@
   background: var(--snice-color-border, rgb(226 226 226));
   border-radius: 9999px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

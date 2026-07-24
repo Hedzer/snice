@@ -197,3 +197,10 @@
   width: 0.75rem; /* 12px */
   height: 0.75rem; /* 12px */
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
