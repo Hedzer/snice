@@ -20,7 +20,7 @@
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--snice-color-text, rgb(23 23 23));
   font-weight: var(--snice-font-weight-semibold, 600);
   line-height: 1.25;
@@ -29,17 +29,17 @@
 }
 
 .markdown-body h1 {
-  font-family: var(--snice-font-family-display); font-size: 2rem; border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226)); padding-bottom: var(--snice-spacing-xs, 0.5rem); }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 2rem; border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226)); padding-bottom: var(--snice-spacing-xs, 0.5rem); }
 .markdown-body h2 {
-  font-family: var(--snice-font-family-display); font-size: 1.5rem; border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226)); padding-bottom: var(--snice-spacing-xs, 0.5rem); }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 1.5rem; border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226)); padding-bottom: var(--snice-spacing-xs, 0.5rem); }
 .markdown-body h3 {
-  font-family: var(--snice-font-family-display); font-size: 1.25rem; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 1.25rem; }
 .markdown-body h4 {
-  font-family: var(--snice-font-family-display); font-size: 1rem; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 1rem; }
 .markdown-body h5 {
-  font-family: var(--snice-font-family-display); font-size: 0.875rem; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 0.875rem; }
 .markdown-body h6 {
-  font-family: var(--snice-font-family-display); font-size: 0.875rem; color: var(--snice-color-text-tertiary, rgb(115 115 115)); }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 0.875rem; color: var(--snice-color-text-tertiary, rgb(115 115 115)); }
 
 /* Paragraphs */
 .markdown-body p {
@@ -180,11 +180,11 @@
 
 /* GitHub theme variant */
 :host([theme="github"]) .markdown-body h1 {
-  font-family: var(--snice-font-family-display); font-size: 2em; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 2em; }
 :host([theme="github"]) .markdown-body h2 {
-  font-family: var(--snice-font-family-display); font-size: 1.5em; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 1.5em; }
 :host([theme="github"]) .markdown-body h3 {
-  font-family: var(--snice-font-family-display); font-size: 1.25em; }
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif); font-size: 1.25em; }
 
 :host([theme="github"]) .markdown-body blockquote {
   border-left-color: var(--snice-color-text-tertiary, rgb(115 115 115));
@@ -199,4 +199,11 @@
 :host([theme="github"]) .markdown-body code {
   background: var(--snice-color-surface-container, rgb(246 248 250));
   color: var(--snice-color-text, rgb(36 41 47));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
