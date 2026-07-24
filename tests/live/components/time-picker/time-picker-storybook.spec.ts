@@ -51,6 +51,11 @@ test('Storybook time form story is native, interactive, responsive, and theme-co
   expect(await legend.evaluate((picker: any) => picker.matches(':disabled'))).toBe(false);
 
   await appointment.locator('.clear-button').click();
+  // Retrying locator assertion first: under parallel-gate load the Storybook
+  // iframe can remount around this click, which destroys the execution
+  // context an immediate evaluate() would use. The auto-retrying assertion
+  // absorbs that window; the evaluate below then runs on a settled context.
+  await expect(appointment.locator('.input')).toHaveValue('');
   expect(await form.evaluate((element: HTMLFormElement) => element.checkValidity())).toBe(false);
   await form.getByRole('button', { name: 'Submit' }).click();
   await expect(output).toHaveText('Ready');

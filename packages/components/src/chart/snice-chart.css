@@ -82,7 +82,7 @@ svg {
 
 .legend-label {
   font-size: var(--snice-font-size-sm, 0.875rem);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .chart-tooltip {
@@ -105,16 +105,16 @@ svg {
 
 .axis-label {
   font-size: var(--snice-font-size-xs, 0.75rem);
-  fill: var(--snice-color-text-secondary);
+  fill: var(--snice-color-text-secondary, rgb(82 82 82));
 }
 
 .axis-line {
-  stroke: var(--snice-color-text-secondary);
+  stroke: var(--snice-color-text-secondary, rgb(82 82 82));
   stroke-width: 1;
 }
 
 .grid-line {
-  stroke: var(--snice-color-border);
+  stroke: var(--snice-color-border, rgb(226 226 226));
   stroke-width: 1;
   stroke-dasharray: 2, 2;
 }
@@ -173,4 +173,11 @@ svg {
 .animated .chart-slice {
   transform-origin: center;
   animation: scaleIn 0.5s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
