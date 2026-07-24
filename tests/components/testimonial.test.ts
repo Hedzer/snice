@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/testimonial/snice-testimonial';
 import type { SniceTestimonialElement } from '../../packages/components/src/testimonial/snice-testimonial.types';
@@ -139,6 +141,32 @@ describe('snice-testimonial', () => {
 
       const avatarImg = queryShadow(testimonial as HTMLElement, '.avatar');
       expect(avatarImg).toBeFalsy();
+    });
+  });
+  describe('star icons', () => {
+    it('renders rating stars as registry SVGs, not unicode glyphs', async () => {
+      testimonial = await createComponent<SniceTestimonialElement>('snice-testimonial', { rating: 3 });
+      await new Promise(r => setTimeout(r, 50));
+
+      const stars = queryShadow(testimonial as HTMLElement, '.stars');
+      expect(stars?.querySelectorAll('svg').length).toBe(5);
+      expect(stars?.textContent).not.toContain('★');
+      expect(stars?.textContent).not.toContain('☆');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/testimonial/snice-testimonial.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

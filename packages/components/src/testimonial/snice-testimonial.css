@@ -19,7 +19,7 @@
   position: absolute;
   top: -0.5rem;
   right: 0.5rem;
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: 8rem;
   line-height: 1;
   color: var(--snice-color-primary, rgb(37 99 235));
@@ -116,4 +116,21 @@
 
 :host([variant="featured"]) .author-role {
   color: rgb(255 255 255 / 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.star-glyph {
+  display: inline-flex;
+}
+
+.star-glyph svg {
+  width: 1em;
+  height: 1em;
+  display: block;
 }

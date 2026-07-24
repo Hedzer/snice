@@ -1,4 +1,5 @@
 import { element, property, render, styles, html, css as cssTag } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-testimonial.css?inline';
 import type { TestimonialVariant, SniceTestimonialElement } from './snice-testimonial.types';
 
@@ -29,9 +30,9 @@ export class SniceTestimonial extends HTMLElement implements SniceTestimonialEle
     if (this.rating <= 0) return html``;
     const filled = Math.round(this.rating);
     const stars = Array.from({ length: 5 }, (_, i) =>
-      i < filled ? '\u2605' : '\u2606'
+      renderIcon(i < filled ? 'star' : 'star-outline', 'star-glyph')
     );
-    return html`<div part="stars" class="stars">${stars.join('')}</div>`;
+    return html`<div part="stars" class="stars">${stars}</div>`;
   }
 
   private renderAvatar() {

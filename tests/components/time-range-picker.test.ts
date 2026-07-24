@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../packages/components/src/time-range-picker/snice-time-range-picker';
 import type { SniceTimeRangePickerElement } from '../../packages/components/src/time-range-picker/snice-time-range-picker.types';
@@ -443,6 +445,20 @@ describe('snice-time-range-picker', () => {
       await wait(50);
       const slot = queryShadow(picker as HTMLElement, '.slot');
       expect(slot?.getAttribute('tabindex')).toBe('0');
+    });
+  });
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/time-range-picker/snice-time-range-picker.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
