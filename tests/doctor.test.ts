@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -133,6 +133,88 @@ describe('snice doctor tsconfig chain', () => {
     expect(configFindings()).toEqual([
       expect.objectContaining({ severity: 'warning', code: 'tsconfig' })
     ]);
+  });
+});
+
+describe('snice doctor decorator-transform probe', () => {
+  const REPO = resolve(__dirname, '..');
+
+  function linkDependency(name: string, scope = false) {
+    const target = scope
+      ? join(REPO, 'node_modules', '@swc', name)
+      : join(REPO, 'node_modules', name);
+    const link = scope
+      ? join(projectDir, 'node_modules', '@swc', name)
+      : join(projectDir, 'node_modules', name);
+    mkdirSync(join(link, '..'), { recursive: true });
+    symlinkSync(target, link);
+  }
+
+  const findings = () => runDoctorFindings().filter(finding => finding.code === 'decorator-transform');
+
+  it('flags a default Vite/esbuild build that drops TC39 field decorators', () => {
+    linkDependency('vite');
+    linkDependency('esbuild');
+    write('src/main.ts', [
+      "import { element, query, html } from 'snice';",
+      "@element('probe-app')",
+      'class ProbeApp extends HTMLElement {',
+      "  @query('.target') $target!: HTMLElement;",
+      '  render() { return html`<div class="target"></div>`; }',
+      '}'
+    ].join('\n'));
+    const results = findings();
+    expect(results).toHaveLength(1);
+    expect(results[0].severity).toBe('error');
+    expect(results[0].message).toContain('unplugin-swc');
+  }, 60000);
+
+  it('passes a SWC-configured build that preserves field decorators', () => {
+    linkDependency('vite');
+    linkDependency('esbuild');
+    linkDependency('unplugin-swc');
+    linkDependency('core', true);
+    linkDependency('core-linux-x64-gnu', true);
+    linkDependency('counter', true);
+    linkDependency('types', true);
+    write('vite.config.ts', [
+      "import { defineConfig } from 'vite';",
+      "import swc from 'unplugin-swc';",
+      'export default defineConfig({',
+      '  plugins: [swc.vite({ jsc: {',
+      "    parser: { syntax: 'typescript', decorators: true },",
+      "    target: 'es2022',",
+      "    transform: { decoratorMetadata: false, decoratorVersion: '2022-03', useDefineForClassFields: false }",
+      '  } })]',
+      '});'
+    ].join('\n'));
+    write('src/main.ts', [
+      "import { element, query, html } from 'snice';",
+      "@element('probe-app')",
+      'class ProbeApp extends HTMLElement {',
+      "  @query('.target') $target!: HTMLElement;",
+      '  render() { return html`<div class="target"></div>`; }',
+      '}'
+    ].join('\n'));
+    expect(findings()).toEqual([]);
+  }, 60000);
+
+  it('skips the probe when source uses no field decorators', () => {
+    linkDependency('vite');
+    linkDependency('esbuild');
+    write('src/main.ts', 'export const value = 1;\n');
+    expect(findings()).toEqual([]);
+  });
+
+  it('skips the probe when Vite is not installed', () => {
+    write('src/main.ts', [
+      "import { element, query } from 'snice';",
+      "@element('probe-app')",
+      'class ProbeApp extends HTMLElement {',
+      "  @query('.target') $target!: HTMLElement;",
+      '}'
+    ].join('\n'));
+    expect(findings()).toEqual([]);
   });
 });
 

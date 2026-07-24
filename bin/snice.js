@@ -12,6 +12,7 @@ import {
   writeFileSync
 } from 'node:fs';
 import { execFile } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -235,13 +236,93 @@ function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
   return configs;
 }
 
-function doctor(targetDir, json = false) {
-  const findings = collectDoctorFindings(targetDir);
+async function doctor(targetDir, json = false) {
+  const findings = await collectDoctorFindings(targetDir);
   renderDoctor(findings, json);
   return findings;
 }
 
-function collectDoctorFindings(targetDir) {
+/**
+ * Empirical decorator-transform probe. Config inspection (experimentalDecorators,
+ * useDefineForClassFields) cannot see what the build pipeline actually does with
+ * TC39 decorators: a default Vite/esbuild build silently drops field decorators
+ * (@query/@state/@property), leaving elements without their decorated accessors.
+ * Build a tiny module through the project's own Vite setup and check a field
+ * decorator marker survives. Skipped unless the project uses field decorators
+ * in source and has a locally installed Vite.
+ */
+const FIELD_DECORATOR_PATTERN = /@(?:query|queryAll|state|property|watch|observe|context|dispatch|on|request|respond)\s*\(/;
+
+const DECORATOR_PROBE_SOURCE = `function probeClass(tag) {
+  return (cls) => cls;
+}
+function probeField(marker) {
+  return (value, ctx) =>
+    function (initial) {
+      this.constructor.prototype[marker] = true;
+      return initial;
+    };
+}
+
+@probeClass('probe-class')
+class SniceDoctorProbe extends HTMLElement {
+  @probeField('snice-doctor-probe-installed')
+  $probe;
+}
+export { SniceDoctorProbe };
+`;
+
+async function probeDecoratorTransform(targetDir, add) {
+  const sourceRoot = join(targetDir, 'src');
+  const usesFieldDecorators = walkSource(sourceRoot).some(file =>
+    /\.[cm]?ts$/.test(file) && FIELD_DECORATOR_PATTERN.test(readFileSync(file, 'utf8'))
+  );
+  if (!usesFieldDecorators) return;
+
+  let vite;
+  try {
+    const projectRequire = createRequire(join(targetDir, 'package.json'));
+    const vitePackagePath = projectRequire.resolve('vite/package.json');
+    const viteRoot = dirname(vitePackagePath);
+    const viteManifest = JSON.parse(readFileSync(vitePackagePath, 'utf8'));
+    const importExport = viteManifest.exports?.['.']?.import;
+    const entry = (typeof importExport === 'string' ? importExport : importExport?.default)
+      ?? viteManifest.module ?? 'dist/node/index.js';
+    vite = await import(pathToFileURL(join(viteRoot, entry)).href);
+  } catch {
+    return; // No local Vite install — the transform cannot be probed here.
+  }
+
+  const probeDir = mkdtempSync(join(tmpdir(), 'snice-doctor-probe-'));
+  try {
+    writeFileSync(join(probeDir, 'index.html'), '<script type="module" src="/probe.ts"></script>');
+    writeFileSync(join(probeDir, 'probe.ts'), DECORATOR_PROBE_SOURCE);
+    const configFile = ['vite.config.ts', 'vite.config.js', 'vite.config.mts', 'vite.config.mjs']
+      .map(name => join(targetDir, name))
+      .find(existsSync);
+    const outDir = join(probeDir, 'dist');
+    await vite.build({
+      root: probeDir,
+      configFile: configFile ?? false,
+      logLevel: 'silent',
+      build: { outDir, emptyOutDir: true, minify: false, write: true }
+    });
+    const bundle = readdirSync(join(outDir, 'assets'))
+      .filter(name => name.endsWith('.js'))
+      .map(name => readFileSync(join(outDir, 'assets', name), 'utf8'))
+      .join('\n');
+    if (!bundle.includes('snice-doctor-probe-installed')) {
+      add('error', 'decorator-transform',
+        'the project build does not preserve TC39 field decorators (@query/@state/@property), so Snice elements silently lose their decorated accessors; use the create-app build setup (unplugin-swc with decoratorVersion 2022-03 and useDefineForClassFields: false) or an equivalent decorator transform');
+    }
+  } catch (error) {
+    add('warning', 'decorator-transform', `could not verify the decorator transform: ${error.message}`);
+  } finally {
+    rmSync(probeDir, { recursive: true, force: true });
+  }
+}
+
+async function collectDoctorFindings(targetDir) {
   const findings = [];
   const add = (severity, code, message) => findings.push({ severity, code, message });
   const projectPackage = readJson(join(targetDir, 'package.json'));
@@ -301,6 +382,8 @@ function collectDoctorFindings(targetDir) {
     add('warning', 'snice-skill', 'Snice skill is not installed; run npx snice init-ai');
   }
 
+  await probeDecoratorTransform(targetDir, add);
+
   return findings;
 }
 
@@ -315,8 +398,8 @@ function renderDoctor(findings, json = false) {
   if (errors) process.exitCode = 1;
 }
 
-function checkProject(targetDir, json = false) {
-  const findings = collectDoctorFindings(targetDir);
+async function checkProject(targetDir, json = false) {
+  const findings = await collectDoctorFindings(targetDir);
   const issues = collectValidationIssues(targetDir);
   const ok = !findings.some(item => item.severity === 'error') &&
     !issues.some(item => item.severity === 'error');
@@ -418,8 +501,8 @@ async function main() {
       });
       if (positional.length > 1) throw new TypeError(`${command} accepts at most one path`);
       const target = resolve(process.cwd(), positional[0] ?? '.');
-      if (command === 'check') checkProject(target, options.json === true);
-      else if (command === 'doctor') doctor(target, options.json === true);
+      if (command === 'check') await checkProject(target, options.json === true);
+      else if (command === 'doctor') await doctor(target, options.json === true);
       else validateProject(target, options.json === true);
       return;
     }
