@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../packages/components/src/receipt/snice-receipt';
 import type { SniceReceiptElement } from '../../packages/components/src/receipt/snice-receipt.types';
@@ -458,6 +460,31 @@ describe('snice-receipt', () => {
       await wait(10);
       const price = queryShadow(receipt, '[part="item-price"]');
       expect(price?.textContent).toBeTruthy();
+    });
+  });
+
+  describe('attribute contract', () => {
+    it('observes every documented kebab-case attribute', () => {
+      const observed = (customElements.get('snice-receipt') as any).observedAttributes as string[];
+      for (const attr of ['receipt-number', 'discount-label', 'payment-method', 'payment-details',
+                          'show-qr', 'qr-data', 'qr-position', 'thank-you', 'terminal-id']) {
+        expect(observed, attr).toContain(attr);
+      }
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/receipt/snice-receipt.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

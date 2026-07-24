@@ -11,7 +11,7 @@ import type {
 
 @element('snice-receipt')
 export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
-  @property()
+  @property({ attribute: 'receipt-number' })
   receiptNumber = '';
 
   @property()
@@ -47,34 +47,34 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
   @property({ type: Number })
   discount = 0;
 
-  @property()
+  @property({ attribute: 'discount-label' })
   discountLabel = 'Discount';
 
-  @property()
+  @property({ attribute: 'payment-method' })
   paymentMethod = '';
 
-  @property()
+  @property({ attribute: 'payment-details' })
   paymentDetails = '';
 
   @property()
   variant: ReceiptVariant = 'standard';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-qr' })
   showQr = false;
 
-  @property()
+  @property({ attribute: 'qr-data' })
   qrData = '';
 
-  @property()
+  @property({ attribute: 'qr-position' })
   qrPosition: QrPosition = 'bottom';
 
-  @property()
+  @property({ attribute: 'thank-you' })
   thankYou = 'Thank you for your purchase!';
 
   @property()
   cashier = '';
 
-  @property()
+  @property({ attribute: 'terminal-id' })
   terminalId = '';
 
   private getComputedSubtotal(): number {
