@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/date-picker/snice-date-picker';
 import type { SniceDatePickerElement } from '../../packages/components/src/date-picker/snice-date-picker.types';
@@ -1012,6 +1014,21 @@ describe('snice-date-picker', () => {
 
       // If @ready re-fired, parseInitialValue would have wiped this back to ''
       expect((datePicker as any).inputValue).toBe('user-typed-value');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/date-picker/snice-date-picker.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

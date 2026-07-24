@@ -227,7 +227,7 @@
 
 /* Calendar Header */
 .calendar-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -235,7 +235,7 @@
 }
 
 .calendar-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   flex: 1;
   text-align: center;
 }
@@ -448,5 +448,11 @@
     right: auto;
     transform: translateX(-50%);
     min-width: 280px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
