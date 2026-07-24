@@ -1,4 +1,5 @@
 import { element, property, dispatch, render, styles, html, css as cssTag } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-rating.css?inline';
 import type { RatingPrecision, RatingSize, SniceRatingElement } from './snice-rating.types';
 
@@ -11,7 +12,7 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
   max = 5;
 
   @property()
-  icon = '\u2605';
+  icon = 'star';
 
   /** Optional glyph for the unfilled layer. Defaults to `icon`. */
   @property({ attribute: 'empty-icon' })
@@ -79,8 +80,8 @@ export class SniceRating extends HTMLElement implements SniceRatingElement {
               aria-checked="${fill > 0 ? 'true' : 'false'}"
               aria-label="${`${i + 1} of ${this.max}`}"
               @click=${(e: MouseEvent) => this.handleClick(i, e)}>
-          <span class="star-empty">${this.emptyIcon || this.icon}</span>
-          <span class="star-full" style="clip-path: inset(0 ${100 - fill}% 0 0)">${this.icon}</span>
+          <span class="star-empty">${renderIcon(this.emptyIcon || this.icon, 'star-glyph')}</span>
+          <span class="star-full" style="clip-path: inset(0 ${100 - fill}% 0 0)">${renderIcon(this.icon, 'star-glyph')}</span>
         </span>
       `;
     });
