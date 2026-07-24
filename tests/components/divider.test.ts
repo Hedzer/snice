@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
 import '../../packages/components/src/divider/snice-divider';
 import type { SniceDividerElement } from '../../packages/components/src/divider/snice-divider.types';
@@ -74,5 +76,13 @@ describe('snice-divider', () => {
 
     const style = (divider as HTMLElement).style.getPropertyValue('--divider-color');
     expect(style).toBe('#ff0000');
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/divider/snice-divider.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
   });
 });

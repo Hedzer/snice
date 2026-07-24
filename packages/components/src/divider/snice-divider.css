@@ -1,6 +1,6 @@
 :host {
   display: block;
-  --divider-color: var(--snice-color-border);
+  --divider-color: var(--snice-color-border, rgb(226 226 226));
   --divider-thickness: 1px;
   --divider-text-bg: transparent;
   --divider-text-padding: 0 1rem; /* 0 16px */
@@ -30,7 +30,7 @@
   flex-shrink: 0;
   padding: var(--divider-text-padding);
   background: var(--divider-text-bg);
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-size: 0.875rem; /* 14px */
   font-weight: var(--snice-font-weight-medium, 500);
   white-space: nowrap;
