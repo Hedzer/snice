@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../packages/components/src/code-block/snice-code-block';
 import type { SniceCodeBlockElement, FormatterFunction } from '../../packages/components/src/code-block/snice-code-block.types';
@@ -1300,5 +1302,34 @@ describe('formatCode (declarative rule-based formatter)', () => {
     // setFormatter wins over grammar-based
     expect(codeBlock.code).toBe('HELLO');
     removeComponent(codeBlock as HTMLElement);
+  });
+
+  describe('copy feedback accessibility', () => {
+    it('should announce the Copied state via aria-live on the button', async () => {
+      const el = document.createElement('snice-code-block') as any;
+      el.code = 'const x = 1;';
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      const btn = el.shadowRoot.querySelector('.code-block__copy');
+      expect(btn?.getAttribute('aria-live')).toBe('polite');
+      el.remove();
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/code-block/snice-code-block.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

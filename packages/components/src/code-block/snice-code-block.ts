@@ -148,6 +148,7 @@ export class SniceCodeBlock extends HTMLElement implements SniceCodeBlockElement
           <button
             class="code-block__copy"
             part="copy-button"
+            aria-live="polite"
             @click="${() => this.copy()}">
             Copy
           </button>
