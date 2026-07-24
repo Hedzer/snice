@@ -11,16 +11,16 @@ export class SnicePagination extends HTMLElement {
   @property({ type: Number,  })
   siblings = 1;
   
-  @property({ type: Boolean,  })
+  @property({ type: Boolean, attribute: 'show-first' })
   showFirst = true;
-  
-  @property({ type: Boolean,  })
+
+  @property({ type: Boolean, attribute: 'show-last' })
   showLast = true;
-  
-  @property({ type: Boolean,  })
+
+  @property({ type: Boolean, attribute: 'show-prev' })
   showPrev = true;
-  
-  @property({ type: Boolean,  })
+
+  @property({ type: Boolean, attribute: 'show-next' })
   showNext = true;
   
   @property({  })
@@ -169,8 +169,15 @@ export class SnicePagination extends HTMLElement {
         color: var(--snice-color-text, #374151);
         font-size: var(--pagination-font-size);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: background var(--snice-transition-fast, 150ms) ease,
+                    border-color var(--snice-transition-fast, 150ms) ease,
+                    color var(--snice-transition-fast, 150ms) ease;
         font-family: inherit;
+      }
+
+      .pagination-button:focus-visible {
+        outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+        outline-offset: 2px;
       }
 
       :host([variant="text"]) .pagination-button {
@@ -203,6 +210,15 @@ export class SnicePagination extends HTMLElement {
         border-color: var(--snice-color-primary-hover, #2563eb);
       }
 
+      :host([variant="text"]) .pagination-button.active {
+        background: var(--snice-color-primary, #3b82f6);
+        color: var(--snice-color-text-inverse, white);
+      }
+
+      :host([variant="text"]) .pagination-button.active:hover {
+        background: var(--snice-color-primary-hover, #2563eb);
+      }
+
       .pagination-ellipsis {
         padding: 0 8px;
         color: var(--snice-color-text-secondary, #6b7280);
@@ -212,6 +228,13 @@ export class SnicePagination extends HTMLElement {
       svg {
         width: 16px;
         height: 16px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+        }
       }
     `;
   }

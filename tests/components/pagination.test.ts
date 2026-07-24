@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
 import '../../packages/components/src/pagination/snice-pagination';
 import type { SnicePaginationElement } from '../../packages/components/src/pagination/snice-pagination.types';
@@ -192,5 +194,37 @@ describe('snice-pagination', () => {
     // Should include pages around current (10) based on siblings
     expect(visiblePages).toContain('10');
     expect(visiblePages.length).toBeGreaterThan(5); // More pages shown with siblings=3
+  });
+
+  describe('attribute contract', () => {
+    it('observes the documented kebab-case show-* attributes', () => {
+      const observed = (customElements.get('snice-pagination') as any).observedAttributes as string[];
+      expect(observed).toContain('show-first');
+      expect(observed).toContain('show-last');
+      expect(observed).toContain('show-prev');
+      expect(observed).toContain('show-next');
+    });
+  });
+
+  describe('stylesheet contracts (inline styles)', () => {
+    const tsPath = resolve(process.cwd(), 'packages/components/src/pagination/snice-pagination.ts');
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const src = readFileSync(tsPath, 'utf8');
+      expect(src).toContain('@media (prefers-reduced-motion: reduce)');
+    });
+
+    it('gives keyboard focus a visible ring', () => {
+      const src = readFileSync(tsPath, 'utf8');
+      expect(src).toContain(':focus-visible');
+    });
+
+    it('keeps the active page visible in the text variant', () => {
+      // Without this rule, :host([variant="text"]) .pagination-button wins the
+      // specificity fight and the active page renders inverse text on a
+      // transparent background — invisible in dark mode.
+      const src = readFileSync(tsPath, 'utf8');
+      expect(src).toContain(':host([variant="text"]) .pagination-button.active');
+    });
   });
 });
