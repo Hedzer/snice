@@ -7,7 +7,7 @@ export default defineConfig({
   testMatch: ['**/*.spec.ts', 'website-render.test.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1, // one local retry: managed-server blips must not fail hundreds of specs
   workers: process.env.CI ? 1 : undefined,
   reporter: 'line',
   // Browser gates run alongside source, built, CDN, and React validation in

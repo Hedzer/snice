@@ -111,12 +111,14 @@ async function main() {
     console.log(`✓ ${label} up on :${port}`);
   };
 
-  await ensureServer({
+  const frameworkServer = {
     port: PORT,
     label: 'framework dev server',
     command: 'npm',
     args: ['run', 'dev:framework'],
-  });
+  };
+  await ensureServer(frameworkServer);
+  startWatchdog(frameworkServer);
   if (needsStorybook) {
     await ensureServer({
       port: STORYBOOK_PORT,
@@ -127,7 +129,28 @@ async function main() {
     });
   }
 
+  // Watchdog: the dev server has been observed dying silently under
+  // sustained multi-engine load. Probe the port and respawn on failure so a
+  // server blip costs a retry, not the remainder of the suite.
+  const watchdogs = [];
+  const startWatchdog = (opts) => {
+    let respawning = false;
+    const timer = setInterval(async () => {
+      if (respawning) return;
+      if (!(await probeEither(opts.port))) {
+        respawning = true;
+        console.error(`✗ ${opts.label} stopped answering on :${opts.port} — respawning`);
+        try { await ensureServer(opts); }
+        catch (error) { console.error(`✗ ${opts.label} respawn failed: ${error}`); }
+        finally { respawning = false; }
+      }
+    }, 5000);
+    timer.unref?.();
+    watchdogs.push(timer);
+  };
+
   const cleanup = () => {
+    for (const timer of watchdogs.splice(0)) clearInterval(timer);
     for (const child of managedChildren.splice(0)) {
       try { process.kill(-child.pid, 'SIGTERM'); } catch {}
     }
