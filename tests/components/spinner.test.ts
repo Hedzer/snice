@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/spinner/snice-spinner';
 import type { SniceSpinnerElement } from '../../packages/components/src/spinner/snice-spinner.types';
@@ -129,6 +131,33 @@ describe('snice-spinner', () => {
 
       const spinnerDiv = queryShadow(spinner as HTMLElement, '.spinner');
       expect(spinnerDiv?.getAttribute('aria-label')).toBe('Processing');
+    });
+  });
+  describe('label layout', () => {
+    it('does not center the label over the ring where long text overflows', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/spinner/snice-spinner.css'), 'utf8');
+      const labelRule = css.split('.spinner__label {')[1]?.split('}')[0] ?? '';
+      expect(labelRule).not.toContain('translate(-50%, -50%)');
+    });
+
+    it('does not paint-contain the host, which would clip the below-ring label', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/spinner/snice-spinner.css'), 'utf8');
+      expect(css).not.toMatch(/contain:[^;]*paint/);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/spinner/snice-spinner.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
