@@ -1,4 +1,4 @@
-import { element, property, ready, on, render, styles, html, css as cssTag } from 'snice';
+import { element, property, ready, on, render, styles, dispatch, html, css as cssTag } from 'snice';
 import cssContent from './snice-card.css?inline';
 import type { CardVariant, CardSize, SniceCardElement } from './snice-card.types';
 
@@ -82,13 +82,7 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
     if (this.clickable && !this.disabled) {
       this.selected = !this.selected;
 
-      this.dispatchEvent(new CustomEvent('card-click', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          selected: this.selected
-        }
-      }));
+      this.emitCardClick();
     }
   }
 
@@ -124,13 +118,12 @@ export class SniceCard extends HTMLElement implements SniceCardElement {
 
       this.selected = !this.selected;
 
-      this.dispatchEvent(new CustomEvent('card-click', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          selected: this.selected
-        }
-      }));
+      this.emitCardClick();
     }
+  }
+
+  @dispatch('card-click', { bubbles: true, composed: true })
+  private emitCardClick() {
+    return { selected: this.selected };
   }
 }

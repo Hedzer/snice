@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, triggerMouseEvent, triggerKeyboardEvent, trackRenders } from './test-utils';
 import '../../packages/components/src/card/snice-card';
 import type { SniceCardElement } from '../../packages/components/src/card/snice-card.types';
@@ -167,5 +169,20 @@ describe('snice-card', () => {
   it('should support different sizes', async () => {
     card = await createComponent<SniceCardElement>('snice-card', { size: 'large' });
     expect(card.size).toBe('large');
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/card/snice-card.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should flatten tilt and hover motion under prefers-reduced-motion', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
