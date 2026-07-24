@@ -12,5 +12,7 @@ export interface SniceBadgeElement extends HTMLElement {
   inline: boolean;
   size: BadgeSize;
   pulse: boolean;
+  label: string;
+  showZero: boolean;
   offset: number;
 }

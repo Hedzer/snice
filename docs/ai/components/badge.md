@@ -14,6 +14,8 @@ position: 'top-right'|'top-left'|'bottom-right'|'bottom-left' = 'top-right';
 inline: boolean = false;
 size: 'small'|'medium'|'large' = 'medium';
 pulse: boolean = false;
+label: string = '';                 // accessible announcement; falls back to visible content
+showZero: boolean = false;          // attr: show-zero — render 0 instead of hiding
 offset: number = 0;
 ```
 

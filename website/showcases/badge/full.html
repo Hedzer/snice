@@ -197,6 +197,23 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <section>
+    <h2>Live count bump + show-zero</h2>
+    <div class="row">
+      <div class="grid-item">
+        <snice-badge id="bump-badge" count="3" show-zero variant="primary" label="3 notifications"><div class="box"><span class="material-symbols-outlined">notifications</span></div></snice-badge>
+        <span>
+          <button id="bump-inc">+1</button>
+          <button id="bump-dec">-1</button>
+        </span>
+      </div>
+      <div class="grid-item">
+        <snice-badge count="0" show-zero variant="default"><div class="box"><span class="material-symbols-outlined">mail</span></div></snice-badge>
+        <span>count=0 show-zero</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <h2>Custom max</h2>
     <div class="row">
       <div class="grid-item">
@@ -265,6 +282,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <script type="module">
     import '../../../packages/components/src/badge/snice-badge.ts';
+
+    const bumpBadge = document.getElementById('bump-badge');
+    document.getElementById('bump-inc').addEventListener('click', () => {
+      bumpBadge.count += 1;
+      bumpBadge.label = `${bumpBadge.count} notifications`;
+    });
+    document.getElementById('bump-dec').addEventListener('click', () => {
+      bumpBadge.count = Math.max(0, bumpBadge.count - 1);
+      bumpBadge.label = `${bumpBadge.count} notifications`;
+    });
   </script>
 </body>
 </html>

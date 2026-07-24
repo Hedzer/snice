@@ -19,7 +19,7 @@ const VARIANTS: BadgeVariant[] = ['default', 'primary', 'success', 'warning', 'e
 const SIZES: BadgeSize[] = ['small', 'medium', 'large'];
 const POSITIONS: BadgePosition[] = ['top-right', 'top-left', 'bottom-right', 'bottom-left'];
 
-function makeBox(text = '📦'): HTMLElement {
+function makeBox(text = 'Box'): HTMLElement {
   const box = document.createElement('div');
   box.style.cssText = 'width:3rem;height:3rem;background:var(--snice-color-surface-container-high,#f0f0f0);border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
   box.textContent = text;
@@ -83,12 +83,12 @@ export const Default: Story = { args: { content: '5', variant: 'primary' } };
 
 // h2: All variants
 export const AllVariants: Story = {
-  render: () => row(...VARIANTS.map(v => makeBadge({ content: '5', variant: v }, '📦'))),
+  render: () => row(...VARIANTS.map(v => makeBadge({ content: '5', variant: v }, 'Box'))),
 };
 
 // h2: All sizes
 export const AllSizes: Story = {
-  render: () => row(...SIZES.map(s => makeBadge({ content: '3', variant: 'error', size: s }, '🔔'))),
+  render: () => row(...SIZES.map(s => makeBadge({ content: '3', variant: 'error', size: s }, 'Bell'))),
 };
 
 // h2: Variant x Size matrix
@@ -123,7 +123,7 @@ export const AllPositions: Story = {
     for (const [position, label] of positions) {
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.35rem;';
-      item.appendChild(makeBadge({ content: '1', variant: 'error', position }, '⬛'));
+      item.appendChild(makeBadge({ content: '1', variant: 'error', position }, 'Sq'));
       const span = document.createElement('span');
       span.style.cssText = 'font-size:.65rem;color:#888;';
       span.textContent = label;
@@ -136,15 +136,15 @@ export const AllPositions: Story = {
 
 // h2: Dot mode
 export const DotMode: Story = {
-  render: () => row(...VARIANTS.map(v => makeBadge({ dot: true, variant: v }, '💬'))),
+  render: () => row(...VARIANTS.map(v => makeBadge({ dot: true, variant: v }, 'Chat'))),
 };
 
 // h2: Pulse animation
 export const PulseAnimation: Story = {
   render: () => row(
-    makeBadge({ dot: true, pulse: true, variant: 'error' }, '🔔'),
-    makeBadge({ content: '!', pulse: true, variant: 'error' }, '🔔'),
-    makeBadge({ content: '3', pulse: true, variant: 'primary' }, '🔔'),
+    makeBadge({ dot: true, pulse: true, variant: 'error' }, 'Bell'),
+    makeBadge({ content: '!', pulse: true, variant: 'error' }, 'Bell'),
+    makeBadge({ content: '3', pulse: true, variant: 'primary' }, 'Bell'),
   ),
 };
 
@@ -157,7 +157,7 @@ export const CountPropertyWithMax: Story = {
     for (const count of counts) {
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.35rem;';
-      item.appendChild(makeBadge({ count, variant: 'error' }, '📧'));
+      item.appendChild(makeBadge({ count, variant: 'error' }, 'Mail'));
       const span = document.createElement('span');
       span.style.cssText = 'font-size:.65rem;color:#888;';
       span.textContent = `count=${count}`;
@@ -177,7 +177,7 @@ export const CustomMax: Story = {
     for (const [count, max] of cases) {
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.35rem;';
-      item.appendChild(makeBadge({ count, max, variant: 'error' }, '💬'));
+      item.appendChild(makeBadge({ count, max, variant: 'error' }, 'Chat'));
       const span = document.createElement('span');
       span.style.cssText = 'font-size:.65rem;color:#888;';
       span.textContent = `max=${max}, count=${count}`;
@@ -191,10 +191,10 @@ export const CustomMax: Story = {
 // h2: Content property (text)
 export const ContentPropertyText: Story = {
   render: () => row(
-    makeBadge({ content: 'NEW', variant: 'primary' }, '🎁'),
-    makeBadge({ content: 'HOT', variant: 'error' }, '🔥'),
-    makeBadge({ content: 'BETA', variant: 'warning' }, '⚙️'),
-    makeBadge({ content: '!', variant: 'error' }, '⚠️'),
+    makeBadge({ content: 'NEW', variant: 'primary' }, 'Gift'),
+    makeBadge({ content: 'HOT', variant: 'error' }, 'Fire'),
+    makeBadge({ content: 'BETA', variant: 'warning' }, 'Cog'),
+    makeBadge({ content: '!', variant: 'error' }, 'Warn'),
   ),
 };
 
@@ -229,7 +229,23 @@ export const OffsetValues: Story = {
 
 // h2: Edge case: no badge shown (count=0, no content, no dot)
 export const EdgeCaseNoBadge: Story = {
-  render: () => makeBadge({ variant: 'error' }, '📦'),
+  render: () => makeBadge({ variant: 'error' }, 'Box'),
+};
+
+// h2: Live count bump + show-zero
+export const LiveCountBumpShowZero: Story = {
+  render: () => {
+    const badge = makeBadge({ count: 3, 'show-zero': true, variant: 'primary', label: '3 notifications' }, 'N');
+    const zero = makeBadge({ count: 0, 'show-zero': true, variant: 'default' }, 'Z');
+    const inc = document.createElement('button');
+    inc.textContent = '+1';
+    inc.addEventListener('click', () => {
+      const el = badge.querySelector('snice-badge') as any ?? badge as any;
+      const target = (el.tagName === 'SNICE-BADGE' ? el : badge) as any;
+      target.count += 1;
+    });
+    return row(badge, inc, zero);
+  },
 };
 
 // h2: Dot x Position matrix
@@ -290,11 +306,11 @@ export const CSSPartsStyling: Story = {
     };
 
     // Default
-    const def = makeBadge({ content: '5', variant: 'error' }, '📦');
+    const def = makeBadge({ content: '5', variant: 'error' }, 'Box');
     demo.appendChild(makeItem('default (no ::part overrides)', def));
 
     // Styled base
-    const styled = makeBadge({ content: '5', variant: 'error' }, '📦');
+    const styled = makeBadge({ content: '5', variant: 'error' }, 'Box');
     styled.className = 'styled';
     demo.appendChild(makeItem('::part(base) + ::part(badge) styled', styled));
 

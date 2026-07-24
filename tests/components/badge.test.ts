@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { createComponent, removeComponent, queryShadow, trackRenders, wait } from './test-utils';
 import '../../packages/components/src/badge/snice-badge';
 import type { SniceBadgeElement } from '../../packages/components/src/badge/snice-badge.types';
 
@@ -181,6 +183,67 @@ describe('snice-badge', () => {
 
       const offsetValue = (badge as HTMLElement).style.getPropertyValue('--badge-offset');
       expect(offsetValue).toBe('20px');
+    });
+  });
+
+  describe('accessible label', () => {
+    it('should use the label property for the aria-label when provided', async () => {
+      badge = await createComponent<SniceBadgeElement>('snice-badge', { count: 5, label: '5 unread messages' });
+      await wait(50);
+
+      expect(queryShadow(badge as HTMLElement, '.badge')?.getAttribute('aria-label')).toBe('5 unread messages');
+    });
+
+    it('should fall back to the display content without a label', async () => {
+      badge = await createComponent<SniceBadgeElement>('snice-badge', { count: 5 });
+      await wait(50);
+
+      expect(queryShadow(badge as HTMLElement, '.badge')?.getAttribute('aria-label')).toBe('5');
+    });
+  });
+
+  describe('show-zero', () => {
+    it('should render a zero count when show-zero is set', async () => {
+      badge = await createComponent<SniceBadgeElement>('snice-badge', { count: 0, 'show-zero': true });
+      await wait(50);
+
+      const el = queryShadow(badge as HTMLElement, '.badge');
+      expect(el).toBeTruthy();
+      expect(el?.textContent?.trim()).toBe('0');
+    });
+
+    it('should keep hiding a zero count without show-zero', async () => {
+      badge = await createComponent<SniceBadgeElement>('snice-badge', { count: 0 });
+      await wait(50);
+
+      expect(queryShadow(badge as HTMLElement, '.badge')).toBeFalsy();
+    });
+  });
+
+  describe('count-change bump', () => {
+    it('should replay the bump animation class when the count changes', async () => {
+      badge = await createComponent<SniceBadgeElement>('snice-badge', { count: 2 });
+      await wait(80);
+
+      badge.count = 3;
+      await wait(120);
+
+      expect(queryShadow(badge as HTMLElement, '.badge')?.classList.contains('badge--bump')).toBe(true);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/badge/snice-badge.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should disable the infinite pulse animations under prefers-reduced-motion', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

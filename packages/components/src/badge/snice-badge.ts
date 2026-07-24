@@ -32,6 +32,14 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   @property({ type: Boolean,  })
   pulse = false;
 
+  // Accessible announcement for the badge; falls back to the visible content.
+  @property({  })
+  label = '';
+
+  // Render a zero count instead of hiding the badge.
+  @property({ type: Boolean, attribute: 'show-zero' })
+  showZero = false;
+
   @property({ type: Number,  })
   offset = 0;
 
@@ -49,7 +57,7 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
         <slot></slot>
         <if ${showBadge}>
           <span part="badge" class="${badgeClasses}"
-                aria-label="${displayContent}"
+                aria-label="${this.label || displayContent}"
                 role="status">
             <if ${!this.dot}>${displayContent}</if>
           </span>
@@ -66,14 +74,14 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   private getDisplayContent(): string {
     if (this.dot) return 'notification';
     if (this.content) return this.content;
-    if (this.count > 0) {
+    if (this.count > 0 || (this.showZero && this.count === 0)) {
       return this.count > this.max ? `${this.max}+` : String(this.count);
     }
     return '';
   }
 
   private shouldShowBadge(): boolean {
-    return this.dot || this.content !== '' || this.count > 0;
+    return this.dot || this.content !== '' || this.count > 0 || this.showZero;
   }
 
   private themeUnsubscribe?: () => void;
@@ -88,6 +96,17 @@ export class SniceBadge extends HTMLElement implements SniceBadgeElement {
   @dispose()
   teardown() {
     this.themeUnsubscribe?.();
+  }
+
+  @watch('count', 'content', { immediate: false })
+  async replayBump() {
+    await (this as any).rendered;
+    const badge = this.badgeElement;
+    if (!badge) return;
+
+    badge.classList.remove('badge--bump');
+    void badge.offsetWidth;
+    badge.classList.add('badge--bump');
   }
 
   @watch('offset')

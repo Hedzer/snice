@@ -27,6 +27,8 @@ The badge component displays notification indicators, status markers, and counts
 | `inline` | `boolean` | `false` | Display inline with text |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Badge size |
 | `pulse` | `boolean` | `false` | Enable pulse animation |
+| `label` | `string` | `''` | Accessible announcement for the badge; falls back to the visible content |
+| `showZero` (attr: `show-zero`) | `boolean` | `false` | Render a zero count instead of hiding the badge |
 | `offset` | `number` | `0` | Offset in pixels from default position |
 
 ## Methods
