@@ -35,10 +35,10 @@
   position: relative;
   width: 90%;
   max-width: 40rem;
-  background-color: var(--snice-color-surface-container-highest, var(--snice-color-surface));
+  background-color: var(--snice-color-surface-container-highest, var(--snice-color-surface, rgb(255 255 255)));
   border: 1px solid var(--snice-color-border-subtle, transparent);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
-  box-shadow: var(--snice-shadow-2xl, var(--snice-shadow-xl));
+  box-shadow: var(--snice-shadow-2xl, var(--snice-shadow-xl, 0 20px 32px -5px hsl(0 0% 0% / 0.06), 0 8px 16px -6px hsl(0 0% 0% / 0.08)));
   animation: slideDown 0.2s ease;
   overflow: hidden;
   max-height: 70vh;
@@ -49,7 +49,7 @@
 
 .command-palette__search {
   padding: var(--snice-spacing-md, 1rem);
-  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .command-palette__input {
@@ -60,11 +60,11 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .command-palette__input::placeholder {
-  color: var(--snice-color-text-tertiary);
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 .command-palette__results {
@@ -76,9 +76,9 @@
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
   font-size: var(--snice-font-size-sm, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text-secondary);
-  background-color: var(--snice-color-surface-container-low);
-  border-top: 1px solid var(--snice-color-border);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  background-color: var(--snice-color-surface-container-low, hsl(0 0% 98%));
+  border-top: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .command-palette__category:first-child {
@@ -100,15 +100,15 @@
 }
 
 .command-palette__item:hover {
-  background-color: var(--snice-color-surface-hover);
+  background-color: var(--snice-color-surface-hover, rgb(242 242 242));
 }
 
 .command-palette__item--active {
-  background-color: var(--snice-color-primary-subtle);
+  background-color: var(--snice-color-primary-subtle, hsl(214 100% 97%));
 }
 
 .command-palette__item--active:hover {
-  background-color: var(--snice-color-primary-subtle-hover);
+  background-color: var(--snice-color-primary-subtle-hover, hsl(214 95% 93%));
 }
 
 .command-palette__item--disabled {
@@ -146,7 +146,7 @@
 
 .command-palette__item-label {
   font-size: var(--snice-font-size-md, 1rem);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -154,7 +154,7 @@
 
 .command-palette__item-description {
   font-size: var(--snice-font-size-sm, 0.875rem);
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -167,11 +167,11 @@
   gap: 4px;
   font-size: var(--snice-font-size-xs, 0.75rem);
   font-family: var(--snice-font-family-mono, monospace);
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   padding: 2px 6px;
-  background-color: var(--snice-color-surface-container-low);
+  background-color: var(--snice-color-surface-container-low, hsl(0 0% 98%));
   border-radius: var(--snice-border-radius-sm, 0.25rem);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 .command-palette__empty {
@@ -198,5 +198,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
