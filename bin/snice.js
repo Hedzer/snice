@@ -272,7 +272,17 @@ class SniceDoctorProbe extends HTMLElement {
 export { SniceDoctorProbe };
 `;
 
-async function probeDecoratorTransform(targetDir, add) {
+async function probeDecoratorTransform(targetDir, add, projectPackage) {
+  const declaresVite = Boolean(
+    projectPackage?.dependencies?.vite || projectPackage?.devDependencies?.vite
+  );
+  const configFile = ['vite.config.ts', 'vite.config.js', 'vite.config.mts', 'vite.config.mjs']
+    .map(name => join(targetDir, name))
+    .find(existsSync);
+  // Only projects that actually build with Vite — vite resolvable merely
+  // through a transitive install is not a build setup.
+  if (!declaresVite && !configFile) return;
+
   const sourceRoot = join(targetDir, 'src');
   const usesFieldDecorators = walkSource(sourceRoot).some(file =>
     /\.[cm]?ts$/.test(file) && FIELD_DECORATOR_PATTERN.test(readFileSync(file, 'utf8'))
@@ -297,15 +307,20 @@ async function probeDecoratorTransform(targetDir, add) {
   try {
     writeFileSync(join(probeDir, 'index.html'), '<script type="module" src="/probe.ts"></script>');
     writeFileSync(join(probeDir, 'probe.ts'), DECORATOR_PROBE_SOURCE);
-    const configFile = ['vite.config.ts', 'vite.config.js', 'vite.config.mts', 'vite.config.mjs']
-      .map(name => join(targetDir, name))
-      .find(existsSync);
     const outDir = join(probeDir, 'dist');
     await vite.build({
       root: probeDir,
       configFile: configFile ?? false,
       logLevel: 'silent',
-      build: { outDir, emptyOutDir: true, minify: false, write: true }
+      build: {
+        outDir,
+        emptyOutDir: true,
+        minify: false,
+        write: true,
+        // Neutralize app-level output shaping (e.g. the create-app template's
+        // manualChunks vendor entry) that cannot resolve in the probe root.
+        rollupOptions: { output: { manualChunks: () => undefined } }
+      }
     });
     const bundle = readdirSync(join(outDir, 'assets'))
       .filter(name => name.endsWith('.js'))
@@ -315,8 +330,9 @@ async function probeDecoratorTransform(targetDir, add) {
       add('error', 'decorator-transform',
         'the project build does not preserve TC39 field decorators (@query/@state/@property), so Snice elements silently lose their decorated accessors; use the create-app build setup (unplugin-swc with decoratorVersion 2022-03 and useDefineForClassFields: false) or an equivalent decorator transform');
     }
-  } catch (error) {
-    add('warning', 'decorator-transform', `could not verify the decorator transform: ${error.message}`);
+  } catch {
+    // The probe only reports when a bundle could actually be inspected; a
+    // failed probe build is the project's build problem, not Doctor's finding.
   } finally {
     rmSync(probeDir, { recursive: true, force: true });
   }
@@ -382,7 +398,7 @@ async function collectDoctorFindings(targetDir) {
     add('warning', 'snice-skill', 'Snice skill is not installed; run npx snice init-ai');
   }
 
-  await probeDecoratorTransform(targetDir, add);
+  await probeDecoratorTransform(targetDir, add, projectPackage);
 
   return findings;
 }

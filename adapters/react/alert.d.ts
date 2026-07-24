@@ -10,6 +10,7 @@ export interface AlertProps extends SniceBaseProps {
     title?: any;
     dismissible?: any;
     icon?: any;
+    duration?: any;
     onAlertDismiss?: (event: any) => void;
     onAlertHidden?: (event: any) => void;
     onAlertShown?: (event: any) => void;

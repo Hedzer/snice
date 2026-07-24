@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Banner = createReactAdapter({
     tagName: 'snice-banner',
-    properties: ["variant", "position", "message", "dismissible", "icon", "actionText", "open"],
+    properties: ["variant", "position", "message", "dismissible", "icon", "actionText", "open", "label", "duration"],
     events: { "banner-open": "onBannerOpen", "banner-close": "onBannerClose", "banner-action": "onBannerAction" },
     formAssociated: false
 });

@@ -15,6 +15,7 @@ export interface AlertProps extends SniceBaseProps {
   title?: any;
   dismissible?: any;
   icon?: any;
+  duration?: any;
   onAlertDismiss?: (event: any) => void;
   onAlertHidden?: (event: any) => void;
   onAlertShown?: (event: any) => void;
@@ -38,7 +39,7 @@ export interface AlertProps extends SniceBaseProps {
  */
 export const Alert: SniceReactComponent<AlertProps, SniceComponentRef> = createReactAdapter<AlertProps, false>({
   tagName: 'snice-alert',
-  properties: ["variant","size","appearance","title","dismissible","icon"],
+  properties: ["variant","size","appearance","title","dismissible","icon","duration"],
   events: {"alert-dismiss":"onAlertDismiss","alert-hidden":"onAlertHidden","alert-shown":"onAlertShown"},
   formAssociated: false
 });

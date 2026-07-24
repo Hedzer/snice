@@ -224,6 +224,26 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/element-decorator-usage',
+    severity: 'error',
+    category: 'framework',
+    description: 'Reject element() used as a factory function; it only works as a class decorator.',
+    check(context) {
+      for (const binding of context.provenance.rootBindings.get('element') ?? []) {
+        const pattern = new RegExp(`\\b${escapeRegExp(binding.local)}\\s*\\(\\s*['"]`, 'g');
+        for (const match of context.source.matchAll(pattern)) {
+          const before = context.source[match.index - 1] ?? '';
+          // '@element(' is the decorator form; '.element(' is a method call.
+          if (before === '@' || before === '.' || /[\w$]/.test(before)) continue;
+          context.report(match.index, {
+            message: `${binding.local}() returns a class decorator; calling it as a factory does not define a custom element.`,
+            fix: `Use @${binding.local}('snice-tag') directly above a class that extends HTMLElement (or SniceElement). Review docs/ai/decorators.md.`
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/stage-3-decorators',
     severity: 'error',
     category: 'configuration',

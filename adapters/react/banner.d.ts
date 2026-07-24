@@ -11,6 +11,8 @@ export interface BannerProps extends SniceBaseProps {
     icon?: any;
     actionText?: any;
     open?: any;
+    label?: any;
+    duration?: any;
     onBannerOpen?: (event: any) => void;
     onBannerClose?: (event: any) => void;
     onBannerAction?: (event: any) => void;

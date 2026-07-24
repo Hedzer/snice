@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "producer": "element-decorator-usage",
+  "cases": [
+    {
+      "name": "element-call-result-invoked-as-factory",
+      "filename": "src/plant.ts",
+      "source": "import { element } from 'snice';\nexport const plant = element('plant')({\n  name: property('string')\n});",
+      "expectedRuleIds": ["snice/element-decorator-usage"]
+    },
+    {
+      "name": "element-call-assigned-as-factory",
+      "filename": "src/button.ts",
+      "source": "import { element } from 'snice';\nexport const Button = element('button', {\n  variant: 'primary'\n});",
+      "expectedRuleIds": ["snice/element-decorator-usage"]
+    },
+    {
+      "name": "element-call-aliased-import-as-factory",
+      "filename": "src/plant.ts",
+      "source": "import { element as defineElement } from 'snice';\nexport const plant = defineElement('plant')({});",
+      "expectedRuleIds": ["snice/element-decorator-usage"]
+    },
+    {
+      "name": "class-decorator-usage-is-clean",
+      "filename": "src/habit-card.ts",
+      "source": "import { element } from 'snice';\n@element('snice-habit-card')\nclass HabitCard extends HTMLElement {\n  render() { return null; }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "custom-elements-define-is-clean",
+      "filename": "src/app.ts",
+      "source": "import { element } from 'snice';\ncustomElements.define('snice-x', class extends HTMLElement {});",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "unrelated-element-method-is-clean",
+      "filename": "src/app.ts",
+      "source": "import { element } from 'snice';\nconst node = parent.element('child');",
+      "expectedRuleIds": []
+    }
+  ]
+}

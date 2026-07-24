@@ -13,6 +13,8 @@ export interface BadgeProps extends SniceBaseProps {
     inline?: any;
     size?: any;
     pulse?: any;
+    label?: any;
+    showZero?: any;
     offset?: any;
 }
 /**

@@ -18,6 +18,8 @@ export interface BadgeProps extends SniceBaseProps {
   inline?: any;
   size?: any;
   pulse?: any;
+  label?: any;
+  showZero?: any;
   offset?: any;
 
 }
@@ -40,7 +42,7 @@ export interface BadgeProps extends SniceBaseProps {
  */
 export const Badge: SniceReactComponent<BadgeProps, SniceComponentRef> = createReactAdapter<BadgeProps, false>({
   tagName: 'snice-badge',
-  properties: ["content","count","max","dot","variant","position","inline","size","pulse","offset"],
+  properties: ["content","count","max","dot","variant","position","inline","size","pulse","label","showZero","offset"],
   events: {},
   formAssociated: false
 });

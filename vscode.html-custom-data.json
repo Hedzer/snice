@@ -218,6 +218,10 @@
           "description": "dismissible: boolean"
         },
         {
+          "name": "duration",
+          "description": "duration: number"
+        },
+        {
           "name": "icon",
           "description": "icon: string"
         },
@@ -524,6 +528,10 @@
           "description": "inline: boolean"
         },
         {
+          "name": "label",
+          "description": "label: string"
+        },
+        {
           "name": "max",
           "description": "max: number"
         },
@@ -552,6 +560,10 @@
         {
           "name": "pulse",
           "description": "pulse: boolean"
+        },
+        {
+          "name": "show-zero",
+          "description": "showZero: boolean"
         },
         {
           "name": "size",
@@ -607,8 +619,16 @@
           "description": "dismissible: boolean"
         },
         {
+          "name": "duration",
+          "description": "duration: number"
+        },
+        {
           "name": "icon",
           "description": "icon: string"
+        },
+        {
+          "name": "label",
+          "description": "label: string"
         },
         {
           "name": "message",

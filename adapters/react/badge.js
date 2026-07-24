@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Badge = createReactAdapter({
     tagName: 'snice-badge',
-    properties: ["content", "count", "max", "dot", "variant", "position", "inline", "size", "pulse", "offset"],
+    properties: ["content", "count", "max", "dot", "variant", "position", "inline", "size", "pulse", "label", "showZero", "offset"],
     events: {},
     formAssociated: false
 });

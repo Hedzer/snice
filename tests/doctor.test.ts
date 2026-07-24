@@ -155,6 +155,12 @@ describe('snice doctor decorator-transform probe', () => {
   it('flags a default Vite/esbuild build that drops TC39 field decorators', () => {
     linkDependency('vite');
     linkDependency('esbuild');
+    write('package.json', JSON.stringify({
+      name: 'doctor-fixture',
+      version: '0.0.1',
+      dependencies: { snice: '^6.0.0' },
+      devDependencies: { vite: '^5.0.0' }
+    }));
     write('src/main.ts', [
       "import { element, query, html } from 'snice';",
       "@element('probe-app')",
@@ -177,6 +183,12 @@ describe('snice doctor decorator-transform probe', () => {
     linkDependency('core-linux-x64-gnu', true);
     linkDependency('counter', true);
     linkDependency('types', true);
+    write('package.json', JSON.stringify({
+      name: 'doctor-fixture',
+      version: '0.0.1',
+      dependencies: { snice: '^6.0.0' },
+      devDependencies: { vite: '^5.0.0', 'unplugin-swc': '^1.5.1' }
+    }));
     write('vite.config.ts', [
       "import { defineConfig } from 'vite';",
       "import swc from 'unplugin-swc';",

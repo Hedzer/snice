@@ -55,7 +55,12 @@ test.describe('Snice Alert', () => {
   });
 
   test('should have alerts with titles', async ({ page }) => {
-    const count = await page.locator('snice-alert[title]').count();
+    // The alert consumes the title attribute at upgrade (native tooltip is
+    // stripped intentionally); the value remains on the title property.
+    const count = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('snice-alert'))
+        .filter(alert => alert.title).length
+    );
     expect(count).toBeGreaterThan(0);
   });
 

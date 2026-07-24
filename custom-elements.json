@@ -1180,12 +1180,30 @@
               "default": "'filled'"
             },
             {
+              "kind": "method",
+              "name": "cleanup",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "dismissible",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
             },
             {
               "kind": "method",
@@ -1215,6 +1233,26 @@
             },
             {
               "kind": "method",
+              "name": "handleDurationChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleTitleChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "hide",
               "parameters": [],
               "return": {
@@ -1230,6 +1268,36 @@
                 "text": "string"
               },
               "default": "''"
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "pauseCountdown",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resumeCountdown",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -1284,6 +1352,14 @@
               "reflects": true
             },
             {
+              "name": "duration",
+              "fieldName": "duration",
+              "type": {
+                "text": "number"
+              },
+              "reflects": true
+            },
+            {
               "name": "icon",
               "fieldName": "icon",
               "type": {
@@ -1304,8 +1380,7 @@
               "fieldName": "title",
               "type": {
                 "text": "string"
-              },
-              "reflects": true
+              }
             },
             {
               "name": "variant",
@@ -2748,6 +2823,14 @@
             },
             {
               "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
               "name": "max",
               "type": {
                 "text": "number"
@@ -2777,6 +2860,16 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "replayBump",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -2819,6 +2912,14 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "showZero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
             },
             {
               "kind": "field",
@@ -2891,6 +2992,14 @@
               "reflects": true
             },
             {
+              "name": "label",
+              "fieldName": "label",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
               "name": "max",
               "fieldName": "max",
               "type": {
@@ -2917,6 +3026,14 @@
             {
               "name": "pulse",
               "fieldName": "pulse",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
+              "name": "show-zero",
+              "fieldName": "showZero",
               "type": {
                 "text": "boolean"
               },
@@ -2996,12 +3113,40 @@
               "default": "''"
             },
             {
+              "kind": "method",
+              "name": "cleanup",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "dismissible",
               "type": {
                 "text": "boolean"
               },
               "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "method",
+              "name": "handleDurationChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -3032,6 +3177,24 @@
               "default": "''"
             },
             {
+              "kind": "method",
+              "name": "init",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
               "kind": "field",
               "name": "message",
               "type": {
@@ -3048,12 +3211,32 @@
               "default": "false"
             },
             {
+              "kind": "method",
+              "name": "pauseCountdown",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "position",
               "type": {
                 "text": "'top' | 'bottom'"
               },
               "default": "'top'"
+            },
+            {
+              "kind": "method",
+              "name": "resumeCountdown",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -3068,16 +3251,6 @@
             {
               "kind": "method",
               "name": "toggle",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "updateOpenAttribute",
               "parameters": [],
               "return": {
                 "type": {
@@ -3112,8 +3285,24 @@
               "reflects": true
             },
             {
+              "name": "duration",
+              "fieldName": "duration",
+              "type": {
+                "text": "number"
+              },
+              "reflects": true
+            },
+            {
               "name": "icon",
               "fieldName": "icon",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "label",
+              "fieldName": "label",
               "type": {
                 "text": "string"
               },

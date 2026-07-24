@@ -890,6 +890,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
+        "duration": {
+          "property": "duration",
+          "type": "number",
+          "literals": []
+        },
         "icon": {
           "property": "icon",
           "type": "string",
@@ -929,6 +934,11 @@ export const ANALYZER_CONTRACTS = {
         "dismissible": {
           "type": "boolean",
           "attribute": "dismissible",
+          "structured": false
+        },
+        "duration": {
+          "type": "number",
+          "attribute": "duration",
           "structured": false
         },
         "icon": {
@@ -1507,6 +1517,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
+        "label": {
+          "property": "label",
+          "type": "string",
+          "literals": []
+        },
         "max": {
           "property": "max",
           "type": "number",
@@ -1529,6 +1544,11 @@ export const ANALYZER_CONTRACTS = {
         },
         "pulse": {
           "property": "pulse",
+          "type": "boolean",
+          "literals": []
+        },
+        "show-zero": {
+          "property": "showZero",
           "type": "boolean",
           "literals": []
         },
@@ -1575,6 +1595,11 @@ export const ANALYZER_CONTRACTS = {
           "attribute": "inline",
           "structured": false
         },
+        "label": {
+          "type": "string",
+          "attribute": "label",
+          "structured": false
+        },
         "max": {
           "type": "number",
           "attribute": "max",
@@ -1593,6 +1618,11 @@ export const ANALYZER_CONTRACTS = {
         "pulse": {
           "type": "boolean",
           "attribute": "pulse",
+          "structured": false
+        },
+        "showZero": {
+          "type": "boolean",
+          "attribute": "show-zero",
           "structured": false
         },
         "size": {
@@ -1629,8 +1659,18 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "literals": []
         },
+        "duration": {
+          "property": "duration",
+          "type": "number",
+          "literals": []
+        },
         "icon": {
           "property": "icon",
+          "type": "string",
+          "literals": []
+        },
+        "label": {
+          "property": "label",
           "type": "string",
           "literals": []
         },
@@ -1674,9 +1714,19 @@ export const ANALYZER_CONTRACTS = {
           "attribute": "dismissible",
           "structured": false
         },
+        "duration": {
+          "type": "number",
+          "attribute": "duration",
+          "structured": false
+        },
         "icon": {
           "type": "string",
           "attribute": "icon",
+          "structured": false
+        },
+        "label": {
+          "type": "string",
+          "attribute": "label",
           "structured": false
         },
         "message": {
@@ -21558,7 +21608,8 @@ export const ANALYZER_CONTRACTS = {
           "appearance",
           "title",
           "dismissible",
-          "icon"
+          "icon",
+          "duration"
         ],
         "events": {
           "alert-dismiss": "onAlertDismiss",
@@ -21572,6 +21623,7 @@ export const ANALYZER_CONTRACTS = {
           "title",
           "dismissible",
           "icon",
+          "duration",
           "onAlertDismiss",
           "onAlertHidden",
           "onAlertShown"
@@ -21786,6 +21838,8 @@ export const ANALYZER_CONTRACTS = {
           "inline",
           "size",
           "pulse",
+          "label",
+          "showZero",
           "offset"
         ],
         "events": {},
@@ -21799,6 +21853,8 @@ export const ANALYZER_CONTRACTS = {
           "inline",
           "size",
           "pulse",
+          "label",
+          "showZero",
           "offset"
         ],
         "formAssociated": false
@@ -21816,7 +21872,9 @@ export const ANALYZER_CONTRACTS = {
           "dismissible",
           "icon",
           "actionText",
-          "open"
+          "open",
+          "label",
+          "duration"
         ],
         "events": {
           "banner-open": "onBannerOpen",
@@ -21831,6 +21889,8 @@ export const ANALYZER_CONTRACTS = {
           "icon",
           "actionText",
           "open",
+          "label",
+          "duration",
           "onBannerOpen",
           "onBannerClose",
           "onBannerAction"

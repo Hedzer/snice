@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const Alert = createReactAdapter({
     tagName: 'snice-alert',
-    properties: ["variant", "size", "appearance", "title", "dismissible", "icon"],
+    properties: ["variant", "size", "appearance", "title", "dismissible", "icon", "duration"],
     events: { "alert-dismiss": "onAlertDismiss", "alert-hidden": "onAlertHidden", "alert-shown": "onAlertShown" },
     formAssociated: false
 });
