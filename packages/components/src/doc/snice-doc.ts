@@ -311,6 +311,7 @@ export class SniceDoc extends HTMLElement {
   }
 
   private showImageDialog() {
+    this.ensureSavedSelection();
     const insertionRange = this.savedSelection?.cloneRange() ?? null;
     const dialog = document.createElement('snice-modal');
     dialog.setAttribute('title', 'Insert Image');
@@ -341,7 +342,7 @@ export class SniceDoc extends HTMLElement {
     const insertBtn = document.createElement('snice-button');
     insertBtn.textContent = 'Insert';
     insertBtn.addEventListener('click', () => {
-      const url = input.value;
+      const url = input.value || input.shadowRoot?.querySelector('input')?.value || '';
       if (url) {
         this.doInsertImage(url, insertionRange);
       }
@@ -378,6 +379,7 @@ export class SniceDoc extends HTMLElement {
   }
 
   private showTableDialog() {
+    this.ensureSavedSelection();
     const insertionRange = this.savedSelection?.cloneRange() ?? null;
     const dialog = document.createElement('snice-modal');
     dialog.setAttribute('title', 'Insert Table');
@@ -545,6 +547,20 @@ export class SniceDoc extends HTMLElement {
   private saveSelectionBeforeAction = (e: MouseEvent) => {
     this.saveCurrentSelection();
   };
+
+  /**
+   * Dialog-open guard: synthetic clicks fire no mousedown and Firefox
+   * delivers selectionchange lazily, so savedSelection can be missing when
+   * a dialog opens. Capture the live selection ONLY when nothing valid is
+   * saved — the live selection at this point may be a collapsed default at
+   * the editor start, which must never overwrite a real saved cursor.
+   */
+  private ensureSavedSelection() {
+    if (this.savedSelection && this.editor.contains(this.savedSelection.commonAncestorContainer)) {
+      return;
+    }
+    this.saveCurrentSelection();
+  }
 
   private restoreSelection() {
     if (this.savedSelection) {
