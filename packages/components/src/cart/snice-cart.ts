@@ -167,7 +167,7 @@ export class SniceCart extends HTMLElement implements SniceCartElement {
               </if>
               <span class="cart__item-price">${this.currency}${this.formatPrice(item.price)} each</span>
             </div>
-            <snice-button size="small" variant="text" circle @button-click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}">✕</snice-button>
+            <snice-button size="small" variant="text" circle icon="x-mark" @button-click=${() => this.handleRemove(item)} aria-label="Remove ${item.name}"></snice-button>
           </div>
           <div class="cart__item-actions">
             <snice-step-input

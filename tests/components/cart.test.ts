@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
 import '../../packages/components/src/cart/snice-cart';
 import type { SniceCartElement, CartItem } from '../../packages/components/src/cart/snice-cart.types';
@@ -247,5 +249,33 @@ describe('snice-cart', () => {
     expect(detail.discount).toBe(20);
     expect(detail.tax).toBe(8);
     expect(detail.total).toBe(88);
+  });
+
+  describe('remove control', () => {
+    it('should render the remove control as an icon, not a text glyph', async () => {
+      cart = await createComponent<SniceCartElement>('snice-cart');
+      cart.items = [{ id: '1', name: 'Widget', price: 9.99, quantity: 1 }];
+      await wait(80);
+
+      const removeBtn = cart.shadowRoot!.querySelector('snice-button[circle]');
+      expect(removeBtn).toBeTruthy();
+      expect(removeBtn?.textContent).not.toContain('\u2715');
+      expect(removeBtn?.getAttribute('icon')).toBe('x-mark');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/cart/snice-cart.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
