@@ -3,6 +3,13 @@ import { renderIcon } from '../utils';
 import cssContent from './snice-message-strip.css?inline';
 import type { MessageStripVariant, SniceMessageStripElement } from './snice-message-strip.types';
 
+const DEFAULT_VARIANT_ICONS: Record<MessageStripVariant, string> = {
+  info: 'info-circle',
+  success: 'check-circle',
+  warning: 'exclamation-triangle',
+  danger: 'x-circle',
+};
+
 @element('snice-message-strip')
 export class SniceMessageStrip extends HTMLElement implements SniceMessageStripElement {
   @property()
@@ -24,6 +31,8 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
     const hasIcon = this.icon ? this.icon !== 'none' : true;
     const showDefaultIcon = !this.icon || this.icon === 'none';
     const iconClasses = showDefaultIcon ? 'message-strip-icon message-strip-icon--default' : 'message-strip-icon';
+    const defaultIconName = DEFAULT_VARIANT_ICONS[this.variant] ?? DEFAULT_VARIANT_ICONS.info;
+    const iconName = showDefaultIcon ? defaultIconName : this.icon;
     const classes = [
       'message-strip',
       this.isHidden ? 'message-strip--hidden' : ''
@@ -34,7 +43,7 @@ export class SniceMessageStrip extends HTMLElement implements SniceMessageStripE
         <if ${hasIcon}>
           <div class="${iconClasses}" part="icon">
             <slot name="icon">
-              ${this.icon && this.icon !== 'none' ? renderIcon(this.icon, 'message-strip-icon-content') : ''}
+              ${renderIcon(iconName, 'message-strip-icon-content')}
             </slot>
           </div>
         </if>

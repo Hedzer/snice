@@ -110,27 +110,6 @@
   line-height: 1;
 }
 
-/* Default icons per variant */
-:host([variant="info"]) .message-strip-icon--default::before,
-:host(:not([variant])) .message-strip-icon--default::before {
-  content: "\2139"; /* info */
-  font-weight: bold;
-}
-
-:host([variant="success"]) .message-strip-icon--default::before {
-  content: "\2713"; /* check */
-  font-weight: bold;
-}
-
-:host([variant="warning"]) .message-strip-icon--default::before {
-  content: "\26A0"; /* warning */
-}
-
-:host([variant="danger"]) .message-strip-icon--default::before {
-  content: "\2715"; /* x */
-  font-weight: bold;
-}
-
 /* Content */
 .message-strip-content {
   flex: 1;
@@ -166,4 +145,12 @@
 .message-strip-dismiss svg {
   width: 0.875rem;
   height: 0.875rem;
+}
+
+/* Near-zero durations (not none) so animationend still fires and hide() completes */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/message-strip/snice-message-strip.css');
 import '../../packages/components/src/message-strip/snice-message-strip';
 import type { SniceMessageStripElement } from '../../packages/components/src/message-strip/snice-message-strip.types';
 
@@ -171,6 +175,39 @@ describe('snice-message-strip', () => {
 
       const dismissBtn = queryShadow(strip as HTMLElement, '.message-strip-dismiss');
       expect(dismissBtn?.getAttribute('aria-label')).toBe('Dismiss');
+    });
+  });
+
+  describe('default icons', () => {
+    it.each([
+      ['info'],
+      ['success'],
+      ['warning'],
+      ['danger'],
+    ])('renders a registry SVG default icon for the %s variant', async (variant) => {
+      strip = await createComponent<SniceMessageStripElement>('snice-message-strip', { variant });
+      await wait(200);
+
+      const icon = queryShadow(strip as HTMLElement, '.message-strip-icon--default');
+      expect(icon?.querySelector('svg')).toBeTruthy();
+    });
+
+    it('does not draw default icons with unicode ::before glyphs', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).not.toMatch(/content:\s*"\\2[0-9A-Fa-f]{3}"/);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
