@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
 import '../../packages/components/src/drawer/snice-drawer';
 import type { SniceDrawerElement } from '../../packages/components/src/drawer/snice-drawer.types';
@@ -486,5 +488,13 @@ describe('snice-drawer', () => {
     expect(drawer.noFooter).toBe(true);
     const footer = queryShadow(drawer as HTMLElement, '.drawer-footer');
     expect(footer).toBeFalsy();
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/drawer/snice-drawer.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
   });
 });
