@@ -292,6 +292,20 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/on-handler-argument',
+    severity: 'error',
+    category: 'events',
+    description: 'Reject a handler function as the second @on() argument; it is silently ignored at runtime.',
+    check(context) {
+      for (const match of context.source.matchAll(/@on\(\s*(?:\[[^\]]*\]|['"][^'"]+['"])\s*,\s*(?:\([^)]*\)\s*=>|[A-Za-z_$][\w$]*\s*=>|(?:async\s+)?function\b)/g)) {
+        context.report(match.index, {
+          message: "The second @on() argument must be a CSS selector string or an options object; a handler function is silently ignored at runtime.",
+          fix: "Handle the event in the decorated method; use @on('event', '.selector') for delegation or @on('event', { preventDefault: true }) for options. Review docs/ai/api.md."
+        });
+      }
+    }
+  },
+  {
     id: 'snice/component-import-path',
     severity: 'error',
     category: 'imports',
@@ -828,7 +842,9 @@ const RULE_DEFINITIONS = [
       for (const opening of reactExportOpenings(context, 'Select')) {
         const element = findElementBody(context.source, opening);
         if (!element) continue;
-        const option = element.body.match(/<option\b/i);
+        // Case-sensitive: native <option> is lowercase; the generated Option
+        // wrapper (<Option>) is a valid way to author select options.
+        const option = element.body.match(/<option\b/);
         if (!option) continue;
         context.report(element.bodyStart + option.index, {
           message: 'Native <option> elements are not read by snice-select.',
@@ -856,7 +872,9 @@ const RULE_DEFINITIONS = [
       for (const opening of findOpeningTags(context.source, ['snice-select'])) {
         const element = findElementBody(context.source, opening);
         if (!element) continue;
-        const option = element.body.match(/<option\b/i);
+        // Case-sensitive: native <option> is lowercase; <Option> is the
+        // generated React wrapper and a valid select child.
+        const option = element.body.match(/<option\b/);
         if (!option) continue;
         context.report(element.bodyStart + option.index, {
           message: 'Native <option> elements are not read by snice-select.',

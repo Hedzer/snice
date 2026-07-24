@@ -75,6 +75,12 @@
       "expectedRuleIds": []
     },
     {
+      "name": "option-wrapper-children-in-select-are-clean",
+      "filename": "src/form.tsx",
+      "source": "import { Select, Option } from 'snice/react';\nexport function GenrePicker({ onChange }) {\n  return <Select label=\"Genre\" onSelectChange={onChange}><Option value=\"a\" label=\"Annual\" /><Option value=\"s\" label=\"Sick\" /></Select>;\n}",
+      "expectedRuleIds": []
+    },
+    {
       "name": "invented-valueless-boolean-prop-on-card",
       "filename": "src/card.tsx",
       "source": "import { Card } from 'snice/react';\nexport function Panel() {\n  return <Card frobnicate />;\n}",

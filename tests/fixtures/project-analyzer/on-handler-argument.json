@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "producer": "on-handler-argument",
+  "cases": [
+    {
+      "name": "arrow-function-as-second-on-argument",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click', () => this.updateHabit())\n  handleClick(event: Event) {}\n}",
+      "expectedRuleIds": ["snice/on-handler-argument"]
+    },
+    {
+      "name": "function-expression-as-second-on-argument",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click', function () { this.updateHabit(); })\n  handleClick(event: Event) {}\n}",
+      "expectedRuleIds": ["snice/on-handler-argument"]
+    },
+    {
+      "name": "selector-string-second-argument-is-clean",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click', '.save-button')\n  handleClick(event: Event) {}\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "options-object-second-argument-is-clean",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click', { preventDefault: true, debounce: 300 })\n  handleClick(event: Event) {}\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "single-argument-and-event-array-are-clean",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click')\n  handleClick(event: Event) {}\n  @on(['click', 'keydown:Enter'])\n  handleAny(event: Event) {}\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "null-selector-with-options-is-clean",
+      "filename": "src/habit-card.ts",
+      "source": "class HabitCard {\n  @on('click', null, { debounce: 300 })\n  handleClick(event: Event) {}\n}",
+      "expectedRuleIds": []
+    }
+  ]
+}

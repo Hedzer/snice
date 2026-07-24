@@ -567,6 +567,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/action-bar/snice-action-bar.js",
       "family": "action-bar",
       "attributes": {
+        "label": {
+          "property": "label",
+          "type": "string",
+          "literals": []
+        },
         "no-animation": {
           "property": "noAnimation",
           "type": "boolean",
@@ -614,6 +619,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "label": {
+          "type": "string",
+          "attribute": "label",
+          "structured": false
+        },
         "noAnimation": {
           "type": "boolean",
           "attribute": "no-animation",
@@ -21302,6 +21312,7 @@ export const ANALYZER_CONTRACTS = {
           "position",
           "size",
           "variant",
+          "label",
           "noAnimation",
           "noEscapeDismiss"
         ],
@@ -21314,6 +21325,7 @@ export const ANALYZER_CONTRACTS = {
           "position",
           "size",
           "variant",
+          "label",
           "noAnimation",
           "noEscapeDismiss",
           "onActionBarOpen",
