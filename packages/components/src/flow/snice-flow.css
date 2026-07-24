@@ -128,7 +128,7 @@
 }
 
 .flow__node-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
   font-size: 0.75rem;
@@ -145,7 +145,7 @@
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   font-weight: var(--snice-font-weight-medium, 500);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
 }
 
 .flow__node-body {
@@ -243,4 +243,11 @@
   fill-opacity: 0.08;
   stroke: var(--snice-color-primary, rgb(37 99 235));
   stroke-width: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
