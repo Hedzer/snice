@@ -107,3 +107,9 @@
 :host([variant="text"]) .skeleton:last-child:not(:only-child) {
   width: 60%;
 }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, trackRenders } from './test-utils';
 import '../../packages/components/src/segmented-control/snice-segmented-control';
 import type { SniceSegmentedControlElement, SegmentedControlOption } from '../../packages/components/src/segmented-control/snice-segmented-control.types';
@@ -173,5 +175,19 @@ describe('snice-segmented-control', () => {
     expect(segments[0]?.getAttribute('role')).toBe('radio');
     expect(segments[0]?.getAttribute('aria-checked')).toBe('true');
     expect(segments[1]?.getAttribute('aria-checked')).toBe('false');
+  });
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/segmented-control/snice-segmented-control.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll } from './test-utils';
 import '../../packages/components/src/skeleton/snice-skeleton';
 import type { SniceSkeletonElement } from '../../packages/components/src/skeleton/snice-skeleton.types';
@@ -64,5 +66,19 @@ describe('snice-skeleton', () => {
     const el = queryShadow(skeleton as HTMLElement, '.skeleton') as HTMLElement;
     expect(el?.style.cssText).toContain('width: 40px');
     expect(el?.style.cssText).toContain('height: 40px');
+  });
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/skeleton/snice-skeleton.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

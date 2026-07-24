@@ -568,3 +568,10 @@ img[src=""] {
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
