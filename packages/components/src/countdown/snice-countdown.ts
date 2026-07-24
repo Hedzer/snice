@@ -120,7 +120,7 @@ export class SniceCountdown extends HTMLElement implements SniceCountdownElement
       `;
     });
 
-    return html`<div part="base" class="countdown">${items}</div>`;
+    return html`<div part="base" class="countdown" role="timer" aria-label="Countdown">${items}</div>`;
   }
 
   @styles()

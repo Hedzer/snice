@@ -29,7 +29,7 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
 }
 
 .separator {
@@ -85,4 +85,11 @@
 /* Complete state */
 :host(.complete) .value {
   color: var(--snice-color-success, rgb(22 163 74));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
