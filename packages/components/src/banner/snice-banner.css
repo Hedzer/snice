@@ -165,3 +165,20 @@
 .banner__slot {
   display: contents;
 }
+
+.banner__close-icon {
+  display: flex;
+}
+
+.banner__close-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .banner__action,
+  .banner__close {
+    transition-duration: 0.01ms;
+  }
+}

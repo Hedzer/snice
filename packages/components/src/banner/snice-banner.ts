@@ -1,6 +1,6 @@
-import { element, property, watch, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, watch, ready, dispose, on, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
 import { renderIcon } from '../utils';
-import { INFO_CIRCLE_SOLID, CHECK_CIRCLE_SOLID, EXCLAMATION_TRIANGLE_SOLID, X_CIRCLE_SOLID } from '../icons';
+import { INFO_CIRCLE_SOLID, CHECK_CIRCLE_SOLID, EXCLAMATION_TRIANGLE_SOLID, X_CIRCLE_SOLID, X_MARK } from '../icons';
 import cssContent from './snice-banner.css?inline';
 import type { BannerVariant, BannerPosition, SniceBannerElement } from './snice-banner.types';
 
@@ -35,14 +35,18 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   @property({ type: Boolean })
   open = false;
 
-  @watch('open')
-  updateOpenAttribute() {
-    if (this.open) {
-      this.setAttribute('open', '');
-    } else {
-      this.removeAttribute('open');
-    }
-  }
+  // Accessible name for the banner region; falls back to "<variant> banner".
+  @property({  })
+  label = '';
+
+  // Auto-dismiss after this many milliseconds once open; 0 disables. The
+  // countdown pauses while the pointer is over the banner.
+  @property({ type: Number })
+  duration = 0;
+
+  private dismissTimer: ReturnType<typeof setTimeout> | null = null;
+  private countdownStartedAt = 0;
+  private countdownRemaining = 0;
 
   @render()
   render() {
@@ -51,7 +55,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
     const defaultSvg = DEFAULT_BANNER_ICONS[this.variant];
 
     return html/*html*/`
-      <div class="${bannerClasses}" role="region" aria-label="${this.variant} banner" part="banner">
+      <div class="${bannerClasses}" role="region" aria-label="${this.label || `${this.variant} banner`}" part="banner">
         <span class="banner__icon-slot" part="icon">
           <slot name="icon">
             <if ${this.icon}>
@@ -85,7 +89,7 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
             type="button"
             aria-label="Close"
             @click=${this.handleClose}
-          >✕</button>
+          ><span class="banner__close-icon" aria-hidden="true">${unsafeHTML(X_MARK)}</span></button>
         </if>
       </div>
     `;
@@ -107,10 +111,71 @@ export class SniceBanner extends HTMLElement implements SniceBannerElement {
   @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
+      this.startCountdown();
       this.dispatchOpenEvent();
     } else {
+      this.clearCountdown();
       this.dispatchCloseEvent();
     }
+  }
+
+  @ready()
+  init() {
+    if (this.open) {
+      this.startCountdown();
+    }
+  }
+
+  @dispose()
+  cleanup() {
+    this.clearCountdown();
+  }
+
+  @watch('duration', { immediate: false })
+  handleDurationChange() {
+    if (this.open) {
+      this.startCountdown();
+    }
+  }
+
+  @on('mouseenter')
+  pauseCountdown() {
+    if (this.dismissTimer === null) return;
+
+    clearTimeout(this.dismissTimer);
+    this.dismissTimer = null;
+    this.countdownRemaining = Math.max(0, this.countdownRemaining - (Date.now() - this.countdownStartedAt));
+  }
+
+  @on('mouseleave')
+  resumeCountdown() {
+    if (this.duration > 0 && this.open && this.countdownRemaining > 0) {
+      this.armCountdown(this.countdownRemaining);
+    }
+  }
+
+  private startCountdown() {
+    this.clearCountdown();
+    if (this.duration > 0) {
+      this.armCountdown(this.duration);
+    }
+  }
+
+  private armCountdown(ms: number) {
+    this.countdownStartedAt = Date.now();
+    this.countdownRemaining = ms;
+    this.dismissTimer = setTimeout(() => {
+      this.dismissTimer = null;
+      this.hide();
+    }, ms);
+  }
+
+  private clearCountdown() {
+    if (this.dismissTimer !== null) {
+      clearTimeout(this.dismissTimer);
+      this.dismissTimer = null;
+    }
+    this.countdownRemaining = 0;
   }
 
   @dispatch('banner-open', { bubbles: true, composed: true })

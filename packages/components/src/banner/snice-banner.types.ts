@@ -9,6 +9,8 @@ export interface SniceBannerElement extends HTMLElement {
   icon: string;
   actionText: string;
   open: boolean;
+  label: string;
+  duration: number;
 
   show(): void;
   hide(): void;

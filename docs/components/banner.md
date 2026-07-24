@@ -26,6 +26,8 @@ The banner component displays fixed-position notification banners at the top or 
 | `icon` | `string` | `''` | Custom icon (emoji, URL, image file). Default icons per variant. |
 | `actionText` (attr: `action-text`) | `string` | `''` | Action button text |
 | `open` | `boolean` | `false` | Banner visibility |
+| `label` | `string` | `''` | Accessible name for the banner region; falls back to `<variant> banner` |
+| `duration` | `number` | `0` | Auto-dismiss after this many milliseconds once open; `0` disables. Countdown pauses on hover |
 
 ## Methods
 

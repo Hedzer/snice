@@ -143,8 +143,26 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     <snice-banner variant="info" message="" open></snice-banner>
   </section>
 
+  <section>
+    <h2>Auto-dismiss with duration (hover to pause)</h2>
+    <button id="spawn-timed-banner">Show a 5s banner</button>
+    <div id="timed-banner-slot" style="position:relative;min-height:4rem;margin-top:0.75rem"></div>
+  </section>
+
   <script type="module">
     import '../../../packages/components/src/banner/snice-banner.ts';
+
+    document.getElementById('spawn-timed-banner').addEventListener('click', () => {
+      const slot = document.getElementById('timed-banner-slot');
+      slot.innerHTML = '';
+      const el = document.createElement('snice-banner');
+      el.setAttribute('variant', 'success');
+      el.setAttribute('message', 'Deployed — this banner closes itself in 5s; hover to pause.');
+      el.setAttribute('duration', '5000');
+      el.setAttribute('open', '');
+      el.style.position = 'static';
+      slot.appendChild(el);
+    });
   </script>
 </body>
 </html>

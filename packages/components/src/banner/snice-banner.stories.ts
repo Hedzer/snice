@@ -67,6 +67,19 @@ export const Default: Story = {
   args: { variant: 'info', message: 'New version available!', dismissible: true, actionText: 'Update Now', open: true },
 };
 
+// h2: Auto-dismiss with duration (hover to pause)
+export const AutoDismissWithDuration: Story = {
+  render: () => {
+    const el = document.createElement('snice-banner');
+    el.setAttribute('variant', 'success');
+    el.setAttribute('message', 'Closes itself in 5s — hover to pause.');
+    el.setAttribute('duration', '5000');
+    el.setAttribute('open', '');
+    el.style.position = 'static';
+    return el;
+  },
+};
+
 // h2: All variants
 export const AllVariants: Story = {
   render: () => col(

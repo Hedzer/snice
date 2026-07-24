@@ -12,6 +12,8 @@ dismissible: boolean = true;
 icon: string = '';                    // emoji, URL, image file
 actionText: string = '';              // attr: action-text
 open: boolean = false;
+label: string = '';                 // accessible region name; falls back to "<variant> banner"
+duration: number = 0;               // ms until auto-dismiss once open, 0 = off; pauses on hover
 ```
 
 ## Methods
