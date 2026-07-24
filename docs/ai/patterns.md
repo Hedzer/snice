@@ -69,19 +69,26 @@ class DataLoader implements IController {
   handleClick(e: Event) {}
 }
 
-// Usage on custom elements:
-// <my-list controller="data-loader"></my-list>
+// Preferred usage — bind the class directly in a template (works on custom
+// AND native elements; skips the registry, decorator still required):
+// html`<my-list controller=${DataLoader}></my-list>`
+// html`<div controller=${DataLoader}></div>`
+// Imperative: attachController(el, DataLoader) or el.controller = DataLoader
 
-// Usage on native HTML elements (requires opt-in):
-// <div controller="data-loader"></div>
-// <form controller="form-handler"></form>
-// <table controller="table-loader"></table>
+// String usage — the only channel in raw HTML markup:
+// <my-list controller="data-loader"></my-list>
 ```
+
+**Class vs string:** class binding is reference-deduped (re-render no-op, swap
+detaches old), removes the `controller` attribute, and owns the element —
+attribute writes are ignored while a class is bound. Strings stay fully
+supported and behave exactly like the static attribute.
 
 **Native element controllers** — attach controllers to any HTML element (div, form, table, etc.).
 Enabled automatically when Snice loads — no setup needed.
 ```typescript
-// Just use controller= on any element:
+// Template class binding: html`<div controller=${DataLoader}></div>`
+// Raw HTML (string names, via MutationObserver):
 // <div controller="data-loader"></div>
 // <form controller="form-handler"></form>
 // <table controller="table-loader"></table>

@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, DIRECT_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -131,42 +131,86 @@ export function deferControllerAttachment(element: HTMLElement, controllerName: 
 }
 
 /**
+ * True when the value is a controller class that went through @controller().
+ * The decorator is required — it registers the class, marks it, and flushes
+ * pending attachments. Direct class binding only changes the attach side.
+ */
+export function isControllerClass(value: unknown): value is ControllerClass {
+  return typeof value === 'function'
+    && (value as any).prototype?.[IS_CONTROLLER_CLASS] === true;
+}
+
+/** Human-readable label for a controller reference (registry name or class). */
+function controllerLabel(controller: string | ControllerClass): string {
+  return typeof controller === 'string'
+    ? controller
+    : (controller?.name || '(anonymous controller class)');
+}
+
+/**
  * Attaches a controller to an element
  * @param element The element to attach the controller to
- * @param controllerName The name of the controller to attach
+ * @param controller The registry name of the controller, or the decorated
+ *                   controller class itself (classes skip the registry)
  */
-export async function attachController(element: HTMLElement, controllerName: string): Promise<void> {
+export async function attachController(element: HTMLElement, controller: string | ControllerClass): Promise<void> {
+  if (typeof controller !== 'string') {
+    if (typeof controller !== 'function') {
+      throw new Error(
+        'attachController: expected a controller name or a controller class, ' +
+        `got ${typeof controller}. Controller instances are not supported — pass the class itself.`
+      );
+    }
+    if (!isControllerClass(controller)) {
+      throw new Error(
+        `Controller class "${controllerLabel(controller)}" must be decorated with ` +
+        `@controller('name') before it can be attached.`
+      );
+    }
+  }
+
+  const controllerName = controllerLabel(controller);
   const existingController = (element as any)[CONTROLLER_KEY] as IController | undefined;
-  const existingName = (element as any)[CONTROLLER_NAME_KEY] as string | undefined;
-  
-  // For native elements, check if this is actually the desired controller
+  const existingSource = (element as any)[CONTROLLER_NAME_KEY] as string | ControllerClass | undefined;
+
+  // For attribute-managed native elements, check if this is actually the
+  // desired controller. Class attachments take the element over instead.
   const nativeController = (element as any)[NATIVE_CONTROLLER];
-  if (nativeController !== undefined && nativeController !== controllerName) {
+  if (typeof controller === 'string' && nativeController !== undefined && nativeController !== controller) {
     // This attachment is outdated, skip it
     return;
   }
-  
-  if (existingName === controllerName && existingController) {
-    // Already attached and controller exists
+
+  if (existingSource === controller && existingController) {
+    // Already attached and controller exists (name or class reference match)
     return;
   }
-  
+
   // If there's an existing controller, detach it first
   if (existingController) {
     await detachController(element);
   }
 
-  // Access globalThis.snice directly to ensure consistency
-  const registry = (globalThis as any).snice?.controllerRegistry;
-  if (!registry) {
-    throw new Error('Snice global registry not initialized');
+  let ControllerClass: ControllerClass;
+  if (typeof controller === 'string') {
+    // Access globalThis.snice directly to ensure consistency
+    const registry = (globalThis as any).snice?.controllerRegistry;
+    if (!registry) {
+      throw new Error('Snice global registry not initialized');
+    }
+
+    ControllerClass = registry.get(controller);
+    if (!ControllerClass) {
+      throw new Error(`Controller "${controller}" not found in registry`);
+    }
+  } else {
+    ControllerClass = controller;
+    // The class channel owns the element from here on: the attribute /
+    // MutationObserver channel goes inert and its bookkeeping is dropped.
+    (element as any)[DIRECT_CONTROLLER] = true;
+    delete (element as any)[NATIVE_CONTROLLER];
   }
 
-  const ControllerClass = registry.get(controllerName);
-  if (!ControllerClass) {
-    throw new Error(`Controller "${controllerName}" not found in registry`);
-  }
-  
   // Create controller instance with unique ID and scope
   const controllerInstance = new ControllerClass();
   snice.controllerIdCounter += 1;
@@ -184,9 +228,11 @@ export async function attachController(element: HTMLElement, controllerName: str
     (controllerInstance as any)[ROUTER_CONTEXT] = routerContext;
   }
   
-  // Store references
+  // Store references. CONTROLLER_NAME_KEY holds the attach source — the
+  // registry name string, or the class reference itself for class attaches
+  // (reference equality is the dedupe key for classes).
   (element as any)[CONTROLLER_KEY] = controllerInstance;
-  (element as any)[CONTROLLER_NAME_KEY] = controllerName;
+  (element as any)[CONTROLLER_NAME_KEY] = controller;
   (element as any)[CONTROLLER_OPERATIONS] = scope;
 
   // Wait for element to be ready. Race against abort (detachController) and
@@ -224,6 +270,9 @@ export async function attachController(element: HTMLElement, controllerName: str
       delete (element as any)[CONTROLLER_KEY];
       delete (element as any)[CONTROLLER_NAME_KEY];
       delete (element as any)[CONTROLLER_OPERATIONS];
+      if (typeof controller !== 'string') {
+        delete (element as any)[DIRECT_CONTROLLER];
+      }
     }
     throw error;
   } finally {
@@ -265,7 +314,7 @@ export async function detachController(element: HTMLElement): Promise<void> {
   if (pendingAbort) pendingAbort.abort();
 
   const controllerInstance = (element as any)[CONTROLLER_KEY] as IController | undefined;
-  const controllerName = (element as any)[CONTROLLER_NAME_KEY] as string | undefined;
+  const controllerSource = (element as any)[CONTROLLER_NAME_KEY] as string | ControllerClass | undefined;
   const scope = (element as any)[CONTROLLER_OPERATIONS] as ControllerScope | undefined;
 
   if (!controllerInstance) {
@@ -280,6 +329,10 @@ export async function detachController(element: HTMLElement): Promise<void> {
   delete (element as any)[CONTROLLER_KEY];
   delete (element as any)[CONTROLLER_NAME_KEY];
   delete (element as any)[CONTROLLER_OPERATIONS];
+  if (typeof controllerSource === 'function') {
+    // Class attach owned the element — release it back to the attribute channel.
+    delete (element as any)[DIRECT_CONTROLLER];
+  }
 
   // A controller whose attach() was aborted before it ever ran must not have
   // detach() (or the teardown/event) run on it.
@@ -316,7 +369,10 @@ export async function detachController(element: HTMLElement): Promise<void> {
   delete (controllerInstance as any)[ROUTER_CONTEXT];
 
   element.dispatchEvent(new CustomEvent('controller-detached', {
-    detail: { name: controllerName, controller: controllerInstance }
+    detail: {
+      name: controllerSource === undefined ? undefined : controllerLabel(controllerSource),
+      controller: controllerInstance
+    }
   }));
 }
 
@@ -358,11 +414,23 @@ export function useNativeElementControllers() {
     if (!element.tagName || element.tagName.includes('-')) return;
     if ((element as any)[IS_ELEMENT_CLASS]) return;
 
+    // A controller CLASS is attached (template binding or direct
+    // attachController(el, Class)). The class channel owns the element:
+    // attribute writes must not attach over it, and insertion sweeps must
+    // not detach it.
+    if ((element as any)[DIRECT_CONTROLLER]) return;
+
     const controllerName = element.getAttribute('controller');
     const currentControllerName = (element as any)[NATIVE_CONTROLLER];
 
     // No change
     if (controllerName === currentControllerName) return;
+
+    // No attribute and never attribute-managed — nothing for this channel to
+    // do. Without this guard, every added native element (including ones a
+    // class controller was imperatively attached to before insertion) would
+    // fall into the removal branch and get spuriously detached.
+    if (!controllerName && currentControllerName === undefined) return;
 
     // Controller removed
     if (!controllerName) {

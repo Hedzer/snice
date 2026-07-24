@@ -10,6 +10,7 @@ name=${value}                   // single-value attribute
 name="a ${value} b ${other}"    // interpolated attribute
 .name=${value}                  // JavaScript property
 ?name=${value}                  // boolean attribute presence
+controller=${ControllerClass}   // controller attachment (class preferred; string = attribute semantics)
 @event=${handler}               // event listener
 class:name=${value}             // one class token
 style:name=${value}             // one CSS property; style:--token supported
@@ -55,6 +56,15 @@ Ordinary attributes/comments support multiple expressions. Property, boolean, ev
 - Falsy or `nothing`: remove. Includes false, 0, `''`, null, undefined, NaN.
 - `noChange`: preserve presence.
 - Presence semantics only; use an ordinary attribute when the consumer needs text.
+
+### Controller `controller=${value}`
+
+- Class decorated with `@controller` (decorator required): attaches directly, registry skipped. Reference-deduped — same class re-render is a no-op; different class or null detaches first. Removes the `controller` attribute; attribute writes ignored while a class is bound.
+- Works on snice elements AND native elements in templates. Not-yet-upgraded custom elements park the class until connectedCallback.
+- String: delegates to `setAttribute` — identical to static `controller="name"`. Interpolated `controller="a-${x}"` is plain attribute interpolation, not this channel.
+- nothing/null/undefined/false/`''`: detach. `noChange`: keep current controller.
+- Detaches while parked/disconnected; re-attaches on reconnect.
+- Imperative equivalents: `attachController(el, Class | 'name')`, `el.controller = Class | 'name'` (snice elements).
 
 ### Class `class:name=${value}`
 
@@ -136,6 +146,7 @@ html`${items.map(item => html`<user-row key=${item.id} .user=${item}></user-row>
 | Attribute | empty string | `"false"` | remove | keep |
 | Property | assign | assign false | assign undefined | keep |
 | Boolean/class | remove | remove | remove | keep |
+| Controller | detach | detach | detach | keep |
 | Style | remove | remove | remove | keep |
 | Event | remove | remove | remove | keep |
 | Whole spread | clear bag | throw | clear bag | keep |

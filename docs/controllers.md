@@ -35,9 +35,40 @@ class UserController implements IController<HTMLElement> {
 }
 ```
 
-### Attaching Controllers to Elements
+### Attaching Controllers
 
-Controllers can be attached via the `controller` attribute:
+Bind the controller class directly in a template — this is the preferred way:
+
+```typescript
+import { UserController } from './controllers/user-controller';
+
+html`<user-list controller=${UserController}></user-list>`
+
+// Works on native elements inside templates too
+html`<div controller=${UserController}></div>`
+```
+
+Class bindings skip the registry lookup: the imported class is attached as-is.
+The `@controller('name')` decorator is still required — it registers the class,
+marks it, and flushes pending attachments. Re-binding the same class reference
+is a no-op; binding a different class (or `null`) detaches the old controller
+first. While a class is bound, the class binding owns the element: `controller`
+attribute writes are ignored until the class is unbound.
+
+Imperative equivalents:
+
+```typescript
+import { attachController } from 'snice';
+
+await attachController(element, UserController); // any element
+el.controller = UserController;                  // snice elements
+```
+
+### Attaching by Name (strings)
+
+Every controller is also registered under its decorator name, and attaching by
+string remains fully supported. It is the only channel available in raw HTML
+markup, where attributes are all you have:
 
 ```html
 <!-- Custom element -->
@@ -46,6 +77,10 @@ Controllers can be attached via the `controller` attribute:
 <!-- Native element (works automatically) -->
 <div controller="user-controller"></div>
 ```
+
+Strings also work in template bindings — `controller=${'user-controller'}` and
+interpolated forms like `controller="user-${kind}"` behave exactly like the
+static attribute.
 
 ### IController Interface
 
@@ -423,7 +458,7 @@ Listen for attachment on the element itself (the event does **not** bubble):
 
 ```typescript
 element.addEventListener('controller-attached', (e: CustomEvent) => {
-  console.log('Name:', e.detail.name);           // controller name string
+  console.log('Name:', e.detail.name);           // registry name, or the class name for class attaches
   console.log('Instance:', e.detail.controller);  // IController instance
 });
 ```

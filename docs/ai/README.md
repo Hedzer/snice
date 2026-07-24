@@ -90,7 +90,7 @@ Runtime first, then one bundle per component (any order after runtime):
 - **Elements are purely visual** - no fetch(), no API calls, no backend logic
 - Elements receive data via properties, emit events for actions
 - **Pages orchestrate** - handle routing, call APIs, coordinate elements
-- **Controllers add behavior** - attach to elements for reusable non-visual logic
+- **Controllers add behavior** - attach to elements for reusable non-visual logic; bind by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`)
 - Put API calls in pages/controllers/services, not in elements
 
 **Properties:**

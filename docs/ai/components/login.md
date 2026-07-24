@@ -74,8 +74,13 @@ interface LoginResult {
 import 'snice/components/login/snice-login';
 ```
 
+```typescript
+// In a template — bind the controller class directly (preferred)
+html`<snice-login controller=${AuthController} title="Welcome" show-remember-me></snice-login>`
+```
+
 ```html
-<!-- With controller -->
+<!-- Raw HTML — string name -->
 <snice-login controller="auth-controller" title="Welcome" show-remember-me></snice-login>
 
 <!-- Variants -->

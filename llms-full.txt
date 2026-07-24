@@ -42,7 +42,7 @@ tsconfig.json:
 
 - **Elements** (`@element`): Visual web components with Shadow DOM. Receive data via properties, emit events. NO business logic, NO fetch(), NO API calls.
 - **Pages** (`@page`): Routable views. Handle API calls, orchestrate elements, manage state.
-- **Controllers** (`@controller`): Reusable non-visual behaviors attached to elements.
+- **Controllers** (`@controller`): Reusable non-visual behaviors attached to elements. Attach by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`).
 - **Layouts** (`@layout`): Persistent page wrappers (nav, sidebar) across route changes.
 
 ---
@@ -57,7 +57,10 @@ tsconfig.json:
   shadow?: 'open'|'closed'|false, delegatesFocus?
 })
 @page({ tag, routes, guards?, placard? })   // `page` from Router(), NOT 'snice'
-@controller('name')
+@controller('name')  // required on every controller class
+// Attach: html`<x-el controller=${MyController}>` (class, preferred; custom + native els)
+//         attachController(el, MyController) | el.controller = MyController
+//         controller="name" attr — only channel in raw HTML, still supported everywhere
 @layout('tag-name')
 ```
 
@@ -276,6 +279,7 @@ import {
   ready, dispose, moved, adopted,    // lifecycle
   Router,                            // routing
   debounce, throttle, once, memoize, // utilities
+  attachController, detachController, getController,  // accept class or registry name
   useNativeElementControllers        // controller= on native elements
 } from 'snice';
 ```

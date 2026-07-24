@@ -2,7 +2,8 @@
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
 import { isRepeatResult } from './repeat';
 import { findRenderHost } from './render-root';
-import { PRE_UPGRADE_PROPERTY_BINDINGS } from './symbols';
+import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BINDING } from './symbols';
+import { attachController, detachController } from './controller';
 
 // Unique marker for dynamic parts
 // This parses as a comment node but doesn't get escaped in attributes
@@ -321,6 +322,20 @@ class Template {
                   element
                 });
                 partIndex += expressionCount;
+              } else if (
+                attr.name === 'controller' &&
+                attrStrings.length === 2 && attrStrings[0] === '' && attrStrings[1] === ''
+              ) {
+                // Bare controller=${...} binding: accepts a decorated
+                // controller class directly, or a registry name string.
+                // Interpolated forms (controller="a-${x}") stay plain
+                // string attributes.
+                this.parts.push({
+                  type: 'controller',
+                  index: partIndex,
+                  element
+                });
+                partIndex += expressionCount;
               } else {
                 // Regular attribute - supports multiple interpolations
                 // Store static string segments for interpolation
@@ -423,7 +438,7 @@ class Template {
 }
 
 interface TemplatePart {
-  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'class' | 'style' | 'spread' | 'conditional-if' | 'conditional-else-if' | 'conditional-case' | 'conditional-when' | 'comment';
+  type: 'node' | 'attribute' | 'property' | 'boolean-attribute' | 'event' | 'class' | 'style' | 'spread' | 'controller' | 'conditional-if' | 'conditional-else-if' | 'conditional-case' | 'conditional-when' | 'comment';
   index: number;
   name?: string;
   element?: Element;
@@ -682,6 +697,10 @@ export class TemplateInstance {
           case 'spread':
             const spreadElement = nodeMap.get(partDef.element!) as Element;
             part = new SpreadPart(spreadElement, partDef.name!);
+            break;
+          case 'controller':
+            const controllerElement = nodeMap.get(partDef.element!) as HTMLElement;
+            part = new ControllerPart(controllerElement);
             break;
           case 'conditional-if':
             const conditionalIfElement = nodeMap.get(partDef.element!) as Element;
@@ -1916,6 +1935,147 @@ export class PropertyPart extends Part {
     // about to leave the tree, so writing `undefined` is both unnecessary and
     // unsafe for native setters such as HTMLTextAreaElement.value.
     this._committedValue = NOT_COMMITTED;
+  }
+
+}
+
+/**
+ * ControllerPart handles bare controller=${...} bindings.
+ *
+ * Accepts a controller class decorated with @controller (attached directly,
+ * no registry lookup) or a registry name string (delegated to the attribute
+ * channel with the exact semantics of a static controller="name"). While a
+ * class is bound it owns the element: the attribute/MutationObserver channel
+ * is inert until the class is unbound.
+ *
+ * Renders commit while the tree is detached and connect afterwards, so
+ * attachment happens on reconnected()/connected commits; every hook is
+ * idempotent because the update loop reconciles connection state on each pass.
+ */
+export class ControllerPart extends Part {
+  readonly type = 'controller' as const;
+  element: Element;
+  private _committedValue: unknown = NOT_COMMITTED;
+
+  constructor(element: Element) {
+    super();
+    this.element = element;
+  }
+
+  commit(value: unknown): void {
+    if (value === noChange) return;
+
+    // Normalize every "no controller" shape to null
+    const next = (value == null || value === false || value === '' || value === nothing)
+      ? null
+      : value;
+    const first = this._committedValue === NOT_COMMITTED;
+    const previous = first ? null : this._committedValue;
+    if (!first && next === previous) return;
+    this._committedValue = next;
+
+    const el = this.element as any;
+
+    // Leaving a class binding: release the element back to the attribute channel.
+    if (typeof previous === 'function' && typeof next !== 'function') {
+      if (el[PENDING_CONTROLLER_BINDING] !== undefined) {
+        delete el[PENDING_CONTROLLER_BINDING];
+      } else if (el[IS_ELEMENT_CLASS]) {
+        el.controller = null;
+      } else {
+        this._detach();
+      }
+    }
+
+    if (typeof next === 'function') {
+      // Class binding takes over — drop any attribute so the string channel
+      // cannot fight it.
+      if (this.element.hasAttribute('controller')) this.element.removeAttribute('controller');
+      if (this.isConnected) {
+        this._apply(next);
+      } else if (this.element.localName.includes('-') && !el[IS_ELEMENT_CLASS]) {
+        // Park on not-yet-upgraded custom elements even while detached — the
+        // element picks the class up in connectedCallback on upgrade.
+        el[PENDING_CONTROLLER_BINDING] = next;
+      }
+      // Detached native/upgraded elements attach in reconnected().
+    } else if (typeof next === 'string') {
+      this.element.setAttribute('controller', next);
+    } else if (typeof previous === 'string') {
+      this.element.removeAttribute('controller');
+    }
+  }
+
+  /** Drive the element toward the committed class. Idempotent. */
+  private _apply(controllerClass: any): void {
+    const el = this.element as any;
+
+    if (el[IS_ELEMENT_CLASS]) {
+      if (el.controller !== controllerClass) {
+        // Setter handles detach of the old controller and attach of the new.
+        el.controller = controllerClass;
+      } else {
+        // Same value: the setter would no-op, but the element may have
+        // self-detached on disconnect. attachController dedupes when the
+        // controller is still attached.
+        this._attach(controllerClass);
+      }
+      return;
+    }
+
+    if (this.element.localName.includes('-')) {
+      // Custom element that hasn't upgraded yet (defined later, or cloned
+      // into a detached fragment). Park the class — connectedCallback picks
+      // it up on upgrade. Assigning the property now would shadow the future
+      // prototype accessor with an own expando property.
+      el[PENDING_CONTROLLER_BINDING] = controllerClass;
+      return;
+    }
+
+    // Native element — attach directly. Mirror the observer path's ready shim.
+    if (!el.ready) el.ready = Promise.resolve();
+    this._attach(controllerClass);
+  }
+
+  private _attach(controllerClass: any): void {
+    attachController(this.element as HTMLElement, controllerClass).catch((error: any) => {
+      if (error?.name === 'ControllerAttachAborted') return;
+      console.error(
+        `Failed to attach controller "${controllerClass?.name || controllerClass}":`,
+        error
+      );
+    });
+  }
+
+  private _detach(): void {
+    detachController(this.element as HTMLElement).catch((error: any) => {
+      console.error('Failed to detach controller:', error);
+    });
+  }
+
+  disconnected(_preserveEventListeners = false): void {
+    const committed = this._committedValue;
+    if (typeof committed !== 'function') return;
+    const el = this.element as any;
+    if (el[PENDING_CONTROLLER_BINDING] !== undefined) return; // never attached
+    if (el[IS_ELEMENT_CLASS]) return; // snice elements detach themselves on disconnect
+    this._detach();
+  }
+
+  reconnected(): void {
+    const committed = this._committedValue;
+    if (typeof committed !== 'function') return;
+    this._apply(committed);
+  }
+
+  clear(): void {
+    const el = this.element as any;
+    if (el[PENDING_CONTROLLER_BINDING] !== undefined) delete el[PENDING_CONTROLLER_BINDING];
+    const committed = this._committedValue;
+    this._committedValue = NOT_COMMITTED;
+    if (typeof committed !== 'function') return;
+    if (el[IS_ELEMENT_CLASS]) return; // the element's own teardown detaches
+    this._detach();
   }
 
 }

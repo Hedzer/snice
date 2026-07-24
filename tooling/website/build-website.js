@@ -458,6 +458,10 @@ class WeatherData {
   }
 }
 
+// In a template — bind the class directly (preferred)
+html\`&lt;stat-card controller=\${WeatherData}&gt;&lt;/stat-card&gt;\`
+
+// Raw HTML — registry name
 &lt;stat-card controller="weather"&gt;&lt;/stat-card&gt;</snice-code-block>
       <p class="doc-link"><a href="docs.html#controllers">Full documentation →</a></p>
     </div>

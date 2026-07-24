@@ -35,6 +35,12 @@ export const CONTROLLER_NAME_KEY = getSymbol('controller-name');
 export const CONTROLLER_ID = getSymbol('controller-id');
 export const CONTROLLER_OPERATIONS = getSymbol('controller-operations');
 export const NATIVE_CONTROLLER = getSymbol('native-controller');
+// Set while a controller CLASS (not a registry name) is attached — the
+// attribute/MutationObserver channel must not attach over or detach it.
+export const DIRECT_CONTROLLER = getSymbol('direct-controller');
+// A controller class bound by a template before the custom element was
+// defined/upgraded. Picked up by connectedCallback on first initialization.
+export const PENDING_CONTROLLER_BINDING = getSymbol('pending-controller-binding');
 
 // Cleanup symbol - holds an object with all cleanup arrays
 export const CLEANUP = getSymbol('cleanup');

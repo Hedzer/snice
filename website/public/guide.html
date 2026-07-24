@@ -152,7 +152,7 @@ class MyCounter extends HTMLElement {
 &lt;script src="snice-button.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-input.min.js?v=80938d7"&gt;&lt;/script&gt;
 &lt;script src="snice-modal.min.js?v=80938d7"&gt;&lt;/script&gt;</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">The runtime is ~28KB gzipped. Each component adds ~1&ndash;107KB. No duplication regardless of how many components you use.</p>
+          <p class="desc" style="margin-top:0.75rem">The runtime is ~29KB gzipped. Each component adds ~1&ndash;107KB. No duplication regardless of how many components you use.</p>
           <p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>
         </div>
 
@@ -547,8 +547,9 @@ class WeatherController {
     // Cleanup when controller is removed
   }
 }</snice-code-block>
-          <p class="desc" style="margin-top:0.75rem">Attach by attribute: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
-          <p class="desc">Swap at runtime: change the attribute to <code>"stocks"</code> and the element gets new behavior, same UI.</p>
+          <p class="desc" style="margin-top:0.75rem">Attach by class in a template (preferred): <span class="h">html`&lt;stat-card <span class="a">controller</span>=<span class="s">${WeatherController}</span>&gt;&lt;/stat-card&gt;`</span></p>
+          <p class="desc">Or by name in raw HTML: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>
+          <p class="desc">Swap at runtime: bind a different class (or change the attribute) and the element gets new behavior, same UI.</p>
         </div>
 
         <div class="dec-section" id="full">

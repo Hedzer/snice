@@ -28,6 +28,7 @@ describe('Binding channel documentation alignment', () => {
       'name=${value}',
       '.name=${value}',
       '?name=${value}',
+      'controller=${',
       '@event=${handler}',
       'class:name=${value}',
       'style:name=${value}',
@@ -51,6 +52,7 @@ describe('Binding channel documentation alignment', () => {
       ['SpreadPart', /spread/i],
       ['PropertyPart', /propert/i],
       ['BooleanAttributePart', /boolean attribute/i],
+      ['ControllerPart', /controller/i],
       ['EventPart', /event/i],
     ] as const;
 
@@ -67,6 +69,7 @@ describe('Binding channel documentation alignment', () => {
     expect(doc).toMatch(/Node[\s\S]{0,160}(?:clear|Clear)/);
     expect(doc).toMatch(/Attribute[\s\S]{0,180}(?:empty|Empty)/);
     expect(doc).toMatch(/Property[\s\S]{0,180}(?:assign|Assign)/);
+    expect(doc).toMatch(/Controller[\s\S]{0,180}(?:detach|Detach)/);
     expect(doc).toMatch(/Whole (?:named )?spread[\s\S]{0,180}(?:throw|Throw)/);
   });
 

@@ -31,7 +31,7 @@ A TypeScript web component framework using TC39 decorators and configurable shad
 Four building blocks:
 - **Elements** (`@element`) — Visual components. Receive data via properties, emit events.
 - **Pages** (`@page`) — Routable views. Handle API calls and orchestration.
-- **Controllers** (`@controller`) — Reusable non-visual behaviors.
+- **Controllers** (`@controller`) — Reusable non-visual behaviors. Attach by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`).
 - **Layouts** (`@layout`) — Persistent page wrappers (nav, sidebar).
 
 ## Quick Start

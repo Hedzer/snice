@@ -18,6 +18,7 @@ This reference covers every binding channel supported by the differential render
 | `name="a ${value} b"` | One interpolated attribute string | Attributes assembled from static and dynamic text |
 | `.name=${value}` | A JavaScript property | Objects, arrays, functions, element APIs, and native form state |
 | `?name=${value}` | Attribute presence | Native boolean attributes and presence-based selectors |
+| `controller=${value}` | A controller attachment | Controller classes (preferred) or registry names |
 | `@event=${handler}` | An event listener | DOM and custom events |
 | `class:name=${value}` | One class token | Independent conditional classes |
 | `style:name=${value}` | One CSS declaration | Independent styles and CSS custom properties |
@@ -150,6 +151,23 @@ html`<button
 A truthy value adds the attribute with an empty value. A falsy value or `nothing` removes it. This includes `false`, `0`, the empty string, `null`, `undefined`, and `NaN`.
 
 Use this channel only when presence has meaning. If a consumer expects the text `"false"`, use an ordinary attribute. If it expects a JavaScript boolean property, use `.name`.
+
+## Controllers
+
+A bare `controller=${value}` binding attaches a controller. Bind the decorated class directly — the preferred channel — or a registry name string:
+
+```typescript
+import { DataLoader } from './controllers/data-loader';
+
+html`<user-list controller=${DataLoader}></user-list>`;
+html`<div controller=${DataLoader}></div>`; // native elements too
+```
+
+Class values skip the registry and are deduped by reference: re-rendering with the same class is a no-op; a different class (or `null`) detaches the previous controller first. The `@controller('name')` decorator is still required on the class. While a class is bound it owns the element — `controller` attribute writes are ignored and no attribute is reflected. Custom elements that have not upgraded yet hold the class until their `connectedCallback` runs.
+
+String values delegate to the attribute channel and behave exactly like a static `controller="name"` attribute. Interpolated forms (`controller="user-${kind}"`) are ordinary attribute interpolation, not this channel.
+
+Controllers detach while their subtree is parked or disconnected and re-attach on reconnection, mirroring element lifecycle.
 
 ## Class and style
 
@@ -339,6 +357,7 @@ The same JavaScript value can mean something different in each channel:
 | Attribute | Write an empty value | Write `"false"` | Remove the attribute | Keep the current value |
 | Property | Assign as-is | Assign `false` | Assign `undefined` | Keep the current value |
 | Boolean attribute | Remove | Remove | Remove | Keep current presence |
+| Controller | Detach | Detach | Detach | Keep the current controller |
 | Class token | Remove | Remove | Remove | Keep current presence |
 | Style property | Remove | Remove | Remove | Keep the current declaration |
 | Event listener | Remove | Remove | Remove | Keep the current listener |

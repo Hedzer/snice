@@ -3,7 +3,7 @@
 ## Class
 - `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?, renderRoot?: 'shadow'|'light', shadow?: 'open'|'closed'|false, delegatesFocus? }`
 - `@page({ tag, routes, guards?, placard? })` - Routable page
-- `@controller('name')` - Swappable behavior
+- `@controller('name')` - Swappable behavior. Required on every controller class. Attach by class (preferred): `controller=${MyController}` in templates, `attachController(el, MyController)`, or `el.controller = MyController`; by string in raw HTML: `controller="name"`
 - `@layout('tag-name')` - Page wrapper for routing system
 
 ## Rendering

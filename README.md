@@ -221,7 +221,14 @@ class UserList extends HTMLElement {
 }
 ```
 
-Usage - swap behavior without touching presentation:
+Usage - swap behavior without touching presentation. Bind the controller class directly in a template:
+
+```typescript
+html`<user-list controller=${RealTimeUserLoader}></user-list>`
+html`<user-list controller=${CachedUserLoader}></user-list>`
+```
+
+Registry names still work everywhere, and are the channel for raw HTML markup:
 
 ```html
 <user-list controller="real-time-user-loader"></user-list>

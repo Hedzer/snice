@@ -1,4 +1,5 @@
 import { attachController, deferControllerAttachment, detachController } from './controller';
+import { ControllerClass } from './types/i-controller';
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
@@ -6,7 +7,7 @@ import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
@@ -143,23 +144,26 @@ export function applyElementFunctionality(constructor: any) {
       get() {
         return this[CONTROLLER];
       },
-      set(value: string) {
+      set(value: string | ControllerClass | null) {
         const oldValue = this[CONTROLLER];
         this[CONTROLLER] = value;
         if (value === oldValue) return;
 
         if (value) {
+          const label = typeof value === 'string' ? value : (value.name || '(anonymous controller class)');
           attachController(this, value).catch(error => {
             // Detached before ready — designed teardown, not a failure
             if (error?.name === 'ControllerAttachAborted') {
-              console.debug(`Controller "${value}" attach aborted (element detached before ready)`);
+              console.debug(`Controller "${label}" attach aborted (element detached before ready)`);
               return;
             }
-            if (error?.message === `Controller "${value}" not found in registry`) {
+            // Registry misses only apply to string names — class references
+            // never go through the registry.
+            if (typeof value === 'string' && error?.message === `Controller "${value}" not found in registry`) {
               deferControllerAttachment(this, value);
               return;
             }
-            console.error(`Failed to attach controller "${value}":`, error);
+            console.error(`Failed to attach controller "${label}":`, error);
           });
           return;
         }
@@ -275,6 +279,29 @@ export function applyElementFunctionality(constructor: any) {
           }
         }
         delete this[PRE_INIT_PROPERTY_VALUES];
+      }
+
+      // Pick up a controller CLASS a template bound before this element was
+      // defined. The binding parks the class instead of assigning the
+      // property — a pre-upgrade assignment would have shadowed this accessor
+      // with an own expando property. Attach directly rather than through the
+      // `controller` accessor: some DOM implementations (happy-dom) invoke
+      // connectedCallback on define without swapping the prototype, so the
+      // accessor may not exist on this instance yet.
+      if (this[PENDING_CONTROLLER_BINDING] !== undefined) {
+        const pendingControllerClass = this[PENDING_CONTROLLER_BINDING];
+        delete this[PENDING_CONTROLLER_BINDING];
+        if (!this[CONTROLLER]) {
+          this[CONTROLLER] = pendingControllerClass;
+          const pendingLabel = pendingControllerClass?.name || '(anonymous controller class)';
+          attachController(this, pendingControllerClass).catch((error: any) => {
+            if (error?.name === 'ControllerAttachAborted') {
+              console.debug(`Controller "${pendingLabel}" attach aborted (element detached before ready)`);
+              return;
+            }
+            console.error(`Failed to attach controller "${pendingLabel}":`, error);
+          });
+        }
       }
 
       // Pick up a `controller` attribute set before connection. Real browsers

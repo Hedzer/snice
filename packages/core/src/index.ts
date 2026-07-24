@@ -4,7 +4,7 @@ export type { Layout } from './element';
 export { SniceElement } from './snice-element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
-export { controller, useNativeElementControllers } from './controller';
+export { controller, useNativeElementControllers, attachController, detachController, getController } from './controller';
 import { useNativeElementControllers } from './controller';
 
 // Auto-enable native element controllers in browser environments

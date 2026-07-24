@@ -10,7 +10,11 @@
   delegatesFocus?: boolean
 }) // Define custom element
 @page({ tag, routes, guards?, placard? }) // Define routable page
-@controller('name') // Define behavior module
+@controller('name') // Define behavior module (required on every controller class)
+// Attach: html`<x-el controller=${MyController}></x-el>` (class, preferred; custom + native els)
+//         attachController(el, MyController) | el.controller = MyController
+//         controller="name" string attr (only channel in raw HTML; still supported everywhere)
+// Class binding: reference-deduped, removes controller attr, attr writes ignored while bound
 @layout('name') // Define page wrapper
 ```
 
@@ -372,6 +376,7 @@ import {
   ready, dispose, moved, adopted,
   Router,
   debounce, throttle, once, memoize,
+  attachController, detachController, getController,  // accept class or registry name
   useNativeElementControllers    // controller= on native HTML elements (auto-called on load, idempotent)
 } from 'snice';
 ```

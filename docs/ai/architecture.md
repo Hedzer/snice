@@ -65,12 +65,14 @@ Mock controller for tests, real API controller in production — same element.
 7. Reconnect: setupEventHandlers, then @reconnect (NOT @ready)
 
 **Controller lifecycle:**
-1. Element sets controller="name"
-2. attributeChangedCallback detects change
+1. Binding set: `controller=${MyController}` (class, ControllerPart) or controller="name" (attribute)
+2. ControllerPart commit / attributeChangedCallback detects change
 3. Detach old controller (if any)
-4. Attach new controller
+4. Attach new controller (class refs skip the registry; reference-deduped)
 5. setupEventHandlers for controller
 6. On detach: cleanupEventHandlers
+- Class bindings own the element: attribute writes ignored while a class is bound
+- Native elements: class bindings attach via ControllerPart; string attrs via MutationObserver
 
 ## Router System
 
@@ -143,7 +145,7 @@ async *fetchData(): any {
 async handleFetch(payload: { id: string }) {
   return await fetch(`/api/${payload.id}`).then(r => r.json());
 }
-// Wiring: <my-element controller="my-controller"></my-element>
+// Wiring: html`<my-element controller=${MyController}></my-element>` (or controller="my-controller" in raw HTML)
 ```
 
 **Global State:** Context

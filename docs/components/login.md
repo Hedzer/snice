@@ -125,6 +125,14 @@ import 'snice/components/login/snice-login';
 <snice-login controller="auth-controller"></snice-login>
 ```
 
+In a Snice template, bind the controller class directly (preferred — no registry name needed at the call site):
+
+```typescript
+import { AuthController } from './controllers/auth-controller';
+
+html`<snice-login controller=${AuthController}></snice-login>`
+```
+
 ## Examples
 
 ### Variants
