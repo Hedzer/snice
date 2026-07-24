@@ -70,3 +70,10 @@
   outline-offset: var(--snice-focus-ring-offset, 2px);
   border-radius: var(--snice-border-radius-md, 0.25rem);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

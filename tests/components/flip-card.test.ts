@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait, triggerMouseEvent } from './test-utils';
 import '../../packages/components/src/flip-card/snice-flip-card';
 import type { SniceFlipCardElement } from '../../packages/components/src/flip-card/snice-flip-card.types';
@@ -137,6 +139,13 @@ describe('snice-flip-card', () => {
       await wait(10);
 
       expect(eventFired).toBe(true);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should flatten the 3D flip under prefers-reduced-motion', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/flip-card/snice-flip-card.css'), 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
