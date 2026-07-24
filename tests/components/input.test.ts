@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/input/snice-input';
 import type { SniceInputElement } from '../../packages/components/src/input/snice-input.types';
@@ -502,6 +504,13 @@ describe('snice-input', () => {
       input.clear();
 
       expect(input.value).toBe('');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/input/snice-input.css'), 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
