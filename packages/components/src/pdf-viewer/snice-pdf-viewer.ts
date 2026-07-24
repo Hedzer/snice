@@ -72,7 +72,9 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
   }
 
   @watch('src')
-  handleSrcChange() {
+  handleSrcChange(oldValue?: string) {
+    if (oldValue === undefined) return; // initial value; @ready loads it
+
     this.loadDocument();
   }
 
@@ -305,6 +307,7 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
       this.pageInputEl.value = String(this.page);
       this.pageInputEl.max = String(this.totalPages);
     }
+    if (this.fitSelectEl) this.fitSelectEl.value = this.fit;
     if (this.pageTotalEl) this.pageTotalEl.textContent = `/ ${this.totalPages || '-'}`;
     if (this.zoomInfoEl) this.zoomInfoEl.textContent = `${Math.round(this.zoom * 100)}%`;
 
@@ -342,37 +345,37 @@ export class SnicePdfViewer extends HTMLElement implements SnicePdfViewerElement
       <div class="pdf-container" part="base" tabindex="0">
         <div class="pdf-toolbar" part="toolbar">
           <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-prev" title="Previous page">
+            <button class="pdf-btn pdf-btn-prev" title="Previous page" aria-label="Previous page">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <input class="pdf-page-input" type="number" min="1" />
+            <input class="pdf-page-input" type="number" min="1" aria-label="Page number" />
             <span class="pdf-page-total">/ -</span>
-            <button class="pdf-btn pdf-btn-next" title="Next page">
+            <button class="pdf-btn pdf-btn-next" title="Next page" aria-label="Next page">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
           <div class="pdf-toolbar-separator"></div>
           <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-zoom-out" title="Zoom out">
+            <button class="pdf-btn pdf-btn-zoom-out" title="Zoom out" aria-label="Zoom out">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
             </button>
             <span class="pdf-zoom-info">100%</span>
-            <button class="pdf-btn pdf-btn-zoom-in" title="Zoom in">
+            <button class="pdf-btn pdf-btn-zoom-in" title="Zoom in" aria-label="Zoom in">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
             </button>
           </div>
           <div class="pdf-toolbar-separator"></div>
-          <select class="pdf-fit-select">
+          <select class="pdf-fit-select" aria-label="Fit mode">
             <option value="width">Fit width</option>
             <option value="height">Fit height</option>
             <option value="page">Fit page</option>
           </select>
           <div class="pdf-toolbar-spacer"></div>
           <div class="pdf-toolbar-group">
-            <button class="pdf-btn pdf-btn-download" title="Download">
+            <button class="pdf-btn pdf-btn-download" title="Download" aria-label="Download">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             </button>
-            <button class="pdf-btn pdf-btn-print" title="Print">
+            <button class="pdf-btn pdf-btn-print" title="Print" aria-label="Print">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             </button>
           </div>
