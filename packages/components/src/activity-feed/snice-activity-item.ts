@@ -24,7 +24,7 @@ export class SniceActivityItem extends HTMLElement implements SniceActivityItemE
 
   @styles()
   componentStyles() {
-    return css`:host { display: none; }`;
+    return css/*css*/`:host { display: none; }`;
   }
 }
 

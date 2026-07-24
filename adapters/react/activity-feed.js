@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const ActivityFeed = createReactAdapter({
     tagName: 'snice-activity-feed',
-    properties: ["activities", "filter", "groupBy"],
+    properties: ["activities", "filter", "groupBy", "hasMore", "refreshInterval", "emptyMessage", "loadMoreLabel", "allLabel"],
     events: { "activity-click": "onActivityClick", "load-more": "onLoadMore" },
     formAssociated: false
 });

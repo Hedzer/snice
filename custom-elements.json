@@ -702,6 +702,24 @@
               }
             },
             {
+              "kind": "field",
+              "name": "allLabel",
+              "type": {
+                "text": "string"
+              },
+              "default": "'All'"
+            },
+            {
+              "kind": "method",
+              "name": "cleanup",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "clearFilter",
               "parameters": [],
@@ -723,6 +741,14 @@
             },
             {
               "kind": "field",
+              "name": "emptyMessage",
+              "type": {
+                "text": "string"
+              },
+              "default": "'No activity to display.'"
+            },
+            {
+              "kind": "field",
               "name": "filter",
               "type": {
                 "text": "string"
@@ -739,13 +765,67 @@
             },
             {
               "kind": "method",
-              "name": "handleFilterChange",
+              "name": "handleRefreshIntervalChange",
               "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "hasMore",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "loadMoreLabel",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Load more'"
+            },
+            {
+              "kind": "method",
+              "name": "onChildAttributeChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onChildListChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "refreshInterval",
+              "type": {
+                "text": "number"
+              },
+              "default": "60000"
             },
             {
               "kind": "method",
@@ -759,6 +839,22 @@
             }
           ],
           "attributes": [
+            {
+              "name": "all-label",
+              "fieldName": "allLabel",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "empty-message",
+              "fieldName": "emptyMessage",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
             {
               "name": "filter",
               "fieldName": "filter",
@@ -774,6 +870,30 @@
                 "text": "'none' | 'date'"
               },
               "reflects": true
+            },
+            {
+              "name": "has-more",
+              "fieldName": "hasMore",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
+              "name": "load-more-label",
+              "fieldName": "loadMoreLabel",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "refresh-interval",
+              "fieldName": "refreshInterval",
+              "type": {
+                "text": "number"
+              },
+              "reflects": true
             }
           ],
           "events": [
@@ -786,7 +906,11 @@
               "type": "CustomEvent<LoadMoreDetail>"
             }
           ],
-          "slots": [],
+          "slots": [
+            {
+              "name": ""
+            }
+          ],
           "cssParts": [
             {
               "name": "base"
@@ -848,6 +972,188 @@
           "declaration": {
             "name": "SniceActivityFeed",
             "module": "dist/components/activity-feed/snice-activity-feed.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/components/activity-feed/snice-activity-item.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "SniceActivityItem",
+          "tagName": "snice-activity-item",
+          "customElement": true,
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "description": "Declarative data carrier for snice-activity-feed. Never rendered directly —\nthe parent feed reads its attributes and renders the entry itself, the same\nway snice-table consumes snice-column definitions.",
+          "members": [
+            {
+              "kind": "field",
+              "name": "action",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "actorAvatar",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "actorName",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "method",
+              "name": "componentStyles",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "itemId",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "method",
+              "name": "renderContent",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "timestamp",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "action",
+              "fieldName": "action",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "actor-avatar",
+              "fieldName": "actorAvatar",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "actor-name",
+              "fieldName": "actorName",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "icon",
+              "fieldName": "icon",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "item-id",
+              "fieldName": "itemId",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "target",
+              "fieldName": "target",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "timestamp",
+              "fieldName": "timestamp",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "type",
+              "fieldName": "type",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            }
+          ],
+          "events": [],
+          "slots": [],
+          "cssParts": [],
+          "cssProperties": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "snice-activity-item",
+          "declaration": {
+            "name": "SniceActivityItem",
+            "module": "dist/components/activity-feed/snice-activity-item.js"
           }
         }
       ]

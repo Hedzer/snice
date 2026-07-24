@@ -8,6 +8,7 @@ export { Accordion } from './accordion';
 export { AccordionItem } from './accordion-item';
 export { ActionBar } from './action-bar';
 export { ActivityFeed } from './activity-feed';
+export { ActivityItem } from './activity-item';
 export { Alert } from './alert';
 export { AppTile } from './app-tile';
 export { AppTiles } from './app-tiles';

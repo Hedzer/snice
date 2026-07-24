@@ -14,10 +14,10 @@ export const ANALYZER_CONTRACTS = {
     "packages/components/src/**/*.types.ts"
   ],
   "stats": {
-    "customElements": 190,
+    "customElements": 191,
     "componentFamilies": 135,
-    "componentModules": 185,
-    "reactWrappers": 190,
+    "componentModules": 186,
+    "reactWrappers": 191,
     "rootExports": 107
   },
   "rootExports": [
@@ -134,6 +134,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/accordion/snice-accordion-item",
     "snice/components/action-bar/snice-action-bar",
     "snice/components/activity-feed/snice-activity-feed",
+    "snice/components/activity-feed/snice-activity-item",
     "snice/components/alert/snice-alert",
     "snice/components/app-tiles/snice-app-tiles",
     "snice/components/approval-flow/snice-approval-flow",
@@ -677,6 +678,16 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/activity-feed/snice-activity-feed.js",
       "family": "activity-feed",
       "attributes": {
+        "all-label": {
+          "property": "allLabel",
+          "type": "string",
+          "literals": []
+        },
+        "empty-message": {
+          "property": "emptyMessage",
+          "type": "string",
+          "literals": []
+        },
         "filter": {
           "property": "filter",
           "type": "string",
@@ -689,6 +700,21 @@ export const ANALYZER_CONTRACTS = {
             "none",
             "date"
           ]
+        },
+        "has-more": {
+          "property": "hasMore",
+          "type": "boolean",
+          "literals": []
+        },
+        "load-more-label": {
+          "property": "loadMoreLabel",
+          "type": "string",
+          "literals": []
+        },
+        "refresh-interval": {
+          "property": "refreshInterval",
+          "type": "number",
+          "literals": []
         }
       },
       "properties": {
@@ -696,6 +722,16 @@ export const ANALYZER_CONTRACTS = {
           "type": "unknown[]",
           "attribute": null,
           "structured": true
+        },
+        "allLabel": {
+          "type": "string",
+          "attribute": "all-label",
+          "structured": false
+        },
+        "emptyMessage": {
+          "type": "string",
+          "attribute": "empty-message",
+          "structured": false
         },
         "filter": {
           "type": "string",
@@ -705,6 +741,21 @@ export const ANALYZER_CONTRACTS = {
         "groupBy": {
           "type": "'none' | 'date'",
           "attribute": "group-by",
+          "structured": false
+        },
+        "hasMore": {
+          "type": "boolean",
+          "attribute": "has-more",
+          "structured": false
+        },
+        "loadMoreLabel": {
+          "type": "string",
+          "attribute": "load-more-label",
+          "structured": false
+        },
+        "refreshInterval": {
+          "type": "number",
+          "attribute": "refresh-interval",
           "structured": false
         }
       },
@@ -721,6 +772,102 @@ export const ANALYZER_CONTRACTS = {
           "type": "CustomEvent<LoadMoreDetail>"
         }
       ],
+      "slots": [
+        ""
+      ]
+    },
+    "snice-activity-item": {
+      "tagName": "snice-activity-item",
+      "className": "SniceActivityItem",
+      "modulePath": "snice/components/activity-feed/snice-activity-item",
+      "sourceModule": "dist/components/activity-feed/snice-activity-item.js",
+      "family": "activity-feed",
+      "attributes": {
+        "action": {
+          "property": "action",
+          "type": "string",
+          "literals": []
+        },
+        "actor-avatar": {
+          "property": "actorAvatar",
+          "type": "string",
+          "literals": []
+        },
+        "actor-name": {
+          "property": "actorName",
+          "type": "string",
+          "literals": []
+        },
+        "icon": {
+          "property": "icon",
+          "type": "string",
+          "literals": []
+        },
+        "item-id": {
+          "property": "itemId",
+          "type": "string",
+          "literals": []
+        },
+        "target": {
+          "property": "target",
+          "type": "string",
+          "literals": []
+        },
+        "timestamp": {
+          "property": "timestamp",
+          "type": "string",
+          "literals": []
+        },
+        "type": {
+          "property": "type",
+          "type": "string",
+          "literals": []
+        }
+      },
+      "properties": {
+        "action": {
+          "type": "string",
+          "attribute": "action",
+          "structured": false
+        },
+        "actorAvatar": {
+          "type": "string",
+          "attribute": "actor-avatar",
+          "structured": false
+        },
+        "actorName": {
+          "type": "string",
+          "attribute": "actor-name",
+          "structured": false
+        },
+        "icon": {
+          "type": "string",
+          "attribute": "icon",
+          "structured": false
+        },
+        "itemId": {
+          "type": "string",
+          "attribute": "item-id",
+          "structured": false
+        },
+        "target": {
+          "type": "string",
+          "attribute": "target",
+          "structured": false
+        },
+        "timestamp": {
+          "type": "string",
+          "attribute": "timestamp",
+          "structured": false
+        },
+        "type": {
+          "type": "string",
+          "attribute": "type",
+          "structured": false
+        }
+      },
+      "structuredProperties": [],
+      "events": [],
       "slots": []
     },
     "snice-alert": {
@@ -20638,6 +20785,8 @@ export const ANALYZER_CONTRACTS = {
       "ActionBarProps",
       "ActivityFeed",
       "ActivityFeedProps",
+      "ActivityItem",
+      "ActivityItemProps",
       "AdapterConfig",
       "AdapterHandle",
       "Alert",
@@ -21050,6 +21199,7 @@ export const ANALYZER_CONTRACTS = {
       "AccordionProps",
       "ActionBarProps",
       "ActivityFeedProps",
+      "ActivityItemProps",
       "AdapterConfig",
       "AdapterHandle",
       "AlertProps",
@@ -21342,7 +21492,12 @@ export const ANALYZER_CONTRACTS = {
         "properties": [
           "activities",
           "filter",
-          "groupBy"
+          "groupBy",
+          "hasMore",
+          "refreshInterval",
+          "emptyMessage",
+          "loadMoreLabel",
+          "allLabel"
         ],
         "events": {
           "activity-click": "onActivityClick",
@@ -21352,8 +21507,42 @@ export const ANALYZER_CONTRACTS = {
           "activities",
           "filter",
           "groupBy",
+          "hasMore",
+          "refreshInterval",
+          "emptyMessage",
+          "loadMoreLabel",
+          "allLabel",
           "onActivityClick",
           "onLoadMore"
+        ],
+        "formAssociated": false
+      },
+      "ActivityItem": {
+        "exportName": "ActivityItem",
+        "module": "snice/react/activity-item",
+        "tagName": "snice-activity-item",
+        "family": "activity-feed",
+        "componentModulePath": "snice/components/activity-feed/snice-activity-item",
+        "properties": [
+          "itemId",
+          "actorName",
+          "actorAvatar",
+          "action",
+          "target",
+          "timestamp",
+          "icon",
+          "type"
+        ],
+        "events": {},
+        "interfaceProps": [
+          "itemId",
+          "actorName",
+          "actorAvatar",
+          "action",
+          "target",
+          "timestamp",
+          "icon",
+          "type"
         ],
         "formAssociated": false
       },

@@ -122,6 +122,14 @@
       "description": "SniceActivityFeed custom element.",
       "attributes": [
         {
+          "name": "all-label",
+          "description": "allLabel: string"
+        },
+        {
+          "name": "empty-message",
+          "description": "emptyMessage: string"
+        },
+        {
           "name": "filter",
           "description": "filter: string"
         },
@@ -136,6 +144,56 @@
               "name": "date"
             }
           ]
+        },
+        {
+          "name": "has-more",
+          "description": "hasMore: boolean"
+        },
+        {
+          "name": "load-more-label",
+          "description": "loadMoreLabel: string"
+        },
+        {
+          "name": "refresh-interval",
+          "description": "refreshInterval: number"
+        }
+      ]
+    },
+    {
+      "name": "snice-activity-item",
+      "description": "Declarative data carrier for snice-activity-feed. Never rendered directly —\nthe parent feed reads its attributes and renders the entry itself, the same\nway snice-table consumes snice-column definitions.",
+      "attributes": [
+        {
+          "name": "action",
+          "description": "action: string"
+        },
+        {
+          "name": "actor-avatar",
+          "description": "actorAvatar: string"
+        },
+        {
+          "name": "actor-name",
+          "description": "actorName: string"
+        },
+        {
+          "name": "icon",
+          "description": "icon: string"
+        },
+        {
+          "name": "item-id",
+          "description": "itemId: string"
+        },
+        {
+          "name": "target",
+          "description": "target: string"
+        },
+        {
+          "name": "timestamp",
+          "description": "timestamp: string"
+        },
+        {
+          "name": "type",
+          "description": "type: string"
         }
       ]
     },

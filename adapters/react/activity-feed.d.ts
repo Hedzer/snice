@@ -7,6 +7,11 @@ export interface ActivityFeedProps extends SniceBaseProps {
     activities?: any;
     filter?: any;
     groupBy?: any;
+    hasMore?: any;
+    refreshInterval?: any;
+    emptyMessage?: any;
+    loadMoreLabel?: any;
+    allLabel?: any;
     onActivityClick?: (event: any) => void;
     onLoadMore?: (event: any) => void;
 }
