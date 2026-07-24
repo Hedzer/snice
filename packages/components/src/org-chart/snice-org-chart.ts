@@ -94,7 +94,10 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
       : '';
 
     const toggleHtml = hasChildren
-      ? html`<div class="org-toggle" @click=${(e: Event) => { e.stopPropagation(); this.toggleNode(node); }}>${toggleIcon}</div>`
+      ? html`<button class="org-toggle"
+                     type="button"
+                     aria-label="${isCollapsed ? 'Expand' : 'Collapse'} ${node.name}"
+                     @click=${(e: Event) => { e.stopPropagation(); this.toggleNode(node); }}>${toggleIcon}</button>`
       : '';
 
     const childrenHtml = showChildren
@@ -106,7 +109,11 @@ export class SniceOrgChart extends HTMLElement implements SniceOrgChartElement {
 
     return html`
       <div class="org-node-wrapper" role="treeitem" aria-expanded="${expandedAttr}" aria-label="${ariaLabel}">
-        <div class="org-node ${isCompact ? 'org-node--compact' : ''}" part="node" @click=${() => this.emitNodeClick(node)}>
+        <div class="org-node ${isCompact ? 'org-node--compact' : ''}"
+             part="node"
+             tabindex="0"
+             @click=${() => this.emitNodeClick(node)}
+             @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.emitNodeClick(node); } }}>
           ${avatarHtml}
           <div class="org-node-info">
             <span class="org-node-name">${node.name}</span>

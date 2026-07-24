@@ -120,7 +120,7 @@
 }
 
 .org-node-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-font-size-xs, 0.75rem);
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   overflow: hidden;
@@ -293,4 +293,23 @@
   transform: translateY(-50%);
   width: 1.5rem;
   height: 1px;
+}
+
+.org-toggle {
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.org-toggle:focus-visible,
+.org-node:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
