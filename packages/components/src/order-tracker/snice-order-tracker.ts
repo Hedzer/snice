@@ -1,4 +1,5 @@
 import { element, property, dispatch, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-order-tracker.css?inline';
 import type {
   SniceOrderTrackerElement,
@@ -39,6 +40,9 @@ export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerE
   }
 
   private renderDefaultIcon(step: OrderStep, index: number): unknown {
+    if (step.icon) {
+      return renderIcon(step.icon, 'tracker__step-icon-authored');
+    }
     if (step.status === 'completed') {
       return this.renderCheckIcon();
     }
@@ -85,6 +89,7 @@ export class SniceOrderTracker extends HTMLElement implements SniceOrderTrackerE
               <div class="${stepClasses}"
                    part="step"
                    role="listitem"
+                   aria-current="${step.status === 'active' ? 'step' : 'false'}"
                    tabindex="0"
                    @click=${() => this.handleStepClick(step, index)}
                    @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleStepClick(step, index); } }}>

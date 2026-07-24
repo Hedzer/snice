@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/order-tracker/snice-order-tracker.css');
 import '../../packages/components/src/order-tracker/snice-order-tracker';
 import type { SniceOrderTrackerElement, OrderStep } from '../../packages/components/src/order-tracker/snice-order-tracker.types';
 
@@ -208,5 +212,46 @@ describe('snice-order-tracker', () => {
     // Non-completed step indicators should not contain a check icon
     const icons = queryShadowAll(el as HTMLElement, '.tracker__step-indicator .tracker__step-icon');
     expect(icons.length).toBe(0);
+  });
+
+  describe('authored step icons', () => {
+    it('renders a registry SVG when a step declares an icon', async () => {
+      el = await createComponent<SniceOrderTrackerElement>('snice-order-tracker');
+      el.steps = [{ label: 'Delivered', status: 'active', icon: 'home' }];
+      await wait(50);
+
+      const indicator = queryShadow(el as HTMLElement, '.tracker__step-indicator');
+      expect(indicator?.querySelector('svg')).toBeTruthy();
+    });
+  });
+
+  describe('current step semantics', () => {
+    it('marks the active step with aria-current="step"', async () => {
+      el = await createComponent<SniceOrderTrackerElement>('snice-order-tracker');
+      el.steps = [
+        { label: 'Ordered', status: 'completed' },
+        { label: 'Shipped', status: 'active' },
+        { label: 'Delivered', status: 'pending' },
+      ];
+      await wait(50);
+
+      const steps = queryShadowAll(el as HTMLElement, '.tracker__step');
+      expect(steps[0].getAttribute('aria-current')).toBe('false');
+      expect(steps[1].getAttribute('aria-current')).toBe('step');
+      expect(steps[2].getAttribute('aria-current')).toBe('false');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
