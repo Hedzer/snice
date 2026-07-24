@@ -14,10 +14,10 @@ export const ANALYZER_CONTRACTS = {
     "packages/components/src/**/*.types.ts"
   ],
   "stats": {
-    "customElements": 191,
-    "componentFamilies": 135,
-    "componentModules": 186,
-    "reactWrappers": 191,
+    "customElements": 190,
+    "componentFamilies": 134,
+    "componentModules": 185,
+    "reactWrappers": 190,
     "rootExports": 107
   },
   "rootExports": [
@@ -223,7 +223,6 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/menu/snice-menu-divider",
     "snice/components/menu/snice-menu-item",
     "snice/components/message-strip/snice-message-strip",
-    "snice/components/metric-table/snice-metric-table",
     "snice/components/modal/snice-modal",
     "snice/components/music-player/snice-music-player",
     "snice/components/nav/snice-nav",
@@ -394,7 +393,6 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/menu/snice-menu-item.types",
     "snice/components/menu/snice-menu.types",
     "snice/components/message-strip/snice-message-strip.types",
-    "snice/components/metric-table/snice-metric-table.types",
     "snice/components/modal/snice-modal.types",
     "snice/components/music-player/snice-music-player.types",
     "snice/components/nav/snice-nav.types",
@@ -8784,12 +8782,12 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "qrdata": {
+        "qr-data": {
           "property": "qrData",
           "type": "string",
           "literals": []
         },
-        "qrposition": {
+        "qr-position": {
           "property": "qrPosition",
           "type": "'top-right' | 'bottom-right' | 'footer'",
           "literals": [
@@ -8798,7 +8796,7 @@ export const ANALYZER_CONTRACTS = {
             "footer"
           ]
         },
-        "showqr": {
+        "show-qr": {
           "property": "showQr",
           "type": "boolean",
           "literals": []
@@ -8879,17 +8877,17 @@ export const ANALYZER_CONTRACTS = {
         },
         "qrData": {
           "type": "string",
-          "attribute": "qrdata",
+          "attribute": "qr-data",
           "structured": false
         },
         "qrPosition": {
           "type": "'top-right' | 'bottom-right' | 'footer'",
-          "attribute": "qrposition",
+          "attribute": "qr-position",
           "structured": false
         },
         "showQr": {
           "type": "boolean",
-          "attribute": "showqr",
+          "attribute": "show-qr",
           "structured": false
         },
         "status": {
@@ -10756,12 +10754,12 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "qrdata": {
+        "qr-data": {
           "property": "qrData",
           "type": "string",
           "literals": []
         },
-        "qrposition": {
+        "qr-position": {
           "property": "qrPosition",
           "type": "'top-right' | 'bottom-right' | 'bottom-left' | 'footer'",
           "literals": [
@@ -10771,7 +10769,7 @@ export const ANALYZER_CONTRACTS = {
             "footer"
           ]
         },
-        "showqr": {
+        "show-qr": {
           "property": "showQr",
           "type": "boolean",
           "literals": []
@@ -10847,17 +10845,17 @@ export const ANALYZER_CONTRACTS = {
         },
         "qrData": {
           "type": "string",
-          "attribute": "qrdata",
+          "attribute": "qr-data",
           "structured": false
         },
         "qrPosition": {
           "type": "'top-right' | 'bottom-right' | 'bottom-left' | 'footer'",
-          "attribute": "qrposition",
+          "attribute": "qr-position",
           "structured": false
         },
         "showQr": {
           "type": "boolean",
-          "attribute": "showqr",
+          "attribute": "show-qr",
           "structured": false
         },
         "status": {
@@ -12806,65 +12804,6 @@ export const ANALYZER_CONTRACTS = {
         "icon"
       ]
     },
-    "snice-metric-table": {
-      "tagName": "snice-metric-table",
-      "className": "SniceMetricTable",
-      "modulePath": "snice/components/metric-table/snice-metric-table",
-      "sourceModule": "dist/components/metric-table/snice-metric-table.js",
-      "family": "metric-table",
-      "attributes": {
-        "sortby": {
-          "property": "sortBy",
-          "type": "string",
-          "literals": []
-        },
-        "sortdirection": {
-          "property": "sortDirection",
-          "type": "'asc' | 'desc'",
-          "literals": [
-            "asc",
-            "desc"
-          ]
-        }
-      },
-      "properties": {
-        "columns": {
-          "type": "unknown[]",
-          "attribute": null,
-          "structured": true
-        },
-        "data": {
-          "type": "unknown[]",
-          "attribute": null,
-          "structured": true
-        },
-        "sortBy": {
-          "type": "string",
-          "attribute": "sortby",
-          "structured": false
-        },
-        "sortDirection": {
-          "type": "'asc' | 'desc'",
-          "attribute": "sortdirection",
-          "structured": false
-        }
-      },
-      "structuredProperties": [
-        "columns",
-        "data"
-      ],
-      "events": [
-        {
-          "name": "row-click",
-          "type": "CustomEvent<RowClickDetail>"
-        },
-        {
-          "name": "sort-change",
-          "type": "CustomEvent<SortChangeDetail>"
-        }
-      ],
-      "slots": []
-    },
     "snice-modal": {
       "tagName": "snice-modal",
       "className": "SniceModal",
@@ -13640,22 +13579,22 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
-        "showfirst": {
+        "show-first": {
           "property": "showFirst",
           "type": "boolean",
           "literals": []
         },
-        "showlast": {
+        "show-last": {
           "property": "showLast",
           "type": "boolean",
           "literals": []
         },
-        "shownext": {
+        "show-next": {
           "property": "showNext",
           "type": "boolean",
           "literals": []
         },
-        "showprev": {
+        "show-prev": {
           "property": "showPrev",
           "type": "boolean",
           "literals": []
@@ -13697,22 +13636,22 @@ export const ANALYZER_CONTRACTS = {
         },
         "showFirst": {
           "type": "boolean",
-          "attribute": "showfirst",
+          "attribute": "show-first",
           "structured": false
         },
         "showLast": {
           "type": "boolean",
-          "attribute": "showlast",
+          "attribute": "show-last",
           "structured": false
         },
         "showNext": {
           "type": "boolean",
-          "attribute": "shownext",
+          "attribute": "show-next",
           "structured": false
         },
         "showPrev": {
           "type": "boolean",
-          "attribute": "showprev",
+          "attribute": "show-prev",
           "structured": false
         },
         "siblings": {
@@ -14039,6 +13978,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
+        "episode-title": {
+          "property": "title",
+          "type": "string",
+          "literals": []
+        },
         "from-rss": {
           "property": "fromRss",
           "type": "string",
@@ -14163,7 +14107,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "title": {
           "type": "string",
-          "attribute": null,
+          "attribute": "episode-title",
           "structured": false
         },
         "volume": {
@@ -15481,7 +15425,7 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
-        "discountlabel": {
+        "discount-label": {
           "property": "discountLabel",
           "type": "string",
           "literals": []
@@ -15491,22 +15435,22 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
-        "paymentdetails": {
+        "payment-details": {
           "property": "paymentDetails",
           "type": "string",
           "literals": []
         },
-        "paymentmethod": {
+        "payment-method": {
           "property": "paymentMethod",
           "type": "string",
           "literals": []
         },
-        "qrdata": {
+        "qr-data": {
           "property": "qrData",
           "type": "string",
           "literals": []
         },
-        "qrposition": {
+        "qr-position": {
           "property": "qrPosition",
           "type": "'top' | 'bottom' | 'footer'",
           "literals": [
@@ -15515,12 +15459,12 @@ export const ANALYZER_CONTRACTS = {
             "footer"
           ]
         },
-        "receiptnumber": {
+        "receipt-number": {
           "property": "receiptNumber",
           "type": "string",
           "literals": []
         },
-        "showqr": {
+        "show-qr": {
           "property": "showQr",
           "type": "boolean",
           "literals": []
@@ -15535,12 +15479,12 @@ export const ANALYZER_CONTRACTS = {
           "type": "number",
           "literals": []
         },
-        "terminalid": {
+        "terminal-id": {
           "property": "terminalId",
           "type": "string",
           "literals": []
         },
-        "thankyou": {
+        "thank-you": {
           "property": "thankYou",
           "type": "string",
           "literals": []
@@ -15590,7 +15534,7 @@ export const ANALYZER_CONTRACTS = {
         },
         "discountLabel": {
           "type": "string",
-          "attribute": "discountlabel",
+          "attribute": "discount-label",
           "structured": false
         },
         "items": {
@@ -15610,32 +15554,32 @@ export const ANALYZER_CONTRACTS = {
         },
         "paymentDetails": {
           "type": "string",
-          "attribute": "paymentdetails",
+          "attribute": "payment-details",
           "structured": false
         },
         "paymentMethod": {
           "type": "string",
-          "attribute": "paymentmethod",
+          "attribute": "payment-method",
           "structured": false
         },
         "qrData": {
           "type": "string",
-          "attribute": "qrdata",
+          "attribute": "qr-data",
           "structured": false
         },
         "qrPosition": {
           "type": "'top' | 'bottom' | 'footer'",
-          "attribute": "qrposition",
+          "attribute": "qr-position",
           "structured": false
         },
         "receiptNumber": {
           "type": "string",
-          "attribute": "receiptnumber",
+          "attribute": "receipt-number",
           "structured": false
         },
         "showQr": {
           "type": "boolean",
-          "attribute": "showqr",
+          "attribute": "show-qr",
           "structured": false
         },
         "subtotal": {
@@ -15655,12 +15599,12 @@ export const ANALYZER_CONTRACTS = {
         },
         "terminalId": {
           "type": "string",
-          "attribute": "terminalid",
+          "attribute": "terminal-id",
           "structured": false
         },
         "thankYou": {
           "type": "string",
-          "attribute": "thankyou",
+          "attribute": "thank-you",
           "structured": false
         },
         "tip": {
@@ -17010,7 +16954,9 @@ export const ANALYZER_CONTRACTS = {
       },
       "structuredProperties": [],
       "events": [],
-      "slots": []
+      "slots": [
+        ""
+      ]
     },
     "snice-split-button": {
       "tagName": "snice-split-button",
@@ -21071,8 +21017,6 @@ export const ANALYZER_CONTRACTS = {
       "MenuProps",
       "MessageStrip",
       "MessageStripProps",
-      "MetricTable",
-      "MetricTableProps",
       "Modal",
       "ModalProps",
       "MusicPlayer",
@@ -21368,7 +21312,6 @@ export const ANALYZER_CONTRACTS = {
       "MenuItemProps",
       "MenuProps",
       "MessageStripProps",
-      "MetricTableProps",
       "ModalProps",
       "MusicPlayerProps",
       "NavProps",
@@ -21455,6 +21398,209 @@ export const ANALYZER_CONTRACTS = {
       "WaterfallProps",
       "WeatherProps",
       "WorkOrderProps"
+    ],
+    "modulePaths": [
+      "snice/react",
+      "snice/react/SniceProvider",
+      "snice/react/SniceRouter",
+      "snice/react/accordion",
+      "snice/react/accordion-item",
+      "snice/react/action-bar",
+      "snice/react/activity-feed",
+      "snice/react/activity-item",
+      "snice/react/alert",
+      "snice/react/app-tile",
+      "snice/react/app-tiles",
+      "snice/react/approval-flow",
+      "snice/react/audio-recorder",
+      "snice/react/availability",
+      "snice/react/avatar",
+      "snice/react/avatar-group",
+      "snice/react/badge",
+      "snice/react/banner",
+      "snice/react/binpack",
+      "snice/react/book",
+      "snice/react/book-page",
+      "snice/react/booking",
+      "snice/react/breadcrumbs",
+      "snice/react/button",
+      "snice/react/calendar",
+      "snice/react/camera",
+      "snice/react/camera-annotate",
+      "snice/react/candlestick",
+      "snice/react/card",
+      "snice/react/carousel",
+      "snice/react/cart",
+      "snice/react/cell",
+      "snice/react/cell-actions",
+      "snice/react/cell-boolean",
+      "snice/react/cell-color",
+      "snice/react/cell-currency",
+      "snice/react/cell-date",
+      "snice/react/cell-duration",
+      "snice/react/cell-email",
+      "snice/react/cell-filesize",
+      "snice/react/cell-image",
+      "snice/react/cell-json",
+      "snice/react/cell-link",
+      "snice/react/cell-location",
+      "snice/react/cell-number",
+      "snice/react/cell-percentage",
+      "snice/react/cell-phone",
+      "snice/react/cell-progress",
+      "snice/react/cell-rating",
+      "snice/react/cell-sparkline",
+      "snice/react/cell-status",
+      "snice/react/cell-tag",
+      "snice/react/cell-text",
+      "snice/react/chart",
+      "snice/react/chat",
+      "snice/react/chat-message",
+      "snice/react/checkbox",
+      "snice/react/chip",
+      "snice/react/code-block",
+      "snice/react/color-display",
+      "snice/react/color-picker",
+      "snice/react/column",
+      "snice/react/command-palette",
+      "snice/react/comment",
+      "snice/react/comments",
+      "snice/react/components",
+      "snice/react/countdown",
+      "snice/react/cropper",
+      "snice/react/crumb",
+      "snice/react/data-card",
+      "snice/react/date-picker",
+      "snice/react/date-range-picker",
+      "snice/react/date-time-picker",
+      "snice/react/diff",
+      "snice/react/divider",
+      "snice/react/doc",
+      "snice/react/draw",
+      "snice/react/drawer",
+      "snice/react/drawer-target",
+      "snice/react/empty-state",
+      "snice/react/estimate",
+      "snice/react/feature",
+      "snice/react/file-gallery",
+      "snice/react/file-upload",
+      "snice/react/flip-card",
+      "snice/react/flow",
+      "snice/react/form-layout",
+      "snice/react/funnel",
+      "snice/react/gantt",
+      "snice/react/gauge",
+      "snice/react/grid",
+      "snice/react/header",
+      "snice/react/heatmap",
+      "snice/react/image",
+      "snice/react/index",
+      "snice/react/input",
+      "snice/react/invoice",
+      "snice/react/kanban",
+      "snice/react/key-value",
+      "snice/react/kpi",
+      "snice/react/kv-pair",
+      "snice/react/layout",
+      "snice/react/layout-blog",
+      "snice/react/layout-card",
+      "snice/react/layout-centered",
+      "snice/react/layout-dashboard",
+      "snice/react/layout-fullscreen",
+      "snice/react/layout-landing",
+      "snice/react/layout-minimal",
+      "snice/react/layout-sidebar",
+      "snice/react/layout-split",
+      "snice/react/leaderboard",
+      "snice/react/leaderboard-entry",
+      "snice/react/link",
+      "snice/react/link-preview",
+      "snice/react/list",
+      "snice/react/list-item",
+      "snice/react/location",
+      "snice/react/login",
+      "snice/react/map",
+      "snice/react/markdown",
+      "snice/react/masonry",
+      "snice/react/matchRoute",
+      "snice/react/menu",
+      "snice/react/menu-divider",
+      "snice/react/menu-item",
+      "snice/react/message-strip",
+      "snice/react/modal",
+      "snice/react/music-player",
+      "snice/react/nav",
+      "snice/react/network-graph",
+      "snice/react/notification-center",
+      "snice/react/option",
+      "snice/react/order-tracker",
+      "snice/react/org-chart",
+      "snice/react/pagination",
+      "snice/react/paint",
+      "snice/react/pdf-viewer",
+      "snice/react/permission-matrix",
+      "snice/react/plan",
+      "snice/react/podcast-player",
+      "snice/react/popover",
+      "snice/react/pricing-table",
+      "snice/react/product-card",
+      "snice/react/progress",
+      "snice/react/progress-ring",
+      "snice/react/qr-code",
+      "snice/react/qr-reader",
+      "snice/react/radio",
+      "snice/react/range-slider",
+      "snice/react/rating",
+      "snice/react/receipt",
+      "snice/react/recipe",
+      "snice/react/route-specificity",
+      "snice/react/row",
+      "snice/react/sankey",
+      "snice/react/segmented-control",
+      "snice/react/select",
+      "snice/react/skeleton",
+      "snice/react/slider",
+      "snice/react/sortable",
+      "snice/react/sparkline",
+      "snice/react/spinner",
+      "snice/react/split-button",
+      "snice/react/split-pane",
+      "snice/react/spotlight",
+      "snice/react/stat-group",
+      "snice/react/step-input",
+      "snice/react/stepper",
+      "snice/react/stepper-panel",
+      "snice/react/switch",
+      "snice/react/tab",
+      "snice/react/tab-panel",
+      "snice/react/table",
+      "snice/react/table-progress",
+      "snice/react/tabs",
+      "snice/react/tag",
+      "snice/react/tag-input",
+      "snice/react/terminal",
+      "snice/react/testimonial",
+      "snice/react/textarea",
+      "snice/react/time-picker",
+      "snice/react/time-range-picker",
+      "snice/react/timeline",
+      "snice/react/timer",
+      "snice/react/toast",
+      "snice/react/toast-container",
+      "snice/react/tooltip",
+      "snice/react/tree",
+      "snice/react/tree-item",
+      "snice/react/treemap",
+      "snice/react/types",
+      "snice/react/useRequestHandler",
+      "snice/react/user-card",
+      "snice/react/utils",
+      "snice/react/video-player",
+      "snice/react/virtual-scroller",
+      "snice/react/waterfall",
+      "snice/react/weather",
+      "snice/react/work-order",
+      "snice/react/wrapper"
     ],
     "wrappers": {
       "Accordion": {
@@ -25311,32 +25457,6 @@ export const ANALYZER_CONTRACTS = {
           "dismissible",
           "icon",
           "onDismiss"
-        ],
-        "formAssociated": false
-      },
-      "MetricTable": {
-        "exportName": "MetricTable",
-        "module": "snice/react/metric-table",
-        "tagName": "snice-metric-table",
-        "family": "metric-table",
-        "componentModulePath": "snice/components/metric-table/snice-metric-table",
-        "properties": [
-          "columns",
-          "data",
-          "sortBy",
-          "sortDirection"
-        ],
-        "events": {
-          "sort-change": "onSortChange",
-          "row-click": "onRowClick"
-        },
-        "interfaceProps": [
-          "columns",
-          "data",
-          "sortBy",
-          "sortDirection",
-          "onSortChange",
-          "onRowClick"
         ],
         "formAssociated": false
       },

@@ -125,7 +125,6 @@ export { Menu } from './menu';
 export { MenuDivider } from './menu-divider';
 export { MenuItem } from './menu-item';
 export { MessageStrip } from './message-strip';
-export { MetricTable } from './metric-table';
 export { Modal } from './modal';
 export { MusicPlayer } from './music-player';
 export { Nav } from './nav';

@@ -306,7 +306,7 @@ The container isn't just a wrapper — it provides layout and behavior that indi
 - Children take precedence if both are provided (slot wins over array)
 
 ### Examples of container components
-`avatar-group`, `stat-group`, `activity-feed`, `leaderboard`, `metric-table`, `tag` (as tag-group), `breadcrumbs`, `stepper`, `tabs`, `carousel`, `nav`
+`avatar-group`, `stat-group`, `activity-feed`, `leaderboard`, `tag` (as tag-group), `breadcrumbs`, `stepper`, `tabs`, `carousel`, `nav`
 
 ---
 

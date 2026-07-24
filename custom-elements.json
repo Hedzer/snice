@@ -15647,7 +15647,7 @@
               "reflects": true
             },
             {
-              "name": "qrdata",
+              "name": "qr-data",
               "fieldName": "qrData",
               "type": {
                 "text": "string"
@@ -15655,7 +15655,7 @@
               "reflects": true
             },
             {
-              "name": "qrposition",
+              "name": "qr-position",
               "fieldName": "qrPosition",
               "type": {
                 "text": "'top-right' | 'bottom-right' | 'footer'"
@@ -15663,7 +15663,7 @@
               "reflects": true
             },
             {
-              "name": "showqr",
+              "name": "show-qr",
               "fieldName": "showQr",
               "type": {
                 "text": "boolean"
@@ -20938,7 +20938,7 @@
               "reflects": true
             },
             {
-              "name": "qrdata",
+              "name": "qr-data",
               "fieldName": "qrData",
               "type": {
                 "text": "string"
@@ -20946,7 +20946,7 @@
               "reflects": true
             },
             {
-              "name": "qrposition",
+              "name": "qr-position",
               "fieldName": "qrPosition",
               "type": {
                 "text": "'top-right' | 'bottom-right' | 'bottom-left' | 'footer'"
@@ -20954,7 +20954,7 @@
               "reflects": true
             },
             {
-              "name": "showqr",
+              "name": "show-qr",
               "fieldName": "showQr",
               "type": {
                 "text": "boolean"
@@ -26265,194 +26265,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/components/metric-table/snice-metric-table.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "name": "SniceMetricTable",
-          "tagName": "snice-metric-table",
-          "customElement": true,
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "members": [
-            {
-              "kind": "field",
-              "name": "columns",
-              "type": {
-                "text": "unknown[]"
-              },
-              "default": "[]"
-            },
-            {
-              "kind": "method",
-              "name": "componentStyles",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "data",
-              "type": {
-                "text": "unknown[]"
-              },
-              "default": "[]"
-            },
-            {
-              "kind": "method",
-              "name": "handleColumnsChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleDataChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleSortByChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleSortDirectionChange",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "renderContent",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "sortBy",
-              "type": {
-                "text": "string"
-              },
-              "default": "''"
-            },
-            {
-              "kind": "field",
-              "name": "sortDirection",
-              "type": {
-                "text": "'asc' | 'desc'"
-              },
-              "default": "'desc'"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "sort-by",
-              "fieldName": "sortBy",
-              "type": {
-                "text": "string"
-              },
-              "reflects": true
-            },
-            {
-              "name": "sort-direction",
-              "fieldName": "sortDirection",
-              "type": {
-                "text": "'asc' | 'desc'"
-              },
-              "reflects": true
-            }
-          ],
-          "events": [
-            {
-              "name": "row-click",
-              "type": "CustomEvent<RowClickDetail>"
-            },
-            {
-              "name": "sort-change",
-              "type": "CustomEvent<SortChangeDetail>"
-            }
-          ],
-          "slots": [],
-          "cssParts": [
-            {
-              "name": "base"
-            },
-            {
-              "name": "row"
-            },
-            {
-              "name": "table"
-            }
-          ],
-          "cssProperties": [
-            {
-              "name": "--mt-bg"
-            },
-            {
-              "name": "--mt-bg-element"
-            },
-            {
-              "name": "--mt-border"
-            },
-            {
-              "name": "--mt-danger"
-            },
-            {
-              "name": "--mt-primary"
-            },
-            {
-              "name": "--mt-success"
-            },
-            {
-              "name": "--mt-text"
-            },
-            {
-              "name": "--mt-text-secondary"
-            },
-            {
-              "name": "--mt-text-tertiary"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "custom-element-definition",
-          "name": "snice-metric-table",
-          "declaration": {
-            "name": "SniceMetricTable",
-            "module": "dist/components/metric-table/snice-metric-table.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "dist/components/modal/snice-modal.js",
       "declarations": [
         {
@@ -28497,7 +28309,7 @@
               "reflects": true
             },
             {
-              "name": "showfirst",
+              "name": "show-first",
               "fieldName": "showFirst",
               "type": {
                 "text": "boolean"
@@ -28505,7 +28317,7 @@
               "reflects": true
             },
             {
-              "name": "showlast",
+              "name": "show-last",
               "fieldName": "showLast",
               "type": {
                 "text": "boolean"
@@ -28513,7 +28325,7 @@
               "reflects": true
             },
             {
-              "name": "shownext",
+              "name": "show-next",
               "fieldName": "showNext",
               "type": {
                 "text": "boolean"
@@ -28521,7 +28333,7 @@
               "reflects": true
             },
             {
-              "name": "showprev",
+              "name": "show-prev",
               "fieldName": "showPrev",
               "type": {
                 "text": "boolean"
@@ -29083,7 +28895,13 @@
             {
               "kind": "method",
               "name": "handleSrcChange",
-              "parameters": [],
+              "parameters": [
+                {
+                  "name": "oldValue",
+                  "type": "string",
+                  "optional": true
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -29833,6 +29651,14 @@
               "fieldName": "duration",
               "type": {
                 "text": "number"
+              },
+              "reflects": true
+            },
+            {
+              "name": "episode-title",
+              "fieldName": "title",
+              "type": {
+                "text": "string"
               },
               "reflects": true
             },
@@ -33278,7 +33104,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "'\\u2605'"
+              "default": "'star'"
             },
             {
               "kind": "field",
@@ -33683,7 +33509,7 @@
               "reflects": true
             },
             {
-              "name": "discountlabel",
+              "name": "discount-label",
               "fieldName": "discountLabel",
               "type": {
                 "text": "string"
@@ -33699,7 +33525,7 @@
               "reflects": true
             },
             {
-              "name": "paymentdetails",
+              "name": "payment-details",
               "fieldName": "paymentDetails",
               "type": {
                 "text": "string"
@@ -33707,7 +33533,7 @@
               "reflects": true
             },
             {
-              "name": "paymentmethod",
+              "name": "payment-method",
               "fieldName": "paymentMethod",
               "type": {
                 "text": "string"
@@ -33715,7 +33541,7 @@
               "reflects": true
             },
             {
-              "name": "qrdata",
+              "name": "qr-data",
               "fieldName": "qrData",
               "type": {
                 "text": "string"
@@ -33723,7 +33549,7 @@
               "reflects": true
             },
             {
-              "name": "qrposition",
+              "name": "qr-position",
               "fieldName": "qrPosition",
               "type": {
                 "text": "'top' | 'bottom' | 'footer'"
@@ -33731,7 +33557,7 @@
               "reflects": true
             },
             {
-              "name": "receiptnumber",
+              "name": "receipt-number",
               "fieldName": "receiptNumber",
               "type": {
                 "text": "string"
@@ -33739,7 +33565,7 @@
               "reflects": true
             },
             {
-              "name": "showqr",
+              "name": "show-qr",
               "fieldName": "showQr",
               "type": {
                 "text": "boolean"
@@ -33763,7 +33589,7 @@
               "reflects": true
             },
             {
-              "name": "terminalid",
+              "name": "terminal-id",
               "fieldName": "terminalId",
               "type": {
                 "text": "string"
@@ -33771,7 +33597,7 @@
               "reflects": true
             },
             {
-              "name": "thankyou",
+              "name": "thank-you",
               "fieldName": "thankYou",
               "type": {
                 "text": "string"
@@ -36930,7 +36756,11 @@
             }
           ],
           "events": [],
-          "slots": [],
+          "slots": [
+            {
+              "name": ""
+            }
+          ],
           "cssParts": [
             {
               "name": "bars"

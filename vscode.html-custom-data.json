@@ -3686,11 +3686,11 @@
           "description": "notes: string"
         },
         {
-          "name": "qrdata",
+          "name": "qr-data",
           "description": "qrData: string"
         },
         {
-          "name": "qrposition",
+          "name": "qr-position",
           "description": "qrPosition: 'top-right' | 'bottom-right' | 'footer'",
           "values": [
             {
@@ -3705,7 +3705,7 @@
           ]
         },
         {
-          "name": "showqr",
+          "name": "show-qr",
           "description": "showQr: boolean"
         },
         {
@@ -4618,11 +4618,11 @@
           "description": "notes: string"
         },
         {
-          "name": "qrdata",
+          "name": "qr-data",
           "description": "qrData: string"
         },
         {
-          "name": "qrposition",
+          "name": "qr-position",
           "description": "qrPosition: 'top-right' | 'bottom-right' | 'bottom-left' | 'footer'",
           "values": [
             {
@@ -4640,7 +4640,7 @@
           ]
         },
         {
-          "name": "showqr",
+          "name": "show-qr",
           "description": "showQr: boolean"
         },
         {
@@ -5582,28 +5582,6 @@
       ]
     },
     {
-      "name": "snice-metric-table",
-      "description": "SniceMetricTable custom element.",
-      "attributes": [
-        {
-          "name": "sort-by",
-          "description": "sortBy: string"
-        },
-        {
-          "name": "sort-direction",
-          "description": "sortDirection: 'asc' | 'desc'",
-          "values": [
-            {
-              "name": "asc"
-            },
-            {
-              "name": "desc"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "snice-modal",
       "description": "SniceModal custom element.",
       "attributes": [
@@ -5924,19 +5902,19 @@
           "description": "current: number"
         },
         {
-          "name": "showfirst",
+          "name": "show-first",
           "description": "showFirst: boolean"
         },
         {
-          "name": "showlast",
+          "name": "show-last",
           "description": "showLast: boolean"
         },
         {
-          "name": "shownext",
+          "name": "show-next",
           "description": "showNext: boolean"
         },
         {
-          "name": "showprev",
+          "name": "show-prev",
           "description": "showPrev: boolean"
         },
         {
@@ -6088,6 +6066,10 @@
         {
           "name": "duration",
           "description": "duration: number"
+        },
+        {
+          "name": "episode-title",
+          "description": "title: string"
         },
         {
           "name": "from-rss",
@@ -6718,7 +6700,7 @@
           "description": "discount: number"
         },
         {
-          "name": "discountlabel",
+          "name": "discount-label",
           "description": "discountLabel: string"
         },
         {
@@ -6726,19 +6708,19 @@
           "description": "locale: string"
         },
         {
-          "name": "paymentdetails",
+          "name": "payment-details",
           "description": "paymentDetails: string"
         },
         {
-          "name": "paymentmethod",
+          "name": "payment-method",
           "description": "paymentMethod: string"
         },
         {
-          "name": "qrdata",
+          "name": "qr-data",
           "description": "qrData: string"
         },
         {
-          "name": "qrposition",
+          "name": "qr-position",
           "description": "qrPosition: 'top' | 'bottom' | 'footer'",
           "values": [
             {
@@ -6753,11 +6735,11 @@
           ]
         },
         {
-          "name": "receiptnumber",
+          "name": "receipt-number",
           "description": "receiptNumber: string"
         },
         {
-          "name": "showqr",
+          "name": "show-qr",
           "description": "showQr: boolean"
         },
         {
@@ -6769,11 +6751,11 @@
           "description": "tax: number"
         },
         {
-          "name": "terminalid",
+          "name": "terminal-id",
           "description": "terminalId: string"
         },
         {
-          "name": "thankyou",
+          "name": "thank-you",
           "description": "thankYou: string"
         },
         {

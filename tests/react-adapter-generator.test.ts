@@ -51,8 +51,8 @@ describe('React adapter generator', () => {
     const primary = elements.filter(element => element.isPrimary);
     const nested = elements.filter(element => !element.isPrimary);
 
-    expect(elements).toHaveLength(191);
-    expect(primary).toHaveLength(135);
+    expect(elements).toHaveLength(190);
+    expect(primary).toHaveLength(134);
     expect(nested).toHaveLength(56);
     expect(new Set(elements.map(element => element.tagName)).size).toBe(elements.length);
     expect(new Set(elements.map(element => element.outputName)).size).toBe(elements.length);

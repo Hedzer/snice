@@ -31,7 +31,6 @@ import '../../packages/components/src/invoice/snice-invoice';
 import '../../packages/components/src/kanban/snice-kanban';
 import '../../packages/components/src/kpi/snice-kpi';
 import '../../packages/components/src/map/snice-map';
-import '../../packages/components/src/metric-table/snice-metric-table';
 import '../../packages/components/src/music-player/snice-music-player';
 import '../../packages/components/src/notification-center/snice-notification-center';
 import '../../packages/components/src/order-tracker/snice-order-tracker';
@@ -267,15 +266,15 @@ describe('attribute: false — complex properties do not reflect to DOM', () => 
     ]);
   });
 
-  // --- Metric Table ---
-  it('snice-metric-table: columns', async () => {
-    await assertNoReflect('snice-metric-table', 'columns', [
-      { key: 'name', label: 'Name' },
+  // --- Table ---
+  it('snice-table: columns', async () => {
+    await assertNoReflect('snice-table', 'columns', [
+      { key: 'name', label: 'Name', type: 'text' },
     ]);
   });
 
-  it('snice-metric-table: data', async () => {
-    await assertNoReflect('snice-metric-table', 'data', [
+  it('snice-table: data', async () => {
+    await assertNoReflect('snice-table', 'data', [
       { name: 'Revenue', value: 1000 },
     ]);
   });

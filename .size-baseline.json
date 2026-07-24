@@ -297,10 +297,6 @@
       "raw": 9361,
       "gzip": 3308
     },
-    "metric-table": {
-      "raw": 12600,
-      "gzip": 4072
-    },
     "modal": {
       "raw": 13612,
       "gzip": 4319
