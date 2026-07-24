@@ -38,14 +38,14 @@
 
 /* Header */
 .mt__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   text-align: left;
   font-size: 0.6875rem;
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--mt-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
   background: var(--mt-bg-element);
   border-bottom: 1px solid var(--mt-border);
   cursor: pointer;
@@ -55,23 +55,23 @@
 }
 
 .mt__header:hover {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--mt-text);
 }
 
 .mt__header--numeric {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   text-align: right;
 }
 
 .mt__header--sparkline {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   text-align: center;
   min-width: 6rem;
 }
 
 .mt__header-content {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: inline-flex;
   align-items: center;
   gap: var(--snice-spacing-3xs, 0.125rem);
@@ -107,6 +107,11 @@
 }
 
 .mt__row:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: -2px;
+}
+
+.mt__header:focus-visible {
   outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline-offset: -2px;
 }
@@ -171,12 +176,19 @@
 
   .mt__header,
   .mt__cell {
-    font-family: var(--snice-font-family-display);
+    font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
     padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   }
 
   .mt__sparkline {
     width: 3.5rem;
     height: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

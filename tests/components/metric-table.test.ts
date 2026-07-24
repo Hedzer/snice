@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/metric-table/snice-metric-table.css');
 import '../../packages/components/src/metric-table/snice-metric-table';
 import type { SniceMetricTableElement, MetricColumn } from '../../packages/components/src/metric-table/snice-metric-table.types';
 
@@ -218,5 +222,91 @@ describe('snice-metric-table', () => {
     await wait(50);
     const cells = queryShadowAll(el as HTMLElement, '.mt__cell');
     expect(cells[0].textContent?.trim()).toBe('\u2014');
+  });
+
+  describe('attribute binding', () => {
+    it('applies sorting declared via kebab-case sort-by and sort-direction attributes', async () => {
+      el = await createComponent<SniceMetricTableElement>('snice-metric-table', {
+        'sort-by': 'value',
+        'sort-direction': 'asc',
+      });
+      el.columns = [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'value', label: 'Value', type: 'number' },
+      ];
+      el.data = [
+        { name: 'C', value: 300 },
+        { name: 'A', value: 100 },
+        { name: 'B', value: 200 },
+      ];
+      await wait(50);
+
+      expect(el.sortBy).toBe('value');
+      expect(el.sortDirection).toBe('asc');
+
+      const firstCells = Array.from(queryShadowAll(el as HTMLElement, '.mt__row td:first-child'));
+      expect(firstCells.map(c => c.textContent?.trim())).toEqual(['A', 'B', 'C']);
+    });
+  });
+
+  describe('keyboard sorting', () => {
+    it('makes sortable headers focusable', async () => {
+      el = await createComponent<SniceMetricTableElement>('snice-metric-table');
+      el.columns = sampleColumns;
+      el.data = sampleData;
+      await wait(50);
+
+      const header = queryShadow(el as HTMLElement, '.mt__header');
+      expect(header?.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('sorts on Enter keydown on a header', async () => {
+      el = await createComponent<SniceMetricTableElement>('snice-metric-table');
+      el.columns = sampleColumns;
+      el.data = sampleData;
+      await wait(50);
+
+      let detail: any = null;
+      (el as HTMLElement).addEventListener('sort-change', (e: Event) => {
+        detail = (e as CustomEvent).detail;
+      });
+
+      const headers = queryShadowAll(el as HTMLElement, '.mt__header');
+      headers[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await wait(50);
+
+      expect(detail?.sortBy).toBe('value');
+    });
+
+    it('sorts on Space keydown on a header', async () => {
+      el = await createComponent<SniceMetricTableElement>('snice-metric-table');
+      el.columns = sampleColumns;
+      el.data = sampleData;
+      await wait(50);
+
+      let detail: any = null;
+      (el as HTMLElement).addEventListener('sort-change', (e: Event) => {
+        detail = (e as CustomEvent).detail;
+      });
+
+      const headers = queryShadowAll(el as HTMLElement, '.mt__header');
+      headers[1].dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      await wait(50);
+
+      expect(detail?.sortBy).toBe('value');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

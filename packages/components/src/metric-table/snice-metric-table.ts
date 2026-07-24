@@ -10,10 +10,10 @@ export class SniceMetricTable extends HTMLElement implements SniceMetricTableEle
   @property({ type: Array, attribute: false })
   data: Record<string, any>[] = [];
 
-  @property()
+  @property({ attribute: 'sort-by' })
   sortBy = '';
 
-  @property()
+  @property({ attribute: 'sort-direction' })
   sortDirection: SortDirection = 'desc';
 
   @watch('columns')
@@ -206,7 +206,9 @@ export class SniceMetricTable extends HTMLElement implements SniceMetricTableEle
               <tr>
                 ${this.columns.map(col => html/*html*/`
                   <th class="mt__header ${col.type === 'number' || col.type === 'percent' || col.type === 'currency' ? 'mt__header--numeric' : ''} ${col.sparkline ? 'mt__header--sparkline' : ''}"
+                      tabindex="0"
                       @click=${() => this.handleSort(col.key)}
+                      @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleSort(col.key); } }}
                       role="columnheader"
                       aria-sort="${this.sortBy === col.key ? (this.sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}">
                     <span class="mt__header-content">
