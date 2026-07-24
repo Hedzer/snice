@@ -133,6 +133,31 @@ describe('snice-spinner', () => {
       expect(spinnerDiv?.getAttribute('aria-label')).toBe('Processing');
     });
   });
+  describe('slotted text', () => {
+    it('renders slotted text as the below-ring label instead of swallowing it', async () => {
+      const el = document.createElement('snice-spinner');
+      el.textContent = 'Crunching numbers…';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 50));
+
+      const slot = el.shadowRoot!.querySelector('.spinner__label slot') as HTMLSlotElement;
+      expect(slot).toBeTruthy();
+      expect(slot.assignedNodes().map(n => n.textContent).join('')).toContain('Crunching numbers…');
+      el.remove();
+    });
+
+    it('falls back to the label attribute when nothing is slotted', async () => {
+      const el = document.createElement('snice-spinner');
+      el.setAttribute('label', 'Loading files');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 50));
+
+      const label = el.shadowRoot!.querySelector('.spinner__label');
+      expect(label?.textContent).toContain('Loading files');
+      el.remove();
+    });
+  });
+
   describe('label layout', () => {
     it('does not center the label over the ring where long text overflows', () => {
       const css = readFileSync(resolve(process.cwd(), 'packages/components/src/spinner/snice-spinner.css'), 'utf8');

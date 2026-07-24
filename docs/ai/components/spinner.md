@@ -8,7 +8,7 @@ Animated loading spinner.
 size: 'small'|'medium'|'large'|'xl' = 'medium';
 color: 'primary'|'success'|'warning'|'error'|'info' = 'primary';
 variant: 'arc'|'dots'|'pulse'|'orbit'|'bars' = 'arc';  // loader shape
-label: string = '';
+label: string = '';                    // slotted text renders as the label too
 thickness: number = 4;   // only applies to arc variant
 ```
 
