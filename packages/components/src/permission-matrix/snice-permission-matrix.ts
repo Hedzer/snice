@@ -75,7 +75,7 @@ export class SnicePermissionMatrix extends HTMLElement implements SnicePermissio
     if (this.readonly) {
       return html/*html*/`
         <td class="matrix-cell">
-          <span class="matrix-readonly-indicator">
+          <span class="matrix-readonly-indicator" role="img" aria-label="${granted ? 'Granted' : 'Not granted'}">
             <if ${granted}>
               <svg class="matrix-readonly-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>

@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/permission-matrix/snice-permission-matrix.css');
 import '../../packages/components/src/permission-matrix/snice-permission-matrix';
 import type { SnicePermissionMatrixElement } from '../../packages/components/src/permission-matrix/snice-permission-matrix.types';
 
@@ -213,5 +217,31 @@ describe('snice-permission-matrix', () => {
     adminDeleteCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
 
     expect(matrix.hasPermission('admin', 'delete')).toBe(false);
+  });
+
+  describe('readonly accessibility', () => {
+    it('gives readonly cells an accessible granted/not-granted state', async () => {
+      matrix = await createMatrix({ readonly: true });
+
+      const indicators = Array.from(queryShadowAll(matrix as HTMLElement, '.matrix-readonly-indicator'));
+      expect(indicators.length).toBeGreaterThan(0);
+      for (const indicator of indicators) {
+        const label = indicator.getAttribute('aria-label');
+        expect(label === 'Granted' || label === 'Not granted').toBe(true);
+      }
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
