@@ -43,7 +43,9 @@ export class SniceBook extends HTMLElement implements SniceBookElement {
   init() {
     this.collectPages();
     this.buildPages();
-    this.setAttribute('tabindex', '0');
+    if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', '0');
+    }
   }
 
   @on('slotchange', { target: 'slot' })

@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow } from './test-utils';
 import '../../packages/components/src/book/snice-book';
 import type { SniceBookElement } from '../../packages/components/src/book/snice-book.types';
@@ -208,5 +210,52 @@ describe('snice-book', () => {
     book.goToPage(-5);
     await wait(50);
     expect(book.currentPage).toBe(0);
+  });
+
+  describe('keyboard navigation', () => {
+    it('should turn forward with ArrowRight', async () => {
+      book = await createWithPages(3);
+
+      (book as HTMLElement).dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      await wait(50);
+
+      expect(book.currentPage).toBe(1);
+    });
+
+    it('should turn backward with ArrowLeft', async () => {
+      book = await createWithPages(3, { 'current-page': 2 });
+
+      (book as HTMLElement).dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+      await wait(50);
+
+      expect(book.currentPage).toBe(1);
+    });
+
+    it('should be focusable so keys can reach it', async () => {
+      book = await createWithPages(2);
+
+      expect((book as HTMLElement).getAttribute('tabindex')).toBe('0');
+    });
+
+    it('should not clobber an author-supplied tabindex', async () => {
+      book = await createWithPages(2, { tabindex: '-1' });
+
+      expect((book as HTMLElement).getAttribute('tabindex')).toBe('-1');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/book/snice-book.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should collapse the 3D flip under prefers-reduced-motion', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
