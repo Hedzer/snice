@@ -213,3 +213,10 @@
 .error-text {
   color: var(--snice-color-danger, rgb(220 38 38));
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
