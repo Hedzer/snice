@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../packages/components/src/candlestick/snice-candlestick';
 import type { SniceCandlestickElement, CandleData } from '../../packages/components/src/candlestick/snice-candlestick.types';
@@ -300,6 +302,21 @@ describe('snice-candlestick', () => {
       const bodies = queryShadowAll(el as HTMLElement, '.candlestick__body');
       expect(bodies.length).toBeGreaterThan(0);
       expect(bodies.length).toBeLessThanOrEqual(200);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/candlestick/snice-candlestick.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
