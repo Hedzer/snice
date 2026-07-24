@@ -17,7 +17,7 @@ export class SniceTree extends HTMLElement implements SniceTreeElement {
   @property({ type: Boolean })
   selectable = true;
 
-  @property({  })
+  @property({ attribute: 'selection-mode' })
   selectionMode: TreeSelectionMode = 'single';
 
   @property({ type: Boolean, attribute: 'show-checkboxes' })

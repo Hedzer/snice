@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, trackRenders } from './test-utils';
 import '../../packages/components/src/tree/snice-tree';
 import '../../packages/components/src/tree/snice-tree-item';
@@ -618,6 +620,27 @@ describe('snice-tree', () => {
 
       const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
       expect(item.shadowRoot.querySelector('[part="icon-text"]')?.textContent).toContain('📄');
+    });
+  });
+  describe('attribute contract', () => {
+    it('observes the documented selection-mode attribute', () => {
+      const observed = (customElements.get('snice-tree') as any).observedAttributes as string[];
+      expect(observed).toContain('selection-mode');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/tree/snice-tree.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

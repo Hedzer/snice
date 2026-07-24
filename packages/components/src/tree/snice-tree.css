@@ -27,3 +27,10 @@
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   font-style: italic;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

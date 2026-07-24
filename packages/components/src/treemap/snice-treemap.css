@@ -124,3 +124,10 @@
               height var(--snice-transition-medium, 250ms) ease,
               opacity var(--snice-transition-fast, 150ms) ease;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

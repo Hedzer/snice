@@ -247,3 +247,9 @@
   border-radius: 0 0 var(--snice-border-radius-lg, 0.5rem) var(--snice-border-radius-lg, 0.5rem);
   transition: width linear;
 }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

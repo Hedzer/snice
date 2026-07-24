@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import '../../packages/components/src/timer/snice-timer';
 import type { SniceTimer } from '../../packages/components/src/timer/snice-timer';
 
@@ -275,6 +277,20 @@ describe('SniceTimer', () => {
     it('should accept initial-time attribute', () => {
       timer.setAttribute('initial-time', '120');
       expect(timer.initialTime).toBe(120);
+    });
+  });
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/timer/snice-timer.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
