@@ -116,6 +116,12 @@
   margin-top: 0.125rem;
 }
 
+.field__icon-glyph svg {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
 .field__label {
   font-size: var(--snice-font-size-sm, 0.875rem);
   font-weight: var(--snice-font-weight-medium, 500);

@@ -1,4 +1,5 @@
 import { element, property, query, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-command-palette.css?inline';
 import type {
   CommandItem,
@@ -284,7 +285,7 @@ export class SniceCommandPalette extends HTMLElement implements SniceCommandPale
               />
             </if>
             <if ${!command.iconImage && command.icon}>
-              ${command.icon}
+              ${renderIcon(command.icon!, 'command-palette__item-icon-glyph')}
             </if>
           </div>
         </if>

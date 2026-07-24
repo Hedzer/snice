@@ -1,5 +1,6 @@
 import { element, property, render, styles, html, css, dispatch, watch, unsafeHTML } from 'snice';
 import { CHECK, PENCIL } from '../icons';
+import { renderIcon } from '../utils';
 import cssContent from './snice-data-card.css?inline';
 import type { DataCardField, DataCardVariant, SniceDataCardElement } from './snice-data-card.types';
 
@@ -149,7 +150,7 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
     return html/*html*/`
       <div class="field" part="field">
         <if ${field.icon}>
-          <span class="field__icon" part="field-icon">${field.icon}</span>
+          <span class="field__icon" part="field-icon">${renderIcon(field.icon!, 'field__icon-glyph')}</span>
         </if>
         <span class="field__label" part="field-label">${field.label}</span>
         <if ${isEditing}>

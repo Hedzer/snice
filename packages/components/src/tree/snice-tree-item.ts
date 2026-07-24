@@ -13,6 +13,7 @@ import {
   repeat,
   isSafeUrl
 } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-tree-item.css?inline';
 import type { TreeNode } from './snice-tree.types';
 import type {
@@ -299,7 +300,7 @@ export class SniceTreeItem extends HTMLElement implements SniceTreeItemElement {
                 @error=${this.handleIconImageError}
               />
               <else-if ${showTextIcon}>
-                <span part="icon-text">${this.node.icon}</span>
+                <span part="icon-text">${renderIcon(this.node.icon!, 'tree-item__icon-glyph')}</span>
               </else-if>
             </if>
           </div>

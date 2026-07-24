@@ -123,29 +123,29 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   const fileTree = [
     {
-      id: 'src', label: 'src', icon: '📁', expanded: true,
+      id: 'src', label: 'src', icon: 'folder', expanded: true,
       children: [
-        { id: 'index.ts', label: 'index.ts', icon: '📄' },
-        { id: 'main.ts', label: 'main.ts', icon: '📄' },
+        { id: 'index.ts', label: 'index.ts', icon: 'document-text' },
+        { id: 'main.ts', label: 'main.ts', icon: 'document-text' },
         {
-          id: 'components', label: 'components', icon: '📁',
+          id: 'components', label: 'components', icon: 'folder',
           children: [
-            { id: 'button.ts', label: 'button.ts', icon: '📄' },
-            { id: 'input.ts', label: 'input.ts', icon: '📄' },
-            { id: 'modal.ts', label: 'modal.ts', icon: '📄' },
+            { id: 'button.ts', label: 'button.ts', icon: 'document-text' },
+            { id: 'input.ts', label: 'input.ts', icon: 'document-text' },
+            { id: 'modal.ts', label: 'modal.ts', icon: 'document-text' },
           ]
         }
       ]
     },
     {
-      id: 'tests', label: 'tests', icon: '📁',
+      id: 'tests', label: 'tests', icon: 'folder',
       children: [
-        { id: 'button.test.ts', label: 'button.test.ts', icon: '📄' },
-        { id: 'input.test.ts', label: 'input.test.ts', icon: '📄' },
+        { id: 'button.test.ts', label: 'button.test.ts', icon: 'document-text' },
+        { id: 'input.test.ts', label: 'input.test.ts', icon: 'document-text' },
       ]
     },
-    { id: 'package.json', label: 'package.json', icon: '📄' },
-    { id: 'README.md', label: 'README.md', icon: '📄' },
+    { id: 'package.json', label: 'package.json', icon: 'document-text' },
+    { id: 'README.md', label: 'README.md', icon: 'document-text' },
   ];
 
   document.getElementById('tree-single').nodes = fileTree;
@@ -177,16 +177,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   // Custom icons
   document.getElementById('tree-custom-icons').nodes = [
-    { id: '1', label: 'Documents', icon: '📚', expanded: true, children: [
-      { id: '2', label: 'Resume.pdf', icon: '📃' },
-      { id: '3', label: 'Photo.jpg', icon: '🖼️' },
-      { id: '4', label: 'Music.mp3', icon: '🎵' },
+    { id: '1', label: 'Documents', icon: 'folder', expanded: true, children: [
+      { id: '2', label: 'Resume.pdf', icon: 'document-text' },
+      { id: '3', label: 'Photo.jpg', icon: 'photo' },
+      { id: '4', label: 'Music.mp3', icon: 'musical-note' },
     ]},
-    { id: '5', label: 'Settings', icon: '⚙️', children: [
-      { id: '6', label: 'Profile', icon: '👤' },
-      { id: '7', label: 'Security', icon: '🔒' },
+    { id: '5', label: 'Settings', icon: 'cog-6-tooth', children: [
+      { id: '6', label: 'Profile', icon: 'user' },
+      { id: '7', label: 'Security', icon: 'lock-closed' },
     ]},
-    { id: '8', label: 'Trash', icon: '🗑️' },
+    { id: '8', label: 'Trash', icon: 'trash' },
   ];
 
   // Image icons use URL data; the text icon is retained as a load fallback.
@@ -201,45 +201,45 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   // Deeply nested
   document.getElementById('tree-deep').nodes = [
-    { id: 'l1', label: 'Level 1', icon: '📁', expanded: true, children: [
-      { id: 'l2', label: 'Level 2', icon: '📁', expanded: true, children: [
-        { id: 'l3', label: 'Level 3', icon: '📁', expanded: true, children: [
-          { id: 'l4a', label: 'Level 4 - File A', icon: '📄' },
-          { id: 'l4b', label: 'Level 4 - File B', icon: '📄' },
+    { id: 'l1', label: 'Level 1', icon: 'folder', expanded: true, children: [
+      { id: 'l2', label: 'Level 2', icon: 'folder', expanded: true, children: [
+        { id: 'l3', label: 'Level 3', icon: 'folder', expanded: true, children: [
+          { id: 'l4a', label: 'Level 4 - File A', icon: 'document-text' },
+          { id: 'l4b', label: 'Level 4 - File B', icon: 'document-text' },
         ]},
-        { id: 'l3b', label: 'Level 3 sibling', icon: '📄' },
+        { id: 'l3b', label: 'Level 3 sibling', icon: 'document-text' },
       ]},
     ]},
   ];
 
   // Flat
   document.getElementById('tree-flat').nodes = [
-    { id: 'a', label: 'Item A', icon: '📄' },
-    { id: 'b', label: 'Item B', icon: '📄' },
-    { id: 'c', label: 'Item C', icon: '📄' },
-    { id: 'd', label: 'Item D', icon: '📄' },
+    { id: 'a', label: 'Item A', icon: 'document-text' },
+    { id: 'b', label: 'Item B', icon: 'document-text' },
+    { id: 'c', label: 'Item C', icon: 'document-text' },
+    { id: 'd', label: 'Item D', icon: 'document-text' },
   ];
 
   // Single node
   document.getElementById('tree-single-node').nodes = [
-    { id: 'only', label: 'Only Node', icon: '📄' },
+    { id: 'only', label: 'Only Node', icon: 'document-text' },
   ];
 
   // Lazy loading
   const lazyTree = document.getElementById('tree-lazy');
   lazyTree.nodes = [
-    { id: 'eager', label: 'Eager Folder', icon: '📁', children: [
-      { id: 'file1', label: 'file1.ts', icon: '📄' },
+    { id: 'eager', label: 'Eager Folder', icon: 'folder', children: [
+      { id: 'file1', label: 'file1.ts', icon: 'document-text' },
     ]},
-    { id: 'lazy', label: 'Lazy Folder', icon: '📁', lazy: true, children: [] },
+    { id: 'lazy', label: 'Lazy Folder', icon: 'folder', lazy: true, children: [] },
   ];
   lazyTree.addEventListener('tree-node-lazy-load', (e) => {
     setTimeout(() => {
       lazyTree.updateNode(e.detail.nodeId, {
         lazy: false,
         children: [
-          { id: 'loaded1', label: 'Loaded File 1', icon: '📄' },
-          { id: 'loaded2', label: 'Loaded File 2', icon: '📄' },
+          { id: 'loaded1', label: 'Loaded File 1', icon: 'document-text' },
+          { id: 'loaded2', label: 'Loaded File 2', icon: 'document-text' },
         ]
       });
     }, 1000);

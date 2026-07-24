@@ -6,6 +6,7 @@
  */
 import { element, property, watch, context } from 'snice';
 import type { Placard, AppContext, Context } from 'snice';
+import { ICONS } from '../icons';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation, NavActiveStyle } from './snice-nav.types';
 
@@ -489,8 +490,14 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
         if (iconMeta.kind === 'img') {
           const img = existingIcon as HTMLImageElement;
           if (img.src !== iconMeta.value) img.src = iconMeta.value;
+        } else if (iconMeta.kind === 'registry') {
+          if (existingIcon.dataset.icon !== iconMeta.value) {
+            existingIcon.innerHTML = (ICONS as Record<string, string>)[iconMeta.value];
+            existingIcon.dataset.icon = iconMeta.value;
+          }
         } else {
           if (existingIcon.textContent !== iconMeta.value) {
+            delete existingIcon.dataset.icon;
             existingIcon.textContent = iconMeta.value;
           }
         }
@@ -515,7 +522,7 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     if (el.getAttribute(name) !== value) el.setAttribute(name, value);
   }
 
-  private buildIcon(meta: { kind: 'img' | 'text'; value: string }): HTMLElement {
+  private buildIcon(meta: { kind: 'img' | 'registry' | 'text'; value: string }): HTMLElement {
     if (meta.kind === 'img') {
       const img = document.createElement('img');
       img.className = 'nav__icon';
@@ -527,7 +534,13 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
     const span = document.createElement('span');
     span.className = 'nav__icon';
     span.setAttribute('part', 'icon');
-    span.textContent = meta.value;
+    if (meta.kind === 'registry') {
+      // Registry values are our own static SVG constants — safe to inject.
+      span.innerHTML = (ICONS as Record<string, string>)[meta.value];
+      span.dataset.icon = meta.value;
+    } else {
+      span.textContent = meta.value;
+    }
     return span;
   }
 
@@ -575,13 +588,16 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   }
 }
 
-function classifyIcon(icon: string): { kind: 'img' | 'text'; value: string } {
+function classifyIcon(icon: string): { kind: 'img' | 'registry' | 'text'; value: string } {
   const isImg = icon.startsWith('img://') ||
     /^(https?:\/\/|\/|\.\/|\.\.\/|data:)/.test(icon) ||
     /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)$/i.test(icon);
   const forceText = icon.startsWith('text://');
   if (isImg && !forceText) {
     return { kind: 'img', value: icon.startsWith('img://') ? icon.slice(6) : icon };
+  }
+  if (!forceText && (ICONS as Record<string, string>)[icon]) {
+    return { kind: 'registry', value: icon };
   }
   return { kind: 'text', value: forceText ? icon.slice(7) : icon };
 }
