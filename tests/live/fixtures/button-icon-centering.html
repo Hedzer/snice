@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* Replica of the Google Fonts Material Symbols stylesheet rules.
+         These are DOCUMENT-level styles, which outrank shadow ::slotted()
+         rules in the cascade — exactly the conflict that off-centered
+         circle-button icons (see f3c0a794). The icon font itself is not
+         loaded; the line-box geometry that caused the bug is font-independent. */
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined', monospace;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+      }
+    </style>
+  </head>
+  <body>
+    <snice-button id="text-icon" variant="text" circle size="small">
+      <!-- Plain "+": no ligature font needed, no emoji substitution, and its
+           ink sits at the optical center of the line box so the fixture also
+           reads correctly to a human eye (compare with the SVG "+" below).
+           The assertion contract is about the line box, not the glyph art. -->
+      <span slot="icon" class="material-symbols-outlined">+</span>
+    </snice-button>
+
+    <snice-button id="svg-icon" variant="text" circle size="small">
+      <!-- viewBox only, no width/height attributes — the case f3c0a794 fixed -->
+      <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+    </snice-button>
+
+    <script type="module">
+      import '/packages/components/src/button/snice-button.ts';
+    </script>
+  </body>
+</html>

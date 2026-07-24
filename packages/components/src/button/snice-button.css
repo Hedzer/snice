@@ -392,13 +392,15 @@
   height: 100%;
 }
 
-/* Slotted icon styles */
+/* Slotted icon styles.
+   No explicit width/height on the generic selector: icon-font spans get
+   their metrics from document-level stylesheets that outrank ::slotted(),
+   and boxing them beyond their line box pushes the glyph off center.
+   SVGs/imgs need explicit dimensions and get them from the rules below. */
 .icon-slot ::slotted(*) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25em;
-  height: 1.25em;
   font-size: 1.25em;
   line-height: 1;
 }
@@ -433,8 +435,6 @@
 }
 
 .button--circle .icon-slot ::slotted(*) {
-  width: 1.25em;
-  height: 1.25em;
   font-size: 1.25em;
   line-height: 1;
   display: flex;
