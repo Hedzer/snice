@@ -201,3 +201,10 @@ canvas:not([style*="display: none"]) {
   max-width: 80%;
   z-index: 5;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

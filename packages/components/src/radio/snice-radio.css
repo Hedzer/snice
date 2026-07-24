@@ -289,3 +289,10 @@
   outline: 2px solid var(--snice-color-primary, rgb(37 99 235));
   outline-offset: 2px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
