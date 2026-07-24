@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/form-layout/snice-form-layout';
 import type { SniceFormLayoutElement } from '../../packages/components/src/form-layout/snice-form-layout.types';
@@ -146,6 +148,14 @@ describe('snice-form-layout', () => {
 
       const slot = queryShadow(layout as HTMLElement, 'slot') as HTMLSlotElement;
       expect(slot?.assignedNodes().length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/form-layout/snice-form-layout.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
     });
   });
 });
