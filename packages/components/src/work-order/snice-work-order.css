@@ -987,3 +987,88 @@
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--wo-paper-ink);
 }
+
+/* ══════════════════════════════════════════════════════
+   Ink variant — masthead band + hero total
+   ══════════════════════════════════════════════════════ */
+
+:host([variant="ink"]) {
+  --wo-bg: rgb(250 249 246);
+  --wo-text: rgb(32 30 27);
+  --wo-text-secondary: rgb(92 87 79);
+  --wo-text-tertiary: rgb(146 139 126);
+  --wo-border: rgb(220 214 202);
+  --wo-bg-element: rgb(244 242 236);
+  --wo-ink: rgb(28 26 23);
+}
+
+:host([variant="ink"]) .wo {
+  border: 1px solid var(--wo-ink);
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 2.25rem;
+  box-shadow: 0 18px 40px -20px rgb(30 28 24 / 0.5);
+}
+
+:host([variant="ink"]) .wo__header {
+  background: var(--wo-ink);
+  color: rgb(249 247 242);
+  margin: -1.5rem -1.5rem 1.5rem;
+  padding: 1.5rem;
+  border-bottom: none;
+}
+
+:host([variant="ink"]) .wo__title {
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  font-weight: var(--snice-font-weight-light, 300);
+  color: rgb(249 247 242 / 0.7);
+}
+
+:host([variant="ink"]) .wo__number {
+  color: rgb(249 247 242);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:host([variant="ink"]) .wo__date-label {
+  color: rgb(249 247 242 / 0.5);
+}
+
+:host([variant="ink"]) .wo__date-value {
+  color: rgb(249 247 242);
+}
+
+:host([variant="ink"]) [class*="wo__priority"],
+:host([variant="ink"]) [class*="wo__status"] {
+  background: transparent;
+  border: 1px solid rgb(249 247 242 / 0.5);
+  color: rgb(249 247 242);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+}
+
+:host([variant="ink"]) .wo__section-title {
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  border-bottom: 2px solid var(--wo-ink);
+}
+
+:host([variant="ink"]) .wo__cost-row--grand {
+  border-top: 2px solid var(--wo-ink);
+  align-items: baseline;
+}
+
+:host([variant="ink"]) .wo__cost-row--grand span:last-child {
+  font-size: 2.25rem;
+  font-weight: var(--snice-font-weight-light, 300);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:host([variant="ink"]) .wo::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0.625rem;
+  background: var(--wo-ink);
+}

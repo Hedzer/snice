@@ -725,3 +725,67 @@
   font-style: italic;
   color: var(--receipt-paper-accent);
 }
+
+/* ══════════════════════════════════════════════════════
+   Ink variant — masthead band + hero total
+   ══════════════════════════════════════════════════════ */
+
+:host([variant="ink"]) {
+  --receipt-bg: rgb(250 249 246);
+  --receipt-text: rgb(32 30 27);
+  --receipt-text-secondary: rgb(92 87 79);
+  --receipt-text-tertiary: rgb(146 139 126);
+  --receipt-border: rgb(220 214 202);
+  --receipt-ink: rgb(28 26 23);
+}
+
+:host([variant="ink"]) .receipt {
+  background: var(--receipt-bg);
+  color: var(--receipt-text);
+  border: 1px solid var(--receipt-ink);
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 2rem;
+  box-shadow: 0 18px 40px -20px rgb(30 28 24 / 0.5);
+}
+
+:host([variant="ink"]) .receipt__header {
+  background: var(--receipt-ink);
+  color: rgb(249 247 242);
+  margin: -1.25rem -1.25rem 1.25rem;
+  padding: 1.25rem;
+  border-bottom: none;
+}
+
+:host([variant="ink"]) .receipt__merchant-name {
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  font-weight: var(--snice-font-weight-light, 300);
+}
+
+:host([variant="ink"]) .receipt__merchant-address,
+:host([variant="ink"]) .receipt__merchant-contact {
+  color: rgb(249 247 242 / 0.6);
+}
+
+:host([variant="ink"]) .receipt__total-row--grand {
+  border-top: 2px solid var(--receipt-ink);
+  align-items: baseline;
+}
+
+:host([variant="ink"]) .receipt__total-row--grand :last-child {
+  font-size: 2rem;
+  font-weight: var(--snice-font-weight-light, 300);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:host([variant="ink"]) .receipt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0.5rem;
+  background: var(--receipt-ink);
+}

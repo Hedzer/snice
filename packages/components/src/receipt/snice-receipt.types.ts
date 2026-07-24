@@ -1,4 +1,4 @@
-export type ReceiptVariant = 'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper';
+export type ReceiptVariant = 'standard' | 'thermal' | 'modern' | 'minimal' | 'detailed' | 'paper' | 'ink';
 
 export type QrPosition = 'top' | 'bottom' | 'footer';
 

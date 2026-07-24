@@ -37,16 +37,17 @@
       <style>
 .tpl-stack-wrap { margin-top: 2rem; }
 .tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
-.tpl-stack { position: relative; height: 26rem; max-width: 720px; }
+.tpl-stack { position: relative; height: 27rem; max-width: 780px; }
 .tpl-sheet { position: absolute; inset: 0; margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: zoom-in; transition: transform 200ms ease, filter 200ms ease; }
 .tpl-sheet > * { pointer-events: none; max-width: 640px; box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.5); }
-.tpl-sheet:nth-child(1) { transform: translate(5.5rem, 3rem) rotate(2.6deg); z-index: 1; }
-.tpl-sheet:nth-child(2) { transform: translate(2.75rem, 1.5rem) rotate(-2deg); z-index: 2; }
-.tpl-sheet:nth-child(3) { transform: translate(0, 0) rotate(0.4deg); z-index: 3; }
+.tpl-sheet:nth-child(1) { transform: translate(9rem, 2.4rem) rotate(2.4deg); z-index: 1; }
+.tpl-sheet:nth-child(2) { transform: translate(6rem, 1.6rem) rotate(-1.8deg); z-index: 2; }
+.tpl-sheet:nth-child(3) { transform: translate(3rem, 0.8rem) rotate(1.1deg); z-index: 3; }
+.tpl-sheet:nth-child(4) { transform: translate(0, 0) rotate(-0.3deg); z-index: 4; }
 .tpl-sheet:hover, .tpl-sheet:focus-visible { transform: translate(0, -0.5rem) rotate(0deg); z-index: 5; filter: brightness(1.02); }
 .tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; }
 .tpl-sheet__tag { position: absolute; top: -0.6em; left: 1rem; z-index: 6; background: var(--snice-color-primary, #3b82f6); color: white; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 999px; pointer-events: none; }
-.tpl-stack .tpl-sheet .tpl-clip { max-height: 24rem; overflow: hidden; border-radius: 4px; mask-image: linear-gradient(to bottom, black 78%, transparent 98%); }
+.tpl-stack .tpl-sheet .tpl-clip { max-height: 24rem; overflow: hidden; border-radius: 4px; }
 </style>
       <div class="tpl-stack-wrap">
         <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
@@ -58,6 +59,10 @@
         <button class="tpl-sheet" data-variant="detailed" aria-label="Zoom detailed template">
           <span class="tpl-sheet__tag">detailed</span>
           <div class="tpl-clip"><snice-work-order data-tpl-wo variant="detailed" wo-number="WO-1906" date="2026-07-24" priority="high" status="in-progress" description="Replace compressor bearing."></snice-work-order></div>
+        </button>
+        <button class="tpl-sheet" data-variant="ink" aria-label="Zoom ink template">
+          <span class="tpl-sheet__tag">ink</span>
+          <div class="tpl-clip"><snice-work-order data-tpl-wo variant="ink" wo-number="WO-1908" date="2026-07-24" due-date="2026-08-01" priority="urgent" status="open" description="Emergency chiller diagnostics and repair."></snice-work-order></div>
         </button>
         <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
           <span class="tpl-sheet__tag">paper</span>

@@ -1,6 +1,6 @@
 export type WorkOrderPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type WorkOrderStatus = 'open' | 'in-progress' | 'completed' | 'cancelled';
-export type WorkOrderVariant = 'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper';
+export type WorkOrderVariant = 'standard' | 'compact' | 'field-service' | 'maintenance' | 'detailed' | 'paper' | 'ink';
 export type QrPosition = 'top-right' | 'header' | 'footer';
 
 export interface WorkOrderCustomer {

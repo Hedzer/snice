@@ -1,5 +1,5 @@
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-export type InvoiceVariant = 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper';
+export type InvoiceVariant = 'standard' | 'modern' | 'classic' | 'minimal' | 'detailed' | 'paper' | 'ink';
 export type QrPosition = 'top-right' | 'bottom-right' | 'bottom-left' | 'footer';
 
 export interface InvoiceParty {
