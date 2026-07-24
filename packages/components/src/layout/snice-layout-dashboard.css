@@ -12,7 +12,7 @@
   grid-template-rows: auto auto 1fr;
   grid-template-columns: 15rem 1fr 15rem;
   min-height: 100vh;
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 .header {
@@ -21,17 +21,17 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
-  background: var(--snice-color-surface-container-high);
-  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .header-start h1 {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   margin: 0;
   font-size: var(--snice-heading-md, 1.25rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   letter-spacing: -0.01em;
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .header-center {
@@ -43,30 +43,30 @@
 .nav {
   grid-area: nav;
   padding: 0 var(--snice-spacing-lg, 1.5rem);
-  background: var(--snice-color-surface-container);
-  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 .sidebar {
   grid-area: sidebar;
-  background: var(--snice-color-surface-container);
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
   padding: var(--snice-spacing-lg, 1.5rem);
-  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   overflow-y: auto;
 }
 
 .main {
   grid-area: main;
   padding: var(--snice-spacing-xl, 2rem);
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
   overflow-y: auto;
 }
 
 .right-sidebar {
   grid-area: right-sidebar;
-  background: var(--snice-color-surface-container);
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
   padding: var(--snice-spacing-lg, 1.5rem);
-  border-left: 1px solid var(--snice-color-border-subtle, var(--snice-color-border));
+  border-left: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   overflow-y: auto;
 }
 
@@ -115,5 +115,12 @@
 
   .main {
     padding: var(--snice-spacing-md, 1rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

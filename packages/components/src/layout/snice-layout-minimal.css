@@ -12,5 +12,11 @@
 
 .main {
   flex: 1;
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

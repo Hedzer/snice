@@ -16,7 +16,7 @@
   align-items: center;
   gap: var(--snice-spacing-md, 1rem);
   padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
-  background: var(--snice-color-surface-container-high);
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   position: relative;
   z-index: var(--snice-z-sticky, 10);
@@ -28,11 +28,11 @@
 }
 
 .header-brand h2 {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   margin: 0;
   font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,7 +46,7 @@
   height: var(--snice-size-control-md, 2rem);
   background: none;
   border: none;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   cursor: pointer;
   padding: var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-md, 6px);
@@ -54,12 +54,12 @@
 }
 
 .sidebar-toggle:hover {
-  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover));
-  color: var(--snice-color-text);
+  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.04)));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .sidebar-toggle:focus-visible {
-  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color);
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
   outline-offset: var(--snice-focus-ring-offset, 2px);
 }
 
@@ -83,7 +83,7 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
 }
 
 .sidebar-drawer {
@@ -101,7 +101,7 @@
   flex: 1;
   padding: var(--snice-spacing-xl, 2rem);
   overflow-y: auto;
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
   position: relative;
   z-index: 0;
 }
@@ -109,7 +109,7 @@
 /* Footer spans full width */
 .footer {
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
-  background: var(--snice-color-surface-container);
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
   border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
@@ -129,5 +129,11 @@
 
   .footer {
     padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

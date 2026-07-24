@@ -17,7 +17,7 @@
 }
 
 .header {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
   border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   padding: var(--snice-spacing-md, 1rem) 0;
 }
@@ -29,11 +29,11 @@
 }
 
 .brand h1 {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   margin: 0;
   font-size: var(--snice-heading-lg, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .nav {
@@ -43,17 +43,17 @@
 
 .nav ::slotted(a) {
   text-decoration: none;
-  color: var(--snice-color-text-secondary);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
   font-weight: var(--snice-font-weight-medium, 500);
   transition: color var(--snice-transition-fast, 0.15s) ease;
 }
 
 .nav ::slotted(a:hover) {
-  color: var(--snice-color-primary);
+  color: var(--snice-color-primary, rgb(37 99 235));
 }
 
 .main {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
   padding: var(--snice-spacing-xl, 3rem) 0;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .sidebar {
-  background: var(--snice-color-surface-container-high);
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
   border: 1px solid var(--snice-color-border-subtle, transparent);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   padding: var(--snice-spacing-lg, 1.5rem);
@@ -80,26 +80,26 @@
 }
 
 .footer {
-  background: var(--snice-color-surface-container);
+  background: var(--snice-color-surface-container, hsl(0 0% 95%));
   border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   padding: var(--snice-spacing-xl, 3rem) 0;
 }
 
 /* Typography for article content */
 .article ::slotted(h1) {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-2xl, 2.25rem);
   font-weight: var(--snice-font-weight-bold, 700);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   line-height: var(--snice-line-height-tight, 1.25);
   margin-bottom: var(--snice-spacing-lg, 2rem);
 }
 
 .article ::slotted(h2) {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-xl, 1.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   margin-top: var(--snice-spacing-xl, 3rem);
   margin-bottom: var(--snice-spacing-md, 1rem);
 }
@@ -107,7 +107,7 @@
 .article ::slotted(p) {
   font-size: var(--snice-font-size-base, 1rem);
   line-height: var(--snice-line-height-relaxed, 1.625);
-  color: var(--snice-color-text);
+  color: var(--snice-color-text, rgb(23 23 23));
   margin-bottom: var(--snice-spacing-md, 1rem);
 }
 
@@ -131,5 +131,11 @@
   
   .main {
     padding: var(--snice-spacing-lg, 2rem) 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

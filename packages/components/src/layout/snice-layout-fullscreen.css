@@ -9,7 +9,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: var(--snice-color-surface, hsl(var(--snice-color-gray-900)));
+  background: var(--snice-color-surface, hsl(var(--snice-color-gray-900, 0 0% 9%)));
 }
 
 .background {
@@ -68,5 +68,11 @@
   
   .content {
     padding: var(--snice-spacing-md, 1rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

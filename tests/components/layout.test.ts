@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/layout/snice-layout';
 import type { SniceLayout } from '../../packages/components/src/layout/snice-layout';
@@ -99,6 +101,25 @@ describe('snice-layout', () => {
       expect(() => {
         layout.update({} as any, [], '', {});
       }).not.toThrow();
+    });
+  });
+
+  describe('stylesheet contracts (whole layout family)', () => {
+    const dir = resolve(process.cwd(), 'packages/components/src/layout');
+
+    it('should provide a fallback for every --snice-* variable reference in every layout css', () => {
+      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+        const css = readFileSync(join(dir, file), 'utf8');
+        const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+        expect(missing, file).toEqual([]);
+      }
+    });
+
+    it('should handle prefers-reduced-motion in every layout css', () => {
+      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+        const css = readFileSync(join(dir, file), 'utf8');
+        expect(css, file).toContain('@media (prefers-reduced-motion: reduce)');
+      }
     });
   });
 });

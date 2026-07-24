@@ -8,7 +8,7 @@
   display: grid;
   min-height: 100vh;
   gap: 1px;
-  background: var(--snice-color-border-subtle, var(--snice-color-border));
+  background: var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 /* Horizontal split (default) */
@@ -69,7 +69,7 @@
 }
 
 .panel {
-  background: var(--snice-color-surface);
+  background: var(--snice-color-surface, rgb(255 255 255));
   overflow: auto;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .divider {
-  background: var(--snice-color-border-subtle, var(--snice-color-border));
+  background: var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
 /* Mobile responsive */
@@ -99,5 +99,11 @@
   .panel-left,
   .panel-right {
     padding: var(--snice-spacing-md, 1rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
