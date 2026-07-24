@@ -278,7 +278,7 @@ describe('snice-comments', () => {
   describe('timestamp robustness', () => {
     it('should show the raw string for an unparseable timestamp', async () => {
       const el = document.createElement('snice-comments') as any;
-      el.comments = [{ id: '1', author: { name: 'A' }, content: 'Hi', timestamp: 'not-a-date' }];
+      el.comments = [{ id: '1', author: 'A', text: 'Hi', timestamp: 'not-a-date' }];
       document.body.appendChild(el);
       await el.ready;
       await new Promise((r) => setTimeout(r, 80));
