@@ -9,6 +9,7 @@ open: boolean = false;                          // attr: open
 position: 'top'|'bottom'|'left'|'right'|'top-left'|'top-right'|'bottom-left'|'bottom-right' = 'bottom';
 size: 'small'|'medium' = 'medium';
 variant: 'default'|'pill' = 'default';
+label: string = 'Actions';                      // accessible name announced for the toolbar
 noAnimation: boolean = false;                   // attr: no-animation — always visible, no transitions
 noEscapeDismiss: boolean = false;               // attr: no-escape-dismiss
 ```

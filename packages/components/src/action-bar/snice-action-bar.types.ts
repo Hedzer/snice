@@ -7,6 +7,7 @@ export interface SniceActionBarElement extends HTMLElement {
   position: ActionBarPosition;
   size: ActionBarSize;
   variant: ActionBarVariant;
+  label: string;
   noAnimation: boolean;
   noEscapeDismiss: boolean;
 

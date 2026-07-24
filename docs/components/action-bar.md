@@ -25,6 +25,7 @@ A positioned, animated container for contextual actions that appears on hover, f
 | `position` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'bottom'` | Position relative to parent |
 | `size` | `'small' \| 'medium'` | `'medium'` | Bar size |
 | `variant` | `'default' \| 'pill'` | `'default'` | Visual style |
+| `label` | `string` | `'Actions'` | Accessible name announced for the toolbar |
 | `noAnimation` (attr: `no-animation`) | `boolean` | `false` | Always visible, no transitions |
 | `noEscapeDismiss` (attr: `no-escape-dismiss`) | `boolean` | `false` | Prevent Escape key from closing |
 

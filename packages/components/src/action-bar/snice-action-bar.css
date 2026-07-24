@@ -3,7 +3,9 @@
   position: absolute;
   z-index: var(--action-bar-z-index, 10);
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
-  contain: layout style paint;
+  /* No paint containment: the host box hugs the bar exactly, so
+     `contain: paint` would clip the bar's drop shadow. */
+  contain: layout style;
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -26,9 +28,6 @@
   opacity: 1;
   visibility: visible;
   transform: translate(0, 0);
-}
-
-:host([no-animation]) {
   transition: none;
 }
 
@@ -150,6 +149,40 @@
   border: var(--action-bar-border, 1px solid var(--snice-color-border, rgb(226 226 226)));
   border-radius: var(--action-bar-border-radius, var(--snice-border-radius-lg, 0.5rem));
   box-shadow: var(--action-bar-shadow, var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)));
+}
+
+/* Staggered child entrance — each action rises in a beat after the bar.
+   The delay applies only while opening; closing reverts to zero delay so
+   dismissal feels immediate. */
+::slotted(*) {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--snice-transition-medium, 250ms) ease, transform var(--snice-transition-medium, 250ms) ease;
+}
+
+:host([open]) ::slotted(*),
+:host([no-animation]) ::slotted(*) {
+  opacity: 1;
+  transform: none;
+}
+
+:host([open]) ::slotted(:nth-child(2)) { transition-delay: 25ms; }
+:host([open]) ::slotted(:nth-child(3)) { transition-delay: 50ms; }
+:host([open]) ::slotted(:nth-child(4)) { transition-delay: 75ms; }
+:host([open]) ::slotted(:nth-child(5)) { transition-delay: 100ms; }
+:host([open]) ::slotted(:nth-child(n+6)) { transition-delay: 125ms; }
+
+:host([no-animation]) ::slotted(*) {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([ready]),
+  :host([open]),
+  ::slotted(*) {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
 }
 
 /* Pill variant */

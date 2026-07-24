@@ -9,6 +9,7 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   @property() position: ActionBarPosition = 'bottom';
   @property() size: ActionBarSize = 'medium';
   @property() variant: ActionBarVariant = 'default';
+  @property() label = 'Actions';
   @property({ type: Boolean, attribute: 'no-animation' }) noAnimation = false;
   @property({ type: Boolean, attribute: 'no-escape-dismiss' }) noEscapeDismiss = false;
 
@@ -20,7 +21,6 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
     // Without this, the element visibly animates to hidden on upgrade.
     setTimeout(() => this.setAttribute('ready', ''), 10);
     this.applyRovingTabindex(0);
-    this.slotElement?.addEventListener('slotchange', () => this.applyRovingTabindex(0));
   }
 
   private applyRovingTabindex(activeIndex: number) {
@@ -33,20 +33,9 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
   @watch('open', { immediate: false })
   handleOpenChange() {
     if (this.open) {
-      this.setAttribute('open', '');
       this.emitOpen();
     } else {
-      this.removeAttribute('open');
       this.emitClose();
-    }
-  }
-
-  @watch('noAnimation')
-  updateNoAnimationAttribute() {
-    if (this.noAnimation) {
-      this.setAttribute('no-animation', '');
-    } else {
-      this.removeAttribute('no-animation');
     }
   }
 
@@ -110,15 +99,19 @@ export class SniceActionBar extends HTMLElement implements SniceActionBarElement
     const elements = this.slotElement.assignedElements({ flatten: true }) as HTMLElement[];
     return elements.filter(el =>
       !el.hasAttribute('disabled') &&
-      (el.tabIndex >= 0 || el.matches('button, [href], input, select, textarea, [tabindex]'))
+      (el.tabIndex >= 0 ||
+        el.matches('button, [href], input, select, textarea, [tabindex]') ||
+        // Snice controls (and other focus-delegating custom elements) expose
+        // no native focusable tag but forward focus() into their shadow root.
+        el.shadowRoot?.delegatesFocus === true)
     );
   }
 
   @render()
   template() {
     return html`
-      <div class="action-bar" role="toolbar" aria-label="Actions" part="base">
-        <slot></slot>
+      <div class="action-bar" role="toolbar" aria-label="${this.label}" part="base">
+        <slot @slotchange="${() => this.applyRovingTabindex(0)}"></slot>
       </div>
     `;
   }

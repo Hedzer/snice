@@ -1,7 +1,11 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait, triggerKeyboardEvent } from './test-utils';
 import '../../packages/components/src/action-bar/snice-action-bar';
 import type { SniceActionBarElement } from '../../packages/components/src/action-bar/snice-action-bar.types';
+
+const actionBarCssPath = resolve(process.cwd(), 'packages/components/src/action-bar/snice-action-bar.css');
 
 describe('snice-action-bar', () => {
   let el: SniceActionBarElement;
@@ -10,6 +14,42 @@ describe('snice-action-bar', () => {
     if (el) {
       removeComponent(el as HTMLElement);
     }
+  });
+
+  describe('labelling', () => {
+    it('should default the toolbar aria-label to Actions', async () => {
+      el = await createComponent<SniceActionBarElement>('snice-action-bar');
+      await wait(50);
+      const toolbar = queryShadow(el as HTMLElement, '.action-bar');
+      expect(toolbar?.getAttribute('aria-label')).toBe('Actions');
+    });
+
+    it('should apply a custom label to the toolbar aria-label', async () => {
+      el = await createComponent<SniceActionBarElement>('snice-action-bar', { label: 'Formatting' });
+      await wait(50);
+      const toolbar = queryShadow(el as HTMLElement, '.action-bar');
+      expect(toolbar?.getAttribute('aria-label')).toBe('Formatting');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(actionBarCssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(actionBarCssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
+
+    it('should not paint-contain the host so the bar shadow can render', () => {
+      const css = readFileSync(actionBarCssPath, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const containRules = css.match(/contain:[^;]+;/g) ?? [];
+      const paintContained = containRules.filter(rule => rule.includes('paint'));
+      expect(paintContained).toEqual([]);
+    });
   });
 
   describe('basic functionality', () => {
