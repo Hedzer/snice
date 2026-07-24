@@ -120,7 +120,7 @@
 
 /* ============ HEADER ============ */
 .est__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -133,14 +133,14 @@
 }
 
 .est__header-left {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   flex-direction: column;
   gap: var(--snice-spacing-2xs, 0.25rem);
 }
 
 .est__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--estimate-title-size);
   font-weight: var(--estimate-title-weight);
   color: var(--estimate-header-text);
@@ -154,7 +154,7 @@
 }
 
 .est__header-right {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -176,7 +176,7 @@
   font-size: var(--estimate-label-size);
   font-weight: var(--snice-font-weight-semibold, 600);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
   white-space: nowrap;
 }
 
@@ -215,7 +215,7 @@
   font-size: var(--estimate-label-size);
   font-weight: var(--snice-font-weight-semibold, 600);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
   color: var(--estimate-text-tertiary);
   margin-bottom: var(--snice-spacing-2xs, 0.25rem);
 }
@@ -245,7 +245,7 @@
 }
 
 .est__table-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   text-align: left;
   padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
   border-bottom: 2px solid var(--estimate-border);
@@ -253,7 +253,7 @@
   color: var(--estimate-text-secondary);
   font-size: var(--estimate-label-size);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
 }
 
 .est__table-cell {
@@ -265,7 +265,7 @@
 
 .est__table-header:nth-child(n+2),
 .est__table-cell:nth-child(n+2) {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   text-align: right;
 }
 
@@ -388,7 +388,7 @@
   font-size: var(--estimate-label-size);
   font-weight: var(--snice-font-weight-semibold, 600);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
   color: var(--estimate-text-tertiary);
   margin: 0 0 var(--snice-spacing-sm, 0.75rem) 0;
 }
@@ -505,7 +505,7 @@
 }
 
 .est__option-title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-md, 1.125rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--estimate-text);
@@ -554,7 +554,7 @@
 }
 
 :host([variant="professional"]) .est__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   background: linear-gradient(135deg, var(--estimate-pro-header-bg-start) 0%, var(--estimate-pro-header-bg-end) 100%);
   color: var(--estimate-pro-header-text);
   border-bottom: none;
@@ -562,10 +562,10 @@
 }
 
 :host([variant="professional"]) .est__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--estimate-pro-header-text);
   font-size: 1.75rem;
-  letter-spacing: var(--snice-tracking-tight);
+  letter-spacing: var(--snice-tracking-tight, -0.02em);
 }
 
 :host([variant="professional"]) .est__meta {
@@ -612,7 +612,7 @@
 }
 
 :host([variant="creative"]) .est__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   background: linear-gradient(135deg, var(--estimate-creative-gradient-start) 0%, var(--estimate-creative-gradient-mid) 50%, var(--estimate-creative-gradient-end) 100%);
   border-bottom: none;
   border-radius: 12px 12px 0 0;
@@ -621,7 +621,7 @@
 }
 
 :host([variant="creative"]) .est__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   color: var(--estimate-creative-text);
   font-size: 1.75rem;
   font-weight: 800;
@@ -651,7 +651,7 @@
 }
 
 :host([variant="creative"]) .est__table-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   border-bottom-color: var(--estimate-creative-accent-border-alpha);
   color: var(--estimate-creative-accent);
 }
@@ -707,16 +707,16 @@
 }
 
 :host([variant="minimal"]) .est__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   border-bottom: none;
   padding: var(--snice-spacing-xl, 2rem) 0 var(--snice-spacing-lg, 1.5rem) 0;
 }
 
 :host([variant="minimal"]) .est__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-weight: var(--snice-font-weight-normal, 400);
   font-size: 1.75rem;
-  letter-spacing: var(--snice-tracking-tight);
+  letter-spacing: var(--snice-tracking-tight, -0.02em);
 }
 
 :host([variant="minimal"]) .est__badge {
@@ -732,7 +732,7 @@
 
 :host([variant="minimal"]) .est__party-label {
   font-size: 0.6875rem;
-  letter-spacing: var(--snice-tracking-widest);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
 }
 
 :host([variant="minimal"]) .est__table-section {
@@ -741,7 +741,7 @@
 }
 
 :host([variant="minimal"]) .est__table-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   border-bottom-width: 1px;
   font-size: 0.6875rem;
 }
@@ -841,7 +841,7 @@
   /* Remove gradients for professional/creative */
   :host([variant="professional"]) .est__header,
   :host([variant="creative"]) .est__header {
-    font-family: var(--snice-font-family-display);
+    font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
     background: var(--estimate-pro-header-bg-end) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -855,7 +855,7 @@
   }
 
   .est__header-right {
-    font-family: var(--snice-font-family-display);
+    font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
     align-items: flex-start;
   }
 
@@ -885,5 +885,12 @@
     position: static;
     padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-lg, 1.5rem);
     justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
