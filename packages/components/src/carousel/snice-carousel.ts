@@ -60,6 +60,43 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     this.pause();
   }
 
+  // WCAG 2.2.2 — auto-advancing content pauses while the pointer or focus
+  // is inside the carousel and resumes when both leave.
+  @on('mouseenter')
+  suspendAutoplayOnHover() {
+    this.pause();
+  }
+
+  @on('focusin')
+  suspendAutoplayOnFocus() {
+    this.pause();
+  }
+
+  @on('mouseleave')
+  resumeAutoplayAfterHover() {
+    if (this.autoplay) {
+      this.play();
+    }
+  }
+
+  @on('focusout')
+  resumeAutoplayAfterFocus() {
+    if (this.autoplay) {
+      this.play();
+    }
+  }
+
+  @on('keydown')
+  handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      this.next();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      this.prev();
+    }
+  }
+
   @watch('activeIndex')
   handleActiveIndexChange() {
     this.updateTransform();
@@ -105,7 +142,7 @@ export class SniceCarousel extends HTMLElement implements SniceCarouselElement {
     return html/*html*/`
       <div class="carousel" part="container" role="region" aria-roledescription="carousel" aria-label="Carousel">
         <div class="carousel__viewport" part="viewport">
-          <div class="carousel__container" part="slides-container" aria-live="polite" aria-atomic="false">
+          <div class="carousel__container" part="slides-container" aria-live="${this.autoplay ? 'off' : 'polite'}" aria-atomic="false">
             <slot></slot>
           </div>
         </div>

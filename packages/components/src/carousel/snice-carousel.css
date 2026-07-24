@@ -93,3 +93,10 @@
 .carousel__indicator--active:hover {
   background: var(--snice-color-primary-hover, rgb(29 78 216));
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

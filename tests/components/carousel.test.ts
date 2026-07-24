@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../packages/components/src/carousel/snice-carousel';
 import type { SniceCarouselElement } from '../../packages/components/src/carousel/snice-carousel.types';
@@ -85,5 +87,91 @@ describe('snice-carousel', () => {
     carousel.pause();
     // Just verify it doesn't throw
     expect(true).toBe(true);
+  });
+
+  describe('autoplay accessibility', () => {
+    async function autoplayCarousel(attrs: Record<string, any> = {}) {
+      const el = document.createElement('snice-carousel') as SniceCarouselElement;
+      el.setAttribute('autoplay', '');
+      el.setAttribute('autoplay-interval', '60');
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+      for (let i = 0; i < 3; i++) {
+        const slide = document.createElement('div');
+        slide.textContent = `Slide ${i + 1}`;
+        el.appendChild(slide);
+      }
+      document.body.appendChild(el);
+      await (el as any).ready;
+      await wait(30);
+      return el;
+    }
+
+    it('should pause autoplay while hovered and resume after', async () => {
+      carousel = await autoplayCarousel();
+      (carousel as HTMLElement).dispatchEvent(new Event('mouseenter'));
+      const frozen = carousel.activeIndex;
+      await wait(250);
+      expect(carousel.activeIndex).toBe(frozen);
+
+      (carousel as HTMLElement).dispatchEvent(new Event('mouseleave'));
+      await wait(250);
+      expect(carousel.activeIndex).not.toBe(frozen);
+    });
+
+    it('should pause autoplay while focus is inside', async () => {
+      carousel = await autoplayCarousel();
+      (carousel as HTMLElement).dispatchEvent(new Event('focusin'));
+      const frozen = carousel.activeIndex;
+      await wait(250);
+      expect(carousel.activeIndex).toBe(frozen);
+    });
+
+    it('should silence the live region while autoplaying', async () => {
+      carousel = await autoplayCarousel();
+      const live = carousel.shadowRoot!.querySelector('.carousel__container');
+      expect(live?.getAttribute('aria-live')).toBe('off');
+    });
+
+    it('should keep the live region polite without autoplay', async () => {
+      carousel = document.createElement('snice-carousel') as SniceCarouselElement;
+      document.body.appendChild(carousel as HTMLElement);
+      await (carousel as any).ready;
+      await wait(30);
+      const live = carousel.shadowRoot!.querySelector('.carousel__container');
+      expect(live?.getAttribute('aria-live')).toBe('polite');
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    it('should advance with ArrowRight and go back with ArrowLeft', async () => {
+      carousel = document.createElement('snice-carousel') as SniceCarouselElement;
+      for (let i = 0; i < 3; i++) carousel.appendChild(document.createElement('div'));
+      document.body.appendChild(carousel as HTMLElement);
+      await (carousel as any).ready;
+      await wait(30);
+
+      (carousel as HTMLElement).dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      await wait(30);
+      expect(carousel.activeIndex).toBe(1);
+
+      (carousel as HTMLElement).dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+      await wait(30);
+      expect(carousel.activeIndex).toBe(0);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/carousel/snice-carousel.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
