@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
 import '../../packages/components/src/stat-group/snice-stat-group';
 import type { SniceStatGroupElement, StatItem } from '../../packages/components/src/stat-group/snice-stat-group.types';
@@ -176,5 +178,19 @@ describe('snice-stat-group', () => {
     await wait(50);
 
     expect(queryShadow(el as HTMLElement, '.stat__icon')?.textContent).toContain('🎉');
+  });
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/stat-group/snice-stat-group.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

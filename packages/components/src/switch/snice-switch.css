@@ -180,7 +180,7 @@
   font-size: 0.5rem; /* 8px */
   font-weight: var(--snice-font-weight-bold, 700);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-widest);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
   opacity: 0;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
   pointer-events: none;
@@ -284,4 +284,43 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* State labels need room beside the thumb — widen every size when authored */
+:host([label-on]) .switch-track--small,
+:host([label-off]) .switch-track--small {
+  width: 3rem;
+}
+
+:host([label-on]) .switch-track--medium,
+:host([label-off]) .switch-track--medium {
+  width: 3.5rem;
+}
+
+:host([label-on]) .switch-track--large,
+:host([label-off]) .switch-track--large {
+  width: 4rem;
+}
+
+/* Wider labeled tracks need matching thumb travel */
+:host([label-on]) .switch-input:checked ~ .switch-track--small .switch-thumb,
+:host([label-off]) .switch-input:checked ~ .switch-track--small .switch-thumb {
+  transform: translateX(1.75rem);
+}
+
+:host([label-on]) .switch-input:checked ~ .switch-track--medium .switch-thumb,
+:host([label-off]) .switch-input:checked ~ .switch-track--medium .switch-thumb {
+  transform: translateX(2rem);
+}
+
+:host([label-on]) .switch-input:checked ~ .switch-track--large .switch-thumb,
+:host([label-off]) .switch-input:checked ~ .switch-track--large .switch-thumb {
+  transform: translateX(2.25rem);
 }

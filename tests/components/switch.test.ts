@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
 import '../../packages/components/src/switch/snice-switch';
 import type { SniceSwitchElement } from '../../packages/components/src/switch/snice-switch.types';
@@ -289,5 +291,27 @@ describe('snice-switch', () => {
     switchEl = await createComponent<SniceSwitchElement>('snice-switch');
     const ctor = (switchEl as any).constructor;
     expect(ctor.formAssociated).toBe(true);
+  });
+  describe('state label layout', () => {
+    it('widens the track when state labels are authored so the thumb cannot cover them', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/switch/snice-switch.css'), 'utf8');
+      expect(css).toContain(':host([label-on]) .switch-track');
+      expect(css).toContain(':host([label-off]) .switch-track');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/switch/snice-switch.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });

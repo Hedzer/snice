@@ -165,3 +165,10 @@
     font-size: var(--snice-font-size-lg, 1.125rem);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
