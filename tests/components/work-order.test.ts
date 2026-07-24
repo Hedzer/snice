@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../packages/components/src/work-order/snice-work-order';
 import type { SniceWorkOrderElement, WorkOrderTask, WorkOrderPart, WorkOrderCustomer, WorkOrderAsset } from '../../packages/components/src/work-order/snice-work-order.types';
@@ -612,6 +614,29 @@ describe('snice-work-order', () => {
       expect(queryShadow(wo, '[part="signature"]')).toBeTruthy();
       expect(queryShadow(wo, '[part="signature-line"]')).toBeTruthy();
       expect(queryShadow(wo, '[part="signature-date"]')).toBeTruthy();
+    });
+  });
+  describe('attribute contract', () => {
+    it('observes the documented kebab-case attributes', () => {
+      const observed = (customElements.get('snice-work-order') as any).observedAttributes as string[];
+      for (const attr of ['wo-number', 'due-date', 'qr-data', 'qr-position']) {
+        expect(observed, attr).toContain(attr);
+      }
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/work-order/snice-work-order.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

@@ -18,13 +18,13 @@ import type {
 
 @element('snice-work-order')
 export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement {
-  @property()
+  @property({ attribute: 'wo-number' })
   woNumber = '';
 
   @property()
   date = '';
 
-  @property()
+  @property({ attribute: 'due-date' })
   dueDate = '';
 
   @property()
@@ -60,10 +60,10 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
   @property({ type: Boolean })
   showQr = false;
 
-  @property()
+  @property({ attribute: 'qr-data' })
   qrData = '';
 
-  @property()
+  @property({ attribute: 'qr-position' })
   qrPosition: QrPosition = 'top-right';
 
   @dispatch('task-toggle', { bubbles: true, composed: true })

@@ -94,7 +94,7 @@
   font-size: 0.75rem;
   color: var(--snice-color-text-secondary, rgb(82 82 82));
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-widest);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
 }
 
 .forecast-icon {
@@ -113,4 +113,11 @@
 
 .forecast-low {
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
