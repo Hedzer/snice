@@ -49,13 +49,13 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
   @property()
   variant: InvoiceVariant = 'standard';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-qr' })
   showQr = false;
 
-  @property()
+  @property({ attribute: 'qr-data' })
   qrData = '';
 
-  @property()
+  @property({ attribute: 'qr-position' })
   qrPosition: QrPosition = 'bottom-right';
 
   @watch('status')
@@ -227,8 +227,8 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
     const isQrFooter = this.showQr && this.qrPosition === 'footer';
 
     return html/*html*/`
-      <div class="invoice" part="base">
-        <div class="invoice__header" part="header">
+      <div class="invoice${isQrBottomRight || isQrBottomLeft ? ' invoice--qr-bottom' : ''}" part="base">
+        <div class="invoice__header${isQrTopRight ? ' invoice__header--qr-top-right' : ''}" part="header">
           <div class="invoice__header-left">
             <if ${this.from.logo}>
               <img class="invoice__logo" src="${this.from.logo}" alt="${this.from.name}" part="logo" />

@@ -45,14 +45,14 @@
 
   /* ── Status Badge ── */
   --invoice-status-draft-bg: var(--snice-color-surface-container, rgb(229 231 235));
-  --invoice-status-draft-text: var(--snice-color-neutral-strong, rgb(55 65 81));
+  --invoice-status-draft-text: var(--snice-color-text-secondary, rgb(55 65 81));
   --invoice-status-sent-bg: var(--snice-color-primary-subtle, rgb(219 234 254));
-  --invoice-status-sent-text: var(--snice-color-primary-strong, rgb(29 78 216));
+  --invoice-status-sent-text: var(--snice-color-primary-hover, rgb(29 78 216));
   --invoice-status-paid-bg: var(--snice-color-success-subtle, rgb(220 252 231));
-  --invoice-status-paid-text: var(--snice-color-success-strong, rgb(21 128 61));
+  --invoice-status-paid-text: var(--snice-color-success-hover, rgb(21 128 61));
   --invoice-status-overdue-bg: var(--snice-color-danger-subtle, rgb(254 226 226));
-  --invoice-status-overdue-text: var(--snice-color-danger-strong, rgb(185 28 28));
-  --invoice-status-cancelled-bg: var(--snice-color-neutral-subtle, rgb(243 244 246));
+  --invoice-status-overdue-text: var(--snice-color-danger-hover, rgb(185 28 28));
+  --invoice-status-cancelled-bg: var(--snice-color-surface-container-low, rgb(243 244 246));
   --invoice-status-cancelled-text: var(--snice-color-neutral, rgb(107 114 128));
 
   /* ── Typography ── */
@@ -335,6 +335,16 @@
   right: 0;
 }
 
+/* Reserve room for the absolute top-right QR so it never covers the meta block */
+.invoice__header--qr-top-right {
+  padding-right: calc(var(--invoice-qr-size) + var(--snice-spacing-lg, 1.5rem));
+}
+
+/* Reserve a bottom band for absolute bottom-corner QRs so they never cover totals */
+.invoice--qr-bottom {
+  padding-bottom: calc(var(--invoice-qr-size) + var(--invoice-padding) + var(--snice-spacing-md, 1rem));
+}
+
 .invoice__qr--bottom-right {
   position: absolute;
   bottom: var(--invoice-padding);
@@ -389,7 +399,7 @@
 }
 
 :host([variant="modern"]) .invoice__meta-label {
-  color: var(--snice-color-text-inverse-secondary, rgb(255 255 255 / 0.7));
+  color: rgb(255 255 255 / 0.7);
 }
 
 :host([variant="modern"]) .invoice__meta-value {
@@ -397,7 +407,7 @@
 }
 
 :host([variant="modern"]) .invoice__status {
-  background: var(--snice-color-text-inverse-subtle, rgb(255 255 255 / 0.2));
+  background: rgb(255 255 255 / 0.2);
   color: var(--snice-color-text-inverse, rgb(255 255 255));
   text-decoration: none;
 }

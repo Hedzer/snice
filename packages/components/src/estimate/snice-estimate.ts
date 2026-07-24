@@ -54,13 +54,13 @@ export class SniceEstimate extends HTMLElement implements SniceEstimateElement {
   @property()
   variant: EstimateVariant = 'standard';
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'show-qr' })
   showQr = false;
 
-  @property()
+  @property({ attribute: 'qr-data' })
   qrData = '';
 
-  @property()
+  @property({ attribute: 'qr-position' })
   qrPosition: QrPosition = 'top-right';
 
   @dispatch('estimate-accept', { bubbles: true, composed: true })

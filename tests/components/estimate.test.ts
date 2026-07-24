@@ -615,4 +615,13 @@ describe('snice-estimate', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('attribute contract', () => {
+    it('observes the documented kebab-case QR attributes', () => {
+      const observed = (customElements.get('snice-estimate') as any).observedAttributes as string[];
+      expect(observed).toContain('show-qr');
+      expect(observed).toContain('qr-data');
+      expect(observed).toContain('qr-position');
+    });
+  });
 });

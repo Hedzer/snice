@@ -441,4 +441,53 @@ describe('snice-invoice', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('attribute contract', () => {
+    it('observes the documented kebab-case QR attributes', () => {
+      const observed = (customElements.get('snice-invoice') as any).observedAttributes as string[];
+      expect(observed).toContain('show-qr');
+      expect(observed).toContain('qr-data');
+      expect(observed).toContain('qr-position');
+    });
+  });
+
+  describe('theme token contract', () => {
+    it('references only --snice-* tokens that the theme actually defines', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/invoice/snice-invoice.css'), 'utf8');
+      const theme = readFileSync(resolve(process.cwd(), 'packages/components/src/theme/theme.css'), 'utf8');
+
+      const referenced = [...new Set(css.match(/var\(\s*(--snice-[a-z0-9-]+)/g)?.map(m => m.replace(/var\(\s*/, '')) ?? [])];
+      const undefinedTokens = referenced.filter(token => !theme.includes(`${token}:`));
+
+      expect(undefinedTokens).toEqual([]);
+    });
+  });
+
+  describe('QR layout', () => {
+    it('reserves header space when the QR sits top-right so it cannot cover the date', async () => {
+      invoice = await createComponent<SniceInvoiceElement>('snice-invoice', {
+        'show-qr': true,
+        'qr-position': 'top-right',
+        date: '2026-03-06',
+      });
+      await wait(50);
+
+      const header = queryShadow(invoice as HTMLElement, '.invoice__header');
+      expect(header?.classList.contains('invoice__header--qr-top-right')).toBe(true);
+    });
+
+    it.each([['bottom-right'], ['bottom-left']])(
+      'reserves a bottom band when the QR sits %s so it cannot cover the totals',
+      async (position) => {
+        invoice = await createComponent<SniceInvoiceElement>('snice-invoice', {
+          'show-qr': true,
+          'qr-position': position,
+        });
+        await wait(50);
+
+        const root = queryShadow(invoice as HTMLElement, '.invoice');
+        expect(root?.classList.contains('invoice--qr-bottom')).toBe(true);
+      }
+    );
+  });
 });
