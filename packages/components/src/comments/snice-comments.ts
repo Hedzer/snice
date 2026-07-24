@@ -127,6 +127,7 @@ export class SniceComments extends HTMLElement implements SniceCommentsElement {
   private formatTimestamp(ts: string): string {
     try {
       const date = new Date(ts);
+      if (Number.isNaN(date.getTime())) return ts;
       const now = new Date();
       const diff = now.getTime() - date.getTime();
       const minutes = Math.floor(diff / 60000);

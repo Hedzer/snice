@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait, queryShadow, queryShadowAll } from './test-utils';
 import '../../packages/components/src/comments/snice-comments';
 import type { SniceCommentsElement, Comment } from '../../packages/components/src/comments/snice-comments.types';
@@ -271,5 +273,35 @@ describe('snice-comments', () => {
     const time = queryShadow(el as HTMLElement, '.comment__time');
     expect(time).toBeTruthy();
     expect(time!.textContent?.trim()).toBeTruthy();
+  });
+
+  describe('timestamp robustness', () => {
+    it('should show the raw string for an unparseable timestamp', async () => {
+      const el = document.createElement('snice-comments') as any;
+      el.comments = [{ id: '1', author: { name: 'A' }, content: 'Hi', timestamp: 'not-a-date' }];
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 80));
+
+      const text = el.shadowRoot.textContent;
+      expect(text).toContain('not-a-date');
+      expect(text).not.toContain('Invalid');
+      el.remove();
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/comments/snice-comments.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
