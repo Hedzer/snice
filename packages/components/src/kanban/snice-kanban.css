@@ -158,6 +158,18 @@
   line-height: 1;
 }
 
+.card__label-icon-glyph svg,
+.card__assignee-icon svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  display: block;
+}
+
+.card__assignee-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
 .column__cards--drag-over {
   background: hsl(var(--snice-color-blue-600) / 0.05);
   border: 2px dashed var(--snice-color-primary, rgb(37 99 235));

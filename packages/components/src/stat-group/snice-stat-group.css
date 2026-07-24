@@ -87,6 +87,12 @@
   color: var(--sg-text-secondary);
 }
 
+.stat__icon-glyph svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+}
+
 /* Content */
 .stat__content {
   display: flex;

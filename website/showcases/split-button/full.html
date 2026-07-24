@@ -183,12 +183,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   // Icon
   const icon = document.getElementById('icon');
   icon.appendChild(sb({ variant: 'primary', icon: '💾', label: 'Save' }));
-  icon.appendChild(sb({ variant: 'success', icon: '✓', label: 'Confirm' }));
-  icon.appendChild(sb({ variant: 'danger', icon: '🗑️', label: 'Delete', outline: true }));
+  icon.appendChild(sb({ variant: 'success', icon: 'check', label: 'Confirm' }));
+  icon.appendChild(sb({ variant: 'danger', icon: 'trash', label: 'Delete', outline: true }));
 
   // Icon end
   const iconEnd = document.getElementById('icon-end');
-  iconEnd.appendChild(sb({ variant: 'primary', icon: '→', iconPlacement: 'end', label: 'Next' }));
+  iconEnd.appendChild(sb({ variant: 'primary', icon: 'arrow-right', iconPlacement: 'end', label: 'Next' }));
   iconEnd.appendChild(sb({ variant: 'default', icon: '📤', iconPlacement: 'end', label: 'Export' }));
 </script>
 </body>

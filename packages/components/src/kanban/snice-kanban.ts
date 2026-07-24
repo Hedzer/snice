@@ -1,4 +1,5 @@
 import { element, property, render, styles, dispatch, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import type { SniceKanbanElement, KanbanColumn, KanbanCard, KanbanLabel } from './snice-kanban.types';
 import cssContent from './snice-kanban.css?inline';
 
@@ -459,7 +460,7 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                     <div class="card__meta">
                       <if ${card.assignee}>
                         <div class="card__assignee">
-                          👤 ${card.assignee}
+                          ${renderIcon('user', 'card__assignee-icon')} ${card.assignee}
                         </div>
                       </if>
                       <if ${card.labels && card.labels.length > 0}>
@@ -475,11 +476,11 @@ export class SniceKanban extends HTMLElement implements SniceKanbanElement {
                             return html`
                               <span class="card__label" style="${style}">
                                 <if ${icon && iconPosition === 'left'}>
-                                  <span class="card__label-icon">${icon}</span>
+                                  <span class="card__label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
                                 </if>
                                 ${labelText}
                                 <if ${icon && iconPosition === 'right'}>
-                                  <span class="card__label-icon">${icon}</span>
+                                  <span class="card__label-icon">${renderIcon(icon, 'card__label-icon-glyph')}</span>
                                 </if>
                               </span>
                             `;

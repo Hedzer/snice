@@ -29,7 +29,7 @@ interface StatItem {
   value: string | number;     // Display value
   trend?: 'up' | 'down' | 'neutral';  // Trend direction
   trendValue?: string;        // Trend comparison text (e.g. "+12.5%")
-  icon?: string;              // Icon text or emoji
+  icon?: string;              // Registry name ('fire'), URL, or text
   color?: string;             // Accent color for icon and value
 }
 ```

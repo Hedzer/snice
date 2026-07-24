@@ -17,7 +17,7 @@ interface KanbanLabel {
   text: string;
   color?: string;
   background?: string;
-  icon?: string; // emoji or text
+  icon?: string; // registry name ('fire'), URL, or text
   iconPosition?: 'left' | 'right';
 }
 

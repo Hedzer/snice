@@ -170,4 +170,35 @@ describe('snice-kanban', () => {
     });
     expect(kanban.showCardCount).toBe(false);
   });
+
+  describe('icons', () => {
+    it('renders registry SVG icons for card label icons', async () => {
+      kanban = await createComponent<SniceKanbanElement>('snice-kanban');
+      kanban.columns = [
+        { id: 1, title: 'To Do', cards: [
+          { id: 'c1', title: 'Hot task', labels: [{ text: 'Urgent', icon: 'fire' }] },
+        ]},
+      ];
+      await wait(80);
+
+      const labelIcon = kanban.shadowRoot!.querySelector('.card__label-icon');
+      expect(labelIcon?.querySelector('svg')).toBeTruthy();
+      expect(labelIcon?.textContent?.trim()).not.toBe('fire');
+    });
+
+    it('renders the assignee marker as a registry SVG, not an emoji', async () => {
+      kanban = await createComponent<SniceKanbanElement>('snice-kanban');
+      kanban.columns = [
+        { id: 1, title: 'To Do', cards: [
+          { id: 'c1', title: 'Owned task', assignee: 'Alice' },
+        ]},
+      ];
+      await wait(80);
+
+      const assignee = kanban.shadowRoot!.querySelector('.card__assignee');
+      expect(assignee?.textContent).not.toContain('👤');
+      expect(assignee?.querySelector('svg')).toBeTruthy();
+      expect(assignee?.textContent).toContain('Alice');
+    });
+  });
 });

@@ -34,6 +34,26 @@ describe('renderIcon registry resolution', () => {
   });
 });
 
+describe('registry covers the showcase icon vocabulary', () => {
+  // Every name the showcases and component defaults rely on must resolve to
+  // an embedded SVG — a missing name silently renders as ligature text.
+  const REQUIRED_NAMES = [
+    'plus', 'pencil', 'trash', 'chat-bubble', 'rocket-launch', 'key',
+    'arrow-up-tray', 'arrow-down-tray', 'arrows-right-left', 'star', 'circle',
+    'fire', 'cog-6-tooth', 'envelope', 'light-bulb', 'users', 'heart',
+    'home', 'chart-bar', 'scissors', 'check', 'arrow-right', 'photo', 'map-pin',
+    'user', 'clipboard', 'bug-ant', 'calendar-days', 'sparkles', 'bell-alert',
+    'cube', 'banknotes', 'cake', 'paint-brush', 'gift',
+  ];
+
+  it('resolves every required icon name to an SVG', async () => {
+    const { ICONS } = await import('../../packages/components/src/icons/index');
+    for (const name of REQUIRED_NAMES) {
+      expect((ICONS as Record<string, string>)[name], `missing icon: ${name}`).toContain('<svg');
+    }
+  });
+});
+
 describe('snice-input prefix-icon uses the registry', () => {
   let el: any;
 

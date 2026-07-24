@@ -55,7 +55,7 @@ interface KanbanLabel {
   text: string;
   color?: string;            // Text color
   background?: string;       // Background color
-  icon?: string;            // Emoji or text icon
+  icon?: string;            // Registry name ('fire'), URL, or text
   iconPosition?: 'left' | 'right';  // Icon placement
 }
 ```
@@ -152,7 +152,7 @@ kanban.columns = [
             text: 'High Priority',
             color: '#dc2626',
             background: '#fee2e2',
-            icon: '🔥',
+            icon: 'fire',
             iconPosition: 'left'
           }
         ]

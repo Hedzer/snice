@@ -159,4 +159,22 @@ describe('snice-stat-group', () => {
     const stats = queryShadowAll(el as HTMLElement, '.stat');
     expect(stats.length).toBe(4);
   });
+
+  it('renders registry SVG icons from icon names', async () => {
+    el = await createComponent<SniceStatGroupElement>('snice-stat-group');
+    el.stats = [{ label: 'Active Users', value: '1,024', icon: 'users' }];
+    await wait(50);
+
+    const icon = queryShadow(el as HTMLElement, '.stat__icon');
+    expect(icon?.querySelector('svg')).toBeTruthy();
+    expect(icon?.textContent?.trim()).not.toBe('users');
+  });
+
+  it('still renders emoji icon values as text', async () => {
+    el = await createComponent<SniceStatGroupElement>('snice-stat-group');
+    el.stats = [{ label: 'Fun', value: '9000', icon: '🎉' }];
+    await wait(50);
+
+    expect(queryShadow(el as HTMLElement, '.stat__icon')?.textContent).toContain('🎉');
+  });
 });

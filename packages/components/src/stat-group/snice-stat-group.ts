@@ -1,4 +1,5 @@
 import { element, property, watch, dispatch, ready, render, styles, html, css } from 'snice';
+import { renderIcon } from '../utils';
 import cssContent from './snice-stat-group.css?inline';
 import type { SniceStatGroupElement, StatGroupVariant, StatItem, StatClickDetail } from './snice-stat-group.types';
 
@@ -75,7 +76,7 @@ export class SniceStatGroup extends HTMLElement implements SniceStatGroupElement
            @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.handleStatClick(stat, index); } }}>
         <if ${stat.icon}>
           <div class="stat__icon" style="${hasColor ? `color: ${stat.color}` : ''}">
-            ${stat.icon}
+            ${renderIcon(stat.icon!, 'stat__icon-glyph')}
           </div>
         </if>
         <div class="stat__content">
