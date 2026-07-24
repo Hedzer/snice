@@ -156,10 +156,13 @@
   transform: translateY(0) scale(0.97);
 }
 
-/* Variants - Warning */
+/* Variants - Warning
+   Amber fills take dark text in BOTH themes: white on the light amber is
+   ~2.9:1 (fails AA), and the dark theme's brighter amber already pairs
+   with dark text. Deep brown keeps ~8:1 on either fill. */
 .button--warning {
   background-color: var(--snice-color-warning, rgb(202 138 4));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  color: var(--button-warning-text, rgb(69 26 3));
   border-color: var(--snice-color-warning, rgb(202 138 4));
 }
 

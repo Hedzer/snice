@@ -826,5 +826,16 @@ describe('snice-button', () => {
       const css = readFileSync(cssPath, 'utf8');
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
+
+    it('gives the filled warning variant dark text instead of white-on-amber', () => {
+      // White on the light-theme amber (#ca8a04) is ~2.9:1 — fails AA. The dark
+      // theme already pairs its brighter amber with dark text; light must match.
+      const css = readFileSync(
+        resolve(process.cwd(), 'packages/components/src/button/snice-button.css'),
+        'utf8'
+      );
+      const warningRule = css.split('.button--warning {')[1]?.split('}')[0] ?? '';
+      expect(warningRule).not.toContain('--snice-color-text-inverse');
+    });
   });
 });
