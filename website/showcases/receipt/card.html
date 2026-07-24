@@ -28,6 +28,68 @@
 &lt;/script&gt;</snice-code-block>
         </div>
       </div>
+    
+      <style>
+.tpl-stack-wrap { margin-top: 2rem; }
+.tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
+.tpl-stack { position: relative; height: 26rem; max-width: 720px; }
+.tpl-sheet { position: absolute; inset: 0; margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: zoom-in; transition: transform 200ms ease, filter 200ms ease; }
+.tpl-sheet > * { pointer-events: none; max-width: 640px; box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.5); }
+.tpl-sheet:nth-child(1) { transform: translate(5.5rem, 3rem) rotate(2.6deg); z-index: 1; }
+.tpl-sheet:nth-child(2) { transform: translate(2.75rem, 1.5rem) rotate(-2deg); z-index: 2; }
+.tpl-sheet:nth-child(3) { transform: translate(0, 0) rotate(0.4deg); z-index: 3; }
+.tpl-sheet:hover, .tpl-sheet:focus-visible { transform: translate(0, -0.5rem) rotate(0deg); z-index: 5; filter: brightness(1.02); }
+.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; }
+.tpl-sheet__tag { position: absolute; top: -0.6em; left: 1rem; z-index: 6; background: var(--snice-color-primary, #3b82f6); color: white; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 999px; pointer-events: none; }
+.tpl-stack .tpl-sheet .tpl-clip { max-height: 24rem; overflow: hidden; border-radius: 4px; mask-image: linear-gradient(to bottom, black 78%, transparent 98%); }
+</style>
+      <div class="tpl-stack-wrap">
+        <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
+        <div class="tpl-stack">
+        <button class="tpl-sheet" data-variant="thermal" aria-label="Zoom thermal template">
+          <span class="tpl-sheet__tag">thermal</span>
+          <div class="tpl-clip"><snice-receipt data-tpl-rc variant="thermal" receipt-number="REC-1905" date="2026-07-24 14:30" cashier="Alice"></snice-receipt></div>
+        </button>
+        <button class="tpl-sheet" data-variant="modern" aria-label="Zoom modern template">
+          <span class="tpl-sheet__tag">modern</span>
+          <div class="tpl-clip"><snice-receipt data-tpl-rc variant="modern" receipt-number="REC-1906" date="2026-07-24 14:30" payment-method="Visa **** 4242"></snice-receipt></div>
+        </button>
+        <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
+          <span class="tpl-sheet__tag">paper</span>
+          <div class="tpl-clip"><snice-receipt data-tpl-rc variant="paper" receipt-number="REC-1907" date="2026-07-24 14:30" payment-method="Visa **** 4242" cashier="Alice" terminal-id="POS-03"></snice-receipt></div>
+        </button>
+        </div>
+      </div>
+      <snice-modal id="tpl-modal-rc" size="large" no-footer label="Template preview">
+        <div id="tpl-modal-body-rc" style="max-width:700px;margin:0 auto"></div>
+      </snice-modal>
+      <script type="module">
+        (() => {
+          const feed = el => { el.merchant = { name: 'Coffee House', address: '123 Brew St, Portland OR', phone: '555-0100' };
+            el.items = [
+              { name: 'Cappuccino', quantity: 2, price: 4.50 },
+              { name: 'Croissant', quantity: 1, price: 3.75 },
+              { name: 'Espresso', quantity: 3, price: 3.00 },
+            ];
+            el.tax = 1.87; };
+          document.querySelectorAll('[data-tpl-rc]').forEach(feed);
+          const modal = document.getElementById('tpl-modal-rc');
+          const body = document.getElementById('tpl-modal-body-rc');
+          document.querySelectorAll('#tpl-modal-rc ~ *, .tpl-stack').length; // noop
+          document.querySelectorAll('.tpl-stack .tpl-sheet[data-variant]').forEach(card => {
+            if (!card.closest('.comp-section')?.contains(modal)) return;
+            card.addEventListener('click', () => {
+              body.innerHTML = '';
+              const clone = card.querySelector('[data-tpl-rc]').cloneNode(false);
+              clone.removeAttribute('data-tpl-rc');
+              feed(clone);
+              body.appendChild(clone);
+              modal.show();
+            });
+          });
+        })();
+      </script>
+
     </div>
 <script>
     customElements.whenDefined('snice-receipt').then(() => {

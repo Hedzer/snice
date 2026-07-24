@@ -13,13 +13,13 @@ import type {
 
 @element('snice-invoice')
 export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
-  @property()
+  @property({ attribute: 'invoice-number' })
   invoiceNumber = '';
 
   @property()
   date = '';
 
-  @property()
+  @property({ attribute: 'due-date' })
   dueDate = '';
 
   @property()
@@ -28,7 +28,7 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
   @property()
   currency = 'USD';
 
-  @property({ type: Number })
+  @property({ type: Number, attribute: 'tax-rate' })
   taxRate = 0;
 
   @property({ type: Number })

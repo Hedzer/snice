@@ -31,7 +31,7 @@ A service work order component with task checklists, parts/materials tracking, t
 | `asset` | `WorkOrderAsset \| null` | `null` | Equipment/asset information |
 | `laborRate` (attr: `labor-rate`) | `number` | `0` | Hourly labor rate for calculations |
 | `notes` | `string` | `''` | Additional notes |
-| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed'` | `'standard'` | Visual style variant |
+| `variant` | `'standard' \| 'compact' \| 'field-service' \| 'maintenance' \| 'detailed' \| 'paper'` | `'standard'` | Visual style variant. `paper` renders a textural shop-ticket template |
 | `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code placeholder |
 | `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
 | `qrPosition` (attr: `qr-position`) | `'top-right' \| 'header' \| 'footer'` | `'top-right'` | QR code placement |

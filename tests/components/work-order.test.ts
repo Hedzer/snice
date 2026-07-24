@@ -625,6 +625,17 @@ describe('snice-work-order', () => {
     });
   });
 
+  describe('paper variant', () => {
+    it.each([['paper']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
+      wo = await createComponent<SniceWorkOrderElement>('snice-work-order', { variant: v });
+      await new Promise(r => setTimeout(r, 50));
+
+      expect(wo.variant).toBe(v);
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/work-order/snice-work-order.css'), 'utf8');
+      expect(css).toContain(`:host([variant="${v}"])`);
+    });
+  });
+
   describe('stylesheet contracts', () => {
     const cssPath = resolve(process.cwd(), 'packages/components/src/work-order/snice-work-order.css');
 

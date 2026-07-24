@@ -29,7 +29,7 @@ A professional invoice component with line items, automatic tax and discount cal
 | `to` | `InvoiceParty` | `{ name: '' }` | Recipient/customer information |
 | `items` | `InvoiceItem[]` | `[]` | Line items for the invoice |
 | `notes` | `string` | `''` | Additional notes section |
-| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
+| `variant` | `'standard' \| 'modern' \| 'classic' \| 'minimal' \| 'detailed' \| 'paper'` | `'standard'` | Visual style variant. `paper` renders a textural certificate template |
 | `showQr` | `boolean` | `false` | Display QR code placeholder |
 | `qrData` | `string` | `''` | Data for QR code |
 | `qrPosition` | `'top-right' \| 'bottom-right' \| 'bottom-left' \| 'footer'` | `'bottom-right'` | QR code placement |

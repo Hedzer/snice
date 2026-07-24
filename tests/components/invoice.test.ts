@@ -448,6 +448,9 @@ describe('snice-invoice', () => {
       expect(observed).toContain('show-qr');
       expect(observed).toContain('qr-data');
       expect(observed).toContain('qr-position');
+      expect(observed).toContain('invoice-number');
+      expect(observed).toContain('due-date');
+      expect(observed).toContain('tax-rate');
     });
   });
 
@@ -460,6 +463,17 @@ describe('snice-invoice', () => {
       const undefinedTokens = referenced.filter(token => !theme.includes(`${token}:`));
 
       expect(undefinedTokens).toEqual([]);
+    });
+  });
+
+  describe('paper variant', () => {
+    it.each([['paper']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
+      invoice = await createComponent<SniceInvoiceElement>('snice-invoice', { variant: v });
+      await wait(50);
+
+      expect(invoice.variant).toBe(v);
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/invoice/snice-invoice.css'), 'utf8');
+      expect(css).toContain(`:host([variant="${v}"])`);
     });
   });
 

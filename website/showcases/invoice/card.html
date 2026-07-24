@@ -32,6 +32,68 @@
 &lt;/script&gt;</snice-code-block>
         </div>
       </div>
+    
+      <style>
+.tpl-stack-wrap { margin-top: 2rem; }
+.tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
+.tpl-stack { position: relative; height: 26rem; max-width: 720px; }
+.tpl-sheet { position: absolute; inset: 0; margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: zoom-in; transition: transform 200ms ease, filter 200ms ease; }
+.tpl-sheet > * { pointer-events: none; max-width: 640px; box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.5); }
+.tpl-sheet:nth-child(1) { transform: translate(5.5rem, 3rem) rotate(2.6deg); z-index: 1; }
+.tpl-sheet:nth-child(2) { transform: translate(2.75rem, 1.5rem) rotate(-2deg); z-index: 2; }
+.tpl-sheet:nth-child(3) { transform: translate(0, 0) rotate(0.4deg); z-index: 3; }
+.tpl-sheet:hover, .tpl-sheet:focus-visible { transform: translate(0, -0.5rem) rotate(0deg); z-index: 5; filter: brightness(1.02); }
+.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; }
+.tpl-sheet__tag { position: absolute; top: -0.6em; left: 1rem; z-index: 6; background: var(--snice-color-primary, #3b82f6); color: white; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 999px; pointer-events: none; }
+.tpl-stack .tpl-sheet .tpl-clip { max-height: 24rem; overflow: hidden; border-radius: 4px; mask-image: linear-gradient(to bottom, black 78%, transparent 98%); }
+</style>
+      <div class="tpl-stack-wrap">
+        <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
+        <div class="tpl-stack">
+        <button class="tpl-sheet" data-variant="classic" aria-label="Zoom classic template">
+          <span class="tpl-sheet__tag">classic</span>
+          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="classic" invoice-number="INV-1905" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div>
+        </button>
+        <button class="tpl-sheet" data-variant="modern" aria-label="Zoom modern template">
+          <span class="tpl-sheet__tag">modern</span>
+          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="modern" invoice-number="INV-1906" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div>
+        </button>
+        <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
+          <span class="tpl-sheet__tag">paper</span>
+          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6"></snice-invoice></div>
+        </button>
+        </div>
+      </div>
+      <snice-modal id="tpl-modal-inv" size="large" no-footer label="Template preview">
+        <div id="tpl-modal-body-inv" style="max-width:700px;margin:0 auto"></div>
+      </snice-modal>
+      <script type="module">
+        (() => {
+          const feed = el => { el.from = { name: 'Acme Corp', address: '123 Business Ave, New York, NY', email: 'billing@acme.com' };
+            el.to = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL', email: 'ap@client.com' };
+            el.items = [
+              { description: 'Web Development', quantity: 40, unitPrice: 150 },
+              { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+              { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+            ]; };
+          document.querySelectorAll('[data-tpl-inv]').forEach(feed);
+          const modal = document.getElementById('tpl-modal-inv');
+          const body = document.getElementById('tpl-modal-body-inv');
+          document.querySelectorAll('#tpl-modal-inv ~ *, .tpl-stack').length; // noop
+          document.querySelectorAll('.tpl-stack .tpl-sheet[data-variant]').forEach(card => {
+            if (!card.closest('.comp-section')?.contains(modal)) return;
+            card.addEventListener('click', () => {
+              body.innerHTML = '';
+              const clone = card.querySelector('[data-tpl-inv]').cloneNode(false);
+              clone.removeAttribute('data-tpl-inv');
+              feed(clone);
+              body.appendChild(clone);
+              modal.show();
+            });
+          });
+        })();
+      </script>
+
     </div>
 <script>
     customElements.whenDefined('snice-invoice').then(() => {

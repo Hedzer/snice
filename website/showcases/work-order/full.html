@@ -23,9 +23,49 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 1.5rem; }
     .label { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-bottom: 0.25rem; }
+
+    .tpl-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .tpl-card { position: relative; display: block; border: 1px solid var(--snice-color-border, #444); border-radius: 8px; background: var(--snice-color-surface-container-low, rgb(30 30 34)); padding: 0; cursor: zoom-in; overflow: hidden; height: 300px; text-align: left; }
+    .tpl-card:hover { border-color: var(--snice-color-primary, #3b82f6); }
+    .tpl-card:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 2px; }
+    .tpl-card__stage { transform: scale(0.32); transform-origin: top left; width: 700px; pointer-events: none; padding: 12px; }
+    .tpl-card__name { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.75rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: color-mix(in srgb, var(--snice-color-surface, #111) 85%, transparent); color: var(--snice-color-text, #eee); backdrop-filter: blur(4px); }
+    #tpl-modal-body > * { max-width: 700px; margin: 0 auto; }
   </style>
 </head>
 <body>
+
+
+<h2>Template gallery - click any sheet to zoom</h2>
+<div class="tpl-gallery">
+  <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="standard" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">standard</span>
+  </button>
+  <button class="tpl-card" data-variant="compact" aria-label="Zoom compact template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="compact" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">compact</span>
+  </button>
+  <button class="tpl-card" data-variant="field-service" aria-label="Zoom field-service template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="field-service" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">field-service</span>
+  </button>
+  <button class="tpl-card" data-variant="maintenance" aria-label="Zoom maintenance template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="maintenance" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">maintenance</span>
+  </button>
+  <button class="tpl-card" data-variant="detailed" aria-label="Zoom detailed template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="detailed" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">detailed</span>
+  </button>
+  <button class="tpl-card" data-variant="paper" aria-label="Zoom paper template">
+    <div class="tpl-card__stage"><snice-work-order data-tpl variant="paper" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold." show-qr qr-data="https://ops.example.com/WO-1907"></snice-work-order></div>
+    <span class="tpl-card__name">paper</span>
+  </button>
+</div>
+<snice-modal id="tpl-modal" size="large" no-footer label="Template preview">
+  <div id="tpl-modal-body"></div>
+</snice-modal>
 
 <h2>Priority: all values</h2>
 <div class="grid">
@@ -116,6 +156,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Full Work Order (all sections populated)</h2>
 <snice-work-order id="wo-full" variant="standard"></snice-work-order>
+
+<h2>Paper (textural)</h2>
+<snice-work-order id="wo-paper" variant="paper" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold."></snice-work-order>
 
 <h2>Minimal (just WO number)</h2>
 <snice-work-order wo-number="WO-099"></snice-work-order>
@@ -210,6 +253,42 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   woFull.asset = asset;
   woFull.laborRate = 95;
   woFull.notes = 'Access through loading dock. Security escort required after 6 PM. Customer has approved overtime if needed.';
+
+  const woPaper = document.getElementById('wo-paper');
+  woPaper.customer = customer;
+  woPaper.tasks = JSON.parse(JSON.stringify(tasks));
+  woPaper.parts = JSON.parse(JSON.stringify(parts));
+  woPaper.laborRate = 95;
+</script>
+<script type="module">
+  import '../../../packages/components/src/modal/snice-modal.ts';
+
+  const tplCustomer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234', email: 'ops@acme.com' };
+  const tplTasks = [
+    { description: 'Drain refrigerant and lock out power', completed: true, hours: 1.5 },
+    { description: 'Replace compressor bearing', completed: false, hours: 3 },
+    { description: 'Recalibrate intake manifold', completed: false, hours: 2 },
+  ];
+  const tplParts = [
+    { name: 'Compressor bearing', partNumber: 'CB-4402', quantity: 1, unitCost: 240 },
+    { name: 'Gasket kit', partNumber: 'GK-115', quantity: 2, unitCost: 35 },
+  ];
+
+  const feed = el => { el.customer = tplCustomer; el.tasks = JSON.parse(JSON.stringify(tplTasks)); el.parts = JSON.parse(JSON.stringify(tplParts)); el.laborRate = 95; };
+  document.querySelectorAll('[data-tpl]').forEach(feed);
+
+  const modal = document.getElementById('tpl-modal');
+  const body = document.getElementById('tpl-modal-body');
+  document.querySelectorAll('.tpl-card').forEach(card => {
+    card.addEventListener('click', () => {
+      body.innerHTML = '';
+      const clone = card.querySelector('[data-tpl]').cloneNode(false);
+      clone.removeAttribute('data-tpl');
+      feed(clone);
+      body.appendChild(clone);
+      modal.show();
+    });
+  });
 </script>
 </body>
 </html>

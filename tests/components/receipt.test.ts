@@ -463,6 +463,18 @@ describe('snice-receipt', () => {
     });
   });
 
+
+  describe('paper variant', () => {
+    it.each([['paper']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
+      receipt = await createComponent<SniceReceiptElement>('snice-receipt', { variant: v });
+      await wait(50);
+
+      expect(receipt.variant).toBe(v);
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/receipt/snice-receipt.css'), 'utf8');
+      expect(css).toContain(`:host([variant="${v}"])`);
+    });
+  });
+
   describe('attribute contract', () => {
     it('observes every documented kebab-case attribute', () => {
       const observed = (customElements.get('snice-receipt') as any).observedAttributes as string[];

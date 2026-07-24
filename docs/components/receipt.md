@@ -34,7 +34,7 @@ A transaction receipt component for displaying purchase details with merchant in
 | `discountLabel` (attr: `discount-label`) | `string` | `'Discount'` | Label for discount line |
 | `paymentMethod` (attr: `payment-method`) | `string` | `''` | Payment method text |
 | `paymentDetails` (attr: `payment-details`) | `string` | `''` | Additional payment info |
-| `variant` | `'standard' \| 'thermal' \| 'modern' \| 'minimal' \| 'detailed'` | `'standard'` | Visual style variant |
+| `variant` | `'standard' \| 'thermal' \| 'modern' \| 'minimal' \| 'detailed' \| 'paper'` | `'standard'` | Visual style variant. `paper` renders a textural certificate template |
 | `showQr` (attr: `show-qr`) | `boolean` | `false` | Show QR code slot |
 | `qrData` (attr: `qr-data`) | `string` | `''` | QR code data |
 | `qrPosition` (attr: `qr-position`) | `'top' \| 'bottom' \| 'footer'` | `'bottom'` | QR code placement |

@@ -19,6 +19,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
     h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
     snice-invoice { display: block; max-width: 700px; margin-bottom: 1.5rem; }
+
+    /* Template gallery: zoomed-out stacked sheets, click to zoom in a modal */
+    .tpl-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .tpl-card { position: relative; display: block; border: 1px solid var(--snice-color-border, #444); border-radius: 8px; background: var(--snice-color-surface-container-low, rgb(30 30 34)); padding: 0; cursor: zoom-in; overflow: hidden; height: 300px; text-align: left; }
+    .tpl-card:hover { border-color: var(--snice-color-primary, #3b82f6); }
+    .tpl-card:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 2px; }
+    .tpl-card__stage { transform: scale(0.32); transform-origin: top left; width: 700px; pointer-events: none; padding: 12px; }
+    .tpl-card__name { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.75rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: color-mix(in srgb, var(--snice-color-surface, #111) 85%, transparent); color: var(--snice-color-text, #eee); backdrop-filter: blur(4px); }
+    #tpl-modal [slot] snice-invoice, #tpl-modal-body > * { max-width: 700px; margin: 0 auto; }
   </style>
   <script type="module">
     import '../../../packages/components/src/invoice/snice-invoice.ts';
@@ -66,6 +75,38 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <body>
 
 <!-- Status variants -->
+
+<h2>Template gallery - click any sheet to zoom</h2>
+<div class="tpl-gallery">
+  <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="standard" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">standard</span>
+  </button>
+  <button class="tpl-card" data-variant="modern" aria-label="Zoom modern template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="modern" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">modern</span>
+  </button>
+  <button class="tpl-card" data-variant="classic" aria-label="Zoom classic template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="classic" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">classic</span>
+  </button>
+  <button class="tpl-card" data-variant="minimal" aria-label="Zoom minimal template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="minimal" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">minimal</span>
+  </button>
+  <button class="tpl-card" data-variant="detailed" aria-label="Zoom detailed template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="detailed" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">detailed</span>
+  </button>
+  <button class="tpl-card" data-variant="paper" aria-label="Zoom paper template">
+    <div class="tpl-card__stage"><snice-invoice data-tpl variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6" show-qr qr-position="footer" qr-data="https://pay.example.com/INV-1907"></snice-invoice></div>
+    <span class="tpl-card__name">paper</span>
+  </button>
+</div>
+<snice-modal id="tpl-modal" size="large" no-footer label="Template preview">
+  <div id="tpl-modal-body"></div>
+</snice-modal>
+
 <h2>Status: draft</h2>
 <snice-invoice data-inv invoice-number="INV-001" date="2026-03-01" status="draft"></snice-invoice>
 
@@ -138,6 +179,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Due Date</h2>
 <snice-invoice data-inv invoice-number="INV-050" date="2026-03-01" due-date="2026-04-15" status="sent"></snice-invoice>
 
+<h2>Paper (textural)</h2>
+<snice-invoice data-inv variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid"></snice-invoice>
+
 <!-- Footer slot -->
 <h2>Slot: Default (footer content)</h2>
 <snice-invoice data-inv invoice-number="INV-060" date="2026-03-06">
@@ -154,5 +198,32 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <h2>Edge: No Items</h2>
 <snice-invoice id="inv-empty" invoice-number="INV-071" date="2026-03-06"></snice-invoice>
 
+<script type="module">
+  import '../../../packages/components/src/modal/snice-modal.ts';
+
+  const tplFrom = { name: 'Acme Corp', address: '123 Business Ave, Suite 100, New York, NY 10001', email: 'billing@acme.com', phone: '(555) 123-4567' };
+  const tplTo = { name: 'Client Industries', address: '456 Oak Street, Chicago, IL 60601', email: 'ap@client.com', phone: '(555) 987-6543' };
+  const tplItems = [
+    { description: 'Web Development', quantity: 40, unitPrice: 150 },
+    { description: 'UI/UX Design', quantity: 20, unitPrice: 120 },
+    { description: 'Hosting (annual)', quantity: 1, unitPrice: 500 },
+  ];
+
+  const feed = el => { el.from = tplFrom; el.to = tplTo; el.items = JSON.parse(JSON.stringify(tplItems)); };
+  document.querySelectorAll('[data-tpl]').forEach(feed);
+
+  const modal = document.getElementById('tpl-modal');
+  const body = document.getElementById('tpl-modal-body');
+  document.querySelectorAll('.tpl-card').forEach(card => {
+    card.addEventListener('click', () => {
+      body.innerHTML = '';
+      const clone = card.querySelector('[data-tpl]').cloneNode(false);
+      clone.removeAttribute('data-tpl');
+      feed(clone);
+      body.appendChild(clone);
+      modal.show();
+    });
+  });
+</script>
 </body>
 </html>

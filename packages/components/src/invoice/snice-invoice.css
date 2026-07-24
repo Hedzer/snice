@@ -777,3 +777,182 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+
+/* ══════════════════════════════════════════════════════
+   Paper variant — certificate-ledger template on real stock
+   Two inks: warm near-black + oxblood accent. Ruled frame,
+   centered masthead lockup, stub meta row, boxed grand total.
+   ══════════════════════════════════════════════════════ */
+
+:host([variant="paper"]) {
+  --invoice-bg: rgb(251 249 244);
+  --invoice-text: rgb(43 38 31);
+  --invoice-text-secondary: rgb(94 85 72);
+  --invoice-text-tertiary: rgb(148 136 116);
+  --invoice-border: rgb(210 201 183);
+  --invoice-bg-element: rgb(246 242 233);
+  --invoice-border-color: rgb(63 55 45);
+  --invoice-border-width: 1px;
+  --invoice-border-radius: 0;
+  --invoice-shadow: 0 1px 2px rgb(56 46 30 / 0.10), 0 18px 40px -20px rgb(56 46 30 / 0.5);
+  --invoice-notes-bg: transparent;
+  --invoice-qr-border: 1px solid rgb(63 55 45);
+  --invoice-paper-ink: rgb(43 38 31);
+  --invoice-paper-accent: rgb(148 54 38);
+}
+
+/* Sheet: grain + inner rule completing the double frame */
+:host([variant="paper"]) .invoice {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+  box-shadow: inset 0 0 0 4px var(--invoice-bg), inset 0 0 0 5px rgb(63 55 45 / 0.55), var(--invoice-shadow);
+  padding: calc(var(--invoice-padding) + 0.5rem);
+}
+
+/* Masthead: centered lockup over a double rule */
+:host([variant="paper"]) .invoice__header {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  border-bottom: 4px double var(--invoice-paper-ink);
+  padding-bottom: var(--snice-spacing-lg, 1.5rem);
+  text-align: center;
+}
+
+:host([variant="paper"]) .invoice__header-left {
+  align-items: center;
+}
+
+:host([variant="paper"]) .invoice__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: var(--snice-font-weight-normal, 400);
+  text-transform: uppercase;
+  letter-spacing: 0.45em;
+  text-indent: 0.45em; /* optically recenters tracked caps */
+  font-size: var(--snice-font-size-xl, 1.375rem);
+}
+
+/* Meta becomes a ruled stub row spanning the sheet */
+:host([variant="paper"]) .invoice__meta {
+  flex-direction: row;
+  justify-content: center;
+  gap: 0;
+  text-align: center;
+  width: 100%;
+  border: 1px solid var(--invoice-paper-ink);
+  background: var(--invoice-bg);
+}
+
+:host([variant="paper"]) .invoice__meta > div {
+  flex: 1;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+:host([variant="paper"]) .invoice__meta > div + div {
+  border-left: 1px solid var(--invoice-paper-ink);
+}
+
+:host([variant="paper"]) .invoice__meta-label {
+  text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  font-size: 0.625rem;
+  color: var(--invoice-text-tertiary);
+}
+
+:host([variant="paper"]) .invoice__meta-value {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Status: oxblood rubber stamp, angled over the frame corner */
+:host([variant="paper"]) .invoice__status {
+  position: absolute;
+  top: 0.25rem;
+  right: 0;
+  background: transparent;
+  border: 3px double var(--invoice-paper-accent);
+  border-radius: 0.1875rem;
+  color: var(--invoice-paper-accent);
+  transform: rotate(-6deg);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+
+/* Parties: letterpress caps labels */
+:host([variant="paper"]) .invoice__party-label {
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  color: var(--invoice-paper-accent);
+}
+
+:host([variant="paper"]) .invoice__party-name {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* Ledger table: accent-ruled header, hairline rows, tabular figures */
+:host([variant="paper"]) .invoice__table th {
+  border-bottom: 1px solid var(--invoice-paper-ink);
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  font-size: 0.6875rem;
+  color: var(--invoice-text-secondary);
+}
+
+:host([variant="paper"]) .invoice__table td {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:host([variant="paper"]) .invoice__table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+:host([variant="paper"]) .invoice__table tbody td {
+  border-bottom: 1px solid var(--invoice-border);
+}
+
+/* Grand total: boxed, two-rule certificate treatment */
+:host([variant="paper"]) .invoice__summary-row--total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--snice-spacing-md, 1rem);
+  border: 1px solid var(--invoice-paper-ink);
+  box-shadow: inset 0 0 0 3px var(--invoice-bg), inset 0 0 0 4px var(--invoice-paper-accent);
+  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);
+  margin-top: var(--snice-spacing-sm, 0.75rem);
+  background: var(--invoice-bg);
+}
+
+:host([variant="paper"]) .invoice__summary-row--total span:first-child {
+  text-transform: uppercase;
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  font-size: 0.6875rem;
+  color: var(--invoice-text-secondary);
+}
+
+:host([variant="paper"]) .invoice__summary-row--total span:last-child {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: var(--snice-font-weight-normal, 400);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--invoice-paper-ink);
+}
+
+/* Notes: fine print under a hairline, like certificate terms */
+:host([variant="paper"]) .invoice__notes {
+  border-top: 1px solid var(--invoice-border);
+  padding-top: var(--snice-spacing-sm, 0.75rem);
+  font-size: var(--snice-font-size-sm, 0.8125rem);
+  color: var(--invoice-text-secondary);
+}
+
+:host([variant="paper"]) .invoice__notes-label {
+  letter-spacing: var(--snice-tracking-widest, 0.1em);
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  color: var(--invoice-paper-accent);
+}
