@@ -29,6 +29,8 @@ A JavaScript-driven bin-packing layout component. Uses the maximal rectangles al
 | `stagger` | `stagger` | `number` | `0` | Delay in ms between each item's transition |
 | `resize` | `resize` | `boolean` | `true` | Auto re-layout on container resize |
 | `draggable` | `draggable` | `boolean` | `false` | Enable drag-to-reorder |
+
+> Dragging is pointer-driven (mouse/touch). There is no keyboard-based rearrangement; keep an alternative flow available where item order matters.
 | `dragThrottle` | `drag-throttle` | `number` | `120` | Throttle interval (ms) for drag layout updates |
 
 ## Methods

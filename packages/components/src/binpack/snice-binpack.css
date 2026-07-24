@@ -63,3 +63,12 @@
 .binpack-drop-placeholder.visible {
   display: block;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  :host([ready]) ::slotted(*) {
+    transition-duration: 0.01ms;
+  }
+  .binpack-drop-placeholder {
+    transition-duration: 0.01ms;
+  }
+}

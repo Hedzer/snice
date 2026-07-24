@@ -14,7 +14,7 @@ originTop: boolean = true;                      // false = bottom-to-top -- attr
 transitionDuration: string = '0.4s';            // CSS transition duration -- attr: transition-duration
 stagger: number = 0;                            // ms delay between each item transition
 resize: boolean = true;                         // auto re-layout on container resize
-draggable: boolean = false;                     // enable drag-to-reorder
+draggable: boolean = false;         // pointer-driven only — no keyboard rearrangement                     // enable drag-to-reorder
 dragThrottle: number = 120;                     // ms throttle for drag layout updates -- attr: drag-throttle
 ```
 
