@@ -253,11 +253,11 @@ describe('snice-cart', () => {
 
   describe('remove control', () => {
     it('should render the remove control as an icon, not a text glyph', async () => {
-      cart = await createComponent<SniceCartElement>('snice-cart');
-      cart.items = [{ id: '1', name: 'Widget', price: 9.99, quantity: 1 }];
+      el = await createComponent<SniceCartElement>('snice-cart');
+      el.items = [{ id: '1', name: 'Widget', price: 9.99, quantity: 1 }];
       await wait(80);
 
-      const removeBtn = cart.shadowRoot!.querySelector('snice-button[circle]');
+      const removeBtn = el.shadowRoot!.querySelector('snice-button[circle]');
       expect(removeBtn).toBeTruthy();
       expect(removeBtn?.textContent).not.toContain('\u2715');
       expect(removeBtn?.getAttribute('icon')).toBe('x-mark');
