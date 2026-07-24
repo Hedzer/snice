@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
 import '../../packages/components/src/gauge/snice-gauge';
 import type { SniceGaugeElement } from '../../packages/components/src/gauge/snice-gauge.types';
@@ -279,6 +281,19 @@ describe('snice-gauge', () => {
       const dashArray = Number(fill?.getAttribute('stroke-dasharray'));
       const dashOffset = Number(fill?.getAttribute('stroke-dashoffset'));
       expect(dashOffset).toBeCloseTo(dashArray, 0);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/gauge/snice-gauge.css'), 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/gauge/snice-gauge.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
     });
   });
 });

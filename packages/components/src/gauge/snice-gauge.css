@@ -121,3 +121,10 @@
 :host([variant="info"]) .gauge__fill {
   stroke: hsl(var(--snice-color-blue-600, 217 91% 60%));
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
