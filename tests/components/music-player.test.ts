@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, queryShadowAll, wait } from './test-utils';
 import '../../packages/components/src/music-player/snice-music-player';
 import type { SniceMusicPlayerElement, Track } from '../../packages/components/src/music-player/snice-music-player.types';
@@ -771,6 +773,57 @@ describe('snice-music-player', () => {
       player.next();
       player.previous();
       await wait(50);
+    });
+  });
+
+  describe('seek bar accessibility', () => {
+    beforeEach(async () => {
+      player = await createComponent<SniceMusicPlayerElement>('snice-music-player');
+      player.tracks = sampleTracks;
+      await wait(50);
+    });
+
+    it('exposes the progress bar as a focusable slider', () => {
+      const progress = queryShadow(player as HTMLElement, '.player-progress');
+      expect(progress?.getAttribute('role')).toBe('slider');
+      expect(progress?.getAttribute('tabindex')).toBe('0');
+      expect(progress?.getAttribute('aria-label')).toBeTruthy();
+      expect(progress?.getAttribute('aria-valuemin')).toBe('0');
+      expect(progress?.hasAttribute('aria-valuenow')).toBe(true);
+    });
+
+    it('seeks forward with ArrowRight', async () => {
+      const progress = queryShadow(player as HTMLElement, '.player-progress');
+      progress?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      await wait(50);
+
+      expect(player.currentTime).toBeGreaterThan(0);
+    });
+
+    it('seeks back to the start with Home', async () => {
+      player.seek(30);
+      await wait(50);
+
+      const progress = queryShadow(player as HTMLElement, '.player-progress');
+      progress?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+      await wait(50);
+
+      expect(player.currentTime).toBe(0);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/music-player/snice-music-player.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });

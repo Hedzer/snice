@@ -2,6 +2,8 @@ import { element, property, render, styles, dispatch, ready, dispose, watch, que
 import type { Track, RepeatMode, PlayerState, SniceMusicPlayerElement } from './snice-music-player.types';
 import playerStyles from './snice-music-player.css?inline';
 
+const SEEK_STEP_SECONDS = 5;
+
 @element('snice-music-player')
 export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerElement {
   @property({ type: Array, attribute: false })
@@ -312,7 +314,16 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
 
             <div class="player-progress-container">
               <span class="player-time player-time-current">${this.formatTime(this.currentTime)}</span>
-              <div class="player-progress" @click=${(e: MouseEvent) => this.handleSeek(e)}>
+              <div class="player-progress"
+                   role="slider"
+                   tabindex="0"
+                   aria-label="Seek"
+                   aria-valuemin="0"
+                   aria-valuemax="${Math.floor(this.duration)}"
+                   aria-valuenow="${Math.floor(this.currentTime)}"
+                   aria-valuetext="${this.formatTime(this.currentTime)} of ${this.formatTime(this.duration)}"
+                   @click=${(e: MouseEvent) => this.handleSeek(e)}
+                   @keydown=${(e: KeyboardEvent) => this.handleSeekKeydown(e)}>
                 <div class="player-progress-bar" style="width: ${progress}%"></div>
               </div>
               <span class="player-time player-time-duration">${this.formatTime(this.duration)}</span>
@@ -563,6 +574,34 @@ export class SniceMusicPlayer extends HTMLElement implements SniceMusicPlayerEle
     const currentIndex = modes.indexOf(this.repeat);
     const nextIndex = (currentIndex + 1) % modes.length;
     this.setRepeat(modes[nextIndex]);
+  }
+
+  private handleSeekKeydown(e: KeyboardEvent): void {
+    let target: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        target = this.currentTime + SEEK_STEP_SECONDS;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        target = this.currentTime - SEEK_STEP_SECONDS;
+        break;
+      case 'Home':
+        target = 0;
+        break;
+      case 'End':
+        target = this.duration;
+        break;
+    }
+
+    if (target === null) return;
+
+    e.preventDefault();
+    if (target < 0) target = 0;
+    if (this.duration > 0 && target > this.duration) target = this.duration;
+    this.seek(target);
   }
 
   private handleSeek(e: MouseEvent): void {
