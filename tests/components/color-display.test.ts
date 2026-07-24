@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/color-display/snice-color-display';
 import type { SniceColorDisplayElement } from '../../packages/components/src/color-display/snice-color-display.types';
@@ -220,6 +222,30 @@ describe('snice-color-display', () => {
 
       const label = queryShadow(colorDisplay as HTMLElement, '.color-label');
       expect(label?.textContent).toBe('hsl(240, 100%, 50%)');
+    });
+  });
+
+  describe('swatch accessibility', () => {
+    it('should give the swatch an accessible name when the label is hidden', async () => {
+      const el = document.createElement('snice-color-display') as any;
+      el.setAttribute('value', '#ff0000');
+      el.setAttribute('show-label', 'false');
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      const swatch = el.shadowRoot.querySelector('.color-swatch');
+      expect(swatch?.getAttribute('role')).toBe('img');
+      expect(swatch?.getAttribute('aria-label')).toContain('#ff0000');
+      el.remove();
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/color-display/snice-color-display.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
     });
   });
 });

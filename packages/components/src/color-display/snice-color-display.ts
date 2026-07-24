@@ -44,6 +44,8 @@ export class SniceColorDisplay extends HTMLElement implements SniceColorDisplayE
           <span
             class="${swatchClasses}"
             part="swatch"
+            role="img"
+            aria-label="Color ${displayText || colorValue}"
             style="background-color: ${colorValue};"
           ></span>
         </if>
