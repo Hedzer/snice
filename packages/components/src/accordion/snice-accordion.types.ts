@@ -13,8 +13,9 @@ export interface SniceAccordionItemElement extends HTMLElement {
   open: boolean;
   disabled: boolean;
   toggle(): void;
-  expand(): void;
-  collapse(): void;
+  expand(animate?: boolean): void;
+  collapse(animate?: boolean): void;
+  focusHeader(): void;
 }
 
 export interface AccordionOpenEvent {

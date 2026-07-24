@@ -1,19 +1,25 @@
 :host {
-  --accordion-border-color: var(--snice-color-border);
-  --accordion-border-radius: var(--snice-border-radius-lg, 8px);
-  --accordion-header-bg: var(--snice-color-surface-container-high);
-  --accordion-header-bg-hover: var(--snice-color-surface-hover);
-  --accordion-header-bg-active: var(--snice-color-surface-active);
-  --accordion-header-color: var(--snice-color-text);
+  --accordion-border-color: var(--snice-color-border, rgb(226 226 226));
+  --accordion-border-radius: var(--snice-border-radius-lg, 0.5rem);
+  --accordion-header-bg: var(--snice-color-surface-container-high, rgb(252 251 249));
+  --accordion-header-bg-hover: var(--snice-color-surface-hover, rgb(242 242 242));
+  --accordion-header-bg-active: var(--snice-color-surface-active, rgb(227 227 227));
+  --accordion-header-color: var(--snice-color-text, rgb(23 23 23));
   --accordion-header-padding: 1rem; /* 16px */
-  --accordion-content-bg: var(--snice-color-surface-container-high);
+  --accordion-content-bg: var(--snice-color-surface-container-high, rgb(252 251 249));
   --accordion-content-padding: 1rem; /* 16px */
-  --accordion-content-color: var(--snice-color-text-secondary);
+  --accordion-content-color: var(--snice-color-text-secondary, rgb(82 82 82));
   --accordion-icon-size: 1.25rem; /* 20px */
-  --accordion-animation-duration: 0.3s;
+  --accordion-animation-duration: var(--snice-transition-medium, 250ms);
 
   display: block;
   width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --accordion-animation-duration: 0ms;
+  }
 }
 
 .accordion {
@@ -41,13 +47,13 @@
 }
 
 .accordion--elevated ::slotted(snice-accordion-item) {
-  --accordion-header-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high));
-  --accordion-content-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high));
+  --accordion-header-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249)));
+  --accordion-content-bg: var(--snice-color-surface-container-low, var(--snice-color-surface-container-high, rgb(252 251 249)));
   border-radius: var(--accordion-border-radius);
   box-shadow: 0 1px 3px 0 hsl(0 0% 0%/0.12), 0 1px 2px -1px hsl(0 0% 0%/0.12);
   border-bottom: none;
   overflow: hidden;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: box-shadow var(--accordion-animation-duration) ease, transform var(--accordion-animation-duration) ease;
 }
 
 .accordion--elevated ::slotted(snice-accordion-item:not(:last-child)) {

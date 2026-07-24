@@ -105,6 +105,13 @@ item.collapse();
 item.collapse(false); // Without animation
 ```
 
+#### `focusHeader(): void`
+Move keyboard focus to the item's header button.
+
+```typescript
+item.focusHeader();
+```
+
 ## Events
 
 ### Container Events

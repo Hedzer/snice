@@ -57,8 +57,29 @@
             },
             {
               "kind": "method",
-              "name": "handleOpenChange",
+              "name": "focusHeader",
               "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleOpenChange",
+              "parameters": [
+                {
+                  "name": "oldValue",
+                  "type": "boolean",
+                  "optional": true
+                },
+                {
+                  "name": "newValue",
+                  "type": "boolean",
+                  "optional": true
+                }
+              ],
               "return": {
                 "type": {
                   "text": "unknown"
@@ -198,16 +219,6 @@
           "members": [
             {
               "kind": "method",
-              "name": "cleanup",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
-              "kind": "method",
               "name": "closeAll",
               "parameters": [],
               "return": {
@@ -223,6 +234,22 @@
                 {
                   "name": "id",
                   "type": "string",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleItemToggle",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": "CustomEvent<{ itemId: string; open: boolean }>",
                   "optional": false
                 }
               ],

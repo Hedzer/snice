@@ -44,6 +44,7 @@ disabled: boolean = false;
 - `toggle()` - Toggle open/closed
 - `expand(animate = true)` - Open
 - `collapse(animate = true)` - Close
+- `focusHeader()` - Focus the header button
 
 ## Events
 
