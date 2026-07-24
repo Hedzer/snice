@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, wait } from './test-utils';
 import '../../packages/components/src/image/snice-image';
 import type { SniceImageElement } from '../../packages/components/src/image/snice-image.types';
@@ -64,14 +66,14 @@ describe('snice-image', () => {
       expect(img?.getAttribute('alt')).toBe('Test Image');
     });
 
-    it('should use default alt text when not provided', async () => {
+    it('should render an empty alt when not provided (decorative default)', async () => {
       image = await createComponent<SniceImageElement>('snice-image', {
         src: 'https://example.com/image.jpg'
       });
       await wait(50);
 
       const img = queryShadow(image as HTMLElement, 'img');
-      expect(img?.getAttribute('alt')).toBe('Image');
+      expect(img?.getAttribute('alt')).toBe('');
     });
   });
 
@@ -213,6 +215,42 @@ describe('snice-image', () => {
       });
 
       expect(image.fallback).toBe('https://example.com/fallback.jpg');
+    });
+  });
+
+  describe('alt semantics', () => {
+    it('should render an empty alt when none is provided, not filler text', async () => {
+      const el = document.createElement('snice-image') as any;
+      el.setAttribute('src', 'test.png');
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      const img = el.shadowRoot.querySelector('img:not([aria-hidden])') || el.shadowRoot.querySelectorAll('img')[el.shadowRoot.querySelectorAll('img').length - 1];
+      expect(img?.getAttribute('alt')).toBe('');
+      el.remove();
+    });
+
+    it('should keep an author-provided alt', async () => {
+      const el = document.createElement('snice-image') as any;
+      el.setAttribute('src', 'test.png');
+      el.setAttribute('alt', 'A described picture');
+      document.body.appendChild(el);
+      await el.ready;
+      await new Promise((r) => setTimeout(r, 50));
+
+      const imgs = el.shadowRoot.querySelectorAll('img');
+      const img = imgs[imgs.length - 1];
+      expect(img?.getAttribute('alt')).toBe('A described picture');
+      el.remove();
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/image/snice-image.css'), 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
     });
   });
 });

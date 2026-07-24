@@ -55,7 +55,9 @@ export class SniceImage extends HTMLElement implements SniceImageElement {
   @render()
   render() {
     const imageSrc = this.imageError && this.fallback ? this.fallback : this.src;
-    const imageAlt = this.alt || 'Image';
+    // Empty alt (decorative) when the author provides none — filler text like
+    // "Image" is screen-reader noise.
+    const imageAlt = this.alt;
     const loadingAttr = this.lazy ? 'lazy' : 'eager';
 
     const imageClasses = [
