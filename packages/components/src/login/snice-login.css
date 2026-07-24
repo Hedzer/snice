@@ -14,7 +14,7 @@
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-lg, 0.5rem);
   padding: var(--snice-spacing-xl, 2rem);
-  box-shadow: var(--snice-shadow-md);
+  box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1));
 }
 
 .login--minimal {
@@ -33,13 +33,13 @@
 }
 
 .login__header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   text-align: center;
   margin-bottom: var(--snice-spacing-xl, 2rem);
 }
 
 .login__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   margin: 0 0 var(--snice-spacing-xs, 0.5rem) 0;
   font-size: var(--snice-heading-xl, 1.5rem);
   font-weight: var(--snice-font-weight-bold, 700);
@@ -72,19 +72,19 @@
 
 .login__input {
   padding: var(--snice-spacing-sm, 0.75rem);
-  border: 1px solid var(--snice-color-border);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-radius: var(--snice-border-radius-md, 0.25rem);
   font-size: var(--snice-font-size-md, 1rem);
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   transition: border-color var(--snice-transition-fast, 150ms) ease;
-  background: var(--snice-color-surface-container-lowest);
-  color: var(--snice-color-text);
+  background: var(--snice-color-surface-container-lowest, hsl(0 0% 100%));
+  color: var(--snice-color-text, rgb(23 23 23));
 }
 
 .login__input:focus-visible {
   outline: none;
   border-color: var(--snice-color-border-focus, rgb(59 130 246));
-  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color);
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 .login__input:disabled {
@@ -156,7 +156,7 @@
 
 /* Size variants */
 .login--small .login__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: 1.25rem; /* 20px */
 }
 
@@ -171,7 +171,7 @@
 }
 
 .login--large .login__title {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: 1.875rem; /* 30px */
 }
 
@@ -204,5 +204,11 @@ snice-alert {
     border-radius: 0;
     border-left: none;
     border-right: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
