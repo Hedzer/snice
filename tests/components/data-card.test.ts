@@ -216,4 +216,24 @@ describe('snice-data-card', () => {
       expect(card.variant).toBe('compact');
     });
   });
+
+  describe('registry icons', () => {
+    it('should render registry icon names as SVGs', async () => {
+      card = await createComponent<SniceDataCardElement>('snice-data-card');
+      card.fields = [{ label: 'Email', value: 'a@b.c', icon: 'envelope' }];
+      await wait(80);
+
+      const icon = queryShadow(card, '.field__icon');
+      expect(icon?.querySelector('svg')).toBeTruthy();
+      expect(icon?.textContent?.trim()).not.toBe('envelope');
+    });
+
+    it('should still render emoji icons as text', async () => {
+      card = await createComponent<SniceDataCardElement>('snice-data-card');
+      card.fields = [{ label: 'Phone', value: '555', icon: '📞' }];
+      await wait(80);
+
+      expect(queryShadow(card, '.field__icon')?.textContent).toContain('📞');
+    });
+  });
 });

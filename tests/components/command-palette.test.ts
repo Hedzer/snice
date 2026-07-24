@@ -201,4 +201,26 @@ describe('snice-command-palette', () => {
       expect(executed).toBe(true);
     });
   });
+
+  describe('registry icons', () => {
+    it('should render registry icon names as SVGs', async () => {
+      palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette', { 'show-recent-commands': false });
+      palette.commands = [{ id: 'deploy', label: 'Deploy', icon: 'rocket-launch' }];
+      palette.show();
+      await wait(80);
+
+      const icon = palette.shadowRoot!.querySelector('.command-palette__item-icon');
+      expect(icon?.querySelector('svg')).toBeTruthy();
+      expect(icon?.textContent?.trim()).not.toBe('rocket-launch');
+    });
+
+    it('should still render emoji icons as text', async () => {
+      palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette', { 'show-recent-commands': false });
+      palette.commands = [{ id: 'party', label: 'Party', icon: '🚀' }];
+      palette.show();
+      await wait(80);
+
+      expect(palette.shadowRoot!.querySelector('.command-palette__item-icon')?.textContent).toContain('🚀');
+    });
+  });
 });

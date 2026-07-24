@@ -598,4 +598,26 @@ describe('snice-tree', () => {
       expect(eventDetail.checked).toBe(true);
     });
   });
+
+  describe('registry icons', () => {
+    it('should render registry icon names as SVGs', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'settings', label: 'Settings', icon: 'cog-6-tooth' }];
+      await wait(80);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      const iconText = item.shadowRoot.querySelector('[part="icon-text"]');
+      expect(iconText?.querySelector('svg')).toBeTruthy();
+      expect(iconText?.textContent?.trim()).not.toBe('cog-6-tooth');
+    });
+
+    it('should still render plain text icons as text', async () => {
+      tree = await createComponent<SniceTreeElement>('snice-tree');
+      tree.nodes = [{ id: 'txt', label: 'Text icon', icon: '📄' }];
+      await wait(80);
+
+      const item = tree.shadowRoot!.querySelector('snice-tree-item') as any;
+      expect(item.shadowRoot.querySelector('[part="icon-text"]')?.textContent).toContain('📄');
+    });
+  });
 });

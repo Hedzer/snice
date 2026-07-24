@@ -441,4 +441,24 @@ describe('snice-nav', () => {
     expect(links?.length).toBe(1);
     expect(links?.[0].textContent).toContain('Fresh');
   });
+
+  it('should render registry icon names as SVGs', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    nav.update([{ name: 'files', title: 'Files', icon: 'folder', order: 0 }]);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const icon = nav.shadowRoot?.querySelector('.nav__icon');
+    expect(icon?.querySelector('svg')).toBeTruthy();
+    expect(icon?.textContent?.trim()).not.toBe('folder');
+  });
+
+  it('should still render emoji icons as text', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    nav.update([{ name: 'home', title: 'Home', icon: '🏠', order: 0 }]);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(nav.shadowRoot?.querySelector('.nav__icon')?.textContent).toBe('🏠');
+  });
 });
