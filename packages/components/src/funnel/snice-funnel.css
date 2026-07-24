@@ -102,3 +102,10 @@
 :host([orientation="horizontal"]) .funnel__percentage {
   text-anchor: middle;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
