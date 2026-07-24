@@ -107,7 +107,7 @@ export class SniceButton extends HTMLElement implements SniceButtonElement {
     ].filter(Boolean).join(' ');
 
     return html/*html*/`
-      <button class="${classes}" type="${this.type}" ?disabled="${effectiveDisabled}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
+      <button class="${classes}" type="${this.type}" ?disabled="${effectiveDisabled}" aria-busy="${this.loading}" part="base" @click="${(e: MouseEvent) => this.handleInternalClick(e)}">
         <span class="spinner" part="spinner"></span>
         <if ${showIconStart}>
           <span class="icon-slot" part="icon">
