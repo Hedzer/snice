@@ -20,9 +20,25 @@ export interface SniceActivityFeedElement extends HTMLElement {
   activities: Activity[];
   filter: string;
   groupBy: ActivityGroupBy;
+  hasMore: boolean;
+  refreshInterval: number;
+  emptyMessage: string;
+  loadMoreLabel: string;
+  allLabel: string;
 
   addActivity(activity: Activity): void;
   clearFilter(): void;
+}
+
+export interface SniceActivityItemElement extends HTMLElement {
+  itemId: string;
+  actorName: string;
+  actorAvatar: string;
+  action: string;
+  target: string;
+  timestamp: string;
+  icon: string;
+  type: string;
 }
 
 export interface ActivityClickDetail {

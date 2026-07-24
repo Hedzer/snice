@@ -477,6 +477,14 @@
             },
             {
               "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Actions'"
+            },
+            {
+              "kind": "field",
               "name": "noAnimation",
               "type": {
                 "text": "boolean"
@@ -556,16 +564,6 @@
               }
             },
             {
-              "kind": "method",
-              "name": "updateNoAnimationAttribute",
-              "parameters": [],
-              "return": {
-                "type": {
-                  "text": "unknown"
-                }
-              }
-            },
-            {
               "kind": "field",
               "name": "variant",
               "type": {
@@ -575,6 +573,14 @@
             }
           ],
           "attributes": [
+            {
+              "name": "label",
+              "fieldName": "label",
+              "type": {
+                "text": "string"
+              },
+              "reflects": true
+            },
             {
               "name": "no-animation",
               "fieldName": "noAnimation",

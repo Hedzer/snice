@@ -44,7 +44,16 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <section>
     <h2>group-by: none (default) &mdash; mixed activity types</h2>
-    <snice-activity-feed id="feed-default"></snice-activity-feed>
+    <snice-activity-feed id="feed-default" has-more></snice-activity-feed>
+  </section>
+
+  <section>
+    <h2>Declarative items &mdash; slotted snice-activity-item children</h2>
+    <snice-activity-feed>
+      <snice-activity-item item-id="s1" actor-name="Nina Torres" action="created" target="Design System" type="create"></snice-activity-item>
+      <snice-activity-item item-id="s2" actor-name="Omar Farid" action="commented on" target="RFC-118" type="comment"></snice-activity-item>
+      <snice-activity-item item-id="s3" actor-name="Priya Nair" action="deployed" target="v5.2.0" type="deploy"></snice-activity-item>
+    </snice-activity-feed>
   </section>
 
   <section>
@@ -119,9 +128,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     const daysAgo = (days) => new Date(now.getTime() - days * 86400000).toISOString();
 
     const mixedActivities = [
-      { id: '1', actor: { name: 'Alice Chen' }, action: 'created', target: 'Project Alpha', timestamp: ago(2), type: 'create', icon: '+' },
-      { id: '2', actor: { name: 'Bob Smith' }, action: 'updated', target: 'README.md', timestamp: ago(15), type: 'update', icon: '~' },
-      { id: '3', actor: { name: 'Carol Davis' }, action: 'deleted', target: 'old-branch', timestamp: ago(45), type: 'delete', icon: '-' },
+      { id: '1', actor: { name: 'Alice Chen' }, action: 'created', target: 'Project Alpha', timestamp: ago(2), type: 'create' },
+      { id: '2', actor: { name: 'Bob Smith' }, action: 'updated', target: 'README.md', timestamp: ago(15), type: 'update' },
+      { id: '3', actor: { name: 'Carol Davis' }, action: 'deleted', target: 'old-branch', timestamp: ago(45), type: 'delete' },
       { id: '4', actor: { name: 'David Lee' }, action: 'commented on', target: 'Issue #42', timestamp: ago(120), type: 'comment' },
       { id: '5', actor: { name: 'Eve Park' }, action: 'deployed', target: 'v2.1.0', timestamp: ago(180), type: 'deploy' },
       { id: '6', actor: { name: 'Frank Wu' }, action: 'logged in', timestamp: daysAgo(1), type: 'login' },
@@ -144,12 +153,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     ];
 
     document.getElementById('feed-icons').activities = [
-      { id: '1', actor: { name: 'Tester' }, action: 'custom star icon', timestamp: ago(1), icon: '⭐' },
-      { id: '2', actor: { name: 'Tester' }, action: 'custom rocket icon', timestamp: ago(5), icon: '🚀' },
-      { id: '3', actor: { name: 'Tester' }, action: 'custom speech icon', timestamp: ago(10), icon: '💬' },
-      { id: '4', actor: { name: 'Tester' }, action: 'custom key icon', timestamp: ago(20), icon: '🔑' },
-      { id: '5', actor: { name: 'Tester' }, action: 'custom arrow icon', timestamp: ago(30), icon: '⬆' },
-      { id: '6', actor: { name: 'Tester' }, action: 'custom circle icon', timestamp: ago(40), icon: '●' },
+      { id: '1', actor: { name: 'Tester' }, action: 'custom star icon', timestamp: ago(1), icon: 'star' },
+      { id: '2', actor: { name: 'Tester' }, action: 'custom rocket icon', timestamp: ago(5), icon: 'rocket-launch' },
+      { id: '3', actor: { name: 'Tester' }, action: 'custom speech icon', timestamp: ago(10), icon: 'chat-bubble' },
+      { id: '4', actor: { name: 'Tester' }, action: 'custom key icon', timestamp: ago(20), icon: 'key' },
+      { id: '5', actor: { name: 'Tester' }, action: 'custom arrow icon', timestamp: ago(30), icon: 'arrow-up' },
+      { id: '6', actor: { name: 'Tester' }, action: 'custom circle icon', timestamp: ago(40), icon: 'circle' },
     ];
 
     document.getElementById('feed-types').activities = [

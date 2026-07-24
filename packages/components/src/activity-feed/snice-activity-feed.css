@@ -21,6 +21,11 @@
   flex-direction: column;
 }
 
+/* Declarative snice-activity-item children are data carriers, never shown. */
+.feed__data-slot {
+  display: none;
+}
+
 /* Filter bar */
 .feed__filters {
   display: flex;
@@ -52,20 +57,11 @@
 .feed__filter--active {
   background: var(--feed-primary);
   border-color: var(--feed-primary);
-  color: rgb(255 255 255);
-  text-shadow:
-    -1px  0   0 rgb(0 0 0 / 0.3),
-     1px  0   0 rgb(0 0 0 / 0.3),
-     0   -1px 0 rgb(0 0 0 / 0.3),
-     0    1px 0 rgb(0 0 0 / 0.3),
-    -1px -1px 0 rgb(0 0 0 / 0.3),
-     1px -1px 0 rgb(0 0 0 / 0.3),
-    -1px  1px 0 rgb(0 0 0 / 0.3),
-     1px  1px 0 rgb(0 0 0 / 0.3);
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
 }
 
 .feed__filter--active:hover {
-  color: rgb(255 255 255);
+  color: var(--snice-color-text-inverse, rgb(250 250 250));
   opacity: 0.9;
 }
 
@@ -76,7 +72,7 @@
 
 /* Group header */
 .feed__group-header {
-  font-family: var(--snice-font-family-display);
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: var(--snice-heading-xs, 0.875rem);
   font-weight: var(--snice-font-weight-semibold, 600);
   color: var(--feed-text-secondary);
@@ -87,7 +83,6 @@
 }
 
 .feed__group-header:first-of-type {
-  font-family: var(--snice-font-family-display);
   margin-top: 0;
 }
 
@@ -139,13 +134,24 @@
   font-size: 0.875rem;
   flex-shrink: 0;
   z-index: 1;
+  color: var(--feed-text-secondary);
+}
+
+.feed__icon-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed__icon-glyph svg {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 /* Content */
 .feed__content {
   flex: 1;
   min-width: 0;
-  padding-top: var(--snice-spacing-3xs, 0.125rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
   padding: var(--snice-spacing-3xs, 0.125rem) var(--snice-spacing-xs, 0.5rem);
   transition: background var(--snice-transition-fast, 150ms);
@@ -226,7 +232,7 @@
   color: var(--feed-text-tertiary);
   margin-left: var(--snice-spacing-xs, 0.5rem);
   text-transform: uppercase;
-  letter-spacing: var(--snice-tracking-wide);
+  letter-spacing: var(--snice-tracking-wide, 0.03em);
   vertical-align: middle;
 }
 
@@ -265,4 +271,12 @@
   padding: var(--snice-spacing-xl, 2rem);
   color: var(--feed-text-tertiary);
   font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed__filter,
+  .feed__content,
+  .feed__load-more-btn {
+    transition-duration: 0.01ms;
+  }
 }

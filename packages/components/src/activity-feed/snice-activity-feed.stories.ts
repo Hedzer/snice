@@ -60,7 +60,25 @@ export const Default: Story = {
 
 // h2: group-by: none (default) — mixed activity types
 export const GroupByNone: Story = {
-  render: () => wrap(makeFeed(SAMPLE_ACTIVITIES, { 'group-by': 'none' })),
+  render: () => wrap(makeFeed(SAMPLE_ACTIVITIES, { 'group-by': 'none', 'has-more': true })),
+};
+
+// h2: Declarative items — slotted snice-activity-item children
+export const DeclarativeItems: Story = {
+  render: () => {
+    const feed = document.createElement('snice-activity-feed');
+    const items: Array<Record<string, string>> = [
+      { 'item-id': 's1', 'actor-name': 'Nina Torres', action: 'created', target: 'Design System', type: 'create', timestamp: new Date(now - 300000).toISOString() },
+      { 'item-id': 's2', 'actor-name': 'Omar Farid', action: 'commented on', target: 'RFC-118', type: 'comment', timestamp: new Date(now - 900000).toISOString() },
+      { 'item-id': 's3', 'actor-name': 'Priya Nair', action: 'deployed', target: 'v5.2.0', type: 'deploy', timestamp: new Date(now - 1800000).toISOString() },
+    ];
+    for (const attrs of items) {
+      const item = document.createElement('snice-activity-item');
+      for (const [k, v] of Object.entries(attrs)) item.setAttribute(k, v);
+      feed.appendChild(item);
+    }
+    return wrap(feed);
+  },
 };
 
 // h2: group-by: date
@@ -97,9 +115,9 @@ export const ActivitiesWithActorAvatars: Story = {
 // h2: Activities with custom icons per entry
 export const ActivitiesWithCustomIcons: Story = {
   render: () => wrap(makeFeed([
-    { id: '1', actor: { name: 'Alice Park' }, action: 'starred', target: 'Repository', type: 'create', icon: '⭐', timestamp: new Date(now - 300000).toISOString() },
-    { id: '2', actor: { name: 'Bob Lee' }, action: 'forked', target: 'snice/core', type: 'update', icon: '🔀', timestamp: new Date(now - 900000).toISOString() },
-    { id: '3', actor: { name: 'Carol Diaz' }, action: 'tagged', target: 'v4.0.0', type: 'deploy', icon: '🏷️', timestamp: new Date(now - 1800000).toISOString() },
+    { id: '1', actor: { name: 'Alice Park' }, action: 'starred', target: 'Repository', type: 'create', icon: 'star', timestamp: new Date(now - 300000).toISOString() },
+    { id: '2', actor: { name: 'Bob Lee' }, action: 'forked', target: 'snice/core', type: 'update', icon: 'arrows-right-left', timestamp: new Date(now - 900000).toISOString() },
+    { id: '3', actor: { name: 'Carol Diaz' }, action: 'tagged', target: 'v4.0.0', type: 'deploy', icon: 'paper-airplane', timestamp: new Date(now - 1800000).toISOString() },
   ])),
 };
 
