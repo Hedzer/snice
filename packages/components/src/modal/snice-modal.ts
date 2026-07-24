@@ -113,8 +113,9 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   }
 
   @watch('open')
-  handleOpenChange() {
-    // Handle side effects when modal opens/closes
+  handleOpenChange(oldValue?: boolean) {
+    if (oldValue === undefined) return; // initial value; @ready applies it
+
     if (this.open) {
       this.showModal();
     } else {

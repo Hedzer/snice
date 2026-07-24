@@ -1,5 +1,9 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, queryShadow, trackRenders } from './test-utils';
+
+const cssPath = resolve(process.cwd(), 'packages/components/src/modal/snice-modal.css');
 import '../../packages/components/src/modal/snice-modal';
 import type { SniceModalElement } from '../../packages/components/src/modal/snice-modal.types';
 
@@ -438,5 +442,53 @@ describe('snice-modal', () => {
     expect(document.activeElement).toBe(externalBtn);
 
     externalBtn.remove();
+  });
+
+  describe('mount events', () => {
+    it('does not dispatch modal-close when a closed modal mounts', async () => {
+      const events: string[] = [];
+      const listener = () => events.push('close');
+      document.addEventListener('modal-close', listener);
+
+      const el = document.createElement('snice-modal');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 100));
+
+      document.removeEventListener('modal-close', listener);
+      el.remove();
+
+      expect(events).toEqual([]);
+    });
+
+    it('dispatches exactly one modal-open when an initially-open modal mounts', async () => {
+      const events: string[] = [];
+      const listener = () => events.push('open');
+      document.addEventListener('modal-open', listener);
+
+      const el = document.createElement('snice-modal');
+      el.setAttribute('open', '');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 100));
+
+      document.removeEventListener('modal-open', listener);
+      (el as unknown as SniceModalElement).open = false;
+      await new Promise(r => setTimeout(r, 50));
+      el.remove();
+
+      expect(events).toEqual(['open']);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
   });
 });
