@@ -20,6 +20,8 @@ A multi-step appointment booking widget with date selection, time slot picking, 
 | Property | Attribute | Type | Default | Description |
 |----------|-----------|------|---------|-------------|
 | `availableDates` | -- | `(Date \| string)[]` | `[]` | Dates that can be selected (JS property only) |
+
+> `availableDates` accepts `Date` objects, `YYYY-MM-DD` strings, or full ISO timestamps — all match by calendar day. When the list is non-empty, days outside it are disabled.
 | `availableSlots` | -- | `BookingSlot[]` | `[]` | Available time slots (JS property only) |
 | `duration` | `duration` | `number` | `30` | Default duration in minutes |
 | `minDate` | `min-date` | `Date \| string` | `''` | Earliest selectable date |

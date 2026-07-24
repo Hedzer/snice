@@ -5,7 +5,7 @@ Multi-step appointment booking widget: date picker, time slots, confirmation for
 ## Properties
 
 ```typescript
-availableDates: (Date | string)[] = [];   // JS property only
+availableDates: (Date | string)[] = [];   // JS property only; Date | 'YYYY-MM-DD' | ISO string, matched by calendar day — non-empty list disables all other days
 availableSlots: BookingSlot[] = [];       // JS property only
 duration: number = 30;                     // default appointment duration (minutes)
 minDate: Date | string = '';              // attr: min-date

@@ -209,9 +209,13 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
       if (isToday) btn.classList.add('booking__day--today');
       if (isSelected) btn.classList.add('booking__day--selected');
       if (isAvailable && !isOtherMonth && !isDisabled) btn.classList.add('booking__day--available');
-      if (isDisabled || isOtherMonth) btn.classList.add('booking__day--disabled');
+      const isSelectable = isAvailable && !isOtherMonth && !isDisabled;
+      if (!isSelectable) {
+        btn.classList.add('booking__day--disabled');
+        btn.disabled = true;
+      }
 
-      if (!isOtherMonth && !isDisabled) {
+      if (isSelectable) {
         btn.onclick = () => this.selectDate(dateStr);
       }
 
@@ -463,7 +467,12 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
 
     const dateStr = this.formatDate(date);
     return this.availableDates.some(d => {
-      const availStr = typeof d === 'string' ? d : this.formatDate(d instanceof Date ? d : new Date(d));
+      // Plain YYYY-MM-DD strings compare as-is; anything else (ISO timestamps,
+      // Date objects) normalizes through local-date formatting so a full ISO
+      // string still matches its calendar day.
+      const availStr = typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)
+        ? d
+        : this.formatDate(d instanceof Date ? d : new Date(d));
       return availStr === dateStr;
     });
   }
@@ -531,6 +540,9 @@ export class SniceBooking extends HTMLElement implements SniceBookingElement {
   @watch('availableSlots')
   @watch('fields')
   @watch('variant')
+  @watch('duration')
+  @watch('minDate')
+  @watch('maxDate')
   handlePropertyChange() {
     if (this.container) {
       this.renderContent();

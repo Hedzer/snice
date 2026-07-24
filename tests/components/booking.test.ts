@@ -1,4 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createComponent, removeComponent, wait } from './test-utils';
 import '../../packages/components/src/booking/snice-booking';
 import type { SniceBookingElement, BookingSlot, BookingField } from '../../packages/components/src/booking/snice-booking.types';
@@ -124,5 +126,70 @@ describe('snice-booking', () => {
 
     // Verify event listener is set up
     expect(cancelled).toBe(false);
+  });
+
+  describe('late constraint updates', () => {
+    it('should re-render the calendar when max-date changes after ready', async () => {
+      booking = await createComponent<SniceBookingElement>('snice-booking');
+      // Make several days in the displayed month available so the baseline
+      // has enabled buttons.
+      const now = new Date();
+      booking.availableDates = [5, 10, 15, 20, 25, 26, 27, 28].map(day =>
+        new Date(now.getFullYear(), now.getMonth(), day)
+      );
+      await wait(80);
+
+      const countEnabled = () =>
+        booking.shadowRoot!.querySelectorAll('.booking__day:not([disabled])').length;
+
+      expect(countEnabled()).toBeGreaterThan(0);
+
+      // Disable everything: window that already ended long ago.
+      (booking as any).maxDate = '2000-01-01';
+      await wait(80);
+
+      expect(countEnabled()).toBe(0);
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/booking/snice-booking.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    });
+  });
+
+  describe('availability parsing', () => {
+    it('should match full ISO timestamp strings to their calendar day', async () => {
+      booking = await createComponent<SniceBookingElement>('snice-booking');
+      const now = new Date();
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      booking.availableDates = [lastDay.toISOString()];
+      await wait(80);
+
+      const enabled = Array.from(
+        booking.shadowRoot!.querySelectorAll('.booking__day:not([disabled])')
+      ).map(el => el.textContent?.trim());
+      expect(enabled).toContain(String(lastDay.getDate()));
+    });
+
+    it('should make unavailable days unclickable when availability is provided', async () => {
+      booking = await createComponent<SniceBookingElement>('snice-booking');
+      const now = new Date();
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      booking.availableDates = [lastDay];
+      await wait(80);
+
+      const enabled = booking.shadowRoot!.querySelectorAll('.booking__day:not([disabled])');
+      expect(enabled.length).toBe(1);
+    });
   });
 });
