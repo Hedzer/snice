@@ -16,6 +16,7 @@ const COMPONENT_CONTRACTS = ANALYZER_CONTRACTS.components;
 const REACT_WRAPPERS = ANALYZER_CONTRACTS.react.wrappers;
 const ROOT_EXPORTS = new Set(ANALYZER_CONTRACTS.rootExports);
 const REACT_EXPORTS = new Set(ANALYZER_CONTRACTS.react.exports);
+const REACT_TYPE_EXPORTS = new Set(ANALYZER_CONTRACTS.react.typeExports ?? []);
 const COMPONENT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentModulePaths);
 const COMPONENT_TYPE_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentTypeModulePaths);
 const COMPONENT_RECOMMENDATIONS = Object.freeze({
@@ -675,6 +676,24 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/react-type-export-as-component',
+    severity: 'error',
+    category: 'react',
+    description: 'Reject type-only snice/react exports (Placard, Props interfaces, ref types) used as JSX components.',
+    check(context) {
+      for (const binding of context.provenance.reactBindings) {
+        if (!binding.normalizedExport || !REACT_TYPE_EXPORTS.has(binding.normalizedExport)) continue;
+        for (const opening of findOpeningTags(context.source, [binding.local])) {
+          if (isTypeArgumentUsage(context.source, opening)) continue;
+          context.report(opening.index, {
+            message: `${binding.normalizedExport} is a type-only export from 'snice/react' and cannot be used as a JSX component.`,
+            fix: `Import it with import type { ${binding.normalizedExport} } from 'snice/react' and use it only in type positions; render a documented component wrapper instead. Review docs/ai/react-integration.md.`
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/package-import',
     severity: 'error',
     category: 'imports',
@@ -813,7 +832,7 @@ const RULE_DEFINITIONS = [
         if (!option) continue;
         context.report(element.bodyStart + option.index, {
           message: 'Native <option> elements are not read by snice-select.',
-          fix: 'In React, pass options={[{ label, value }]} to Select. A raw <snice-option> also works, but it has no React wrapper and requires explicit JSX intrinsic typing.'
+          fix: 'In React, pass options={[{ label, value }]} to Select, or use the generated Option wrapper. Review docs/ai/components/select.md.'
         });
       }
 
@@ -826,6 +845,63 @@ const RULE_DEFINITIONS = [
         });
       }
 
+    }
+  },
+  {
+    id: 'snice/select-native-option',
+    severity: 'error',
+    category: 'components',
+    description: 'Reject native <option> children inside snice-select; they are not read and silently do nothing.',
+    check(context) {
+      for (const opening of findOpeningTags(context.source, ['snice-select'])) {
+        const element = findElementBody(context.source, opening);
+        if (!element) continue;
+        const option = element.body.match(/<option\b/i);
+        if (!option) continue;
+        context.report(element.bodyStart + option.index, {
+          message: 'Native <option> elements are not read by snice-select.',
+          fix: 'Pass options with the options property, or use declarative <snice-option value="..."> children. Review docs/ai/components/select.md.',
+          recommendation: {
+            component: 'select',
+            tag: 'snice-select',
+            import: "import 'snice/components/select/snice-select';",
+            docsPath: 'docs/ai/components/select.md'
+          }
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/recommend-key-filter',
+    severity: 'suggestion',
+    category: 'events',
+    description: 'Recommend key-filtered event bindings (keydown:Enter) instead of manual event.key checks.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+
+      // Decorator form: @on('keydown'|'keyup'|'keypress') without a key filter,
+      // where the decorated method checks event.key by hand.
+      for (const match of context.source.matchAll(/@on\(\s*['"](keydown|keyup|keypress)['"]/g)) {
+        const window = context.source.slice(match.index, match.index + 600);
+        const keyCheck = /\.key\s*={2,3}\s*['"]([^'"]+)['"]/.exec(window);
+        if (!keyCheck) continue;
+        context.report(match.index, {
+          message: `This @on('${match[1]}') handler filters on event.key manually; Snice supports key-filtered events.`,
+          fix: `Use @on('${match[1]}:${keyCheck[1]}') and drop the manual check; pass preventDefault/stopPropagation through the @on options instead of calling them in the handler. Review docs/ai/api.md.`
+        });
+      }
+
+      // Template form: an unfiltered @keydown=/@keyup=/@keypress= binding while
+      // the file checks event.key by hand. Filtered forms (@keydown:Enter=,
+      // @keydown.ctrl+s=, @keydown:Enter|prevent=) never match this pattern.
+      const manualKeyCheck = /\.key\s*={2,3}\s*['"]([^'"]+)['"]/.exec(context.source);
+      if (!manualKeyCheck) return;
+      for (const match of context.source.matchAll(/@(keydown|keyup|keypress)\s*=/g)) {
+        context.report(match.index, {
+          message: `This template listens to every ${match[1]} and filters event.key by hand; Snice templates support key filters.`,
+          fix: `Use @${match[1]}:${manualKeyCheck[1]}=\${...} (dot notation also works), and append |prevent or |stop instead of calling preventDefault()/stopPropagation() in the handler. Review docs/ai/bindings.md.`
+        });
+      }
     }
   },
   {
@@ -1762,6 +1838,27 @@ function isNativeReactProp(name) {
   if (name.endsWith('Capture')) {
     return NATIVE_REACT_EVENT_PROPS.has(name.slice(0, -'Capture'.length));
   }
+  return false;
+}
+
+/**
+ * Distinguish `<Name` used as a JSX opening tag from the same spelling in
+ * type-argument position: `useRef<SniceFormRef>(null)`, `Map<string, Placard>`,
+ * `Promise<Placard | null>`. Type positions are the legitimate usage of a
+ * type-only export and must never be reported as JSX.
+ */
+function isTypeArgumentUsage(source, opening) {
+  // Identifier/dot directly before '<': generic instantiation (useRef<X>, React.Ref<X>).
+  const before = source[opening.index - 1] ?? '';
+  if (/[\w$.]/.test(before)) return true;
+  // The tag text itself contains a type union or parameter list.
+  if (/[|,]/.test(opening.text.slice(opening.name.length + 1))) return true;
+  // A call immediately follows: useRef<SniceFormRef>(null).
+  if (/^\s*\(/.test(source.slice(opening.index + opening.text.length))) return true;
+  // An unclosed generic parameter list earlier on the line: Map<string, Placard>.
+  const lineStart = source.lastIndexOf('\n', opening.index) + 1;
+  const linePrefix = source.slice(lineStart, opening.index);
+  if (/[A-Za-z_$][\w$]*<[^>]*$/.test(linePrefix)) return true;
   return false;
 }
 

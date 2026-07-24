@@ -203,6 +203,38 @@ function readJson(path) {
   }
 }
 
+/**
+ * Collect a project's tsconfig chain: the root tsconfig.json plus the configs
+ * it references (composite solution files) and their relative `extends`
+ * bases. Vite-style projects put compiler flags in tsconfig.app.json and
+ * leave the root as a references-only solution file, so reading only the
+ * root produces false "set useDefineForClassFields" guidance.
+ */
+function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
+  const configs = [];
+  const target = join(dir, entry);
+  if (seen.has(target)) return configs;
+  seen.add(target);
+  const data = readJson(target);
+  if (!data) return configs;
+  configs.push(data);
+
+  if (typeof data.extends === 'string' && data.extends.startsWith('.')) {
+    const base = data.extends.endsWith('.json') ? data.extends : `${data.extends}.json`;
+    configs.push(...resolveTsconfigChain(dir, base, seen));
+  }
+  if (Array.isArray(data.references)) {
+    for (const reference of data.references) {
+      if (!reference || typeof reference.path !== 'string') continue;
+      const referenced = reference.path.endsWith('.json')
+        ? reference.path
+        : join(reference.path, 'tsconfig.json');
+      configs.push(...resolveTsconfigChain(dir, referenced, seen));
+    }
+  }
+  return configs;
+}
+
 function doctor(targetDir, json = false) {
   const findings = collectDoctorFindings(targetDir);
   renderDoctor(findings, json);
@@ -223,12 +255,14 @@ function collectDoctorFindings(targetDir) {
   if (!installedPackage) add('error', 'snice-install', 'the declared Snice package is not installed');
   else add('info', 'snice-version', `using snice ${installedPackage.version}`);
 
-  const tsconfig = readJson(join(targetDir, 'tsconfig.json'));
-  if (!tsconfig) add('warning', 'tsconfig', 'tsconfig.json is missing or invalid');
+  const tsconfigs = resolveTsconfigChain(targetDir);
+  if (!tsconfigs.length) add('warning', 'tsconfig', 'tsconfig.json is missing or invalid');
   else {
-    const compiler = tsconfig.compilerOptions ?? {};
-    if (compiler.experimentalDecorators === true) add('error', 'decorators', 'experimentalDecorators must be false');
-    if (compiler.useDefineForClassFields !== false) {
+    const compilers = tsconfigs.map(config => config.compilerOptions ?? {});
+    if (compilers.some(compiler => compiler.experimentalDecorators === true)) {
+      add('error', 'decorators', 'experimentalDecorators must be false');
+    }
+    if (!compilers.some(compiler => compiler.useDefineForClassFields === false)) {
       add('warning', 'class-fields', 'set useDefineForClassFields to false for the documented Snice field semantics');
     }
   }

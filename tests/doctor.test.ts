@@ -43,6 +43,19 @@ function runDoctor(source: string) {
     .filter(finding => RUNTIME_CODES.has(finding.code));
 }
 
+function runDoctorFindings() {
+  let stdout = '';
+  try {
+    stdout = execFileSync(process.execPath, [CLI, 'doctor', projectDir, '--json'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+  } catch (error: any) {
+    stdout = error.stdout ?? '';
+  }
+  return JSON.parse(stdout).findings as Array<{ severity: string; code: string; message: string }>;
+}
+
 beforeEach(() => {
   projectDir = mkdtempSync(join(tmpdir(), 'snice-doctor-'));
   write('package.json', JSON.stringify({
@@ -66,6 +79,61 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(projectDir, { recursive: true, force: true });
+});
+
+describe('snice doctor tsconfig chain', () => {
+  const configFindings = () =>
+    runDoctorFindings().filter(finding =>
+      ['class-fields', 'decorators', 'tsconfig'].includes(finding.code)
+    );
+
+  it('accepts useDefineForClassFields in a referenced composite config', () => {
+    write('tsconfig.json', JSON.stringify({
+      files: [],
+      references: [{ path: './tsconfig.app.json' }]
+    }));
+    write('tsconfig.app.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false }
+    }));
+    expect(configFindings()).toEqual([]);
+  });
+
+  it('accepts useDefineForClassFields through a relative extends chain', () => {
+    write('tsconfig.json', JSON.stringify({ extends: './tsconfig.base.json' }));
+    write('tsconfig.base.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false }
+    }));
+    expect(configFindings()).toEqual([]);
+  });
+
+  it('still warns when no config in the chain sets useDefineForClassFields false', () => {
+    write('tsconfig.json', JSON.stringify({
+      references: [{ path: './tsconfig.app.json' }]
+    }));
+    write('tsconfig.app.json', JSON.stringify({ compilerOptions: {} }));
+    expect(configFindings()).toEqual([
+      expect.objectContaining({ severity: 'warning', code: 'class-fields' })
+    ]);
+  });
+
+  it('rejects experimentalDecorators in a referenced config', () => {
+    write('tsconfig.json', JSON.stringify({
+      references: [{ path: './tsconfig.app.json' }]
+    }));
+    write('tsconfig.app.json', JSON.stringify({
+      compilerOptions: { experimentalDecorators: true, useDefineForClassFields: false }
+    }));
+    expect(configFindings()).toEqual([
+      expect.objectContaining({ severity: 'error', code: 'decorators' })
+    ]);
+  });
+
+  it('warns when tsconfig.json is missing', () => {
+    rmSync(join(projectDir, 'tsconfig.json'), { force: true });
+    expect(configFindings()).toEqual([
+      expect.objectContaining({ severity: 'warning', code: 'tsconfig' })
+    ]);
+  });
 });
 
 describe('snice doctor component import checks', () => {

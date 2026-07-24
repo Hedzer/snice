@@ -35,6 +35,7 @@ export type { SniceReactContext, SniceProviderProps, Placard } from './SniceProv
 export { SniceRouter, Route } from './SniceRouter';
 export type { SniceRouterProps, RouteProps } from './SniceRouter';
 export { useRequestHandler } from './useRequestHandler';
+export type { UseRequestRoute, UseRequestRouteMap, UseRequestHandlerOptions } from './useRequestHandler';
 export { createReactAdapter, useSniceFormValue } from './wrapper';
 export type { AdapterConfig, AdapterHandle, SniceComponentProps, SniceReactComponent } from './wrapper';
 export type { SniceBaseProps, SniceFormProps, SniceComponentRef, SniceFormRef, SniceAdapterRef, SniceMethodHandle, SniceCustomEvent } from './types';

@@ -102,6 +102,7 @@ export function buildAnalyzerContracts(root = projectRoot) {
   const rootExports = collectRootExports(coreIndexPath, coreTypesPath);
   const reactWrappers = collectReactWrappers(reactComponentsPath, reactDirectory, components);
   const reactExports = collectReactExports(reactIndexPath, reactComponentsPath, Object.keys(reactWrappers));
+  const reactTypeExports = collectReactTypeExports(reactIndexPath, reactComponentsPath);
   const componentModulePaths = [...new Set(Object.values(components).map(component => component.modulePath))].sort();
   const componentTypeModulePaths = walkFiles(componentSourcePath)
     .filter(path => path.endsWith('.types.ts'))
@@ -135,6 +136,7 @@ export function buildAnalyzerContracts(root = projectRoot) {
     components: sortObject(components),
     react: {
       exports: reactExports,
+      typeExports: reactTypeExports,
       wrappers: sortObject(reactWrappers)
     }
   };
@@ -185,6 +187,21 @@ function collectReactExports(indexPath, componentsPath, wrapperNames) {
   const exports = new Set(wrapperNames);
   for (const source of [readFileSync(indexPath, 'utf8'), readFileSync(componentsPath, 'utf8')]) {
     for (const match of source.matchAll(/export\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"][^'"]+['"]/g)) {
+      addExportList(exports, match[1]);
+    }
+  }
+  return [...exports].sort();
+}
+
+/**
+ * Names exported from snice/react in type position only (export type { ... }):
+ * the Props interfaces, SniceComponentRef/SniceFormRef, Placard, router prop
+ * types, and friends. Importing them is legal; rendering them is not.
+ */
+function collectReactTypeExports(indexPath, componentsPath) {
+  const exports = new Set();
+  for (const source of [readFileSync(indexPath, 'utf8'), readFileSync(componentsPath, 'utf8')]) {
+    for (const match of source.matchAll(/export\s+type\s+\{([^}]+)\}\s+from\s+['"][^'"]+['"]/g)) {
       addExportList(exports, match[1]);
     }
   }

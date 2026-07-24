@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "producer": "select-native-option-and-key-filter",
+  "cases": [
+    {
+      "name": "native-option-inside-snice-select-template",
+      "filename": "src/form.ts",
+      "source": "import { html } from 'snice';\nexport const view = html`<snice-select name=\"type\"><option value=\"a\">Annual</option><option value=\"s\">Sick</option></snice-select>`;",
+      "expectedRuleIds": ["snice/select-native-option"]
+    },
+    {
+      "name": "native-option-inside-snice-select-html-document",
+      "filename": "index.html",
+      "source": "<html><body><snice-select><option value=\"a\">A</option></snice-select></body></html>",
+      "expectedRuleIds": ["snice/select-native-option"]
+    },
+    {
+      "name": "snice-option-children-are-clean",
+      "filename": "src/form.ts",
+      "source": "import { html } from 'snice';\nexport const view = html`<snice-select name=\"type\"><snice-option value=\"a\">Annual</snice-option><snice-option value=\"s\">Sick</snice-option></snice-select>`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "options-property-usage-is-clean",
+      "filename": "src/form.ts",
+      "source": "import { html } from 'snice';\nexport const view = html`<snice-select name=\"type\" .options=${this.leaveTypes}></snice-select>`;",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "manual-key-check-in-on-decorator",
+      "filename": "src/task-form.ts",
+      "source": "class TaskForm {\n  @on('keydown')\n  handleKey(event: KeyboardEvent) {\n    if (event.key === 'Enter') this.addTask();\n  }\n}",
+      "expectedRuleIds": ["snice/recommend-key-filter"]
+    },
+    {
+      "name": "manual-key-check-in-template-binding",
+      "filename": "src/task-form.ts",
+      "source": "import { html } from 'snice';\nclass TaskForm {\n  render() {\n    return html`<input @keydown=${this.handleKey} />`;\n  }\n  handleKey(event: KeyboardEvent) {\n    if (event.key === 'Escape') this.clear();\n  }\n}",
+      "expectedRuleIds": ["snice/recommend-input", "snice/recommend-key-filter"]
+    },
+    {
+      "name": "key-filtered-decorator-is-clean",
+      "filename": "src/editor.ts",
+      "source": "class Editor {\n  @on('keydown:Enter')\n  handleEnter(event: KeyboardEvent) {\n    this.save();\n  }\n  @on('keydown:Ctrl+S')\n  handleSave(event: KeyboardEvent) {\n    event.preventDefault();\n    this.save();\n  }\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "key-filtered-template-bindings-are-clean",
+      "filename": "src/task-form.ts",
+      "source": "import { html } from 'snice';\nclass TaskForm {\n  render() {\n    return html`<input @keydown:Enter|prevent=${this.addTask} @keydown:Escape|stop=${this.clear} @keydown.ctrl+s=${this.save} />`;\n  }\n}",
+      "expectedRuleIds": ["snice/recommend-input"]
+    },
+    {
+      "name": "unfiltered-listener-without-key-check-is-clean",
+      "filename": "src/tracker.ts",
+      "source": "class Tracker {\n  @on('keydown')\n  handleKey(event: KeyboardEvent) {\n    this.count++;\n  }\n}",
+      "expectedRuleIds": []
+    }
+  ]
+}

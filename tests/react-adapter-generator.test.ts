@@ -165,6 +165,13 @@ describe('React adapter generator', () => {
     }
   });
 
+  it('re-exports the useRequestHandler types from the snice/react root as documented', () => {
+    const declaration = readFileSync(join(process.cwd(), 'adapters', 'react', 'index.d.ts'), 'utf8');
+    expect(declaration).toContain(
+      "export type { UseRequestRoute, UseRequestRouteMap, UseRequestHandlerOptions } from './useRequestHandler';"
+    );
+  });
+
   it('emits the exact ref handle type in built declarations, never RefAttributes<any>', () => {
     const formDeclaration = readFileSync(join(process.cwd(), 'adapters', 'react', 'button.d.ts'), 'utf8');
     const plainDeclaration = readFileSync(join(process.cwd(), 'adapters', 'react', 'card.d.ts'), 'utf8');

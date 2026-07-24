@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "producer": "react-type-export-as-component",
+  "cases": [
+    {
+      "name": "placard-used-as-jsx-component",
+      "filename": "src/app.tsx",
+      "source": "import { Placard } from 'snice/react';\nexport function App() {\n  return <Placard>Hi</Placard>;\n}",
+      "expectedRuleIds": ["snice/react-type-export-as-component"]
+    },
+    {
+      "name": "aliased-type-export-used-as-jsx-component",
+      "filename": "src/app.tsx",
+      "source": "import { Placard as Meta } from 'snice/react';\nexport function App() {\n  return <Meta />;\n}",
+      "expectedRuleIds": ["snice/react-type-export-as-component"]
+    },
+    {
+      "name": "type-only-import-still-cannot-be-rendered",
+      "filename": "src/app.tsx",
+      "source": "import type { ButtonProps } from 'snice/react';\nexport function App() {\n  return <ButtonProps />;\n}",
+      "expectedRuleIds": ["snice/react-type-export-as-component"]
+    },
+    {
+      "name": "type-export-used-in-type-position-is-clean",
+      "filename": "src/meta.ts",
+      "source": "import type { Placard } from 'snice/react';\nexport const meta: Placard = { title: 'Home' };\n",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "value-wrapper-used-as-jsx-component-is-clean",
+      "filename": "src/app.tsx",
+      "source": "import { Button } from 'snice/react';\nexport function App() {\n  return <Button variant=\"primary\">Save</Button>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "router-value-exports-used-as-jsx-are-clean",
+      "filename": "src/app.tsx",
+      "source": "import { SniceRouter, Route } from 'snice/react';\nimport { Home } from './Home';\nexport function App() {\n  return <SniceRouter mode=\"hash\"><Route path=\"/\" page={Home} /></SniceRouter>;\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "request-handler-type-exports-from-root-are-clean",
+      "filename": "src/hooks.ts",
+      "source": "import type { UseRequestRouteMap, UseRequestHandlerOptions } from 'snice/react';\nexport const routes: UseRequestRouteMap = {};\nexport const options: UseRequestHandlerOptions = {};\n",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "type-export-used-as-generic-argument-is-clean",
+      "filename": "src/app.tsx",
+      "source": "import { useRef } from 'react';\nimport type { SniceComponentRef, SniceFormRef } from 'snice/react';\nexport function useRefs() {\n  const modal = useRef<SniceComponentRef>(null);\n  const input = useRef<SniceFormRef | null>(null);\n  return { modal, input };\n}",
+      "expectedRuleIds": []
+    },
+    {
+      "name": "type-export-inside-type-parameter-lists-is-clean",
+      "filename": "src/meta.ts",
+      "source": "import type { Placard } from 'snice/react';\nexport const byRoute: Map<string, Placard> = new Map();\nexport type PlacardList = Array<Placard>;\nexport type Nullable = Promise<Placard | null>;\n",
+      "expectedRuleIds": []
+    }
+  ]
+}

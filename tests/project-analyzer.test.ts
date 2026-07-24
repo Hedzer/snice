@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { readdirSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import {
   analyzeProject,
   analyzeSource,
@@ -410,6 +410,92 @@ describe('snice/react-prop-contract manifest coverage', () => {
         `${wrapper.exportName}: ${diagnostics.map(diagnostic => diagnostic.message).join('; ')}`
       ).toEqual([]);
     }
+  });
+});
+
+describe('snice/react-type-export-as-component manifest coverage', () => {
+  it('flags every type-only snice/react export used as a JSX component', async () => {
+    const { ANALYZER_CONTRACTS } = await import('../bin/analyzer-contracts.js');
+    const typeExports = ANALYZER_CONTRACTS.react.typeExports as string[];
+    const allExports = new Set(ANALYZER_CONTRACTS.react.exports);
+
+    expect(typeExports.length).toBeGreaterThan(0);
+    expect(typeExports).toContain('Placard');
+    for (const name of typeExports) {
+      expect(allExports.has(name), `${name} must also be a declared export`).toBe(true);
+    }
+    for (const valueName of ['SniceRouter', 'Route', 'Button', 'createReactAdapter', 'useSniceFormValue']) {
+      expect(typeExports, `${valueName} is a value export`).not.toContain(valueName);
+    }
+
+    for (const name of typeExports) {
+      const source = `import { ${name} } from 'snice/react';\nconst view = <${name} />;`;
+      const diagnostics = analyzeSource(source, 'src/contracts.tsx')
+        .filter(diagnostic => diagnostic.ruleId === 'snice/react-type-export-as-component');
+      expect(diagnostics, `${name} used as JSX must be flagged`).toHaveLength(1);
+    }
+  });
+});
+
+describe('element recommendation docs pointers', () => {
+  const triggers: Array<[string, string]> = [
+    ['snice/recommend-modal', 'export const view = html`<dialog>Hi</dialog>`;'],
+    ['snice/recommend-table', 'export const view = html`<table></table>`;'],
+    ['snice/recommend-toast', "export function notify() {\n  showToast('Saved');\n}"],
+    ['snice/recommend-notification-center', "export class Center {\n  unreadCount = 3;\n  markAllAsRead() { this.unreadCount = 0; }\n}"],
+    ['snice/recommend-checkbox', 'export const view = html`<input type="checkbox" />`;'],
+    ['snice/recommend-radio', 'export const view = html`<input type="radio" />`;'],
+    ['snice/recommend-input', 'export const view = html`<input type="text" />`;'],
+    ['snice/recommend-textarea', 'export const view = html`<textarea></textarea>`;'],
+    ['snice/recommend-select', 'export const view = html`<select></select>`;'],
+    ['snice/recommend-tabs', 'export const view = html`<div role="tablist"></div>`;'],
+    ['snice/recommend-pagination', 'export const view = html`<nav aria-label="pagination"></nav>`;']
+  ];
+
+  it('every element recommendation links an existing AI doc in fix and structured fields', () => {
+    for (const [ruleId, source] of triggers) {
+      const diagnostics = analyzeSource(source, 'src/view.ts')
+        .filter(diagnostic => diagnostic.ruleId === ruleId);
+      expect(diagnostics, `${ruleId} must fire on its trigger`).toHaveLength(1);
+      const [diagnostic] = diagnostics;
+      expect(diagnostic.fix, `${ruleId} fix must reference the AI docs`).toMatch(
+        /Review docs\/ai\/components\/[a-z0-9-]+\.md/
+      );
+      expect(diagnostic.recommendation?.docsPath, `${ruleId} structured docsPath`).toMatch(
+        /^docs\/ai\/components\/[a-z0-9-]+\.md$/
+      );
+      expect(
+        existsSync(join(process.cwd(), diagnostic.recommendation!.docsPath)),
+        `${ruleId} docsPath must exist: ${diagnostic.recommendation!.docsPath}`
+      ).toBe(true);
+    }
+  });
+
+  it('substitution and syntax rules link the AI docs too', () => {
+    const select = analyzeSource(
+      "import { html } from 'snice';\nexport const view = html`<snice-select><option value=\"a\">A</option></snice-select>`;",
+      'src/form.ts'
+    ).find(diagnostic => diagnostic.ruleId === 'snice/select-native-option');
+    expect(select?.fix).toContain('docs/ai/components/select.md');
+    expect(select?.recommendation?.docsPath).toBe('docs/ai/components/select.md');
+
+    const keyFilter = analyzeSource(
+      "class F {\n  @on('keydown')\n  handleKey(event: KeyboardEvent) {\n    if (event.key === 'Enter') this.save();\n  }\n}",
+      'src/f.ts'
+    ).find(diagnostic => diagnostic.ruleId === 'snice/recommend-key-filter');
+    expect(keyFilter?.fix).toContain('docs/ai/api.md');
+
+    const templateKeyFilter = analyzeSource(
+      "import { html } from 'snice';\nclass F {\n  render() { return html`<div @keydown=${this.handleKey}></div>`; }\n  handleKey(event: KeyboardEvent) {\n    if (event.key === 'Escape') this.close();\n  }\n}",
+      'src/f.ts'
+    ).find(diagnostic => diagnostic.ruleId === 'snice/recommend-key-filter');
+    expect(templateKeyFilter?.fix).toContain('docs/ai/bindings.md');
+
+    const typeExport = analyzeSource(
+      "import { Placard } from 'snice/react';\nexport const view = <Placard />;",
+      'src/app.tsx'
+    ).find(diagnostic => diagnostic.ruleId === 'snice/react-type-export-as-component');
+    expect(typeExport?.fix).toContain('docs/ai/react-integration.md');
   });
 });
 
