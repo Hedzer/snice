@@ -508,7 +508,7 @@ export class SniceChat extends HTMLElement implements SniceChatElement {
   render() {
     return html/*html*/`
       <div part="base" class="chat-container">
-        <div part="messages" class="messages-area">
+        <div part="messages" class="messages-area" role="log" aria-label="Conversation messages">
           ${this.messages.length === 0
             ? this.renderEmptyState()
             : this.messages.map((msg) => this.renderMessage(msg))}

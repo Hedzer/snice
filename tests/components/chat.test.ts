@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { SniceChat } from '../../packages/components/src/chat/snice-chat';
 import type { ChatMessage } from '../../packages/components/src/chat/snice-chat.types';
 import { PAPER_CLIP, PAPER_AIRPLANE_SOLID } from '../../packages/components/src/icons';
@@ -1101,6 +1103,32 @@ describe('snice-chat', () => {
       ) as HTMLButtonElement;
       expect(send).toBeTruthy();
       expect(send.innerHTML).toContain(iconPathData(PAPER_AIRPLANE_SOLID));
+    });
+  });
+
+  describe('message list accessibility', () => {
+    it('should expose the message area as a live log', async () => {
+      await (chat as any).ready;
+      await new Promise((r) => setTimeout(r, 80));
+
+      const area = chat.shadowRoot!.querySelector('.messages-area');
+      expect(area?.getAttribute('role')).toBe('log');
+      expect(area?.getAttribute('aria-label')).toBeTruthy();
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const cssPath = resolve(process.cwd(), 'packages/components/src/chat/snice-chat.css');
+
+    it('should provide a fallback for every --snice-* variable reference', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      const missing = css.match(/var\(\s*--snice-[a-z0-9-]+\s*\)/g) ?? [];
+      expect(missing).toEqual([]);
+    });
+
+    it('should handle prefers-reduced-motion without the theme loaded', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
 });
