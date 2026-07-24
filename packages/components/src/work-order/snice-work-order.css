@@ -872,29 +872,24 @@
    ══════════════════════════════════════════════════════ */
 
 :host([variant="paper"]) {
-  --wo-bg: rgb(251 249 244);
-  --wo-text: rgb(43 38 31);
-  --wo-text-secondary: rgb(94 85 72);
-  --wo-text-tertiary: rgb(148 136 116);
-  --wo-border: rgb(210 201 183);
-  --wo-bg-element: rgb(246 242 233);
-  --wo-paper-ink: rgb(43 38 31);
-  --wo-paper-accent: rgb(148 54 38);
+  --wo-bg: color-mix(in srgb, var(--snice-color-surface, rgb(255 255 255)) 96%, rgb(196 160 96));
+  --wo-text: var(--snice-color-text, rgb(43 38 31));
+  --wo-text-secondary: var(--snice-color-text-secondary, rgb(94 85 72));
+  --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(148 136 116));
+  --wo-border: color-mix(in srgb, var(--snice-color-border, rgb(216 208 192)) 85%, rgb(180 150 90));
+  --wo-bg-element: color-mix(in srgb, var(--snice-color-surface-container-high, rgb(246 242 233)) 94%, rgb(196 160 96));
+  --wo-paper-ink: var(--snice-color-text, rgb(43 38 31));
+  --wo-paper-accent: rgb(186 96 74);
 }
 
-/* Sheet: grain + counterfoil punch-hole rail down the left edge */
+/* Sheet: counterfoil rail down the left edge */
 :host([variant="paper"]) .wo {
   position: relative;
   border: 1px solid var(--wo-paper-ink);
   border-radius: 0;
   padding-left: 3.5rem;
   overflow: hidden;
-  background-image:
-    radial-gradient(circle 5px at 1.25rem 50%, rgb(0 0 0 / 0.12) 4px, transparent 5px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 2.5rem 3.5rem, 140px 140px;
-  background-repeat: repeat-y, repeat;
-  box-shadow: 0 1px 2px rgb(56 46 30 / 0.10), 0 18px 40px -20px rgb(56 46 30 / 0.5);
+  box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.35);
 }
 
 /* Perforation line separating the counterfoil rail */
@@ -993,13 +988,13 @@
    ══════════════════════════════════════════════════════ */
 
 :host([variant="ink"]) {
-  --wo-bg: rgb(250 249 246);
-  --wo-text: rgb(32 30 27);
-  --wo-text-secondary: rgb(92 87 79);
-  --wo-text-tertiary: rgb(146 139 126);
-  --wo-border: rgb(220 214 202);
-  --wo-bg-element: rgb(244 242 236);
-  --wo-ink: rgb(28 26 23);
+  --wo-bg: var(--snice-color-surface, rgb(250 249 246));
+  --wo-text: var(--snice-color-text, rgb(32 30 27));
+  --wo-text-secondary: var(--snice-color-text-secondary, rgb(92 87 79));
+  --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(146 139 126));
+  --wo-border: var(--snice-color-border, rgb(220 214 202));
+  --wo-bg-element: var(--snice-color-surface-container-high, rgb(244 242 236));
+  --wo-ink: var(--snice-color-text, rgb(28 26 23));
 }
 
 :host([variant="ink"]) .wo {
@@ -1013,7 +1008,7 @@
 
 :host([variant="ink"]) .wo__header {
   background: var(--wo-ink);
-  color: rgb(249 247 242);
+  color: var(--snice-color-surface, rgb(249 247 242));
   margin: -1.5rem -1.5rem 1.5rem;
   padding: 1.5rem;
   border-bottom: none;
@@ -1023,27 +1018,27 @@
   text-transform: uppercase;
   letter-spacing: 0.4em;
   font-weight: var(--snice-font-weight-light, 300);
-  color: rgb(249 247 242 / 0.7);
+  color: color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 70%, transparent);
 }
 
 :host([variant="ink"]) .wo__number {
-  color: rgb(249 247 242);
+  color: var(--snice-color-surface, rgb(249 247 242));
   font-variant-numeric: tabular-nums lining-nums;
 }
 
 :host([variant="ink"]) .wo__date-label {
-  color: rgb(249 247 242 / 0.5);
+  color: color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 55%, transparent);
 }
 
 :host([variant="ink"]) .wo__date-value {
-  color: rgb(249 247 242);
+  color: var(--snice-color-surface, rgb(249 247 242));
 }
 
 :host([variant="ink"]) [class*="wo__priority"],
 :host([variant="ink"]) [class*="wo__status"] {
   background: transparent;
-  border: 1px solid rgb(249 247 242 / 0.5);
-  color: rgb(249 247 242);
+  border: 1px solid color-mix(in srgb, var(--snice-color-surface, rgb(249 247 242)) 55%, transparent);
+  color: var(--snice-color-surface, rgb(249 247 242));
   letter-spacing: var(--snice-tracking-widest, 0.1em);
 }
 
@@ -1071,4 +1066,89 @@
   bottom: 0;
   height: 0.625rem;
   background: var(--wo-ink);
+}
+
+/* ══════════════════════════════════════════════════════
+   Ledger variant — typewriter stock ledger (mono, dotted
+   leaders, oversized mono total, fine-print footer)
+   ══════════════════════════════════════════════════════ */
+
+:host([variant="ledger"]) {
+  --wo-bg: var(--snice-color-surface, rgb(250 250 247));
+  --wo-text: var(--snice-color-text, rgb(40 40 38));
+  --wo-text-secondary: var(--snice-color-text-secondary, rgb(105 103 96));
+  --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(150 147 138));
+  --wo-border: var(--snice-color-border, rgb(216 214 205));
+  --wo-bg-element: transparent;
+}
+
+:host([variant="ledger"]) [part="base"] {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  border: 1px solid var(--snice-color-text, rgb(40 40 38));
+  border-radius: 0;
+  box-shadow: 0 14px 34px -18px rgb(40 40 38 / 0.45);
+  letter-spacing: 0.01em;
+}
+
+:host([variant="ledger"]) [part="base"] * {
+  font-family: inherit;
+}
+
+/* ══════════════════════════════════════════════════════
+   Ticket variant — counterfoil stub, notches, barcode strip
+   ══════════════════════════════════════════════════════ */
+
+:host([variant="ticket"]) {
+  --wo-bg: var(--snice-color-surface, rgb(252 251 247));
+  --wo-text: var(--snice-color-text, rgb(45 42 38));
+  --wo-text-secondary: var(--snice-color-text-secondary, rgb(110 104 94));
+  --wo-text-tertiary: var(--snice-color-text-tertiary, rgb(158 150 136));
+  --wo-border: var(--snice-color-border, rgb(214 208 194));
+  --wo-bg-element: var(--snice-color-surface-container-high, rgb(246 243 236));
+}
+
+:host([variant="ticket"]) [part="base"] {
+  border: 1px solid var(--snice-color-text, rgb(45 42 38));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 3.25rem;
+  box-shadow: 0 14px 34px -18px rgb(45 42 38 / 0.45);
+}
+
+/* Stub separation: dashed rule + side notches under the header */
+:host([variant="ticket"]) [part="header"] {
+  position: relative;
+  border-bottom: 2px dashed var(--snice-color-border-hover, rgb(178 168 150));
+  padding-bottom: 1rem;
+}
+
+:host([variant="ticket"]) [part="header"]::before,
+:host([variant="ticket"]) [part="header"]::after {
+  content: '';
+  position: absolute;
+  bottom: -0.8125rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--snice-color-surface, rgb(24 24 27));
+  border: 1px solid var(--snice-color-text, rgb(45 42 38));
+}
+
+:host([variant="ticket"]) [part="header"]::before { left: -2.25rem; }
+:host([variant="ticket"]) [part="header"]::after { right: -2.25rem; }
+
+/* Barcode strip along the bottom — pure CSS bars */
+:host([variant="ticket"]) [part="base"]::after {
+  content: '';
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 0.875rem;
+  height: 1.75rem;
+  background: repeating-linear-gradient(90deg,
+    var(--snice-color-text, rgb(45 42 38)) 0 2px, transparent 2px 5px,
+    var(--snice-color-text, rgb(45 42 38)) 5px 6px, transparent 6px 11px,
+    var(--snice-color-text, rgb(45 42 38)) 11px 14px, transparent 14px 17px);
+  opacity: 0.85;
 }

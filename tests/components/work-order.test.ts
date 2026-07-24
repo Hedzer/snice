@@ -626,7 +626,7 @@ describe('snice-work-order', () => {
   });
 
   describe('paper variant', () => {
-    it.each([['paper'], ['ink']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
+    it.each([['paper'], ['ink'], ['ledger'], ['ticket']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order', { variant: v });
       await new Promise(r => setTimeout(r, 50));
 

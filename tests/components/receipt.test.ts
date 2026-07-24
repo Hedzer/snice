@@ -465,7 +465,7 @@ describe('snice-receipt', () => {
 
 
   describe('paper variant', () => {
-    it.each([['paper'], ['ink']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
+    it.each([['paper'], ['ink'], ['ledger'], ['ticket']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
       receipt = await createComponent<SniceReceiptElement>('snice-receipt', { variant: v });
       await wait(50);
 
