@@ -8,6 +8,7 @@ export interface ActionBarProps extends SniceBaseProps {
     position?: any;
     size?: any;
     variant?: any;
+    label?: any;
     noAnimation?: any;
     noEscapeDismiss?: any;
     onActionBarOpen?: (event: any) => void;

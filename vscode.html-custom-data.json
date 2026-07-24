@@ -46,6 +46,10 @@
       "description": "SniceActionBar custom element.",
       "attributes": [
         {
+          "name": "label",
+          "description": "label: string"
+        },
+        {
           "name": "no-animation",
           "description": "noAnimation: boolean"
         },

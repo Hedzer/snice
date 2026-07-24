@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const ActionBar = createReactAdapter({
     tagName: 'snice-action-bar',
-    properties: ["open", "position", "size", "variant", "noAnimation", "noEscapeDismiss"],
+    properties: ["open", "position", "size", "variant", "label", "noAnimation", "noEscapeDismiss"],
     events: { "action-bar-open": "onActionBarOpen", "action-bar-close": "onActionBarClose" },
     formAssociated: false
 });
