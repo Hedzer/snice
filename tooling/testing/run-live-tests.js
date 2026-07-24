@@ -111,24 +111,6 @@ async function main() {
     console.log(`✓ ${label} up on :${port}`);
   };
 
-  const frameworkServer = {
-    port: PORT,
-    label: 'framework dev server',
-    command: 'npm',
-    args: ['run', 'dev:framework'],
-  };
-  await ensureServer(frameworkServer);
-  startWatchdog(frameworkServer);
-  if (needsStorybook) {
-    await ensureServer({
-      port: STORYBOOK_PORT,
-      label: 'Storybook',
-      command: 'npm',
-      args: ['run', 'dev:storybook'],
-      readyUrl: `http://${HOST}:${STORYBOOK_PORT}/iframe.html`,
-    });
-  }
-
   // Watchdog: the dev server has been observed dying silently under
   // sustained multi-engine load. Probe the port and respawn on failure so a
   // server blip costs a retry, not the remainder of the suite.
@@ -148,6 +130,24 @@ async function main() {
     timer.unref?.();
     watchdogs.push(timer);
   };
+
+  const frameworkServer = {
+    port: PORT,
+    label: 'framework dev server',
+    command: 'npm',
+    args: ['run', 'dev:framework'],
+  };
+  await ensureServer(frameworkServer);
+  startWatchdog(frameworkServer);
+  if (needsStorybook) {
+    await ensureServer({
+      port: STORYBOOK_PORT,
+      label: 'Storybook',
+      command: 'npm',
+      args: ['run', 'dev:storybook'],
+      readyUrl: `http://${HOST}:${STORYBOOK_PORT}/iframe.html`,
+    });
+  }
 
   const cleanup = () => {
     for (const timer of watchdogs.splice(0)) clearInterval(timer);
