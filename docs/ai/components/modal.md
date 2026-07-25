@@ -64,6 +64,10 @@ modal.close();
 modal.addEventListener('modal-close', () => console.log('Closed'));
 ```
 
+## CSS Custom Properties
+
+- `--snice-modal-backdrop` - Modal backdrop
+
 ## Keyboard Navigation
 
 - Escape closes (unless `no-escape-dismiss`)

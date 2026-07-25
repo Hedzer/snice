@@ -102,6 +102,13 @@ Layouts own the screen. App shells (`sidebar`, `dashboard`, `fullscreen`) are `p
 <div style="height:340px"><snice-layout-sidebar contained>…</snice-layout-sidebar></div>  <!-- embedded -->
 ```
 
+## CSS Custom Properties
+
+- `--snice-layout-auth-panel-bg` - Layout auth panel background
+- `--snice-layout-control-size` - Layout control size
+- `--snice-layout-docs-header-height` - Layout docs header height
+- `--snice-layout-docs-header-height-compact` - Layout docs header height compact
+
 ## Sizing hooks
 
 - `--snice-layout-sidebar-width` (`16rem`), `--snice-layout-rail-collapsed-width` (`3rem`)

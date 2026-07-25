@@ -31,6 +31,23 @@ showTimestamps: boolean = false; // attr: show-timestamps
 
 ## CSS Custom Properties
 
+- `--snice-terminal-ansi-black` - Terminal ANSI black
+- `--snice-terminal-ansi-blue` - Terminal ANSI blue
+- `--snice-terminal-ansi-bright-black` - Terminal ANSI bright black
+- `--snice-terminal-ansi-bright-blue` - Terminal ANSI bright blue
+- `--snice-terminal-ansi-bright-cyan` - Terminal ANSI bright cyan
+- `--snice-terminal-ansi-bright-green` - Terminal ANSI bright green
+- `--snice-terminal-ansi-bright-magenta` - Terminal ANSI bright magenta
+- `--snice-terminal-ansi-bright-red` - Terminal ANSI bright red
+- `--snice-terminal-ansi-bright-white` - Terminal ANSI bright white
+- `--snice-terminal-ansi-bright-yellow` - Terminal ANSI bright yellow
+- `--snice-terminal-ansi-cyan` - Terminal ANSI cyan
+- `--snice-terminal-ansi-green` - Terminal ANSI green
+- `--snice-terminal-ansi-magenta` - Terminal ANSI magenta
+- `--snice-terminal-ansi-red` - Terminal ANSI red
+- `--snice-terminal-ansi-white` - Terminal ANSI white
+- `--snice-terminal-ansi-yellow` - Terminal ANSI yellow
+- `--snice-terminal-scrollbar-hover-color` - Terminal scrollbar hover color
 ```css
 --snice-terminal-height            /* 400px */
 --snice-terminal-font-size         /* 0.875rem */

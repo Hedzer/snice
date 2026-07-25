@@ -119,6 +119,10 @@ snice-chat::part(author)      { font-family: 'Inter'; }
 snice-chat::part(message-own) { background: rgba(37,99,235,.06); }
 ```
 
+## CSS Custom Properties
+
+- `--snice-chat-height` - Chat height
+
 ## Accessibility
 
 - Keyboard navigation for messages and controls

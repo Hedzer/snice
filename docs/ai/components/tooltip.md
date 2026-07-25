@@ -64,6 +64,11 @@ strictPositioning: boolean = false; // attr: strict-positioning
 tip.open = true;
 ```
 
+## CSS Custom Properties
+
+- `--snice-tooltip-bg` - Tooltip background
+- `--snice-tooltip-color` - Tooltip color
+
 ## Attribute-Based Tooltips
 
 Observer for `tooltip` attribute on any element. No wrapper element -- safe inside strict-children components (tabs, accordion, etc.). Auto-activates when the tooltip component is loaded.

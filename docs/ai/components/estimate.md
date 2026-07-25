@@ -46,6 +46,21 @@ items: EstimateItem[] = [];               // JS only
 
 ## CSS Custom Properties
 
+- `--snice-estimate-border-inverse` - Estimate border inverse
+- `--snice-estimate-border-inverse-light` - Estimate border inverse light
+- `--snice-estimate-creative-alpha` - Estimate creative tint
+- `--snice-estimate-creative-alpha-strong` - Estimate creative tint strong
+- `--snice-estimate-creative-end` - Estimate creative end stop
+- `--snice-estimate-creative-mid` - Estimate creative midpoint
+- `--snice-estimate-creative-shadow` - Estimate creative shadow
+- `--snice-estimate-creative-start` - Estimate creative start
+- `--snice-estimate-surface-alt` - Estimate surface alt
+- `--snice-estimate-surface-inverse-alpha` - Estimate surface inverse tint
+- `--snice-estimate-text-inverse-muted` - Estimate text inverse muted
+- `--snice-estimate-text-inverse-subtle` - Estimate text inverse subtle
+- `--snice-estimate-text-muted` - Estimate text muted
+- `--snice-estimate-text-muted-light` - Estimate text muted light
+- `--snice-estimate-warning-text` - Estimate warning text
 `--estimate-max-width`, `--estimate-bg`, `--estimate-border`, `--estimate-text`, `--estimate-accent`, `--estimate-header-padding`, `--estimate-section-padding`, `--estimate-radius`, `--estimate-title-size`, `--estimate-accept-bg`, `--estimate-decline-text`, `--estimate-total-bg`, `--estimate-qr-size`
 
 ## Basic Usage

@@ -143,6 +143,10 @@ Contract:
 - Disabled controls are omitted and barred. `readonly` remains successful but is barred. `loading` is inert and barred while preserving the successful value.
 - `invalid` and `errorText` control presentation only; they do not change native validity.
 
+## CSS Custom Properties
+
+- `--snice-select-min-height` - Select minimum height
+
 ## Accessibility
 
 - Explicit, wrapping, multiple, and dynamically reassociated external labels

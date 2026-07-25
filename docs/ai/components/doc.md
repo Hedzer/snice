@@ -21,6 +21,7 @@ icons: 'default'|'material'|'fontawesome' = 'default';
 
 ## CSS Custom Properties
 
+- `--snice-doc-active-background` - Doc active background
 ```css
 --snice-doc-font-family
 --snice-doc-font-size

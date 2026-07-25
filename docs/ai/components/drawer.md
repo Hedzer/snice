@@ -40,6 +40,8 @@ contained: boolean = false;                    // Position relative to parent
 
 ## CSS Custom Properties
 
+- `--snice-drawer-backdrop` - Drawer backdrop
+- `--snice-drawer-control-size` - Drawer control size
 - `--drawer-width-small` through `--drawer-width-xxxl` - Width per size
 - `--drawer-height-small` through `--drawer-height-xxxl` - Height per size (top/bottom)
 - `--drawer-bg` - Background (default: `var(--snice-color-surface, white)`)

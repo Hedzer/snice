@@ -66,6 +66,11 @@ transitionDuration: number = 300; // attr: transition-duration
 - `scroll-button-end` - End scroll button
 - `panels` - Panel content wrapper
 
+## CSS Custom Properties
+
+- `--snice-tabs-panel-padding` - Tabs panel padding
+- `--snice-tabs-transition-duration` - Tabs transition duration
+
 ## Basic Usage
 
 ```html

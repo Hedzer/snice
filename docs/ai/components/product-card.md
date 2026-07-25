@@ -79,6 +79,10 @@ card.addEventListener('add-to-cart', (e) => {
 - Favorite button has descriptive `aria-label`
 - Out-of-stock disables CTA button
 
+## CSS Custom Properties
+
+- `--snice-product-card-badge-bg` - Product card badge background
+
 ## Types
 
 ```typescript
