@@ -73,6 +73,7 @@ interface AppTile {
 
 | Part | Description |
 |------|-------------|
+| `base` | Root container |
 | `icon` | Material Symbols ligature icon span (inside rendered tiles) |
 
 ## Basic Usage

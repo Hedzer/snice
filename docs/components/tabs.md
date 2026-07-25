@@ -76,6 +76,8 @@ A tabbed interface for organizing content into separate panels, using `<snice-ta
 
 | Part | Description |
 |------|-------------|
+| `close` | Close button on a closable tab |
+| `label` | Text label |
 | `base` | Outermost tabs container |
 | `nav-container` | Nav bar wrapper (includes scroll buttons) |
 | `nav` | Tab navigation scroll area |

@@ -62,6 +62,7 @@ A form-associated color selection interface with format conversion, preset color
 
 | Part | Description |
 |------|-------------|
+| `base` | Root container |
 | `spinner` | Loading spinner element |
 | `error-text` | Error text element |
 | `helper-text` | Helper text element |

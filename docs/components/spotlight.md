@@ -131,6 +131,21 @@ Control the tour with methods for custom navigation UI.
 <button onclick="document.getElementById('controlled-tour').end()">End Tour</button>
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `backdrop` | Dimmed overlay behind the spotlight |
+| `cutout` | Transparent cutout highlighting the target |
+| `popover` | Step popover |
+| `title` | Step title |
+| `description` | Step description |
+| `actions` | Step action buttons |
+| `step-indicator` | Current step indicator |
+
 ## Accessibility
 
 - Navigation buttons (Next, Previous, Skip) are keyboard accessible

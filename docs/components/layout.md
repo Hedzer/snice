@@ -39,6 +39,23 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `main` | `<main>` | Main content area |
 | `footer` | `<footer>` | Footer element |
 
+Shell variants add parts for their own regions:
+
+| Part | Shells | Description |
+|------|--------|-------------|
+| `sidebar` | sidebar, dashboard, docs | Navigation column |
+| `scrim` | sidebar, dashboard, docs | Overlay backdrop shown while the sidebar is open on narrow screens |
+| `toolbar` | dashboard | Strip below the header holding breadcrumbs or filters |
+| `right-sidebar` | dashboard | Secondary rail beside main |
+| `prose` | docs | Measured article column |
+| `toc` | docs | On-this-page rail |
+| `list` | master-detail | List pane |
+| `detail` | master-detail | Detail pane |
+| `empty` | master-detail | Empty-state shown until a detail is slotted |
+| `form` | auth-split | Column holding the sign-in form |
+| `panel` | auth-split | Decorative brand panel |
+| `page` | auth-split | Form content wrapper |
+
 ```css
 snice-layout::part(header) {
   background: #1a1a2e;

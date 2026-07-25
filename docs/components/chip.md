@@ -45,6 +45,7 @@ Compact elements for tags, filters, selections, or categorizations. Supports ico
 
 | Part | Description |
 |------|-------------|
+| `base` | Root container |
 | `icon` | The icon wrapper element |
 
 ## Basic Usage

@@ -50,6 +50,7 @@ interface SplitButtonAction {
 
 | Part | Description |
 |------|-------------|
+| `spinner` | Loading spinner shown while `loading` is set |
 | `base` | The button container |
 | `primary` | The primary button |
 | `divider` | The divider between primary and toggle buttons |

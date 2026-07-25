@@ -174,6 +174,23 @@ reader.addEventListener('qr-error', (e) => {
 });
 ```
 
+## CSS Parts
+
+Style internal elements from outside the shadow DOM using `::part()`.
+
+| Part | Description |
+|------|-------------|
+| `base` | Root container |
+| `video` | Live camera video element |
+| `canvas` | Offscreen canvas used for frame capture |
+| `viewport` | Scanning viewport framing the video |
+| `controls` | Control bar |
+| `button-start` | Start scanning button |
+| `button-stop` | Stop scanning button |
+| `button-switch` | Switch camera button |
+| `result` | Decoded result output |
+| `error-text` | Error message |
+
 ## Accessibility
 
 - Requires HTTPS for camera access on mobile devices

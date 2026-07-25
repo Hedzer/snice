@@ -49,6 +49,7 @@ interface Step {
 
 | Part | Description |
 |------|-------------|
+| `panel` | Step content panel |
 | `container` | Main stepper container |
 | `step` | Individual step wrapper |
 | `step-indicator` | Circular step number/checkmark |

@@ -112,6 +112,7 @@ Use the `icon` slot for external CSS-based icon fonts (Material Symbols, Font Aw
 
 | Part | Description |
 |------|-------------|
+| `base` | Root container |
 | `icon` | The icon container |
 
 ## Basic Usage

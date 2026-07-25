@@ -731,6 +731,8 @@ the corresponding user-action event; density is the explicit exception.
 
 | Element | Part | Description |
 |---------|------|-------------|
+| `filter-button` | Column filter trigger |
+| `sort-indicator` | Column sort direction indicator |
 | `<snice-table>` | `superheader` | Wrapper for the `header` slot in native-table mode |
 | `<snice-table>` | `controls` | Legacy search/selector controls |
 | `<snice-table>` | `toolbar` | Toolbar installed by `setToolbar()` |
