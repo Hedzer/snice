@@ -195,7 +195,7 @@
   border-top: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
 }
 
-.footer:empty {
+.footer--empty {
   display: none;
 }
 

@@ -1,4 +1,4 @@
-import { element, query, ready, render, styles, html, css } from 'snice';
+import { element, property, query, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout.css?inline';
 import '../nav/snice-nav.ts';
@@ -11,6 +11,9 @@ export class SniceLayout extends HTMLElement implements Layout {
 
   private placards: Placard[] = [];
   private currentRoute = '';
+
+  @property({ attribute: false })
+  private hasFooterContent = false;
 
   @render()
   render() {
@@ -29,7 +32,7 @@ export class SniceLayout extends HTMLElement implements Layout {
           <slot name="page"></slot>
         </main>
 
-        <footer class="footer" part="footer">
+        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer">
           <slot name="footer">
           </slot>
         </footer>
@@ -40,6 +43,16 @@ export class SniceLayout extends HTMLElement implements Layout {
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
+  }
+
+  @ready()
+  wireFooterState() {
+    this.syncFooterState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncFooterState());
+  }
+
+  private syncFooterState() {
+    this.hasFooterContent = !!this.querySelector('[slot="footer"]');
   }
 
   @ready()

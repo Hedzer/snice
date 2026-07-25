@@ -122,6 +122,13 @@ describe('snice-layout', () => {
       }
     });
 
+    it('never hides slot containers with a dead :empty rule', () => {
+      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+        const css = readFileSync(join(dir, file), 'utf8');
+        expect(css, `${file}: a container holding a <slot> is never :empty`).not.toMatch(/:empty/);
+      }
+    });
+
     it('inner layouts inherit the host height so contained shells never overflow', () => {
       for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
         const css = readFileSync(join(dir, file), 'utf8');

@@ -31,6 +31,9 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   private placards: Placard[] = [];
   private currentRoute = '';
 
+  @property({ attribute: false })
+  private hasFooterContent = false;
+
   @render()
   render() {
     const isRail = this.collapseMode === 'rail';
@@ -75,7 +78,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
           </main>
         </div>
 
-        <footer class="footer" part="footer">
+        <footer class="footer${this.hasFooterContent ? '' : ' footer--empty'}" part="footer">
           <slot name="footer"></slot>
         </footer>
       </div>
@@ -114,6 +117,16 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   }
 
   private shortcutListener?: (event: KeyboardEvent) => void;
+
+  @ready()
+  wireFooterState() {
+    this.syncFooterState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncFooterState());
+  }
+
+  private syncFooterState() {
+    this.hasFooterContent = !!this.querySelector('[slot="footer"]');
+  }
 
   @ready()
   bindShortcut() {
