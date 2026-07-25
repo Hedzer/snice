@@ -33,7 +33,6 @@ describe('repository layout', () => {
       'adapters/react/index.js',
       'adapters/react/index.d.ts',
       'bin/snice.js',
-      'bin/mcp-server.js',
       'bin/templates/default',
       'bin/templates/react',
     ]) {
