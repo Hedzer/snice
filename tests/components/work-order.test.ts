@@ -625,6 +625,30 @@ describe('snice-work-order', () => {
     });
   });
 
+  describe('slots', () => {
+    it.each([['title'], ['customer'], ['asset'], ['description'], ['before-tasks'], ['after-tasks'], ['after-parts'], ['notes'], ['totals'], ['signature'], ['footer'], ['qr']])(
+      'ships a named %s slot',
+      async (name) => {
+        wo = await createComponent<SniceWorkOrderElement>('snice-work-order', name === 'qr' ? { 'show-qr': true } : {});
+        await wait(50);
+        expect(wo.shadowRoot!.querySelector(`slot[name="${name}"]`), name).toBeTruthy();
+      }
+    );
+
+    it('assigns slotted content into region slots', async () => {
+      const el = document.createElement('snice-work-order');
+      el.innerHTML = '<div slot="before-tasks">Safety checklist attached</div><span slot="title">Job Ticket</span>';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 50));
+
+      const bt = el.shadowRoot!.querySelector('slot[name="before-tasks"]') as HTMLSlotElement;
+      expect(bt.assignedNodes().map(n => n.textContent).join('')).toContain('Safety checklist');
+      const title = el.shadowRoot!.querySelector('slot[name="title"]') as HTMLSlotElement;
+      expect(title.assignedNodes().map(n => n.textContent).join('')).toContain('Job Ticket');
+      el.remove();
+    });
+  });
+
   describe('paper variant', () => {
     it.each([['paper'], ['ink'], ['ledger'], ['ticket']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
       wo = await createComponent<SniceWorkOrderElement>('snice-work-order', { variant: v });

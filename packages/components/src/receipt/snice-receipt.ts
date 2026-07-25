@@ -298,6 +298,8 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
           ${this.renderDivider()}
         </if>
 
+        <slot name="before-items"></slot>
+
         <if ${hasItems}>
           <div class="receipt__items-header" part="items-header">
             <span>Item</span>
@@ -308,6 +310,8 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
           </div>
           ${this.renderDivider()}
         </if>
+
+        <slot name="after-items"></slot>
 
         <div class="receipt__totals" part="totals">
           <div class="receipt__total-row" part="subtotal-row">
@@ -376,6 +380,7 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
 
         ${this.renderDivider()}
         <div class="receipt__footer" part="footer">
+          <slot name="thank-you"></slot>
           <if ${this.thankYou}>
             <div class="receipt__thank-you" part="thank-you">${this.thankYou}</div>
           </if>

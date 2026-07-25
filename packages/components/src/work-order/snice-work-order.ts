@@ -192,7 +192,7 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
     return html/*html*/`
       <div class="wo__header" part="header">
         <div class="wo__header-left">
-          <span class="wo__title" part="title">Work Order</span>
+          <span class="wo__title" part="title"><slot name="title">Work Order</slot></span>
           <h2 class="wo__number" part="wo-number">${this.woNumber || '---'}</h2>
           <div class="wo__dates">
             <if ${this.date}>
@@ -495,15 +495,19 @@ export class SniceWorkOrder extends HTMLElement implements SniceWorkOrderElement
     return html/*html*/`
       <div class="wo" part="base">
         ${this.renderHeader()}
-        ${this.renderCustomer()}
-        ${this.renderAsset()}
-        ${this.renderDescription()}
+        <slot name="customer">${this.renderCustomer()}</slot>
+        <slot name="asset">${this.renderAsset()}</slot>
+        <slot name="description">${this.renderDescription()}</slot>
+        <slot name="before-tasks"></slot>
         ${this.renderTasks()}
+        <slot name="after-tasks"></slot>
         ${this.renderParts()}
+        <slot name="after-parts"></slot>
         ${this.renderLabor()}
         ${this.renderNotes()}
+        <slot name="notes"></slot>
         ${this.renderSignature()}
-        ${this.renderCosts()}
+        <slot name="totals">${this.renderCosts()}</slot>
         ${this.renderFooter()}
         <slot></slot>
       </div>

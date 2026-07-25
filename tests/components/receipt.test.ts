@@ -464,6 +464,28 @@ describe('snice-receipt', () => {
   });
 
 
+  describe('slots', () => {
+    it.each([['before-items'], ['after-items'], ['thank-you'], ['barcode'], ['qr']])(
+      'ships a named %s slot',
+      async (name) => {
+        receipt = await createComponent<SniceReceiptElement>('snice-receipt', name === 'qr' ? { 'show-qr': true } : {});
+        await wait(50);
+        expect(receipt.shadowRoot!.querySelector(`slot[name="${name}"]`), name).toBeTruthy();
+      }
+    );
+
+    it('assigns slotted content into region slots', async () => {
+      const el = document.createElement('snice-receipt');
+      el.innerHTML = '<div slot="after-items">Loyalty points earned: 42</div>';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 50));
+
+      const ai = el.shadowRoot!.querySelector('slot[name="after-items"]') as HTMLSlotElement;
+      expect(ai.assignedNodes().map(n => n.textContent).join('')).toContain('Loyalty points');
+      el.remove();
+    });
+  });
+
   describe('paper variant', () => {
     it.each([['paper'], ['ink'], ['ledger'], ['ticket']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
       receipt = await createComponent<SniceReceiptElement>('snice-receipt', { variant: v });
