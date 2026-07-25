@@ -23,13 +23,45 @@ optional structured lookup; it is not a replacement for the workflow skill.
 - No tutorials, pure reference
 
 **Files:**
+
+Every page under `docs/` has a same-named counterpart here. Read the topic page
+for depth; read the aggregates when you want the whole surface at once.
+
+*Aggregates (no single human counterpart):*
 - `api.md` - Complete API reference
-- `rendering.md` - Declarative syntax, reactivity, roots, and async values
-- `bindings.md` - Exact node, attribute, property, event, class, style, spread, sentinel, and form semantics
 - `decorators.md` - Quick decorator reference
 - `patterns.md` - Common usage patterns
-- `react-integration.md` - React router, hooks, guards, context
 - `architecture.md` - System design
+
+*Core:*
+- `elements.md` - Defining elements, render roots, extending
+- `properties.md` - `@property` / `@state`, attribute conversion, reflection, deep state
+- `lifecycle.md` - `@ready`, `@dispose`, `@watch`, `@context`, the `ready` promise
+- `queries.md` - `@query` / `@queryAll`, including light-DOM options
+- `rendering.md` - Declarative syntax, reactivity, roots, and async values
+- `bindings.md` - Exact node, attribute, property, event, class, style, spread, controller, sentinel, and form semantics
+- `events.md` - Template event syntax, `@on`, `@dispatch`, delegation, keyboard filters
+- `controllers.md` - Attaching by class or registry name, lifecycle, cleanup
+- `routing.md` - Router setup, pages, params, transitions, guards, layouts
+
+*Patterns:*
+- `request-response.md` - `@request` / `@respond` channels
+- `observe.md` - Intersection, resize, media, and mutation observers
+- `fetcher.md` - Context-aware fetch middleware
+- `placards.md` - Page metadata for navigation and breadcrumbs
+
+*Styling:*
+- `styling.md` - `@styles`, scoped CSS, host styling, icons
+- `theme.md` - Tokens, surfaces, dark mode
+
+*Tooling:*
+- `cli.md` - `create-app`, `init-ai`, `check`, `doctor`, `validate`, `mcp`, `build-component`
+- `testing.md` - `ready` / `rendered`, asserting events, swapping controllers
+
+*Integration:*
+- `cdn.md` - Load order and bundle families
+- `react-integration.md` - React router, hooks, guards, context
+
 - `components/*.md` - Component reference (DO NOT read all upfront - read only as needed)
 
 Read these instead of `/docs/*.md` for faster context loading.

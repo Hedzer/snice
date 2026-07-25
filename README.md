@@ -927,7 +927,14 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 ## Documentation
 
 ### User Documentation
-- [Elements API](./docs/elements.md) - Complete guide to creating elements with properties, queries, and styling
+- [Elements API](./docs/elements.md) - Defining elements, render roots, and extending existing elements
+- [Properties](./docs/properties.md) - Public input, internal state, attribute conversion, and reflection
+- [Lifecycle](./docs/lifecycle.md) - Connection, readiness, teardown, and reacting to change
+- [Queries](./docs/queries.md) - Resolving elements with `@query` and `@queryAll`
+- [Styling](./docs/styling.md) - Scoped CSS, host styling, and icons
+- [Theming](./docs/theme.md) - Design tokens, surfaces, and dark mode
+- [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and the MCP server
+- [Testing](./docs/testing.md) - Waiting on `ready` / `rendered`, asserting events, swapping controllers
 - [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
 - [Binding Channels](./docs/bindings.md) - Detailed DOM destinations, value/removal rules, events, spreads, sentinels, and forms
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
@@ -936,6 +943,10 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
 - [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers
 - [Observe API](./docs/observe.md) - Lifecycle-managed observers for external changes
+- [Fetcher](./docs/fetcher.md) - Context-aware fetch middleware for pages and controllers
+- [CDN](./docs/cdn.md) - Load order, bundle families, and standalone usage without a bundler
+- [React Integration](./docs/react-integration.md) - Router, hooks, guards, and mixing React and Snice pages
+- [Code Block](./docs/code-block.md) - The syntax-highlighting component and its grammar system
 
 ### Developer Documentation
 - [DEVELOPMENT.md](./DEVELOPMENT.md) - Build system, testing, and contributing to Snice

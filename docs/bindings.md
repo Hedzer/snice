@@ -394,7 +394,7 @@ updateAccepted(event: Event) {
 
 This keeps parsing, validation, IME policy, and the event that changes state visible. Use `input` for text as it changes and `change` for committed choices such as checkboxes, selects, and files.
 
-Property-to-attribute reflection from `@property()` is a custom-element API concern; it does not replace a form control's browser-to-state event. See [Elements](./elements.md) for property and reflection semantics.
+Property-to-attribute reflection from `@property()` is a custom-element API concern; it does not replace a form control's browser-to-state event. See [Properties](./properties.md) for property and reflection semantics.
 
 ## Invalid placements and diagnostics
 

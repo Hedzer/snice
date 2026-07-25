@@ -4,82 +4,206 @@
     {
       "title": "Start",
       "sections": [
-        { "id": "esm", "title": "ESM + Bundler", "docs": "elements" },
-        { "id": "cdn", "title": "CDN", "docs": "cdn" },
-        { "id": "react", "title": "React Wrappers", "docs": "react-integration" }
+        {
+          "id": "esm",
+          "title": "ESM + Bundler",
+          "docs": "cli"
+        },
+        {
+          "id": "cdn",
+          "title": "CDN",
+          "docs": "cdn"
+        },
+        {
+          "id": "react",
+          "title": "React Wrappers",
+          "docs": "react-integration"
+        }
       ]
     },
     {
       "title": "Your first element",
       "sections": [
-        { "id": "minimum", "title": "Bare minimum", "docs": "elements" },
-        { "id": "styles", "title": "Styles", "docs": "elements" }
+        {
+          "id": "minimum",
+          "title": "Bare minimum",
+          "docs": "elements"
+        },
+        {
+          "id": "styles",
+          "title": "Styles",
+          "docs": "styling"
+        }
       ]
     },
     {
       "title": "Data in",
       "sections": [
-        { "id": "properties", "title": "Properties", "docs": "elements" },
-        { "id": "state", "title": "Internal state", "docs": "elements" },
-        { "id": "deep-state", "title": "Deep state", "docs": "elements" }
+        {
+          "id": "properties",
+          "title": "Properties",
+          "docs": "properties"
+        },
+        {
+          "id": "state",
+          "title": "Internal state",
+          "docs": "properties"
+        },
+        {
+          "id": "deep-state",
+          "title": "Deep state",
+          "docs": "properties"
+        }
       ]
     },
     {
       "title": "Templates",
       "sections": [
-        { "id": "bindings", "title": "Binding channels", "docs": "bindings" },
-        { "id": "conditionals", "title": "Conditionals", "docs": "rendering" },
-        { "id": "lists", "title": "Keyed lists", "docs": "rendering" },
-        { "id": "async", "title": "Async content", "docs": "rendering" },
-        { "id": "spreads", "title": "Named spreads", "docs": "bindings" },
-        { "id": "forms", "title": "Form controls", "docs": "bindings" }
+        {
+          "id": "bindings",
+          "title": "Binding channels",
+          "docs": "bindings"
+        },
+        {
+          "id": "conditionals",
+          "title": "Conditionals",
+          "docs": "rendering"
+        },
+        {
+          "id": "lists",
+          "title": "Keyed lists",
+          "docs": "rendering"
+        },
+        {
+          "id": "async",
+          "title": "Async content",
+          "docs": "rendering"
+        },
+        {
+          "id": "spreads",
+          "title": "Named spreads",
+          "docs": "bindings"
+        },
+        {
+          "id": "forms",
+          "title": "Form controls",
+          "docs": "bindings"
+        }
       ]
     },
     {
       "title": "Events out",
       "sections": [
-        { "id": "events", "title": "Inline handlers", "docs": "events" },
-        { "id": "dispatch", "title": "Emitting events", "docs": "events" },
-        { "id": "on", "title": "Event delegation", "docs": "events" },
-        { "id": "keyboard", "title": "Keyboard shortcuts", "docs": "events" }
+        {
+          "id": "events",
+          "title": "Inline handlers",
+          "docs": "events"
+        },
+        {
+          "id": "dispatch",
+          "title": "Emitting events",
+          "docs": "events"
+        },
+        {
+          "id": "on",
+          "title": "Event delegation",
+          "docs": "events"
+        },
+        {
+          "id": "keyboard",
+          "title": "Keyboard shortcuts",
+          "docs": "events"
+        }
       ]
     },
     {
       "title": "Lifecycle",
       "sections": [
-        { "id": "ready", "title": "Ready", "docs": "elements" },
-        { "id": "watch", "title": "Watch changes", "docs": "elements" },
-        { "id": "query", "title": "Query the DOM", "docs": "elements" },
-        { "id": "dispose", "title": "Dispose", "docs": "elements" }
+        {
+          "id": "ready",
+          "title": "Ready",
+          "docs": "lifecycle"
+        },
+        {
+          "id": "watch",
+          "title": "Watch changes",
+          "docs": "lifecycle"
+        },
+        {
+          "id": "query",
+          "title": "Query the DOM",
+          "docs": "queries"
+        },
+        {
+          "id": "dispose",
+          "title": "Dispose",
+          "docs": "lifecycle"
+        }
       ]
     },
     {
       "title": "Behavior",
       "sections": [
-        { "id": "controllers", "title": "Controllers", "docs": "controllers" },
-        { "id": "request-respond", "title": "Request / Respond", "docs": "request-response" },
-        { "id": "observe", "title": "Observers", "docs": "observe" }
+        {
+          "id": "controllers",
+          "title": "Controllers",
+          "docs": "controllers"
+        },
+        {
+          "id": "request-respond",
+          "title": "Request / Respond",
+          "docs": "request-response"
+        },
+        {
+          "id": "observe",
+          "title": "Observers",
+          "docs": "observe"
+        }
       ]
     },
     {
       "title": "Routing",
       "sections": [
-        { "id": "pages", "title": "Pages and router", "docs": "routing" },
-        { "id": "guards", "title": "Guards and layouts", "docs": "routing" }
+        {
+          "id": "pages",
+          "title": "Pages and router",
+          "docs": "routing"
+        },
+        {
+          "id": "guards",
+          "title": "Guards and layouts",
+          "docs": "routing"
+        }
       ]
     },
     {
       "title": "Composition",
       "sections": [
-        { "id": "roots", "title": "Render roots", "docs": "elements" },
-        { "id": "extending", "title": "Extending", "docs": "elements" },
-        { "id": "full", "title": "Full example", "docs": "elements" }
+        {
+          "id": "roots",
+          "title": "Render roots",
+          "docs": "elements"
+        },
+        {
+          "id": "extending",
+          "title": "Extending",
+          "docs": "elements"
+        },
+        {
+          "id": "full",
+          "title": "Full example",
+          "docs": "elements"
+        }
       ]
     },
     {
       "title": "AI tooling",
       "sections": [
-        { "id": "ai", "title": "AI assistance", "docs": null }
+        {
+          "id": "ai",
+          "title": "AI assistance",
+          "docs": "cli"
+        }
       ]
     }
   ]

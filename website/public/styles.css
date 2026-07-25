@@ -614,7 +614,12 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
 .doc-file {
   padding: 2.5rem 0;
   border-bottom: 1px solid var(--snice-color-border);
+  /* Clear the sticky header so anchored headings are not clipped. */
+  scroll-margin-top: 5.5rem;
 }
+/* Sub-section anchors within a page need the same offset. */
+.doc-file h2[id],
+.doc-file h3[id] { scroll-margin-top: 5.5rem; }
 .doc-file:last-child { border-bottom: none; }
 .doc-file h1 {
   font-size: 1.6rem;

@@ -124,7 +124,7 @@ class MyCounter extends HTMLElement {
   }
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#cli">CLI documentation →</a></p>
         </div>
 
         <div class="dec-section" id="cdn">
@@ -206,7 +206,7 @@ css() {
   `;
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#styling">Component Styles documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -261,7 +261,7 @@ class TaskItem extends HTMLElement {
 </div>
 <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
 <p class="desc"><code>type</code> converts strings arriving from attributes. Direct JavaScript assignments keep their original type and object identity. Use <code>reflect: false</code> for attribute input without property-to-attribute output, or <code>attribute: false</code> for a JavaScript-only public property.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
         </div>
 
         <div class="dec-section" id="state">
@@ -310,7 +310,7 @@ this.selectedId = task.id;</snice-code-block>
 </div>
 <p class="desc" style="margin-top:0.75rem">Use <code>@property()</code> for public input and <code>@state()</code> for state owned entirely by the component. Multiple writes in one turn are batched into one render.</p>
 <p class="desc">Under <code>{ once: true }</code> the template still renders once with correct values, then <code>@watch</code> fires synchronously on each write instead of a re-render.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
         </div>
 
         <div class="dec-section" id="deep-state">
@@ -326,7 +326,7 @@ this.selectedId = task.id;</snice-code-block>
 this.model.tasks.push(task);
 this.model.selected.add(task.id);</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Deep state uses native <code>Proxy</code> and <code>Reflect</code>, including cycles, arrays, <code>Map</code>, and <code>Set</code>. It targets modern browsers; ordinary state does not require deep proxies.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -601,7 +601,7 @@ onMount() {
   this.checkbox.focus();
   this.startMeasurement();
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
         </div>
 
         <div class="dec-section" id="watch">
@@ -611,7 +611,7 @@ onMount() {
 onDoneChanged(oldVal, newVal) {
   console.log(`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`);
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
         </div>
 
         <div class="dec-section" id="query">
@@ -627,7 +627,7 @@ focusCheckbox() {
 <snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.5rem">import type { SniceInput } from 'snice/components/input';
 
 @query('snice-input') input!: SniceInput;</snice-code-block>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#queries">Queries documentation →</a></p>
         </div>
 
         <div class="dec-section" id="dispose">
@@ -638,7 +638,7 @@ onUnmount() {
   clearInterval(this.interval);
   this.subscription.unsubscribe();
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -1000,6 +1000,7 @@ npx snice mcp
 claude mcp add snice -- npx snice mcp</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">The MCP server exposes component docs, decorator references, and a code validator as tools. It is optional — the skill is the primary path.</p>
 <p class="desc">Token-efficient copies of every reference page live in <code>docs/ai/</code>, mirroring these docs without the prose.</p>
+          <p class="doc-link"><a href="docs.html#cli">CLI documentation →</a></p>
         </div>
 
       </div>
@@ -1011,6 +1012,23 @@ claude mcp add snice -- npx snice mcp</snice-code-block>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      function reanchor() {
+        if (!location.hash) return;
+        var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (el) el.scrollIntoView();
+      }
+      window.addEventListener('load', reanchor);
+      if (window.customElements) {
+        customElements.whenDefined('snice-code-block').then(function () {
+          requestAnimationFrame(function () { requestAnimationFrame(reanchor); });
+          setTimeout(reanchor, 250);
+        });
+      }
+    })();
+  </script>
   <script>
     // Each tab group toggles only its own panels.
     document.querySelectorAll('.code-tabgroup').forEach(group => {

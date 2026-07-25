@@ -288,17 +288,7 @@ class UserPanel extends SniceElement {
 
 ## Render roots
 
-```typescript
-@element('open-panel')                       // open shadow root
-@element('closed-panel', { shadow: 'closed' })
-@element('light-panel', { renderRoot: 'light' })
-@element('light-panel-short', { shadow: false })
-@element('focus-panel', { delegatesFocus: true })
-```
-
-Shadow DOM is the default. Light DOM, open/closed shadow roots, and `delegatesFocus` all use the same rendering, query, style, event, and reconnect lifecycle. Framework `@query()` access continues to work with a closed root. Override `createRenderRoot()` for a custom host or shadow-root policy; it must return the host element or a `ShadowRoot`.
-
-`renderRoot` and `shadow` may be written together only when they select the same root kind. An explicit child-class `shadow` option overrides an inherited light/shadow kind; an explicit child `renderRoot: 'shadow'` likewise escapes an inherited `shadow: false` setting.
+Render-root selection (shadow, closed, light) is an element-definition concern; see [Elements](./elements.md#render-roots-and-shadow-dom).
 
 ## Editor metadata
 
@@ -309,3 +299,168 @@ Published packages include:
 - `snice/components/custom-elements` TypeScript declarations for tag-name maps and component element types.
 
 Regenerate metadata with `npm run generate:metadata`; CI or local checks can use `npm run check:metadata`.
+
+## @render() Decorator
+
+Returns a template using the `html` tagged template. Automatically re-renders when properties change due to differential rendering.
+
+```typescript
+import { element, render, html, property } from 'snice';
+
+@element('user-card')
+class UserCard extends HTMLElement {
+  @property()
+  name = 'Anonymous';
+
+  @render()
+  renderContent() {
+    return html`
+      <div class="card">
+        <h3>${this.name}</h3>
+        <p>User details...</p>
+      </div>
+    `;
+  }
+}
+```
+
+**Auto-Rendering:**
+- Template automatically re-renders when `@property()` decorated properties change
+- Only changed parts of the DOM update (differential rendering)
+- No manual re-render calls needed
+
+**Render Options:**
+
+The `@render()` decorator accepts an optional configuration object:
+
+```typescript
+@render({
+  debounce?: number,    // Delay re-render (ms)
+  throttle?: number,    // Limit re-render frequency (ms)
+  once?: boolean,       // Render once, disable auto-rendering
+  sync?: boolean,       // Synchronous rendering (skip batching)
+  differential?: boolean // Disable differential rendering (default: true)
+})
+```
+
+**Differential Rendering:**
+
+By default, Snice uses differential rendering which only updates changed parts of the DOM. To disable this and re-render from scratch each time:
+
+```typescript
+@element('simple-list')
+class SimpleList extends HTMLElement {
+  @property({ type: Array })
+  items = [];
+
+  @render({ differential: false })
+  renderContent() {
+    // Must return a string when differential: false
+    return `
+      <ul>
+        ${this.items.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    `;
+  }
+}
+```
+
+**When to use `differential: false`:**
+- Component has complex dynamic structure that changes between renders
+- Template structure changes based on data (e.g., empty state vs. populated)
+- Avoiding differential rendering issues with dynamic attributes
+- Simple components where full re-render is acceptable
+
+**Note:** When `differential: false`, the render method must return a string (not `html\`...\``). Declarative bindings and virtual control flow (`<if>`, `<case>`, and related tags) are not available in the raw-string mode.
+
+## Imperative Rendering
+
+Use `@render({ once: true })` with `@watch` and `@query` to render the template once, then update the DOM directly. Property changes fire watchers instead of triggering re-renders.
+
+```typescript
+@element('user-card')
+class UserCard extends HTMLElement {
+  @property() name = '';
+  @property() role = '';
+
+  @query('.name') $name!: HTMLElement;
+  @query('.role') $role!: HTMLElement;
+
+  @render({ once: true })
+  template() {
+    return html`
+      <div class="card">
+        <h3 class="name">${this.name}</h3>
+        <span class="role">${this.role}</span>
+      </div>
+    `;
+  }
+
+  @watch('name', 'role')
+  update(oldVal: any, newVal: any, prop: string) {
+    if (!this.$name) return;
+    this.$name.textContent = this.name;
+    this.$role.textContent = this.role;
+  }
+}
+```
+
+**How it works:**
+
+1. `@render({ once: true })` renders the template on first connect, then blocks all subsequent auto-renders. The initial render uses current property values via normal interpolation, so the DOM starts correct.
+2. `@query` provides getters that re-query the shadow DOM on each access — no stale references.
+3. `@watch` fires **synchronously** in the property setter, before `requestRender` is called. Since `once: true` blocks the render anyway, only the watcher runs.
+
+**Timing on property change:**
+1. Property setter runs
+2. Value reflected to attribute (if applicable)
+3. `@watch` methods fire synchronously
+4. `requestRender()` called but immediately returns (blocked by `once`)
+
+**When to use imperative rendering:**
+
+- The template structure never changes — only content within fixed elements updates
+- Updates are expensive (e.g., syntax highlighting, canvas operations) and you want precise control over what changes
+- You need to coordinate async operations (fetching data, animations) without re-renders interfering
+- Performance-critical components where differential rendering overhead matters
+
+**Compared to declarative rendering:**
+
+| | Declarative (`@render()`) | Imperative (`@render({ once: true })`) |
+|---|---|---|
+| Template re-renders | Automatic on property change | Never (after first render) |
+| DOM updates | Differential (only changed parts) | Manual via `@watch` + `@query` |
+| Boilerplate | Less — just use interpolation | More — explicit update methods |
+| Control | Framework manages updates | You manage updates |
+
+## Conditional Rendering
+
+```typescript
+@element('conditional-content')
+class ConditionalContent extends HTMLElement {
+  @property({ type: Boolean })
+  isLoggedIn = false;
+
+  @render()
+  renderContent() {
+    return html`
+      <if ${this.isLoggedIn}>
+        <div>Welcome back!</div>
+        <button @click=${this.logout}>Logout</button>
+        <else-if ${this.sessionExpired}>
+          <button @click=${this.login}>Sign in again</button>
+        </else-if>
+        <else>
+          <a href="/login">Please login</a>
+        </else>
+      </if>
+    `;
+  }
+
+  logout() {
+    this.isLoggedIn = false;
+  }
+}
+```
+
+The virtual control-flow tags add no wrapper elements and retain each branch's DOM identity. See [Declarative Rendering](./rendering.md) for typed `<when>` branches, `repeat()`, and direct async values. See [Binding Channels](./bindings.md) for exact property, attribute, event, spread, sentinel, and form semantics.

@@ -286,6 +286,27 @@ const footer = `
     </div>
   </footer>`;
 
+// Pages grow as <snice-code-block> elements upgrade, which pushes an anchored
+// section away from wherever the browser first scrolled — a deep link then
+// lands in the wrong place. Re-anchor once the blocks have settled.
+const anchorSettleScript = `
+  <script>
+    (function () {
+      function reanchor() {
+        if (!location.hash) return;
+        var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (el) el.scrollIntoView();
+      }
+      window.addEventListener('load', reanchor);
+      if (window.customElements) {
+        customElements.whenDefined('snice-code-block').then(function () {
+          requestAnimationFrame(function () { requestAnimationFrame(reanchor); });
+          setTimeout(reanchor, 250);
+        });
+      }
+    })();
+  </script>`;
+
 const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: tooling/website/build-website.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -415,7 +436,7 @@ class LightCard extends SniceElement { /* ... */ }
 
 @element('closed-card', { shadow: 'closed', delegatesFocus: true })
 class ClosedCard extends SniceElement { /* ... */ }</snice-code-block>
-      <p class="doc-link"><a href="docs.html#elements">Full documentation →</a></p>
+      <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
     </div>
 
     <div class="dec-section">
@@ -1797,19 +1818,32 @@ ${footer}
 const docsDir = join(root, 'docs');
 
 const docsManifest = [
+  // Order follows how a reader builds up: define an element, give it data,
+  // render it, wire events, add behavior, then put it on a route.
   { group: 'Core', docs: [
     { id: 'elements', file: 'elements.md', title: 'Elements' },
+    { id: 'properties', file: 'properties.md', title: 'Properties' },
+    { id: 'lifecycle', file: 'lifecycle.md', title: 'Lifecycle' },
+    { id: 'queries', file: 'queries.md', title: 'Queries' },
     { id: 'rendering', file: 'rendering.md', title: 'Declarative Rendering' },
     { id: 'bindings', file: 'bindings.md', title: 'Binding Channels' },
-    { id: 'routing', file: 'routing.md', title: 'Routing' },
     { id: 'events', file: 'events.md', title: 'Events' },
     { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
+    { id: 'routing', file: 'routing.md', title: 'Routing' },
   ]},
   { group: 'Patterns', docs: [
-    { id: 'observe', file: 'observe.md', title: 'Observers' },
     { id: 'request-response', file: 'request-response.md', title: 'Request / Response' },
+    { id: 'observe', file: 'observe.md', title: 'Observers' },
     { id: 'fetcher', file: 'fetcher.md', title: 'Fetcher' },
     { id: 'placards', file: 'placards.md', title: 'Placards' },
+  ]},
+  { group: 'Styling', docs: [
+    { id: 'styling', file: 'styling.md', title: 'Component Styles' },
+    { id: 'theme', file: 'theme.md', title: 'Theming' },
+  ]},
+  { group: 'Tooling', docs: [
+    { id: 'cli', file: 'cli.md', title: 'CLI' },
+    { id: 'testing', file: 'testing.md', title: 'Testing' },
   ]},
   { group: 'Integration', docs: [
     { id: 'cdn', file: 'cdn.md', title: 'CDN' },
@@ -2096,6 +2130,7 @@ ${header('docs')}
     ${contentHtml}
   </main>
 ${footer}
+${anchorSettleScript}
   <script>
     // Highlight active sidebar link on scroll
     (() => {
@@ -2330,6 +2365,7 @@ ${guideSections}
       </div>
   </main>
 ${footer}
+${anchorSettleScript}
   <script>
     // Each tab group toggles only its own panels.
     document.querySelectorAll('.code-tabgroup').forEach(group => {

@@ -1,20 +1,19 @@
-<!-- AI: For the AI-optimized version of this doc, see docs/ai/elements.md -->
 # Elements
 
-Defining custom elements, choosing a render root, and extending existing elements.
+Human reference: docs/elements.md
 
-| Topic | Documented in |
+Defining custom elements, choosing a render root, extending existing elements.
+
+| Topic | Doc |
 |---|---|
-| Public input, state, attribute conversion | [Properties](./properties.md) |
-| Connection, readiness, teardown, `@watch` | [Lifecycle](./lifecycle.md) |
-| `@query` / `@queryAll` | [Queries](./queries.md) |
-| `@styles`, host styling, icons | [Styling](./styling.md) |
-| `@render`, templates, control flow | [Declarative Rendering](./rendering.md) |
-| Template events, `@on`, `@dispatch` | [Events](./events.md) |
+| Public input, state, attribute conversion | [Properties](properties.md) |
+| Connection, readiness, teardown, `@watch` | [Lifecycle](lifecycle.md) |
+| `@query` / `@queryAll` | [Queries](queries.md) |
+| `@styles`, host styling, icons | [Styling](styling.md) |
+| `@render`, templates, control flow | [Declarative Rendering](rendering.md) |
+| Template events, `@on`, `@dispatch` | [Events](events.md) |
 
 ## Basic Usage
-
-### Creating an Element
 
 ```typescript
 import { element, render, html } from 'snice';
@@ -28,7 +27,7 @@ class MyButton extends HTMLElement {
 }
 ```
 
-For convention-based authoring, extend the optional `SniceElement` base and implement `render()` directly:
+Convention-based authoring: extend optional `SniceElement`, implement `render()` directly.
 
 ```typescript
 import { SniceElement, css, element, html, state } from 'snice';
@@ -44,21 +43,27 @@ class MyCounter extends SniceElement {
 }
 ```
 
-Plain `HTMLElement` subclasses and decorated render/style methods remain fully supported.
+Plain `HTMLElement` subclasses + decorated `@render`/`@styles` methods remain fully supported.
 
-### Element Decorator Options
+## `@element` Decorator Options
 
-The `@element` decorator accepts:
-- `tagName: string` - The custom element tag name (must contain a hyphen)
-- `options?: ElementOptions` - Optional configuration
-  - `formAssociated?: boolean` - Enable form association (default: false)
-  - `renderRoot?: 'shadow' | 'light'` - Select shadow or light DOM rendering
-  - `shadow?: 'open' | 'closed' | false` - Shadow mode, or light-DOM shorthand
-  - `delegatesFocus?: boolean` - Forwarded to `attachShadow()`
+```typescript
+@element(tagName: string, options?: ElementOptions)
 
-## Render Roots and Shadow DOM
+interface ElementOptions {
+  formAssociated?: boolean;              // default false
+  renderRoot?: 'shadow' | 'light';
+  shadow?: 'open' | 'closed' | false;    // false = light-DOM shorthand
+  delegatesFocus?: boolean;              // forwarded to attachShadow()
+}
+```
 
-Elements use an open shadow root by default. Open/closed shadow roots and light DOM share the same differential renderer, lifecycle, event binding, styles, and query decorators.
+`tagName` must contain a hyphen.
+
+## Render Roots / Shadow DOM
+
+- Default: open shadow root.
+- Open/closed shadow roots and light DOM share the same differential renderer, lifecycle, event binding, styles, and query decorators.
 
 ```typescript
 @element('closed-card', { shadow: 'closed' })
@@ -71,17 +76,16 @@ class LightCard extends HTMLElement { /* ... */ }
 class FocusCard extends HTMLElement { /* ... */ }
 ```
 
-`shadow: false` is shorthand for `renderRoot: 'light'`. Framework-managed queries continue to work with a closed root. A `createRenderRoot()` override may return the host element or a `ShadowRoot` for a custom policy.
-
-See [Queries](./queries.md) for resolving elements inside the render root.
+- `shadow: false` is shorthand for `renderRoot: 'light'`.
+- Framework-managed queries continue to work with a closed root.
+- `createRenderRoot()` override may return the host element or a `ShadowRoot` for a custom policy.
+- See [Queries](queries.md) for resolving elements inside the render root.
 
 ## Extending Elements
 
-Elements can extend other elements — including Snice's built-in components. The child inherits the parent's properties, watchers, event handlers, lifecycle hooks, and styles, then adds or overrides its own.
+Elements can extend other elements, including Snice's built-in components. Child inherits parent's properties, watchers, event handlers, lifecycle hooks, and styles, then adds/overrides its own.
 
-### Example: Currency Input
-
-Extend `snice-input` to create an input that prefixes a currency symbol, restricts to numeric entry, and formats the value on blur:
+### Example: Currency Input extends `snice-input`
 
 ```typescript
 import { element, property, watch, on, render, styles, html, css } from 'snice';
@@ -136,12 +140,12 @@ class CurrencyInput extends SniceInput {
 <currency-input label="Price" currency="EUR" placeholder="0.00"></currency-input>
 ```
 
-The `currency-input` inherits everything from `snice-input` — label rendering, variants, sizes, validation, focus/blur events, clearable, keyboard handling — without re-implementing any of it. It adds a currency symbol prefix, numeric restriction, and formatting.
+`currency-input` inherits everything from `snice-input` — label rendering, variants, sizes, validation, focus/blur events, clearable, keyboard handling — without re-implementing any of it. Adds a currency symbol prefix, numeric restriction, formatting.
 
-### What inherits
+### What Inherits
 
 | Feature | Behavior |
-|---------|----------|
+|---|---|
 | `@property` | Child gets all parent properties. Child can override defaults or type. |
 | `@watch` | Both parent and child watchers fire. |
 | `@on` | Both parent and child handlers fire. |
@@ -153,9 +157,9 @@ The `currency-input` inherits everything from `snice-input` — label rendering,
 
 Each child class needs its own `@element('tag-name')` with a unique tag name.
 
-## Full Example
+## Full Example: Separation of Concerns
 
-Elements handle visual behavior — they render the form and emit events. Business logic (API calls, validation) belongs in controllers:
+Elements handle visual behavior — render the form, emit events. Business logic (API calls, validation) belongs in controllers.
 
 ```typescript
 import { element, property, query, dispatch, render, styles, html, css } from 'snice';
