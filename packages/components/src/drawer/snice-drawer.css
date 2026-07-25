@@ -16,7 +16,7 @@
   /* Theme-integrated colors and effects */
   --drawer-bg: var(--snice-color-surface-container-highest, var(--snice-color-surface, white));
   --drawer-shadow: var(--snice-shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
-  --drawer-backdrop: var(--snice-color-backdrop, rgb(0 0 0 / 0.6));
+  --drawer-backdrop: var(--snice-drawer-backdrop, rgb(0 0 0 / 0.6));
   --drawer-backdrop-blur: 6px;
   --drawer-transition: transform 320ms var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
   --drawer-z-index: var(--snice-z-overlay, 1050);
@@ -303,8 +303,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--snice-size-control-md, 2rem); /* 32px */
-  height: var(--snice-size-control-md, 2rem); /* 32px */
+  width: var(--snice-drawer-control-size, 2rem); /* 32px */
+  height: var(--snice-drawer-control-size, 2rem); /* 32px */
   border: none;
   background: transparent;
   border-radius: var(--snice-border-radius-md, 6px);

@@ -37,7 +37,7 @@
 }
 
 .cell-link:visited {
-  color: var(--snice-color-secondary, rgb(107 114 128));
+  color: var(--snice-color-text-secondary, rgb(107 114 128));
 }
 
 .link-icon {

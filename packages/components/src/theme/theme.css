@@ -196,6 +196,26 @@
   --snice-tracking-wide: 0.03em;
   --snice-tracking-widest: 0.1em;
 
+  /* Alpha tints of the semantic colors */
+  --snice-color-primary-alpha: color-mix(in srgb, var(--snice-color-primary) 10%, transparent);
+  --snice-color-primary-alpha-strong: color-mix(in srgb, var(--snice-color-primary) 16%, transparent);
+  --snice-color-primary-alpha-dark: color-mix(in srgb, var(--snice-color-primary) 24%, transparent);
+  --snice-color-danger-alpha: color-mix(in srgb, var(--snice-color-danger) 10%, transparent);
+  --snice-color-danger-alpha-dark: color-mix(in srgb, var(--snice-color-danger) 24%, transparent);
+  --snice-color-success-alpha: color-mix(in srgb, var(--snice-color-success) 10%, transparent);
+  --snice-color-success-alpha-dark: color-mix(in srgb, var(--snice-color-success) 24%, transparent);
+  --snice-color-warning-alpha: color-mix(in srgb, var(--snice-color-warning) 10%, transparent);
+  --snice-color-warning-alpha-strong: color-mix(in srgb, var(--snice-color-warning) 16%, transparent);
+  --snice-color-warning-alpha-dark: color-mix(in srgb, var(--snice-color-warning) 24%, transparent);
+  --snice-color-text-secondary-alpha: color-mix(in srgb, var(--snice-color-text-secondary) 12%, transparent);
+
+  /* Motion + type + radius aliases */
+  --snice-transition-normal: 250ms;
+  --snice-line-height-tight: 1.25;
+  --snice-line-height-relaxed: 1.75;
+  --snice-border-radius-full: 9999px;
+  --snice-font-size-base: var(--snice-font-size-md);
+
   /* Border radius */
   --snice-border-radius-sm: 0.125rem;  /* 2px */
   --snice-border-radius-md: 0.25rem;   /* 4px */

@@ -55,7 +55,7 @@
 .drop-zone-icon {
   width: 3rem;
   height: 3rem;
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 .drop-zone-text {
@@ -72,12 +72,12 @@
 
 .drop-zone-secondary {
   font-size: var(--snice-font-size-sm, 0.875rem);
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 .drop-zone-hint {
   font-size: var(--snice-font-size-xs, 0.75rem);
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 /* Gallery Header */
@@ -198,7 +198,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 .gallery-item-placeholder svg {
@@ -321,7 +321,7 @@
   display: flex;
   gap: var(--snice-spacing-sm, 0.5rem);
   font-size: var(--snice-font-size-xs, 0.75rem);
-  color: var(--snice-color-text-muted, rgb(115 115 115));
+  color: var(--snice-color-text-tertiary, rgb(115 115 115));
 }
 
 .gallery-item-error {

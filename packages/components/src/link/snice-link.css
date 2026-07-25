@@ -35,7 +35,7 @@
 }
 
 .link:active {
-  color: var(--snice-color-primary-darker, rgb(29 78 216));
+  color: var(--snice-color-primary-hover, rgb(29 78 216));
 }
 
 /* A rejected URL intentionally has no href. Keep its label visible without
@@ -74,7 +74,7 @@
 }
 
 .link--muted {
-  color: var(--snice-color-text-muted, rgb(156 163 175));
+  color: var(--snice-color-text-tertiary, rgb(156 163 175));
 }
 
 .link--muted:hover {

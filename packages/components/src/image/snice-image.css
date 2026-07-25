@@ -54,8 +54,8 @@
 }
 
 .image--large {
-  width: var(--snice-spacing-6xl, 12rem); /* 192px */
-  height: var(--snice-spacing-6xl, 12rem); /* 192px */
+  width: var(--snice-spacing-3xl, 12rem); /* 192px */
+  height: var(--snice-spacing-3xl, 12rem); /* 192px */
 }
 
 /* Shape variants */

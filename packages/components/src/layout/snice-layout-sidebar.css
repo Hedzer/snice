@@ -42,8 +42,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--snice-size-control-md, 2rem);
-  height: var(--snice-size-control-md, 2rem);
+  width: var(--snice-layout-control-size, 2rem);
+  height: var(--snice-layout-control-size, 2rem);
   background: none;
   border: none;
   color: var(--snice-color-text-secondary, rgb(82 82 82));

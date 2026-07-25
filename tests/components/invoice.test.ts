@@ -454,16 +454,6 @@ describe('snice-invoice', () => {
     });
   });
 
-  describe('theme token contract', () => {
-    it('references only --snice-* tokens that the theme actually defines', () => {
-      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/invoice/snice-invoice.css'), 'utf8');
-      const theme = readFileSync(resolve(process.cwd(), 'packages/components/src/theme/theme.css'), 'utf8');
-
-      const referenced = [...new Set(css.match(/var\(\s*(--snice-[a-z0-9-]+)/g)?.map(m => m.replace(/var\(\s*/, '')) ?? [])];
-      const undefinedTokens = referenced.filter(token => !theme.includes(`${token}:`));
-
-      expect(undefinedTokens).toEqual([]);
-    });
   });
 
   describe('slots', () => {

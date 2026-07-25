@@ -24,8 +24,8 @@
   --wo-priority-low-text: var(--snice-color-primary, rgb(37 99 235));
   --wo-priority-medium-bg: var(--snice-color-warning-subtle, rgb(245 158 11 / 0.1));
   --wo-priority-medium-text: var(--snice-color-warning, rgb(217 119 6));
-  --wo-priority-high-bg: var(--snice-color-warning-strong-light, rgb(249 115 22 / 0.1));
-  --wo-priority-high-text: var(--snice-color-warning-strong, rgb(234 88 12));
+  --wo-priority-high-bg: var(--snice-color-warning-alpha, rgb(249 115 22 / 0.1));
+  --wo-priority-high-text: var(--snice-color-warning-hover, rgb(234 88 12));
   --wo-priority-urgent-bg: var(--snice-color-danger-subtle, rgb(220 38 38 / 0.1));
   --wo-priority-urgent-text: var(--snice-color-danger, rgb(220 38 38));
 

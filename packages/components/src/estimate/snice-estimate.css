@@ -39,7 +39,7 @@
 
   /* Optional items */
   --estimate-optional-bg: var(--snice-color-warning-alpha, rgb(245 158 11 / 0.1));
-  --estimate-optional-text: var(--snice-color-warning-text, rgb(217 119 6));
+  --estimate-optional-text: var(--snice-estimate-warning-text, rgb(217 119 6));
   --estimate-optional-border: var(--snice-color-warning-alpha-strong, rgb(245 158 11 / 0.3));
 
   /* Status */
@@ -52,7 +52,7 @@
   --estimate-status-declined-bg: var(--snice-color-danger-alpha, rgb(220 38 38 / 0.1));
   --estimate-status-declined-text: var(--snice-color-danger, rgb(220 38 38));
   --estimate-status-expired-bg: var(--snice-color-warning-alpha, rgb(245 158 11 / 0.1));
-  --estimate-status-expired-text: var(--snice-color-warning-text, rgb(217 119 6));
+  --estimate-status-expired-text: var(--snice-estimate-warning-text, rgb(217 119 6));
 
   /* Radius & shadow */
   --estimate-radius: var(--snice-border-radius-lg, 0.5rem);
@@ -68,12 +68,12 @@
 
   /* Professional variant */
   --estimate-pro-header-bg-start: var(--snice-color-surface, rgb(15 23 42));
-  --estimate-pro-header-bg-end: var(--snice-color-surface-alt, rgb(30 41 59));
+  --estimate-pro-header-bg-end: var(--snice-estimate-surface-alt, rgb(30 41 59));
   --estimate-pro-header-text: var(--snice-color-text-inverse, rgb(250 250 250));
-  --estimate-pro-meta-text: var(--snice-color-text-muted, rgb(148 163 184));
-  --estimate-pro-badge-border: var(--snice-color-border-inverse, rgb(255 255 255 / 0.2));
-  --estimate-pro-status-draft-bg: var(--snice-color-surface-inverse-alpha, rgb(255 255 255 / 0.1));
-  --estimate-pro-status-draft-text: var(--snice-color-text-muted-light, rgb(203 213 225));
+  --estimate-pro-meta-text: var(--snice-estimate-text-muted, rgb(148 163 184));
+  --estimate-pro-badge-border: var(--snice-estimate-border-inverse, rgb(255 255 255 / 0.2));
+  --estimate-pro-status-draft-bg: var(--snice-estimate-surface-inverse-alpha, rgb(255 255 255 / 0.1));
+  --estimate-pro-status-draft-text: var(--snice-estimate-text-muted-light, rgb(203 213 225));
   --estimate-pro-status-sent-bg: var(--snice-color-primary-alpha-dark, rgb(59 130 246 / 0.2));
   --estimate-pro-status-sent-text: var(--snice-color-primary-subtle, rgb(147 197 253));
   --estimate-pro-status-accepted-bg: var(--snice-color-success-alpha-dark, rgb(22 163 74 / 0.2));
@@ -86,18 +86,18 @@
   --estimate-pro-accept-bg-end: var(--snice-color-success-hover, rgb(21 128 61));
 
   /* Creative variant */
-  --estimate-creative-gradient-start: var(--snice-color-creative-start, rgb(124 58 237));
-  --estimate-creative-gradient-mid: var(--snice-color-creative-mid, rgb(219 39 119));
-  --estimate-creative-gradient-end: var(--snice-color-creative-end, rgb(245 158 11));
+  --estimate-creative-gradient-start: var(--snice-estimate-creative-start, rgb(124 58 237));
+  --estimate-creative-gradient-mid: var(--snice-estimate-creative-mid, rgb(219 39 119));
+  --estimate-creative-gradient-end: var(--snice-estimate-creative-end, rgb(245 158 11));
   --estimate-creative-text: var(--snice-color-text-inverse, rgb(250 250 250));
-  --estimate-creative-text-muted: var(--snice-color-text-inverse-muted, rgb(255 255 255 / 0.8));
-  --estimate-creative-badge-bg: var(--snice-color-surface-inverse-alpha, rgb(255 255 255 / 0.2));
-  --estimate-creative-badge-border: var(--snice-color-border-inverse-light, rgb(255 255 255 / 0.3));
-  --estimate-creative-expiry-text: var(--snice-color-text-inverse-subtle, rgb(255 255 255 / 0.7));
-  --estimate-creative-accent: var(--snice-color-creative-start, rgb(124 58 237));
-  --estimate-creative-accent-border-alpha: var(--snice-color-creative-alpha, rgb(124 58 237 / 0.2));
-  --estimate-creative-accent-border-strong: var(--snice-color-creative-alpha-strong, rgb(124 58 237 / 0.3));
-  --estimate-creative-shadow: var(--snice-color-creative-shadow, rgb(124 58 237 / 0.15));
+  --estimate-creative-text-muted: var(--snice-estimate-text-inverse-muted, rgb(255 255 255 / 0.8));
+  --estimate-creative-badge-bg: var(--snice-estimate-surface-inverse-alpha, rgb(255 255 255 / 0.2));
+  --estimate-creative-badge-border: var(--snice-estimate-border-inverse-light, rgb(255 255 255 / 0.3));
+  --estimate-creative-expiry-text: var(--snice-estimate-text-inverse-subtle, rgb(255 255 255 / 0.7));
+  --estimate-creative-accent: var(--snice-estimate-creative-start, rgb(124 58 237));
+  --estimate-creative-accent-border-alpha: var(--snice-estimate-creative-alpha, rgb(124 58 237 / 0.2));
+  --estimate-creative-accent-border-strong: var(--snice-estimate-creative-alpha-strong, rgb(124 58 237 / 0.3));
+  --estimate-creative-shadow: var(--snice-estimate-creative-shadow, rgb(124 58 237 / 0.15));
 
   /* Minimal variant */
   --estimate-minimal-cell-border: var(--snice-color-border-subtle, rgb(0 0 0 / 0.05));
