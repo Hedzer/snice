@@ -47,3 +47,45 @@ import 'snice/components/layout/snice-layout';
 ```typescript
 layout.update(appContext, placards, currentRoute, routeParams);
 ```
+
+## Shell variants
+
+Siblings of `snice-layout` for the other standard page shapes. All regions are slots; all still take router `update()`.
+
+- `snice-layout` — stacked: `brand`, `page`, `footer`
+- `snice-layout-sidebar` — app shell: `brand`, `header`, `sidebar`, `page`, `footer`
+- `snice-layout-dashboard` — app shell + toolbar + right rail: `brand`, `header`, `toolbar`, `sidebar`, `page`, `right-sidebar`
+- `snice-layout-blog` — article measure: `brand`, `nav`, `page`, `sidebar`, `footer`
+- `snice-layout-centered` — auth card: `brand`, `page`, `footer`
+- `snice-layout-split` — two panes: `left`, `right` (`direction`, `ratio`)
+- `snice-layout-landing` — marketing bands: `brand`, `nav`, `cta`, `hero`, `page`, `footer` (`use-nav`)
+- `snice-layout-card` — card grid: `header`, `page`, `footer` (`columns`, `gap`)
+- `snice-layout-minimal` — `page` only
+- `snice-layout-fullscreen` — layers: `background`, `overlay`, `page`, `controls` (`overlay`)
+
+## Sidebar shells
+
+Sidebar is in-flow on desktop (main reflows on collapse); below 768px it overlays behind a scrim that closes on click/Escape. Content is never hidden.
+
+- `collapsed` — boolean, reflected → `[collapsed]` is styleable
+- `collapse-mode` — `rail` (default, icon column) | `offcanvas` (hidden) | `none` (pinned, no toggle)
+- `Ctrl`/`Cmd`+`B` toggles
+
+```html
+<snice-layout-sidebar collapse-mode="rail">
+  <div slot="brand">Acme</div>
+  <a slot="sidebar" href="/dashboard"><span class="icon">▦</span><span class="label">Dashboard</span></a>
+  <div slot="page">Page content</div>
+</snice-layout-sidebar>
+```
+
+```css
+snice-layout-sidebar[collapsed] .label { display: none; }
+```
+
+Directly slotted links get hover/focus/current styling; nested markup is styled by its owner. No slotted content → placard-driven nav.
+
+## Sizing hooks
+
+- `--snice-layout-sidebar-width` (`16rem`), `--snice-layout-rail-collapsed-width` (`3rem`)
+- `--snice-layout-rail-width` (`18rem`), `--snice-layout-measure` (`65ch`), `--snice-layout-container` (`80rem`)
