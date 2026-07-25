@@ -79,23 +79,26 @@ export function on(
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Dedup by method reference. Use hasOwnProperty so subclasses get their
-      // OWN Set instead of inheriting — otherwise parent and child share state
+      // Dedup by registration identity (method + events + selector), NOT by
+      // method reference alone — stacked @on decorators share one method and
+      // must each register. Use hasOwnProperty so subclasses get their OWN
+      // Set instead of inheriting — otherwise parent and child share state
       // and child registrations pollute parent (and vice versa) via the
       // prototype chain.
+      const eventNames = Array.isArray(eventName) ? eventName : [eventName];
+      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}`;
+
       if (!Object.prototype.hasOwnProperty.call(constructor, ON_METHODS)) {
         constructor[ON_METHODS] = new Set();
       }
-      if (constructor[ON_METHODS].has(originalMethod)) return;
-      constructor[ON_METHODS].add(originalMethod);
+      if (constructor[ON_METHODS].has(registrationKey)) return;
+      constructor[ON_METHODS].add(registrationKey);
 
       if (!Object.prototype.hasOwnProperty.call(constructor, ON_HANDLERS)) {
         // Seed with parent's handlers (if any) so inherited @on still fires.
         const inherited = constructor[ON_HANDLERS];
         constructor[ON_HANDLERS] = inherited ? [...inherited] : [];
       }
-
-      const eventNames = Array.isArray(eventName) ? eventName : [eventName];
 
       for (const event of eventNames) {
         constructor[ON_HANDLERS].push({

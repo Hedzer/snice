@@ -1,10 +1,66 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { element, dispatch, query, property, request, respond, observe, render, html } from '../packages/core/src/index';
+import { element, on, dispatch, query, property, request, respond, observe, render, html } from '../packages/core/src/index';
 
 describe('Decorator stacking and this context preservation', () => {
   beforeEach(() => {
     // Clear DOM
     document.body.innerHTML = '';
+  });
+
+  it('registers every event when multiple @on decorators stack on one method', async () => {
+    @element('test-stacking-double-on')
+    class TestDoubleOn extends HTMLElement {
+      calls: string[] = [];
+
+      @on('pointerdown')
+      @on('keydown')
+      handleEither(event: Event) {
+        this.calls.push(event.type);
+      }
+
+      @render()
+      renderContent() {
+        return html`<div>content</div>`;
+      }
+    }
+
+    const el = document.createElement('test-stacking-double-on') as TestDoubleOn;
+    document.body.appendChild(el);
+    await (el as any).ready;
+
+    el.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+
+    expect(el.calls.sort()).toEqual(['keydown', 'pointerdown']);
+  });
+
+  it('does not double-register stacked @on handlers across multiple instances', async () => {
+    @element('test-stacking-double-on-multi')
+    class TestDoubleOnMulti extends HTMLElement {
+      calls: string[] = [];
+
+      @on('pointerdown')
+      @on('keydown')
+      handleEither(event: Event) {
+        this.calls.push(event.type);
+      }
+
+      @render()
+      renderContent() {
+        return html`<div>content</div>`;
+      }
+    }
+
+    const first = document.createElement('test-stacking-double-on-multi') as TestDoubleOnMulti;
+    const second = document.createElement('test-stacking-double-on-multi') as TestDoubleOnMulti;
+    document.body.appendChild(first);
+    document.body.appendChild(second);
+    await (first as any).ready;
+    await (second as any).ready;
+
+    second.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    expect(second.calls).toEqual(['pointerdown']);
+    expect(first.calls).toEqual([]);
   });
 
   it('should preserve this context when stacking @on and @dispatch decorators', async () => {
