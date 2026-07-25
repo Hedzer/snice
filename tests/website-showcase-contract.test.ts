@@ -40,6 +40,21 @@ describe('website showcase contract', () => {
     expect(firstScript, 'a script before <head> makes the whole page unparseable').toBeGreaterThan(headOpen);
   });
 
+  it('every generated page opens <head> before any script', () => {
+    const pagesDir = resolve(root, 'website/public');
+    const offenders: string[] = [];
+
+    for (const file of readdirSync(pagesDir).filter(f => f.endsWith('.html'))) {
+      const html = readFileSync(join(pagesDir, file), 'utf8');
+      const headOpen = html.indexOf('<head>');
+      const firstScript = html.indexOf('<script');
+      if (headOpen === -1 || firstScript === -1) continue;
+      if (firstScript < headOpen) offenders.push(file);
+    }
+
+    expect(offenders, 'a script before <head> makes the page unparseable and the dev server returns 500').toEqual([]);
+  });
+
   it('every section heading resolves to a documentation file', () => {
     const html = buildComponentsPage();
     const aliasBlock = html.slice(html.indexOf('const DOC_SLUGS'), html.indexOf('const DOC_SLUGS') + 600);

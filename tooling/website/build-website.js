@@ -310,9 +310,9 @@ const anchorSettleScript = `
 const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: tooling/website/build-website.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
 <head>
   <meta charset="UTF-8">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
   <script src="components/snice-runtime.min.js"></script>
