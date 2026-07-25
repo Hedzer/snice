@@ -115,6 +115,3 @@ storybook-static/
 
 # Brainstorming companion session cache
 .superpowers/
-.all-layouts-preview.html
-.frame-test.html
-.docs-test.html
