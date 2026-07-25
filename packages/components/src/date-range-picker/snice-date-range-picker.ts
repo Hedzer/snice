@@ -320,7 +320,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
                         </button>
                       </div>
                       <div class="calendar-weekdays">${this.getDayHeaders()}</div>
-                      <div class="calendar-days" role="grid" aria-label="Calendar days">${this.getDaysGrid(this.viewDate.getFullYear(), this.viewDate.getMonth())}</div>
+                      <div class="calendar-days" role="grid" aria-label="Calendar days" @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>${this.getDaysGrid(this.viewDate.getFullYear(), this.viewDate.getMonth())}</div>
                     </div>
 
                     <if ${isDual}>
@@ -341,7 +341,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
                           </button>
                         </div>
                         <div class="calendar-weekdays">${this.getDayHeaders()}</div>
-                        <div class="calendar-days" role="grid" aria-label="Calendar days">${this.getDaysGrid(nextMonthDate.getFullYear(), nextMonthDate.getMonth())}</div>
+                        <div class="calendar-days" role="grid" aria-label="Calendar days" @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>${this.getDaysGrid(nextMonthDate.getFullYear(), nextMonthDate.getMonth())}</div>
                       </div>
                     </if>
                   </default>
@@ -628,6 +628,21 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
     const days = [];
 
+    // Roving tabindex target: exactly one day across both panels is tabbable.
+    const focusCandidate = this.getFocusedCalendarDate();
+    const inThisPanel = (d: Date) => d.getFullYear() === year && d.getMonth() === month;
+    const firstVisible = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+    let rovingDate: Date;
+    if (inThisPanel(focusCandidate) && this.isDateInVisibleMonths(focusCandidate)) {
+      rovingDate = focusCandidate;
+    } else if (this.isDateInVisibleMonths(focusCandidate)) {
+      rovingDate = new Date(0); // focus target lives in the other panel
+    } else if (inThisPanel(firstVisible)) {
+      rovingDate = firstVisible;
+    } else {
+      rovingDate = new Date(0);
+    }
+
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
     }
@@ -681,6 +696,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       const inConfirmedRange = classes.includes('day--in-range');
       const selectedValue = isStart || isEnd || inConfirmedRange ? 'true' : 'false';
       const currentValue = isSameDay(date, today) ? 'date' : 'false';
+      const tabindexValue = isSameDay(date, rovingDate) ? '0' : '-1';
 
       days.push(html`
         <button
@@ -692,6 +708,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
           aria-label="${this.formatDate(date)}"
           aria-selected="${selectedValue}"
           aria-current="${currentValue}"
+          tabindex="${tabindexValue}"
         >
           ${day}
         </button>
@@ -772,12 +789,86 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
 
   private handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
+      const onDayCell = (e.target as HTMLElement | null)?.hasAttribute?.('data-date');
+      if (onDayCell) return; // let the day button's native activation select it
+
       e.preventDefault();
       if (!this.showCalendar) this.open();
     } else if (e.key === 'Escape' && this.showCalendar) {
       this.close();
       this.focus();
+    } else if (this.showCalendar && this.calendarView === 'days') {
+      // Arrow / Home / End / PageUp / PageDown navigation over the day grids.
+      const delta = this.dayGridDelta(e.key);
+      if (delta === null) return;
+      e.preventDefault();
+      const current = this.getFocusedCalendarDate();
+      const next = new Date(current);
+      if (typeof delta === 'number') {
+        next.setDate(current.getDate() + delta);
+      } else if (delta === 'month+') {
+        next.setMonth(current.getMonth() + 1);
+      } else if (delta === 'month-') {
+        next.setMonth(current.getMonth() - 1);
+      } else if (delta === 'year+') {
+        next.setFullYear(current.getFullYear() + 1);
+      } else if (delta === 'year-') {
+        next.setFullYear(current.getFullYear() - 1);
+      }
+
+      if (!this.isDateInVisibleMonths(next)) {
+        this.viewDate = new Date(next.getFullYear(), next.getMonth(), 1);
+      }
+      this.updateCalendarGrid();
+      this.focusCalendarDate(next);
     }
+  }
+
+  private dayGridDelta(key: string): number | 'month+' | 'month-' | 'year+' | 'year-' | null {
+    switch (key) {
+      case 'ArrowLeft': return -1;
+      case 'ArrowRight': return 1;
+      case 'ArrowUp': return -7;
+      case 'ArrowDown': return 7;
+      case 'Home': {
+        const d = this.getFocusedCalendarDate();
+        return -d.getDay();
+      }
+      case 'End': {
+        const d = this.getFocusedCalendarDate();
+        return 6 - d.getDay();
+      }
+      case 'PageUp':
+        return 'month-';
+      case 'PageDown':
+        return 'month+';
+    }
+    return null;
+  }
+
+  private getFocusedCalendarDate(): Date {
+    const focused = this.shadowRoot?.querySelector('[data-date]:focus') as HTMLElement | null;
+    if (focused) {
+      const dateStr = focused.getAttribute('data-date');
+      if (dateStr) return new Date(dateStr + 'T00:00:00');
+    }
+    if (this.startDate) return new Date(this.startDate);
+    return new Date(this.viewDate);
+  }
+
+  private isDateInVisibleMonths(date: Date): boolean {
+    const first = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+    const monthCount = this.columns === 2 ? 2 : 1;
+    const afterLast = new Date(first.getFullYear(), first.getMonth() + monthCount, 1);
+    return date >= first && date < afterLast;
+  }
+
+  private focusCalendarDate(date: Date) {
+    requestAnimationFrame(() => {
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const btn = this.shadowRoot?.querySelector(`[data-date="${dateStr}"]`) as HTMLElement | null;
+      btn?.focus();
+    });
   }
 
   private handleCalendarToggle(_e: Event) {

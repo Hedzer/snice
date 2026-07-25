@@ -269,7 +269,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
                   ${this.getDayHeaders()}
                 </div>
 
-                <div class="calendar-days" role="grid" aria-label="Calendar days">
+                <div class="calendar-days" role="grid" aria-label="Calendar days" @keydown=${(e: KeyboardEvent) => this.handleKeydown(e)}>
                   ${this.getDaysGrid()}
                 </div>
               </default>

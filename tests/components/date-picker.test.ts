@@ -1061,6 +1061,25 @@ describe('snice-date-picker', () => {
       expect(current, 'today carries aria-current').toBeTruthy();
     });
 
+    it('keeps arrow navigation working after focus lands on a day button', async () => {
+      // happy-dom cannot model shadow focus, so this asserts the day grid owns
+      // a keydown path into the navigation handler; the focus hand-off itself
+      // is verified live (ArrowRight on a focused 06-10 button moves shadow
+      // activeElement to 06-11 in Chromium).
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', { value: '2026-06-10' });
+      await wait(50);
+      datePicker.show();
+      await wait(20);
+
+      const before = new Date((datePicker as any).viewDate);
+      const day = datePicker.shadowRoot!.querySelector('button[data-date="2026-06-10"]') as HTMLButtonElement;
+      day.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
+      await wait(30);
+
+      const after = new Date((datePicker as any).viewDate);
+      expect(after.getTime(), 'grid keydown reaches the navigation handler').not.toBe(before.getTime());
+    });
+
     it('uses a roving tabindex so only one day is tabbable', async () => {
       datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
       await wait(50);

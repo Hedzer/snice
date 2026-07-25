@@ -1188,5 +1188,33 @@ describe('snice-date-range-picker', () => {
       const current = picker.shadowRoot!.querySelectorAll('.calendar-days [aria-current="date"]');
       expect(current.length).toBe(1);
     });
+
+    it('arrow keys on a day button reach the grid navigation handler', async () => {
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        start: `${ym}-10`,
+        end: `${ym}-12`,
+      });
+      (picker as any).showCalendar = true;
+      await wait(30);
+
+      const spy = vi.spyOn(picker as any, 'focusCalendarDate');
+      const day = picker.shadowRoot!.querySelector(`button[data-date="${ym}-10"]`) as HTMLButtonElement;
+      expect(day, 'start day is rendered in the open view').toBeTruthy();
+      day.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
+      await wait(20);
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses a roving tabindex so only one day is tabbable', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker');
+      (picker as any).showCalendar = true;
+      await wait(30);
+
+      const tabbable = picker.shadowRoot!.querySelectorAll('.calendar-days button[tabindex="0"]');
+      expect(tabbable.length).toBe(1);
+    });
   });
 });
