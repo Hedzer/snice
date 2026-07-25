@@ -131,6 +131,31 @@
         grid-template-rows: 1fr;
       }
 
+      .ly-grid-master-detail {
+        grid-template-columns: 3.5rem 1fr;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h"
+          "l d";
+      }
+      .ly-grid-docs {
+        grid-template-columns: 2.75rem 1fr 2.25rem;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h h"
+          "s m t";
+      }
+      .ly-grid-auth-split {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "form panel";
+      }
+
+      .ly-a-l { grid-area: l; }
+      .ly-a-d { grid-area: d; }
+      .ly-a-t { grid-area: t; }
+      .ly-a-form { grid-area: form; }
+      .ly-a-panel { grid-area: panel; }
       .ly-a-h { grid-area: h; }
       .ly-a-n { grid-area: n; }
       .ly-a-s { grid-area: s; }
@@ -197,7 +222,7 @@
 
     <div class="comp-section">
       <h3>Layouts</h3>
-      <p class="comp-desc">Nine layout primitives for common application shells: dashboards, landing pages, split views, and more.</p>
+      <p class="comp-desc">Twelve layout shells for common application shells: dashboards, landing pages, split views, and more.</p>
       <div class="comp-split comp-split-stacked">
         <div class="comp-split-demo demo-col" style="flex-direction:column;gap:1.25rem;align-items:stretch">
 
@@ -389,6 +414,66 @@
               </div>
             </div>
 
+            <!-- Master detail -->
+            <div>
+              <p class="ly-caption">Master detail · list beside the selected item</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-master-detail</span>
+                </div>
+                <div class="ly-demo__body ly-grid-master-detail">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-l ly-zone--accent"><span class="ly-tag">List</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-d"><span class="ly-tag">Detail</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Docs -->
+            <div>
+              <p class="ly-caption">Docs · nav tree, prose, on-this-page rail</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-docs</span>
+                </div>
+                <div class="ly-demo__body ly-grid-docs">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-s ly-zone--accent"><span class="ly-tag">Nav</span></div>
+                  <div class="ly-zone ly-a-m"><span class="ly-tag">Prose</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-t"><span class="ly-tag">TOC</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auth split -->
+            <div>
+              <p class="ly-caption">Auth split · form beside a brand panel</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-auth-split</span>
+                </div>
+                <div class="ly-demo__body ly-grid-auth-split">
+                  <div class="ly-zone ly-a-form"><span class="ly-tag">Form</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-panel ly-zone--solid"><span class="ly-tag">Panel</span></div>
+                </div>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -403,7 +488,10 @@
 &lt;snice-layout-landing&gt;&lt;/snice-layout-landing&gt;
 &lt;snice-layout-blog&gt;&lt;/snice-layout-blog&gt;
 &lt;snice-layout-card&gt;&lt;/snice-layout-card&gt;
-&lt;snice-layout-fullscreen&gt;&lt;/snice-layout-fullscreen&gt;</snice-code-block>
+&lt;snice-layout-fullscreen&gt;&lt;/snice-layout-fullscreen&gt;
+&lt;snice-layout-master-detail&gt;&lt;/snice-layout-master-detail&gt;
+&lt;snice-layout-docs&gt;&lt;/snice-layout-docs&gt;
+&lt;snice-layout-auth-split&gt;&lt;/snice-layout-auth-split&gt;</snice-code-block>
         </div>
       </div>
     </div>
