@@ -4,14 +4,15 @@
 Request/Response provides request/response communication between elements and controllers using async generators.
 
 ## Table of Contents
-- [Why Request/Response?](#why-requestresponse)
+- [Why Request/Response?](#why-request-response)
 - [Basic Concept](#basic-concept)
-- [Request/Response Decorators](#requestresponse-decorators)
+- [Request/Response Decorators](#request-response-decorators)
 - [Element-Side Requests](#element-side-requests)
 - [Controller-Side Responses](#controller-side-responses)
-- [Request/Response Options](#requestresponse-options)
+- [Request/Response Options](#request-response-options)
 - [Error Handling](#error-handling)
 - [Advanced Patterns](#advanced-patterns)
+- [Using Without Decorators](#using-without-decorators)
 
 ## Why Request/Response?
 

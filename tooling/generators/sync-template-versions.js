@@ -78,3 +78,31 @@ for (const file of htmlFiles) {
 }
 
 console.log(`\n${htmlUpdated} HTML file(s) updated.\n`);
+
+// Also sync version in the agent-plugin manifests. These are what the
+// install-from-repo flow reads, so a stale version here ships a plugin
+// that claims the wrong Snice release.
+const manifestFiles = ['.claude-plugin/plugin.json', 'gemini-extension.json'];
+
+console.log(`Syncing plugin manifests to v${currentVersion}...\n`);
+
+let manifestUpdated = 0;
+for (const file of manifestFiles) {
+  const filePath = join(root, file);
+  try {
+    const manifest = JSON.parse(readFileSync(filePath, 'utf8'));
+    if (manifest.version === currentVersion) {
+      console.log(`  - ${file}: already at ${currentVersion}`);
+      continue;
+    }
+    const oldVersion = manifest.version;
+    manifest.version = currentVersion;
+    writeFileSync(filePath, JSON.stringify(manifest, null, 2) + '\n');
+    console.log(`  ✓ ${file}: ${oldVersion} → ${currentVersion}`);
+    manifestUpdated++;
+  } catch (error) {
+    console.error(`  ✗ ${file}: ${error.message}`);
+  }
+}
+
+console.log(`\n${manifestUpdated} manifest(s) updated.\n`);

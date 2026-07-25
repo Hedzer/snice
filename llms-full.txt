@@ -7,7 +7,7 @@
 - npm: https://www.npmjs.com/package/snice
 - CDN: https://cdn.snice.dev
 
-For per-component docs, use the MCP server: `claude mcp add snice -- npx snice mcp`
+For per-component docs, read `docs/ai/components/<name>.md`.
 
 ---
 
@@ -302,7 +302,7 @@ Import via side-effect: `import 'snice/components/button/snice-button'`
 
 **Utility:** theme
 
-Per-component docs available via MCP server (`get_component_docs` tool)
+Per-component docs live in `docs/ai/components/<name>.md`
 
 ### Component Conventions
 - Tag prefix: `snice-` (e.g., `<snice-button>`)
@@ -361,4 +361,3 @@ Core variables: `--snice-color-primary`, `-success`, `-warning`, `-danger`, `-ne
 - https://snice.dev/guide.html — Getting started guide
 - https://snice.dev/decorators.html — Decorator reference
 - npm: https://www.npmjs.com/package/snice
-- MCP server: `claude mcp add snice -- npx snice mcp`

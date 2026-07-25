@@ -1,0 +1,18 @@
+{
+  "name": "snice",
+  "description": "Build, modify, debug, and review applications using the Snice web-component framework and its React adapters",
+  "version": "6.1.0",
+  "author": {
+    "name": "Hedzer"
+  },
+  "homepage": "https://snice.dev",
+  "repository": "https://gitlab.com/Hedzer/snice",
+  "license": "MIT",
+  "keywords": [
+    "snice",
+    "web-components",
+    "custom-elements",
+    "decorators",
+    "typescript"
+  ]
+}

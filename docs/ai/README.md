@@ -13,8 +13,7 @@ npx snice init-ai
 ```
 
 The skill points back to these version-matched AI docs and loads only the
-topical and component references needed for the current task. The MCP server is
-optional structured lookup; it is not a replacement for the workflow skill.
+topical and component references needed for the current task.
 
 **Format:**
 - Type signatures over prose
@@ -55,7 +54,7 @@ for depth; read the aggregates when you want the whole surface at once.
 - `theme.md` - Tokens, surfaces, dark mode
 
 *Tooling:*
-- `cli.md` - `create-app`, `init-ai`, `check`, `doctor`, `validate`, `mcp`, `build-component`
+- `cli.md` - `create-app`, `init-ai`, `check`, `doctor`, `validate`, `build-component`
 - `testing.md` - `ready` / `rendered`, asserting events, swapping controllers
 
 *Integration:*
@@ -66,7 +65,7 @@ for depth; read the aggregates when you want the whole surface at once.
 
 Read these instead of `/docs/*.md` for faster context loading.
 
-**WIP Components:** Some component folders exist but are not available in builds or MCP output. The source of truth is `packages/components/.wip` (one directory name per line).
+**WIP Components:** Some component folders exist but are not available in builds. The source of truth is `packages/components/.wip` (one directory name per line).
 
 ## CLI
 
@@ -78,27 +77,7 @@ npx snice create-app my-app --template=react
 # Check package, configuration, and Snice source together
 npx snice check
 
-# Run MCP server
-npx snice mcp
 ```
-
-## MCP Server
-
-Snice includes an MCP server for AI-assisted development.
-
-**Connect in Claude Code:**
-```bash
-claude mcp add snice -- npx snice mcp
-```
-
-**Tools provided:**
-- `list_components` - List all UI components
-- `get_component_docs` - Get component documentation
-- `get_decorator_docs` - Get decorator reference
-- `get_overview` - Framework overview
-- `generate_component` - Scaffold new components
-- `search_docs` - Search documentation
-- `validate_code` - Check code for common mistakes
 
 ## CDN / Standalone Usage
 

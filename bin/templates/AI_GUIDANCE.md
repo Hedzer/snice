@@ -16,8 +16,3 @@ npx snice check
 Use `doctor` or `validate` only to isolate the configuration or source half of
 a failed check.
 
-The optional MCP server provides structured documentation lookup:
-
-```bash
-npx snice mcp
-```

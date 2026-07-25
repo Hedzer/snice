@@ -12,6 +12,9 @@ The `@observe` decorator provides lifecycle-managed observation of external chan
 - [Using with Controllers](#using-with-controllers)
 - [Options](#options)
 - [Best Practices](#best-practices)
+- [Lifecycle and Cleanup](#lifecycle-and-cleanup)
+- [Performance Considerations](#performance-considerations)
+- [Examples](#examples)
 
 ## Overview
 

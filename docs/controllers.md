@@ -11,6 +11,7 @@ Controllers handle data fetching, business logic, and server communication separ
 - [Event Handling in Controllers](#event-handling-in-controllers)
 - [Query Selectors in Controllers](#query-selectors-in-controllers)
 - [Advanced Patterns](#advanced-patterns)
+- [Accessing Controllers](#accessing-controllers)
 
 ## Basic Usage
 

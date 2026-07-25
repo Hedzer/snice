@@ -17,7 +17,6 @@ npx snice <command>
 | `doctor [path]` | Diagnose configuration, imports, dependencies, and AI setup |
 | `validate [path]` | Run the source analyzer only |
 | `build-component <name>` | Build a CDN bundle from a Snice source checkout |
-| `mcp` | Start the stdio MCP documentation server |
 
 ## Creating a Project
 
@@ -62,23 +61,65 @@ npx snice init-ai --force    # overwrite an existing install
 
 This installs a skill matched to the Snice version in your project, so an agent reads the documentation for the version you actually have rather than whatever it remembers. See [AI Assistance](#ai-assistance) below.
 
-## MCP Server
-
-```bash
-npx snice mcp
-```
-
-Starts an stdio MCP server exposing component documentation, decorator references, and a code validator as tools.
-
-Register it with Claude Code:
-
-```bash
-claude mcp add snice -- npx snice mcp
-```
-
-The MCP server is optional. `init-ai` is the primary path — the skill points at version-matched documentation and does not require a running server.
-
 ## AI Assistance
+
+There are two ways to give a coding agent the Snice skill. Both install the same
+skill; they differ in what it is scoped to.
+
+### Per project, from npm
+
+Installs into the current project, matched to the Snice version that project has:
+
+```bash
+npx snice init-ai
+```
+
+This writes `.agents/skills/snice/` plus `AGENTS.md` and `CLAUDE.md` pointing at
+it. Use `--force` to overwrite an existing install. Because the skill reads
+`node_modules/snice/docs/ai/`, the agent always sees documentation for the
+version actually installed — not whatever it remembers.
+
+### Per harness, from the repository
+
+Installs globally for your agent, straight from the repo. Snice ships the plugin
+manifests these harnesses expect, so no clone or build step is needed.
+
+**Claude Code**
+
+```bash
+/plugin marketplace add https://gitlab.com/Hedzer/snice
+/plugin install snice@snice
+```
+
+**Antigravity**
+
+```bash
+agy plugin install https://gitlab.com/Hedzer/snice
+```
+
+**Gemini CLI**
+
+```bash
+gemini extensions install https://gitlab.com/Hedzer/snice
+gemini extensions update snice     # later
+```
+
+**Kimi Code**
+
+```text
+/plugins install https://gitlab.com/Hedzer/snice
+```
+
+**Factory Droid**
+
+```bash
+droid plugin marketplace add https://gitlab.com/Hedzer/snice
+droid plugin install snice@snice
+```
+
+Prefer `init-ai` when you work on one Snice project and want the skill pinned to
+its version. Prefer the repository install when you move between Snice projects
+and want the skill always available.
 
 Token-efficient copies of every reference page live in `docs/ai/`, mirroring these documents without the prose. Agents should read those instead of the human pages.
 

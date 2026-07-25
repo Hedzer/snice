@@ -36,7 +36,6 @@ Usage:
   snice doctor [path] [--json]
   snice validate [path] [--json]
   snice build-component <name> [options]
-  snice mcp
   snice --version
 
 Commands:
@@ -46,7 +45,6 @@ Commands:
   doctor           Diagnose configuration, imports, dependencies, and AI setup.
   validate         Run the source analyzer only.
   build-component  Build a CDN component from a Snice source checkout.
-  mcp              Start the optional stdio MCP documentation server.
 
 Build options:
   --output=<dir>       Output directory (default: ./dist/cdn)
@@ -485,11 +483,6 @@ async function main() {
     }
     if (['--version', '-v', 'version'].includes(command)) {
       console.log(packageJson.version);
-      return;
-    }
-    if (command === 'mcp') {
-      if (argv.length > 1) throw new TypeError('mcp accepts no arguments');
-      await import('./mcp-server.js');
       return;
     }
     if (command === 'create-app') {

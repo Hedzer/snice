@@ -80,10 +80,9 @@ Description paragraph.
 - AI docs use same order, low-token format: type signatures in code blocks, bullets, arrow notation for events
 - AI comment is an invisible HTML comment `<!-- AI: ... -->`
 
-## MCP Server Catalogue
-- [ ] AI docs file exists at `docs/ai/components/<name>.md` — the MCP server (`bin/mcp-server.js`) auto-discovers components from this directory
-- [ ] Verify component appears in `list_components` tool output
-- [ ] Note: No code changes needed in mcp-server.js — it reads all `.md` files from `docs/ai/components/` at startup
+## AI Docs Catalogue
+- [ ] AI docs file exists at `docs/ai/components/<name>.md` — this directory is the component reference the skill loads from
+- [ ] Listed in the components inventory in `docs/ai/README.md`
 
 ## Website Integration
 - [ ] Showcase card: `website/showcases/<name>/card.html`

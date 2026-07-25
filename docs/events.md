@@ -4,14 +4,12 @@
 Event handling in Snice provides two powerful approaches: **template event syntax** and the **`@on` decorator**. The `@on` decorator works in **both elements AND controllers** with full event delegation, keyboard modifiers, debounce/throttle, and more. Additionally, the `@dispatch` decorator enables automatic custom event dispatching.
 
 ## Table of Contents
-- [Template Event Syntax](#template-event-syntax)
-- [Template Event Modifiers](#template-event-modifiers)
+- [Template Event Syntax (Preferred for Elements)](#template-event-syntax-preferred-for-elements)
 - [@on Decorator](#on-decorator)
 - [@dispatch Decorator](#dispatch-decorator)
 - [Custom Events](#custom-events)
 - [Event Delegation](#event-delegation)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Best Practices](#best-practices)
 
 ## Template Event Syntax (Preferred for Elements)
 

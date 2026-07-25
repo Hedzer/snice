@@ -126,6 +126,42 @@ describe('Cross-links resolve', () => {
   });
 });
 
+describe('Tables of contents stay in step with their headings', () => {
+  const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const withToc = humanDocs.filter(f => read(`docs/${f}`).includes('## Table of Contents'));
+
+  it('finds the docs that carry one', () => {
+    expect(withToc.length).toBeGreaterThan(0);
+  });
+
+  it.each(withToc)('%s lists exactly its own H2 headings, in order', (file) => {
+    const md = read(`docs/${file}`);
+    const block = /## Table of Contents\n((?:- \[[^\]]*\]\([^)]*\)\n)*)/.exec(md);
+    expect(block, `${file} has a ToC heading but no entries`).toBeTruthy();
+
+    const listed = Array.from(block![1].matchAll(/\(#([\w-]+)\)/g)).map(m => m[1]);
+    const headings = Array.from(md.matchAll(/^## (.+)$/gm))
+      .map(m => m[1].trim())
+      .filter(h => h !== 'Table of Contents');
+
+    expect(listed, `${file}: table of contents drifted from its headings`).toEqual(headings.map(slugify));
+  });
+});
+
+describe('Rendered documentation has no dead in-page links', () => {
+  // Headings render as `<docId>-<slug>`, so a bare `#slug` from a doc's own
+  // table of contents is dead unless the builder scopes it.
+  it('every #anchor on docs.html points at an element that exists', () => {
+    const html = read('website/public/docs.html');
+    const ids = new Set(Array.from(html.matchAll(/id="([\w-]+)"/g)).map(m => m[1]));
+    const links = Array.from(html.matchAll(/href="#([\w-]+)"/g)).map(m => m[1]);
+
+    expect(links.length, 'no in-page links found — did the page render?').toBeGreaterThan(50);
+    const dead = [...new Set(links.filter(l => !ids.has(l)))];
+    expect(dead, `dead anchors: ${dead.join(', ')}`).toEqual([]);
+  });
+});
+
 describe('One topic, one owner', () => {
   const owns = (file: string, heading: RegExp) => heading.test(read(`docs/${file}`));
 
@@ -206,10 +242,32 @@ describe('New pages carry real content', () => {
   it('cli.md documents every shipped command', () => {
     const cli = read('docs/cli.md');
     const help = read('bin/snice.js');
-    for (const command of ['create-app', 'init-ai', 'check', 'doctor', 'validate', 'build-component', 'mcp']) {
+    for (const command of ['create-app', 'init-ai', 'check', 'doctor', 'validate', 'build-component']) {
       expect(help, `bin/snice.js no longer mentions ${command}`).toContain(command);
       expect(cli, `docs/cli.md is missing ${command}`).toContain(command);
     }
+  });
+
+  it('documents no command the CLI does not ship', () => {
+    const help = read('bin/snice.js');
+    const documented = Array.from(read('docs/cli.md').matchAll(/^\| `([a-z][\w-]*)[^`]*` \|/gm))
+      .map(m => m[1]);
+    expect(documented.length).toBeGreaterThan(3);
+    for (const command of documented) {
+      expect(help, `docs/cli.md documents "${command}", which the CLI does not implement`).toContain(command);
+    }
+  });
+
+  it('has no lingering reference to the removed MCP server', () => {
+    const surfaces = [
+      'bin/snice.js', 'package.json', 'docs/cli.md', 'docs/ai/cli.md',
+      'docs/ai/README.md', 'README.md', 'llms.txt', 'llms-full.txt',
+      'bin/templates/AI_GUIDANCE.md', 'website/guide/ai.html',
+    ];
+    for (const file of surfaces) {
+      expect(read(file).toLowerCase(), `${file} still references the MCP server`).not.toMatch(/\bmcp\b/);
+    }
+    expect(existsSync(join(root, 'bin/mcp-server.js')), 'bin/mcp-server.js still exists').toBe(false);
   });
 
   it('testing.md documents both readiness promises', () => {

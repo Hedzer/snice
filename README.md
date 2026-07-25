@@ -933,7 +933,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Queries](./docs/queries.md) - Resolving elements with `@query` and `@queryAll`
 - [Styling](./docs/styling.md) - Scoped CSS, host styling, and icons
 - [Theming](./docs/theme.md) - Design tokens, surfaces, and dark mode
-- [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and the MCP server
+- [CLI](./docs/cli.md) - Scaffolding, diagnostics, source validation, and AI setup
 - [Testing](./docs/testing.md) - Waiting on `ready` / `rendered`, asserting events, swapping controllers
 - [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
 - [Binding Channels](./docs/bindings.md) - Detailed DOM destinations, value/removal rules, events, spreads, sentinels, and forms

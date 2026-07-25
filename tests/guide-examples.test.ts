@@ -41,7 +41,10 @@ interface Example {
 
 function classify(code: string): Kind {
   const lines = code.split('\n').filter(l => l.trim());
-  if (lines.every(l => /^\s*(#|npm\b|npx\b|claude\b)/.test(l))) return 'shell';
+  // Shell and coding-agent commands: npm/npx plus the per-harness plugin
+  // installers (Claude Code and Kimi slash commands, agy, gemini, droid…).
+  const command = /^\s*(#|npm\b|npx\b|claude\b|\/plugins?\b|agy\b|gemini\b|droid\b|copilot\b)/;
+  if (lines.every(l => command.test(l))) return 'shell';
   if (/from '[^']*snice\/react'/.test(code) || /^\s*function App\(/m.test(code)) return 'jsx';
   if (/^\s*</.test(code) && !/@\w+\(/.test(code)) return 'markup';
   if (/@(element|page|layout)\s*\(/.test(code) && /\bclass\s+\w+/.test(code)) return 'module';

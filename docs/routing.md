@@ -13,6 +13,7 @@ Snice provides a powerful routing system for single-page applications with suppo
 - [Route Guards](#route-guards)
 - [Layouts](#layouts)
 - [Advanced Patterns](#advanced-patterns)
+- [Router API Reference](#router-api-reference)
 
 ## Router Setup
 

@@ -16,7 +16,6 @@ npx snice <command>
 | `doctor [path] [--json]` | Diagnose config, imports, dependencies, AI setup |
 | `validate [path] [--json]` | Run the source analyzer only |
 | `build-component <name> [options]` | Build a CDN bundle from a Snice source checkout |
-| `mcp` | Start the stdio MCP documentation server |
 
 ## create-app
 
@@ -56,16 +55,6 @@ npx snice init-ai --force    # overwrite an existing install
 ```
 
 Installs a skill matched to the Snice version in the project, so an agent reads documentation for the version actually installed, not whatever it remembers.
-
-## mcp
-
-```bash
-npx snice mcp
-```
-
-- stdio MCP server exposing component docs, decorator references, a code validator as tools
-- Register: `claude mcp add snice -- npx snice mcp`
-- Optional — `init-ai` is the primary path; the skill points at version-matched docs and does not require a running server
 
 ## AI Assistance
 

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "snice",
+  "description": "The Snice agent skill: version-matched documentation, component selection, and verification workflows",
+  "owner": {
+    "name": "Hedzer",
+    "url": "https://gitlab.com/Hedzer"
+  },
+  "plugins": [
+    {
+      "name": "snice",
+      "description": "Work with the Snice web-component framework using the docs shipped with the installed version",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

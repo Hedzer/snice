@@ -1,0 +1,19 @@
+{
+  "name": "snice",
+  "interface": {
+    "displayName": "Snice"
+  },
+  "plugins": [
+    {
+      "name": "snice",
+      "source": {
+        "source": "url",
+        "url": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

@@ -1944,6 +1944,15 @@ function mdToHtml(markdown, docId) {
     // become in-page anchors instead of dead .md requests.
     text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, rawHref) => {
       const [path, fragment] = rawHref.split('#', 2);
+
+      // Same-page anchor (a doc's own table of contents, or any in-page
+      // reference). Headings are emitted as `<docId>-<slug>`, so a bare
+      // `#slug` would be a dead link once the doc is rendered onto the
+      // shared page — scope it to the owning doc.
+      if (path === '' && fragment) {
+        return `<a href="#${docId}-${slugify(fragment)}">${label}</a>`;
+      }
+
       const linkedDoc = docsByFile.get(path.replace(/^\.\//, ''));
       const href = linkedDoc
         ? `#${linkedDoc.id}${fragment ? `-${slugify(fragment)}` : ''}`

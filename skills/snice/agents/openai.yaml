@@ -1,0 +1,4 @@
+interface:
+  display_name: "Snice App Builder"
+  short_description: "Build and validate applications with Snice"
+  default_prompt: "Use $snice to build this application with the correct Snice components, imports, and verification workflow."
