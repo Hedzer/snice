@@ -11,6 +11,8 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutCardProps extends SniceBaseProps {
   columns?: any;
   gap?: any;
+  hasFooter?: any;
+  hasHeader?: any;
 
 }
 
@@ -32,7 +34,7 @@ export interface LayoutCardProps extends SniceBaseProps {
  */
 export const LayoutCard: SniceReactComponent<LayoutCardProps, SniceComponentRef> = createReactAdapter<LayoutCardProps, false>({
   tagName: 'snice-layout-card',
-  properties: ["columns","gap"],
+  properties: ["columns","gap","hasFooter","hasHeader"],
   events: {},
   formAssociated: false
 });

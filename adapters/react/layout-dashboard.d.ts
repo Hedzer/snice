@@ -4,6 +4,11 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  * Props for the LayoutDashboard component
  */
 export interface LayoutDashboardProps extends SniceBaseProps {
+    collapsed?: any;
+    contained?: any;
+    mobileOpen?: any;
+    hasRail?: any;
+    hasToolbarContent?: any;
 }
 /**
  * LayoutDashboard - React adapter for snice-layout-dashboard

@@ -10,6 +10,9 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutSidebarProps extends SniceBaseProps {
   collapsed?: any;
+  contained?: any;
+  collapseMode?: any;
+  mobileOpen?: any;
 
 }
 
@@ -31,7 +34,7 @@ export interface LayoutSidebarProps extends SniceBaseProps {
  */
 export const LayoutSidebar: SniceReactComponent<LayoutSidebarProps, SniceComponentRef> = createReactAdapter<LayoutSidebarProps, false>({
   tagName: 'snice-layout-sidebar',
-  properties: ["collapsed"],
+  properties: ["collapsed","contained","collapseMode","mobileOpen"],
   events: {},
   formAssociated: false
 });

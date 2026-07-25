@@ -10,6 +10,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutFullscreenProps extends SniceBaseProps {
   overlay?: any;
+  contained?: any;
 
 }
 
@@ -31,7 +32,7 @@ export interface LayoutFullscreenProps extends SniceBaseProps {
  */
 export const LayoutFullscreen: SniceReactComponent<LayoutFullscreenProps, SniceComponentRef> = createReactAdapter<LayoutFullscreenProps, false>({
   tagName: 'snice-layout-fullscreen',
-  properties: ["overlay"],
+  properties: ["overlay","contained"],
   events: {},
   formAssociated: false
 });

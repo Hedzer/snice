@@ -1,0 +1,38 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: components/layout/ + scripts/generate-react-adapters.js
+// Rebuild: npm run generate:react-adapters
+import { createReactAdapter, type SniceReactComponent } from './wrapper';
+import type { SniceBaseProps, SniceComponentRef } from './types';
+
+
+/**
+ * Props for the LayoutMasterDetail component
+ */
+export interface LayoutMasterDetailProps extends SniceBaseProps {
+  selected?: any;
+  contained?: any;
+  onDetailClosed?: (event: any) => void;
+}
+
+/**
+ * LayoutMasterDetail - React adapter for snice-layout-master-detail
+ *
+ * This is an auto-generated React wrapper for the Snice layout-master-detail component.
+ * Make sure to import the Snice component before using this wrapper:
+ *
+ * @example
+ * ```tsx
+ * import 'snice/components/layout/snice-layout-master-detail';
+ * import { LayoutMasterDetail } from 'snice/react';
+ *
+ * function MyComponent() {
+ *   return <LayoutMasterDetail />;
+ * }
+ * ```
+ */
+export const LayoutMasterDetail: SniceReactComponent<LayoutMasterDetailProps, SniceComponentRef> = createReactAdapter<LayoutMasterDetailProps, false>({
+  tagName: 'snice-layout-master-detail',
+  properties: ["selected","contained"],
+  events: {"detail-closed":"onDetailClosed"},
+  formAssociated: false
+});

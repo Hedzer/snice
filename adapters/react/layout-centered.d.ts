@@ -5,6 +5,8 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutCenteredProps extends SniceBaseProps {
     width?: any;
+    hasBrand?: any;
+    hasFooter?: any;
 }
 /**
  * LayoutCentered - React adapter for snice-layout-centered

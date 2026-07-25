@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutDashboard = createReactAdapter({
     tagName: 'snice-layout-dashboard',
-    properties: [],
+    properties: ["collapsed", "contained", "mobileOpen", "hasRail", "hasToolbarContent"],
     events: {},
     formAssociated: false
 });

@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutFullscreen = createReactAdapter({
     tagName: 'snice-layout-fullscreen',
-    properties: ["overlay"],
+    properties: ["overlay", "contained"],
     events: {},
     formAssociated: false
 });

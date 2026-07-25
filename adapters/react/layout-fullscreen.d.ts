@@ -5,6 +5,7 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutFullscreenProps extends SniceBaseProps {
     overlay?: any;
+    contained?: any;
 }
 /**
  * LayoutFullscreen - React adapter for snice-layout-fullscreen

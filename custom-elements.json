@@ -22456,6 +22456,14 @@
           },
           "members": [
             {
+              "kind": "field",
+              "name": "hasSidebar",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
               "kind": "method",
               "name": "update",
               "parameters": [
@@ -22514,6 +22522,16 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "wireSlotDetection",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
           "attributes": [
@@ -22587,6 +22605,32 @@
                 "text": "'sm' | 'md' | 'lg' | 'xl'"
               },
               "default": "'md'"
+            },
+            {
+              "kind": "field",
+              "name": "hasFooter",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "hasHeader",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "wireSlotDetection",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
           "attributes": [
@@ -22649,11 +22693,37 @@
           "members": [
             {
               "kind": "field",
+              "name": "hasBrand",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "hasFooter",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
               "name": "width",
               "type": {
                 "text": "'sm' | 'md' | 'lg' | 'xl'"
               },
               "default": "'md'"
+            },
+            {
+              "kind": "method",
+              "name": "wireSlotDetection",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
           "attributes": [
@@ -22668,6 +22738,12 @@
           ],
           "events": [],
           "slots": [
+            {
+              "name": "brand"
+            },
+            {
+              "name": "footer"
+            },
             {
               "name": "page"
             }
@@ -22700,6 +22776,67 @@
             "name": "HTMLElement"
           },
           "members": [
+            {
+              "kind": "field",
+              "name": "collapsed",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "kind": "method",
+              "name": "handleScrimClick",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleSidebarToggle",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hasRail",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "hasToolbarContent",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "mobileOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
             {
               "kind": "method",
               "name": "update",
@@ -22751,13 +22888,44 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "wireSlotDetection",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
-          "attributes": [],
+          "attributes": [
+            {
+              "name": "collapsed",
+              "fieldName": "collapsed",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of pinning to the viewport."
+            }
+          ],
           "events": [],
           "slots": [
             {
               "name": "brand"
+            },
+            {
+              "name": "header"
             },
             {
               "name": "page"
@@ -22766,13 +22934,32 @@
               "name": "right-sidebar"
             },
             {
-              "name": "search"
+              "name": "sidebar"
             },
             {
-              "name": "user"
+              "name": "toolbar"
             }
           ],
-          "cssParts": [],
+          "cssParts": [
+            {
+              "name": "header"
+            },
+            {
+              "name": "main"
+            },
+            {
+              "name": "right-sidebar"
+            },
+            {
+              "name": "scrim"
+            },
+            {
+              "name": "sidebar"
+            },
+            {
+              "name": "toolbar"
+            }
+          ],
           "cssProperties": []
         }
       ],
@@ -22802,6 +22989,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "kind": "field",
               "name": "overlay",
               "type": {
                 "text": "boolean"
@@ -22810,6 +23006,15 @@
             }
           ],
           "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
             {
               "name": "overlay",
               "fieldName": "overlay",
@@ -22971,6 +23176,171 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/components/layout/snice-layout-master-detail.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "SniceLayoutMasterDetail",
+          "tagName": "snice-layout-master-detail",
+          "customElement": true,
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "description": "Master-detail shell: a scrollable list beside the selected item's detail.\nThe mail, chat, and issue-tracker shape.\n\nWide viewports show both panes. Below the breakpoint only one is on screen:\nthe list, until something is selected, then the detail with a back control.",
+          "members": [
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "kind": "method",
+              "name": "handleBack",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "releaseViewport",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "A detail item is open. Drives the single-pane view below the breakpoint."
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "_appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "_routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "watchViewport",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "name": "selected",
+              "fieldName": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "A detail item is open. Drives the single-pane view below the breakpoint."
+            }
+          ],
+          "events": [
+            {
+              "name": "detail-closed",
+              "type": "CustomEvent<unknown>"
+            }
+          ],
+          "slots": [
+            {
+              "name": "brand"
+            },
+            {
+              "name": "detail"
+            },
+            {
+              "name": "empty"
+            },
+            {
+              "name": "header"
+            },
+            {
+              "name": "list"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "detail"
+            },
+            {
+              "name": "empty"
+            },
+            {
+              "name": "header"
+            },
+            {
+              "name": "list"
+            }
+          ],
+          "cssProperties": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "snice-layout-master-detail",
+          "declaration": {
+            "name": "SniceLayoutMasterDetail",
+            "module": "dist/components/layout/snice-layout-master-detail.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/components/layout/snice-layout-minimal.js",
       "declarations": [
         {
@@ -23018,12 +23388,66 @@
           },
           "members": [
             {
+              "kind": "method",
+              "name": "bindShortcut",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "collapsed",
               "type": {
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "collapseMode",
+              "type": {
+                "text": "SidebarCollapseMode"
+              },
+              "default": "'rail'",
+              "description": "How the sidebar collapses on desktop:\n`rail` shrinks it to an icon-width column, `offcanvas` hides it entirely,\n`none` pins it open and drops the toggle."
+            },
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "kind": "method",
+              "name": "handleKeydown",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": "KeyboardEvent",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleScrimClick",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             },
             {
               "kind": "method",
@@ -23038,6 +23462,24 @@
             {
               "kind": "method",
               "name": "init",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "mobileOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "releaseShortcut",
               "parameters": [],
               "return": {
                 "type": {
@@ -23100,12 +23542,30 @@
           ],
           "attributes": [
             {
+              "name": "collapse-mode",
+              "fieldName": "collapseMode",
+              "type": {
+                "text": "SidebarCollapseMode"
+              },
+              "reflects": true,
+              "description": "How the sidebar collapses on desktop:\n`rail` shrinks it to an icon-width column, `offcanvas` hides it entirely,\n`none` pins it open and drops the toggle."
+            },
+            {
               "name": "collapsed",
               "fieldName": "collapsed",
               "type": {
                 "text": "boolean"
               },
               "reflects": true
+            },
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of pinning to the viewport."
             }
           ],
           "events": [],
@@ -23121,10 +23581,33 @@
             },
             {
               "name": "page"
+            },
+            {
+              "name": "sidebar"
             }
           ],
-          "cssParts": [],
-          "cssProperties": []
+          "cssParts": [
+            {
+              "name": "footer"
+            },
+            {
+              "name": "header"
+            },
+            {
+              "name": "main"
+            },
+            {
+              "name": "scrim"
+            },
+            {
+              "name": "sidebar"
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--collapsed"
+            }
+          ]
         }
       ],
       "exports": [

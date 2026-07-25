@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutBlog = createReactAdapter({
     tagName: 'snice-layout-blog',
-    properties: ["useNav"],
+    properties: ["useNav", "hasSidebar"],
     events: {},
     formAssociated: false
 });

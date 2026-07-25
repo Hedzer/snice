@@ -10,6 +10,8 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutCenteredProps extends SniceBaseProps {
   width?: any;
+  hasBrand?: any;
+  hasFooter?: any;
 
 }
 
@@ -31,7 +33,7 @@ export interface LayoutCenteredProps extends SniceBaseProps {
  */
 export const LayoutCentered: SniceReactComponent<LayoutCenteredProps, SniceComponentRef> = createReactAdapter<LayoutCenteredProps, false>({
   tagName: 'snice-layout-centered',
-  properties: ["width"],
+  properties: ["width","hasBrand","hasFooter"],
   events: {},
   formAssociated: false
 });

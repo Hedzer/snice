@@ -5,6 +5,9 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
  */
 export interface LayoutSidebarProps extends SniceBaseProps {
     collapsed?: any;
+    contained?: any;
+    collapseMode?: any;
+    mobileOpen?: any;
 }
 /**
  * LayoutSidebar - React adapter for snice-layout-sidebar

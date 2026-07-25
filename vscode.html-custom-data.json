@@ -4956,12 +4956,25 @@
     {
       "name": "snice-layout-dashboard",
       "description": "SniceLayoutDashboard custom element.",
-      "attributes": []
+      "attributes": [
+        {
+          "name": "collapsed",
+          "description": "collapsed: boolean"
+        },
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of pinning to the viewport."
+        }
+      ]
     },
     {
       "name": "snice-layout-fullscreen",
       "description": "SniceLayoutFullscreen custom element.",
       "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of pinning to the viewport."
+        },
         {
           "name": "overlay",
           "description": "overlay: boolean"
@@ -4979,6 +4992,20 @@
       ]
     },
     {
+      "name": "snice-layout-master-detail",
+      "description": "Master-detail shell: a scrollable list beside the selected item's detail.\nThe mail, chat, and issue-tracker shape.\n\nWide viewports show both panes. Below the breakpoint only one is on screen:\nthe list, until something is selected, then the detail with a back control.",
+      "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of pinning to the viewport."
+        },
+        {
+          "name": "selected",
+          "description": "A detail item is open. Drives the single-pane view below the breakpoint."
+        }
+      ]
+    },
+    {
       "name": "snice-layout-minimal",
       "description": "SniceLayoutMinimal custom element.",
       "attributes": []
@@ -4988,8 +5015,16 @@
       "description": "SniceLayoutSidebar custom element.",
       "attributes": [
         {
+          "name": "collapse-mode",
+          "description": "How the sidebar collapses on desktop:\n`rail` shrinks it to an icon-width column, `offcanvas` hides it entirely,\n`none` pins it open and drops the toggle."
+        },
+        {
           "name": "collapsed",
           "description": "collapsed: boolean"
+        },
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of pinning to the viewport."
         }
       ]
     },

@@ -14,10 +14,10 @@ export const ANALYZER_CONTRACTS = {
     "packages/components/src/**/*.types.ts"
   ],
   "stats": {
-    "customElements": 190,
+    "customElements": 191,
     "componentFamilies": 134,
-    "componentModules": 185,
-    "reactWrappers": 190,
+    "componentModules": 186,
+    "reactWrappers": 191,
     "rootExports": 110
   },
   "rootExports": [
@@ -208,6 +208,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/layout/snice-layout-dashboard",
     "snice/components/layout/snice-layout-fullscreen",
     "snice/components/layout/snice-layout-landing",
+    "snice/components/layout/snice-layout-master-detail",
     "snice/components/layout/snice-layout-minimal",
     "snice/components/layout/snice-layout-sidebar",
     "snice/components/layout/snice-layout-split",
@@ -11360,6 +11361,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "hasSidebar": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
         "useNav": {
           "type": "boolean",
           "attribute": "use-nav",
@@ -11415,6 +11421,16 @@ export const ANALYZER_CONTRACTS = {
           "type": "'sm' | 'md' | 'lg' | 'xl'",
           "attribute": "gap",
           "structured": false
+        },
+        "hasFooter": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
+        "hasHeader": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
         }
       },
       "structuredProperties": [],
@@ -11444,6 +11460,16 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "hasBrand": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
+        "hasFooter": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
         "width": {
           "type": "'sm' | 'md' | 'lg' | 'xl'",
           "attribute": "width",
@@ -11453,6 +11479,8 @@ export const ANALYZER_CONTRACTS = {
       "structuredProperties": [],
       "events": [],
       "slots": [
+        "brand",
+        "footer",
         "page"
       ]
     },
@@ -11462,16 +11490,54 @@ export const ANALYZER_CONTRACTS = {
       "modulePath": "snice/components/layout/snice-layout-dashboard",
       "sourceModule": "dist/components/layout/snice-layout-dashboard.js",
       "family": "layout",
-      "attributes": {},
-      "properties": {},
+      "attributes": {
+        "collapsed": {
+          "property": "collapsed",
+          "type": "boolean",
+          "literals": []
+        },
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        }
+      },
+      "properties": {
+        "collapsed": {
+          "type": "boolean",
+          "attribute": "collapsed",
+          "structured": false
+        },
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
+        "hasRail": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
+        "hasToolbarContent": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        },
+        "mobileOpen": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        }
+      },
       "structuredProperties": [],
       "events": [],
       "slots": [
         "brand",
+        "header",
         "page",
         "right-sidebar",
-        "search",
-        "user"
+        "sidebar",
+        "toolbar"
       ]
     },
     "snice-layout-fullscreen": {
@@ -11481,6 +11547,11 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-fullscreen.js",
       "family": "layout",
       "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
         "overlay": {
           "property": "overlay",
           "type": "boolean",
@@ -11488,6 +11559,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
         "overlay": {
           "type": "boolean",
           "attribute": "overlay",
@@ -11534,6 +11610,51 @@ export const ANALYZER_CONTRACTS = {
         "page"
       ]
     },
+    "snice-layout-master-detail": {
+      "tagName": "snice-layout-master-detail",
+      "className": "SniceLayoutMasterDetail",
+      "modulePath": "snice/components/layout/snice-layout-master-detail",
+      "sourceModule": "dist/components/layout/snice-layout-master-detail.js",
+      "family": "layout",
+      "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
+        "selected": {
+          "property": "selected",
+          "type": "boolean",
+          "literals": []
+        }
+      },
+      "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
+        "selected": {
+          "type": "boolean",
+          "attribute": "selected",
+          "structured": false
+        }
+      },
+      "structuredProperties": [],
+      "events": [
+        {
+          "name": "detail-closed",
+          "type": "CustomEvent<unknown>"
+        }
+      ],
+      "slots": [
+        "brand",
+        "detail",
+        "empty",
+        "header",
+        "list"
+      ]
+    },
     "snice-layout-minimal": {
       "tagName": "snice-layout-minimal",
       "className": "SniceLayoutMinimal",
@@ -11555,8 +11676,18 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/layout/snice-layout-sidebar.js",
       "family": "layout",
       "attributes": {
+        "collapse-mode": {
+          "property": "collapseMode",
+          "type": "SidebarCollapseMode",
+          "literals": []
+        },
         "collapsed": {
           "property": "collapsed",
+          "type": "boolean",
+          "literals": []
+        },
+        "contained": {
+          "property": "contained",
           "type": "boolean",
           "literals": []
         }
@@ -11566,6 +11697,21 @@ export const ANALYZER_CONTRACTS = {
           "type": "boolean",
           "attribute": "collapsed",
           "structured": false
+        },
+        "collapseMode": {
+          "type": "SidebarCollapseMode",
+          "attribute": "collapse-mode",
+          "structured": false
+        },
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
+        "mobileOpen": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
         }
       },
       "structuredProperties": [],
@@ -11574,7 +11720,8 @@ export const ANALYZER_CONTRACTS = {
         "brand",
         "footer",
         "header",
-        "page"
+        "page",
+        "sidebar"
       ]
     },
     "snice-layout-split": {
@@ -21012,6 +21159,8 @@ export const ANALYZER_CONTRACTS = {
       "LayoutFullscreenProps",
       "LayoutLanding",
       "LayoutLandingProps",
+      "LayoutMasterDetail",
+      "LayoutMasterDetailProps",
       "LayoutMinimal",
       "LayoutMinimalProps",
       "LayoutProps",
@@ -21325,6 +21474,7 @@ export const ANALYZER_CONTRACTS = {
       "LayoutDashboardProps",
       "LayoutFullscreenProps",
       "LayoutLandingProps",
+      "LayoutMasterDetailProps",
       "LayoutMinimalProps",
       "LayoutProps",
       "LayoutSidebarProps",
@@ -24964,11 +25114,13 @@ export const ANALYZER_CONTRACTS = {
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-blog",
         "properties": [
-          "useNav"
+          "useNav",
+          "hasSidebar"
         ],
         "events": {},
         "interfaceProps": [
-          "useNav"
+          "useNav",
+          "hasSidebar"
         ],
         "formAssociated": false
       },
@@ -24980,12 +25132,16 @@ export const ANALYZER_CONTRACTS = {
         "componentModulePath": "snice/components/layout/snice-layout-card",
         "properties": [
           "columns",
-          "gap"
+          "gap",
+          "hasFooter",
+          "hasHeader"
         ],
         "events": {},
         "interfaceProps": [
           "columns",
-          "gap"
+          "gap",
+          "hasFooter",
+          "hasHeader"
         ],
         "formAssociated": false
       },
@@ -24996,11 +25152,15 @@ export const ANALYZER_CONTRACTS = {
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-centered",
         "properties": [
-          "width"
+          "width",
+          "hasBrand",
+          "hasFooter"
         ],
         "events": {},
         "interfaceProps": [
-          "width"
+          "width",
+          "hasBrand",
+          "hasFooter"
         ],
         "formAssociated": false
       },
@@ -25010,9 +25170,21 @@ export const ANALYZER_CONTRACTS = {
         "tagName": "snice-layout-dashboard",
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-dashboard",
-        "properties": [],
+        "properties": [
+          "collapsed",
+          "contained",
+          "mobileOpen",
+          "hasRail",
+          "hasToolbarContent"
+        ],
         "events": {},
-        "interfaceProps": [],
+        "interfaceProps": [
+          "collapsed",
+          "contained",
+          "mobileOpen",
+          "hasRail",
+          "hasToolbarContent"
+        ],
         "formAssociated": false
       },
       "LayoutFullscreen": {
@@ -25022,11 +25194,13 @@ export const ANALYZER_CONTRACTS = {
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-fullscreen",
         "properties": [
-          "overlay"
+          "overlay",
+          "contained"
         ],
         "events": {},
         "interfaceProps": [
-          "overlay"
+          "overlay",
+          "contained"
         ],
         "formAssociated": false
       },
@@ -25042,6 +25216,26 @@ export const ANALYZER_CONTRACTS = {
         "events": {},
         "interfaceProps": [
           "useNav"
+        ],
+        "formAssociated": false
+      },
+      "LayoutMasterDetail": {
+        "exportName": "LayoutMasterDetail",
+        "module": "snice/react/layout-master-detail",
+        "tagName": "snice-layout-master-detail",
+        "family": "layout",
+        "componentModulePath": "snice/components/layout/snice-layout-master-detail",
+        "properties": [
+          "selected",
+          "contained"
+        ],
+        "events": {
+          "detail-closed": "onDetailClosed"
+        },
+        "interfaceProps": [
+          "selected",
+          "contained",
+          "onDetailClosed"
         ],
         "formAssociated": false
       },
@@ -25063,11 +25257,17 @@ export const ANALYZER_CONTRACTS = {
         "family": "layout",
         "componentModulePath": "snice/components/layout/snice-layout-sidebar",
         "properties": [
-          "collapsed"
+          "collapsed",
+          "contained",
+          "collapseMode",
+          "mobileOpen"
         ],
         "events": {},
         "interfaceProps": [
-          "collapsed"
+          "collapsed",
+          "contained",
+          "collapseMode",
+          "mobileOpen"
         ],
         "formAssociated": false
       },

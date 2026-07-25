@@ -6,6 +6,8 @@ import type { SniceBaseProps, SniceComponentRef } from './types';
 export interface LayoutCardProps extends SniceBaseProps {
     columns?: any;
     gap?: any;
+    hasFooter?: any;
+    hasHeader?: any;
 }
 /**
  * LayoutCard - React adapter for snice-layout-card

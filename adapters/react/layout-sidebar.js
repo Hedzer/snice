@@ -20,7 +20,7 @@ import { createReactAdapter } from './wrapper';
  */
 export const LayoutSidebar = createReactAdapter({
     tagName: 'snice-layout-sidebar',
-    properties: ["collapsed"],
+    properties: ["collapsed", "contained", "collapseMode", "mobileOpen"],
     events: {},
     formAssociated: false
 });
