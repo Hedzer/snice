@@ -154,6 +154,12 @@ card.addEventListener('add-to-cart', (e) => {
 - Out-of-stock state disables the CTA button
 - All interactive elements are keyboard-focusable
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-product-card-badge-bg` | Product card badge background |
+
 ## Data Types
 
 ```typescript

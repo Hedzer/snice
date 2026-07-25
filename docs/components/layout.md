@@ -118,6 +118,15 @@ Use the `update()` method to sync navigation with the router.
 layout.update(appContext, placards, currentRoute, routeParams);
 ```
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-layout-auth-panel-bg` | Layout auth panel background |
+| `--snice-layout-control-size` | Layout control size |
+| `--snice-layout-docs-header-height` | Layout docs header height |
+| `--snice-layout-docs-header-height-compact` | Layout docs header height compact |
+
 ## Shell variants
 
 `<snice-layout>` is the stacked shell (header / main / footer). These siblings cover the

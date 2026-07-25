@@ -92,6 +92,37 @@ interface ReceiptTaxLine {
 
 | Property | Description | Default |
 |----------|-------------|---------|
+| `--snice-receipt-accent` | Receipt accent | -- |
+| `--snice-receipt-bg` | Receipt background | -- |
+| `--snice-receipt-bg-element` | Receipt background element | -- |
+| `--snice-receipt-border` | Receipt border | -- |
+| `--snice-receipt-border-color` | Receipt border color | -- |
+| `--snice-receipt-border-radius` | Receipt border radius | -- |
+| `--snice-receipt-divider-color` | Receipt divider color | -- |
+| `--snice-receipt-divider-style` | Receipt divider style | -- |
+| `--snice-receipt-divider-width` | Receipt divider width | -- |
+| `--snice-receipt-font-family` | Receipt font family | -- |
+| `--snice-receipt-footer-font-size` | Receipt footer font size | -- |
+| `--snice-receipt-header-bg` | Receipt header background | -- |
+| `--snice-receipt-item-font-size` | Receipt item font size | -- |
+| `--snice-receipt-max-width` | Receipt maximum width | -- |
+| `--snice-receipt-merchant-font-size` | Receipt merchant font size | -- |
+| `--snice-receipt-meta-font-size` | Receipt meta font size | -- |
+| `--snice-receipt-modern-radius` | Receipt modern radius | -- |
+| `--snice-receipt-modern-section-bg` | Receipt modern section background | -- |
+| `--snice-receipt-modern-section-radius` | Receipt modern section radius | -- |
+| `--snice-receipt-modern-shadow` | Receipt modern shadow | -- |
+| `--snice-receipt-padding` | Receipt padding | -- |
+| `--snice-receipt-qr-size` | Receipt qr size | -- |
+| `--snice-receipt-shadow` | Receipt shadow | -- |
+| `--snice-receipt-text` | Receipt text | -- |
+| `--snice-receipt-text-secondary` | Receipt text secondary | -- |
+| `--snice-receipt-text-tertiary` | Receipt text tertiary | -- |
+| `--snice-receipt-thermal-bg` | Receipt thermal background | -- |
+| `--snice-receipt-thermal-font` | Receipt thermal font | -- |
+| `--snice-receipt-thermal-width` | Receipt thermal width | -- |
+| `--snice-receipt-total-font-size` | Receipt total font size | -- |
+| `--snice-receipt-total-font-weight` | Receipt total font weight | -- |
 | `--receipt-max-width` | Maximum width | `22rem` |
 | `--receipt-padding` | Internal padding | `1.5rem` |
 | `--receipt-bg` | Background color | `white` |

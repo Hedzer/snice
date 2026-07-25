@@ -63,6 +63,8 @@ Slide-out panel from any viewport side with focus trap and dismissal options. Su
 
 | Property | Description | Default |
 |----------|-------------|---------|
+| `--snice-drawer-backdrop` | Drawer backdrop | -- |
+| `--snice-drawer-control-size` | Drawer control size | -- |
 | `--drawer-width-small` | Small drawer width | `var(--snice-size-drawer-small, 15rem)` |
 | `--drawer-width-medium` | Medium drawer width | `var(--snice-size-drawer-medium, 20rem)` |
 | `--drawer-width-large` | Large drawer width | `var(--snice-size-drawer-large, 30rem)` |

@@ -126,6 +126,21 @@ interface EstimateItem {
 
 | Property | Default | Description |
 |----------|---------|-------------|
+| `--snice-estimate-border-inverse` | Estimate border inverse | -- |
+| `--snice-estimate-border-inverse-light` | Estimate border inverse light | -- |
+| `--snice-estimate-creative-alpha` | Estimate creative tint | -- |
+| `--snice-estimate-creative-alpha-strong` | Estimate creative tint strong | -- |
+| `--snice-estimate-creative-end` | Estimate creative end stop | -- |
+| `--snice-estimate-creative-mid` | Estimate creative midpoint | -- |
+| `--snice-estimate-creative-shadow` | Estimate creative shadow | -- |
+| `--snice-estimate-creative-start` | Estimate creative start | -- |
+| `--snice-estimate-surface-alt` | Estimate surface alt | -- |
+| `--snice-estimate-surface-inverse-alpha` | Estimate surface inverse tint | -- |
+| `--snice-estimate-text-inverse-muted` | Estimate text inverse muted | -- |
+| `--snice-estimate-text-inverse-subtle` | Estimate text inverse subtle | -- |
+| `--snice-estimate-text-muted` | Estimate text muted | -- |
+| `--snice-estimate-text-muted-light` | Estimate text muted light | -- |
+| `--snice-estimate-warning-text` | Estimate warning text | -- |
 | `--estimate-max-width` | `50rem` | Maximum width |
 | `--estimate-bg` | `white` | Background color |
 | `--estimate-bg-element` | `rgb(252 251 249)` | Element background |

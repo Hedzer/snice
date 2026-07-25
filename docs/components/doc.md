@@ -38,6 +38,7 @@ A simple WYSIWYG document editor component with formatting toolbar and content i
 
 | Property | Description |
 |----------|-------------|
+| `--snice-doc-active-background` | Doc active background |
 | `--snice-doc-font-family` | Editor font family |
 | `--snice-doc-font-size` | Editor font size |
 | `--snice-doc-text-color` | Text color |

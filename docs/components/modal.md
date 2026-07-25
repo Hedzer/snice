@@ -191,6 +191,12 @@ modal.addEventListener('modal-close', () => console.log('Closed'));
 | Tab | Cycle through focusable elements within the modal |
 | Shift+Tab | Cycle backwards through focusable elements |
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-modal-backdrop` | Modal backdrop |
+
 ## Accessibility
 
 - Uses `role="dialog"` with `aria-modal="true"` and `aria-label`

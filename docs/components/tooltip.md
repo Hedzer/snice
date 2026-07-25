@@ -183,6 +183,13 @@ Set the `strict-positioning` attribute to disable automatic repositioning when n
 </div>
 ```
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-tooltip-bg` | Tooltip background |
+| `--snice-tooltip-color` | Tooltip color |
+
 ## Attribute-Based Tooltips
 
 Wrapping elements in `<snice-tooltip>` can break parent-child relationships in components that require direct children (accordion, tabs, stepper, breadcrumbs, table, etc.). The attribute-based approach uses a plain `tooltip` attribute on any element, avoiding DOM disruption entirely.

@@ -286,6 +286,12 @@ An enabled empty `required` select reports `validity.valueMissing`, including mu
 | `Escape` | Close dropdown |
 | `Tab` | Close dropdown and move focus |
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-select-min-height` | Select minimum height |
+
 ## Accessibility
 
 - Native explicit and wrapping label association through the form-associated host

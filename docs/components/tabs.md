@@ -107,6 +107,13 @@ import 'snice/components/tabs/snice-tab-panel';
 </snice-tabs>
 ```
 
+## CSS Custom Properties
+
+| Property | Description |
+|----------|-------------|
+| `--snice-tabs-panel-padding` | Tabs panel padding |
+| `--snice-tabs-transition-duration` | Tabs transition duration |
+
 ## Examples
 
 ### Placement
