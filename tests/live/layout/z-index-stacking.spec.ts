@@ -3,11 +3,11 @@ import { test, expect } from '@playwright/test';
 const demoPath = 'http://localhost:5566/tests/live/layout/z-index-stacking.html';
 
 test.describe('Layout Z-Index Stacking', () => {
-  test('page content should render below layout drawer', async ({ page }) => {
+  test('the mobile sidebar overlay stacks above page content', async ({ page }) => {
+    await page.setViewportSize({ width: 480, height: 800 });
     await page.goto(demoPath);
     await page.waitForLoadState('networkidle');
 
-    // Wait for shadow root to be attached
     await page.waitForFunction(() => {
       const sidebar = document.querySelector('snice-layout-sidebar');
       return sidebar?.shadowRoot != null;
@@ -17,48 +17,30 @@ test.describe('Layout Z-Index Stacking', () => {
       const sidebar = document.querySelector('snice-layout-sidebar');
       if (!sidebar?.shadowRoot) throw new Error('Shadow root not found');
 
-      const drawerElement = sidebar.shadowRoot.querySelector('snice-drawer');
-      const main = sidebar.shadowRoot.querySelector('.main');
-      const toggleButton = sidebar.shadowRoot.querySelector('.sidebar-toggle') as HTMLButtonElement;
+      const aside = sidebar.shadowRoot.querySelector('aside.sidebar') as HTMLElement | null;
+      const main = sidebar.shadowRoot.querySelector('.main') as HTMLElement | null;
+      const toggleButton = sidebar.shadowRoot.querySelector('.sidebar-toggle') as HTMLButtonElement | null;
 
-      if (!drawerElement || !main || !toggleButton) {
-        const availableElements = {
-          drawerElement: !!drawerElement,
-          main: !!main,
-          toggleButton: !!toggleButton,
-          shadowHTML: sidebar.shadowRoot.innerHTML.substring(0, 500)
-        };
-        throw new Error(`Required elements not found: ${JSON.stringify(availableElements)}`);
-      }
-
-      // Make sure drawer element has shadow root
-      if (!drawerElement.shadowRoot) {
-        throw new Error('Drawer shadow root not found');
-      }
-
-      // Get the actual drawer panel inside the drawer's shadow DOM
-      const drawerPanel = drawerElement.shadowRoot.querySelector('.drawer');
-      if (!drawerPanel) {
-        throw new Error('Drawer panel not found in drawer shadow DOM');
+      if (!aside || !main || !toggleButton) {
+        throw new Error(`Required elements not found: ${JSON.stringify({ aside: !!aside, main: !!main, toggleButton: !!toggleButton })}`);
       }
 
       toggleButton.click();
 
-      return new Promise<any>((resolve) => {
+      return new Promise<any>(resolve => {
         setTimeout(() => {
-          const drawerZ = window.getComputedStyle(drawerPanel).zIndex;
-          const mainZ = window.getComputedStyle(main).zIndex;
-
+          const scrim = sidebar.shadowRoot!.querySelector('.scrim') as HTMLElement;
           resolve({
-            drawerZ: parseInt(drawerZ, 10),
-            mainZ: parseInt(mainZ, 10)
+            sidebarZ: parseInt(window.getComputedStyle(aside).zIndex, 10),
+            scrimZ: parseInt(window.getComputedStyle(scrim).zIndex, 10),
+            mainZ: parseInt(window.getComputedStyle(main).zIndex, 10),
           });
-        }, 200);
+        }, 300);
       });
     });
 
-    expect(result.drawerZ).toBeGreaterThan(result.mainZ);
-    expect(result.drawerZ).toBeGreaterThanOrEqual(1050);
+    expect(result.sidebarZ).toBeGreaterThan(result.scrimZ);
+    expect(result.scrimZ).toBeGreaterThan(result.mainZ);
     expect(result.mainZ).toBe(0);
   });
 
@@ -96,51 +78,45 @@ test.describe('Layout Z-Index Stacking', () => {
     expect(result.headerZ).toBe(10);
   });
 
-  test('drawer backdrop should be clickable and not blocked by page content', async ({ page }) => {
+  test('the scrim is reachable and closes the overlay', async ({ page }) => {
+    await page.setViewportSize({ width: 480, height: 800 });
     await page.goto(demoPath);
     await page.waitForLoadState('networkidle');
 
-    // Wait for shadow root to be attached
     await page.waitForFunction(() => {
       const sidebar = document.querySelector('snice-layout-sidebar');
       return sidebar?.shadowRoot != null;
     }, { timeout: 5000 });
 
     const result = await page.evaluate(() => {
-      const sidebar = document.querySelector('snice-layout-sidebar');
+      const sidebar = document.querySelector('snice-layout-sidebar') as any;
       if (!sidebar?.shadowRoot) throw new Error('Shadow root not found');
 
-      const drawerElement = sidebar.shadowRoot.querySelector('snice-drawer');
       const toggleButton = sidebar.shadowRoot.querySelector('.sidebar-toggle') as HTMLButtonElement;
-
-      if (!drawerElement || !toggleButton) {
-        throw new Error('Drawer or toggle not found');
-      }
-
       toggleButton.click();
 
-      return new Promise<any>((resolve) => {
+      return new Promise<any>(resolve => {
         setTimeout(() => {
-          if (!drawerElement.shadowRoot) {
-            resolve({ error: 'Drawer shadow root not found' });
-            return;
-          }
+          const scrim = sidebar.shadowRoot.querySelector('.scrim') as HTMLElement;
+          const visible = window.getComputedStyle(scrim).display !== 'none';
+          const rect = scrim.getBoundingClientRect();
+          const topElement = sidebar.shadowRoot.elementFromPoint(rect.right - 5, rect.bottom - 5);
 
-          const backdrop = drawerElement.shadowRoot.querySelector('.drawer-backdrop') as HTMLElement;
-          if (!backdrop) {
-            resolve({ error: 'Backdrop not found' });
-            return;
-          }
-
-          backdrop.click();
+          scrim.click();
 
           setTimeout(() => {
-            resolve({ drawerClosed: !drawerElement.hasAttribute('open') });
-          }, 200);
-        }, 200);
+            resolve({
+              scrimVisible: visible,
+              scrimOnTop: topElement === scrim,
+              closedAfterClick: sidebar.mobileOpen === false,
+            });
+          }, 300);
+        }, 300);
       });
     });
 
-    expect(result.drawerClosed).toBe(true);
+    expect(result.scrimVisible).toBe(true);
+    expect(result.scrimOnTop).toBe(true);
+    expect(result.closedAfterClick).toBe(true);
   });
 });
