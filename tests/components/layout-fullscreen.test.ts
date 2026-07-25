@@ -49,5 +49,14 @@ describe('snice-layout-fullscreen', () => {
     it('should handle prefers-reduced-motion without the theme loaded', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
+
+    it('never sizes itself with 100vw, which overflows containers and ignores scrollbars', () => {
+      expect(css).not.toMatch(/100vw/);
+    });
+
+    it('puts the viewport height on the host so embedding apps can override it', () => {
+      expect(css).toMatch(/:host\s*\{[^}]*min-height:\s*100vh/);
+      expect(css).toMatch(/\.layout\s*\{[^}]*width:\s*100%/);
+    });
   });
 });
