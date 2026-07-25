@@ -454,8 +454,6 @@ describe('snice-invoice', () => {
     });
   });
 
-  });
-
   describe('slots', () => {
     it.each([['logo'], ['title'], ['status'], ['parties'], ['before-items'], ['after-items'], ['notes'], ['qr']])(
       'ships a named %s slot',
