@@ -23,9 +23,9 @@ describe('snice-layout-dashboard breadcrumbs', () => {
     layout.update({} as any, placards, 'settings', {});
     await wait(20);
 
-    const sidebar = layout.shadowRoot?.querySelector('.sidebar');
-    expect(sidebar).toBeTruthy();
-    const html = sidebar!.innerHTML || sidebar!.textContent || '';
+    const toolbar = layout.shadowRoot?.querySelector('.toolbar');
+    expect(toolbar).toBeTruthy();
+    const html = toolbar!.innerHTML || toolbar!.textContent || '';
     expect(html).toContain('/custom-home');
     expect(html).toContain('#/settings-page');
     expect(html).not.toContain('#/home');
@@ -43,8 +43,8 @@ describe('snice-layout-dashboard breadcrumbs', () => {
     layout.update({} as any, placards, 'orphan', {});
     await wait(20);
 
-    const sidebar = layout.shadowRoot?.querySelector('.sidebar');
-    const html = sidebar!.innerHTML || sidebar!.textContent || '';
+    const toolbar = layout.shadowRoot?.querySelector('.toolbar');
+    const html = toolbar!.innerHTML || toolbar!.textContent || '';
     expect(html).toContain('"href":""');
   });
 });

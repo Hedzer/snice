@@ -1,4 +1,4 @@
-import { element, query, property, render, styles, html, css } from 'snice';
+import { element, query, property, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-dashboard.css?inline';
 import '../breadcrumbs/snice-breadcrumbs.ts';
@@ -13,40 +13,106 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   @property({ type: Array })
   private placards: Placard[] = [];
 
-  @property({  })
+  @property({ attribute: false })
   private currentRoute = '';
+
+  @property({ type: Boolean })
+  collapsed = false;
+
+  @property({ attribute: false })
+  mobileOpen = false;
+
+  @property({ attribute: false })
+  hasRail = false;
+
+  @property({ attribute: false })
+  hasToolbarContent = false;
 
   @render()
   render() {
+    const sidebarCollapsedClass = this.collapsed ? ' sidebar--collapsed' : '';
+    const sidebarMobileClass = this.mobileOpen ? ' sidebar--mobile-open' : '';
+    const scrimClass = this.mobileOpen ? ' scrim--visible' : '';
+    const expanded = this.mobileOpen || !this.collapsed;
+    const railedClass = this.hasRail ? ' content-area--railed' : '';
+    const railEmptyClass = this.hasRail ? '' : ' right-sidebar--empty';
+    const breadcrumbsHtml = this.getBreadcrumbsHtml();
+    const toolbarHiddenClass = this.hasToolbarContent || breadcrumbsHtml ? '' : ' toolbar--hidden';
+
     return html/*html*/`
       <div class="layout">
-        <header class="header">
+        <header class="header" part="header">
+          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
+            </svg>
+          </button>
           <div class="header-start">
             <slot name="brand">
               <h1>Dashboard</h1>
             </slot>
           </div>
-          <div class="header-center">
-            <slot name="search"></slot>
-          </div>
-          <div class="header-end">
-            <slot name="user"></slot>
+          <div class="header-content">
+            <slot name="header"></slot>
           </div>
         </header>
 
-        <snice-nav class="nav" variant="grouped" orientation="horizontal"></snice-nav>
+        <div class="toolbar${toolbarHiddenClass}" part="toolbar">
+          <slot name="toolbar">${breadcrumbsHtml}</slot>
+        </div>
 
-        <aside class="sidebar">${this.getBreadcrumbsHtml()}</aside>
+        <div class="body-area">
+          <aside class="sidebar${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
+            <slot name="sidebar">
+              <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+            </slot>
+          </aside>
 
-        <main class="main">
-          <slot name="page"></slot>
-        </main>
+          <div class="scrim${scrimClass}" part="scrim" @click=${this.handleScrimClick}></div>
 
-        <aside class="right-sidebar">
-          <slot name="right-sidebar"></slot>
-        </aside>
+          <div class="content-area${railedClass}">
+            <main class="main" part="main">
+              <slot name="page"></slot>
+            </main>
+
+            <aside class="right-sidebar${railEmptyClass}" part="right-sidebar">
+              <slot name="right-sidebar"></slot>
+            </aside>
+          </div>
+        </div>
       </div>
     `;
+  }
+
+  handleSidebarToggle() {
+    const isMobileViewport = typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobileViewport) {
+      this.mobileOpen = !this.mobileOpen;
+      return;
+    }
+
+    this.collapsed = !this.collapsed;
+  }
+
+  handleScrimClick() {
+    this.mobileOpen = false;
+  }
+
+  @ready()
+  wireSlotDetection() {
+    this.syncSlotState();
+
+    // slotchange bubbles to the shadow root (not past it), so one delegated
+    // listener survives re-renders that replace the slot elements.
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncSlotState());
+  }
+
+  private syncSlotState() {
+    this.hasRail = !!this.querySelector('[slot="right-sidebar"]');
+    this.hasToolbarContent = !!this.querySelector('[slot="toolbar"]');
   }
 
   @styles()

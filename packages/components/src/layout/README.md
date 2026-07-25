@@ -173,30 +173,30 @@ Article layout with sidebar for additional content.
 ```
 
 ### snice-layout-dashboard
-Complex dashboard layout with multiple content areas.
+App shell with left nav sidebar, toolbar strip (placard breadcrumbs by
+default, slottable), main area, and an optional right rail. The rail renders
+only when `slot="right-sidebar"` content exists, stacks below main under
+1024px, and the left sidebar overlays with a scrim under 768px. App chrome
+like search or a user menu belongs in the generic `header` slot.
 
 ```html
 <snice-layout-dashboard>
   <div slot="brand"><h1>Analytics</h1></div>
-  <input slot="search" type="search" placeholder="Search...">
-  <div slot="user">Welcome, John!</div>
-  
-  <nav slot="nav">
+  <div slot="header">
+    <input type="search" placeholder="Search...">
+    <span>Welcome, John!</span>
+  </div>
+
+  <nav slot="sidebar">
     <a href="/dashboard">Overview</a>
     <a href="/analytics">Analytics</a>
   </nav>
-  
-  <div slot="sidebar">
-    <h3>Quick Actions</h3>
-    <button>New Report</button>
-  </div>
-  
-  <!-- Main dashboard content -->
-  <div>
+
+  <div slot="page">
     <h2>Dashboard Overview</h2>
     <div class="metrics">...</div>
   </div>
-  
+
   <div slot="right-sidebar">
     <h3>Recent Activity</h3>
     <ul>...</ul>
