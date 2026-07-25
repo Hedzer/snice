@@ -230,11 +230,13 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
       <div class="invoice${isQrBottomRight || isQrBottomLeft ? ' invoice--qr-bottom' : ''}" part="base">
         <div class="invoice__header${isQrTopRight ? ' invoice__header--qr-top-right' : ''}" part="header">
           <div class="invoice__header-left">
-            <if ${this.from.logo}>
-              <img class="invoice__logo" src="${this.from.logo}" alt="${this.from.name}" part="logo" />
-            </if>
-            <h2 class="invoice__title" part="title">Invoice</h2>
-            <span class="invoice__status invoice__status--${this.status}" part="status">${this.status}</span>
+            <slot name="logo">
+              <if ${this.from.logo}>
+                <img class="invoice__logo" src="${this.from.logo}" alt="${this.from.name}" part="logo" />
+              </if>
+            </slot>
+            <h2 class="invoice__title" part="title"><slot name="title">Invoice</slot></h2>
+            <span class="invoice__status invoice__status--${this.status}" part="status"><slot name="status">${this.status}</slot></span>
           </div>
           <div class="invoice__meta" part="meta">
             <if ${this.invoiceNumber}>
@@ -261,12 +263,16 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
           </if>
         </div>
 
-        <if ${hasParties}>
-          <div class="invoice__parties" part="parties">
-            ${this.renderParty('From', this.from)}
-            ${this.renderParty('Bill To', this.to)}
-          </div>
-        </if>
+        <slot name="parties">
+          <if ${hasParties}>
+            <div class="invoice__parties" part="parties">
+              ${this.renderParty('From', this.from)}
+              ${this.renderParty('Bill To', this.to)}
+            </div>
+          </if>
+        </slot>
+
+        <slot name="before-items"></slot>
 
         <if ${this.items.length > 0}>
           <table class="invoice__table" part="table">
@@ -286,6 +292,8 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
             </tbody>
           </table>
         </if>
+
+        <slot name="after-items"></slot>
 
         <div class="invoice__summary" part="summary">
           <div class="invoice__summary-table">
@@ -318,6 +326,7 @@ export class SniceInvoice extends HTMLElement implements SniceInvoiceElement {
             <div part="notes-content">${this.notes}</div>
           </div>
         </if>
+        <slot name="notes"></slot>
 
         <if ${isQrBottomRight}>
           ${this.renderQr('bottom-right')}

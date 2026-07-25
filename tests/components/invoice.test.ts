@@ -466,6 +466,30 @@ describe('snice-invoice', () => {
     });
   });
 
+  describe('slots', () => {
+    it.each([['logo'], ['title'], ['status'], ['parties'], ['before-items'], ['after-items'], ['notes'], ['qr']])(
+      'ships a named %s slot',
+      async (name) => {
+        invoice = await createComponent<SniceInvoiceElement>('snice-invoice', name === 'qr' ? { 'show-qr': true } : {});
+        await wait(50);
+        expect(invoice.shadowRoot!.querySelector(`slot[name="${name}"]`), name).toBeTruthy();
+      }
+    );
+
+    it('assigns slotted content and keeps fallbacks otherwise', async () => {
+      const el = document.createElement('snice-invoice');
+      el.innerHTML = '<span slot="title">Tax Invoice</span><div slot="before-items">PO-4477 attached</div>';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 50));
+
+      const titleSlot = el.shadowRoot!.querySelector('slot[name="title"]') as HTMLSlotElement;
+      expect(titleSlot.assignedNodes().map(n => n.textContent).join('')).toContain('Tax Invoice');
+      const statusSlot = el.shadowRoot!.querySelector('slot[name="status"]') as HTMLSlotElement;
+      expect(statusSlot.assignedNodes().length).toBe(0); // fallback in effect
+      el.remove();
+    });
+  });
+
   describe('paper variant', () => {
     it.each([['paper'], ['ink'], ['ledger'], ['ticket']])('accepts variant="%s" and ships its stylesheet block', async (v) => {
       invoice = await createComponent<SniceInvoiceElement>('snice-invoice', { variant: v });
