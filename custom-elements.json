@@ -23831,6 +23831,16 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "wireFooterState",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
             }
           ],
           "attributes": [
@@ -24055,6 +24065,16 @@
                   "optional": true
                 }
               ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wireFooterState",
+              "parameters": [],
               "return": {
                 "type": {
                   "text": "unknown"

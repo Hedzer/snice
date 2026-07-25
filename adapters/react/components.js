@@ -101,6 +101,7 @@ export { KeyValue } from './key-value';
 export { Kpi } from './kpi';
 export { KvPair } from './kv-pair';
 export { Layout } from './layout';
+export { LayoutAuthSplit } from './layout-auth-split';
 export { LayoutBlog } from './layout-blog';
 export { LayoutCard } from './layout-card';
 export { LayoutCentered } from './layout-centered';
