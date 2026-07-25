@@ -10903,7 +10903,14 @@ export const ANALYZER_CONTRACTS = {
       ],
       "slots": [
         "",
-        "qr"
+        "after-items",
+        "before-items",
+        "logo",
+        "notes",
+        "parties",
+        "qr",
+        "status",
+        "title"
       ]
     },
     "snice-kanban": {
@@ -15642,8 +15649,11 @@ export const ANALYZER_CONTRACTS = {
       "events": [],
       "slots": [
         "",
+        "after-items",
         "barcode",
-        "qr"
+        "before-items",
+        "qr",
+        "thank-you"
       ]
     },
     "snice-recipe": {
@@ -20778,9 +20788,18 @@ export const ANALYZER_CONTRACTS = {
       ],
       "slots": [
         "",
+        "after-parts",
+        "after-tasks",
+        "asset",
+        "before-tasks",
+        "customer",
+        "description",
         "footer",
+        "notes",
         "qr",
-        "signature"
+        "signature",
+        "title",
+        "totals"
       ]
     }
   },

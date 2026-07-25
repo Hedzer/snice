@@ -21001,7 +21001,28 @@
               "name": ""
             },
             {
+              "name": "after-items"
+            },
+            {
+              "name": "before-items"
+            },
+            {
+              "name": "logo"
+            },
+            {
+              "name": "notes"
+            },
+            {
+              "name": "parties"
+            },
+            {
               "name": "qr"
+            },
+            {
+              "name": "status"
+            },
+            {
+              "name": "title"
             }
           ],
           "cssParts": [
@@ -33644,10 +33665,19 @@
               "name": ""
             },
             {
+              "name": "after-items"
+            },
+            {
               "name": "barcode"
             },
             {
+              "name": "before-items"
+            },
+            {
               "name": "qr"
+            },
+            {
+              "name": "thank-you"
             }
           ],
           "cssParts": [
@@ -53675,13 +53705,40 @@
               "name": ""
             },
             {
+              "name": "after-parts"
+            },
+            {
+              "name": "after-tasks"
+            },
+            {
+              "name": "asset"
+            },
+            {
+              "name": "before-tasks"
+            },
+            {
+              "name": "customer"
+            },
+            {
+              "name": "description"
+            },
+            {
               "name": "footer"
+            },
+            {
+              "name": "notes"
             },
             {
               "name": "qr"
             },
             {
               "name": "signature"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "totals"
             }
           ],
           "cssParts": [
