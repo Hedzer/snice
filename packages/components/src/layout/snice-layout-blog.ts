@@ -1,4 +1,4 @@
-import { element, query, property, render, styles, html, css } from 'snice';
+import { element, query, property, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-blog.css?inline';
 import '../nav/snice-nav.ts';
@@ -11,6 +11,9 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
 
   @property({ type: Boolean, attribute: 'use-nav' })
   useNav = false;
+
+  @property({ attribute: false })
+  hasSidebar = false;
 
   private placards: Placard[] = [];
   private currentRoute = '';
@@ -39,12 +42,12 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
 
         <main class="main">
           <div class="container">
-            <div class="content-area">
+            <div class="content-area${this.hasSidebar ? ' content-area--with-sidebar' : ''}">
               <article class="article">
                 <slot name="page"></slot>
               </article>
 
-              <aside class="sidebar">
+              <aside class="sidebar${this.hasSidebar ? '' : ' sidebar--empty'}">
                 <slot name="sidebar"></slot>
               </aside>
             </div>
@@ -63,6 +66,16 @@ export class SniceLayoutBlog extends HTMLElement implements Layout {
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
+  }
+
+  @ready()
+  wireSlotDetection() {
+    this.syncSlotState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncSlotState());
+  }
+
+  private syncSlotState() {
+    this.hasSidebar = !!this.querySelector('[slot="sidebar"]');
   }
 
   update(appContext: AppContext, placards: Placard[], currentRoute: string, routeParams: RouteParams): void {
