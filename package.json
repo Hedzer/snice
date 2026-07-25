@@ -150,7 +150,7 @@
     "test:browsers:install": "playwright install chromium firefox webkit",
     "test:live:components": "npx playwright test tests/live/components --config=tests/playwright.config.ts",
     "test:live:templates": "npx playwright test tests/live/templates --config=tests/playwright.config.ts",
-    "prerelease": "NEXT_VERSION=$(node tooling/release/get-next-version.js) && node tooling/generators/sync-template-versions.js $NEXT_VERSION && npm run build",
+    "prerelease": "export NEXT_VERSION=$(node tooling/release/get-next-version.js) && node tooling/generators/sync-template-versions.js $NEXT_VERSION && npm run build",
     "release": "semantic-release --no-ci",
     "postrelease": "npm run deploy:website",
     "release:dry-run": "semantic-release --dry-run --no-ci",
