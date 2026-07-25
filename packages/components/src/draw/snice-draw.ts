@@ -4,7 +4,7 @@ import drawStyles from './snice-draw.css?inline';
 
 const ease = (t: number): number => t * (2 - t);
 
-class DrawPoint implements Point {
+export class DrawPoint implements Point {
   x: number;
   y: number;
 
@@ -56,7 +56,7 @@ class DrawPoint implements Point {
   }
 }
 
-class DrawBrush {
+export class DrawBrush {
   private enabled: boolean;
   private hasMoved: boolean;
   radius: number;
@@ -566,7 +566,7 @@ export class SniceDraw extends HTMLElement implements SniceDrawElement {
   }
 
   toDataURL(type: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png', quality: number = 0.92): string {
-    if (!this.canvas) return '';
+    if (!this.canvas || typeof this.canvas.toDataURL !== 'function') return '';
     return this.canvas.toDataURL(type, quality);
   }
 
