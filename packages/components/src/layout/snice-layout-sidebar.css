@@ -102,6 +102,20 @@
   border-right: none;
 }
 
+/* Rail collapse: keep an icon-width column so navigation stays reachable. */
+.sidebar--rail.sidebar--collapsed {
+  width: var(--snice-layout-rail-collapsed-width, 3rem);
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+}
+
+/* Keep nav items on one line so the rail clips them cleanly instead of
+   wrapping labels into fragments. Authors hide labels outright by targeting
+   the reflected attribute on the host: snice-layout-sidebar[collapsed] .label. */
+.sidebar--rail.sidebar--collapsed ::slotted(*) {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .scrim {
   display: none;
 }
@@ -152,7 +166,8 @@
   }
 
   /* Desktop collapse does not apply while overlaid */
-  .sidebar--collapsed {
+  .sidebar--collapsed,
+  .sidebar--rail.sidebar--collapsed {
     width: min(80vw, 18rem);
     border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   }

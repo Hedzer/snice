@@ -1,5 +1,6 @@
-import { element, property, query, on, ready, render, styles, html, css } from 'snice';
+import { element, property, query, on, ready, dispose, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
+import type { SidebarCollapseMode } from './snice-layout.types';
 import cssContent from './snice-layout-sidebar.css?inline';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
@@ -8,6 +9,14 @@ import type { SniceNav } from '../nav/snice-nav.ts';
 export class SniceLayoutSidebar extends HTMLElement implements Layout {
   @property({ type: Boolean })
   collapsed = false;
+
+  /**
+   * How the sidebar collapses on desktop:
+   * `rail` shrinks it to an icon-width column, `offcanvas` hides it entirely,
+   * `none` pins it open and drops the toggle.
+   */
+  @property({ attribute: 'collapse-mode' })
+  collapseMode: SidebarCollapseMode = 'rail';
 
   @property({ attribute: false })
   mobileOpen = false;
@@ -20,7 +29,10 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
 
   @render()
   render() {
-    const sidebarCollapsedClass = this.collapsed ? ' sidebar--collapsed' : '';
+    const isRail = this.collapseMode === 'rail';
+    const canCollapse = this.collapseMode !== 'none';
+    const sidebarRailClass = isRail ? ' sidebar--rail' : '';
+    const sidebarCollapsedClass = canCollapse && this.collapsed ? ' sidebar--collapsed' : '';
     const sidebarMobileClass = this.mobileOpen ? ' sidebar--mobile-open' : '';
     const scrimClass = this.mobileOpen ? ' scrim--visible' : '';
     const expanded = this.mobileOpen || !this.collapsed;
@@ -28,11 +40,13 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
     return html/*html*/`
       <div class="layout">
         <header class="header" part="header">
-          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
-            </svg>
-          </button>
+          <if ${canCollapse}>
+            <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
+              </svg>
+            </button>
+          </if>
           <div class="header-brand">
             <slot name="brand">
               <h2>App</h2>
@@ -44,7 +58,7 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
         </header>
 
         <div class="body-area">
-          <aside class="sidebar${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
+          <aside class="sidebar${sidebarRailClass}${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
             <slot name="sidebar">
               <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
             </slot>
@@ -70,6 +84,8 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   }
 
   handleSidebarToggle() {
+    if (this.collapseMode === 'none') return;
+
     const isMobileViewport = typeof window !== 'undefined'
       && typeof window.matchMedia === 'function'
       && window.matchMedia('(max-width: 768px)').matches;
@@ -90,6 +106,30 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape' && this.mobileOpen) {
       this.mobileOpen = false;
+    }
+  }
+
+  private shortcutListener?: (event: KeyboardEvent) => void;
+
+  @ready()
+  bindShortcut() {
+    if (typeof document === 'undefined') return;
+
+    this.shortcutListener = (event: KeyboardEvent) => {
+      const isToggleChord = event.key?.toLowerCase() === 'b' && (event.metaKey || event.ctrlKey);
+      if (!isToggleChord) return;
+
+      event.preventDefault();
+      this.handleSidebarToggle();
+    };
+    document.addEventListener('keydown', this.shortcutListener);
+  }
+
+  @dispose()
+  releaseShortcut() {
+    if (this.shortcutListener && typeof document !== 'undefined') {
+      document.removeEventListener('keydown', this.shortcutListener);
+      this.shortcutListener = undefined;
     }
   }
 

@@ -202,6 +202,67 @@ describe('snice-layout-sidebar', () => {
     });
   });
 
+  describe('collapse modes', () => {
+    it('observes collapse-mode and defaults to rail', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      const observed = (customElements.get('snice-layout-sidebar') as any).observedAttributes as string[];
+      expect(observed).toContain('collapse-mode');
+      expect((layout as any).collapseMode).toBe('rail');
+    });
+
+    it('rail mode keeps the sidebar visible at icon width when collapsed', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar', { collapsed: true });
+      await wait(20);
+
+      const sidebar = queryShadow(layout as HTMLElement, 'aside.sidebar');
+      expect(sidebar!.classList.contains('sidebar--rail')).toBe(true);
+      expect(sidebar!.classList.contains('sidebar--collapsed')).toBe(true);
+    });
+
+    it('offcanvas mode hides the sidebar entirely when collapsed', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar', {
+        collapsed: true,
+        'collapse-mode': 'offcanvas',
+      });
+      await wait(20);
+
+      const sidebar = queryShadow(layout as HTMLElement, 'aside.sidebar');
+      expect(sidebar!.classList.contains('sidebar--rail')).toBe(false);
+      expect(sidebar!.classList.contains('sidebar--collapsed')).toBe(true);
+    });
+
+    it('none mode drops the toggle so the sidebar is static', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar', { 'collapse-mode': 'none' });
+      await wait(20);
+
+      expect(queryShadow(layout as HTMLElement, '.sidebar-toggle')).toBeNull();
+    });
+  });
+
+  describe('keyboard shortcut', () => {
+    it('ctrl/cmd+b toggles the sidebar', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      await wait(20);
+      expect(layout.collapsed).toBe(false);
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', ctrlKey: true, bubbles: true }));
+      await wait(20);
+      expect(layout.collapsed).toBe(true);
+    });
+
+    it('stops listening once disconnected', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      await wait(20);
+      const el = layout as unknown as HTMLElement;
+      el.parentNode!.removeChild(el);
+      await wait(20);
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', ctrlKey: true, bubbles: true }));
+      await wait(20);
+      expect(layout.collapsed).toBe(false);
+    });
+  });
+
   describe('stylesheet contracts', () => {
     const readCss = async () => {
       const { readFileSync } = await import('node:fs');
@@ -225,6 +286,16 @@ describe('snice-layout-sidebar', () => {
     it('never hides the sidebar with display none', async () => {
       const css = await readCss();
       expect(css).not.toMatch(/\.sidebar[^{]*\{[^}]*display:\s*none/);
+    });
+
+    it('rail collapse keeps an icon-width column instead of zero width', async () => {
+      const css = await readCss();
+      expect(css).toMatch(/\.sidebar--rail\.sidebar--collapsed\s*\{[^}]*width:\s*var\(--snice-layout-rail-collapsed-width,\s*3rem\)/);
+    });
+
+    it('rail clips nav labels to one line instead of wrapping them into fragments', async () => {
+      const css = await readCss();
+      expect(css).toMatch(/\.sidebar--rail\.sidebar--collapsed ::slotted\(\*\)\s*\{[^}]*white-space:\s*nowrap/);
     });
   });
 });
