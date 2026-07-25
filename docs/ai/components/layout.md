@@ -85,6 +85,17 @@ snice-layout-sidebar[collapsed] .label { display: none; }
 
 Directly slotted links get hover/focus/current styling; nested markup is styled by its owner. No slotted content → placard-driven nav.
 
+## The layout is the frame
+
+Layouts own the screen. App shells (`sidebar`, `dashboard`, `fullscreen`) are `position: fixed; inset: 0` — body margin/ancestor padding cannot inset them; chrome is pinned, content region scrolls. Content shells use `100dvh` (with `100vh` fallback) and let the page scroll.
+
+`contained` on any shell → sizes to parent instead (docs demos, showcase cards, preview panes).
+
+```html
+<snice-layout-sidebar>…</snice-layout-sidebar>                  <!-- is the page -->
+<div style="height:340px"><snice-layout-sidebar contained>…</snice-layout-sidebar></div>  <!-- embedded -->
+```
+
 ## Sizing hooks
 
 - `--snice-layout-sidebar-width` (`16rem`), `--snice-layout-rail-collapsed-width` (`3rem`)

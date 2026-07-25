@@ -153,6 +153,30 @@ Wrap them in your own element and that styling becomes yours to write, because a
 component cannot reach inside markup it does not own. Slot nothing and the shell
 renders its own navigation from placards.
 
+### The layout is the frame
+
+A layout owns the whole screen. App shells (`sidebar`, `dashboard`, `fullscreen`) pin
+themselves to the viewport, so body margins or ancestor padding cannot inset them:
+their chrome stays put and only the content region scrolls. Content shells fill the
+screen with `100dvh` and let the page scroll normally.
+
+Add `contained` when a shell is *not* the page — inside a documentation demo, a
+showcase card, or a preview pane. It then sizes to its parent instead.
+
+```html
+<!-- The page: owns the screen -->
+<snice-layout-sidebar>…</snice-layout-sidebar>
+
+<!-- A demo inside a page: sized by its container -->
+<div style="height: 340px">
+  <snice-layout-sidebar contained>…</snice-layout-sidebar>
+</div>
+```
+
+| Attribute | Applies to | Description |
+|-----------|------------|-------------|
+| `contained` | every shell | Size to the parent element instead of owning the screen |
+
 ### Sizing hooks
 
 | Custom property | Default | Applies to |
