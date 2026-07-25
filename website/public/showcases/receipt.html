@@ -1,0 +1,124 @@
+    <div class="comp-section">
+      <h3>Receipt</h3>
+      <p class="comp-desc">Transaction receipt with merchant info, line items, totals, and payment method</p>
+      <div class="comp-split">
+        <div class="comp-split-demo" style="gap:1.5rem;flex-wrap:wrap;justify-content:center">
+          <snice-receipt id="demo-receipt" receipt-number="RCT-48291" date="Feb 27, 2026 3:42 PM" currency="USD" tax="4.76" payment-method="Visa ending in 4242" style="max-width:320px;width:100%"></snice-receipt>
+          <snice-receipt id="demo-receipt-thermal" receipt-number="00847" date="02/27/2026 15:42" currency="USD" tax="2.10" payment-method="Cash" variant="thermal" style="max-width:280px;width:100%"></snice-receipt>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">&lt;snice-receipt
+  id="rcpt"
+  receipt-number="RCT-48291"
+  date="Feb 27, 2026 3:42 PM"
+  tax="4.76"
+  payment-method="Visa ending in 4242"
+&gt;&lt;/snice-receipt&gt;
+
+&lt;script&gt;
+  rcpt.merchant = { name: 'Coffee Shop',
+    address: '789 Main St' };
+  rcpt.items = [
+    { name: 'Latte', quantity: 2,
+      price: 5.50 },
+    { name: 'Muffin', quantity: 1,
+      price: 3.95 }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    
+      <style>
+.tpl-stack-wrap { margin-top: 2rem; }
+.tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
+.tpl-stack { display: grid; grid-template-columns: repeat(auto-fill, 216px); gap: 1.75rem 1.5rem; justify-content: start; }
+.tpl-sheet { margin: 0; padding: 0; border: 0; background: none; text-align: center; cursor: zoom-in; }
+.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; border-radius: 4px; }
+.tpl-frame { width: 214px; height: 252px; overflow: hidden; margin: 0 auto; padding: 8px; border-radius: 3px; transition: translate 150ms ease; }
+.tpl-sheet:hover .tpl-frame { translate: 0 -3px; }
+.tpl-clip { width: 660px; transform: scale(0.3); transform-origin: top left; pointer-events: none; }
+.tpl-sheet__tag { display: block; margin-top: 0.5rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--snice-color-text-tertiary, #888); }
+</style>
+      <div class="tpl-stack-wrap">
+        <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
+        <div class="tpl-stack">
+        <button class="tpl-sheet" data-variant="thermal" aria-label="Zoom thermal template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="thermal" receipt-number="REC-1905" date="2026-07-24 14:30" cashier="Alice"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">thermal</span>
+        </button>
+        <button class="tpl-sheet" data-variant="modern" aria-label="Zoom modern template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="modern" receipt-number="REC-1906" date="2026-07-24 14:30" payment-method="Visa **** 4242"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">modern</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ledger" aria-label="Zoom ledger template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="ledger" receipt-number="REC-1909" date="2026-07-24 15:40" cashier="Noor"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">ledger</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ticket" aria-label="Zoom ticket template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="ticket" receipt-number="REC-1910" date="2026-07-24 16:20" payment-method="Cash"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">ticket</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ink" aria-label="Zoom ink template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="ink" receipt-number="REC-1908" date="2026-07-24 15:05" payment-method="Amex **** 9001" cashier="Marco"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">ink</span>
+        </button>
+        <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-receipt data-tpl-rc variant="paper" receipt-number="REC-1907" date="2026-07-24 14:30" payment-method="Visa **** 4242" cashier="Alice" terminal-id="POS-03"></snice-receipt></div></div>
+          <span class="tpl-sheet__tag">paper</span>
+        </button>
+        </div>
+      </div>
+      <snice-modal id="tpl-modal-rc" size="large" no-footer label="Template preview">
+        <div id="tpl-modal-body-rc" style="max-width:700px;margin:0 auto"></div>
+      </snice-modal>
+      <script type="module">
+        (() => {
+          const feed = el => { el.merchant = { name: 'Coffee House', address: '123 Brew St, Portland OR', phone: '555-0100' };
+            el.items = [
+              { name: 'Cappuccino', quantity: 2, price: 4.50 },
+              { name: 'Croissant', quantity: 1, price: 3.75 },
+              { name: 'Espresso', quantity: 3, price: 3.00 },
+            ];
+            el.tax = 1.87; };
+          document.querySelectorAll('[data-tpl-rc]').forEach(feed);
+          const modal = document.getElementById('tpl-modal-rc');
+          const body = document.getElementById('tpl-modal-body-rc');
+          document.querySelectorAll('#tpl-modal-rc ~ *, .tpl-stack').length; // noop
+          document.querySelectorAll('.tpl-stack .tpl-sheet[data-variant]').forEach(card => {
+            if (!card.closest('.comp-section')?.contains(modal)) return;
+            card.addEventListener('click', () => {
+              body.innerHTML = '';
+              const clone = card.querySelector('[data-tpl-rc]').cloneNode(false);
+              clone.removeAttribute('data-tpl-rc');
+              feed(clone);
+              body.appendChild(clone);
+              modal.show();
+            });
+          });
+        })();
+      </script>
+
+    </div>
+<script>
+    customElements.whenDefined('snice-receipt').then(() => {
+      const rcpt = document.getElementById('demo-receipt');
+      if (rcpt) {
+        rcpt.merchant = { name: 'Downtown Coffee', address: '789 Main St, Suite 100' };
+        rcpt.items = [
+          { name: 'Cappuccino', quantity: 2, price: 5.50 },
+          { name: 'Blueberry Muffin', quantity: 1, price: 3.95 },
+          { name: 'Bottled Water', quantity: 1, price: 2.50 }
+        ];
+      }
+      const thermal = document.getElementById('demo-receipt-thermal');
+      if (thermal) {
+        thermal.merchant = { name: 'QUICK MART' };
+        thermal.items = [
+          { name: 'Sandwich', quantity: 1, price: 8.99 },
+          { name: 'Soda', quantity: 2, price: 1.99 },
+          { name: 'Chips', quantity: 1, price: 3.49 }
+        ];
+      }
+    });
+</script>

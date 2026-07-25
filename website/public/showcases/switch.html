@@ -1,0 +1,43 @@
+    <div class="comp-section">
+      <h3>Switch</h3>
+      <p class="comp-desc">Toggle switches with on/off labels, sizes, and states</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col">
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center">
+            <snice-switch checked>Notifications</snice-switch>
+            <snice-switch>Dark Mode</snice-switch>
+            <snice-switch disabled>Disabled</snice-switch>
+          </div>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+            <snice-switch size="small" label="Small" checked></snice-switch>
+            <snice-switch size="medium" label="Medium" checked></snice-switch>
+            <snice-switch size="large" label="Large" checked></snice-switch>
+          </div>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin-top:1rem">
+            <snice-switch loading label="Loading"></snice-switch>
+            <snice-switch invalid label="Invalid"></snice-switch>
+            <snice-switch label-on="ON" label-off="OFF" label="On/Off labels"></snice-switch>
+            <snice-switch label-on="Yes" label-off="No" checked label="Yes/No"></snice-switch>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-switch checked&gt;Notifications&lt;/snice-switch&gt;
+&lt;snice-switch&gt;Dark Mode&lt;/snice-switch&gt;
+&lt;snice-switch disabled&gt;Disabled&lt;/snice-switch&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;snice-switch size="small" label="Small"&gt;&lt;/snice-switch&gt;
+&lt;snice-switch size="large" label="Large"&gt;&lt;/snice-switch&gt;
+
+&lt;!-- On/Off labels inside the track --&gt;
+&lt;snice-switch label-on="ON" label-off="OFF"&gt;
+  Power
+&lt;/snice-switch&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-switch loading&gt;Loading&lt;/snice-switch&gt;
+&lt;snice-switch invalid&gt;Invalid&lt;/snice-switch&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,136 @@
+    <!-- ── Date Time Picker ── -->
+    <div class="comp-section">
+      <h3>Date Time Picker</h3>
+      <p class="comp-desc">Combined date and time selection with calendar, time columns, and year picker</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Event Start" placeholder="Select date and time"></snice-date-time-picker>
+            <snice-date-time-picker label="12h Format" time-format="12h" date-format="mm/dd/yyyy" placeholder="Select..."></snice-date-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Long Format" date-format="mmmm dd, yyyy" value="2026-03-15T10:30"></snice-date-time-picker>
+            <snice-date-time-picker label="With Seconds" show-seconds helper-text="Includes seconds"></snice-date-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Clearable" value="2026-03-15T10:30" clearable></snice-date-time-picker>
+          </div>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-date-time-picker
+  label="Event Start"
+  placeholder="Select date and time"
+&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- 12h + US date format --&gt;
+&lt;snice-date-time-picker
+  time-format="12h"
+  date-format="mm/dd/yyyy"
+&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- Long date format --&gt;
+&lt;snice-date-time-picker
+  date-format="mmmm dd, yyyy"
+&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- With seconds --&gt;
+&lt;snice-date-time-picker show-seconds&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- Clearable --&gt;
+&lt;snice-date-time-picker
+  value="2026-03-15T10:30"
+  clearable
+&gt;&lt;/snice-date-time-picker&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Small" size="small"></snice-date-time-picker>
+            <snice-date-time-picker label="Medium" size="medium"></snice-date-time-picker>
+            <snice-date-time-picker label="Large" size="large"></snice-date-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Disabled" value="2026-03-15T10:30" disabled></snice-date-time-picker>
+            <snice-date-time-picker label="Readonly" value="2026-03-15T10:30" readonly></snice-date-time-picker>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <snice-date-time-picker label="Loading" loading></snice-date-time-picker>
+            <snice-date-time-picker label="Required" required helper-text="This field is required"></snice-date-time-picker>
+          </div>
+          <snice-date-time-picker label="Invalid" invalid error-text="Please select a valid date and time"></snice-date-time-picker>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Sizes --&gt;
+&lt;snice-date-time-picker size="small"&gt;&lt;/snice-date-time-picker&gt;
+&lt;snice-date-time-picker size="large"&gt;&lt;/snice-date-time-picker&gt;
+
+&lt;!-- States --&gt;
+&lt;snice-date-time-picker disabled&gt;&lt;/snice-date-time-picker&gt;
+&lt;snice-date-time-picker readonly&gt;&lt;/snice-date-time-picker&gt;
+&lt;snice-date-time-picker loading&gt;&lt;/snice-date-time-picker&gt;
+&lt;snice-date-time-picker required helper-text="Required"&gt;&lt;/snice-date-time-picker&gt;
+&lt;snice-date-time-picker invalid error-text="Invalid"&gt;&lt;/snice-date-time-picker&gt;</snice-code-block>
+        </div>
+      </div>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:.75rem">
+          <form id="showcase-date-time-form" style="display:flex;flex-direction:column;gap:.75rem;width:100%">
+            <snice-date-time-picker
+              id="showcase-date-time-form-picker"
+              name="appointment"
+              label="Native Form Appointment"
+              value="2026-03-10T14:05"
+              date-format="dd/mm/yyyy"
+              min="2026-03-01T00:00"
+              max="2026-03-31T23:59"
+              helper-text="Canonical local datetime; no UTC conversion"
+              show-seconds
+              clearable
+              required
+            ></snice-date-time-picker>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <button type="submit">Submit</button>
+              <button type="reset">Reset</button>
+            </div>
+            <output aria-live="polite">Ready</output>
+          </form>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;form&gt;
+  &lt;snice-date-time-picker
+    name="appointment"
+    value="2026-03-10T14:05"
+    min="2026-03-01T00:00"
+    max="2026-03-31T23:59"
+    show-seconds
+    clearable
+    required
+  &gt;&lt;/snice-date-time-picker&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+    <script>
+      (() => {
+        const form = document.getElementById('showcase-date-time-form');
+        if (!form || form.dataset.bound === 'true') return;
+        form.dataset.bound = 'true';
+        const output = form.querySelector('output');
+        const describeData = () => Array.from(new FormData(form).entries())
+          .map(([name, value]) => `${name}=${String(value)}`)
+          .join(', ') || '(empty)';
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          output.textContent = `Submitted: ${describeData()}`;
+        });
+        form.addEventListener('reset', () => {
+          requestAnimationFrame(() => { output.textContent = `Reset: ${describeData()}`; });
+        });
+      })();
+    </script>

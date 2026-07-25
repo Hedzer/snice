@@ -1,0 +1,129 @@
+    <div class="comp-section">
+      <h3>Work Order</h3>
+      <p class="comp-desc">Service work order with task checklist, parts list, time tracking, and cost summary</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo" style="justify-content:center">
+          <snice-work-order id="demo-work-order" wo-number="WO-2026-0184" date="Feb 27, 2026" priority="high" status="in-progress" description="HVAC system inspection and filter replacement for main office building. Check all units on floors 2-5." labor-rate="85" notes="Customer requested service between 8 AM - 5 PM only." style="max-width:640px;width:100%"></snice-work-order>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">javascript</span>
+          <snice-code-block language="javascript" grammar="grammars/typescript.json?v=80938d7">&lt;snice-work-order
+  id="wo"
+  wo-number="WO-2026-0184"
+  priority="high"
+  status="in-progress"
+  labor-rate="85"
+&gt;&lt;/snice-work-order&gt;
+
+&lt;script&gt;
+  wo.customer = { name: 'Office Park LLC',
+    phone: '(555) 123-4567' };
+  wo.tasks = [
+    { description: 'Inspect units',
+      assignee: 'Mike', hours: 2,
+      completed: true },
+    { description: 'Replace filters',
+      assignee: 'Mike', hours: 3 }
+  ];
+  wo.parts = [
+    { name: 'HVAC Filter 20x25',
+      partNumber: 'HF-2025',
+      quantity: 8, unitCost: 24.99 }
+  ];
+&lt;/script&gt;</snice-code-block>
+        </div>
+      </div>
+    
+      <style>
+.tpl-stack-wrap { margin-top: 2rem; }
+.tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
+.tpl-stack { display: grid; grid-template-columns: repeat(auto-fill, 216px); gap: 1.75rem 1.5rem; justify-content: start; }
+.tpl-sheet { margin: 0; padding: 0; border: 0; background: none; text-align: center; cursor: zoom-in; }
+.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; border-radius: 4px; }
+.tpl-frame { width: 214px; height: 252px; overflow: hidden; margin: 0 auto; padding: 8px; border-radius: 3px; transition: translate 150ms ease; }
+.tpl-sheet:hover .tpl-frame { translate: 0 -3px; }
+.tpl-clip { width: 660px; transform: scale(0.3); transform-origin: top left; pointer-events: none; }
+.tpl-sheet__tag { display: block; margin-top: 0.5rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--snice-color-text-tertiary, #888); }
+</style>
+      <div class="tpl-stack-wrap">
+        <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
+        <div class="tpl-stack">
+        <button class="tpl-sheet" data-variant="field-service" aria-label="Zoom field-service template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="field-service" wo-number="WO-1905" date="2026-07-24" priority="medium" status="open" description="Quarterly maintenance visit."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">field-service</span>
+        </button>
+        <button class="tpl-sheet" data-variant="detailed" aria-label="Zoom detailed template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="detailed" wo-number="WO-1906" date="2026-07-24" priority="high" status="in-progress" description="Replace compressor bearing."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">detailed</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ledger" aria-label="Zoom ledger template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="ledger" wo-number="WO-1909" date="2026-07-24" priority="low" status="open" description="Inspect rooftop condensate drain."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">ledger</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ticket" aria-label="Zoom ticket template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="ticket" wo-number="WO-1910" date="2026-07-24" priority="medium" status="open" description="Swap air filters, building B."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">ticket</span>
+        </button>
+        <button class="tpl-sheet" data-variant="ink" aria-label="Zoom ink template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="ink" wo-number="WO-1908" date="2026-07-24" due-date="2026-08-01" priority="urgent" status="open" description="Emergency chiller diagnostics and repair."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">ink</span>
+        </button>
+        <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-work-order data-tpl-wo variant="paper" wo-number="WO-1907" date="2026-07-24" due-date="2026-08-01" priority="high" status="in-progress" description="Replace compressor bearing and recalibrate the intake manifold."></snice-work-order></div></div>
+          <span class="tpl-sheet__tag">paper</span>
+        </button>
+        </div>
+      </div>
+      <snice-modal id="tpl-modal-wo" size="large" no-footer label="Template preview">
+        <div id="tpl-modal-body-wo" style="max-width:700px;margin:0 auto"></div>
+      </snice-modal>
+      <script type="module">
+        (() => {
+          const feed = el => { el.customer = { name: 'Acme Corp', address: '123 Main St, Suite 200', phone: '+1 555-1234' };
+            el.tasks = [
+              { description: 'Drain refrigerant and lock out power', completed: true, hours: 1.5 },
+              { description: 'Replace compressor bearing', completed: false, hours: 3 },
+            ];
+            el.parts = [
+              { name: 'Compressor bearing', partNumber: 'CB-4402', quantity: 1, unitCost: 240 },
+              { name: 'Gasket kit', partNumber: 'GK-115', quantity: 2, unitCost: 35 },
+            ];
+            el.laborRate = 95; };
+          document.querySelectorAll('[data-tpl-wo]').forEach(feed);
+          const modal = document.getElementById('tpl-modal-wo');
+          const body = document.getElementById('tpl-modal-body-wo');
+          document.querySelectorAll('#tpl-modal-wo ~ *, .tpl-stack').length; // noop
+          document.querySelectorAll('.tpl-stack .tpl-sheet[data-variant]').forEach(card => {
+            if (!card.closest('.comp-section')?.contains(modal)) return;
+            card.addEventListener('click', () => {
+              body.innerHTML = '';
+              const clone = card.querySelector('[data-tpl-wo]').cloneNode(false);
+              clone.removeAttribute('data-tpl-wo');
+              feed(clone);
+              body.appendChild(clone);
+              modal.show();
+            });
+          });
+        })();
+      </script>
+
+    </div>
+<script>
+    customElements.whenDefined('snice-work-order').then(() => {
+      const wo = document.getElementById('demo-work-order');
+      if (wo) {
+        wo.customer = { name: 'Office Park LLC', address: '500 Commerce Dr, Building A', phone: '(555) 123-4567', email: 'facilities@officepark.com' };
+        wo.tasks = [
+          { description: 'Inspect all HVAC units on floors 2-5', assignee: 'Mike T.', hours: 2, completed: true },
+          { description: 'Replace air filters', assignee: 'Mike T.', hours: 3, completed: false },
+          { description: 'Clean condenser coils', assignee: 'Sarah K.', hours: 1.5, completed: false },
+          { description: 'Test thermostat calibration', assignee: 'Sarah K.', hours: 1, completed: false }
+        ];
+        wo.parts = [
+          { name: 'HVAC Filter 20x25', partNumber: 'HF-2025', quantity: 8, unitCost: 24.99 },
+          { name: 'Condenser Coil Cleaner', partNumber: 'CC-500', quantity: 2, unitCost: 18.50 },
+          { name: 'Thermostat Battery', partNumber: 'TB-CR2032', quantity: 4, unitCost: 3.99 }
+        ];
+      }
+    });
+</script>

@@ -1,0 +1,59 @@
+    <!-- ── Avatar Group ── -->
+    <div class="comp-section">
+      <h3>Avatar Group</h3>
+      <p class="comp-desc">Stacked avatar list with overflow indicator</p>
+      <div class="comp-split">
+        <div class="comp-split-demo demo-col" style="gap:1.5rem">
+          <snice-avatar-group id="demo-avatar-group" max="4" size="medium"></snice-avatar-group>
+          <snice-avatar-group id="demo-avatar-group-lg" max="3" size="large"></snice-avatar-group>
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;snice-avatar-group id="group"
+  max="4" size="medium"&gt;
+&lt;/snice-avatar-group&gt;
+
+&lt;script&gt;
+  group.avatars = [
+    { name: 'Alice Chen',
+      src: 'assets/avatars/pravatar-80-1.jpg' },
+    { name: 'Bob Rivera' },
+    { name: 'Carol Kim',
+      src: 'assets/avatars/pravatar-80-3.jpg' },
+    { name: 'Dave Patel' },
+    { name: 'Eve Martinez' },
+    { name: 'Frank Lee' }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Sizes: small, medium, large --&gt;
+&lt;!-- max: visible count before +N --&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
+
+<script>
+  customElements.whenDefined('snice-avatar-group').then(() => {
+    const ag = document.getElementById('demo-avatar-group');
+    if (ag) {
+      ag.avatars = [
+        { name: 'Alice Chen', src: 'assets/avatars/pravatar-80-a1.jpg' },
+        { name: 'Bob Rivera' },
+        { name: 'Carol Kim', src: 'assets/avatars/pravatar-80-a3.jpg' },
+        { name: 'Dave Patel' },
+        { name: 'Eve Martinez' },
+        { name: 'Frank Lee' }
+      ];
+    }
+    const agl = document.getElementById('demo-avatar-group-lg');
+    if (agl) {
+      agl.avatars = [
+        { name: 'Grace Wu', src: 'assets/avatars/pravatar-100-a7.jpg' },
+        { name: 'Henry Zhao' },
+        { name: 'Iris Novak', src: 'assets/avatars/pravatar-100-a9.jpg' },
+        { name: 'Jack Moore' },
+        { name: 'Kate Lin' }
+      ];
+    }
+  });
+</script>

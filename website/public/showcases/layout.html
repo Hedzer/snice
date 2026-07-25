@@ -1,0 +1,497 @@
+    <!-- ── Layouts ── -->
+    <style>
+      .ly-demo {
+        --ly-bg:        var(--snice-color-surface-container-low, rgba(128,128,128,0.04));
+        --ly-chrome:    var(--snice-color-surface-container-high, rgba(128,128,128,0.08));
+        --ly-border:    var(--snice-color-border-subtle, rgba(128,128,128,0.18));
+        --ly-fill:      var(--snice-color-surface-container, rgba(128,128,128,0.1));
+        --ly-fill-2:    var(--snice-color-surface-container-highest, rgba(128,128,128,0.14));
+        --ly-accent:    var(--snice-color-primary-subtle, rgba(59,130,246,0.18));
+        --ly-text-1:    var(--snice-color-text-tertiary);
+        --ly-text-2:    var(--snice-color-text-secondary);
+
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--ly-border);
+        border-radius: 10px;
+        background: var(--ly-bg);
+        box-shadow: var(--snice-shadow-sm);
+        overflow: hidden;
+      }
+      .ly-demo__chrome {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.75rem;
+        background: var(--ly-chrome);
+        border-bottom: 1px solid var(--ly-border);
+        font-family: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, monospace;
+        font-size: 0.62rem;
+        color: var(--ly-text-1);
+      }
+      .ly-demo__dots { display: inline-flex; gap: 0.26rem; margin-right: 0.25rem; }
+      .ly-demo__dot  { width: 7px; height: 7px; border-radius: 50%; background: rgba(128,128,128,0.28); }
+      .ly-demo__dot--r { background: rgba(255,95,86,0.55); }
+      .ly-demo__dot--y { background: rgba(255,189,46,0.55); }
+      .ly-demo__dot--g { background: rgba(39,201,63,0.55); }
+
+      .ly-demo__body {
+        position: relative;
+        height: 10.5rem;
+        display: grid;
+        gap: 2px;
+        background: var(--ly-border);
+      }
+      .ly-zone {
+        background: var(--ly-fill);
+        padding: 0.5rem 0.625rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .ly-zone--accent { background: var(--ly-accent); }
+      .ly-zone--solid  { background: var(--ly-fill-2); }
+
+      .ly-tag {
+        font-size: 0.55rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ly-text-1);
+      }
+      .ly-line {
+        height: 0.3rem;
+        border-radius: 999px;
+        background: var(--ly-border);
+        opacity: 0.7;
+      }
+      .ly-line--full { width: 100%; }
+      .ly-line--med  { width: 70%; }
+      .ly-line--short { width: 40%; }
+
+      .ly-card {
+        background: var(--ly-fill-2);
+        border-radius: 4px;
+        min-height: 1.6rem;
+      }
+
+      /* Structural grids */
+      .ly-grid-dashboard {
+        grid-template-columns: 3rem 1fr 3rem;
+        grid-template-rows: 1.4rem 1.1rem 1fr;
+        grid-template-areas:
+          "h h h"
+          "n n n"
+          "s m r";
+      }
+      .ly-grid-sidebar {
+        grid-template-columns: 3.25rem 1fr;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h"
+          "s m";
+      }
+      .ly-grid-split {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "a b";
+      }
+      .ly-grid-centered {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1.4rem 1fr 1rem;
+        grid-template-areas: "h" "c" "f";
+      }
+      .ly-grid-minimal {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas: "h" "m";
+      }
+      .ly-grid-landing {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1.4rem 3rem 1fr;
+        grid-template-areas: "h" "hero" "sections";
+      }
+      .ly-grid-blog {
+        grid-template-columns: 1fr 4.5rem;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h"
+          "a m";
+      }
+      .ly-grid-card {
+        place-items: center;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+      .ly-grid-fullscreen {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+
+      .ly-grid-master-detail {
+        grid-template-columns: 3.5rem 1fr;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h"
+          "l d";
+      }
+      .ly-grid-docs {
+        grid-template-columns: 2.75rem 1fr 2.25rem;
+        grid-template-rows: 1.4rem 1fr;
+        grid-template-areas:
+          "h h h"
+          "s m t";
+      }
+      .ly-grid-auth-split {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "form panel";
+      }
+
+      .ly-a-l { grid-area: l; }
+      .ly-a-d { grid-area: d; }
+      .ly-a-t { grid-area: t; }
+      .ly-a-form { grid-area: form; }
+      .ly-a-panel { grid-area: panel; }
+      .ly-a-h { grid-area: h; }
+      .ly-a-n { grid-area: n; }
+      .ly-a-s { grid-area: s; }
+      .ly-a-m { grid-area: m; }
+      .ly-a-r { grid-area: r; }
+      .ly-a-f { grid-area: f; }
+      .ly-a-c { grid-area: c; }
+      .ly-a-hero { grid-area: hero; }
+      .ly-a-sections { grid-area: sections; }
+      .ly-a-a { grid-area: a; }
+      .ly-a-b { grid-area: b; }
+
+      .ly-card-centered {
+        background: var(--ly-fill-2);
+        border-radius: 6px;
+        width: 58%;
+        aspect-ratio: 5 / 3;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        padding: 0.5rem 0.625rem;
+      }
+      .ly-fs {
+        position: absolute;
+        inset: 0;
+        background: var(--ly-fill-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--ly-text-2);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .ly-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.35rem;
+        padding: 0.35rem;
+      }
+      .ly-sections > div {
+        background: var(--ly-fill-2);
+        border-radius: 4px;
+        min-height: 2.25rem;
+      }
+
+      .ly-caption {
+        font-size: 0.66rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ly-text-1);
+        margin: 0 0 0.4rem;
+      }
+      .ly-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        gap: 1rem;
+        width: 100%;
+      }
+    </style>
+
+    <div class="comp-section">
+      <h3>Layouts</h3>
+      <p class="comp-desc">Twelve layout shells for common application shells: dashboards, landing pages, split views, and more.</p>
+      <div class="comp-split comp-split-stacked">
+        <div class="comp-split-demo demo-col" style="flex-direction:column;gap:1.25rem;align-items:stretch">
+
+          <div class="ly-grid">
+
+            <!-- Dashboard -->
+            <div>
+              <p class="ly-caption">Dashboard · header + toolbar + sidebar + main + rail</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-dashboard</span>
+                </div>
+                <div class="ly-demo__body ly-grid-dashboard">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-n ly-zone--accent"><span class="ly-tag">Toolbar</span></div>
+                  <div class="ly-zone ly-a-s"><span class="ly-tag">Sidebar</span></div>
+                  <div class="ly-zone ly-a-m">
+                    <span class="ly-tag">Main</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                    <div class="ly-line ly-line--short"></div>
+                  </div>
+                  <div class="ly-zone ly-a-r"><span class="ly-tag">Right</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+              <p class="ly-caption">Sidebar · persistent left nav, overlays on mobile</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-sidebar</span>
+                </div>
+                <div class="ly-demo__body ly-grid-sidebar">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-s ly-zone--accent">
+                    <span class="ly-tag">Sidebar</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                    <div class="ly-line ly-line--full"></div>
+                  </div>
+                  <div class="ly-zone ly-a-m">
+                    <span class="ly-tag">Main</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Split -->
+            <div>
+              <p class="ly-caption">Split · two panes side-by-side</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-split</span>
+                </div>
+                <div class="ly-demo__body ly-grid-split">
+                  <div class="ly-zone ly-a-a">
+                    <span class="ly-tag">Left</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-b ly-zone--solid">
+                    <span class="ly-tag">Right</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Centered -->
+            <div>
+              <p class="ly-caption">Centered · auth card, brand above, links below</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-centered</span>
+                </div>
+                <div class="ly-demo__body ly-grid-centered">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-c" style="align-items:center">
+                    <div class="ly-card-centered">
+                      <span class="ly-tag">Content</span>
+                      <div class="ly-line ly-line--full"></div>
+                      <div class="ly-line ly-line--med"></div>
+                    </div>
+                  </div>
+                  <div class="ly-zone ly-a-f ly-zone--solid"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Minimal -->
+            <div>
+              <p class="ly-caption">Minimal · bare main, no chrome</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-minimal</span>
+                </div>
+                <div class="ly-demo__body ly-grid-minimal">
+                  <div class="ly-zone ly-a-m">
+                    <span class="ly-tag">Main</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                    <div class="ly-line ly-line--short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Landing -->
+            <div>
+              <p class="ly-caption">Landing · hero + stacked sections</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-landing</span>
+                </div>
+                <div class="ly-demo__body ly-grid-landing">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-hero ly-zone--accent" style="align-items:center;justify-content:center">
+                    <span class="ly-tag">Hero</span>
+                  </div>
+                  <div class="ly-sections ly-a-sections">
+                    <div></div><div></div><div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Blog -->
+            <div>
+              <p class="ly-caption">Blog · centred measure, optional rail</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-blog</span>
+                </div>
+                <div class="ly-demo__body ly-grid-blog">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-a">
+                    <span class="ly-tag">Article</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-m"><span class="ly-tag">Meta</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card -->
+            <div>
+              <p class="ly-caption">Card grid · responsive columns</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-card</span>
+                </div>
+                <div class="ly-demo__body ly-grid-card">
+                  <div class="ly-card-centered" style="width:68%">
+                    <span class="ly-tag">Card</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fullscreen -->
+            <div>
+              <p class="ly-caption">Fullscreen · layered canvas, overlay + controls</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-fullscreen</span>
+                </div>
+                <div class="ly-demo__body ly-grid-fullscreen" style="background:transparent">
+                  <div class="ly-fs">Fullscreen canvas</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Master detail -->
+            <div>
+              <p class="ly-caption">Master detail · list beside the selected item</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-master-detail</span>
+                </div>
+                <div class="ly-demo__body ly-grid-master-detail">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-l ly-zone--accent"><span class="ly-tag">List</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-d"><span class="ly-tag">Detail</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Docs -->
+            <div>
+              <p class="ly-caption">Docs · nav tree, prose, on-this-page rail</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-docs</span>
+                </div>
+                <div class="ly-demo__body ly-grid-docs">
+                  <div class="ly-zone ly-a-h ly-zone--solid"><span class="ly-tag">Header</span></div>
+                  <div class="ly-zone ly-a-s ly-zone--accent"><span class="ly-tag">Nav</span></div>
+                  <div class="ly-zone ly-a-m"><span class="ly-tag">Prose</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-t"><span class="ly-tag">TOC</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auth split -->
+            <div>
+              <p class="ly-caption">Auth split · form beside a brand panel</p>
+              <div class="ly-demo">
+                <div class="ly-demo__chrome">
+                  <span class="ly-demo__dots"><span class="ly-demo__dot ly-demo__dot--r"></span><span class="ly-demo__dot ly-demo__dot--y"></span><span class="ly-demo__dot ly-demo__dot--g"></span></span>
+                  <span>snice-layout-auth-split</span>
+                </div>
+                <div class="ly-demo__body ly-grid-auth-split">
+                  <div class="ly-zone ly-a-form"><span class="ly-tag">Form</span>
+                    <div class="ly-line ly-line--full"></div>
+                    <div class="ly-line ly-line--med"></div>
+                  </div>
+                  <div class="ly-zone ly-a-panel ly-zone--solid"><span class="ly-tag">Panel</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="comp-split-code">
+          <span class="code-lang">html</span>
+          <snice-code-block language="html" grammar="grammars/html.json?v=80938d7">&lt;!-- Each layout consumes placards from the Snice router --&gt;
+&lt;snice-layout-dashboard&gt;&lt;/snice-layout-dashboard&gt;
+&lt;snice-layout-sidebar&gt;&lt;/snice-layout-sidebar&gt;
+&lt;snice-layout-split&gt;&lt;/snice-layout-split&gt;
+&lt;snice-layout-centered&gt;&lt;/snice-layout-centered&gt;
+&lt;snice-layout-minimal&gt;&lt;/snice-layout-minimal&gt;
+&lt;snice-layout-landing&gt;&lt;/snice-layout-landing&gt;
+&lt;snice-layout-blog&gt;&lt;/snice-layout-blog&gt;
+&lt;snice-layout-card&gt;&lt;/snice-layout-card&gt;
+&lt;snice-layout-fullscreen&gt;&lt;/snice-layout-fullscreen&gt;
+&lt;snice-layout-master-detail&gt;&lt;/snice-layout-master-detail&gt;
+&lt;snice-layout-docs&gt;&lt;/snice-layout-docs&gt;
+&lt;snice-layout-auth-split&gt;&lt;/snice-layout-auth-split&gt;</snice-code-block>
+        </div>
+      </div>
+    </div>
