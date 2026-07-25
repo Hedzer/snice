@@ -30,6 +30,8 @@
         "assets": [
           "package.json",
           "package-lock.json",
+          ".claude-plugin/plugin.json",
+          "gemini-extension.json",
           "CHANGELOG.md",
           "bin/templates/**/package.json",
           "llms.txt",
