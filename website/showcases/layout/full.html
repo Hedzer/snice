@@ -30,7 +30,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <body>
 
 <h2>Slots: brand, page, footer</h2>
-<snice-layout>
+<snice-layout contained>
   <div slot="brand">
     <div class="brand-logo">MyApp</div>
   </div>
@@ -43,7 +43,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout>
 
 <h2>Brand slot with icon</h2>
-<snice-layout>
+<snice-layout contained>
   <div slot="brand">
     <div class="brand-logo"><span style="font-size:1.5rem">&#x1F680;</span> Rocket App</div>
   </div>
@@ -53,14 +53,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout>
 
 <h2>No brand slot (default fallback)</h2>
-<snice-layout>
+<snice-layout contained>
   <div slot="page">
     <div class="page-content">Without a brand slot, the default "App" heading is shown.</div>
   </div>
 </snice-layout>
 
 <h2>No footer slot</h2>
-<snice-layout>
+<snice-layout contained>
   <div slot="brand">
     <div class="brand-logo">No Footer</div>
   </div>
@@ -70,7 +70,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout>
 
 <h2>All slots populated</h2>
-<snice-layout>
+<snice-layout contained>
   <div slot="brand">
     <div class="brand-logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%232563eb'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E" alt="" style="width:24px;height:24px"> Brand</div>
   </div>
@@ -86,7 +86,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout>
 
 <h2>App shell: snice-layout-sidebar (persistent sidebar, slotted nav)</h2>
-<snice-layout-sidebar style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+<snice-layout-sidebar contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
   <div slot="brand"><div class="brand-logo">Acme Admin</div></div>
   <div slot="header"><span style="font-size:0.875rem;color:var(--snice-color-text-secondary,#888)">actions</span></div>
   <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
@@ -100,7 +100,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout-sidebar>
 
 <h2>App shell: snice-layout-dashboard (header actions, right rail)</h2>
-<snice-layout-dashboard style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+<snice-layout-dashboard contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
   <div slot="brand"><h1 style="margin:0;font-size:1.125rem">Analytics</h1></div>
   <div slot="header"><input type="search" placeholder="Search..." style="padding:0.35rem 0.6rem"></div>
   <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
@@ -112,7 +112,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout-dashboard>
 
 <h2>Auth page: snice-layout-centered (brand above, footer links below)</h2>
-<snice-layout-centered style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:420px">
+<snice-layout-centered contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:420px">
   <div slot="brand">&#9670; Acme</div>
   <div slot="page">
     <h3 style="margin-top:0">Sign in</h3>
@@ -123,7 +123,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-layout-centered>
 
 <h2>Article: snice-layout-blog (centered measure, no sidebar)</h2>
-<snice-layout-blog style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+<snice-layout-blog contained style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
   <div slot="brand">The Ledger</div>
   <nav slot="nav"><a href="#">Essays</a> <a href="#">About</a></nav>
   <div slot="page"><h1>On Building Layouts</h1><p>Without sidebar content the article keeps a centered reading measure instead of reserving an empty rail.</p></div>

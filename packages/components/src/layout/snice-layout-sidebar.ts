@@ -10,6 +10,10 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   @property({ type: Boolean })
   collapsed = false;
 
+  /** Size to the parent element instead of pinning to the viewport. */
+  @property({ type: Boolean })
+  contained = false;
+
   /**
    * How the sidebar collapses on desktop:
    * `rail` shrinks it to an icon-width column, `offcanvas` hides it entirely,

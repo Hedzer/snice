@@ -54,9 +54,34 @@ describe('snice-layout-fullscreen', () => {
       expect(css).not.toMatch(/100vw/);
     });
 
-    it('puts the viewport height on the host so embedding apps can override it', () => {
-      expect(css).toMatch(/:host\s*\{[^}]*min-height:\s*100vh/);
+    it('fills its pinned host rather than forcing viewport units inside', () => {
       expect(css).toMatch(/\.layout\s*\{[^}]*width:\s*100%/);
+      expect(css).toMatch(/\.layout\s*\{[^}]*height:\s*100%/);
+    });
+  });
+
+  describe('frame behaviour', () => {
+    const readCssSync = () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { readFileSync } = require('node:fs');
+      const { resolve } = require('node:path');
+      return readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-fullscreen.css'), 'utf8');
+    };
+
+    it('pins itself to the viewport so body margins cannot inset the frame', () => {
+      const css = readCssSync();
+      expect(css).toMatch(/:host\(:not\(\[contained\]\)\)\s*\{[^}]*position:\s*fixed/);
+      expect(css).toMatch(/:host\(:not\(\[contained\]\)\)\s*\{[^}]*inset:\s*0/);
+    });
+
+    it('contained sizes to the parent instead of the viewport', () => {
+      const css = readCssSync();
+      expect(css).toMatch(/:host\(\[contained\]\)\s*\{[^}]*position:\s*relative/);
+    });
+
+    it('observes the contained attribute', () => {
+      const observed = (customElements.get('snice-layout-fullscreen') as any).observedAttributes as string[];
+      expect(observed).toContain('contained');
     });
   });
 });

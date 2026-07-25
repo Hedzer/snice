@@ -6,6 +6,10 @@ export class SniceLayoutFullscreen extends HTMLElement {
   @property({ type: Boolean,  })
   overlay = false;
 
+  /** Size to the parent element instead of pinning to the viewport. */
+  @property({ type: Boolean })
+  contained = false;
+
   @render()
   render() {
     return html/*html*/`

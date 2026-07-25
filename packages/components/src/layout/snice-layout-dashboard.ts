@@ -19,6 +19,10 @@ export class SniceLayoutDashboard extends HTMLElement implements Layout {
   @property({ type: Boolean })
   collapsed = false;
 
+  /** Size to the parent element instead of pinning to the viewport. */
+  @property({ type: Boolean })
+  contained = false;
+
   @property({ attribute: false })
   mobileOpen = false;
 

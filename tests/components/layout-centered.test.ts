@@ -62,4 +62,24 @@ describe('snice-layout-centered', () => {
       expect(observed).toContain('width');
     });
   });
+
+  describe('frame behaviour', () => {
+    const readFrameCss = () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { readFileSync } = require('node:fs');
+      const { resolve } = require('node:path');
+      return readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-centered.css'), 'utf8');
+    };
+
+    it('fills the small viewport with a dvh height and a vh fallback', () => {
+      const css = readFrameCss();
+      expect(css).toMatch(/min-height:\s*100vh/);
+      expect(css).toMatch(/min-height:\s*100dvh/);
+    });
+
+    it('contained drops the viewport height so it can be embedded', () => {
+      const css = readFrameCss();
+      expect(css).toMatch(/:host\(\[contained\]\)/);
+    });
+  });
 });

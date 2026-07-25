@@ -4,6 +4,17 @@
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
 }
 
+/* Content shells fill the screen and let the page scroll. `contained` drops
+   the viewport height so the shell can be embedded in a larger page. */
+:host {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+:host([contained]) {
+  min-height: 0;
+}
+
 .layout {
   min-height: 100vh;
   display: flex;
