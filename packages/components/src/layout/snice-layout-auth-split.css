@@ -19,6 +19,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: inherit;
+  height: 100%;
   background: var(--snice-color-surface, rgb(255 255 255));
 }
 

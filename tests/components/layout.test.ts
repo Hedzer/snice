@@ -121,5 +121,17 @@ describe('snice-layout', () => {
         expect(css, file).toContain('@media (prefers-reduced-motion: reduce)');
       }
     });
+
+    it('inner layouts inherit the host height so contained shells never overflow', () => {
+      for (const file of readdirSync(dir).filter(f => f.endsWith('.css'))) {
+        const css = readFileSync(join(dir, file), 'utf8');
+        const start = css.indexOf('.layout {');
+        if (start === -1) continue;
+
+        const block = css.slice(start, css.indexOf('}', start));
+        expect(block, `${file}: .layout must not hardcode viewport height`).not.toMatch(/min-height:\s*100vh/);
+        expect(block, `${file}: .layout should inherit the host height`).toMatch(/min-height:\s*inherit/);
+      }
+    });
   });
 });

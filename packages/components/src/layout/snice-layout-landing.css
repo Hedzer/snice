@@ -16,7 +16,7 @@
 }
 
 .layout {
-  min-height: 100vh;
+  min-height: inherit;
   display: flex;
   flex-direction: column;
 }

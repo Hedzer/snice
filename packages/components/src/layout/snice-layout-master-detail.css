@@ -19,9 +19,9 @@
 }
 
 .layout {
+  min-height: inherit;
   display: grid;
   grid-template-rows: auto 1fr;
-  min-height: 100%;
   height: 100%;
   background: var(--snice-color-surface, rgb(255 255 255));
 }

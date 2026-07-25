@@ -21770,6 +21770,7 @@ export const ANALYZER_CONTRACTS = {
       "snice/react/kpi",
       "snice/react/kv-pair",
       "snice/react/layout",
+      "snice/react/layout-auth-split",
       "snice/react/layout-blog",
       "snice/react/layout-card",
       "snice/react/layout-centered",
