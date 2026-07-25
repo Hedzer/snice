@@ -1,9 +1,9 @@
 <!-- GENERATED FILE — do not edit directly. Source: tooling/website/build-website.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
 <head>
   <meta charset="UTF-8">
+  <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load runtime + code-block + grammars first to prevent layout shift -->
   <script src="components/snice-runtime.min.js"></script>
@@ -184,7 +184,7 @@ class TaskItem extends HTMLElement {
   }
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item&gt;&lt;/task-item&gt;</span></p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#elements-basic-usage">Elements documentation →</a></p>
         </div>
 
         <div class="dec-section" id="styles">
@@ -206,7 +206,7 @@ css() {
   `;
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>
-          <p class="doc-link"><a href="docs.html#styling">Component Styles documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#styling-scoped-styles">Component Styles documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -261,7 +261,7 @@ class TaskItem extends HTMLElement {
 </div>
 <p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
 <p class="desc"><code>type</code> converts strings arriving from attributes. Direct JavaScript assignments keep their original type and object identity. Use <code>reflect: false</code> for attribute input without property-to-attribute output, or <code>attribute: false</code> for a JavaScript-only public property.</p>
-          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties-basic-properties">Properties documentation →</a></p>
         </div>
 
         <div class="dec-section" id="state">
@@ -310,7 +310,7 @@ this.selectedId = task.id;</snice-code-block>
 </div>
 <p class="desc" style="margin-top:0.75rem">Use <code>@property()</code> for public input and <code>@state()</code> for state owned entirely by the component. Multiple writes in one turn are batched into one render.</p>
 <p class="desc">Under <code>{ once: true }</code> the template still renders once with correct values, then <code>@watch</code> fires synchronously on each write instead of a re-render.</p>
-          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties-basic-properties">Properties documentation →</a></p>
         </div>
 
         <div class="dec-section" id="deep-state">
@@ -326,7 +326,7 @@ this.selectedId = task.id;</snice-code-block>
 this.model.tasks.push(task);
 this.model.selected.add(task.id);</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Deep state uses native <code>Proxy</code> and <code>Reflect</code>, including cycles, arrays, <code>Map</code>, and <code>Set</code>. It targets modern browsers; ordinary state does not require deep proxies.</p>
-          <p class="doc-link"><a href="docs.html#properties">Properties documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#properties-property-options">Properties documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -377,7 +377,7 @@ template() {
   `;
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Static <code>&lt;when value="..."&gt;</code> matches strings. A dynamic <code>&lt;when ${value}&gt;</code> uses <code>Object.is</code> for typed values and object identity.</p>
-          <p class="doc-link"><a href="docs.html#rendering">Declarative Rendering documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#rendering-control-flow">Declarative Rendering documentation →</a></p>
         </div>
 
         <div class="dec-section" id="lists">
@@ -404,7 +404,7 @@ class TaskList extends HTMLElement {
     `;
   }
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#rendering">Declarative Rendering documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#rendering-control-flow">Declarative Rendering documentation →</a></p>
         </div>
 
         <div class="dec-section" id="async">
@@ -417,7 +417,7 @@ class TaskList extends HTMLElement {
 
 return html`${this.userView}`;</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Promise cancellation remains explicit: own an <code>AbortController</code> in the component lifecycle when a fetch must be aborted.</p>
-          <p class="doc-link"><a href="docs.html#rendering">Declarative Rendering documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#rendering-async-content">Declarative Rendering documentation →</a></p>
         </div>
 
         <div class="dec-section" id="spreads">
@@ -435,7 +435,7 @@ return html`
   &gt;
 `;</snice-code-block>
 <p class="desc" style="margin-top:0.75rem"><code>...props</code> preserves JavaScript values, <code>...attrs</code> manages attributes, and <code>...events</code> manages listeners. Keys omitted from the next bag are removed or reset.</p>
-          <p class="doc-link"><a href="docs.html#bindings">Binding Channels documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#bindings-named-spreads">Binding Channels documentation →</a></p>
         </div>
 
         <div class="dec-section" id="forms">
@@ -487,7 +487,7 @@ queryChanged() {
 </div>
 <p class="desc" style="margin-top:0.75rem">Use <code>input</code> for text as it changes and <code>change</code> for committed choices such as checkboxes, selects, and files. Parsing, validation, and IME behavior stay visible in the handler.</p>
 <p class="desc">The declarative binding re-asserts the property on every render; the imperative version guards the write so it never fights the caret while typing.</p>
-          <p class="doc-link"><a href="docs.html#bindings">Binding Channels documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#bindings-form-data-flow">Binding Channels documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -540,7 +540,7 @@ doneChanged() {
 </div>
 <p class="desc" style="margin-top:0.75rem"><code>.checked=${val}</code> sets the property (not attribute). <code>?disabled=${bool}</code> toggles an attribute.</p>
 <p class="desc"><code>@on</code> delegates from the host and is cleaned up on disconnect, so the imperative path never manages listeners by hand.</p>
-          <p class="doc-link"><a href="docs.html#events">Events documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#events-template-event-syntax-preferred-for-elements">Events documentation →</a></p>
         </div>
 
         <div class="dec-section" id="dispatch">
@@ -552,7 +552,7 @@ toggle() {
   return { label: this.label, done: this.done };
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Parents listen with <code>@status-changed=${handler}</code> in templates, <code>@on('status-changed')</code> as a decorator, or <code>addEventListener('status-changed', ...)</code>.</p>
-          <p class="doc-link"><a href="docs.html#events">Events documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#events-dispatch-decorator">Events documentation →</a></p>
         </div>
 
         <div class="dec-section" id="on">
@@ -569,7 +569,7 @@ handleSearch(e) {
   this.filter = e.target.value;
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Delegation works on shadow DOM elements. Built-in <code>debounce</code> and <code>throttle</code> options.</p>
-          <p class="doc-link"><a href="docs.html#events">Events documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#events-on-decorator">Events documentation →</a></p>
         </div>
 
         <div class="dec-section" id="keyboard">
@@ -586,7 +586,7 @@ template() {
   `;
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Compose <code>|prevent</code>, <code>|stop</code>, <code>|immediate</code>, <code>|once</code>, <code>|capture</code>, <code>|passive</code>, and <code>|self</code>.</p>
-          <p class="doc-link"><a href="docs.html#events">Events documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#events-keyboard-shortcuts">Events documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -601,7 +601,7 @@ onMount() {
   this.checkbox.focus();
   this.startMeasurement();
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle-lifecycle-decorators">Lifecycle documentation →</a></p>
         </div>
 
         <div class="dec-section" id="watch">
@@ -611,7 +611,7 @@ onMount() {
 onDoneChanged(oldVal, newVal) {
   console.log(`Task ${this.label}: ${newVal ? 'completed' : 'reopened'}`);
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle-watch-decorator">Lifecycle documentation →</a></p>
         </div>
 
         <div class="dec-section" id="query">
@@ -627,7 +627,7 @@ focusCheckbox() {
 <snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.5rem">import type { SniceInput } from 'snice/components/input';
 
 @query('snice-input') input!: SniceInput;</snice-code-block>
-          <p class="doc-link"><a href="docs.html#queries">Queries documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#queries-single-element-query">Queries documentation →</a></p>
         </div>
 
         <div class="dec-section" id="dispose">
@@ -638,7 +638,7 @@ onUnmount() {
   clearInterval(this.interval);
   this.subscription.unsubscribe();
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#lifecycle">Lifecycle documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#lifecycle-lifecycle-decorators">Lifecycle documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -730,7 +730,7 @@ class ProductApi {
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">One <code>yield</code> per call: it dispatches the payload, the responder returns data, and <code>await</code> resolves with it.</p>
 <p class="desc">Any controller that responds to <code>'fetch-product'</code> works — a real API in production, a fixture in tests. The element never changes.</p>
-          <p class="doc-link"><a href="docs.html#request-response">Request / Response documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#request-response-element-side-requests">Request / Response documentation →</a></p>
         </div>
 
         <div class="dec-section" id="observe">
@@ -766,7 +766,7 @@ class MediaPanel extends HTMLElement {
   }
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Works the same inside a controller, where the observer applies to the attached element.</p>
-          <p class="doc-link"><a href="docs.html#observe">Observers documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#observe-intersection-observer">Observers documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -801,7 +801,7 @@ import { initialize, navigate } from './router';
 
 initialize();
 navigate('/products/42');</snice-code-block>
-          <p class="doc-link"><a href="docs.html#routing">Routing documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#routing-page-components">Routing documentation →</a></p>
         </div>
 
         <div class="dec-section" id="guards">
@@ -846,7 +846,7 @@ class LoginPage extends HTMLElement {
     return html`&lt;h1&gt;Sign in&lt;/h1&gt;`;
   }
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#routing">Routing documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#guards-and-layouts-route-guards">Guards and Layouts documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->
@@ -865,7 +865,7 @@ class ClosedCard extends SniceElement { /* ... */ }
 @element('light-card', { renderRoot: 'light' })
 class LightCard extends SniceElement { /* ... */ }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem"><code>SniceElement</code> is optional. It adds a conventional <code>render()</code>, static styles, kebab-case implicit attributes, <code>invalidate()</code>, and <code>renderNow()</code>.</p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#elements-render-roots-and-shadow-dom">Elements documentation →</a></p>
         </div>
 
         <div class="dec-section" id="extending">
@@ -912,7 +912,7 @@ class CurrencyInput extends SniceInput {
   <strong>Replaces:</strong> <code>@render</code> (inherits parent's if not declared)<br>
   <strong>Concatenates:</strong> <code>@styles</code> (parent first, child wins via cascade)
 </p>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#elements-extending-elements">Elements documentation →</a></p>
         </div>
 
         <div class="dec-section" id="full">
@@ -970,7 +970,7 @@ class TaskItem extends SniceElement {
     console.log(this.label, newVal ? 'completed' : 'reopened');
   }
 }</snice-code-block>
-          <p class="doc-link"><a href="docs.html#elements">Elements documentation →</a></p>
+          <p class="doc-link"><a href="docs.html#elements-full-example">Elements documentation →</a></p>
         </div>
 
         <!-- ═══════════════════════════════════════ -->

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-theme') || 'dark');
+(function(){
+  var p = localStorage.getItem('snice-theme-preset');
+  var c = localStorage.getItem('snice-theme-custom');
+  if (p) { var s = document.createElement('style'); s.id = 'snice-theme-preset'; s.textContent = p; document.head.appendChild(s); }
+  if (c) { var s = document.createElement('style'); s.id = 'snice-theme-custom'; s.textContent = c; document.head.appendChild(s); }
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'snice-theme') document.documentElement.setAttribute('data-theme', e.data.theme);
+  });
+})();
+</script>
+  <title>Icons</title>
+  <link rel="stylesheet" href="../../../packages/components/src/theme/theme.css">
+  <style>
+    body { font-family: system-ui; padding: 1.5rem; background: var(--snice-color-surface); color: var(--snice-color-text); }
+    h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--snice-color-text-tertiary, #888); }
+    .row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    section { margin-bottom: 2rem; }
+    .vert-container { display: flex; align-items: center; height: 50px; gap: 1rem; }
+  </style>
+  <script type="module">import '../../../packages/components/src/empty-state/snice-empty-state.ts';</script>
+
+  <style>
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: 0.5rem; }
+    .icon { margin: 0; padding: 0.75rem 0.25rem; text-align: center; border: 1px solid var(--snice-color-border); border-radius: 6px; }
+    .icon snice-empty-state { --empty-state-padding: 0; }
+    figcaption { font-size: 0.7rem; color: var(--snice-color-text-tertiary); margin-top: 0.25rem; word-break: break-word; }
+  </style>
+</head>
+<body>
+
+<section>
+  <h2>Built-in catalogue (69 icons)</h2>
+  <p style="font-size:0.8rem;color:var(--snice-color-text-secondary);max-width:60ch">
+    Pass any of these names to a component's <code>icon</code> property. Anything not in this
+    list is treated as an image path, an emoji, or icon-font text.
+  </p>
+  <div class="grid">
+  <figure class="icon">
+    <snice-empty-state icon="info-circle" title="" description=""></snice-empty-state>
+    <figcaption>info-circle</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="check-circle" title="" description=""></snice-empty-state>
+    <figcaption>check-circle</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="exclamation-triangle" title="" description=""></snice-empty-state>
+    <figcaption>exclamation-triangle</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="x-circle" title="" description=""></snice-empty-state>
+    <figcaption>x-circle</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="x-mark" title="" description=""></snice-empty-state>
+    <figcaption>x-mark</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chevron-down" title="" description=""></snice-empty-state>
+    <figcaption>chevron-down</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chevron-up" title="" description=""></snice-empty-state>
+    <figcaption>chevron-up</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chevron-right" title="" description=""></snice-empty-state>
+    <figcaption>chevron-right</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chevron-left" title="" description=""></snice-empty-state>
+    <figcaption>chevron-left</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="check" title="" description=""></snice-empty-state>
+    <figcaption>check</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="magnifying-glass" title="" description=""></snice-empty-state>
+    <figcaption>magnifying-glass</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="search" title="" description=""></snice-empty-state>
+    <figcaption>search</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="bars-3" title="" description=""></snice-empty-state>
+    <figcaption>bars-3</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="photo" title="" description=""></snice-empty-state>
+    <figcaption>photo</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="ellipsis-horizontal" title="" description=""></snice-empty-state>
+    <figcaption>ellipsis-horizontal</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="trash" title="" description=""></snice-empty-state>
+    <figcaption>trash</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="plus" title="" description=""></snice-empty-state>
+    <figcaption>plus</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="camera" title="" description=""></snice-empty-state>
+    <figcaption>camera</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="pencil" title="" description=""></snice-empty-state>
+    <figcaption>pencil</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-up" title="" description=""></snice-empty-state>
+    <figcaption>arrow-up</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-down" title="" description=""></snice-empty-state>
+    <figcaption>arrow-down</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-right" title="" description=""></snice-empty-state>
+    <figcaption>arrow-right</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-trending-up" title="" description=""></snice-empty-state>
+    <figcaption>arrow-trending-up</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-trending-down" title="" description=""></snice-empty-state>
+    <figcaption>arrow-trending-down</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="star" title="" description=""></snice-empty-state>
+    <figcaption>star</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="star-outline" title="" description=""></snice-empty-state>
+    <figcaption>star-outline</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="circle" title="" description=""></snice-empty-state>
+    <figcaption>circle</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="paper-clip" title="" description=""></snice-empty-state>
+    <figcaption>paper-clip</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="paper-airplane" title="" description=""></snice-empty-state>
+    <figcaption>paper-airplane</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-down-tray" title="" description=""></snice-empty-state>
+    <figcaption>arrow-down-tray</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrow-up-tray" title="" description=""></snice-empty-state>
+    <figcaption>arrow-up-tray</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chat-bubble" title="" description=""></snice-empty-state>
+    <figcaption>chat-bubble</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="rocket-launch" title="" description=""></snice-empty-state>
+    <figcaption>rocket-launch</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="key" title="" description=""></snice-empty-state>
+    <figcaption>key</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrows-right-left" title="" description=""></snice-empty-state>
+    <figcaption>arrows-right-left</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="arrows-pointing-out" title="" description=""></snice-empty-state>
+    <figcaption>arrows-pointing-out</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="eye-slash" title="" description=""></snice-empty-state>
+    <figcaption>eye-slash</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="map-pin" title="" description=""></snice-empty-state>
+    <figcaption>map-pin</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="fire" title="" description=""></snice-empty-state>
+    <figcaption>fire</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="cog-6-tooth" title="" description=""></snice-empty-state>
+    <figcaption>cog-6-tooth</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="settings" title="" description=""></snice-empty-state>
+    <figcaption>settings</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="envelope" title="" description=""></snice-empty-state>
+    <figcaption>envelope</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="light-bulb" title="" description=""></snice-empty-state>
+    <figcaption>light-bulb</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="users" title="" description=""></snice-empty-state>
+    <figcaption>users</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="heart" title="" description=""></snice-empty-state>
+    <figcaption>heart</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="home" title="" description=""></snice-empty-state>
+    <figcaption>home</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="chart-bar" title="" description=""></snice-empty-state>
+    <figcaption>chart-bar</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="scissors" title="" description=""></snice-empty-state>
+    <figcaption>scissors</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="user" title="" description=""></snice-empty-state>
+    <figcaption>user</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="clipboard" title="" description=""></snice-empty-state>
+    <figcaption>clipboard</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="bug-ant" title="" description=""></snice-empty-state>
+    <figcaption>bug-ant</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="calendar-days" title="" description=""></snice-empty-state>
+    <figcaption>calendar-days</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="sparkles" title="" description=""></snice-empty-state>
+    <figcaption>sparkles</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="bell-alert" title="" description=""></snice-empty-state>
+    <figcaption>bell-alert</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="cube" title="" description=""></snice-empty-state>
+    <figcaption>cube</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="banknotes" title="" description=""></snice-empty-state>
+    <figcaption>banknotes</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="cake" title="" description=""></snice-empty-state>
+    <figcaption>cake</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="paint-brush" title="" description=""></snice-empty-state>
+    <figcaption>paint-brush</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="gift" title="" description=""></snice-empty-state>
+    <figcaption>gift</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="folder" title="" description=""></snice-empty-state>
+    <figcaption>folder</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="document-text" title="" description=""></snice-empty-state>
+    <figcaption>document-text</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="bell" title="" description=""></snice-empty-state>
+    <figcaption>bell</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="link" title="" description=""></snice-empty-state>
+    <figcaption>link</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="phone" title="" description=""></snice-empty-state>
+    <figcaption>phone</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="computer-desktop" title="" description=""></snice-empty-state>
+    <figcaption>computer-desktop</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="musical-note" title="" description=""></snice-empty-state>
+    <figcaption>musical-note</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="lock-closed" title="" description=""></snice-empty-state>
+    <figcaption>lock-closed</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="table-cells" title="" description=""></snice-empty-state>
+    <figcaption>table-cells</figcaption>
+  </figure>
+  <figure class="icon">
+    <snice-empty-state icon="minus" title="" description=""></snice-empty-state>
+    <figcaption>minus</figcaption>
+  </figure>
+  </div>
+</section>
+
+</body>
+</html>

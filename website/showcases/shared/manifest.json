@@ -1,7 +1,6 @@
 {
   "files": [
     "_head.html",
-
     "_cat-form.html",
     "button.html",
     "input.html",
@@ -26,7 +25,6 @@
     "step-input.html",
     "tag.html",
     "time-picker.html",
-
     "_cat-layout.html",
     "layout.html",
     "action-bar.html",
@@ -43,7 +41,6 @@
     "grid.html",
     "carousel.html",
     "virtual-scroller.html",
-
     "_cat-nav.html",
     "breadcrumbs.html",
     "pagination.html",
@@ -52,7 +49,6 @@
     "nav.html",
     "stepper.html",
     "command-palette.html",
-
     "_cat-data.html",
     "table.html",
     "list.html",
@@ -73,7 +69,6 @@
     "message-strip.html",
     "stat-group.html",
     "user-card.html",
-
     "_cat-feedback.html",
     "alert.html",
     "toast.html",
@@ -86,7 +81,6 @@
     "login.html",
     "activity-feed.html",
     "progress-ring.html",
-
     "_cat-charts.html",
     "chart-sparkline.html",
     "gauge.html",
@@ -97,7 +91,6 @@
     "candlestick.html",
     "waterfall.html",
     "network-graph.html",
-
     "_cat-media.html",
     "camera.html",
     "camera-annotate.html",
@@ -109,8 +102,8 @@
     "video-player.html",
     "podcast-player.html",
     "file-gallery.html",
-
     "_cat-specialty.html",
+    "icons.html",
     "code-block.html",
     "terminal.html",
     "doc.html",
@@ -137,7 +130,6 @@
     "weather.html",
     "pricing-table.html",
     "app-tiles.html",
-
     "_cat-commerce.html",
     "product-card.html",
     "cart.html",
@@ -150,7 +142,6 @@
     "booking.html",
     "availability.html",
     "permission-matrix.html",
-
     "_footer.html"
   ]
 }
