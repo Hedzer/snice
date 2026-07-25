@@ -183,7 +183,9 @@ function createApp(projectPath, template) {
 
   console.log(`Creating Snice app (${template === 'react' ? 'React' : 'Vanilla'}) in ${targetDir}`);
   copyTemplateFiles(join(__dirname, 'templates', template), targetDir, projectName);
-  const gitignore = readFileSync(join(__dirname, 'templates', '.gitignore'), 'utf8');
+  // Stored without the leading dot: npm strips .gitignore from published
+  // tarballs, so a dotted source file is missing for every installed user.
+  const gitignore = readFileSync(join(__dirname, 'templates', 'gitignore'), 'utf8');
   writeFileSync(join(targetDir, '.gitignore'), gitignore);
   installAiSupport(targetDir, true);
   console.log(`\nNext:\n  ${projectPath === '.' ? '' : `cd ${projectPath}\n  `}npm install\n  npm run type-check\n  npm run dev`);
