@@ -153,7 +153,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <h2>Infinite scroll (requires scrollable parent)</h2>
 <div style="height:200px;overflow-y:auto;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;">
-  <snice-list infinite dividers>
+  <snice-list infinite dividers controller="demo-list-controller">
     <snice-list-item heading="Item 1" description="Scroll down for infinite loading"></snice-list-item>
     <snice-list-item heading="Item 2"></snice-list-item>
     <snice-list-item heading="Item 3"></snice-list-item>
@@ -177,6 +177,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 </snice-list>
 
 <script type="module">
+  // Register the responder before the list loads: infinite scroll issues a
+  // `list/load-more` request and errors out when nothing answers it.
+  import './demo-list-controller.ts';
   import '../../../packages/components/src/list/snice-list.ts';
   import '../../../packages/components/src/list/snice-list-item.ts';
 </script>
