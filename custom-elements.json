@@ -8836,6 +8836,9 @@
           ],
           "slots": [
             {
+              "name": ""
+            },
+            {
               "name": "icon"
             }
           ],
@@ -37879,7 +37882,11 @@
               "type": "CustomEvent<unknown>"
             }
           ],
-          "slots": [],
+          "slots": [
+            {
+              "name": ""
+            }
+          ],
           "cssParts": [
             {
               "name": "action"

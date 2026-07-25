@@ -5760,6 +5760,7 @@ export const ANALYZER_CONTRACTS = {
         }
       ],
       "slots": [
+        "",
         "icon"
       ]
     },
@@ -17335,7 +17336,9 @@ export const ANALYZER_CONTRACTS = {
           "type": "CustomEvent<unknown>"
         }
       ],
-      "slots": []
+      "slots": [
+        ""
+      ]
     },
     "snice-split-pane": {
       "tagName": "snice-split-pane",
