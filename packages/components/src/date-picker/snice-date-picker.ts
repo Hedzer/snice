@@ -269,7 +269,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
                   ${this.getDayHeaders()}
                 </div>
 
-                <div class="calendar-days">
+                <div class="calendar-days" role="grid" aria-label="Calendar days">
                   ${this.getDaysGrid()}
                 </div>
               </default>
@@ -584,8 +584,14 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
 
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(html`<div class="day day--empty"></div>`);
+      days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
     }
+
+    const focused = this.getFocusedCalendarDate();
+    const isFocused = (date: Date) =>
+      date.getDate() === focused.getDate() &&
+      date.getMonth() === focused.getMonth() &&
+      date.getFullYear() === focused.getFullYear();
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
@@ -597,14 +603,21 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
       if (!this.isDateInRange(date)) classes.push('day--disabled');
 
       const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const selectedValue = isSelected(date) ? 'true' : 'false';
+      const currentValue = isToday(date) ? 'date' : 'false';
+      const tabindexValue = isFocused(date) ? '0' : '-1';
 
       days.push(html`
         <button
           class="${classes.join(' ')}"
           type="button"
+          role="gridcell"
           data-date="${dateStr}"
           .disabled=${!this.isDateInRange(date)}
           aria-label="${this.formatDate(date)}"
+          aria-selected="${selectedValue}"
+          aria-current="${currentValue}"
+          tabindex="${tabindexValue}"
         >
           ${day}
         </button>

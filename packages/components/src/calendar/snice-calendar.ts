@@ -253,6 +253,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-selected', isSelected ? 'true' : 'false');
       cell.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+      cell.setAttribute('aria-current', isToday && !isOtherMonth ? 'date' : 'false');
       cell.setAttribute('tabindex', i === rovingIndex ? '0' : '-1');
       cell.setAttribute('aria-label', date.toLocaleDateString(this.locale, { dateStyle: 'full' }));
       (cell as any).__date = date;

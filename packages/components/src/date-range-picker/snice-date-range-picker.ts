@@ -320,7 +320,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
                         </button>
                       </div>
                       <div class="calendar-weekdays">${this.getDayHeaders()}</div>
-                      <div class="calendar-days">${this.getDaysGrid(this.viewDate.getFullYear(), this.viewDate.getMonth())}</div>
+                      <div class="calendar-days" role="grid" aria-label="Calendar days">${this.getDaysGrid(this.viewDate.getFullYear(), this.viewDate.getMonth())}</div>
                     </div>
 
                     <if ${isDual}>
@@ -341,7 +341,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
                           </button>
                         </div>
                         <div class="calendar-weekdays">${this.getDayHeaders()}</div>
-                        <div class="calendar-days">${this.getDaysGrid(nextMonthDate.getFullYear(), nextMonthDate.getMonth())}</div>
+                        <div class="calendar-days" role="grid" aria-label="Calendar days">${this.getDaysGrid(nextMonthDate.getFullYear(), nextMonthDate.getMonth())}</div>
                       </div>
                     </if>
                   </default>
@@ -629,7 +629,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     const days = [];
 
     for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(html`<div class="day day--empty"></div>`);
+      days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -678,14 +678,20 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       }
 
       const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const inConfirmedRange = classes.includes('day--in-range');
+      const selectedValue = isStart || isEnd || inConfirmedRange ? 'true' : 'false';
+      const currentValue = isSameDay(date, today) ? 'date' : 'false';
 
       days.push(html`
         <button
           class="${classes.join(' ')}"
           type="button"
+          role="gridcell"
           data-date="${dateStr}"
           ?disabled="${isDisabled(date)}"
           aria-label="${this.formatDate(date)}"
+          aria-selected="${selectedValue}"
+          aria-current="${currentValue}"
         >
           ${day}
         </button>

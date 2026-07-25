@@ -1154,4 +1154,39 @@ describe('snice-date-range-picker', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('ARIA grid semantics', () => {
+    it('exposes both month panels as grids of gridcells', async () => {
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', { columns: 2 });
+      (picker as any).showCalendar = true;
+      await wait(30);
+
+      const grids = picker.shadowRoot!.querySelectorAll('.calendar-days[role="grid"]');
+      expect(grids.length).toBe(2);
+      const cells = picker.shadowRoot!.querySelectorAll('.calendar-days [role="gridcell"]');
+      const dayEls = picker.shadowRoot!.querySelectorAll('.calendar-days .day');
+      expect(cells.length).toBe(dayEls.length);
+    });
+
+    it('marks range endpoints and in-range days aria-selected, today aria-current', async () => {
+      const y = new Date().getFullYear() + 1;
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker', {
+        start: `${y}-03-10`,
+        end: `${y}-03-12`,
+      });
+      (picker as any).viewDate = new Date(y, 2, 1);
+      (picker as any).showCalendar = true;
+      await wait(30);
+
+      const selected = picker.shadowRoot!.querySelectorAll('.calendar-days [aria-selected="true"]');
+      expect(selected.length).toBe(3);
+
+      removeComponent(picker as HTMLElement);
+      picker = await createComponent<SniceDateRangePickerElement>('snice-date-range-picker');
+      (picker as any).showCalendar = true;
+      await wait(30);
+      const current = picker.shadowRoot!.querySelectorAll('.calendar-days [aria-current="date"]');
+      expect(current.length).toBe(1);
+    });
+  });
 });

@@ -1031,4 +1031,47 @@ describe('snice-date-picker', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('ARIA grid semantics', () => {
+    it('exposes the day area as a grid of gridcells', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      await wait(50);
+      datePicker.show();
+      await wait(20);
+
+      const grid = queryShadow(datePicker as HTMLElement, '.calendar-days');
+      expect(grid!.getAttribute('role')).toBe('grid');
+      const cells = datePicker.shadowRoot!.querySelectorAll('.calendar-days [role="gridcell"]');
+      const dayEls = datePicker.shadowRoot!.querySelectorAll('.calendar-days .day');
+      expect(cells.length).toBeGreaterThanOrEqual(28);
+      expect(cells.length).toBe(dayEls.length);
+    });
+
+    it('marks the selected day aria-selected and today aria-current', async () => {
+      const today = new Date();
+      const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker', { value: iso });
+      await wait(50);
+      datePicker.show();
+      await wait(20);
+
+      const selected = datePicker.shadowRoot!.querySelector('.calendar-days [aria-selected="true"]');
+      expect(selected, 'selected day carries aria-selected').toBeTruthy();
+      const current = datePicker.shadowRoot!.querySelector('.calendar-days [aria-current="date"]');
+      expect(current, 'today carries aria-current').toBeTruthy();
+    });
+
+    it('uses a roving tabindex so only one day is tabbable', async () => {
+      datePicker = await createComponent<SniceDatePickerElement>('snice-date-picker');
+      await wait(50);
+      datePicker.show();
+      await wait(20);
+
+      const tabbable = datePicker.shadowRoot!.querySelectorAll('.calendar-days button[tabindex="0"]');
+      expect(tabbable.length).toBe(1);
+      const buttons = datePicker.shadowRoot!.querySelectorAll('.calendar-days button');
+      const inert = datePicker.shadowRoot!.querySelectorAll('.calendar-days button[tabindex="-1"]');
+      expect(inert.length).toBe(buttons.length - 1);
+    });
+  });
 });

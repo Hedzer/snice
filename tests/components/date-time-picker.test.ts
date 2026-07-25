@@ -1119,4 +1119,26 @@ describe('snice-date-time-picker', () => {
       expect(position).not.toHaveBeenCalled();
     });
   });
+
+  describe('ARIA grid semantics', () => {
+    it('exposes the day area as a grid with selected and current markers', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker');
+      picker.open();
+      await wait(30);
+
+      const grid = queryShadow(picker as HTMLElement, '.calendar-days');
+      expect(grid!.getAttribute('role')).toBe('grid');
+      const cells = (picker as HTMLElement).shadowRoot!.querySelectorAll('.calendar-days [role="gridcell"]');
+      const dayEls = (picker as HTMLElement).shadowRoot!.querySelectorAll('.calendar-days .day');
+      expect(cells.length).toBe(dayEls.length);
+      const current = (picker as HTMLElement).shadowRoot!.querySelectorAll('.calendar-days [aria-current="date"]');
+      expect(current.length).toBe(1);
+
+      const day = (picker as HTMLElement).shadowRoot!.querySelector<HTMLButtonElement>('.day:not(.day--empty):not(.day--disabled)')!;
+      day.click();
+      await wait(20);
+      const selected = (picker as HTMLElement).shadowRoot!.querySelectorAll('.calendar-days [aria-selected="true"]');
+      expect(selected.length).toBe(1);
+    });
+  });
 });

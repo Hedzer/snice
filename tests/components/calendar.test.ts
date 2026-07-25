@@ -153,6 +153,14 @@ describe('snice-calendar', () => {
     expect(value.toDateString()).toBe(targetDate.toDateString());
   });
 
+  it('marks today with aria-current so screen readers announce it', async () => {
+    calendar = await createComponent<SniceCalendarElement>('snice-calendar');
+    await wait(30);
+
+    const current = calendar.shadowRoot!.querySelectorAll('.calendar__day[aria-current="date"]');
+    expect(current.length).toBe(1);
+  });
+
   describe('stylesheet contracts', () => {
     const cssPath = resolve(process.cwd(), 'packages/components/src/calendar/snice-calendar.css');
 

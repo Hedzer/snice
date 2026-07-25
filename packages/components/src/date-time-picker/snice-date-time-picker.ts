@@ -314,7 +314,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
             ${this.dayNames.map(day => html`<div class="weekday">${day}</div>`)}
           </div>
 
-          <div class="calendar-days" @click=${(e: Event) => this.handleDayClick(e)}>
+          <div class="calendar-days" role="grid" aria-label="Calendar days" @click=${(e: Event) => this.handleDayClick(e)}>
             ${this.getDaysGrid()}
           </div>
         </default>
@@ -766,7 +766,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
     const days = [];
 
     for (let i = 0; i < startingDay; i++) {
-      days.push(html`<div class="day day--empty"></div>`);
+      days.push(html`<div class="day day--empty" role="gridcell" aria-hidden="true"></div>`);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -778,13 +778,19 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
       const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
+      const selectedValue = isSelected(date) ? 'true' : 'false';
+      const currentValue = isToday(date) ? 'date' : 'false';
+
       days.push(html`
         <button
           class="${classes.join(' ')}"
           type="button"
+          role="gridcell"
           data-date="${dateStr}"
           ?disabled=${isDisabled(date)}
           aria-label="${this.formatDatePart(date)}"
+          aria-selected="${selectedValue}"
+          aria-current="${currentValue}"
         >${day}</button>
       `);
     }
