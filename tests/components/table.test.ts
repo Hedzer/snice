@@ -2585,4 +2585,33 @@ describe('snice-table', () => {
       expect(cs.color, 'badge color').not.toBe('rgb(23, 23, 23)');
     });
   });
+
+  describe('sortable header keyboard access', () => {
+    it('exposes sortable headers to the keyboard with a name', async () => {
+      const { readFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      const src = readFileSync(resolve(process.cwd(), 'packages/components/src/table/snice-table.ts'), 'utf8');
+
+      const i = src.indexOf("th.setAttribute('role', 'button')");
+      expect(i, 'sortable headers take role=button').toBeGreaterThan(-1);
+
+      const block = src.slice(i - 200, i + 400);
+      expect(block, 'a role=button that cannot be focused is unusable by keyboard').toMatch(/setAttribute\('tabindex'/);
+      expect(block, 'a role=button with no name is announced blank').toMatch(/setAttribute\('aria-label'/);
+    });
+
+    it('activates sorting from the keyboard, not only the mouse', async () => {
+      table = await createTable({ attrs: { sortable: true } });
+      await wait(20);
+
+      const th = queryShadow(table as HTMLElement, 'th.sortable') as HTMLElement;
+      expect(th, 'sortable header renders').toBeTruthy();
+      expect(table.currentSort.length, 'starts unsorted').toBe(0);
+
+      th.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await wait(20);
+
+      expect(table.currentSort.length, 'Enter on a role=button header must sort').toBe(1);
+    });
+  });
 });

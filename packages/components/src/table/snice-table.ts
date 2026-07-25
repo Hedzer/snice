@@ -1461,7 +1461,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (hasSlottedRows) {
       // Use slotted rows layout
       return html/*html*/`
-        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
+        <div class="snice-table snice-table--slotted" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
 <div class="table-header" id="slotted-header"></div>
           <div class="table-body">
@@ -1473,7 +1473,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     } else {
       // Use traditional table layout
       return html/*html*/`
-        <div class="snice-table" @click=${this.handleClick} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
+        <div class="snice-table" @click=${this.handleClick} @keydown=${this.handleKeydown} @change=${this.handleChange} @checkbox-change=${this.handleChange}>
           <div class="table-controls-container"></div>
 <div class="table-frame">
             <div class="table-superheader" part="superheader">
@@ -2144,6 +2144,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       if (this.sortable && column.sortable !== false) {
         th.classList.add('sortable');
         th.setAttribute('role', 'button');
+        // A role=button must be focusable and named, or the keyboard cannot
+        // sort at all. Matches the declarative header in snice-header.ts.
+        th.setAttribute('tabindex', '0');
+        th.setAttribute('aria-label', `Sort by ${column.label}`);
         th.innerHTML = this.renderSortableHeader(column);
       } else {
         th.textContent = column.label;
@@ -3167,6 +3171,19 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       document.addEventListener('fullscreenchange', this.fsExitHandler);
     }
   }
+
+  private handleKeydown = (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    const th = (e.target as HTMLElement).closest('th.sortable') as HTMLElement | null;
+    if (!th) return;
+
+    const columnKey = th.getAttribute('data-key');
+    if (!columnKey) return;
+
+    e.preventDefault();
+    this.toggleSort(columnKey, true);
+  };
 
   private handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
