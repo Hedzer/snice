@@ -117,3 +117,4 @@ storybook-static/
 .superpowers/
 .all-layouts-preview.html
 .frame-test.html
+.docs-test.html

@@ -14,10 +14,10 @@ export const ANALYZER_CONTRACTS = {
     "packages/components/src/**/*.types.ts"
   ],
   "stats": {
-    "customElements": 191,
+    "customElements": 192,
     "componentFamilies": 134,
-    "componentModules": 186,
-    "reactWrappers": 191,
+    "componentModules": 187,
+    "reactWrappers": 192,
     "rootExports": 110
   },
   "rootExports": [
@@ -206,6 +206,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/layout/snice-layout-card",
     "snice/components/layout/snice-layout-centered",
     "snice/components/layout/snice-layout-dashboard",
+    "snice/components/layout/snice-layout-docs",
     "snice/components/layout/snice-layout-fullscreen",
     "snice/components/layout/snice-layout-landing",
     "snice/components/layout/snice-layout-master-detail",
@@ -11540,6 +11541,42 @@ export const ANALYZER_CONTRACTS = {
         "toolbar"
       ]
     },
+    "snice-layout-docs": {
+      "tagName": "snice-layout-docs",
+      "className": "SniceLayoutDocs",
+      "modulePath": "snice/components/layout/snice-layout-docs",
+      "sourceModule": "dist/components/layout/snice-layout-docs.js",
+      "family": "layout",
+      "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        }
+      },
+      "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
+        "sidebarOpen": {
+          "type": "boolean",
+          "attribute": null,
+          "structured": false
+        }
+      },
+      "structuredProperties": [],
+      "events": [],
+      "slots": [
+        "brand",
+        "footer",
+        "header",
+        "page",
+        "sidebar",
+        "toc"
+      ]
+    },
     "snice-layout-fullscreen": {
       "tagName": "snice-layout-fullscreen",
       "className": "SniceLayoutFullscreen",
@@ -21155,6 +21192,8 @@ export const ANALYZER_CONTRACTS = {
       "LayoutCenteredProps",
       "LayoutDashboard",
       "LayoutDashboardProps",
+      "LayoutDocs",
+      "LayoutDocsProps",
       "LayoutFullscreen",
       "LayoutFullscreenProps",
       "LayoutLanding",
@@ -21472,6 +21511,7 @@ export const ANALYZER_CONTRACTS = {
       "LayoutCardProps",
       "LayoutCenteredProps",
       "LayoutDashboardProps",
+      "LayoutDocsProps",
       "LayoutFullscreenProps",
       "LayoutLandingProps",
       "LayoutMasterDetailProps",
@@ -25184,6 +25224,23 @@ export const ANALYZER_CONTRACTS = {
           "mobileOpen",
           "hasRail",
           "hasToolbarContent"
+        ],
+        "formAssociated": false
+      },
+      "LayoutDocs": {
+        "exportName": "LayoutDocs",
+        "module": "snice/react/layout-docs",
+        "tagName": "snice-layout-docs",
+        "family": "layout",
+        "componentModulePath": "snice/components/layout/snice-layout-docs",
+        "properties": [
+          "sidebarOpen",
+          "contained"
+        ],
+        "events": {},
+        "interfaceProps": [
+          "sidebarOpen",
+          "contained"
         ],
         "formAssociated": false
       },

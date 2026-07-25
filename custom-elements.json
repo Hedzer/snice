@@ -22976,6 +22976,200 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/components/layout/snice-layout-docs.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "SniceLayoutDocs",
+          "tagName": "snice-layout-docs",
+          "customElement": true,
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "description": "Documentation shell: navigation tree, prose at a reading measure, and an\non-this-page rail.\n\nThe rail leaves first on narrower screens, then the tree becomes a drawer —\nthe order documentation sites settle on. Each region scrolls on its own.",
+          "members": [
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of pinning to the viewport."
+            },
+            {
+              "kind": "method",
+              "name": "handleScrimClick",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleSidebarToggle",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "releaseListeners",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "sidebarOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Sidebar drawer state below the navigation breakpoint."
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "parameters": [
+                {
+                  "name": "appContext",
+                  "type": "AppContext",
+                  "optional": false
+                },
+                {
+                  "name": "placards",
+                  "type": "Placard[]",
+                  "optional": false
+                },
+                {
+                  "name": "currentRoute",
+                  "type": "string",
+                  "optional": false
+                },
+                {
+                  "name": "routeParams",
+                  "type": "RouteParams",
+                  "optional": false
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "updateNav",
+              "parameters": [
+                {
+                  "name": "appContext",
+                  "type": "AppContext",
+                  "optional": true
+                },
+                {
+                  "name": "routeParams",
+                  "type": "RouteParams",
+                  "optional": true
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wireRegions",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of pinning to the viewport."
+            }
+          ],
+          "events": [],
+          "slots": [
+            {
+              "name": "brand"
+            },
+            {
+              "name": "footer"
+            },
+            {
+              "name": "header"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "sidebar"
+            },
+            {
+              "name": "toc"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "footer"
+            },
+            {
+              "name": "header"
+            },
+            {
+              "name": "main"
+            },
+            {
+              "name": "prose"
+            },
+            {
+              "name": "scrim"
+            },
+            {
+              "name": "sidebar"
+            },
+            {
+              "name": "toc"
+            }
+          ],
+          "cssProperties": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "snice-layout-docs",
+          "declaration": {
+            "name": "SniceLayoutDocs",
+            "module": "dist/components/layout/snice-layout-docs.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/components/layout/snice-layout-fullscreen.js",
       "declarations": [
         {

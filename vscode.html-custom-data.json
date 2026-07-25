@@ -4968,6 +4968,16 @@
       ]
     },
     {
+      "name": "snice-layout-docs",
+      "description": "Documentation shell: navigation tree, prose at a reading measure, and an\non-this-page rail.\n\nThe rail leaves first on narrower screens, then the tree becomes a drawer —\nthe order documentation sites settle on. Each region scrolls on its own.",
+      "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of pinning to the viewport."
+        }
+      ]
+    },
+    {
       "name": "snice-layout-fullscreen",
       "description": "SniceLayoutFullscreen custom element.",
       "attributes": [

@@ -1,0 +1,244 @@
+/* Documentation shell: nav tree, prose, on-this-page rail */
+:host {
+  display: block;
+  font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+/* This shell is the application frame: pinned to the viewport so body margins
+   or ancestor padding cannot inset it. Each region scrolls on its own. Add
+   `contained` to embed it inside a page and it sizes to its parent instead. */
+:host(:not([contained])) {
+  position: fixed;
+  inset: 0;
+}
+
+:host([contained]) {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+}
+
+.layout {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 100%;
+  background: var(--snice-color-surface, rgb(255 255 255));
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--snice-spacing-xs, 0.5rem);
+  left: var(--snice-spacing-xs, 0.5rem);
+  z-index: var(--snice-z-notification, 1300);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+  border-radius: var(--snice-border-radius-md, 6px);
+  background: var(--snice-color-surface-container-highest, hsl(0 0% 100%));
+  color: var(--snice-color-text, rgb(23 23 23));
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--snice-transition-fast, 150ms) ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-md, 1rem);
+  height: var(--snice-layout-docs-header-height, 4rem);
+  padding: 0 var(--snice-spacing-lg, 1.5rem);
+  background: var(--snice-color-surface-container-high, rgb(252 251 249));
+  border-bottom: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+  position: relative;
+  z-index: var(--snice-z-sticky, 10);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text, rgb(23 23 23));
+  white-space: nowrap;
+}
+
+.header-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--snice-spacing-md, 1rem);
+}
+
+.sidebar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--snice-layout-control-size, 2rem);
+  height: var(--snice-layout-control-size, 2rem);
+  background: none;
+  border: none;
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  cursor: pointer;
+  padding: var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-md, 6px);
+  transition: background var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;
+}
+
+.sidebar-toggle:hover {
+  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.06)));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.sidebar-toggle:focus-visible {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.body-area {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    var(--snice-layout-docs-nav-width, 18.75rem)
+    minmax(0, 1fr)
+    var(--snice-layout-docs-toc-width, 18.75rem);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  overflow-y: auto;
+  padding: var(--snice-spacing-lg, 1.5rem) var(--snice-spacing-md, 1rem);
+  border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+  background: var(--snice-color-surface, rgb(255 255 255));
+  transition: transform var(--snice-transition-normal, 250ms) ease;
+}
+
+.sidebar ::slotted(a) {
+  display: block;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
+  border-radius: var(--snice-border-radius-md, 6px);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  text-decoration: none;
+  transition: background var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;
+}
+
+.sidebar ::slotted(a:hover) {
+  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.06)));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.sidebar ::slotted([aria-current]) {
+  background: var(--snice-color-primary-alpha, color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 10%, transparent));
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.scrim {
+  display: none;
+}
+
+.content {
+  overflow-y: auto;
+  padding: var(--snice-spacing-xl, 2rem);
+  min-width: 0;
+}
+
+.prose {
+  max-width: var(--snice-layout-measure, 65ch);
+  margin-inline: auto;
+}
+
+/* Anchored headings clear the sticky header instead of hiding beneath it. */
+.prose ::slotted(h1),
+.prose ::slotted(h2),
+.prose ::slotted(h3),
+.prose ::slotted(h4) {
+  scroll-margin-top: calc(var(--snice-layout-docs-header-height, 4rem) + var(--snice-spacing-md, 1rem));
+}
+
+.footer {
+  max-width: var(--snice-layout-measure, 65ch);
+  margin-inline: auto;
+  padding-top: var(--snice-spacing-xl, 2rem);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.toc {
+  overflow-y: auto;
+  padding: var(--snice-spacing-lg, 1.5rem) var(--snice-spacing-md, 1rem);
+  border-left: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
+  font-size: var(--snice-font-size-sm, 0.875rem);
+}
+
+.toc ::slotted(*) {
+  position: sticky;
+  top: 0;
+}
+
+/* The rail leaves before the tree — the order documentation sites settle on. */
+@media (max-width: 1152px) {
+  .body-area {
+    grid-template-columns: var(--snice-layout-docs-nav-width, 18.75rem) minmax(0, 1fr);
+  }
+
+  .toc {
+    display: none;
+  }
+}
+
+/* Below the navigation breakpoint the tree becomes a drawer over the content. */
+@media (max-width: 996px) {
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .body-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--snice-z-overlay, 1100);
+    width: min(83vw, var(--snice-layout-docs-nav-width, 18.75rem));
+    transform: translateX(-105%);
+    box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .scrim--visible {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: var(--snice-z-scrim, 1000);
+    background: rgb(0 0 0 / 0.4);
+  }
+
+  .content {
+    padding: var(--snice-spacing-lg, 1.5rem);
+  }
+
+  .header {
+    height: var(--snice-layout-docs-header-height-compact, 3.5rem);
+    padding: 0 var(--snice-spacing-md, 1rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
