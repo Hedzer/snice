@@ -14,10 +14,10 @@ export const ANALYZER_CONTRACTS = {
     "packages/components/src/**/*.types.ts"
   ],
   "stats": {
-    "customElements": 192,
+    "customElements": 193,
     "componentFamilies": 134,
-    "componentModules": 187,
-    "reactWrappers": 192,
+    "componentModules": 188,
+    "reactWrappers": 193,
     "rootExports": 110
   },
   "rootExports": [
@@ -202,6 +202,7 @@ export const ANALYZER_CONTRACTS = {
     "snice/components/key-value/snice-kv-pair",
     "snice/components/kpi/snice-kpi",
     "snice/components/layout/snice-layout",
+    "snice/components/layout/snice-layout-auth-split",
     "snice/components/layout/snice-layout-blog",
     "snice/components/layout/snice-layout-card",
     "snice/components/layout/snice-layout-centered",
@@ -11348,6 +11349,48 @@ export const ANALYZER_CONTRACTS = {
         "page"
       ]
     },
+    "snice-layout-auth-split": {
+      "tagName": "snice-layout-auth-split",
+      "className": "SniceLayoutAuthSplit",
+      "modulePath": "snice/components/layout/snice-layout-auth-split",
+      "sourceModule": "dist/components/layout/snice-layout-auth-split.js",
+      "family": "layout",
+      "attributes": {
+        "contained": {
+          "property": "contained",
+          "type": "boolean",
+          "literals": []
+        },
+        "panel-position": {
+          "property": "panelPosition",
+          "type": "'start' | 'end'",
+          "literals": [
+            "start",
+            "end"
+          ]
+        }
+      },
+      "properties": {
+        "contained": {
+          "type": "boolean",
+          "attribute": "contained",
+          "structured": false
+        },
+        "panelPosition": {
+          "type": "'start' | 'end'",
+          "attribute": "panel-position",
+          "structured": false
+        }
+      },
+      "structuredProperties": [],
+      "events": [],
+      "slots": [
+        "brand",
+        "footer",
+        "page",
+        "panel"
+      ]
+    },
     "snice-layout-blog": {
       "tagName": "snice-layout-blog",
       "className": "SniceLayoutBlog",
@@ -21184,6 +21227,8 @@ export const ANALYZER_CONTRACTS = {
       "KvPair",
       "KvPairProps",
       "Layout",
+      "LayoutAuthSplit",
+      "LayoutAuthSplitProps",
       "LayoutBlog",
       "LayoutBlogProps",
       "LayoutCard",
@@ -21507,6 +21552,7 @@ export const ANALYZER_CONTRACTS = {
       "KeyValueProps",
       "KpiProps",
       "KvPairProps",
+      "LayoutAuthSplitProps",
       "LayoutBlogProps",
       "LayoutCardProps",
       "LayoutCenteredProps",
@@ -21728,8 +21774,10 @@ export const ANALYZER_CONTRACTS = {
       "snice/react/layout-card",
       "snice/react/layout-centered",
       "snice/react/layout-dashboard",
+      "snice/react/layout-docs",
       "snice/react/layout-fullscreen",
       "snice/react/layout-landing",
+      "snice/react/layout-master-detail",
       "snice/react/layout-minimal",
       "snice/react/layout-sidebar",
       "snice/react/layout-split",
@@ -25145,6 +25193,23 @@ export const ANALYZER_CONTRACTS = {
         "properties": [],
         "events": {},
         "interfaceProps": [],
+        "formAssociated": false
+      },
+      "LayoutAuthSplit": {
+        "exportName": "LayoutAuthSplit",
+        "module": "snice/react/layout-auth-split",
+        "tagName": "snice-layout-auth-split",
+        "family": "layout",
+        "componentModulePath": "snice/components/layout/snice-layout-auth-split",
+        "properties": [
+          "panelPosition",
+          "contained"
+        ],
+        "events": {},
+        "interfaceProps": [
+          "panelPosition",
+          "contained"
+        ],
         "formAssociated": false
       },
       "LayoutBlog": {

@@ -22444,6 +22444,105 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/components/layout/snice-layout-auth-split.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "SniceLayoutAuthSplit",
+          "tagName": "snice-layout-auth-split",
+          "customElement": true,
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "description": "Split authentication page: the form on one side, brand imagery on the other.\n\nThe brand panel is decorative. Below the breakpoint it steps aside and the\nform takes the full width, which is what sign-in pages do everywhere.",
+          "members": [
+            {
+              "kind": "field",
+              "name": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "kind": "field",
+              "name": "panelPosition",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "default": "'end'",
+              "description": "Which side the brand panel sits on."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "contained",
+              "fieldName": "contained",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Size to the parent element instead of filling the screen."
+            },
+            {
+              "name": "panel-position",
+              "fieldName": "panelPosition",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "reflects": true,
+              "description": "Which side the brand panel sits on."
+            }
+          ],
+          "events": [],
+          "slots": [
+            {
+              "name": "brand"
+            },
+            {
+              "name": "footer"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "panel"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "brand"
+            },
+            {
+              "name": "footer"
+            },
+            {
+              "name": "form"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "panel"
+            }
+          ],
+          "cssProperties": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "snice-layout-auth-split",
+          "declaration": {
+            "name": "SniceLayoutAuthSplit",
+            "module": "dist/components/layout/snice-layout-auth-split.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/components/layout/snice-layout-blog.js",
       "declarations": [
         {

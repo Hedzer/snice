@@ -4875,6 +4875,28 @@
       "attributes": []
     },
     {
+      "name": "snice-layout-auth-split",
+      "description": "Split authentication page: the form on one side, brand imagery on the other.\n\nThe brand panel is decorative. Below the breakpoint it steps aside and the\nform takes the full width, which is what sign-in pages do everywhere.",
+      "attributes": [
+        {
+          "name": "contained",
+          "description": "Size to the parent element instead of filling the screen."
+        },
+        {
+          "name": "panel-position",
+          "description": "Which side the brand panel sits on.",
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "end"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "snice-layout-blog",
       "description": "SniceLayoutBlog custom element.",
       "attributes": [

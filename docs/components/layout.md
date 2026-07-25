@@ -118,6 +118,9 @@ navigation through `update()`.
 | `<snice-layout-landing>` | Marketing bands with contained inner content | `brand`, `nav`, `cta`, `hero`, `page`, `footer` |
 | `<snice-layout-card>` | Responsive card grid | `header`, `page`, `footer` |
 | `<snice-layout-minimal>` | Bare main region | `page` |
+| `<snice-layout-master-detail>` | List beside the selected item's detail | `brand`, `header`, `list`, `detail`, `empty` |
+| `<snice-layout-docs>` | Navigation tree, prose, on-this-page rail | `brand`, `header`, `sidebar`, `page`, `toc`, `footer` |
+| `<snice-layout-auth-split>` | Sign-in form beside a brand panel | `brand`, `page`, `footer`, `panel` |
 | `<snice-layout-fullscreen>` | Layered canvas with overlay and controls | `background`, `overlay`, `page`, `controls` |
 
 ### Sidebar shells
@@ -177,6 +180,52 @@ showcase card, or a preview pane. It then sizes to its parent instead.
 |-----------|------------|-------------|
 | `contained` | every shell | Size to the parent element instead of owning the screen |
 
+### Master detail
+
+Both panes show side by side on wide screens. Below 641px only one is on screen:
+the list, until `selected` is set, then the detail with a back control that emits
+`detail-closed`.
+
+```html
+<snice-layout-master-detail selected>
+  <div slot="brand">Inbox</div>
+  <ul slot="list">…</ul>
+  <article slot="detail">…</article>
+  <p slot="empty">Pick a message</p>
+</snice-layout-master-detail>
+```
+
+### Documentation
+
+Three panes, collapsing in the order documentation sites use: the on-this-page
+rail leaves at 1152px, then the navigation tree becomes a drawer at 996px. Ships a
+skip link, labelled landmarks, and heading `scroll-margin-top` so anchors clear the
+sticky header.
+
+```html
+<snice-layout-docs>
+  <div slot="brand">Docs</div>
+  <a slot="sidebar" href="/start" aria-current="page">Getting started</a>
+  <div slot="page"><h1>Getting started</h1>…</div>
+  <nav slot="toc">…</nav>
+</snice-layout-docs>
+```
+
+### Auth split
+
+The brand panel is decorative: it is hidden from assistive technology and steps
+aside below 768px so the form takes the full width. `panel-position="start"` moves
+it to the leading side.
+
+```html
+<snice-layout-auth-split>
+  <div slot="brand">Acme</div>
+  <form slot="page">…</form>
+  <div slot="footer"><a href="/privacy">Privacy</a></div>
+  <img slot="panel" src="/hero.jpg" alt="">
+</snice-layout-auth-split>
+```
+
 ### Sizing hooks
 
 | Custom property | Default | Applies to |
@@ -186,3 +235,7 @@ showcase card, or a preview pane. It then sizes to its parent instead.
 | `--snice-layout-rail-width` | `18rem` | Dashboard right rail |
 | `--snice-layout-measure` | `65ch` | Blog reading measure |
 | `--snice-layout-container` | `80rem` | Landing band inner width |
+| `--snice-layout-list-width` | `20rem` | Master-detail list pane |
+| `--snice-layout-docs-nav-width` | `18.75rem` | Documentation navigation tree |
+| `--snice-layout-docs-toc-width` | `18.75rem` | Documentation on-this-page rail |
+| `--snice-layout-auth-width` | `24rem` | Auth split form column |

@@ -62,6 +62,9 @@ Siblings of `snice-layout` for the other standard page shapes. All regions are s
 - `snice-layout-card` — card grid: `header`, `page`, `footer` (`columns`, `gap`)
 - `snice-layout-minimal` — `page` only
 - `snice-layout-fullscreen` — layers: `background`, `overlay`, `page`, `controls` (`overlay`)
+- `snice-layout-master-detail` — list + detail: `brand`, `header`, `list`, `detail`, `empty` (`selected`); <641px single pane, back emits `detail-closed`
+- `snice-layout-docs` — three panes: `brand`, `header`, `sidebar`, `page`, `toc`, `footer`; rail drops at 1152px, tree → drawer at 996px; skip link + heading scroll-margin
+- `snice-layout-auth-split` — form + decorative panel: `brand`, `page`, `footer`, `panel` (`panel-position`: `end` default | `start`); panel hidden <768px
 
 ## Sidebar shells
 
@@ -100,3 +103,4 @@ Layouts own the screen. App shells (`sidebar`, `dashboard`, `fullscreen`) are `p
 
 - `--snice-layout-sidebar-width` (`16rem`), `--snice-layout-rail-collapsed-width` (`3rem`)
 - `--snice-layout-rail-width` (`18rem`), `--snice-layout-measure` (`65ch`), `--snice-layout-container` (`80rem`)
+- `--snice-layout-list-width` (`20rem`), `--snice-layout-docs-nav-width` / `--snice-layout-docs-toc-width` (`18.75rem`), `--snice-layout-auth-width` (`24rem`)
