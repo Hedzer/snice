@@ -121,7 +121,7 @@
   padding-bottom: var(--snice-spacing-sm, 0.5rem);
 }
 
-.modal__header:empty {
+.modal__header--empty {
   font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   display: none;
 }
@@ -182,17 +182,17 @@
   padding-top: var(--snice-spacing-sm, 0.5rem);
 }
 
-.modal__footer:empty {
+.modal__footer--empty {
   display: none;
 }
 
 /* Remove borders when header/footer are empty */
-.modal__header:empty + .modal__body {
+.modal__header--empty + .modal__body {
   font-family: var(--snice-font-family-display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   padding-top: var(--modal-padding);
 }
 
-.modal__body:has(+ .modal__footer:empty) {
+.modal__body:has(+ .modal__footer--empty) {
   padding-bottom: var(--modal-padding);
 }
 

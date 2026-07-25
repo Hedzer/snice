@@ -491,4 +491,41 @@ describe('snice-modal', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('empty chrome', () => {
+    it('does not reserve footer space when nothing is slotted into it', async () => {
+      const el = document.createElement('snice-modal');
+      el.innerHTML = '<p>Body only</p>';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 60));
+
+      const footer = el.shadowRoot!.querySelector('.modal__footer') as HTMLElement | null;
+      if (footer) {
+        expect(footer.classList.contains('modal__footer--empty'), 'empty footer must be flagged so it can collapse').toBe(true);
+      }
+      el.remove();
+    });
+
+    it('shows the footer once content is slotted', async () => {
+      const el = document.createElement('snice-modal');
+      el.innerHTML = '<p>Body</p><button slot="footer">Save</button>';
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 60));
+
+      const footer = el.shadowRoot!.querySelector('.modal__footer') as HTMLElement | null;
+      if (footer) {
+        expect(footer.classList.contains('modal__footer--empty')).toBe(false);
+      }
+      el.remove();
+    });
+
+    it('collapses the empty footer through a class, not a dead :empty rule', async () => {
+      const { readFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/modal/snice-modal.css'), 'utf8');
+
+      expect(css, 'a container holding a <slot> is never :empty').not.toMatch(/\.modal__footer:empty/);
+      expect(css).toMatch(/\.modal__footer--empty/);
+    });
+  });
 });

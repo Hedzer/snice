@@ -101,7 +101,7 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
         </div>
 
         <if ${!this.noFooter}>
-          <div class="drawer-footer" part="footer">
+          <div class="drawer-footer${this.hasFooterContent ? '' : ' drawer-footer--empty'}" part="footer">
             <slot name="footer"></slot>
           </div>
         </if>
@@ -116,8 +116,20 @@ export class SniceDrawer extends HTMLElement implements SniceDrawerElement {
     return cssTag`${cssContent}`;
   }
 
+  @property({ attribute: false })
+  private hasFooterContent = false;
+
+  private syncFooterState() {
+    this.hasFooterContent = !!this.querySelector('[slot="footer"]');
+  }
+
   @ready()
   init() {
+    // A container holding a <slot> is never :empty, so track assignment
+    // instead of relying on a CSS rule that can never match.
+    this.syncFooterState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncFooterState());
+
     // Ensure default attributes are set
     if (!this.hasAttribute('position')) {
       this.setAttribute('position', this.position);

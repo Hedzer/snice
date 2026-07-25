@@ -344,7 +344,7 @@
   flex-shrink: 0;
 }
 
-.drawer-footer:empty {
+.drawer-footer--empty {
   display: none;
 }
 

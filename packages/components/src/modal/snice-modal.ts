@@ -29,6 +29,12 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
   @property({ type: Boolean, attribute: 'no-footer',  })
   noFooter = false;
 
+  @property({ attribute: false })
+  private hasFooterContent = false;
+
+  @property({ attribute: false })
+  private hasHeaderContent = false;
+
   @property({  })
   label = '';
 
@@ -68,7 +74,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
         <div class="modal__backdrop" part="backdrop"></div>
         <div class="${panelClass}" part="panel">
           <if ${!this.noHeader}>
-            <div class="modal__header" part="header" id="${this.headerId}">
+            <div class="modal__header${this.hasHeaderContent || !this.noCloseButton ? '' : ' modal__header--empty'}" part="header" id="${this.headerId}">
               <slot name="header"></slot>
               <if ${!this.noCloseButton}>
                 <button class="modal__close"
@@ -82,7 +88,7 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
             <slot></slot>
           </div>
           <if ${!this.noFooter}>
-            <div class="modal__footer" part="footer">
+            <div class="modal__footer${this.hasFooterContent ? '' : ' modal__footer--empty'}" part="footer">
               <slot name="footer"></slot>
             </div>
           </if>
@@ -102,6 +108,16 @@ export class SniceModal extends HTMLElement implements SniceModalElement {
     if (this.open) {
       this.showModal();
     }
+
+    // A container holding a <slot> is never :empty, so track assignment
+    // instead of relying on a CSS rule that can never match.
+    this.syncFooterState();
+    this.shadowRoot?.addEventListener('slotchange', () => this.syncFooterState());
+  }
+
+  private syncFooterState() {
+    this.hasFooterContent = !!this.querySelector('[slot="footer"]');
+    this.hasHeaderContent = !!this.querySelector('[slot="header"]');
   }
 
   @dispose()
