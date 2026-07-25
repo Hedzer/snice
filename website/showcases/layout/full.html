@@ -85,6 +85,57 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </div>
 </snice-layout>
 
-<script type="module">import '../../../packages/components/src/layout/snice-layout.ts';</script>
+<h2>App shell: snice-layout-sidebar (persistent sidebar, slotted nav)</h2>
+<snice-layout-sidebar style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand"><div class="brand-logo">Acme Admin</div></div>
+  <div slot="header"><span style="font-size:0.875rem;color:var(--snice-color-text-secondary,#888)">actions</span></div>
+  <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+    <a href="#">Dashboard</a>
+    <a href="#">Orders</a>
+    <a href="#">Customers</a>
+    <a href="#">Settings</a>
+  </nav>
+  <div slot="page"><div class="page-content">Sidebar sits in flow; the header toggle collapses it and main reflows. Below 768px it overlays behind a scrim.</div></div>
+  <div slot="footer"><div class="footer-content">&copy; Acme</div></div>
+</snice-layout-sidebar>
+
+<h2>App shell: snice-layout-dashboard (header actions, right rail)</h2>
+<snice-layout-dashboard style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand"><h1 style="margin:0;font-size:1.125rem">Analytics</h1></div>
+  <div slot="header"><input type="search" placeholder="Search..." style="padding:0.35rem 0.6rem"></div>
+  <nav slot="sidebar" style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+    <a href="#">Overview</a>
+    <a href="#">Reports</a>
+  </nav>
+  <div slot="page"><div class="page-content">Main content. The right rail stacks below on narrow screens instead of disappearing.</div></div>
+  <div slot="right-sidebar"><strong>Activity</strong><p style="font-size:0.875rem">Deploy finished 4m ago.</p></div>
+</snice-layout-dashboard>
+
+<h2>Auth page: snice-layout-centered (brand above, footer links below)</h2>
+<snice-layout-centered style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:420px">
+  <div slot="brand">&#9670; Acme</div>
+  <div slot="page">
+    <h3 style="margin-top:0">Sign in</h3>
+    <input placeholder="Email" style="width:100%;padding:0.5rem;margin-bottom:0.5rem;box-sizing:border-box">
+    <button style="width:100%;padding:0.6rem">Continue</button>
+  </div>
+  <div slot="footer"><a href="#">Privacy</a> &middot; <a href="#">Terms</a></div>
+</snice-layout-centered>
+
+<h2>Article: snice-layout-blog (centered measure, no sidebar)</h2>
+<snice-layout-blog style="display:block;border:1px solid var(--snice-color-border,#ddd);border-radius:8px;overflow:hidden;height:340px">
+  <div slot="brand">The Ledger</div>
+  <nav slot="nav"><a href="#">Essays</a> <a href="#">About</a></nav>
+  <div slot="page"><h1>On Building Layouts</h1><p>Without sidebar content the article keeps a centered reading measure instead of reserving an empty rail.</p></div>
+  <div slot="footer"><div class="footer-content">&copy; The Ledger</div></div>
+</snice-layout-blog>
+
+<script type="module">
+import '../../../packages/components/src/layout/snice-layout.ts';
+import '../../../packages/components/src/layout/snice-layout-sidebar.ts';
+import '../../../packages/components/src/layout/snice-layout-dashboard.ts';
+import '../../../packages/components/src/layout/snice-layout-centered.ts';
+import '../../../packages/components/src/layout/snice-layout-blog.ts';
+</script>
 </body>
 </html>
