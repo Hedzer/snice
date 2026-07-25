@@ -939,7 +939,8 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
 - [Binding Channels](./docs/bindings.md) - Detailed DOM destinations, value/removal rules, events, spreads, sentinels, and forms
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
-- [Routing API](./docs/routing.md) - Single-page application routing with transitions
+- [Routing API](./docs/routing.md) - Router setup, pages, route params, and navigation
+- [Guards and Layouts](./docs/guards-and-layouts.md) - Protecting routes, page wrappers, and transitions
 - [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery
 - [Events API](./docs/events.md) - Event handling, dispatching, and custom events
 - [Request/Response API](./docs/request-response.md) - Bidirectional communication between elements and controllers

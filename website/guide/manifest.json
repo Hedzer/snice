@@ -27,12 +27,14 @@
         {
           "id": "minimum",
           "title": "Bare minimum",
-          "docs": "elements"
+          "docs": "elements",
+          "anchor": "basic-usage"
         },
         {
           "id": "styles",
           "title": "Styles",
-          "docs": "styling"
+          "docs": "styling",
+          "anchor": "scoped-styles"
         }
       ]
     },
@@ -42,17 +44,20 @@
         {
           "id": "properties",
           "title": "Properties",
-          "docs": "properties"
+          "docs": "properties",
+          "anchor": "basic-properties"
         },
         {
           "id": "state",
           "title": "Internal state",
-          "docs": "properties"
+          "docs": "properties",
+          "anchor": "basic-properties"
         },
         {
           "id": "deep-state",
           "title": "Deep state",
-          "docs": "properties"
+          "docs": "properties",
+          "anchor": "property-options"
         }
       ]
     },
@@ -67,27 +72,32 @@
         {
           "id": "conditionals",
           "title": "Conditionals",
-          "docs": "rendering"
+          "docs": "rendering",
+          "anchor": "control-flow"
         },
         {
           "id": "lists",
           "title": "Keyed lists",
-          "docs": "rendering"
+          "docs": "rendering",
+          "anchor": "control-flow"
         },
         {
           "id": "async",
           "title": "Async content",
-          "docs": "rendering"
+          "docs": "rendering",
+          "anchor": "async-content"
         },
         {
           "id": "spreads",
           "title": "Named spreads",
-          "docs": "bindings"
+          "docs": "bindings",
+          "anchor": "named-spreads"
         },
         {
           "id": "forms",
           "title": "Form controls",
-          "docs": "bindings"
+          "docs": "bindings",
+          "anchor": "form-data-flow"
         }
       ]
     },
@@ -97,22 +107,26 @@
         {
           "id": "events",
           "title": "Inline handlers",
-          "docs": "events"
+          "docs": "events",
+          "anchor": "template-event-syntax-preferred-for-elements"
         },
         {
           "id": "dispatch",
           "title": "Emitting events",
-          "docs": "events"
+          "docs": "events",
+          "anchor": "dispatch-decorator"
         },
         {
           "id": "on",
           "title": "Event delegation",
-          "docs": "events"
+          "docs": "events",
+          "anchor": "on-decorator"
         },
         {
           "id": "keyboard",
           "title": "Keyboard shortcuts",
-          "docs": "events"
+          "docs": "events",
+          "anchor": "keyboard-shortcuts"
         }
       ]
     },
@@ -122,22 +136,26 @@
         {
           "id": "ready",
           "title": "Ready",
-          "docs": "lifecycle"
+          "docs": "lifecycle",
+          "anchor": "lifecycle-decorators"
         },
         {
           "id": "watch",
           "title": "Watch changes",
-          "docs": "lifecycle"
+          "docs": "lifecycle",
+          "anchor": "watch-decorator"
         },
         {
           "id": "query",
           "title": "Query the DOM",
-          "docs": "queries"
+          "docs": "queries",
+          "anchor": "single-element-query"
         },
         {
           "id": "dispose",
           "title": "Dispose",
-          "docs": "lifecycle"
+          "docs": "lifecycle",
+          "anchor": "lifecycle-decorators"
         }
       ]
     },
@@ -152,12 +170,14 @@
         {
           "id": "request-respond",
           "title": "Request / Respond",
-          "docs": "request-response"
+          "docs": "request-response",
+          "anchor": "element-side-requests"
         },
         {
           "id": "observe",
           "title": "Observers",
-          "docs": "observe"
+          "docs": "observe",
+          "anchor": "intersection-observer"
         }
       ]
     },
@@ -167,12 +187,14 @@
         {
           "id": "pages",
           "title": "Pages and router",
-          "docs": "routing"
+          "docs": "routing",
+          "anchor": "page-components"
         },
         {
           "id": "guards",
           "title": "Guards and layouts",
-          "docs": "routing"
+          "docs": "guards-and-layouts",
+          "anchor": "route-guards"
         }
       ]
     },
@@ -182,17 +204,20 @@
         {
           "id": "roots",
           "title": "Render roots",
-          "docs": "elements"
+          "docs": "elements",
+          "anchor": "render-roots-and-shadow-dom"
         },
         {
           "id": "extending",
           "title": "Extending",
-          "docs": "elements"
+          "docs": "elements",
+          "anchor": "extending-elements"
         },
         {
           "id": "full",
           "title": "Full example",
-          "docs": "elements"
+          "docs": "elements",
+          "anchor": "full-example"
         }
       ]
     },

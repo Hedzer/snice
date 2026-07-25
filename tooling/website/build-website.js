@@ -1830,6 +1830,7 @@ const docsManifest = [
     { id: 'events', file: 'events.md', title: 'Events' },
     { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
     { id: 'routing', file: 'routing.md', title: 'Routing' },
+    { id: 'guards-and-layouts', file: 'guards-and-layouts.md', title: 'Guards and Layouts' },
   ]},
   { group: 'Patterns', docs: [
     { id: 'request-response', file: 'request-response.md', title: 'Request / Response' },
@@ -2387,8 +2388,13 @@ const guideSections = guideManifest.groups.map(group => {
     // Emitted verbatim: <snice-code-block> content is whitespace-significant,
     // so the fragment must not be re-indented to match the surrounding markup.
     const body = readFileSync(join(guideDir, `${section.id}.html`), 'utf8').trimEnd();
-    const docsLink = section.docs
-      ? `\n          <p class="doc-link"><a href="docs.html#${section.docs}">${docIdToTitle.get(section.docs)} documentation →</a></p>`
+    // A section may point at a sub-heading of its docs page, so the reader
+    // lands on the relevant part rather than the top of a long reference.
+    const docsAnchor = section.docs
+      ? `${section.docs}${section.anchor ? `-${section.anchor}` : ''}`
+      : null;
+    const docsLink = docsAnchor
+      ? `\n          <p class="doc-link"><a href="docs.html#${docsAnchor}">${docIdToTitle.get(section.docs)} documentation →</a></p>`
       : '';
     return `        <div class="dec-section" id="${section.id}">
 ${body}${docsLink}

@@ -41,7 +41,8 @@ for depth; read the aggregates when you want the whole surface at once.
 - `bindings.md` - Exact node, attribute, property, event, class, style, spread, controller, sentinel, and form semantics
 - `events.md` - Template event syntax, `@on`, `@dispatch`, delegation, keyboard filters
 - `controllers.md` - Attaching by class or registry name, lifecycle, cleanup
-- `routing.md` - Router setup, pages, params, transitions, guards, layouts
+- `routing.md` - Router setup, pages, params, navigation
+- `guards-and-layouts.md` - Route guards, layouts, page transitions
 
 *Patterns:*
 - `request-response.md` - `@request` / `@respond` channels

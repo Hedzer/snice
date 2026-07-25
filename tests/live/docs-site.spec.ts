@@ -164,9 +164,11 @@ test.describe('Guide links into the documentation', () => {
       ).toHaveCount(1);
 
       if (!section.docs) continue;
+      // A section may deep-link to a heading within its docs page.
+      const target = `${section.docs}${section.anchor ? `-${section.anchor}` : ''}`;
       await expect(
-        page.locator(`#${section.id} a[href="docs.html#${section.docs}"]`),
-        `section ${section.id} has no link to docs.html#${section.docs}`
+        page.locator(`#${section.id} a[href="docs.html#${target}"]`),
+        `section ${section.id} has no link to docs.html#${target}`
       ).toHaveCount(1);
     }
 
@@ -180,14 +182,17 @@ test.describe('Guide links into the documentation', () => {
       const section = guideSections.find((s: any) => s.docs === target);
       if (!section) continue;
 
+      const href = `${target}${section.anchor ? `-${section.anchor}` : ''}`;
       await page.goto(guideUrl, { waitUntil: 'domcontentloaded' });
-      await page.locator(`#${section.id} a[href="docs.html#${target}"]`).first().click();
+      await page.locator(`#${section.id} a[href="docs.html#${href}"]`).first().click();
       await page.waitForLoadState('domcontentloaded');
 
-      expect(page.url(), `did not navigate to docs.html#${target}`).toContain(`docs.html#${target}`);
+      expect(page.url(), `did not navigate to docs.html#${href}`).toContain(`docs.html#${href}`);
 
-      const heading = page.locator(`#${target}`);
-      await expect(heading, `docs.html#${target} does not exist`).toHaveCount(1);
+      // The owning page must open, and the anchored heading must exist.
+      await expect(page.locator(`#${target}`), `#${target} did not open`).toBeVisible();
+      const heading = page.locator(`#${href}`);
+      await expect(heading, `docs.html#${href} does not exist`).toHaveCount(1);
 
       // The page grows as code blocks upgrade, so the landing position is only
       // meaningful once it has settled — poll rather than sampling the race.

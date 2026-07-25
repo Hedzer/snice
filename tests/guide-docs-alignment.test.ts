@@ -86,12 +86,34 @@ describe('Guide sections resolve to real documentation', () => {
     }
   });
 
+  it('every sub-anchor resolves to a real heading on the docs page', () => {
+    // A section may deep-link to a heading inside its docs page. Headings are
+    // emitted as `<docId>-<slug>`, so a renamed heading silently breaks the
+    // link unless this fails.
+    const docsHtml = read('website/public/docs.html');
+    const ids = new Set(
+      Array.from(docsHtml.matchAll(/id="([\w-]+)"/g)).map(m => m[1])
+    );
+
+    const anchored = sections.filter((s: any) => s.anchor);
+    expect(anchored.length, 'no sections declare a sub-anchor').toBeGreaterThan(5);
+
+    for (const section of anchored) {
+      const target = `${section.docs}-${section.anchor}`;
+      expect(
+        ids.has(target),
+        `guide section "${section.id}" points at docs.html#${target}, which does not exist`
+      ).toBe(true);
+    }
+  });
+
   it('renders a documentation link for every section that declares one', () => {
     for (const section of sections) {
       if (section.docs === null) continue;
+      const target = `${section.docs}${section.anchor ? `-${section.anchor}` : ''}`;
       expect(
-        guideHtml.includes(`href="docs.html#${section.docs}"`),
-        `guide.html has no link to docs.html#${section.docs} for section "${section.id}"`
+        guideHtml.includes(`href="docs.html#${target}"`),
+        `guide.html has no link to docs.html#${target} for section "${section.id}"`
       ).toBe(true);
     }
   });
