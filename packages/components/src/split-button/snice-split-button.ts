@@ -79,7 +79,7 @@ export class SniceSplitButton extends HTMLElement implements SniceSplitButtonEle
           <if ${!this.loading && this.icon && this.iconPlacement === 'start'}>
             ${iconHtml}
           </if>
-          <span class="split-button__label">${this.label}</span>
+          <span class="split-button__label"><slot>${this.label}</slot></span>
           <if ${!this.loading && this.icon && this.iconPlacement === 'end'}>
             ${iconHtml}
           </if>

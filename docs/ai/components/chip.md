@@ -5,7 +5,7 @@ Compact element for tags, filters, or selections.
 ## Properties
 
 ```typescript
-label: string = '';
+label: string = '';   // slotted content wins: <snice-chip>Text</snice-chip>
 variant: 'default'|'primary'|'success'|'warning'|'error'|'info' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
 shape: 'pill'|'rounded'|'square' = 'pill';

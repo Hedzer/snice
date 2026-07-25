@@ -17,7 +17,7 @@ Compact elements for tags, filters, selections, or categorizations. Supports ico
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `label` | `string` | `''` | Text label for the chip |
+| `label` | `string` | `''` | Text label for the chip. Slotted content takes precedence: `<snice-chip>Starred</snice-chip>` |
 | `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Color variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Chip size |
 | `shape` | `'pill' \| 'rounded' \| 'square'` | `'pill'` | Chip shape (fully round, rounded rectangle, or rectangle) |

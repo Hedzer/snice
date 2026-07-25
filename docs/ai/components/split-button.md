@@ -5,7 +5,7 @@ Primary action button with dropdown menu of alternative actions.
 ## Properties
 
 ```typescript
-label: string = '';
+label: string = '';   // slotted content wins: <snice-split-button>Text</snice-split-button>
 actions: SplitButtonAction[] = [];  // { label, value, icon?, disabled? }
 variant: 'default'|'primary'|'success'|'warning'|'danger' = 'default';
 size: 'small'|'medium'|'large' = 'medium';

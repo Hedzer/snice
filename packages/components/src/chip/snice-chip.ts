@@ -80,7 +80,7 @@ export class SniceChip extends HTMLElement implements SniceChipElement {
             </slot>
           </span>
         </if>
-        <span class="chip-label">${this.label}</span>
+        <span class="chip-label"><slot>${this.label}</slot></span>
         <if ${this.removable && !this.disabled}>
           <button class="chip-remove"
                   type="button"

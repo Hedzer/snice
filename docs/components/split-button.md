@@ -17,7 +17,7 @@ A primary action button with a dropdown menu of alternative actions. Click the m
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `label` | `string` | `''` | Primary button text |
+| `label` | `string` | `''` | Primary button text. Slotted content takes precedence: `<snice-split-button>Save</snice-split-button>` |
 | `actions` | `SplitButtonAction[]` | `[]` | Array of `{ label, value, icon?, disabled? }` for the dropdown menu |
 | `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Visual style |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Button size |
