@@ -76,6 +76,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
 <!-- Status variants -->
 
+
+<h2>Slots: title, status, before-items, notes</h2>
+<snice-invoice data-inv invoice-number="INV-070" date="2026-07-24" status="sent" tax-rate="8.6">
+  <span slot="title">Tax Invoice</span>
+  <span slot="status" style="display:inline-flex;align-items:center;gap:0.35rem">⚡ Rush</span>
+  <div slot="before-items" style="font-size:0.8rem;padding:0.5rem 0.75rem;border:1px dashed var(--snice-color-border);border-radius:6px;margin-bottom:0.75rem">Purchase order <strong>PO-4477</strong> attached — net 15 terms apply.</div>
+  <div slot="notes" style="font-size:0.8rem;color:var(--snice-color-text-tertiary);margin-top:0.75rem">Wire details sent separately. Reference the invoice number.</div>
+</snice-invoice>
+
 <h2>Template gallery - click any sheet to zoom</h2>
 <div class="tpl-gallery">
   <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">

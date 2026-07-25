@@ -35,6 +35,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <body>
 
 
+
+<h2>Slots: after-items, thank-you</h2>
+<snice-receipt id="r-slots" receipt-number="REC-070" date="2026-07-24 17:02" payment-method="Visa **** 4242">
+  <div slot="after-items" style="font-size:0.75rem;padding:0.4rem 0;border-top:1px dashed var(--snice-color-border)">Loyalty points earned: <strong>42</strong> · Balance: 1,860</div>
+  <div slot="thank-you" style="font-style:italic;font-size:0.8rem">See you tomorrow — your usual will be ready ☕</div>
+</snice-receipt>
+
 <h2>Template gallery - click any sheet to zoom</h2>
 <div class="tpl-gallery">
   <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
@@ -225,6 +232,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   const feed = el => { el.merchant = tplMerchant; el.items = JSON.parse(JSON.stringify(tplItems)); el.tax = 1.87; };
   document.querySelectorAll('[data-tpl]').forEach(feed);
+  const rs = document.getElementById('r-slots'); if (rs) feed(rs);
 
   const modal = document.getElementById('tpl-modal');
   const body = document.getElementById('tpl-modal-body');

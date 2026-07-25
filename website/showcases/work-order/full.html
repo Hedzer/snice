@@ -36,6 +36,14 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 <body>
 
 
+
+<h2>Slots: title, before-tasks, notes</h2>
+<snice-work-order wo-number="WO-070" date="2026-07-24" priority="high" status="open" description="Line 3 conveyor bearing replacement.">
+  <span slot="title">Job Ticket</span>
+  <div slot="before-tasks" style="font-size:0.8rem;padding:0.5rem 0.75rem;border:1px dashed var(--snice-color-border);border-radius:6px">⚠ Lockout/tagout required before starting. Permit #LT-2211.</div>
+  <div slot="notes" style="font-size:0.8rem;color:var(--snice-color-text-tertiary)">Customer requests completion before Friday shift change.</div>
+</snice-work-order>
+
 <h2>Template gallery - click any sheet to zoom</h2>
 <div class="tpl-gallery">
   <button class="tpl-card" data-variant="standard" aria-label="Zoom standard template">
