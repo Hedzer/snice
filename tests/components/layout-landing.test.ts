@@ -62,5 +62,9 @@ describe('snice-layout-landing', () => {
     it('keeps a sticky translucent header', () => {
       expect(css).toMatch(/\.header\s*\{[^}]*position:\s*sticky/);
     });
+
+    it('contains band content at the standard 80rem marketing wrapper', () => {
+      expect(css).toMatch(/\.container\s*\{[^}]*max-width:\s*var\(--snice-layout-container,\s*80rem\)/);
+    });
   });
 });

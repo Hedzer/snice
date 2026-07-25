@@ -42,6 +42,17 @@ describe('snice-layout-centered', () => {
     });
   });
 
+  describe('card measure', () => {
+    it('defaults the card to the standard 24rem auth width', async () => {
+      const { readFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-centered.css'), 'utf8');
+
+      expect(css).toMatch(/^\.container\s*\{[^}]*max-width:\s*24rem/m);
+      expect(css).toMatch(/:host\(\[width="md"\]\) \.container \{ max-width: 24rem; \}/);
+    });
+  });
+
   describe('width variants', () => {
     it('keeps the width attribute contract', async () => {
       layout = await createComponent<SniceLayoutCentered>('snice-layout-centered', { width: 'lg' });

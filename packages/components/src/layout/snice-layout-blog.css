@@ -71,7 +71,9 @@
 }
 
 .article {
-  max-width: 42rem;
+  /* Reading measure in ch so it tracks the font: 65ch sits inside the
+     canonical 45-75 characters-per-line band. */
+  max-width: var(--snice-layout-measure, 65ch);
   margin-inline: auto;
   width: 100%;
 }

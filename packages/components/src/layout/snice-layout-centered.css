@@ -46,7 +46,7 @@
 
 .container {
   width: 100%;
-  max-width: 25rem;
+  max-width: 24rem;
   background: var(--snice-color-surface-container-highest, hsl(0 0% 100%));
   border: 1px solid var(--snice-color-border-subtle, transparent);
   border-radius: var(--snice-border-radius-lg, 0.5rem);
@@ -55,7 +55,7 @@
 }
 
 :host([width="sm"]) .container { max-width: 20rem; }
-:host([width="md"]) .container { max-width: 25rem; }
+:host([width="md"]) .container { max-width: 24rem; }
 :host([width="lg"]) .container { max-width: 32rem; }
 :host([width="xl"]) .container { max-width: 38rem; }
 

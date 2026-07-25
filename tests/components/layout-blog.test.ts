@@ -51,8 +51,17 @@ describe('snice-layout-blog', () => {
   describe('stylesheet contracts', () => {
     const css = readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-blog.css'), 'utf8');
 
-    it('keeps a reading measure on the article', () => {
-      expect(css).toMatch(/\.article\s*\{[^}]*max-width/);
+    it('sets the reading measure in ch so it tracks the font (Bringhurst 45-75, prose default 65ch)', () => {
+      const measure = css.match(/^\.article\s*\{[^}]*max-width:\s*([^;]+);/m);
+      expect(measure, 'article declares a max-width').toBeTruthy();
+      expect(measure![1]).toContain('ch');
+      const ch = Number(measure![1].match(/(\d+)ch/)![1]);
+      expect(ch).toBeGreaterThanOrEqual(45);
+      expect(ch).toBeLessThanOrEqual(75);
+    });
+
+    it('exposes the measure as a themeable layout hook', () => {
+      expect(css).toMatch(/var\(--snice-layout-measure/);
     });
 
     it('centers the article instead of pinning it to the sidebar edge', () => {
