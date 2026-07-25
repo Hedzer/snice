@@ -64,16 +64,20 @@ Clean layout with just content area.
 ```
 
 ### snice-layout-centered
-Centered container perfect for forms, authentication pages.
+Centered card for forms and authentication pages. Optional `brand` renders
+above the card and `footer` (privacy/terms links) below; both hide when not
+slotted.
 
 ```html
 <snice-layout-centered width="md">
-  <form>
+  <div slot="brand">Acme</div>
+  <form slot="page">
     <h2>Sign In</h2>
     <input type="email" placeholder="Email">
     <input type="password" placeholder="Password">
     <button type="submit">Sign In</button>
   </form>
+  <div slot="footer"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></div>
 </snice-layout-centered>
 ```
 
@@ -126,18 +130,19 @@ Two-panel layout with configurable split ratios.
 - `ratio`: Panel size ratio - `"50-50"` | `"60-40"` | `"70-30"` | `"33-67"` | `"67-33"` (default: `"50-50"`)
 
 ### snice-layout-card
-Grid layout optimized for card-based content.
+Grid layout optimized for card-based content. Header and footer bars render
+only when slotted; the grid steps down to 2 columns under 768px and 1 under
+480px.
 
 ```html
 <snice-layout-card columns="3" gap="lg">
   <div slot="header">
     <h1>Product Gallery</h1>
   </div>
-  
-  <!-- Cards go in main slot -->
-  <div class="card">Product 1</div>
-  <div class="card">Product 2</div>
-  <div class="card">Product 3</div>
+
+  <div slot="page" class="card">Product 1</div>
+  <div slot="page" class="card">Product 2</div>
+  <div slot="page" class="card">Product 3</div>
 </snice-layout-card>
 ```
 
@@ -146,7 +151,9 @@ Grid layout optimized for card-based content.
 - `gap`: Grid gap size - `"sm"` | `"md"` | `"lg"` | `"xl"` (default: `"md"`)
 
 ### snice-layout-blog
-Article layout with sidebar for additional content.
+Article layout with a centered reading measure. The sidebar column exists
+only when `slot="sidebar"` content is provided; otherwise the article
+centers. The sidebar stacks below the article under 968px.
 
 ```html
 <snice-layout-blog>
@@ -155,13 +162,12 @@ Article layout with sidebar for additional content.
     <a href="/">Home</a>
     <a href="/archive">Archive</a>
   </nav>
-  
-  <!-- Article content -->
-  <article>
+
+  <article slot="page">
     <h1>Blog Post Title</h1>
     <p>Article content goes here...</p>
   </article>
-  
+
   <div slot="sidebar">
     <h3>Recent Posts</h3>
     <ul>
