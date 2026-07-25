@@ -28,12 +28,16 @@ Basic layout with header, main content, and footer areas.
 ```
 
 ### snice-layout-sidebar
-Layout with collapsible sidebar navigation.
+App shell with a persistent sidebar: in flow on desktop (main reflows when it
+collapses), overlay with scrim below 768px. `collapsed` controls the desktop
+state; the header toggle flips it (or opens the overlay on mobile). Slot
+`sidebar` for your own navigation; without it a placard-driven `snice-nav`
+renders when a router is present.
 
 ```html
 <snice-layout-sidebar>
   <div slot="brand"><h2>Dashboard</h2></div>
-  <nav slot="nav">
+  <nav slot="sidebar">
     <a href="/dashboard">Overview</a>
     <a href="/users">Users</a>
     <a href="/settings">Settings</a>
@@ -41,9 +45,7 @@ Layout with collapsible sidebar navigation.
   <div slot="header">
     <h1>Page Title</h1>
   </div>
-  
-  <!-- Main content -->
-  <div>
+  <div slot="page">
     <p>Dashboard content goes here</p>
   </div>
 </snice-layout-sidebar>

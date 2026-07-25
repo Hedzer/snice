@@ -1,18 +1,16 @@
-import { element, property, query, ready, render, styles, html, css } from 'snice';
+import { element, property, query, on, ready, render, styles, html, css } from 'snice';
 import type { AppContext, Placard, RouteParams, Layout } from 'snice';
 import cssContent from './snice-layout-sidebar.css?inline';
-import '../drawer/snice-drawer.ts';
 import '../nav/snice-nav.ts';
 import type { SniceNav } from '../nav/snice-nav.ts';
-import type { SniceDrawerElement } from '../drawer/snice-drawer.types.ts';
 
 @element('snice-layout-sidebar')
 export class SniceLayoutSidebar extends HTMLElement implements Layout {
-  @property({ type: Boolean,  })
+  @property({ type: Boolean })
   collapsed = false;
 
-  @query('.sidebar-drawer')
-  sidebarDrawer?: SniceDrawerElement;
+  @property({ attribute: false })
+  mobileOpen = false;
 
   @query('snice-nav')
   navElement!: SniceNav;
@@ -22,10 +20,15 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
 
   @render()
   render() {
+    const sidebarCollapsedClass = this.collapsed ? ' sidebar--collapsed' : '';
+    const sidebarMobileClass = this.mobileOpen ? ' sidebar--mobile-open' : '';
+    const scrimClass = this.mobileOpen ? ' scrim--visible' : '';
+    const expanded = this.mobileOpen || !this.collapsed;
+
     return html/*html*/`
       <div class="layout">
-        <header class="header">
-          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" @click=${this.handleSidebarToggle}>
+        <header class="header" part="header">
+          <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="${expanded}" @click=${this.handleSidebarToggle}>
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
             </svg>
@@ -41,17 +44,20 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
         </header>
 
         <div class="body-area">
-          <snice-drawer class="sidebar-drawer" position="left" size="medium" contained>
-            <span slot="title">Navigation</span>
-            <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
-          </snice-drawer>
+          <aside class="sidebar${sidebarCollapsedClass}${sidebarMobileClass}" part="sidebar">
+            <slot name="sidebar">
+              <snice-nav class="sidebar-nav" variant="hierarchical" orientation="vertical"></snice-nav>
+            </slot>
+          </aside>
 
-          <main class="main">
+          <div class="scrim${scrimClass}" part="scrim" @click=${this.handleScrimClick}></div>
+
+          <main class="main" part="main">
             <slot name="page"></slot>
           </main>
         </div>
 
-        <footer class="footer">
+        <footer class="footer" part="footer">
           <slot name="footer"></slot>
         </footer>
       </div>
@@ -64,8 +70,26 @@ export class SniceLayoutSidebar extends HTMLElement implements Layout {
   }
 
   handleSidebarToggle() {
-    if (this.sidebarDrawer) {
-      this.sidebarDrawer.toggle();
+    const isMobileViewport = typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobileViewport) {
+      this.mobileOpen = !this.mobileOpen;
+      return;
+    }
+
+    this.collapsed = !this.collapsed;
+  }
+
+  handleScrimClick() {
+    this.mobileOpen = false;
+  }
+
+  @on('keydown')
+  handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.mobileOpen) {
+      this.mobileOpen = false;
     }
   }
 

@@ -36,20 +36,28 @@ describe('snice-layout-sidebar', () => {
       expect(queryShadow(layout as HTMLElement, '.footer')).toBeTruthy();
     });
 
-    it('should contain snice-drawer in body area', async () => {
+    it('renders a persistent aside sidebar, not a modal drawer', async () => {
       layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
       await wait(10);
 
-      const drawer = queryShadow(layout as HTMLElement, 'snice-drawer.sidebar-drawer');
-      expect(drawer).toBeTruthy();
+      expect(queryShadow(layout as HTMLElement, 'aside.sidebar')).toBeTruthy();
+      expect(queryShadow(layout as HTMLElement, 'snice-drawer')).toBeNull();
     });
 
-    it('should contain snice-nav inside the drawer', async () => {
+    it('should contain snice-nav as the sidebar slot fallback', async () => {
       layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
       await wait(10);
 
       const nav = queryShadow(layout as HTMLElement, 'snice-nav');
       expect(nav).toBeTruthy();
+      expect(nav!.closest('slot[name="sidebar"]'), 'nav must be slot fallback so apps can replace it').toBeTruthy();
+    });
+
+    it('ships a scrim for the mobile overlay state', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      await wait(10);
+
+      expect(queryShadow(layout as HTMLElement, '.scrim')).toBeTruthy();
     });
   });
 
@@ -157,6 +165,66 @@ describe('snice-layout-sidebar', () => {
       layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar', { collapsed: true });
 
       expect(layout.collapsed).toBe(true);
+    });
+
+    it('is observed as an attribute so authored collapsed works', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+
+      const observed = (customElements.get('snice-layout-sidebar') as any).observedAttributes as string[];
+      expect(observed).toContain('collapsed');
+    });
+
+    it('sidebar is visible by default and hides via the collapsed class', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      await wait(10);
+
+      const sidebar = queryShadow(layout as HTMLElement, 'aside.sidebar');
+      expect(sidebar!.classList.contains('sidebar--collapsed')).toBe(false);
+
+      layout.collapsed = true;
+      await wait(20);
+      const after = queryShadow(layout as HTMLElement, 'aside.sidebar');
+      expect(after!.classList.contains('sidebar--collapsed')).toBe(true);
+    });
+
+    it('desktop toggle flips collapsed and reflects aria-expanded', async () => {
+      layout = await createComponent<SniceLayoutSidebar>('snice-layout-sidebar');
+      await wait(10);
+
+      const btn = queryShadow(layout as HTMLElement, '.sidebar-toggle') as HTMLButtonElement;
+      expect(btn.getAttribute('aria-expanded')).toBe('true');
+
+      btn.click();
+      await wait(20);
+      expect(layout.collapsed).toBe(true);
+      const btnAfter = queryShadow(layout as HTMLElement, '.sidebar-toggle') as HTMLButtonElement;
+      expect(btnAfter.getAttribute('aria-expanded')).toBe('false');
+    });
+  });
+
+  describe('stylesheet contracts', () => {
+    const readCss = async () => {
+      const { readFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      return readFileSync(resolve(process.cwd(), 'packages/components/src/layout/snice-layout-sidebar.css'), 'utf8');
+    };
+
+    it('sidebar participates in flow with a width token and collapses by width', async () => {
+      const css = await readCss();
+      expect(css).toMatch(/\.sidebar\s*\{[^}]*width:\s*var\(--snice-layout-sidebar-width/);
+      expect(css).toMatch(/\.sidebar--collapsed\s*\{[^}]*width:\s*0/);
+    });
+
+    it('below the mobile breakpoint the sidebar overlays via transform with a scrim', async () => {
+      const css = await readCss();
+      expect(css).toMatch(/@media \(max-width: 768px\)[\s\S]*\.sidebar[\s\S]*transform: translateX\(/);
+      expect(css).toMatch(/\.sidebar--mobile-open\s*\{[^}]*transform: translateX\(0\)/);
+      expect(css).toMatch(/\.scrim--visible/);
+    });
+
+    it('never hides the sidebar with display none', async () => {
+      const css = await readCss();
+      expect(css).not.toMatch(/\.sidebar[^{]*\{[^}]*display:\s*none/);
     });
   });
 });
