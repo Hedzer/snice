@@ -94,6 +94,7 @@
   border-right: 1px solid var(--snice-color-border-subtle, var(--snice-color-border, rgb(226 226 226)));
   overflow-y: auto;
   overflow-x: hidden;
+  padding-block: var(--snice-spacing-sm, 0.75rem);
   transition: width var(--snice-transition-normal, 250ms) ease, transform var(--snice-transition-normal, 250ms) ease;
 }
 
@@ -119,6 +120,41 @@
 .scrim {
   display: none;
 }
+
+/* Slotted navigation affordances. ::slotted() only reaches top-level slotted
+   nodes, so slot links directly (<a slot="sidebar">) to get these defaults;
+   deeper markup is styled by the page that owns that light DOM. */
+.sidebar ::slotted(a),
+.sidebar ::slotted(button) {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-sm, 0.75rem);
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-md, 1rem);
+  margin: 0 var(--snice-spacing-xs, 0.5rem);
+  border-radius: var(--snice-border-radius-md, 6px);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--snice-transition-fast, 150ms) ease, color var(--snice-transition-fast, 150ms) ease;
+}
+
+.sidebar ::slotted(a:hover),
+.sidebar ::slotted(button:hover) {
+  background: var(--snice-color-surface-hover, var(--snice-color-overlay-hover, hsl(0 0% 0% / 0.06)));
+  color: var(--snice-color-text, rgb(23 23 23));
+}
+
+.sidebar ::slotted(a:focus-visible),
+.sidebar ::slotted(button:focus-visible) {
+  outline: var(--snice-focus-ring-width, 2px) solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+  outline-offset: var(--snice-focus-ring-offset, 2px);
+}
+
+.sidebar ::slotted([aria-current]) {
+  background: var(--snice-color-primary-alpha, color-mix(in srgb, var(--snice-color-primary, rgb(37 99 235)) 10%, transparent));
+  color: var(--snice-color-primary, rgb(37 99 235));
+}
+
 
 .sidebar-nav {
   display: flex;

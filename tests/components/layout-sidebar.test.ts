@@ -293,6 +293,12 @@ describe('snice-layout-sidebar', () => {
       expect(css).toMatch(/\.sidebar--rail\.sidebar--collapsed\s*\{[^}]*width:\s*var\(--snice-layout-rail-collapsed-width,\s*3rem\)/);
     });
 
+    it('gives slotted sidebar links hover and focus affordances', async () => {
+      const css = await readCss();
+      expect(css).toMatch(/\.sidebar ::slotted\(a:hover\)/);
+      expect(css).toMatch(/\.sidebar ::slotted\(a:focus-visible\)/);
+    });
+
     it('rail clips nav labels to one line instead of wrapping them into fragments', async () => {
       const css = await readCss();
       expect(css).toMatch(/\.sidebar--rail\.sidebar--collapsed ::slotted\(\*\)\s*\{[^}]*white-space:\s*nowrap/);
