@@ -71,7 +71,8 @@
   padding: var(--snice-spacing-md, 1rem) var(--snice-spacing-lg, 1.5rem);
 }
 
-.footer:empty {
+.footer--empty,
+.header--empty {
   display: none;
 }
 
@@ -90,6 +91,7 @@
 }
 
 @media (max-width: 768px) {
+  :host(:not([columns])) .grid,
   :host([columns="3"]) .grid,
   :host([columns="4"]) .grid,
   :host([columns="6"]) .grid {
