@@ -1,3 +1,10 @@
+## [7.0.2](https://github.com/Hedzer/snice/compare/v7.0.1...v7.0.2) (2026-07-25)
+
+
+### Bug Fixes
+
+* **cli:** ship the template gitignore npm was stripping from the tarball ([533a948](https://github.com/Hedzer/snice/commit/533a9486e182038091b3b90f210061813604c727))
+
 ## [7.0.1](https://github.com/Hedzer/snice/compare/v7.0.0...v7.0.1) (2026-07-25)
 
 
