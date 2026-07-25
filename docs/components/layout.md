@@ -226,6 +226,20 @@ it to the leading side.
 </snice-layout-auth-split>
 ```
 
+### Shell attributes
+
+| Element | Attribute | Values | Default | Description |
+|---------|-----------|--------|---------|-------------|
+| `snice-layout-split` | `direction` | `horizontal`, `vertical` | `horizontal` | Axis the two panes divide along |
+| `snice-layout-split` | `ratio` | `50-50`, `60-40`, `70-30`, `33-67`, `67-33` | `50-50` | Size split between the panes |
+| `snice-layout-card` | `columns` | `1`, `2`, `3`, `4`, `6` | `3` | Grid columns before responsive step-down |
+| `snice-layout-card` | `gap` | `sm`, `md`, `lg`, `xl` | `md` | Space between cards |
+| `snice-layout-centered` | `width` | `sm`, `md`, `lg`, `xl` | `md` | Card width |
+| `snice-layout-landing` | `use-nav` | boolean | `false` | Render the placard-driven nav instead of the `nav` slot |
+| `snice-layout-fullscreen` | `overlay` | boolean | `false` | Dim the canvas behind the content layer |
+| `snice-layout-master-detail` | `selected` | boolean | `false` | A detail is open; drives the single-pane view below 641px |
+| `snice-layout-auth-split` | `panel-position` | `start`, `end` | `end` | Side the brand panel sits on |
+
 ### Sizing hooks
 
 | Custom property | Default | Applies to |
