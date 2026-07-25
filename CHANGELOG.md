@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/Hedzer/snice/compare/v7.0.0...v7.0.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* **release:** export NEXT_VERSION so prebuild stops reverting template pins ([e41a77a](https://github.com/Hedzer/snice/commit/e41a77ada3d341a4fe0be1ff32e61d5d5279b857))
+
 # [7.0.0](https://github.com/Hedzer/snice/compare/v6.1.0...v7.0.0) (2026-07-25)
 
 
