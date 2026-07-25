@@ -484,6 +484,15 @@ describe('snice-receipt', () => {
       expect(ai.assignedNodes().map(n => n.textContent).join('')).toContain('Loyalty points');
       el.remove();
     });
+
+    it('slotted thank-you content replaces the attribute text instead of doubling it', async () => {
+      receipt = await createComponent<SniceReceiptElement>('snice-receipt', {});
+      await wait(50);
+
+      const fallback = receipt.shadowRoot!.querySelector('.receipt__thank-you');
+      expect(fallback, 'attribute thank-you renders as slot fallback').toBeTruthy();
+      expect(fallback!.closest('slot[name="thank-you"]'), 'fallback must live inside the slot so slotted content displaces it').toBeTruthy();
+    });
   });
 
   describe('paper variant', () => {

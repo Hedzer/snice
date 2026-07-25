@@ -380,10 +380,11 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
 
         ${this.renderDivider()}
         <div class="receipt__footer" part="footer">
-          <slot name="thank-you"></slot>
-          <if ${this.thankYou}>
-            <div class="receipt__thank-you" part="thank-you">${this.thankYou}</div>
-          </if>
+          <slot name="thank-you">
+            <if ${this.thankYou}>
+              <div class="receipt__thank-you" part="thank-you">${this.thankYou}</div>
+            </if>
+          </slot>
           <slot></slot>
           <if ${qrFooter}>
             ${this.renderQrSlot()}
