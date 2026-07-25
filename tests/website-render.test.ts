@@ -59,14 +59,16 @@ test.describe('Website Component Rendering', () => {
     ]) {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
-    await expect(page.locator('a[href="docs.html#rendering"]')).toBeVisible();
-    const bindingReference = page.locator('a[href="docs.html#bindings"]');
+    // Guide sections deep-link to the exact heading, so match the page prefix
+    // rather than a bare page anchor.
+    await expect(page.locator('a[href^="docs.html#rendering"]').first()).toBeVisible();
+    const bindingReference = page.locator('a[href^="docs.html#bindings"]').first();
     await expect(bindingReference).toBeVisible();
     await expect(page.locator('#ssr')).toHaveCount(0);
     await expect(page.getByText('SSR & hydration', { exact: false })).toHaveCount(0);
 
     await bindingReference.click();
-    await expect(page).toHaveURL(/\/docs\.html#bindings$/);
+    await expect(page).toHaveURL(/\/docs\.html#bindings/);
     await expect(page.locator('#bindings')).toBeVisible();
     await expect(page.locator('.docs-sidebar a[href="#bindings"]')).toBeVisible();
     for (const id of [

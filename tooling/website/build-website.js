@@ -2423,6 +2423,81 @@ ${guideSections}
 ${footer}
 ${anchorSettleScript}
   <script>
+    const sidebar = document.querySelector('.guide-sidebar');
+    const sections = [...document.querySelectorAll('.dec-section[id]')];
+    const navLinks = [...document.querySelectorAll('.guide-sidebar a[href^="#"]')];
+
+    function revealSidebarLink(link) {
+      if (!sidebar || !link) return;
+      const padding = 12;
+      const top = link.offsetTop;
+      const bottom = top + link.offsetHeight;
+      const visibleTop = sidebar.scrollTop + padding;
+      const visibleBottom = sidebar.scrollTop + sidebar.clientHeight - padding;
+      if (top < visibleTop) sidebar.scrollTop = Math.max(0, top - padding);
+      else if (bottom > visibleBottom) sidebar.scrollTop = bottom - sidebar.clientHeight + padding;
+    }
+
+    function activateSection(id) {
+      let activeLink = null;
+      for (const link of navLinks) {
+        const active = link.getAttribute('href') === '#' + id;
+        link.classList.toggle('active', active);
+        if (active) activeLink = link;
+      }
+      revealSidebarLink(activeLink);
+    }
+
+    function updateActiveSection() {
+      const marker = window.scrollY + 100;
+      let active = sections[0] || null;
+      for (const section of sections) {
+        if (section.offsetTop > marker) break;
+        active = section;
+      }
+      if (active) activateSection(active.id);
+    }
+
+    let scrollTicking = false;
+    window.addEventListener('scroll', () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        scrollTicking = false;
+        updateActiveSection();
+      });
+    }, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    function syncHash() {
+      const id = decodeURIComponent(location.hash.slice(1));
+      const target = id ? document.getElementById(id) : null;
+      if (!target || !target.classList.contains('dec-section')) {
+        updateActiveSection();
+        return;
+      }
+      target.scrollIntoView({ block: 'start' });
+      activateSection(id);
+    }
+
+    window.addEventListener('hashchange', () => requestAnimationFrame(syncHash));
+
+    async function settleGuideLayout() {
+      await customElements.whenDefined('snice-code-block');
+      await Promise.all(
+        [...document.querySelectorAll('snice-code-block')].map(block => block.ready || Promise.resolve())
+      );
+      if (document.fonts?.ready) await document.fonts.ready;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (location.hash) syncHash();
+        else updateActiveSection();
+      }));
+    }
+
+    if (document.readyState === 'complete') settleGuideLayout();
+    else window.addEventListener('load', settleGuideLayout, { once: true });
+  </script>
+  <script>
     // Each tab group toggles only its own panels.
     document.querySelectorAll('.code-tabgroup').forEach(group => {
       group.querySelectorAll('.code-tab').forEach(tab => {
