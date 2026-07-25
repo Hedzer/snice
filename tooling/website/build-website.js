@@ -1844,6 +1844,7 @@ const docsManifest = [
   { group: 'Tooling', docs: [
     { id: 'cli', file: 'cli.md', title: 'CLI' },
     { id: 'testing', file: 'testing.md', title: 'Testing' },
+    { id: 'utilities', file: 'utilities.md', title: 'Utilities' },
   ]},
   { group: 'Integration', docs: [
     { id: 'cdn', file: 'cdn.md', title: 'CDN' },
@@ -2111,13 +2112,17 @@ for (const group of docsManifest) {
     try { md = readFileSync(mdPath, 'utf-8'); } catch { console.warn(`Docs: skipping ${doc.file} (not found)`); continue; }
     const { html: docHtml, headings } = mdToHtml(md, doc.id);
 
-    // Sidebar: doc title link
-    sidebarHtml += `<a href="#${doc.id}">${escapeHtml(doc.title)}</a>\n`;
-    // Sidebar: ## sub-headings
-    for (const h of headings) {
-      if (h.level === 2) {
+    // Sidebar: doc title link, then its own sub-headings. The sub-headings are
+    // wrapped and tagged with the owning doc so only the open page expands —
+    // otherwise every heading of every page is listed at once.
+    sidebarHtml += `<a href="#${doc.id}" class="doc-link" data-doc="${doc.id}">${escapeHtml(doc.title)}</a>\n`;
+    const subHeadings = headings.filter(h => h.level === 2);
+    if (subHeadings.length) {
+      sidebarHtml += `<div class="doc-subnav" data-doc="${doc.id}">\n`;
+      for (const h of subHeadings) {
         sidebarHtml += `<a href="#${h.id}" class="sub">${escapeHtml(h.text.replace(/[*_`]/g, ''))}</a>\n`;
       }
+      sidebarHtml += `</div>\n`;
     }
 
     // Content section
@@ -2132,37 +2137,76 @@ ${header('docs')}
     ${sidebarHtml}
   </nav>
   <main class="docs-content">
-    <div class="page-title">
-      <h2>Documentation</h2>
-      <p>Complete API reference for the Snice framework.</p>
-    </div>
     ${contentHtml}
   </main>
 ${footer}
 ${anchorSettleScript}
   <script>
-    // Highlight active sidebar link on scroll
+    // One reference page is shown at a time. Concatenating every doc produced a
+    // page tens of thousands of pixels tall and a sidebar listing every heading
+    // of every page at once. The hash scheme is unchanged — #elements and
+    // #elements-basic-usage both still work — so existing deep links survive.
     (() => {
       const sidebar = document.getElementById('docs-sidebar');
       if (!sidebar) return;
-      const links = [...sidebar.querySelectorAll('a')];
-      const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+      const pages = [...document.querySelectorAll('.doc-file')];
+      if (!pages.length) return;
+      const ids = pages.map(p => p.id);
+
+      // #elements-basic-usage belongs to the elements page. Longest id wins so
+      // request-response is not mistaken for request.
+      function pageFor(hash) {
+        const target = decodeURIComponent((hash || '').replace(/^#/, ''));
+        if (!target) return null;
+        if (ids.includes(target)) return target;
+        return ids
+          .filter(id => target.startsWith(id + '-'))
+          .sort((a, b) => b.length - a.length)[0] || null;
+      }
+
+      function show(pageId, hash) {
+        pages.forEach(p => p.classList.toggle('active', p.id === pageId));
+        sidebar.querySelectorAll('.doc-subnav').forEach(nav =>
+          nav.classList.toggle('open', nav.dataset.doc === pageId));
+        sidebar.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+
+        const current = sidebar.querySelector('a[href="#' + (hash || pageId) + '"]')
+          || sidebar.querySelector('a[href="#' + pageId + '"]');
+        if (current) current.classList.add('active');
+
+        const anchor = hash && hash !== pageId ? document.getElementById(hash) : null;
+        if (anchor) anchor.scrollIntoView();
+        else window.scrollTo(0, 0);
+      }
+
+      function apply() {
+        const hash = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+        show(pageFor(location.hash) || ids[0], hash);
+      }
+
+      window.addEventListener('hashchange', apply);
+      apply();
+
+      // Highlight the sub-heading being read within the open page.
       let ticking = false;
       function updateActive() {
-        const scrollY = window.scrollY + 120;
-        let active = null;
-        for (const section of sections) {
-          if (section.offsetTop <= scrollY) active = section;
-        }
-        links.forEach(a => a.classList.remove('active'));
-        if (active) {
-          const link = sidebar.querySelector('a[href="#' + active.id + '"]');
-          if (link) link.classList.add('active');
+        const open = pages.find(p => p.classList.contains('active'));
+        if (open) {
+          const scrollY = window.scrollY + 120;
+          const headings = [...open.querySelectorAll('h2[id]')];
+          let current = null;
+          for (const heading of headings) {
+            if (heading.getBoundingClientRect().top + window.scrollY <= scrollY) current = heading;
+          }
+          if (current) {
+            sidebar.querySelectorAll('a.sub').forEach(a => a.classList.remove('active'));
+            const link = sidebar.querySelector('a[href="#' + current.id + '"]');
+            if (link) link.classList.add('active');
+          }
         }
         ticking = false;
       }
       window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateActive); } });
-      updateActive();
     })();
   </script>
 </body>

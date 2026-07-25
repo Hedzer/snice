@@ -18,6 +18,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { analyzeProject, findImports, isTypeOnlyImport, maskComments } from './project-analyzer.js';
+import { generateComponentSource } from './component-scaffold.js';
 
 const execFileAsync = promisify(execFile);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,6 +36,7 @@ Usage:
   snice check [path] [--json]
   snice doctor [path] [--json]
   snice validate [path] [--json]
+  snice generate-component <name> [--props=a:string,b:number] [--events=x-changed] [--no-styles] [--out=path]
   snice build-component <name> [options]
   snice --version
 
@@ -44,6 +46,7 @@ Commands:
   check             Run all package, configuration, and source checks.
   doctor           Diagnose configuration, imports, dependencies, and AI setup.
   validate         Run the source analyzer only.
+  generate-component  Print a current Snice element scaffold (use --out to write it).
   build-component  Build a CDN component from a Snice source checkout.
 
 Build options:
@@ -97,6 +100,43 @@ function copyTemplateFiles(sourceDir, targetDir, projectName) {
     const content = readFileSync(source, 'utf8').replace(/\{\{projectName\}\}/g, projectName);
     writeFileSync(target, content);
   }
+}
+
+/**
+ * Print a current Snice element scaffold, or write it to a file.
+ *
+ * Prints by default so the output can be piped or reviewed before it lands;
+ * `--out` is the explicit opt-in to touching the filesystem, and never
+ * overwrites an existing file.
+ */
+function generateComponent(name, options = {}) {
+  const parseList = (value) =>
+    typeof value === 'string' ? value.split(',').map(part => part.trim()).filter(Boolean) : [];
+
+  const properties = parseList(options.props).map(entry => {
+    const [propertyName, type] = entry.split(':').map(part => part.trim());
+    return type ? { name: propertyName, type } : { name: propertyName };
+  });
+
+  const source = generateComponentSource({
+    name,
+    properties,
+    withEvents: parseList(options.events),
+    withStyles: options.styles !== false
+  });
+
+  if (typeof options.out !== 'string') {
+    process.stdout.write(source);
+    return;
+  }
+
+  const target = resolve(process.cwd(), options.out);
+  if (existsSync(target)) {
+    throw new Error(`refusing to overwrite ${options.out}`);
+  }
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, source);
+  console.log(`  wrote ${options.out}`);
 }
 
 function installAiSupport(targetDir, force = false) {
@@ -513,6 +553,15 @@ async function main() {
       if (command === 'check') await checkProject(target, options.json === true);
       else if (command === 'doctor') await doctor(target, options.json === true);
       else validateProject(target, options.json === true);
+      return;
+    }
+    if (command === 'generate-component') {
+      const { positional, options } = parseArgs(argv.slice(1), {
+        keys: new Set(['props', 'events', 'styles', 'out']),
+        values: new Set(['props', 'events', 'out'])
+      });
+      if (positional.length !== 1) throw new TypeError('generate-component accepts one component name');
+      generateComponent(positional[0], options);
       return;
     }
     if (command === 'build-component') {

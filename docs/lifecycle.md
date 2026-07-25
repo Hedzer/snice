@@ -82,6 +82,41 @@ class AnimatedElement extends HTMLElement {
 }
 ```
 
+## @moved() and @adopted()
+
+Fire when the element is moved between documents (`adoptedCallback`).
+`@adopted()` is an alias of `@moved()`; both accept the same debounce/throttle
+options as the other lifecycle decorators.
+
+```typescript
+@element('portable-widget')
+class PortableWidget extends HTMLElement {
+  @moved()
+  reattach() {
+    // Re-resolve anything tied to the previous document (styles, observers)
+  }
+}
+```
+
+## Waiting for elements
+
+Awaiting definition or readiness from outside a component — useful in tests and
+in code that hands work to an element it did not create:
+
+```typescript
+import { waitForElementDefined, waitForElementReady, waitForAllCustomElements } from 'snice';
+
+await waitForElementDefined('user-card');        // custom element is registered
+await waitForElementReady(element);              // defined, connected, first render done
+await waitForAllCustomElements(container);       // every custom element in a subtree
+```
+
+Each takes an optional `warningTimeout` (ms) and warns when an element takes
+longer than expected rather than hanging silently. Silence those warnings with
+`setDisableElementReadyWarnings(true)`.
+
+Inside a component, prefer `await el.ready` — see [Testing](./testing.md).
+
 ## ready Promise
 
 Every element has a `ready` promise that resolves when fully initialized:

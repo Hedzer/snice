@@ -238,6 +238,50 @@ describe('AI mirrors carry the same API surface', () => {
   });
 });
 
+describe('Every public export is documented', () => {
+  // Framework internals with no user-facing story. Anything not listed here
+  // must appear somewhere in docs/ — adding an export means documenting it.
+  const internals = new Set([
+    'applyElementFunctionality', // internal: applies element behaviour to a class
+    'contextProperty',           // deprecated in favour of the @context decorator
+    'getSymbol',                 // symbol registry helper
+    'IS_CONTROLLER_INSTANCE',    // marker symbol
+  ]);
+
+  const exported = (() => {
+    const index = read('packages/core/src/index.ts');
+    const names = new Set<string>();
+    for (const match of index.matchAll(/export \{([^}]+)\} from/g)) {
+      for (let name of match[1].split(',')) {
+        name = name.trim().replace(/^type\s+/, '').split(' as ').pop()!.trim();
+        if (/^[A-Za-z_$][\w$]*$/.test(name)) names.add(name);
+      }
+    }
+    return [...names];
+  })();
+
+  const allDocs = humanDocs.map(f => read(`docs/${f}`)).join('\n');
+
+  it('finds the public surface', () => {
+    expect(exported.length).toBeGreaterThan(40);
+  });
+
+  it('documents every export that is not an internal', () => {
+    const undocumented = exported.filter(name => !internals.has(name) && !allDocs.includes(name));
+    expect(
+      undocumented,
+      `undocumented public exports: ${undocumented.join(', ')}`
+    ).toEqual([]);
+  });
+
+  it('keeps the internals list honest', () => {
+    // A name listed as internal that no longer exists means the list is stale.
+    for (const name of internals) {
+      expect(exported, `"${name}" is listed as internal but is not exported`).toContain(name);
+    }
+  });
+});
+
 describe('New pages carry real content', () => {
   it('cli.md documents every shipped command', () => {
     const cli = read('docs/cli.md');

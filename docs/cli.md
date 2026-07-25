@@ -16,6 +16,7 @@ npx snice <command>
 | `check [path]` | Run all package, configuration, and source checks |
 | `doctor [path]` | Diagnose configuration, imports, dependencies, and AI setup |
 | `validate [path]` | Run the source analyzer only |
+| `generate-component <name>` | Print a current element scaffold |
 | `build-component <name>` | Build a CDN bundle from a Snice source checkout |
 
 ## Creating a Project
@@ -122,6 +123,26 @@ its version. Prefer the repository install when you move between Snice projects
 and want the skill always available.
 
 Token-efficient copies of every reference page live in `docs/ai/`, mirroring these documents without the prose. Agents should read those instead of the human pages.
+
+## Generating a Component
+
+Prints a scaffold using the current decorator conventions, so a new element
+starts from correct code rather than a half-remembered example:
+
+```bash
+npx snice generate-component task-item
+npx snice generate-component task-item --props=label:string,done:boolean --events=status-changed
+```
+
+| Option | Meaning |
+|---|---|
+| `--props=name:type,…` | Declared `@property()` fields. Types: `string`, `number`, `boolean`, `array`, `object` (default `string`) |
+| `--events=name,…` | A `@dispatch()` method per event |
+| `--no-styles` | Omit the `@styles()` block |
+| `--out=<path>` | Write to a file instead of stdout. Never overwrites |
+
+Output goes to stdout by default, so you can review or pipe it. `--out` is the
+explicit opt-in to writing, and refuses to clobber an existing file.
 
 ## Building CDN Bundles
 

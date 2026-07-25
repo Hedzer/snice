@@ -56,6 +56,7 @@ for depth; read the aggregates when you want the whole surface at once.
 *Tooling:*
 - `cli.md` - `create-app`, `init-ai`, `check`, `doctor`, `validate`, `build-component`
 - `testing.md` - `ready` / `rendered`, asserting events, swapping controllers
+- `utilities.md` - `@debounce`/`@throttle`/`@once`/`@memoize`, escaping, durations, scroll lock, controller helpers
 
 *Integration:*
 - `cdn.md` - Load order and bundle families

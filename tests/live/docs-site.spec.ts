@@ -29,20 +29,66 @@ const docPages = Array.from(
 test.describe.configure({ mode: 'serial', timeout: 60_000 });
 
 test.describe('Documentation site', () => {
-  test('every published doc page renders with content', async ({ page }) => {
+  test('every published doc page renders with content when opened', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.goto(docsUrl, { waitUntil: 'domcontentloaded' });
 
     for (const doc of docPages) {
+      await page.goto(`${docsUrl}#${doc.id}`, { waitUntil: 'domcontentloaded' });
       const section = page.locator(`#${doc.id}`);
+
       await expect(section, `docs.html is missing #${doc.id}`).toHaveCount(1);
+      // `innerText` returns text for display:none nodes, so assert on
+      // visibility rather than on string length.
+      await expect(section, `#${doc.id} did not open`).toBeVisible();
 
       const text = (await section.innerText()).trim();
       expect(text.length, `#${doc.id} rendered empty`).toBeGreaterThan(200);
     }
 
     expect(errors, `page errors: ${errors.join('; ')}`).toEqual([]);
+  });
+
+  test('shows exactly one reference page at a time', async ({ page }) => {
+    await page.goto(docsUrl, { waitUntil: 'domcontentloaded' });
+
+    const visible = async () =>
+      page.$$eval('.doc-file', els =>
+        els.filter(e => getComputedStyle(e).display !== 'none').map(e => e.id));
+
+    // With no hash, the first page opens rather than all of them.
+    expect(await visible()).toEqual([docPages[0].id]);
+
+    for (const id of ['properties', 'cli', 'routing']) {
+      await page.goto(`${docsUrl}#${id}`, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(200);
+      expect(await visible(), `#${id} should be the only page shown`).toEqual([id]);
+    }
+  });
+
+  test('keeps the page and its sidebar to a usable size', async ({ page }) => {
+    // Concatenating every doc produced a page ~165,000px tall and a sidebar of
+    // 174 links. Both made the reference unusable.
+    await page.goto(docsUrl, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(400);
+
+    const { pageHeight, sidebarLinks } = await page.evaluate(() => ({
+      pageHeight: document.body.scrollHeight,
+      sidebarLinks: [...document.querySelectorAll('.docs-sidebar a')]
+        .filter(a => (a as HTMLElement).offsetParent !== null).length,
+    }));
+
+    expect(pageHeight, `page is ${pageHeight}px tall`).toBeLessThan(40000);
+    expect(sidebarLinks, `${sidebarLinks} sidebar links visible`).toBeLessThan(60);
+  });
+
+  test('expands sub-headings only for the open page', async ({ page }) => {
+    await page.goto(`${docsUrl}#properties`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(300);
+
+    const open = await page.$$eval('.doc-subnav', els =>
+      els.filter(e => getComputedStyle(e).display !== 'none').map(e => (e as HTMLElement).dataset.doc));
+    expect(open).toEqual(['properties']);
   });
 
   test('sidebar lists every group and links to every page', async ({ page }) => {

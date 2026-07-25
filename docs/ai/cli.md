@@ -60,6 +60,18 @@ Installs a skill matched to the Snice version in the project, so an agent reads 
 
 Token-efficient copies of every reference page live in `docs/ai/`, mirroring the human docs without the prose. Agents should read those instead.
 
+## generate-component
+
+```bash
+snice generate-component <name> [--props=a:string,b:number] [--events=x-changed] [--no-styles] [--out=path]
+```
+
+- Prints a scaffold to stdout; `--out=<path>` writes instead and refuses to overwrite
+- `--props` types: `string` | `number` | `boolean` | `array` | `object` (default `string`)
+- `--events` emits one `@dispatch('<name>')` method each, named `emit<PascalName>`
+- `--no-styles` omits the `@styles()` block
+- Name must be a valid custom-element name (lowercase, contains a hyphen)
+
 ## build-component
 
 ```bash
