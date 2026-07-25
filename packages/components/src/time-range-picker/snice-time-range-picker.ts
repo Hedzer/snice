@@ -74,7 +74,7 @@ export class SniceTimeRangePicker extends HTMLElement implements SniceTimeRangeP
             ${displayValue || 'No selection'}
           </span>
         </div>
-        <div part="slots" class="slots-container"
+        <div part="slots" class="slots-container" role="listbox" aria-multiselectable="true" aria-label="Time slots"
           @mousedown=${(e: MouseEvent) => this.handleMouseDown(e)}
           @touchstart=${(e: TouchEvent) => this.handleTouchStart(e)}>
           ${this.slots.map((time, index) => {

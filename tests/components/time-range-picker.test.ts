@@ -461,4 +461,17 @@ describe('snice-time-range-picker', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('ARIA listbox semantics', () => {
+    it('slot options live inside a multiselectable listbox', async () => {
+      picker = await createComponent<SniceTimeRangePickerElement>('snice-time-range-picker');
+      await wait(30);
+
+      const container = picker.shadowRoot!.querySelector('.slots-container');
+      expect(container!.getAttribute('role')).toBe('listbox');
+      expect(container!.getAttribute('aria-multiselectable')).toBe('true');
+      const options = picker.shadowRoot!.querySelectorAll('[role="option"]');
+      expect(options.length).toBeGreaterThan(0);
+    });
+  });
 });
