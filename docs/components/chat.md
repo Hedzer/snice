@@ -115,44 +115,13 @@ React, edit, and delete are applied to the local `messages` model by the compone
 
 | Property | Description |
 |----------|-------------|
-| `--snice-chat-height` | Chat container height |
-| `--snice-chat-border-radius` | Container border radius |
-| `--snice-chat-text-color` | Primary text color |
-| `--snice-chat-background` | Background color |
-| `--snice-chat-border-color` | Border color |
-| `--snice-chat-author-color` | Author name color |
-| `--snice-chat-timestamp-color` | Timestamp text color |
-| `--snice-chat-system-color` | System message color |
-| `--snice-chat-placeholder-color` | Input placeholder color |
-| `--snice-chat-scrollbar-color` | Scrollbar thumb color |
-| `--snice-chat-scrollbar-hover-color` | Scrollbar hover color |
-| `--snice-chat-avatar-background` | Avatar background color |
-| `--snice-chat-avatar-text-color` | Avatar text color |
-| `--snice-chat-attachment-border` | Attachment border color |
-| `--snice-chat-attachment-background` | Attachment background |
-| `--snice-chat-attachment-icon-background` | Attachment icon background |
-| `--snice-chat-attachment-icon-color` | Attachment icon color |
-| `--snice-chat-reaction-background` | Reaction background |
-| `--snice-chat-reaction-border` | Reaction border |
-| `--snice-chat-reaction-hover-background` | Reaction hover background |
-| `--snice-chat-reaction-active-background` | Active reaction background |
-| `--snice-chat-reaction-active-color` | Active reaction text color |
-| `--snice-chat-reaction-active-border` | Active reaction border |
-| `--snice-chat-actions-background` | Actions menu background |
-| `--snice-chat-action-color` | Action icon color |
-| `--snice-chat-action-hover-background` | Action hover background |
-| `--snice-chat-typing-color` | Typing indicator text color |
-| `--snice-chat-typing-dot-color` | Typing indicator dot color |
-| `--snice-chat-input-background` | Input field background |
-| `--snice-chat-input-container-background` | Input area background |
-| `--snice-chat-input-border` | Input border |
-| `--snice-chat-input-focus-border` | Input focus border |
-| `--snice-chat-button-color` | Button icon color |
-| `--snice-chat-button-hover-background` | Button hover background |
-| `--snice-chat-send-color` | Send button text color |
-| `--snice-chat-send-background` | Send button background |
-| `--snice-chat-send-hover-background` | Send button hover background |
-| `--snice-chat-empty-color` | Empty state text color |
+| `--snice-chat-height` | Height of the chat container |
+| `--snice-chat-author-color` | Message author name colour |
+
+Everything else follows the theme: colours come from `--snice-color-*`, spacing
+from `--snice-spacing-*`, radii from `--snice-border-radius-*`. Override those
+tokens on the host to restyle the component, or use the [CSS parts](#css-parts)
+for structural changes.
 
 ## CSS Parts
 

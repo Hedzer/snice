@@ -76,13 +76,10 @@ snice-notification-center::part(panel) {
 | `--snice-color-primary` | Mark-all-read link color and unread highlight |
 | `--snice-color-primary-subtle` | Unread item background |
 | `--snice-color-danger` | Badge background and dismiss hover color |
-| `--snice-color-text-inverse` | Badge text color |
 | `--snice-color-text-secondary` | Message text color |
 | `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |
 | `--snice-color-border` | Panel and item border color |
 | `--snice-color-surface` | Panel background color |
-| `--snice-color-surface-container-high` | Item hover and bell hover background |
-| `--snice-shadow-lg` | Panel drop shadow |
 
 ## Basic Usage
 
