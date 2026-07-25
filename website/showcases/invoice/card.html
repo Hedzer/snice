@@ -36,39 +36,40 @@
       <style>
 .tpl-stack-wrap { margin-top: 2rem; }
 .tpl-stack-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--snice-color-text-tertiary, #888); margin-bottom: 1rem; }
-.tpl-stack { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; max-width: 920px; }
-.tpl-sheet { position: relative; margin: 0; padding: 0; border: 1px solid var(--snice-color-border, #444); border-radius: 8px; background: var(--snice-color-surface-container-low, rgb(30 30 34)); text-align: left; cursor: zoom-in; overflow: hidden; height: 250px; transition: border-color 150ms ease; }
-.tpl-sheet:hover { border-color: var(--snice-color-primary, #3b82f6); }
-.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 2px; }
-.tpl-sheet > .tpl-clip { transform: scale(0.3); transform-origin: top left; width: 660px; pointer-events: none; padding: 10px; }
-.tpl-sheet__tag { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.35rem 0.7rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: color-mix(in srgb, var(--snice-color-surface, #111) 88%, transparent); color: var(--snice-color-text, #eee); backdrop-filter: blur(4px); }
+.tpl-stack { display: grid; grid-template-columns: repeat(auto-fill, 216px); gap: 1.75rem 1.5rem; justify-content: start; }
+.tpl-sheet { margin: 0; padding: 0; border: 0; background: none; text-align: center; cursor: zoom-in; }
+.tpl-sheet:focus-visible { outline: 2px solid var(--snice-focus-ring-color, rgb(59 130 246 / 0.5)); outline-offset: 4px; border-radius: 4px; }
+.tpl-frame { width: 214px; height: 252px; overflow: hidden; margin: 0 auto; padding: 8px; border-radius: 3px; transition: translate 150ms ease; }
+.tpl-sheet:hover .tpl-frame { translate: 0 -3px; }
+.tpl-clip { width: 660px; transform: scale(0.3); transform-origin: top left; pointer-events: none; }
+.tpl-sheet__tag { display: block; margin-top: 0.5rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--snice-color-text-tertiary, #888); }
 </style>
       <div class="tpl-stack-wrap">
         <div class="tpl-stack-title">Templates - click a sheet to zoom</div>
         <div class="tpl-stack">
         <button class="tpl-sheet" data-variant="classic" aria-label="Zoom classic template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="classic" invoice-number="INV-1905" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">classic</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="classic" invoice-number="INV-1905" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div>
         </button>
         <button class="tpl-sheet" data-variant="modern" aria-label="Zoom modern template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="modern" invoice-number="INV-1906" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">modern</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="modern" invoice-number="INV-1906" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div>
         </button>
         <button class="tpl-sheet" data-variant="ledger" aria-label="Zoom ledger template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="ledger" invoice-number="INV-1909" date="2026-07-24" status="draft" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">ledger</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="ledger" invoice-number="INV-1909" date="2026-07-24" status="draft" tax-rate="8.6"></snice-invoice></div>
         </button>
         <button class="tpl-sheet" data-variant="ticket" aria-label="Zoom ticket template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="ticket" invoice-number="INV-1910" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">ticket</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="ticket" invoice-number="INV-1910" date="2026-07-24" status="sent" tax-rate="8.6"></snice-invoice></div>
         </button>
         <button class="tpl-sheet" data-variant="ink" aria-label="Zoom ink template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="ink" invoice-number="INV-1908" date="2026-07-24" due-date="2026-08-07" status="sent" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">ink</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="ink" invoice-number="INV-1908" date="2026-07-24" due-date="2026-08-07" status="sent" tax-rate="8.6"></snice-invoice></div>
         </button>
         <button class="tpl-sheet" data-variant="paper" aria-label="Zoom paper template">
+          <div class="tpl-frame"><div class="tpl-clip"><snice-invoice data-tpl-inv variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6"></snice-invoice></div></div>
           <span class="tpl-sheet__tag">paper</span>
-          <div class="tpl-clip"><snice-invoice data-tpl-inv variant="paper" invoice-number="INV-1907" date="2026-07-24" due-date="2026-08-07" status="paid" tax-rate="8.6"></snice-invoice></div>
         </button>
         </div>
       </div>
