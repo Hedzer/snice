@@ -65,6 +65,12 @@
   line-height: 1;
 }
 
+.empty-state__icon svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
 /* Slotted icon styles */
 .empty-state__icon-wrapper ::slotted(*) {
   display: flex;

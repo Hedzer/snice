@@ -147,7 +147,7 @@ export const Max10: Story = {
 
 // h2: Custom icon: heart
 export const CustomIconHeart: Story = {
-  render: () => row(makeRating({ value: 3, max: 5, icon: '❤️' })),
+  render: () => row(makeRating({ value: 3, max: 5, icon: 'heart' })),
 };
 
 // h2: Custom icon: thumbs up
@@ -157,7 +157,7 @@ export const CustomIconThumbsUp: Story = {
 
 // h2: Custom icon: fire
 export const CustomIconFire: Story = {
-  render: () => row(makeRating({ value: 2, max: 5, icon: '🔥' })),
+  render: () => row(makeRating({ value: 2, max: 5, icon: 'fire' })),
 };
 
 // h2: Custom icon: circle

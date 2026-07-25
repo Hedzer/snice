@@ -152,15 +152,15 @@ export const AllTypesCombined: Story = {
 // h2: Custom icons on notifications
 export const CustomIconsOnNotifications: Story = {
   render: () => wrap(makeCenter([
-    makeNotif({ id: '1', title: 'Comment',  message: 'Alice replied.', timestamp: '2m ago', icon: 'chat_bubble' }),
-    makeNotif({ id: '2', title: 'Deployed', message: 'Build is live.', timestamp: '10m ago', icon: 'check_circle', read: true }),
-    makeNotif({ id: '3', title: 'Warning',  message: 'High CPU usage.', timestamp: '1h ago', icon: 'warning' }),
+    makeNotif({ id: '1', title: 'Comment',  message: 'Alice replied.', timestamp: '2m ago', icon: 'chat-bubble' }),
+    makeNotif({ id: '2', title: 'Deployed', message: 'Build is live.', timestamp: '10m ago', icon: 'check-circle', read: true }),
+    makeNotif({ id: '3', title: 'Warning',  message: 'High CPU usage.', timestamp: '1h ago', icon: 'exclamation-triangle' }),
   ], { open: 'true' })),
 };
 
 // h2: Custom bell icon (icon property)
 export const CustomBellIcon: Story = {
-  render: () => wrap(makeCenter(SAMPLE_NOTIFICATIONS, { icon: '🔔', open: 'true' })),
+  render: () => wrap(makeCenter(SAMPLE_NOTIFICATIONS, { icon: 'bell', open: 'true' })),
 };
 
 // h2: Icon slot (custom bell)

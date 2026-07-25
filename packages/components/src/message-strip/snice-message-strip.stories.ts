@@ -104,10 +104,10 @@ export const DismissibleFalse: Story = {
 // h2: Custom icon (emoji)
 export const CustomIconEmoji: Story = {
   render: () => col(
-    makeStrip('Custom bell icon notification.',  { variant: 'info',    icon: '🔔' }),
-    makeStrip('Celebration icon for success.',   { variant: 'success', icon: '🎉' }),
-    makeStrip('Construction icon for warning.',  { variant: 'warning', icon: '🚧' }),
-    makeStrip('Siren icon for danger.',          { variant: 'danger',  icon: '🚨' }),
+    makeStrip('Custom bell icon notification.',  { variant: 'info',    icon: 'bell' }),
+    makeStrip('Sparkles icon for success.',      { variant: 'success', icon: 'sparkles' }),
+    makeStrip('Fire icon for warning.',          { variant: 'warning', icon: 'fire' }),
+    makeStrip('Alert bell icon for danger.',     { variant: 'danger',  icon: 'bell-alert' }),
   ),
 };
 
@@ -160,8 +160,8 @@ export const VariantXDismissibleMatrix: Story = {
 // h2: Variant x Custom icon x Dismissible
 export const VariantXCustomIconXDismissible: Story = {
   render: () => col(
-    makeStrip('Info + Custom icon + Dismissible',   { variant: 'info',   icon: '📧', dismissible: true }),
-    makeStrip('Danger + Custom icon + Dismissible', { variant: 'danger', icon: '⛔', dismissible: true }),
+    makeStrip('Info + Custom icon + Dismissible',   { variant: 'info',   icon: 'envelope', dismissible: true }),
+    makeStrip('Danger + Custom icon + Dismissible', { variant: 'danger', icon: 'x-circle', dismissible: true }),
   ),
 };
 

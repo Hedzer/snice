@@ -12,15 +12,15 @@ type Args = {
 };
 
 const DEFAULT_COMMANDS: CommandItem[] = [
-  { id: 'new',      label: 'New File',      description: 'Create a new file',   icon: '📄', shortcut: '⌘N', category: 'File' },
-  { id: 'open',     label: 'Open File',     description: 'Open existing file',  icon: '📂', shortcut: '⌘O', category: 'File' },
-  { id: 'save',     label: 'Save',          description: 'Save current file',   icon: '💾', shortcut: '⌘S', category: 'File' },
-  { id: 'cut',      label: 'Cut',                                                icon: '✂️', shortcut: '⌘X', category: 'Edit' },
-  { id: 'copy',     label: 'Copy',                                               icon: '📋', shortcut: '⌘C', category: 'Edit' },
-  { id: 'paste',    label: 'Paste',                                              icon: '📄', shortcut: '⌘V', category: 'Edit' },
-  { id: 'find',     label: 'Find',          description: 'Find in document',    icon: '🔍', shortcut: '⌘F', category: 'Search' },
-  { id: 'settings', label: 'Settings',      description: 'Open settings',       icon: '⚙️', shortcut: '⌘,', category: 'View' },
-  { id: 'theme',    label: 'Toggle Theme',                                       icon: '🌓',                 category: 'View' },
+  { id: 'new',      label: 'New File',      description: 'Create a new file',   icon: 'document-text', shortcut: '⌘N', category: 'File' },
+  { id: 'open',     label: 'Open File',     description: 'Open existing file',  icon: 'folder', shortcut: '⌘O', category: 'File' },
+  { id: 'save',     label: 'Save',          description: 'Save current file',   icon: 'arrow-down-tray', shortcut: '⌘S', category: 'File' },
+  { id: 'cut',      label: 'Cut',                                                icon: 'scissors', shortcut: '⌘X', category: 'Edit' },
+  { id: 'copy',     label: 'Copy',                                               icon: 'clipboard', shortcut: '⌘C', category: 'Edit' },
+  { id: 'paste',    label: 'Paste',                                              icon: 'document-text', shortcut: '⌘V', category: 'Edit' },
+  { id: 'find',     label: 'Find',          description: 'Find in document',    icon: 'search', shortcut: '⌘F', category: 'Search' },
+  { id: 'settings', label: 'Settings',      description: 'Open settings',       icon: 'settings', shortcut: '⌘,', category: 'View' },
+  { id: 'theme',    label: 'Toggle Theme',                                       icon: 'light-bulb',                 category: 'View' },
 ];
 
 function makePalette(commands: CommandItem[], attrs: Record<string, string | boolean> = {}) {
@@ -100,10 +100,10 @@ export const MinimalNoIconsNoCategoriesNoShortcuts: Story = {
 // h2: Disabled items
 export const DisabledItems: Story = {
   render: () => makePalette([
-    { id: 'e1', label: 'Enabled',      icon: '✅', category: 'Status' },
-    { id: 'd1', label: 'Disabled',     icon: '❌', category: 'Status', disabled: true },
-    { id: 'e2', label: 'Also enabled', icon: '✅', category: 'Status' },
-    { id: 'd2', label: 'Also disabled',icon: '❌', category: 'Status', disabled: true },
+    { id: 'e1', label: 'Enabled',      icon: 'check-circle', category: 'Status' },
+    { id: 'd1', label: 'Disabled',     icon: 'x-circle', category: 'Status', disabled: true },
+    { id: 'e2', label: 'Also enabled', icon: 'check-circle', category: 'Status' },
+    { id: 'd2', label: 'Also disabled',icon: 'x-circle', category: 'Status', disabled: true },
   ]),
 };
 

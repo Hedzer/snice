@@ -89,12 +89,12 @@ export const IconEmojiIcons: Story = {
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;';
     const items = [
-      { icon: '📭', title: 'No messages', description: 'Your inbox is empty.' },
-      { icon: '🔍', title: 'No results', description: 'No matches found.' },
-      { icon: '📁', title: 'No files', description: 'Upload a file to get started.' },
-      { icon: '🛒', title: 'Cart is empty', description: 'Add items to your cart.' },
-      { icon: '📊', title: 'No data', description: 'No analytics data yet.' },
-      { icon: '👥', title: 'No users', description: 'Invite team members.' },
+      { icon: 'envelope', title: 'No messages', description: 'Your inbox is empty.' },
+      { icon: 'search', title: 'No results', description: 'No matches found.' },
+      { icon: 'folder', title: 'No files', description: 'Upload a file to get started.' },
+      { icon: 'cube', title: 'Cart is empty', description: 'Add items to your cart.' },
+      { icon: 'chart-bar', title: 'No data', description: 'No analytics data yet.' },
+      { icon: 'users', title: 'No users', description: 'Invite team members.' },
     ];
     items.forEach(item => grid.appendChild(box(makeEmptyState(item))));
     return grid;
@@ -107,10 +107,10 @@ export const IconMaterialSymbols: Story = {
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;';
     const items = [
-      { icon: 'inbox', title: 'No messages', description: 'Check back later.' },
+      { icon: 'envelope', title: 'No messages', description: 'Check back later.' },
       { icon: 'search', title: 'No results', description: 'Try different keywords.' },
-      { icon: 'folder_open', title: 'No files', description: 'This folder is empty.' },
-      { icon: 'notifications_off', title: 'No notifications', description: "You're all caught up." },
+      { icon: 'folder', title: 'No files', description: 'This folder is empty.' },
+      { icon: 'bell', title: 'No notifications', description: "You're all caught up." },
     ];
     items.forEach(item => grid.appendChild(box(makeEmptyState(item))));
     return grid;
@@ -187,7 +187,7 @@ export const SizeXIconCombinations: Story = {
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;';
     grid.appendChild(box(makeEmptyState({ size: 'small', icon: '📦', title: 'Small + Emoji', description: 'Compact.' })));
-    grid.appendChild(box(makeEmptyState({ size: 'medium', icon: 'cloud_off', title: 'Medium + Material', description: 'Default.' })));
+    grid.appendChild(box(makeEmptyState({ size: 'medium', icon: 'cube', title: 'Medium + Registry', description: 'Default.' })));
     grid.appendChild(box(makeEmptyState({ size: 'large', icon: '🎯', title: 'Large + Emoji', description: 'Spacious.' })));
     return grid;
   },
@@ -282,10 +282,10 @@ export const CSSPartsStyling: Story = {
       return b;
     };
 
-    const defaultEl = makeEmptyState({ icon: '📭', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
+    const defaultEl = makeEmptyState({ icon: 'envelope', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
     wrap.appendChild(makeBox('Default (no ::part() styles)', box(defaultEl)));
 
-    const styledEl = makeEmptyState({ icon: '📭', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
+    const styledEl = makeEmptyState({ icon: 'envelope', title: 'No Messages', description: 'Your inbox is empty.', 'action-text': 'Compose' });
     styledEl.classList.add('styled-es');
     wrap.appendChild(makeBox('Styled via ::part() — container, icon, title, description, action', styledEl));
 

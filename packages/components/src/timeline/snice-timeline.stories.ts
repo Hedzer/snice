@@ -120,12 +120,12 @@ export const AllVariants: Story = {
 // h2: Custom Emoji Icons
 export const CustomEmojiIcons: Story = {
   render: () => makeTimeline({}, [
-    { title: 'Rocket Launch', description: 'Deployed to production', icon: '🚀', variant: 'success' },
-    { title: 'Code Review', description: 'Pull request reviewed', icon: '📋', variant: 'info' },
-    { title: 'Bug Fix', description: 'Fixed memory leak', icon: '🐛', variant: 'error' },
-    { title: 'Meeting', description: 'Sprint planning', icon: '📅', variant: 'default' },
-    { title: 'Celebration', description: 'Milestone reached', icon: '🎉', variant: 'success' },
-    { title: 'Warning Sign', description: 'Approaching limit', icon: '⚠️', variant: 'warning' },
+    { title: 'Rocket Launch', description: 'Deployed to production', icon: 'rocket-launch', variant: 'success' },
+    { title: 'Code Review', description: 'Pull request reviewed', icon: 'clipboard', variant: 'info' },
+    { title: 'Bug Fix', description: 'Fixed memory leak', icon: 'bug-ant', variant: 'error' },
+    { title: 'Meeting', description: 'Sprint planning', icon: 'calendar-days', variant: 'default' },
+    { title: 'Celebration', description: 'Milestone reached', icon: 'sparkles', variant: 'success' },
+    { title: 'Warning Sign', description: 'Approaching limit', icon: 'exclamation-triangle', variant: 'warning' },
   ]),
 };
 

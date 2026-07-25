@@ -85,10 +85,10 @@ export const WithTrendValues: Story = {
 // h2: With Icons
 export const WithIcons: Story = {
   render: () => makeGroup([
-    { label: 'Revenue', value: '$12,500', icon: '💰' },
-    { label: 'Users',   value: '1,234',   icon: '👥' },
-    { label: 'Orders',  value: '567',     icon: '📦' },
-    { label: 'Rating',  value: '4.8',     icon: '⭐' },
+    { label: 'Revenue', value: '$12,500', icon: 'banknotes' },
+    { label: 'Users',   value: '1,234',   icon: 'users' },
+    { label: 'Orders',  value: '567',     icon: 'cube' },
+    { label: 'Rating',  value: '4.8',     icon: 'star' },
   ], { variant: 'card' }),
 };
 
@@ -156,10 +156,10 @@ export const AllTrendDirectionsXVariants: Story = {
 // h2: Icons + Trends + Colors Combined
 export const IconsTrendsColorsCombined: Story = {
   render: () => makeGroup([
-    { label: 'Revenue',  value: '$12,500', trend: 'up',      trendValue: '+12%', icon: '💰', color: '#22c55e' },
-    { label: 'Expenses', value: '$8,200',  trend: 'down',    trendValue: '-3%',  icon: '💸', color: '#ef4444' },
-    { label: 'Users',    value: '1,234',   trend: 'up',      trendValue: '+8%',  icon: '👥', color: '#3b82f6' },
-    { label: 'Rating',   value: '4.8',     trend: 'neutral', trendValue: '0%',   icon: '⭐', color: '#f59e0b' },
+    { label: 'Revenue',  value: '$12,500', trend: 'up',      trendValue: '+12%', icon: 'banknotes', color: '#22c55e' },
+    { label: 'Expenses', value: '$8,200',  trend: 'down',    trendValue: '-3%',  icon: 'banknotes', color: '#ef4444' },
+    { label: 'Users',    value: '1,234',   trend: 'up',      trendValue: '+8%',  icon: 'users', color: '#3b82f6' },
+    { label: 'Rating',   value: '4.8',     trend: 'neutral', trendValue: '0%',   icon: 'star', color: '#f59e0b' },
   ], { variant: 'card' }),
 };
 

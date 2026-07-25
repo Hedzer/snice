@@ -183,12 +183,12 @@ export const ErrorText: Story = {
 
 // h2: Prefix Icon (emoji)
 export const PrefixIconEmoji: Story = {
-  render: () => col(makeInput({ 'prefix-icon': '🔍', label: 'Search', placeholder: 'Search...' })),
+  render: () => col(makeInput({ 'prefix-icon': 'search', label: 'Search', placeholder: 'Search...' })),
 };
 
 // h2: Suffix Icon (emoji)
 export const SuffixIconEmoji: Story = {
-  render: () => col(makeInput({ 'suffix-icon': '✉️', label: 'Email', placeholder: 'user@example.com' })),
+  render: () => col(makeInput({ 'suffix-icon': 'envelope', label: 'Email', placeholder: 'user@example.com' })),
 };
 
 // h2: Prefix Icon (Material Symbol)
@@ -198,12 +198,12 @@ export const PrefixIconMaterial: Story = {
 
 // h2: Suffix Icon (Material Symbol)
 export const SuffixIconMaterial: Story = {
-  render: () => col(makeInput({ 'suffix-icon': 'mail', label: 'Email', placeholder: 'user@example.com' })),
+  render: () => col(makeInput({ 'suffix-icon': 'envelope', label: 'Email', placeholder: 'user@example.com' })),
 };
 
 // h2: Both Prefix + Suffix Icons
 export const BothPrefixSuffixIcons: Story = {
-  render: () => col(makeInput({ 'prefix-icon': 'person', 'suffix-icon': 'check_circle', label: 'Username', value: 'john_doe' })),
+  render: () => col(makeInput({ 'prefix-icon': 'user', 'suffix-icon': 'check-circle', label: 'Username', value: 'john_doe' })),
 };
 
 // h2: Min/Max (number)
@@ -247,7 +247,7 @@ export const CSSPartsStyling: Story = {
     defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
     defaultSection.appendChild(defaultLabel);
     defaultSection.appendChild(col(
-      makeInput({ label: 'Text Input', placeholder: 'Enter text...', 'prefix-icon': '🔍', clearable: true }),
+      makeInput({ label: 'Text Input', placeholder: 'Enter text...', 'prefix-icon': 'search', clearable: true }),
       makeInput({ label: 'With helper', 'helper-text': 'Helper text below', placeholder: 'Type here...' }),
     ));
     wrap.appendChild(defaultSection);
@@ -308,7 +308,7 @@ export const CSSPartsStyling: Story = {
     styledSection.appendChild(style);
 
     styledSection.appendChild(col(
-      makeInput({ label: 'Styled Input', placeholder: 'Type something...', 'prefix-icon': '🔍', clearable: true }),
+      makeInput({ label: 'Styled Input', placeholder: 'Type something...', 'prefix-icon': 'search', clearable: true }),
       makeInput({ label: 'With helper', 'helper-text': 'Custom helper styling', placeholder: 'Type here...' }),
       makeInput({ label: 'With error', invalid: true, 'error-text': 'Custom error styling', value: 'bad value' }),
     ));

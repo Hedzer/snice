@@ -185,9 +185,9 @@ export const Loading: Story = {
 // h2: Icon property (emoji)
 export const IconPropertyEmoji: Story = {
   render: () => row(
-    makeBtn('primary', 'Star',   { icon: '⭐' }),
-    makeBtn('success', 'Done',   { icon: '✔️' }),
-    makeBtn('danger',  'Delete', { icon: '🗑️' }),
+    makeBtn('primary', 'Star',   { icon: 'star' }),
+    makeBtn('success', 'Done',   { icon: 'check' }),
+    makeBtn('danger',  'Delete', { icon: 'trash' }),
   ),
 };
 
@@ -196,15 +196,15 @@ export const IconPropertyMaterial: Story = {
   render: () => row(
     makeBtn('primary', 'Home',    { icon: 'home' }),
     makeBtn('success', 'Confirm', { icon: 'check' }),
-    makeBtn('danger',  'Remove',  { icon: 'delete' }),
+    makeBtn('danger',  'Remove',  { icon: 'trash' }),
   ),
 };
 
 // h2: icon-placement: start (default) vs end
 export const IconPlacement: Story = {
   render: () => row(
-    makeBtn('primary', 'Start', { icon: '➡️', 'icon-placement': 'start' }),
-    makeBtn('primary', 'End',   { icon: '➡️', 'icon-placement': 'end'   }),
+    makeBtn('primary', 'Start', { icon: 'arrow-right', 'icon-placement': 'start' }),
+    makeBtn('primary', 'End',   { icon: 'arrow-right', 'icon-placement': 'end'   }),
   ),
 };
 
@@ -329,7 +329,7 @@ export const CSSPartsStyling: Story = {
     defaultLabel.style.cssText = 'margin:0 0 .5rem;font-size:.875rem;color:#888;';
     defaultSection.appendChild(defaultLabel);
     defaultSection.appendChild(row(
-      makeBtn('primary', 'Primary', { icon: '⭐' }),
+      makeBtn('primary', 'Primary', { icon: 'star' }),
       makeBtn('success', 'Success'),
       makeBtn('danger',  'Danger'),
     ));
@@ -377,7 +377,7 @@ export const CSSPartsStyling: Story = {
 
     const btn1 = document.createElement('snice-button');
     btn1.setAttribute('variant', 'primary');
-    btn1.setAttribute('icon', '⭐');
+    btn1.setAttribute('icon', 'star');
     btn1.textContent = 'Styled Button';
 
     const btn2 = document.createElement('snice-button');

@@ -10,29 +10,29 @@ type Args = {
 
 const fileTree = [
   {
-    id: 'src', label: 'src', icon: '📁', expanded: true,
+    id: 'src', label: 'src', icon: 'folder', expanded: true,
     children: [
-      { id: 'index.ts', label: 'index.ts', icon: '📄' },
-      { id: 'main.ts', label: 'main.ts', icon: '📄' },
+      { id: 'index.ts', label: 'index.ts', icon: 'document-text' },
+      { id: 'main.ts', label: 'main.ts', icon: 'document-text' },
       {
-        id: 'components', label: 'components', icon: '📁',
+        id: 'components', label: 'components', icon: 'folder',
         children: [
-          { id: 'button.ts', label: 'button.ts', icon: '📄' },
-          { id: 'input.ts', label: 'input.ts', icon: '📄' },
-          { id: 'modal.ts', label: 'modal.ts', icon: '📄' },
+          { id: 'button.ts', label: 'button.ts', icon: 'document-text' },
+          { id: 'input.ts', label: 'input.ts', icon: 'document-text' },
+          { id: 'modal.ts', label: 'modal.ts', icon: 'document-text' },
         ],
       },
     ],
   },
   {
-    id: 'tests', label: 'tests', icon: '📁',
+    id: 'tests', label: 'tests', icon: 'folder',
     children: [
-      { id: 'button.test.ts', label: 'button.test.ts', icon: '📄' },
-      { id: 'input.test.ts', label: 'input.test.ts', icon: '📄' },
+      { id: 'button.test.ts', label: 'button.test.ts', icon: 'document-text' },
+      { id: 'input.test.ts', label: 'input.test.ts', icon: 'document-text' },
     ],
   },
-  { id: 'package.json', label: 'package.json', icon: '📄' },
-  { id: 'README.md', label: 'README.md', icon: '📄' },
+  { id: 'package.json', label: 'package.json', icon: 'document-text' },
+  { id: 'README.md', label: 'README.md', icon: 'document-text' },
 ];
 
 function makeTree(attrs: Record<string, boolean | string> = {}, nodes = fileTree): HTMLElement {
@@ -201,13 +201,13 @@ export const ImageIconsWithTextFallbacks: Story = {
 export const DeeplyNested4Levels: Story = {
   render: () => {
     const deepNodes = [
-      { id: 'l1', label: 'Level 1', icon: '📁', expanded: true, children: [
-        { id: 'l2', label: 'Level 2', icon: '📁', expanded: true, children: [
-          { id: 'l3', label: 'Level 3', icon: '📁', expanded: true, children: [
-            { id: 'l4a', label: 'Level 4 - File A', icon: '📄' },
-            { id: 'l4b', label: 'Level 4 - File B', icon: '📄' },
+      { id: 'l1', label: 'Level 1', icon: 'folder', expanded: true, children: [
+        { id: 'l2', label: 'Level 2', icon: 'folder', expanded: true, children: [
+          { id: 'l3', label: 'Level 3', icon: 'folder', expanded: true, children: [
+            { id: 'l4a', label: 'Level 4 - File A', icon: 'document-text' },
+            { id: 'l4b', label: 'Level 4 - File B', icon: 'document-text' },
           ]},
-          { id: 'l3b', label: 'Level 3 sibling', icon: '📄' },
+          { id: 'l3b', label: 'Level 3 sibling', icon: 'document-text' },
         ]},
       ]},
     ];
@@ -219,10 +219,10 @@ export const DeeplyNested4Levels: Story = {
 export const FlatNoChildren: Story = {
   render: () => {
     const flatNodes = [
-      { id: 'a', label: 'Item A', icon: '📄' },
-      { id: 'b', label: 'Item B', icon: '📄' },
-      { id: 'c', label: 'Item C', icon: '📄' },
-      { id: 'd', label: 'Item D', icon: '📄' },
+      { id: 'a', label: 'Item A', icon: 'document-text' },
+      { id: 'b', label: 'Item B', icon: 'document-text' },
+      { id: 'c', label: 'Item C', icon: 'document-text' },
+      { id: 'd', label: 'Item D', icon: 'document-text' },
     ];
     return makeTree({}, flatNodes);
   },
@@ -230,7 +230,7 @@ export const FlatNoChildren: Story = {
 
 // h2: Single Node
 export const SingleNode: Story = {
-  render: () => makeTree({}, [{ id: 'only', label: 'Only Node', icon: '📄' }]),
+  render: () => makeTree({}, [{ id: 'only', label: 'Only Node', icon: 'document-text' }]),
 };
 
 // h2: Lazy Loading
@@ -243,18 +243,18 @@ export const LazyLoading: Story = {
     lbl.textContent = 'Expand "Lazy Folder" to trigger lazy-load event';
     const tree = document.createElement('snice-tree') as any;
     tree.nodes = [
-      { id: 'eager', label: 'Eager Folder', icon: '📁', children: [
-        { id: 'file1', label: 'file1.ts', icon: '📄' },
+      { id: 'eager', label: 'Eager Folder', icon: 'folder', children: [
+        { id: 'file1', label: 'file1.ts', icon: 'document-text' },
       ]},
-      { id: 'lazy', label: 'Lazy Folder', icon: '📁', lazy: true, children: [] },
+      { id: 'lazy', label: 'Lazy Folder', icon: 'folder', lazy: true, children: [] },
     ];
     tree.addEventListener('tree-node-lazy-load', (e: CustomEvent) => {
       setTimeout(() => {
         tree.updateNode(e.detail.nodeId, {
           lazy: false,
           children: [
-            { id: 'loaded1', label: 'Loaded File 1', icon: '📄' },
-            { id: 'loaded2', label: 'Loaded File 2', icon: '📄' },
+            { id: 'loaded1', label: 'Loaded File 1', icon: 'document-text' },
+            { id: 'loaded2', label: 'Loaded File 2', icon: 'document-text' },
           ],
         });
       }, 1000);

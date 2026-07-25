@@ -72,11 +72,11 @@ export const AllFieldTypesTextLinkBadgeDateCurrency: Story = {
 // h2: Grouped fields with icons
 export const GroupedFieldsWithIcons: Story = {
   render: () => makeCard([
-    { label: 'First Name', value: 'John',        group: 'Personal', icon: '👤' },
-    { label: 'Last Name',  value: 'Doe',         group: 'Personal', icon: '👤' },
-    { label: 'Email',      value: 'john@acme.com', group: 'Contact', icon: '✉️' },
-    { label: 'Phone',      value: '555-0123',    group: 'Contact', icon: '📞' },
-    { label: 'Address',    value: '123 Main St', group: 'Location', icon: '📍' },
+    { label: 'First Name', value: 'John',        group: 'Personal', icon: 'user' },
+    { label: 'Last Name',  value: 'Doe',         group: 'Personal', icon: 'user' },
+    { label: 'Email',      value: 'john@acme.com', group: 'Contact', icon: 'envelope' },
+    { label: 'Phone',      value: '555-0123',    group: 'Contact', icon: 'phone' },
+    { label: 'Address',    value: '123 Main St', group: 'Location', icon: 'map-pin' },
   ]),
 };
 
@@ -123,11 +123,11 @@ export const VariantCompact: Story = {
 export const WithHeaderSlot: Story = {
   render: () => {
     const el = makeCard([
-      { label: 'Name',     value: 'Alice', icon: '👤' },
-      { label: 'Email',    value: 'alice@test.com', icon: '✉️' },
-      { label: 'Phone',    value: '555-1234', icon: '📞' },
-      { label: 'Location', value: 'NYC', icon: '📍' },
-      { label: 'Role',     value: 'Admin', icon: '🔑' },
+      { label: 'Name',     value: 'Alice', icon: 'user' },
+      { label: 'Email',    value: 'alice@test.com', icon: 'envelope' },
+      { label: 'Phone',    value: '555-1234', icon: 'phone' },
+      { label: 'Location', value: 'NYC', icon: 'map-pin' },
+      { label: 'Role',     value: 'Admin', icon: 'key' },
     ]);
     const title = document.createElement('span');
     title.slot = 'title';
@@ -238,8 +238,8 @@ export const CSSPartsStyling: Story = {
     `;
 
     const sampleFields: DataCardField[] = [
-      { label: 'Name',     value: 'Alice Chen',        icon: '👤' },
-      { label: 'Email',    value: 'alice@example.com', type: 'link', href: 'mailto:alice@example.com', icon: '✉️' },
+      { label: 'Name',     value: 'Alice Chen',        icon: 'user' },
+      { label: 'Email',    value: 'alice@example.com', type: 'link', href: 'mailto:alice@example.com', icon: 'envelope' },
       { label: 'Status',   value: 'Active',            type: 'badge', badgeVariant: 'success' },
       { label: 'Joined',   value: '2024-01-15',        type: 'date' },
       { label: 'Balance',  value: '$1,200.00',         type: 'currency' },

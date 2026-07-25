@@ -192,5 +192,11 @@ describe('snice-empty-state', () => {
       const css = readFileSync(cssPath, 'utf8');
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
+
+    it('sizes registry SVG icons so icon="envelope" is not an invisible collapsed span', () => {
+      const css = readFileSync(cssPath, 'utf8');
+      expect(css).toMatch(/\.empty-state__icon\s+svg\s*\{[^}]*width:\s*1em/);
+      expect(css).toMatch(/\.empty-state__icon\s+svg\s*\{[^}]*height:\s*1em/);
+    });
   });
 });

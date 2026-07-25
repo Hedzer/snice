@@ -150,8 +150,8 @@ export const Disabled: Story = {
 export const IconPropertyEmoji: Story = {
   render: () => row(
     makeChip('React',    { variant: 'primary', icon: '⚛️' }),
-    makeChip('Approved', { variant: 'success', icon: '✅' }),
-    makeChip('Critical', { variant: 'error',   icon: '🚨' }),
+    makeChip('Approved', { variant: 'success', icon: 'check-circle' }),
+    makeChip('Critical', { variant: 'error',   icon: 'exclamation-triangle' }),
     makeChip('Pending',  { variant: 'warning', icon: '⏳' }),
   ),
 };

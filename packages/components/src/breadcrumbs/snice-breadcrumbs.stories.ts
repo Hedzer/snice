@@ -86,9 +86,9 @@ export const WithHrefLinks: Story = {
 // h2: With icons (emoji)
 export const WithIconsEmoji: Story = {
   render: () => makeBreadcrumbs([
-    { label: 'Home', href: '#', icon: '🏠' },
-    { label: 'Settings', href: '#', icon: '⚙️' },
-    { label: 'Profile', icon: '👤' },
+    { label: 'Home', href: '#', icon: 'home' },
+    { label: 'Settings', href: '#', icon: 'settings' },
+    { label: 'Profile', icon: 'user' },
   ]),
 };
 

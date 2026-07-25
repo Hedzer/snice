@@ -183,17 +183,17 @@ export const Loading: Story = {
 // h2: With Icon
 export const WithIcon: Story = {
   render: () => row(
-    makeSB({ label: 'Save', variant: 'primary', icon: '💾' }),
-    makeSB({ label: 'Upload', variant: 'success', icon: '⬆️' }),
-    makeSB({ label: 'Delete', variant: 'danger', icon: '🗑️' }),
+    makeSB({ label: 'Save', variant: 'primary', icon: 'arrow-down-tray' }),
+    makeSB({ label: 'Upload', variant: 'success', icon: 'arrow-up-tray' }),
+    makeSB({ label: 'Delete', variant: 'danger', icon: 'trash' }),
   ),
 };
 
 // h2: Icon Placement End
 export const IconPlacementEnd: Story = {
   render: () => row(
-    makeSB({ label: 'Next', variant: 'primary', icon: '➡️', 'icon-placement': 'end' }),
-    makeSB({ label: 'Send', variant: 'success', icon: '📤', 'icon-placement': 'end' }),
+    makeSB({ label: 'Next', variant: 'primary', icon: 'arrow-right', 'icon-placement': 'end' }),
+    makeSB({ label: 'Send', variant: 'success', icon: 'paper-airplane', 'icon-placement': 'end' }),
   ),
 };
 
