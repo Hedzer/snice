@@ -202,6 +202,7 @@ export class TableTreeData {
       btn.className = `tree-toggle${treeRow.expanded ? ' tree-toggle--expanded' : ''}`;
       btn.innerHTML = `<svg class="tree-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`;
       btn.setAttribute('aria-expanded', String(treeRow.expanded));
+      btn.setAttribute('aria-label', `${treeRow.expanded ? 'Collapse' : 'Expand'} row`);
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggle(treeRow.key);

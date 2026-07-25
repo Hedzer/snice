@@ -193,4 +193,20 @@ describe('snice-video-player', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('accessible names', () => {
+    it('names the volume slider', async () => {
+      const el = document.createElement('snice-video-player');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 80));
+
+      el.remove();
+
+      const { readFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      const src = readFileSync(resolve(process.cwd(), 'packages/components/src/video-player/snice-video-player.ts'), 'utf8');
+      const slider = src.slice(src.indexOf('video-volume-slider'), src.indexOf('video-volume-slider') + 400);
+      expect(slider, 'an unnamed range input is announced as just "slider"').toMatch(/aria-label=/);
+    });
+  });
 });

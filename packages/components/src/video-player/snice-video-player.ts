@@ -551,6 +551,7 @@ export class SniceVideoPlayer extends HTMLElement implements SniceVideoPlayerEle
                   <input
                     class="video-volume-slider"
                     type="range"
+                    aria-label="Volume"
                     min="0"
                     max="1"
                     step="0.01"

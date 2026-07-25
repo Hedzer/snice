@@ -294,4 +294,18 @@ describe('snice-terminal', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('accessible names', () => {
+    it('names the command input so screen readers announce its purpose', async () => {
+      const el = document.createElement('snice-terminal');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 60));
+
+      const input = el.shadowRoot!.querySelector('.terminal-input');
+      expect(input, 'terminal renders a command input').toBeTruthy();
+      const named = input!.getAttribute('aria-label') || input!.getAttribute('aria-labelledby');
+      expect(named, 'an unnamed command input is announced as just "edit text"').toBeTruthy();
+      el.remove();
+    });
+  });
 });

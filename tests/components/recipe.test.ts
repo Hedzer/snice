@@ -480,4 +480,21 @@ describe('SniceRecipe', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('accessible names', () => {
+    it('names each ingredient checkbox after its ingredient', async () => {
+      const el = document.createElement('snice-recipe') as any;
+      el.ingredients = [{ name: 'Flour', amount: 2, unit: 'cups' }, { name: 'Salt', amount: 1, unit: 'tsp' }];
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 80));
+
+      const boxes = [...el.shadowRoot!.querySelectorAll('.recipe__ingredient-checkbox')];
+      expect(boxes.length).toBeGreaterThan(0);
+      for (const box of boxes) {
+        const named = box.getAttribute('aria-label') || box.getAttribute('aria-labelledby');
+        expect(named, 'checkbox must say which ingredient it toggles').toBeTruthy();
+      }
+      el.remove();
+    });
+  });
 });

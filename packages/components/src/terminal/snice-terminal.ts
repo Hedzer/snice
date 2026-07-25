@@ -121,6 +121,7 @@ export class SniceTerminal extends HTMLElement implements SniceTerminalElement {
               type="text"
               class="terminal-input"
               part="input"
+              aria-label="Terminal command"
               @keydown="${(e: KeyboardEvent) => this.handleKeyDown(e)}"
               autocomplete="off"
               spellcheck="false"

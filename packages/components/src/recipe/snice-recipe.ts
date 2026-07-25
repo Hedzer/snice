@@ -297,7 +297,7 @@ export class SniceRecipe extends HTMLElement implements SniceRecipeElement {
         const checkedClass = isChecked ? 'recipe__ingredient--checked' : '';
         ingredientItems.push(html`
           <li class="recipe__ingredient ${checkedClass}" @click=${() => this.toggleIngredient(index)}>
-            <input type="checkbox" class="recipe__ingredient-checkbox" ?checked=${isChecked} @click=${(e: Event) => e.stopPropagation()} @change=${() => this.toggleIngredient(index)} />
+            <input type="checkbox" class="recipe__ingredient-checkbox" aria-label="${ingredient.name}" ?checked=${isChecked} @click=${(e: Event) => e.stopPropagation()} @change=${() => this.toggleIngredient(index)} />
             <span class="recipe__ingredient-amount">${this.formatAmount(ingredient.amount)} ${ingredient.unit}</span>
             <span class="recipe__ingredient-text">${ingredient.name}</span>
           </li>
