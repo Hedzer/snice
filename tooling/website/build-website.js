@@ -1850,9 +1850,6 @@ const docsManifest = [
     { id: 'cdn', file: 'cdn.md', title: 'CDN' },
     { id: 'react-integration', file: 'react-integration.md', title: 'React' },
   ]},
-  { group: 'Components', docs: [
-    { id: 'code-block', file: 'code-block.md', title: 'Code Block' },
-  ]},
 ];
 const docsByFile = new Map(
   docsManifest.flatMap(group => group.docs.map(doc => [doc.file, doc]))

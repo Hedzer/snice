@@ -947,7 +947,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Fetcher](./docs/fetcher.md) - Context-aware fetch middleware for pages and controllers
 - [CDN](./docs/cdn.md) - Load order, bundle families, and standalone usage without a bundler
 - [React Integration](./docs/react-integration.md) - Router, hooks, guards, and mixing React and Snice pages
-- [Code Block](./docs/code-block.md) - The syntax-highlighting component and its grammar system
+- [Code Block](./docs/components/code-block.md) - The syntax-highlighting component, its grammar system, and highlighter API
 
 ### Developer Documentation
 - [DEVELOPMENT.md](./DEVELOPMENT.md) - Build system, testing, and contributing to Snice

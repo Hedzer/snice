@@ -30,9 +30,9 @@ const groups = Array.from(builder.matchAll(/\{\s*group:\s*'(\w[\w /]*)'/g)).map(
 describe('Docs manifest', () => {
   it('publishes every human doc page', () => {
     const published = new Set(manifestEntries.map(e => e.file));
-    // code-block is a component page; components are surfaced on components.html
-    const expected = humanDocs.filter(f => f !== 'code-block.md');
-    for (const file of expected) {
+    // docs/ is the framework reference; every page in it is published.
+    // Component pages live in docs/components/ and are served by components.html.
+    for (const file of humanDocs) {
       expect(published.has(file), `docs/${file} exists but is not published on docs.html`).toBe(true);
     }
   });
@@ -81,6 +81,39 @@ describe('Human and AI trees map to each other', () => {
       const match = /<!-- AI:.*see\s+(\S+)\s/.exec(content);
       expect(match, `docs/${file} has no AI banner`).toBeTruthy();
       expect(existsSync(join(root, match![1])), `docs/${file} points at missing ${match![1]}`).toBe(true);
+    }
+  });
+});
+
+describe('docs/ holds framework reference only', () => {
+  // A single component page published beside the framework docs read as a
+  // "Components" category of one, implying coverage that lives elsewhere.
+  // theme.md exists in both trees but they are different subjects:
+  // docs/theme.md is the token system, docs/components/theme.md is the
+  // <snice-theme> element.
+  const sameSubjectAsComponent = (file: string) => file !== 'theme.md';
+
+  it('has no per-component page', () => {
+    const componentPages = humanDocs
+      .filter(sameSubjectAsComponent)
+      .filter(f => existsSync(join(root, 'docs/components', f)));
+    expect(
+      componentPages,
+      `these belong in docs/components/: ${componentPages.join(', ')}`
+    ).toEqual([]);
+  });
+
+  it('keeps the two theme docs distinct', () => {
+    expect(read('docs/theme.md'), 'docs/theme.md should document the token system')
+      .toMatch(/--snice-color-/);
+    expect(read('docs/components/theme.md'), 'docs/components/theme.md should document the element')
+      .toMatch(/theme\.css|snice-theme/);
+  });
+
+  it('still documents the code-block component, in docs/components', () => {
+    const doc = read('docs/components/code-block.md');
+    for (const section of ['Grammar System', 'Highlighter API', 'Token CSS Classes', 'Fetch Mode']) {
+      expect(doc, `docs/components/code-block.md lost "${section}"`).toContain(section);
     }
   });
 });
