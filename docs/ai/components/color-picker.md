@@ -56,6 +56,7 @@ readonly labels: NodeList|null;
 
 ## CSS Parts
 
+- `base` - Root container
 - `spinner` - Loading spinner
 - `error-text` - Error text element
 - `helper-text` - Helper text element

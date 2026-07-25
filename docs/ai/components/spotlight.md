@@ -57,6 +57,17 @@ spotlight.addEventListener('spotlight-end', () => console.log('Tour completed'))
 spotlight.addEventListener('spotlight-skip', (e) => console.log(`Skipped at ${e.detail.index}`));
 ```
 
+## CSS Parts
+
+- `base` - Root container
+- `backdrop` - Dimmed overlay
+- `cutout` - Transparent target cutout
+- `popover` - Step popover
+- `title` - Step title
+- `description` - Step description
+- `actions` - Step action buttons
+- `step-indicator` - Current step indicator
+
 ## Accessibility
 
 - Keyboard-accessible navigation buttons

@@ -43,6 +43,7 @@ interface AppTile {
 
 ## CSS Parts
 
+- `base` - Root container
 - `icon` - Material Symbols ligature icon span
 
 ## Basic Usage

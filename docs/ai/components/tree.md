@@ -54,6 +54,13 @@ interface TreeNode {
 
 ## CSS Parts
 
+- `checkbox` - Node checkbox
+- `children` - Nested children container
+- `expander` - Expand and collapse control
+- `icon-image` - Node icon rendered as an image
+- `icon-text` - Node icon rendered as text or inline SVG
+- `label` - Text label
+- `loading` - Lazy-loading indicator
 - `container` - Main tree container
 - `content` - Tree content area
 

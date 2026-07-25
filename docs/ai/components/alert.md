@@ -32,6 +32,7 @@ icon: string = '';   // URL, emoji, or 'none'. Use icon slot for icon fonts.
 
 ## CSS Parts
 
+- `base` - Root container
 - `icon` - The icon container
 
 ## Basic Usage

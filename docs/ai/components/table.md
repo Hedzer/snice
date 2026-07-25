@@ -124,6 +124,9 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 
 ## CSS Parts
 
+- `body` - Table body
+- `filter-button` - Column filter trigger
+- `sort-indicator` - Column sort direction indicator
 - `<snice-table>`: `superheader`, `controls`, `toolbar`, `pagination` (no native header/body/cell parts); `<snice-row>`: `container`, `checkbox-cell`, `cell`; cells: `content`; actions: `action-button`; JSON: `toggle`; tag: `tag`; link/email/phone/location: `link`
 
 ## CSS Custom Properties

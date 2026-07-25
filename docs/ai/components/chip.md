@@ -28,6 +28,7 @@ avatar: string = '';    // Avatar image URL (takes precedence over icon slot)
 
 ## CSS Parts
 
+- `base` - Root container
 - `icon` - Icon wrapper element
 
 ## Basic Usage

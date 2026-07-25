@@ -27,6 +27,7 @@ interface Step {
 
 ## CSS Parts
 
+- `panel` - Step content panel
 - `container` - Main container
 - `step` - Individual step wrapper
 - `step-indicator` - Circular indicator (number/checkmark)

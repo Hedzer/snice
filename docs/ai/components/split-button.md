@@ -24,6 +24,7 @@ iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
 
 ## CSS Parts
 
+- `spinner` - Loading spinner
 - `base` - Root container
 - `primary` - Primary action button
 - `divider` - Divider between buttons

@@ -14,6 +14,9 @@ Application layout with header navigation, main content area, and footer.
 
 ## CSS Parts
 
+- `scrim` - Overlay backdrop for the mobile sidebar
+- `prose` - Measured article column (docs shell)
+- `form` - Form column (auth-split shell)
 - `base` - Outer layout container div
 - `header` - Header element with navigation
 - `brand` - Brand/logo area within header

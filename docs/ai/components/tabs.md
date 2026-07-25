@@ -55,6 +55,8 @@ transitionDuration: number = 300; // attr: transition-duration
 
 ## CSS Parts
 
+- `label` - Text label
+- `close` - Close button on a closable tab
 - `base` - Outermost tabs container
 - `nav-container` - Nav bar wrapper (includes scroll buttons)
 - `nav` - Tab navigation scroll area

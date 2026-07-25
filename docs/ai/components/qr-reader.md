@@ -63,6 +63,19 @@ const result = await reader.snap();
 const data = await reader.scanImage(file);
 ```
 
+## CSS Parts
+
+- `base` - Root container
+- `video` - Live camera video element
+- `canvas` - Offscreen capture canvas
+- `viewport` - Scanning viewport
+- `controls` - Control bar
+- `button-start` - Start scanning button
+- `button-stop` - Stop scanning button
+- `button-switch` - Switch camera button
+- `result` - Decoded result output
+- `error-text` - Error message
+
 ## Accessibility
 
 - Requires HTTPS for mobile camera access
