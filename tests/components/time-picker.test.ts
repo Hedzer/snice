@@ -1168,4 +1168,33 @@ describe('snice-time-picker', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('ARIA listbox semantics', () => {
+    it('exposes every selector column list as a listbox of options', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', { value: '14:30' });
+      await wait(30);
+
+      const lists = picker.shadowRoot!.querySelectorAll('.selector-list');
+      expect(lists.length).toBeGreaterThanOrEqual(2);
+      for (const list of lists) {
+        expect(list.getAttribute('role'), 'selector list role').toBe('listbox');
+      }
+      const items = picker.shadowRoot!.querySelectorAll('.selector-item');
+      for (const item of items) {
+        expect(item.getAttribute('role'), 'selector item role').toBe('option');
+        expect(item.hasAttribute('aria-selected'), 'option carries aria-selected').toBe(true);
+      }
+    });
+
+    it('marks exactly one selected option per visible column', async () => {
+      picker = await createComponent<SniceTimePickerElement>('snice-time-picker', { value: '14:30' });
+      await wait(30);
+
+      const lists = picker.shadowRoot!.querySelectorAll('.selector-list');
+      for (const list of lists) {
+        const selected = list.querySelectorAll('[aria-selected="true"]');
+        expect(selected.length, 'one selection per column').toBe(1);
+      }
+    });
+  });
 });

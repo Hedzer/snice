@@ -1140,5 +1140,24 @@ describe('snice-date-time-picker', () => {
       const selected = (picker as HTMLElement).shadowRoot!.querySelectorAll('.calendar-days [aria-selected="true"]');
       expect(selected.length).toBe(1);
     });
+
+    it('exposes time columns as listboxes with selected options', async () => {
+      picker = await createComponent<SniceDateTimePickerElement>('snice-date-time-picker', { value: '2026-06-10T14:30' });
+      picker.open();
+      await wait(30);
+
+      const lists = (picker as HTMLElement).shadowRoot!.querySelectorAll('.time-list');
+      expect(lists.length).toBeGreaterThanOrEqual(2);
+      for (const list of lists) {
+        expect(list.getAttribute('role'), 'time list role').toBe('listbox');
+        const selected = list.querySelectorAll('[aria-selected="true"]');
+        expect(selected.length, 'one selection per time column').toBeLessThanOrEqual(1);
+      }
+      const items = (picker as HTMLElement).shadowRoot!.querySelectorAll('.time-item');
+      for (const item of items) {
+        expect(item.getAttribute('role'), 'time item role').toBe('option');
+        expect(item.hasAttribute('aria-selected')).toBe(true);
+      }
+    });
   });
 });

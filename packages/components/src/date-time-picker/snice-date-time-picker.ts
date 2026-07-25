@@ -336,7 +336,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       <div class="time-selectors">
         <div class="time-column" role="group" data-time-unit="hours" aria-label="${accessibleName} hours">
           <label class="time-label">Hr</label>
-          <div class="time-list" @click=${(e: Event) => this.handleHourClick(e)}>
+          <div class="time-list" role="listbox" @click=${(e: Event) => this.handleHourClick(e)}>
             ${Array.from({ length: hourMax - hourStart + 1 }, (_, i) => i + hourStart).map(h => {
               const displayH = this.timeFormat === '12h' ? this.hours : this.hours;
               const isSelected = h === (this.timeFormat === '12h' ? (this.hours === 0 ? 12 : this.hours > 12 ? this.hours - 12 : this.hours) : this.hours);
@@ -344,6 +344,8 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
                 <button
                   class="time-item ${isSelected ? 'time-item--selected' : ''}"
                   type="button"
+                  role="option"
+                  aria-selected="${isSelected ? 'true' : 'false'}"
                   data-hour="${h}"
                   .disabled=${this.interactionDisabled || this.readonly}
                 >${this.timeFormat === '12h' ? String(h) : h.toString().padStart(2, '0')}</button>
@@ -354,13 +356,15 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
         <div class="time-column" role="group" data-time-unit="minutes" aria-label="${accessibleName} minutes">
           <label class="time-label">Min</label>
-          <div class="time-list" @click=${(e: Event) => this.handleMinuteClick(e)}>
+          <div class="time-list" role="listbox" @click=${(e: Event) => this.handleMinuteClick(e)}>
             ${Array.from({ length: 12 }, (_, i) => i * 5).map(m => {
               const isSelected = m === this.minutes;
               return html`
                 <button
                   class="time-item ${isSelected ? 'time-item--selected' : ''}"
                   type="button"
+                  role="option"
+                  aria-selected="${isSelected ? 'true' : 'false'}"
                   data-minute="${m}"
                   .disabled=${this.interactionDisabled || this.readonly}
                 >${m.toString().padStart(2, '0')}</button>
@@ -372,13 +376,15 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         <if ${this.showSeconds}>
           <div class="time-column" role="group" data-time-unit="seconds" aria-label="${accessibleName} seconds">
             <label class="time-label">Sec</label>
-            <div class="time-list" @click=${(e: Event) => this.handleSecondClick(e)}>
+            <div class="time-list" role="listbox" @click=${(e: Event) => this.handleSecondClick(e)}>
               ${Array.from({ length: 12 }, (_, i) => i * 5).map(s => {
                 const isSelected = s === this.seconds;
                 return html`
                   <button
                     class="time-item ${isSelected ? 'time-item--selected' : ''}"
                     type="button"
+                    role="option"
+                    aria-selected="${isSelected ? 'true' : 'false'}"
                     data-second="${s}"
                     .disabled=${this.interactionDisabled || this.readonly}
                   >${s.toString().padStart(2, '0')}</button>
@@ -391,16 +397,20 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
         <if ${this.timeFormat === '12h'}>
           <div class="time-column time-column--period" role="group" data-time-unit="period" aria-label="${accessibleName} period">
             <label class="time-label">Period</label>
-            <div class="time-list">
+            <div class="time-list" role="listbox">
               <button
                 class="time-item ${this.period === 'AM' ? 'time-item--selected' : ''}"
                 type="button"
+                role="option"
+                aria-selected="${this.period === 'AM' ? 'true' : 'false'}"
                 .disabled=${this.interactionDisabled || this.readonly}
                 @click=${() => this.setPeriod('AM')}
               >AM</button>
               <button
                 class="time-item ${this.period === 'PM' ? 'time-item--selected' : ''}"
                 type="button"
+                role="option"
+                aria-selected="${this.period === 'PM' ? 'true' : 'false'}"
                 .disabled=${this.interactionDisabled || this.readonly}
                 @click=${() => this.setPeriod('PM')}
               >PM</button>
