@@ -538,6 +538,41 @@ header nav a:hover, header nav a.active { color: var(--snice-color-text); }
   color: var(--snice-color-text-secondary);
 }
 
+/* ─── Guide page ─── */
+.guide-sidebar {
+  position: fixed;
+  top: 5rem;
+  left: max(1rem, calc(50% - 550px + 2rem));
+  width: 155px;
+  max-height: calc(100vh - 5.5rem);
+  overflow-y: auto;
+  font-size: 0.8rem;
+  scrollbar-width: thin;
+  padding: 0.5rem 0;
+}
+.guide-content { margin-left: 185px; }
+@media (max-width: 860px) {
+  .guide-sidebar { display: none; }
+  .guide-content { margin-left: 0; }
+}
+.guide-sidebar .nav-group {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--snice-color-text-tertiary);
+  margin-top: 1.25rem; margin-bottom: 0.25rem;
+}
+.guide-sidebar .nav-group:first-child { margin-top: 0; }
+.guide-sidebar a {
+  display: block; padding: 0.2rem 0; color: var(--snice-color-text-secondary);
+  text-decoration: none; line-height: 1.4;
+}
+.guide-sidebar a:hover { color: var(--snice-color-text); }
+.guide-sidebar a.active { color: var(--snice-color-primary); }
+.dec-section { scroll-margin-top: 5.5rem; }
+/* Per-section declarative|imperative switcher (the home page has one group;
+   the guide has many, so panels are scoped to their own .code-tabgroup). */
+.code-tabgroup { margin-top: 0.75rem; }
+.code-tabgroup .code-tabs { margin-bottom: 0; }
+
 /* ─── Docs page ─── */
 .docs-sidebar {
   position: fixed;

@@ -1,0 +1,23 @@
+<h3>Keyed lists</h3>
+<p class="desc"><code>repeat()</code> makes identity explicit, moves existing DOM on reorder, rejects duplicate keys, and renders an empty state without a wrapper.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@element('task-list')
+class TaskList extends HTMLElement {
+  @property({ type: Array }) items = [];
+
+  @render()
+  template() {
+    return html`
+      ${repeat(this.items, {
+        key: item =&gt; item.id,
+        render: item =&gt; html`
+          &lt;task-item
+            label=${item.label}
+            ?done=${item.done}
+            @status-changed=${(e) =&gt; this.update(e.detail)}
+          &gt;&lt;/task-item&gt;
+        `,
+        empty: () =&gt; html`&lt;p&gt;No tasks&lt;/p&gt;`
+      })}
+    `;
+  }
+}</snice-code-block>

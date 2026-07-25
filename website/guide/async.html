@@ -1,0 +1,9 @@
+<h3>Async content</h3>
+<p class="desc">Promises and async iterables render directly in node expressions. Replacing a source ignores stale results; disconnecting stops active iterator consumption.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">userView = fetch(this.url)
+  .then(response =&gt; response.json())
+  .then(user =&gt; html`&lt;user-card .user=${user}&gt;&lt;/user-card&gt;`)
+  .catch(error =&gt; html`&lt;p role="alert"&gt;${error.message}&lt;/p&gt;`);
+
+return html`${this.userView}`;</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Promise cancellation remains explicit: own an <code>AbortController</code> in the component lifecycle when a fetch must be aborted.</p>

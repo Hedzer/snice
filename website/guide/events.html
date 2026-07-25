@@ -1,0 +1,45 @@
+<h3>Inline handlers</h3>
+<p class="desc">Bind the handler in the template, or attach it with <code>@on</code> and drive the DOM yourself. Both stay on the framework — neither reaches for <code>addEventListener</code>.</p>
+<div class="code-tabgroup">
+  <div class="code-tabs">
+    <button class="code-tab active" data-tab="declarative">Declarative</button>
+    <button class="code-tab" data-tab="imperative">Imperative</button>
+  </div>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel active" data-panel="declarative">@render()
+template() {
+  return html`
+    &lt;input
+      type="checkbox"
+      .checked=${this.done}
+      @change=${this.toggle}
+    /&gt;
+    &lt;span&gt;${this.label}&lt;/span&gt;
+  `;
+}
+
+toggle() {
+  this.done = !this.done;
+}</snice-code-block>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel" data-panel="imperative">@query('input') $checkbox!: HTMLInputElement;
+@query('span') $label!: HTMLElement;
+
+@render({ once: true })
+template() {
+  return html`
+    &lt;input type="checkbox" .checked=${this.done} /&gt;
+    &lt;span&gt;${this.label}&lt;/span&gt;
+  `;
+}
+
+@on('change', 'input')
+toggle() {
+  this.done = !this.done;
+}
+
+@watch('done')
+doneChanged() {
+  if (this.$checkbox) this.$checkbox.checked = this.done;
+}</snice-code-block>
+</div>
+<p class="desc" style="margin-top:0.75rem"><code>.checked=${val}</code> sets the property (not attribute). <code>?disabled=${bool}</code> toggles an attribute.</p>
+<p class="desc"><code>@on</code> delegates from the host and is cleaned up on disconnect, so the imperative path never manages listeners by hand.</p>

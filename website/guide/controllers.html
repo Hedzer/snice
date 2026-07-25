@@ -1,0 +1,42 @@
+<h3>Controllers</h3>
+<p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">import { controller, on } from 'snice';
+
+@controller('weather')
+class WeatherController {
+  async attach(el) {
+    // Called when controller binds to an element
+    const data = await fetch('/api/weather').then(r => r.json());
+    this.city = data.city;
+    el.label = data.city;
+    el.value = `${data.temp}&deg;`;
+  }
+
+  @on('click')
+  viewDetails() {
+    // Navigate to the city's weather page
+    navigate(`/weather/${this.city}`);
+  }
+
+  detach(el) {
+    // Cleanup when controller is removed
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Attach the class directly — import it, bind it, done.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@element('weather-dashboard')
+class WeatherDashboard extends HTMLElement {
+  @render()
+  template() {
+    return html`
+      &lt;stat-card controller=${WeatherController}&gt;&lt;/stat-card&gt;
+
+      &lt;!-- swap behavior: same card, different logic --&gt;
+      &lt;stat-card controller=${StocksController}&gt;&lt;/stat-card&gt;
+
+      &lt;!-- works on plain HTML elements too --&gt;
+      &lt;div controller=${WeatherController}&gt;&lt;/div&gt;
+    `;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Binding the same class again is a no-op; binding a different one detaches the old controller first.</p>
+<p class="desc">In raw HTML, attach by the registered name instead: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>

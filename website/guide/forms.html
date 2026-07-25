@@ -1,0 +1,48 @@
+<h3>Form controls</h3>
+<p class="desc">Keep both directions explicit: bind state to the native property and handle the browser event that updates state.</p>
+<div class="code-tabgroup">
+  <div class="code-tabs">
+    <button class="code-tab active" data-tab="declarative">Declarative</button>
+    <button class="code-tab" data-tab="imperative">Imperative</button>
+  </div>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel active" data-panel="declarative">@state() query = '';
+@state() accepted = false;
+
+return html`
+  &lt;input .value=${this.query} @input=${this.updateQuery}&gt;
+  &lt;input type="checkbox" .checked=${this.accepted} @change=${this.updateAccepted}&gt;
+`;</snice-code-block>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel" data-panel="imperative">@state() query = '';
+@state() accepted = false;
+
+@query('.query') $query!: HTMLInputElement;
+@query('.accepted') $accepted!: HTMLInputElement;
+
+@render({ once: true })
+template() {
+  return html`
+    &lt;input class="query" .value=${this.query}&gt;
+    &lt;input class="accepted" type="checkbox" .checked=${this.accepted}&gt;
+  `;
+}
+
+@on('input', '.query')
+updateQuery(e) {
+  this.query = e.target.value;
+}
+
+@on('change', '.accepted')
+updateAccepted(e) {
+  this.accepted = e.target.checked;
+}
+
+@watch('query')
+queryChanged() {
+  // Only write back when something other than typing changed it
+  if (this.$query &amp;&amp; this.$query.value !== this.query) {
+    this.$query.value = this.query;
+  }
+}</snice-code-block>
+</div>
+<p class="desc" style="margin-top:0.75rem">Use <code>input</code> for text as it changes and <code>change</code> for committed choices such as checkboxes, selects, and files. Parsing, validation, and IME behavior stay visible in the handler.</p>
+<p class="desc">The declarative binding re-asserts the property on every render; the imperative version guards the write so it never fights the caret while typing.</p>

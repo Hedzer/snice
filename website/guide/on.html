@@ -1,0 +1,13 @@
+<h3>Event delegation</h3>
+<p class="desc">Handle events declaratively with the <code>@on</code> decorator instead of inline handlers.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@on('click', '.delete')
+handleDelete(e) {
+  const id = e.target.dataset.id;
+  this.items = this.items.filter(i => i.id !== id);
+}
+
+@on('input', 'input.search', { debounce: 300 })
+handleSearch(e) {
+  this.filter = e.target.value;
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Delegation works on shadow DOM elements. Built-in <code>debounce</code> and <code>throttle</code> options.</p>

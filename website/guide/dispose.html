@@ -1,0 +1,7 @@
+<h3>Dispose</h3>
+<p class="desc"><code>@dispose()</code> runs when the element disconnects. Release resources that are not already managed by Snice lifecycle decorators.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@dispose()
+onUnmount() {
+  clearInterval(this.interval);
+  this.subscription.unsubscribe();
+}</snice-code-block>

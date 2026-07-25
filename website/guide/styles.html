@@ -1,0 +1,18 @@
+<h3>Styles</h3>
+<p class="desc">Styles are applied once to the managed render root. Shadow-root styles are encapsulated; light-root styles follow normal CSS scoping.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@styles()
+css() {
+  return css`
+    :host {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+    }
+
+    :host([done]) span {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+  `;
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Use <code>:host</code> to style the element itself. <code>:host([done])</code> targets when the <code>done</code> attribute is present.</p>

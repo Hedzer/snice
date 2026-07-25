@@ -1,0 +1,12 @@
+<h3>Deep state</h3>
+<p class="desc">Add <code>deep: true</code> when nested object and collection mutations should invalidate the view without replacing the top-level field.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@state({ deep: true }) model = {
+  tasks: [],
+  selected: new Set(),
+  flags: new Map()
+};
+
+// Each write is observed and batched into one render.
+this.model.tasks.push(task);
+this.model.selected.add(task.id);</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Deep state uses native <code>Proxy</code> and <code>Reflect</code>, including cycles, arrays, <code>Map</code>, and <code>Set</code>. It targets modern browsers; ordinary state does not require deep proxies.</p>

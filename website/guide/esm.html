@@ -1,0 +1,24 @@
+<h3>ESM + Bundler</h3>
+<p class="desc">Install the package and use with Vite, esbuild, or Rollup. Full framework with decorators, routing, and controllers.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json"># Install
+npm install snice
+
+# Or scaffold a full project
+npx snice create-app my-app</snice-code-block>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">import { element, property, render, html } from 'snice';
+
+@element('my-counter')
+class MyCounter extends HTMLElement {
+  @property({ type: Number })
+  count = 0;
+
+  @render()
+  template() {
+    return html`
+      &lt;button @click=${() =&gt; this.count++}&gt;
+        ${this.count}
+      &lt;/button&gt;
+    `;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> Full applications, SPAs, projects using a bundler.</p>

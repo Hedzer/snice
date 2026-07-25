@@ -286,7 +286,7 @@ const footer = `
     </div>
   </footer>`;
 
-const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: scripts/build-website.js -->
+const head = (title) => `<!-- GENERATED FILE — do not edit directly. Source: tooling/website/build-website.js -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('snice-theme')||'dark')</script>
@@ -1811,6 +1811,10 @@ const docsManifest = [
     { id: 'fetcher', file: 'fetcher.md', title: 'Fetcher' },
     { id: 'placards', file: 'placards.md', title: 'Placards' },
   ]},
+  { group: 'Integration', docs: [
+    { id: 'cdn', file: 'cdn.md', title: 'CDN' },
+    { id: 'react-integration', file: 'react-integration.md', title: 'React' },
+  ]},
   { group: 'Components', docs: [
     { id: 'code-block', file: 'code-block.md', title: 'Code Block' },
   ]},
@@ -2275,6 +2279,73 @@ ${themeScripts}
 </body>
 </html>`;
 
+// ─── GUIDE PAGE ──────────────────────────────────────────────────────────
+// Structure comes from website/guide/manifest.json; each section's body is a
+// fragment at website/guide/<id>.html. Section order in the manifest is the
+// learning arc, and every section carries the docs.html anchor that owns its
+// full reference (null only where no reference page exists yet).
+const guideDir = join(root, 'website', 'guide');
+const guideManifest = JSON.parse(readFileSync(join(guideDir, 'manifest.json'), 'utf8'));
+
+const docIdToTitle = new Map(
+  docsManifest.flatMap(group => group.docs.map(doc => [doc.id, doc.title]))
+);
+
+const guideSidebar = guideManifest.groups.map(group => `
+        <div class="nav-group">${group.title}</div>
+${group.sections.map(section => `        <a href="#${section.id}">${section.title}</a>`).join('\n')}`
+).join('\n');
+
+const guideSections = guideManifest.groups.map(group => {
+  const banner = group.title.toUpperCase();
+  const sections = group.sections.map(section => {
+    // Emitted verbatim: <snice-code-block> content is whitespace-significant,
+    // so the fragment must not be re-indented to match the surrounding markup.
+    const body = readFileSync(join(guideDir, `${section.id}.html`), 'utf8').trimEnd();
+    const docsLink = section.docs
+      ? `\n          <p class="doc-link"><a href="docs.html#${section.docs}">${docIdToTitle.get(section.docs)} documentation →</a></p>`
+      : '';
+    return `        <div class="dec-section" id="${section.id}">
+${body}${docsLink}
+        </div>`;
+  }).join('\n\n');
+
+  return `        <!-- ═══════════════════════════════════════ -->
+        <!-- ${banner.padEnd(39)}-->
+        <!-- ═══════════════════════════════════════ -->
+
+${sections}`;
+}).join('\n\n');
+
+const guideHtml = `${head('Guide')}
+${header('guide')}
+  <main class="wrap">
+      <nav class="guide-sidebar">${guideSidebar}
+      </nav>
+
+      <div class="guide-content">
+
+${guideSections}
+
+      </div>
+  </main>
+${footer}
+  <script>
+    // Each tab group toggles only its own panels.
+    document.querySelectorAll('.code-tabgroup').forEach(group => {
+      group.querySelectorAll('.code-tab').forEach(tab => {
+        tab.onclick = () => {
+          group.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+          group.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          group.querySelector('[data-panel="' + tab.dataset.tab + '"]').classList.add('active');
+        };
+      });
+    });
+  </script>
+</body>
+</html>`;
+
 // LICENSE PAGE — MIT terms + acknowledgments
 const licenseHtml = `${head('License')}
 ${header()}
@@ -2348,11 +2419,13 @@ ${footer}
 </html>`;
 
 // NOTE: styles.css, index.html, and components.html are hand-maintained
+// guide.html is generated from website/guide/manifest.json + website/guide/*.html
 // styles.css: full version lives in public/styles.css (511 lines with comp-split, code-tabs, etc.)
 // index.html: has imperative/declarative tabs, hand-crafted syntax highlighting
 // components.html: built from public/showcases/ fragments via build-showcases.js
 writeFileSync(join(out, 'decorators.html'), decoratorsHtml);
 writeFileSync(join(out, 'docs.html'), docsPageHtml);
+writeFileSync(join(out, 'guide.html'), guideHtml);
 writeFileSync(join(out, 'themes.html'), themesHtml);
 writeFileSync(join(out, 'license.html'), licenseHtml);
 console.log('Built to website/public/ - preview at http://localhost:52891');

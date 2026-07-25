@@ -1,0 +1,8 @@
+<h3>Emitting events</h3>
+<p class="desc">Use <code>@dispatch</code> to fire custom events. The return value becomes <code>event.detail</code>.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@dispatch('status-changed')
+toggle() {
+  this.done = !this.done;
+  return { label: this.label, done: this.done };
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Parents listen with <code>@status-changed=${handler}</code> in templates, <code>@on('status-changed')</code> as a decorator, or <code>addEventListener('status-changed', ...)</code>.</p>

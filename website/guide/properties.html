@@ -1,0 +1,47 @@
+<h3>Properties</h3>
+<p class="desc">Public properties accept HTML attributes, reflect writes by default, and trigger differential re-renders.</p>
+<div class="code-tabgroup">
+  <div class="code-tabs">
+    <button class="code-tab active" data-tab="declarative">Declarative</button>
+    <button class="code-tab" data-tab="imperative">Imperative</button>
+  </div>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel active" data-panel="declarative">@element('task-item')
+class TaskItem extends HTMLElement {
+  @property()
+  label = '';
+
+  @property({ type: Boolean })
+  done = false;
+
+  @render()
+  template() {
+    return html`
+      &lt;span&gt;${this.label}&lt;/span&gt;
+    `;
+  }
+}</snice-code-block>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel" data-panel="imperative">@element('task-item')
+class TaskItem extends HTMLElement {
+  @property()
+  label = '';
+
+  @property({ type: Boolean })
+  done = false;
+
+  @query('.label') $label!: HTMLElement;
+
+  @render({ once: true })
+  template() {
+    return html`
+      &lt;span class="label"&gt;${this.label}&lt;/span&gt;
+    `;
+  }
+
+  @watch('label')
+  labelChanged() {
+    if (this.$label) this.$label.textContent = this.label;
+  }
+}</snice-code-block>
+</div>
+<p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item</span> <span class="a">label</span>=<span class="s">"Buy groceries"</span><span class="h">&gt;&lt;/task-item&gt;</span></p>
+<p class="desc"><code>type</code> converts strings arriving from attributes. Direct JavaScript assignments keep their original type and object identity. Use <code>reflect: false</code> for attribute input without property-to-attribute output, or <code>attribute: false</code> for a JavaScript-only public property.</p>

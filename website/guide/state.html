@@ -1,0 +1,45 @@
+<h3>Internal state</h3>
+<p class="desc"><code>@state()</code> declares reactive implementation data. It triggers rendering but never creates or reflects an HTML attribute.</p>
+<div class="code-tabgroup">
+  <div class="code-tabs">
+    <button class="code-tab active" data-tab="declarative">Declarative</button>
+    <button class="code-tab" data-tab="imperative">Imperative</button>
+  </div>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel active" data-panel="declarative">@state() editing = false;
+@state() selectedId = null;
+
+@render()
+template() {
+  return html`
+    &lt;span class="name"&gt;${this.label}&lt;/span&gt;
+    &lt;button&gt;${this.editing ? 'Done' : 'Edit'}&lt;/button&gt;
+  `;
+}
+
+this.editing = true;
+this.selectedId = task.id;</snice-code-block>
+  <snice-code-block language="snice" grammar="grammars/snice.json" class="code-panel" data-panel="imperative">@state() editing = false;
+@state() selectedId = null;
+
+@query('.name') $name!: HTMLElement;
+@query('button') $button!: HTMLButtonElement;
+
+@render({ once: true })
+template() {
+  return html`
+    &lt;span class="name"&gt;${this.label}&lt;/span&gt;
+    &lt;button&gt;${this.editing ? 'Done' : 'Edit'}&lt;/button&gt;
+  `;
+}
+
+@watch('editing')
+editingChanged() {
+  if (!this.$button) return;
+  this.$button.textContent = this.editing ? 'Done' : 'Edit';
+}
+
+this.editing = true;
+this.selectedId = task.id;</snice-code-block>
+</div>
+<p class="desc" style="margin-top:0.75rem">Use <code>@property()</code> for public input and <code>@state()</code> for state owned entirely by the component. Multiple writes in one turn are batched into one render.</p>
+<p class="desc">Under <code>{ once: true }</code> the template still renders once with correct values, then <code>@watch</code> fires synchronously on each write instead of a re-render.</p>

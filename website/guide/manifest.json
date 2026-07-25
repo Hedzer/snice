@@ -1,0 +1,86 @@
+{
+  "_comment": "Guide structure. Section bodies live in website/guide/<id>.html. Consumed by tooling/website/build-website.js to generate website/public/guide.html. `docs` is the docs.html anchor that owns the full reference for that section; tests/guide-docs-alignment.test.ts asserts every anchor resolves. `docs: null` means the section has no reference page yet and must stay explicit, never omitted.",
+  "groups": [
+    {
+      "title": "Start",
+      "sections": [
+        { "id": "esm", "title": "ESM + Bundler", "docs": "elements" },
+        { "id": "cdn", "title": "CDN", "docs": "cdn" },
+        { "id": "react", "title": "React Wrappers", "docs": "react-integration" }
+      ]
+    },
+    {
+      "title": "Your first element",
+      "sections": [
+        { "id": "minimum", "title": "Bare minimum", "docs": "elements" },
+        { "id": "styles", "title": "Styles", "docs": "elements" }
+      ]
+    },
+    {
+      "title": "Data in",
+      "sections": [
+        { "id": "properties", "title": "Properties", "docs": "elements" },
+        { "id": "state", "title": "Internal state", "docs": "elements" },
+        { "id": "deep-state", "title": "Deep state", "docs": "elements" }
+      ]
+    },
+    {
+      "title": "Templates",
+      "sections": [
+        { "id": "bindings", "title": "Binding channels", "docs": "bindings" },
+        { "id": "conditionals", "title": "Conditionals", "docs": "rendering" },
+        { "id": "lists", "title": "Keyed lists", "docs": "rendering" },
+        { "id": "async", "title": "Async content", "docs": "rendering" },
+        { "id": "spreads", "title": "Named spreads", "docs": "bindings" },
+        { "id": "forms", "title": "Form controls", "docs": "bindings" }
+      ]
+    },
+    {
+      "title": "Events out",
+      "sections": [
+        { "id": "events", "title": "Inline handlers", "docs": "events" },
+        { "id": "dispatch", "title": "Emitting events", "docs": "events" },
+        { "id": "on", "title": "Event delegation", "docs": "events" },
+        { "id": "keyboard", "title": "Keyboard shortcuts", "docs": "events" }
+      ]
+    },
+    {
+      "title": "Lifecycle",
+      "sections": [
+        { "id": "ready", "title": "Ready", "docs": "elements" },
+        { "id": "watch", "title": "Watch changes", "docs": "elements" },
+        { "id": "query", "title": "Query the DOM", "docs": "elements" },
+        { "id": "dispose", "title": "Dispose", "docs": "elements" }
+      ]
+    },
+    {
+      "title": "Behavior",
+      "sections": [
+        { "id": "controllers", "title": "Controllers", "docs": "controllers" },
+        { "id": "request-respond", "title": "Request / Respond", "docs": "request-response" },
+        { "id": "observe", "title": "Observers", "docs": "observe" }
+      ]
+    },
+    {
+      "title": "Routing",
+      "sections": [
+        { "id": "pages", "title": "Pages and router", "docs": "routing" },
+        { "id": "guards", "title": "Guards and layouts", "docs": "routing" }
+      ]
+    },
+    {
+      "title": "Composition",
+      "sections": [
+        { "id": "roots", "title": "Render roots", "docs": "elements" },
+        { "id": "extending", "title": "Extending", "docs": "elements" },
+        { "id": "full", "title": "Full example", "docs": "elements" }
+      ]
+    },
+    {
+      "title": "AI tooling",
+      "sections": [
+        { "id": "ai", "title": "AI assistance", "docs": null }
+      ]
+    }
+  ]
+}

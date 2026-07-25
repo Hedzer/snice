@@ -1,0 +1,14 @@
+<h3>Named spreads</h3>
+<p class="desc">Prefer direct bindings when the keys are known. Use a named spread when a wrapper, plugin, or generated view receives a dynamic bag that must be forwarded through one explicit DOM channel.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@property({ attribute: false }) forwardedProps = {};
+@property({ attribute: false }) accessibility = {};
+@property({ attribute: false }) forwardedListeners = {};
+
+return html`
+  &lt;input
+    ...props=${this.forwardedProps}
+    ...attrs=${this.accessibility}
+    ...events=${this.forwardedListeners}
+  &gt;
+`;</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><code>...props</code> preserves JavaScript values, <code>...attrs</code> manages attributes, and <code>...events</code> manages listeners. Keys omitted from the next bag are removed or reset.</p>

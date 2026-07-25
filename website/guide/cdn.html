@@ -1,0 +1,11 @@
+<h3>CDN</h3>
+<p class="desc">Load the Snice runtime once, then add CDN component builds. No bundler needed &mdash; just <code>&lt;script&gt;</code> tags.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">&lt;!-- Load runtime once --&gt;
+&lt;script src="snice-runtime.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Add components --&gt;
+&lt;script src="snice-button.min.js"&gt;&lt;/script&gt;
+&lt;script src="snice-input.min.js"&gt;&lt;/script&gt;
+&lt;script src="snice-modal.min.js"&gt;&lt;/script&gt;</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">The runtime is ~29KB gzipped. Each component adds ~1&ndash;107KB. No duplication regardless of how many components you use.</p>
+<p class="desc"><strong>Best for:</strong> CMS pages, WordPress, static sites, landing pages, dashboards.</p>

@@ -1,0 +1,32 @@
+<h3>Observers</h3>
+<p class="desc">Watch the DOM and the viewport without wiring observers by hand. Setup and teardown are automatic.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@element('media-panel')
+class MediaPanel extends HTMLElement {
+  @state() columns = 1;
+  @state() visible = false;
+
+  // Fires when slotted children are added or removed
+  @observe('mutation:childList', '.items')
+  itemsChanged(records) {
+    this.count = this.querySelectorAll('.item').length;
+  }
+
+  // Fires when the element scrolls into view
+  @observe('intersection')
+  onVisible(entries) {
+    this.visible = entries[0].isIntersecting;
+  }
+
+  // Fires when the element is resized
+  @observe('resize')
+  onResize(entries) {
+    this.columns = entries[0].contentRect.width &gt; 600 ? 2 : 1;
+  }
+
+  // Fires when the media query flips
+  @observe('media:(prefers-color-scheme: dark)')
+  onScheme(event) {
+    this.dark = event.matches;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Works the same inside a controller, where the observer applies to the attached element.</p>

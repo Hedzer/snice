@@ -1,0 +1,22 @@
+<h3>AI assistance</h3>
+<p class="desc">Snice ships its own AI tooling: a version-matched skill for coding agents, a project doctor, a source analyzer, and an MCP documentation server.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json"># Install the version-matched Snice skill and agent pointers
+npx snice init-ai
+
+# Diagnose configuration, imports, dependencies, and AI setup
+npx snice doctor
+
+# Run the source analyzer on its own
+npx snice validate
+
+# Everything above in one pass
+npx snice check</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><code>init-ai</code> installs a skill matched to your installed Snice version, so the agent reads the docs for the version you actually have — not whatever it remembers.</p>
+<p class="desc"><code>validate</code> catches the mistakes agents make most: an <code>@element</code> class that never extends <code>HTMLElement</code>, or an invented deep import like <code>snice/decorators</code> that was never a released package path.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem"># Optional: stdio MCP documentation server
+npx snice mcp
+
+# Claude Code
+claude mcp add snice -- npx snice mcp</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">The MCP server exposes component docs, decorator references, and a code validator as tools. It is optional — the skill is the primary path.</p>
+<p class="desc">Token-efficient copies of every reference page live in <code>docs/ai/</code>, mirroring these docs without the prose.</p>

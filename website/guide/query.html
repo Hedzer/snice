@@ -1,0 +1,12 @@
+<h3>Query the DOM</h3>
+<p class="desc">Declare typed access to one or every matching element in the managed render root.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@query('input') checkbox!: HTMLInputElement;
+@queryAll('[data-row]') rows!: HTMLElement[];
+
+focusCheckbox() {
+  this.checkbox.focus();
+}</snice-code-block>
+<p class="desc">Snice components export their interfaces from <code>.types.ts</code>, so you can type queries:</p>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.5rem">import type { SniceInput } from 'snice/components/input';
+
+@query('snice-input') input!: SniceInput;</snice-code-block>

@@ -1,0 +1,21 @@
+<h3>React Wrappers</h3>
+<p class="desc">First-class React adapters with prop mapping, event callbacks, ref forwarding, and form integration. React 17, 18, and 19.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">import { Button, Input, Modal } from 'snice/react';
+
+function App() {
+  const [email, setEmail] = useState('');
+
+  return (
+    &lt;&gt;
+      &lt;Input
+        label="Email"
+        value={email}
+        onChange={(e) =&gt; setEmail(e.detail.value)}
+      /&gt;
+      &lt;Button variant="primary" onClick={handleSubmit}&gt;
+        Submit
+      &lt;/Button&gt;
+    &lt;/&gt;
+  );
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><strong>Best for:</strong> React applications that want Snice UI components with native React DX.</p>

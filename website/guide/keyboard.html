@@ -1,0 +1,13 @@
+<h3>Keyboard shortcuts</h3>
+<p class="desc">Filter events by key or key combo directly in the template.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@render()
+template() {
+  return html`
+    &lt;input
+      placeholder="New task..."
+      @keydown:Enter|prevent=${this.addTask}
+      @keydown:Escape|stop=${this.clear}
+    /&gt;
+  `;
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Combos: <code>@keydown:ctrl+s</code>, <code>@keydown:shift+Enter</code>. Compose <code>|prevent</code>, <code>|stop</code>, <code>|immediate</code>, <code>|once</code>, <code>|capture</code>, <code>|passive</code>, and <code>|self</code>.</p>

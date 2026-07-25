@@ -1,0 +1,43 @@
+<h3>Extending elements</h3>
+<p class="desc">Extend any element — including built-in Snice components. The child inherits everything, then adds or overrides what it needs.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">import { SniceInput } from 'snice/components/input/snice-input';
+
+// Inherits: label, value, placeholder, disabled, size, variant,
+// error-text, clearable, all events, all styles...
+@element('currency-input')
+class CurrencyInput extends SniceInput {
+  @property() currency = 'USD';
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.updatePrefix();
+  }
+
+  @watch('currency')
+  updatePrefix() {
+    const symbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+    this.prefixIcon = symbols[this.currency] || this.currency;
+  }
+
+  @on('input', 'input')
+  restrictNumeric(e) {
+    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+    this.value = e.target.value;
+  }
+
+  @on('blur', 'input')
+  formatValue() {
+    const n = parseFloat(this.value);
+    if (!isNaN(n)) this.value = n.toFixed(2);
+  }
+
+  @styles()
+  currencyStyles() {
+    return css`:host { --input-text-align: right; }`;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">
+  <strong>Inherits:</strong> properties, <code>@watch</code>, <code>@on</code>, <code>@ready</code>, <code>@dispose</code>, <code>formAssociated</code><br>
+  <strong>Replaces:</strong> <code>@render</code> (inherits parent's if not declared)<br>
+  <strong>Concatenates:</strong> <code>@styles</code> (parent first, child wins via cascade)
+</p>

@@ -1,0 +1,27 @@
+<h3>Pages and router</h3>
+<p class="desc">A page is an element bound to a route. Create the router once, then use the <code>page</code> decorator it returns.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">// router.ts — create it once, export the pieces
+import { Router } from 'snice';
+
+export const { page, navigate, initialize } = Router({
+  target: '#app',
+  type: 'hash'        // 'hash' or 'pushstate' — required
+});</snice-code-block>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// pages/product.ts — `page` comes from router.ts, not from 'snice'
+import { page } from '../router';
+
+@page({ tag: 'product-page', routes: ['/products/:id'] })
+class ProductPage extends HTMLElement {
+  @property() id = '';        // route params arrive as properties
+
+  @render()
+  template() {
+    return html`&lt;h1&gt;Product ${this.id}&lt;/h1&gt;`;
+  }
+}</snice-code-block>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// main.ts — import pages for their side effects, then start
+import './pages/product';
+import { initialize, navigate } from './router';
+
+initialize();
+navigate('/products/42');</snice-code-block>

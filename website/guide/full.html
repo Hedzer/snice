@@ -1,0 +1,54 @@
+<h3>Full example</h3>
+<p class="desc">A convention-driven component with public input, internal deep state, explicit form events, declarative styling, control flow, and differential updates.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">import { SniceElement, css, dispatch, element,
+         html, property, state, watch } from 'snice';
+
+@element('task-item')
+class TaskItem extends SniceElement {
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+    .done { text-decoration: line-through; opacity: 0.5; }
+    small { color: green; }
+  `;
+
+  @property() label = '';
+  @property({ type: Boolean }) done = false;
+
+  @state({ deep: true }) meta = { edits: 0, tags: new Set() };
+
+  render() {
+    return html`
+      &lt;input
+        type="checkbox"
+        .checked=${this.done}
+        @change=${this.updateStatus}
+      /&gt;
+      &lt;span class:done=${this.done}&gt;${this.label}&lt;/span&gt;
+      &lt;if ${this.done}&gt;
+        &lt;small&gt;Done&lt;/small&gt;
+        &lt;else&gt;&lt;small&gt;Open&lt;/small&gt;&lt;/else&gt;
+      &lt;/if&gt;
+    `;
+  }
+
+  updateStatus(event) {
+    this.done = event.currentTarget.checked;
+    this.emitStatus();
+  }
+
+  @dispatch('status-changed')
+  emitStatus() {
+    return { label: this.label, done: this.done };
+  }
+
+  @watch('done')
+  onDone(oldVal, newVal) {
+    this.meta.edits++;
+    console.log(this.label, newVal ? 'completed' : 'reopened');
+  }
+}</snice-code-block>

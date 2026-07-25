@@ -1,0 +1,38 @@
+<h3>Request / Respond</h3>
+<p class="desc">The element says <em>what</em> it needs. The controller decides <em>how</em> to get it. Neither imports the other — they meet on a named channel.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">// Element: ask for data, wait for it, render it
+@element('product-card')
+class ProductCard extends HTMLElement {
+  @property() productId = '';
+  @property() name = '';
+  @property() price = '';
+
+  @request('fetch-product')
+  async *loadProduct() {
+    const product = await (yield { id: this.productId });
+    this.name = product.name;
+    this.price = product.price;
+  }
+
+  @render()
+  template() {
+    return html`
+      &lt;h3&gt;${this.name || 'Loading…'}&lt;/h3&gt;
+      &lt;p&gt;${this.price}&lt;/p&gt;
+      &lt;button @click=${this.loadProduct}&gt;Refresh&lt;/button&gt;
+    `;
+  }
+}</snice-code-block>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// Controller: answer the channel
+@controller('product-api')
+class ProductApi {
+  async attach() {}
+  async detach() {}
+
+  @respond('fetch-product')
+  async fetchProduct({ id }) {
+    return fetch(`/api/products/${id}`).then(r =&gt; r.json());
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">One <code>yield</code> per call: it dispatches the payload, the responder returns data, and <code>await</code> resolves with it.</p>
+<p class="desc">Any controller that responds to <code>'fetch-product'</code> works — a real API in production, a fixture in tests. The element never changes.</p>

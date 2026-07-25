@@ -1,0 +1,41 @@
+<h3>Guards and layouts</h3>
+<p class="desc">A guard decides whether a route may render. A layout wraps whatever does.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">// A guard receives the router context and the route params
+const isAuthenticated = (ctx, params) =&gt; ctx.user !== null;
+const hasRole = (role) =&gt; (ctx, params) =&gt; ctx.user?.role === role;
+
+@page({
+  tag: 'admin-page',
+  routes: ['/admin'],
+  guards: [isAuthenticated, hasRole('admin')]   // AND, short-circuits
+})
+class AdminPage extends HTMLElement {
+  @render()
+  template() {
+    return html`&lt;h1&gt;Admin&lt;/h1&gt;`;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Guards return a boolean or a promise of one. Async guards are awaited before the page mounts.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// A layout is an element with a slot for the page
+@layout('app-shell')
+class AppShell extends HTMLElement {
+  @render()
+  template() {
+    return html`
+      &lt;nav&gt;…&lt;/nav&gt;
+      &lt;main&gt;&lt;slot name="page"&gt;&lt;/slot&gt;&lt;/main&gt;
+    `;
+  }
+}
+
+// Apply to every route…
+Router({ target: '#app', type: 'hash', layout: 'app-shell' });
+
+// …or opt a single page out
+@page({ tag: 'login-page', routes: ['/login'], layout: false })
+class LoginPage extends HTMLElement {
+  @render()
+  template() {
+    return html`&lt;h1&gt;Sign in&lt;/h1&gt;`;
+  }
+}</snice-code-block>

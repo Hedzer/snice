@@ -1,0 +1,16 @@
+<h3>Binding channels</h3>
+<p class="desc">Choose the channel that matches what the browser consumes: text, an attribute, a JavaScript property, boolean presence, a listener, one class, or one CSS property.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">return html`
+  &lt;button
+    title=${this.label}
+    data-label="task: ${this.label}"
+    .task=${this.task}
+    ?disabled=${this.saving}
+    @click=${this.save}
+    class:selected=${this.selected}
+    style:--task-accent=${this.accent}
+  &gt;
+    ${this.label}
+  &lt;/button&gt;
+`;</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Use <code>.property</code> for objects, arrays, functions, native form state, and any value whose JavaScript type or identity matters. Use <code>?attribute</code> when only attribute presence matters.</p>

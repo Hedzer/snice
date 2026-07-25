@@ -1,0 +1,11 @@
+<h3>Render roots</h3>
+<p class="desc">Open shadow DOM is the default. Choose closed shadow DOM, light DOM, focus delegation, or a custom root without changing template syntax.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@element('open-card')
+class OpenCard extends SniceElement { /* ... */ }
+
+@element('closed-card', { shadow: 'closed', delegatesFocus: true })
+class ClosedCard extends SniceElement { /* ... */ }
+
+@element('light-card', { renderRoot: 'light' })
+class LightCard extends SniceElement { /* ... */ }</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><code>SniceElement</code> is optional. It adds a conventional <code>render()</code>, static styles, kebab-case implicit attributes, <code>invalidate()</code>, and <code>renderNow()</code>.</p>

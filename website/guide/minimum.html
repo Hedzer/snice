@@ -1,0 +1,12 @@
+<h3>The bare minimum</h3>
+<p class="desc">An element needs a tag name and a template. That's it.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">import { element, render, html } from 'snice';
+
+@element('task-item')
+class TaskItem extends HTMLElement {
+  @render()
+  template() {
+    return html`&lt;span&gt;Buy groceries&lt;/span&gt;`;
+  }
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><span class="h">&lt;task-item&gt;&lt;/task-item&gt;</span></p>

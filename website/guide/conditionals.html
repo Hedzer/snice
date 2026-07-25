@@ -1,0 +1,23 @@
+<h3>Conditionals</h3>
+<p class="desc">Virtual control-flow tags add no wrappers and preserve each branch's DOM identity while it is inactive.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@render()
+template() {
+  return html`
+    &lt;if ${this.loading}&gt;
+      &lt;snice-spinner&gt;&lt;/snice-spinner&gt;
+      &lt;else-if ${this.error}&gt;
+        &lt;p role="alert"&gt;${this.error.message}&lt;/p&gt;
+      &lt;/else-if&gt;
+      &lt;else&gt;
+        &lt;task-list .items=${this.items}&gt;&lt;/task-list&gt;
+      &lt;/else&gt;
+    &lt;/if&gt;
+
+    &lt;case ${this.status}&gt;
+      &lt;when value="idle"&gt;Idle&lt;/when&gt;
+      &lt;when ${OFFLINE_STATE}&gt;Offline&lt;/when&gt;
+      &lt;default&gt;Working&lt;/default&gt;
+    &lt;/case&gt;
+  `;
+}</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Static <code>&lt;when value="..."&gt;</code> matches strings. A dynamic <code>&lt;when ${value}&gt;</code> uses <code>Object.is</code> for typed values and object identity.</p>
