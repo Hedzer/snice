@@ -101,3 +101,7 @@ Set `data-theme="dark"` on `<html>`. All semantic tokens (not primitives) switch
 ```
 
 Applied to `::-webkit-calendar-picker-indicator` with 0.7 opacity, 1.0 on hover.
+
+## Complete token list
+
+Exhaustive table (colors, surfaces, borders, overlays, motion, shadow glows, focus rings, density, texture, print, spacing, typography, radius, layers): components/theme.md

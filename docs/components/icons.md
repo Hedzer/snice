@@ -11,7 +11,12 @@ These defaults are sourced from **[Heroicons](https://heroicons.com)** (MIT © T
 Every component that shows an icon looks for the icon in this order:
 
 1. **Snice default** — a Heroicons glyph chosen to match the component's semantic context (info-circle for `variant="info"`, check-circle for success, etc.). Rendered only when neither of the overrides below is present.
-2. **`icon` property** — a string. Components pipe it through `renderIcon()` which detects whether it's a URL, data-URL, emoji, or plain text and renders accordingly.
+2. **`icon` property** — a string. Components pipe it through `renderIcon()`, which resolves it in this order:
+   1. `img://path` or `text://content` — force an image or text
+   2. a URL or path (`https://`, `/`, `./`, `../`, `data:`)
+   3. a filename with an image extension, with an optional query string (`logo.svg?v=2`)
+   4. a **name from the built-in catalogue below** (`search`, `check-circle`, …) — rendered as inline SVG
+   5. anything else — text, so emoji and icon-font ligatures pass through
 3. **`<slot name="icon">`** — consumer-provided element. Wins over both the prop and the default.
 
 ## Examples

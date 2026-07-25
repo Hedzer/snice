@@ -5,7 +5,9 @@ Snice embeds a small set of Heroicons (MIT © Tailwind Labs) as defaults. Consum
 ## Override precedence (lowest → highest)
 
 1. Built-in snice default (Heroicon glyph matching the component's semantic context)
-2. `icon` property: string → URL / data-URL / emoji / plain text (via `renderIcon()`)
+2. `icon` property: string via `renderIcon()`, resolved in order:
+   `img://` / `text://` override → URL or path (`https://`, `/`, `./`, `../`, `data:`) →
+   image filename with optional query (`logo.svg?v=2`) → built-in catalogue name (inline SVG) → text (emoji, ligature)
 3. `<slot name="icon">` override: wins over both
 
 ## Override examples

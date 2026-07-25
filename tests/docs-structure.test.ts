@@ -88,9 +88,10 @@ describe('Human and AI trees map to each other', () => {
 describe('docs/ holds framework reference only', () => {
   // A single component page published beside the framework docs read as a
   // "Components" category of one, implying coverage that lives elsewhere.
-  // theme.md exists in both trees but they are different subjects:
-  // docs/theme.md is the token system, docs/components/theme.md is the
-  // <snice-theme> element.
+  // theme.md exists in both trees. There is no <snice-theme> element — theme
+  // is a CSS-only module — so these are the same subject, split by role:
+  // docs/theme.md explains the system, docs/components/theme.md is the
+  // exhaustive token table that components.html serves.
   const sameSubjectAsComponent = (file: string) => file !== 'theme.md';
 
   it('has no per-component page', () => {
@@ -103,11 +104,16 @@ describe('docs/ holds framework reference only', () => {
     ).toEqual([]);
   });
 
-  it('keeps the two theme docs distinct', () => {
-    expect(read('docs/theme.md'), 'docs/theme.md should document the token system')
-      .toMatch(/--snice-color-/);
-    expect(read('docs/components/theme.md'), 'docs/components/theme.md should document the element')
-      .toMatch(/theme\.css|snice-theme/);
+  it('does not duplicate the token table across the two theme docs', () => {
+    const guide = read('docs/theme.md');
+    const reference = read('docs/components/theme.md');
+
+    // The exhaustive list lives in one place, and the guide points at it.
+    const countTokens = (doc: string) => (doc.match(/--snice-[\w-]+/g) ?? []).length;
+    expect(countTokens(reference), 'the reference should hold the full token list')
+      .toBeGreaterThan(countTokens(guide) * 2);
+    expect(guide, 'docs/theme.md should defer to the token reference')
+      .toContain('components/theme.md');
   });
 
   it('still documents the code-block component, in docs/components', () => {

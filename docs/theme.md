@@ -9,7 +9,9 @@ Load the stylesheet once:
 <link rel="stylesheet" href="theme/theme.css">
 ```
 
-Component-level styling — `@styles()`, host styling, and icons — is covered in [Styling](./styling.md).
+Component-level styling — `@styles()`, host styling, and icons — is covered in
+[Styling](./styling.md). The full token table lives in the
+[theme reference](./components/theme.md).
 
 ## Color Format
 
@@ -45,58 +47,13 @@ There are two layers, and you almost always want the second.
 
 Override semantic tokens to rebrand; override primitives only to change the underlying palette.
 
-## Surfaces
+## The complete token list
 
-Surfaces are ordered by elevation rather than by colour, so the same names work in both themes:
-
-```css
---snice-color-surface:                   /* page background */
---snice-color-surface-container-lowest:  /* inputs, recessed fields */
---snice-color-surface-container-low:
---snice-color-surface-container:
---snice-color-surface-container-high:    /* cards, panels */
---snice-color-surface-container-highest: /* modals, popovers */
-```
-
-## Borders and Interactive States
-
-```css
---snice-color-border:        /* default */
---snice-color-border-hover:
---snice-color-border-focus:
---snice-color-border-subtle: /* hairlines over arbitrary backgrounds */
-
---snice-color-surface-hover:
---snice-color-surface-active:
---snice-color-surface-disabled:
---snice-color-text-disabled:
-
---snice-color-overlay-hover:            /* translucent, composites over any surface */
---snice-color-overlay-selected:
---snice-color-overlay-selected-hover:
-```
-
-The `overlay-*` tokens are translucent on purpose: they tint whatever is underneath instead of replacing it, so selection states survive on top of any surface.
-
-## Layers
-
-Stacking is centralised so components never invent a `z-index`:
-
-```css
---snice-z-base: 0;      --snice-z-raised: 1;      --snice-z-sticky: 10;
---snice-z-fixed: 30;    --snice-z-floating: 100;  --snice-z-scrim: 1000;
---snice-z-overlay: 1100; --snice-z-popover-over: 1200; --snice-z-notification: 1300;
-```
-
-## Shadows and Focus
-
-```css
---snice-shadow-xs   /* through */   --snice-shadow-2xl
-
---snice-focus-ring-width: 2px;
---snice-focus-ring-color: hsl(var(--snice-color-blue-500) / 0.5);
---snice-focus-ring-offset: 2px;
-```
+Every token — colors, surfaces, borders, interaction overlays, motion, shadow
+glows, state-aware focus rings, density, texture, print, spacing, typography,
+radius, and layers — is tabulated in the
+[theme reference](./components/theme.md). That page is the exhaustive list;
+this one explains how the system fits together.
 
 ## Dark Mode
 
