@@ -76,6 +76,13 @@ interface InvoiceItem {
 
 | Slot Name | Description |
 |-----------|-------------|
+| `logo` | Logo shown in the header |
+| `title` | Replaces the "Invoice" heading |
+| `status` | Replaces the status badge |
+| `parties` | Replaces the from/bill-to block |
+| `before-items` | Content inserted above the line-item table |
+| `after-items` | Content inserted below the line-item table |
+| `notes` | Content appended to the notes area |
 | `qr` | QR code content. Use for payment QR codes or links. |
 | (default) | Additional content rendered in the footer area |
 

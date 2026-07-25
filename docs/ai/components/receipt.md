@@ -49,9 +49,10 @@ interface ReceiptTaxLine { label: string; rate?: number; amount: number; }
 
 ## Slots
 
-- `(default)` - Footer content below thank-you message
-- `qr` - QR code content (shown when `show-qr` is set)
-- `barcode` - Barcode content
+- `before-items` / `after-items` - insert around the item list
+- `thank-you` - replaces the closing line
+- `barcode`, `qr` - code content
+- `(default)` - Footer content
 
 ## CSS Parts
 

@@ -92,10 +92,19 @@ interface WorkOrderAsset {
 
 | Name | Description |
 |------|-------------|
-| (default) | Additional content after main sections |
-| `qr` | QR code content |
+| `title` | Replaces the "Work Order" heading |
+| `customer` | Replaces the customer block |
+| `asset` | Replaces the asset block |
+| `description` | Replaces the scope-of-work block |
+| `before-tasks` | Content inserted above the task list |
+| `after-tasks` | Content inserted below the task list |
+| `after-parts` | Content inserted below the parts table |
+| `totals` | Replaces the cost summary |
+| `notes` | Content appended to the notes area |
 | `signature` | Signature capture area |
+| `qr` | QR code content |
 | `footer` | Additional footer content |
+| (default) | Additional content after main sections |
 
 ## CSS Custom Properties
 

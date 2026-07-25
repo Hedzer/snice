@@ -45,6 +45,9 @@ interface InvoiceItem {
 
 ## Slots
 
+- `logo`, `title`, `status`, `parties` - replace the matching header regions
+- `before-items` / `after-items` - insert around the line-item table
+- `notes` - appended to the notes area
 - `qr` - Custom QR code content (shown when show-qr is set)
 - `(default)` - Footer content
 

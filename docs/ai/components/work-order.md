@@ -40,10 +40,12 @@ qrPosition: 'top-right'|'header'|'footer' = 'top-right'; // attr: qr-position
 
 ## Slots
 
-- `(default)` - Additional content after main sections
-- `signature` - Custom signature content (e.g., canvas, image)
-- `qr` - Custom QR code content (rendered at qr-position)
-- `footer` - Custom footer content
+- `title`, `customer`, `asset`, `description`, `totals` - replace the matching regions
+- `before-tasks` / `after-tasks` / `after-parts` - insert around the task and parts tables
+- `notes` - appended to the notes area
+- `signature` - above the signature lines
+- `qr`, `footer` - QR content and footer
+- `(default)` - Footer content
 
 ## CSS Parts
 

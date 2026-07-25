@@ -81,9 +81,12 @@ interface ReceiptTaxLine {
 
 | Name | Description |
 |------|-------------|
-| (default) | Additional footer content below thank-you message |
+| `before-items` | Content inserted above the item list |
+| `after-items` | Content inserted below the item list |
+| `thank-you` | Replaces the closing thank-you line |
 | `qr` | QR code content (shown when `show-qr` is set) |
 | `barcode` | Barcode content displayed near the footer |
+| (default) | Additional footer content below thank-you message |
 
 ## CSS Custom Properties
 
