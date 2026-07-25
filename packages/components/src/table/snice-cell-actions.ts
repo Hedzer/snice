@@ -1,7 +1,8 @@
-import { element, property, watch, ready, dispatch, render, styles, html, css, unsafeHTML } from 'snice';
+import { element, property, watch, ready, dispatch, render, styles, html, css } from 'snice';
 import cssContent from './snice-cell-actions.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 import { installCellPresentation } from './table-cell-presentation';
+import { renderIcon } from '../utils';
 
 export interface ActionButton {
   action: string;
@@ -75,17 +76,10 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
     const variant = action.variant || 'secondary';
     const disabled = action.disabled || false;
 
-    // Determine if icon is an image URL or text/emoji
-    const isImageUrl = icon && (icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/') || icon.startsWith('./'));
-
-    let iconHTML = '';
-    if (icon) {
-      if (isImageUrl) {
-        iconHTML = `<span class="action-icon action-icon--image"><img src="${icon}" alt="" /></span>`;
-      } else {
-        iconHTML = `<span class="action-icon">${icon}</span>`;
-      }
-    }
+    // Consumer-supplied: resolve through renderIcon, which handles registry
+    // names, every image form (including ../ and data:), and text — and never
+    // treats the value as markup.
+    const iconHTML = icon ? renderIcon(icon, 'action-icon') : '';
 
     return html/*html*/`
       <button
@@ -95,7 +89,7 @@ export class SniceCellActions extends HTMLElement implements SniceCellElement {
         ?disabled=${disabled}
         @click=${(e: Event) => this.handleActionClick(e, action.action)}
       >
-        ${unsafeHTML(iconHTML)}
+        ${iconHTML}
         ${label ? html/*html*/`<span class="action-label">${label}</span>` : ''}
       </button>
     `;

@@ -158,6 +158,47 @@ describe('snice-nav', () => {
     expect(icon?.textContent).toBe('🏠');
   });
 
+  it('renders a versioned image URL as an image, not literal text', async () => {
+    // renderIcon() tolerates a query string on an image path; nav classified
+    // it as text, so cache-busted icons rendered as the raw URL.
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    // A bare filename, so the leading-slash URL rule does not apply and the
+    // file-extension rule is what has to tolerate the query string.
+    nav.update([{ name: 'home', title: 'Home', icon: 'home.svg?v=abc123', order: 0 }] as Placard[]);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const icon = nav.shadowRoot?.querySelector('.nav__icon');
+    expect(icon?.tagName).toBe('IMG');
+    expect(icon?.getAttribute('src')).toBe('home.svg?v=abc123');
+  });
+
+  it('resolves a registry icon name to inline SVG', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    nav.update([{ name: 'home', title: 'Home', icon: 'search', order: 0 }] as Placard[]);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const icon = nav.shadowRoot?.querySelector('.nav__icon');
+    expect(icon?.querySelector('svg'), 'registry icon did not resolve to SVG').toBeTruthy();
+  });
+
+  it('honours the text:// and img:// scheme overrides', async () => {
+    nav = await createComponent<SniceNavElement>('snice-nav');
+
+    nav.update([
+      { name: 'a', title: 'A', icon: 'text:///not/a/path', order: 0 },
+      { name: 'b', title: 'B', icon: 'img://logo', order: 1 },
+    ] as Placard[]);
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const icons = nav.shadowRoot?.querySelectorAll('.nav__icon');
+    expect(icons?.[0].tagName).toBe('SPAN');
+    expect(icons?.[0].textContent).toBe('/not/a/path');
+    expect(icons?.[1].tagName).toBe('IMG');
+    expect(icons?.[1].getAttribute('src')).toBe('logo');
+  });
+
   it('should update current route', async () => {
     nav = await createComponent<SniceNavElement>('snice-nav');
 

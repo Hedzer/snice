@@ -93,15 +93,17 @@
   font-size: 1rem; /* 16px */
 }
 
-.action-icon--image {
+/* renderIcon emits the icon element itself, so size the image and the
+   registry SVG directly rather than a wrapper. */
+img.action-icon {
   width: 1rem; /* 16px */
   height: 1rem; /* 16px */
+  object-fit: contain;
 }
 
-.action-icon--image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.action-icon svg {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
 }
 
 .action-label {

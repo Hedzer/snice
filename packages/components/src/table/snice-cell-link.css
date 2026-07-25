@@ -46,6 +46,18 @@
   font-size: 1rem; /* 16px */
 }
 
+/* renderIcon emits the icon element itself (img or a span wrapping an SVG). */
+img.link-icon {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+  object-fit: contain;
+}
+
+.link-icon svg {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
 .link-text {
   overflow: hidden;
   text-overflow: ellipsis;

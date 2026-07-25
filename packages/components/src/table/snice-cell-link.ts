@@ -2,6 +2,7 @@ import { element, property, watch, ready, render, styles, html, css, unsafeHTML 
 import cssContent from './snice-cell-link.css?inline';
 import type { SniceCellElement, ColumnDefinition } from './snice-table.types';
 import { installCellPresentation } from './table-cell-presentation';
+import { renderIcon } from '../utils';
 
 @element('snice-cell-link')
 export class SniceCellLink extends HTMLElement implements SniceCellElement {
@@ -41,7 +42,9 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
     const linkText = this.text || this.value;
     const isExternal = this.external || this.target === '_blank' || linkHref.startsWith('http');
 
-    const iconHTML = this.icon ? `<span class="link-icon">${this.icon}</span>` : '';
+    // Consumer-supplied: resolve through renderIcon so registry names and
+    // image paths work, and so the value can never be spliced in as markup.
+    const iconHTML = this.icon ? renderIcon(this.icon, 'link-icon') : '';
     const externalIcon = isExternal ? '<span class="external-icon">↗</span>' : '';
 
     return html/*html*/`
@@ -53,7 +56,7 @@ export class SniceCellLink extends HTMLElement implements SniceCellElement {
           class="cell-link"
           part="link"
         >
-          ${unsafeHTML(iconHTML)}
+          ${iconHTML}
           <span class="link-text">${linkText}</span>
           ${unsafeHTML(externalIcon)}
         </a>

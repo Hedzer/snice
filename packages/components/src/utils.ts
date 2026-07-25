@@ -13,6 +13,30 @@ export const strictStringAttributeConverter = {
 };
 
 /**
+ * Classify a consumer-supplied icon value.
+ *
+ * This is the single source of truth for icon resolution. `renderIcon` uses it
+ * for declarative rendering; components that build DOM imperatively (nav) use
+ * it directly, so both paths agree on what counts as an image, a registry
+ * name, or plain text.
+ */
+export function classifyIcon(icon: string): { kind: 'img' | 'registry' | 'text'; value: string } {
+  if (icon.startsWith('img://')) return { kind: 'img', value: icon.slice(6) };
+  if (icon.startsWith('text://')) return { kind: 'text', value: icon.slice(7) };
+
+  // URL-shaped, or a filename with an image extension (an optional query
+  // string is allowed so cache-busted paths still resolve as images).
+  const isUrl = /^(https?:\/\/|\/|\.\/|\.\.\/|data:)/.test(icon);
+  const isImageFile =
+    /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)(\?.*)?$/i.test(icon);
+  if (isUrl || isImageFile) return { kind: 'img', value: icon };
+
+  if ((ICONS as Record<string, string>)[icon]) return { kind: 'registry', value: icon };
+
+  return { kind: 'text', value: icon };
+}
+
+/**
  * Detects icon type and returns appropriate template
  *
  * Scheme overrides:
@@ -40,45 +64,27 @@ export const strictStringAttributeConverter = {
 export function renderIcon(icon: string, className = 'icon'): TemplateResult {
   if (!icon) return html``;
 
-  // Check for scheme overrides first
-  if (icon.startsWith('img://')) {
-    const src = icon.slice(6);
-    return html`<img class="${className}" src="${src}" alt="" part="icon" />`;
-  }
+  const { kind, value } = classifyIcon(icon);
 
-  if (icon.startsWith('text://')) {
-    const content = icon.slice(7);
-    return html`<span class="${className}" part="icon">${content}</span>`;
-  }
-
-  // Auto-detect: Check if it's a URL pattern
-  if (/^(https?:\/\/|\/|\.\/|\.\.\/|data:)/.test(icon)) {
-    return html`<img class="${className}" src="${icon}" alt="" part="icon" />`;
-  }
-
-  // Auto-detect: Check if it's a file with image extension
-  // Must have at least one char before the dot, and no unsupported protocol prefix
-  // Covers: SVG, PNG, JPEG variants, GIF, WebP, AVIF, JPEG XL, ICO, BMP, TIFF, HEIC/HEIF, APNG
-  if (/^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)(\?.*)?$/i.test(icon)) {
-    return html`<img class="${className}" src="${icon}" alt="" part="icon" />`;
+  if (kind === 'img') {
+    return html`<img class="${className}" src="${value}" alt="" part="icon" />`;
   }
 
   // Built-in SVG registry (components/icons) — named icons resolve here
   // BEFORE the font-ligature fallback. Without this, names like 'search'
   // render as literal text unless an external icon font is loaded.
-  const registered = (ICONS as Record<string, string>)[icon];
-  if (registered) {
-    return html`<span class="${className}" part="icon">${unsafeHTML(registered)}</span>`;
+  if (kind === 'registry') {
+    return html`<span class="${className}" part="icon">${unsafeHTML((ICONS as Record<string, string>)[value])}</span>`;
   }
 
   // Default: text content (emoji, font icon ligature names)
   // All content is escaped - no HTML injection possible
   // Detect ligature icon names (lowercase words with underscores, e.g. "search", "check_circle")
   // vs emoji/other text — apply --snice-icon-font (defaults to Material Symbols Outlined)
-  if (/^[a-z][a-z0-9_]*$/.test(icon)) {
-    return html`<span class="${className} snice-icon-ligature" style="font-family:var(--snice-icon-font,'Material Symbols Outlined'),sans-serif" part="icon">${icon}</span>`;
+  if (/^[a-z][a-z0-9_]*$/.test(value)) {
+    return html`<span class="${className} snice-icon-ligature" style="font-family:var(--snice-icon-font,'Material Symbols Outlined'),sans-serif" part="icon">${value}</span>`;
   }
-  return html`<span class="${className}" part="icon">${icon}</span>`;
+  return html`<span class="${className}" part="icon">${value}</span>`;
 }
 
 /**

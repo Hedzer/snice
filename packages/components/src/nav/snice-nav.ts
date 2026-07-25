@@ -7,6 +7,7 @@
 import { element, property, watch, context } from 'snice';
 import type { Placard, AppContext, Context } from 'snice';
 import { ICONS } from '../icons';
+import { classifyIcon } from '../utils';
 import cssContent from './snice-nav.css?inline';
 import type { SniceNavElement, NavVariant, NavOrientation, NavActiveStyle } from './snice-nav.types';
 
@@ -588,16 +589,3 @@ export class SniceNav extends HTMLElement implements SniceNavElement {
   }
 }
 
-function classifyIcon(icon: string): { kind: 'img' | 'registry' | 'text'; value: string } {
-  const isImg = icon.startsWith('img://') ||
-    /^(https?:\/\/|\/|\.\/|\.\.\/|data:)/.test(icon) ||
-    /^[^:]*\w\.(svg|png|jpe?g|jfif|pjp|gif|webp|avif|jxl|ico|cur|bmp|tiff?|heic|heif|apng)$/i.test(icon);
-  const forceText = icon.startsWith('text://');
-  if (isImg && !forceText) {
-    return { kind: 'img', value: icon.startsWith('img://') ? icon.slice(6) : icon };
-  }
-  if (!forceText && (ICONS as Record<string, string>)[icon]) {
-    return { kind: 'registry', value: icon };
-  }
-  return { kind: 'text', value: forceText ? icon.slice(7) : icon };
-}
