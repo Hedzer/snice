@@ -18,6 +18,7 @@ Combines camera capture with freehand drawing and labeled annotations. Provides 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `mode` | `'camera' \| 'annotate'` | `'camera'` | Current mode of the component |
+| `autoStart` (attr: `auto-start`) | `boolean` | `false` | Open the camera as soon as the component connects |
 | `autoRotateColors` (attr: `auto-rotate-colors`) | `boolean` | `true` | Automatically cycle through preset colors for each new annotation |
 | `showLabelsPanel` (attr: `show-labels-panel`) | `boolean` | `true` | Show the sidebar panel with annotation labels |
 

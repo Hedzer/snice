@@ -6,6 +6,7 @@ Camera capture + freehand drawing + labeled annotations.
 
 ```typescript
 mode: 'camera' | 'annotate' = 'camera';
+autoStart: boolean = false;           // attribute: auto-start
 autoRotateColors: boolean = true;     // attribute: auto-rotate-colors
 showLabelsPanel: boolean = true;      // attribute: show-labels-panel
 ```

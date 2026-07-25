@@ -18,6 +18,7 @@ target: string = '';
 download: string = '';
 icon: string = '';                        // emoji, URL, image file
 iconPlacement: 'start'|'end' = 'start';  // attr: icon-placement
+justifyText: 'start'|'center'|'end' = 'center';  // attr: justify-text
 readonly form: HTMLFormElement | null;
 readonly labels: NodeList | null;
 ```
