@@ -29,4 +29,21 @@ describe('snice-camera', () => {
       expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     });
   });
+
+  describe('accessible names', () => {
+    it('every icon-only control announces what it does', async () => {
+      const el = document.createElement('snice-camera');
+      document.body.appendChild(el);
+      await new Promise(r => setTimeout(r, 60));
+
+      const buttons = [...el.shadowRoot!.querySelectorAll('button')];
+      const unnamed = buttons.filter(b => {
+        const named = b.getAttribute('aria-label') || b.getAttribute('aria-labelledby') || b.getAttribute('title');
+        return !named && !(b.textContent || '').trim();
+      }).map(b => b.className);
+
+      expect(unnamed, 'an icon-only button with no name is announced as just "button"').toEqual([]);
+      el.remove();
+    });
+  });
 });
