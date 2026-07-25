@@ -6,6 +6,7 @@ The `<snice-image>` component provides a flexible image display with variants, s
 
 ## Table of Contents
 - [Properties](#properties)
+- [Slots](#slots)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
@@ -26,6 +27,12 @@ The `<snice-image>` component provides a flexible image display with variants, s
 | `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | Object-fit behavior |
 | `width` | `string` | `''` | Custom width (CSS value) |
 | `height` | `string` | `''` | Custom height (CSS value) |
+
+## Slots
+
+| Name | Description |
+|------|-------------|
+| `placeholder` | Placeholder content shown while loading or when no `src` resolves |
 
 ## CSS Parts
 

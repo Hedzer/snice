@@ -61,6 +61,8 @@ The list uses `@request`/`@respond` for controller-driven data flow.
 | (default) | List item elements |
 | `before` | Content before the list items |
 | `after` | Content after the list items |
+| `loading` | Replaces the loading skeletons while `loading` is set |
+| `no-results` | Replaces the empty state while `no-results` is set |
 | `no-results` | Custom empty state (overrides default) |
 | `loading` | Custom loading content (overrides skeletons) |
 
