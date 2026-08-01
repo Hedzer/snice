@@ -1,3 +1,14 @@
+## [7.0.3](https://github.com/Hedzer/snice/compare/v7.0.2...v7.0.3) (2026-08-01)
+
+
+### Bug Fixes
+
+* **release:** commit plugin manifests so shipped versions match the release ([8afc3b5](https://github.com/Hedzer/snice/commit/8afc3b584d3e19e48e9116b48886103eb3a7f6af))
+* **showcase:** attach the load-more responder so infinite scroll works ([f3d3a9b](https://github.com/Hedzer/snice/commit/f3d3a9bd2473dab750cca31ae229a58b7a01d953))
+* **table:** make sortable headers focusable, named, and keyboard-operable ([2b5c8c4](https://github.com/Hedzer/snice/commit/2b5c8c49c3d35cd52e0bbb2a6f0554a9e5b616fa))
+* **terminal,video-player,recipe,table:** name controls that screen readers announced blank ([975ab33](https://github.com/Hedzer/snice/commit/975ab3307bb6d5fc0b767b80be06dc7470183cc1))
+* **website:** replace stale MCP setup with the Snice skill ([fb2a152](https://github.com/Hedzer/snice/commit/fb2a152b24377f7b4a3d605477ba8d62ff64abe6))
+
 ## [7.0.2](https://github.com/Hedzer/snice/compare/v7.0.1...v7.0.2) (2026-07-25)
 
 

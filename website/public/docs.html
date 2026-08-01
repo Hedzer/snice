@@ -110,6 +110,7 @@
 <a href="#events-template-event-syntax-preferred-for-elements" class="sub">Template Event Syntax (Preferred for Elements)</a>
 <a href="#events-on-decorator" class="sub">@on Decorator</a>
 <a href="#events-dispatch-decorator" class="sub">@dispatch Decorator</a>
+<a href="#events-event-bus" class="sub">Event Bus</a>
 <a href="#events-custom-events" class="sub">Custom Events</a>
 <a href="#events-event-delegation" class="sub">Event Delegation</a>
 <a href="#events-keyboard-shortcuts" class="sub">Keyboard Shortcuts</a>
@@ -2013,6 +2014,52 @@ class ColorPicker extends HTMLElement {
     return { color: this.color };
   }
 }</snice-code-block>
+<h2 id="events-event-bus">Event Bus</h2>
+<p>Snice has no bus object and no singleton. A bus is <code>@dispatch</code> publishing upward and</p>
+<p><code>@on</code> subscribing at a chosen ancestor -- the scope is a DOM node, so it is created and</p>
+<p>torn down with the DOM.</p>
+<p>There are two ways to publish, and the choice decides who can hear it.</p>
+<p><strong>Bubble up from the host.</strong> <code>@dispatch</code> is <code>bubbles: true, composed: true</code> by default, so</p>
+<p>the event crosses shadow boundaries and passes every ancestor on its way to <code>document</code>.</p>
+<p>Use this when the event is about <em>this</em> element and ancestors may care.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@element('product-tile')
+class ProductTile extends HTMLElement {
+  @dispatch('bus:cart-added')
+  addToCart(sku: string) {
+    return { sku, qty: 1 };
+  }
+}</snice-code-block>
+<p><strong>Dispatch directly on a scope.</strong> <code>@dispatch</code> takes the same <code>scope</code> option as <code>@on</code>, which</p>
+<p>fires the event <em>on</em> that target instead of bubbling from the host. Use this when the</p>
+<p>subscriber is not an ancestor -- a sibling subtree, or a host that may be detached.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">@dispatch('bus:cart-added', { scope: 'global' })   // dispatched on document
+add(id: string) { return { id }; }</snice-code-block>
+<p>Subscribe at the scope you want to share.</p>
+<snice-code-block language="typescript" grammar="grammars/typescript.json">// App-wide: listens on document
+@on('bus:cart-added', { scope: 'global' })
+onCartAdded(e: CustomEvent) { /* ... */ }
+
+// Feature-scoped: listens on the nearest &lt;cart-shell&gt; ancestor, so a second
+// &lt;cart-shell&gt; elsewhere on the page keeps its own traffic
+@on('bus:cart-added', { scope: 'cart-shell' })
+onCartAdded(e: CustomEvent) { /* ... */ }</snice-code-block>
+<p>Choosing a scope:</p>
+<div class="doc-table-wrap"><table><thead><tr><th>Reach</th><th><code>scope</code></th><th>Use when</th></tr></thead><tbody><tr><td>Whole document</td><td><code>'global'</code></td><td>Genuinely app-wide: auth expiry, theme change, save shortcut</td></tr><tr><td>A feature subtree</td><td>selector string</td><td>The event belongs to one shell and must not leak to a sibling instance</td></tr><tr><td>A specific node</td><td><code>EventTarget</code> / resolver</td><td>You already hold the node, or the target moves and must re-resolve</td></tr></tbody></table></div>
+<p>Prefer the narrowest scope that works. <code>'global'</code> means every instance on the page hears</p>
+<p>every message, which is what makes singleton buses hard to reason about.</p>
+<p>Match the two halves. A bubbling publish only reaches subscribers that sit on the host's</p>
+<p>ancestor chain; if the subscriber lives in a sibling subtree, scope the dispatch too so</p>
+<p>both meet on the same node. See</p>
+<p><a href="#events-scope-controlling-the-dispatch-target">scope on @dispatch</a>.</p>
+<p>Name events so the routing is visible at the call site -- the <code>bus:</code> prefix above is a</p>
+<p>convention, not a framework feature. Any string works.</p>
+<p>Teardown is automatic: the listener is removed on disconnect from whichever target it</p>
+<p>resolved to, and re-resolved on reconnect, so subscribers follow the host when it moves.</p>
+<p>If a selector scope matches no ancestor the listener is skipped with a <code>console.warn</code></p>
+<p>rather than silently binding to the wrong node. See</p>
+<p><a href="#events-scope-controlling-the-listener-target">scope</a> for the full resolution table.</p>
+<p>For a request that needs an answer rather than a broadcast, use</p>
+<p><a href="#request-response">@request / @respond</a> instead.</p>
 <h2 id="events-custom-events">Custom Events</h2>
 <h3 id="events-dispatching-manually">Dispatching Manually</h3>
 <snice-code-block language="typescript" grammar="grammars/typescript.json">@element('manual-dispatcher')
@@ -5743,7 +5790,7 @@ function MyComponent() {
 
   <footer>
     <div class="wrap">
-      <span>Snice v7.0.2 · <a href="license.html">MIT</a></span>
+      <span>Snice v7.0.3 · <a href="license.html">MIT</a></span>
       <span><a href="https://www.npmjs.com/package/snice">npm</a> · <a href="https://gitlab.com/Hedzer/snice">GitLab</a></span>
     </div>
   </footer>
