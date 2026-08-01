@@ -400,10 +400,10 @@ ${header('home')}
 
     <section class="mcp-section">
       <h3>AI-Assisted Development</h3>
-      <p>Use the snice MCP server with Claude Code for intelligent component scaffolding and documentation lookup.</p>
+      <p>Install the Snice skill in your project so coding agents can choose the right components and follow the framework’s patterns.</p>
       <div class="install">
-        <code>claude mcp add snice -- npx snice mcp</code>
-        <button onclick="navigator.clipboard.writeText('claude mcp add snice -- npx snice mcp')">
+        <code>npx snice init-ai</code>
+        <button onclick="navigator.clipboard.writeText('npx snice init-ai')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
       </div>
