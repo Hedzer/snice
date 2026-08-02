@@ -12,6 +12,7 @@ A product display card with image gallery, pricing, star ratings, variant select
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
+- [CSS Custom Properties](#css-custom-properties)
 - [Data Types](#data-types)
 
 ## Properties

@@ -23,6 +23,12 @@ showTimestamps: boolean = false; // attr: show-timestamps
 - `getHistory()` - Get command history
 - `clearHistory()` - Clear command history
 
+Streaming API — feed raw chunks without splitting on newlines; a trailing partial line stays live and grows until a newline commits it:
+
+- `appendChunk(chunk, type?)` - Append a raw chunk
+- `pipeFrom(source, type?)` - Stream an `AsyncIterable<string>` or `ReadableStream<string|Uint8Array>`; returns `Promise<void>`
+- `commitLiveLine()` - Force the live buffer to become a finished line
+
 ## Events
 
 - `terminal-command` -> `{ command, args }` - Command entered

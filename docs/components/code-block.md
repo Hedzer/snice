@@ -13,6 +13,10 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
+- [Fetch Mode](#fetch-mode)
+- [Grammar System](#grammar-system)
+- [Highlighter API](#highlighter-api)
+- [Token CSS Classes](#token-css-classes)
 
 ## Properties
 
@@ -20,10 +24,10 @@ Display code with syntax highlighting, line numbers, and copy functionality. Use
 |----------|------|---------|-------------|
 | `code` | `string` | `''` | Code content (set via slot or property) |
 | `language` | `CodeLanguage` | `'plaintext'` | Programming language |
-| `grammar` | `Grammar \| string \| null` | `null` | Grammar object or URL to grammar JSON |
+| `grammar` | `Grammar \| string \| null` | `''` | Grammar object or URL to grammar JSON |
 | `showLineNumbers` (attr: `show-line-numbers`) | `boolean` | `false` | Show line numbers |
 | `startLine` (attr: `start-line`) | `number` | `1` | Starting line number |
-| `highlightLines` (attr: `highlight-lines`) | `number[]` | `[]` | Lines to highlight |
+| `highlightLines` | `number[]` | `[]` | Lines to highlight (JS-only; no attribute) |
 | `copyable` | `boolean` | `true` | Show copy button |
 | `filename` | `string` | `''` | File name to display in header |
 | `format` | `string` | `''` | Formatter name from grammar (e.g. `"pretty"`), or any truthy string with `setFormatter()` |
@@ -104,15 +108,20 @@ console.log(greeting);
 
 ### Highlight Specific Lines
 
-Use `highlight-lines` to draw attention to specific lines.
+Set `highlightLines` in JavaScript to draw attention to specific lines. There is no
+`highlight-lines` attribute -- the property is JS-only.
 
 ```html
-<snice-code-block grammar="grammars/python.json" language="python" highlight-lines="[2,3,4]">
+<snice-code-block id="snippet" grammar="grammars/python.json" language="python">
 def hello():
     name = "World"
     greeting = f"Hello {name}"
     print(greeting)
 </snice-code-block>
+```
+
+```typescript
+document.getElementById('snippet').highlightLines = [2, 3, 4];
 ```
 
 ### Programmatic Code

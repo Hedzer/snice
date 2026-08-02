@@ -8,6 +8,7 @@ Bell icon with dropdown notification panel. Shows unread badge, supports dismiss
 notifications: NotificationItem[] = [];  // attr: none (JS only)
 open: boolean = false;                   // Panel visibility
 icon: string = '';                       // Custom bell icon (URL, image, emoji)
+placement: 'start'|'end' = 'end';        // Panel alignment side
 ```
 
 ## Methods
@@ -37,15 +38,15 @@ icon: string = '';                       // Custom bell icon (URL, image, emoji)
 
 ```css
 --snice-color-primary              /* Mark all read link, unread highlight */
---snice-color-primary-subtle       /* Unread item background */
+--snice-color-primary-subtle-hover /* Unread item hover (base tint derives from --snice-color-primary) */
 --snice-color-danger               /* Badge background, dismiss hover */
---snice-color-text-inverse         /* Badge text */
+--snice-color-surface              /* Badge text, via the nested snice-badge */
 --snice-color-text-secondary       /* Message text */
 --snice-color-text-tertiary        /* Timestamp, empty state, dismiss icon */
 --snice-color-border               /* Panel, item borders */
 --snice-color-surface           /* Panel background */
---snice-color-surface-container-high   /* Item hover, bell hover */
---snice-shadow-lg                  /* Panel shadow */
+--snice-color-surface-hover        /* Item hover, bell hover */
+--snice-shadow-xl                  /* Panel shadow */
 ```
 
 ## Basic Usage

@@ -37,6 +37,9 @@ A shell terminal emulator with command execution, history navigation, and ANSI c
 | `focus()` | -- | Focus the input |
 | `getHistory()` | -- | Get command history, returns `string[]` |
 | `clearHistory()` | -- | Clear command history |
+| `appendChunk()` | `chunk: string, type?: TerminalLineType` | Feed a raw chunk without splitting on newlines; a trailing partial line stays live and grows as more chunks arrive |
+| `pipeFrom()` | `source: AsyncIterable<string> \| ReadableStream<string \| Uint8Array>, type?: TerminalLineType` | Stream a source to the terminal until it ends. Returns `Promise<void>` |
+| `commitLiveLine()` | -- | Force the current live (un-newlined) buffer to be treated as a finished line |
 
 ## Events
 

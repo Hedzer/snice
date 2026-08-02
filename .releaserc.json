@@ -36,7 +36,6 @@
           "bin/templates/**/package.json",
           "llms.txt",
           "llms-full.txt",
-          "website/public/**",
           "adapters/react/**"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"

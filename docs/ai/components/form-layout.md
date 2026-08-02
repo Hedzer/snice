@@ -59,4 +59,6 @@ import 'snice/components/form-layout/snice-form-layout';
 </snice-form-layout>
 ```
 
+Span columns with CSS `grid-column` on a slotted child: `<snice-textarea style="grid-column: 1 / -1">`.
+
 No events -- layout-only component. Responsive: collapses to single column on mobile (<640px).

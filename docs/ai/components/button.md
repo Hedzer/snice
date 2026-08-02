@@ -53,16 +53,11 @@ readonly labels: NodeList | null;
 ```html
 <snice-button>Click me</snice-button>
 
-<!-- Variants -->
+<!-- Variants: default|primary|success|warning|danger|text -->
 <snice-button variant="primary">Primary</snice-button>
-<snice-button variant="success">Success</snice-button>
-<snice-button variant="warning">Warning</snice-button>
-<snice-button variant="danger">Danger</snice-button>
-<snice-button variant="text">Text</snice-button>
 
-<!-- Sizes -->
+<!-- Sizes: small|medium|large -->
 <snice-button size="small">Small</snice-button>
-<snice-button size="large">Large</snice-button>
 
 <!-- States -->
 <snice-button disabled>Disabled</snice-button>

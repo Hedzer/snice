@@ -138,6 +138,46 @@ describe('@on scope option', () => {
     expect(seen).toEqual(['shell']);
   });
 
+  it('scope: sibling scope roots isolate their own traffic', async () => {
+    // The property that makes a scoped bus worth using: a second <cart-shell>
+    // elsewhere on the page must not hear the first one's messages.
+    const seenA: string[] = [];
+    const seenB: string[] = [];
+    const tA = tag('scope-iso-a');
+    const tB = tag('scope-iso-b');
+
+    @element(tA)
+    class A extends HTMLElement {
+      @on('bus:cart-added', { scope: 'cart-shell' })
+      h(e: CustomEvent) { seenA.push(e.detail); }
+    }
+
+    @element(tB)
+    class B extends HTMLElement {
+      @on('bus:cart-added', { scope: 'cart-shell' })
+      h(e: CustomEvent) { seenB.push(e.detail); }
+    }
+
+    const shellA = document.createElement('cart-shell');
+    const shellB = document.createElement('cart-shell');
+    const a = document.createElement(tA);
+    const b = document.createElement(tB);
+    shellA.appendChild(a);
+    shellB.appendChild(b);
+    container.appendChild(shellA);
+    container.appendChild(shellB);
+    await (a as any).ready;
+    await (b as any).ready;
+
+    // Published inside shell A: bubbles a -> shellA -> container, never through shellB.
+    a.dispatchEvent(new CustomEvent('bus:cart-added', {
+      detail: 'from-a', bubbles: true, composed: true,
+    }));
+
+    expect(seenA).toEqual(['from-a']);
+    expect(seenB).toEqual([]);
+  });
+
   it('scope: selector string with no matching ancestor warns and skips', async () => {
     const seen: number[] = [];
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});

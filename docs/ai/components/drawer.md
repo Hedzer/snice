@@ -44,10 +44,10 @@ contained: boolean = false;                    // Position relative to parent
 - `--snice-drawer-control-size` - Drawer control size
 - `--drawer-width-small` through `--drawer-width-xxxl` - Width per size
 - `--drawer-height-small` through `--drawer-height-xxxl` - Height per size (top/bottom)
-- `--drawer-bg` - Background (default: `var(--snice-color-surface, white)`)
-- `--drawer-shadow` - Shadow (default: `var(--snice-shadow-lg)`)
-- `--drawer-backdrop` - Backdrop color (default: `rgba(0, 0, 0, 0.5)`)
-- `--drawer-transition` - Transition timing
+- `--drawer-bg` - Background (default: `var(--snice-color-surface-container-highest, var(--snice-color-surface, white))`)
+- `--drawer-shadow` - Shadow (default: `var(--snice-shadow-2xl, ...)`)
+- `--drawer-backdrop` - Backdrop color (default: `var(--snice-drawer-backdrop, rgb(0 0 0 / 0.6))`)
+- `--drawer-transition` - Transition timing (default: `transform 320ms var(--snice-ease-out, cubic-bezier(0.22, 1, 0.36, 1))`)
 - `--drawer-z-index` - Z-index (default: `1050`)
 
 ## CSS Parts

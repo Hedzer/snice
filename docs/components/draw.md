@@ -67,11 +67,11 @@ interface DrawStroke {
 
 | Event | Detail | Description |
 |-------|--------|-------------|
-| `draw-start` | -- | Drawing started |
-| `draw-end` | `{ stroke }` | Drawing ended (stroke complete) |
-| `draw-clear` | -- | Canvas cleared |
-| `draw-undo` | -- | Undo performed |
-| `draw-redo` | -- | Redo performed |
+| `draw-start` | `{ draw, point }` | Drawing started |
+| `draw-end` | `{ draw, stroke }` | Drawing ended (stroke complete) |
+| `draw-clear` | `{ draw }` | Canvas cleared |
+| `draw-undo` | `{ draw }` | Undo performed |
+| `draw-redo` | `{ draw }` | Redo performed |
 
 ## CSS Parts
 

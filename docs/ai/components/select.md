@@ -14,14 +14,8 @@ Customizable dropdown selection with single/multiple, search, editable input, an
 ```typescript
 value: string = '';                 // Live; comma-separated for multiple
 defaultValue: string = '';          // attr: value; authored/reset default
-disabled: boolean = false;
-required: boolean = false;
-invalid: boolean = false;
-readonly: boolean = false;
-loading: boolean = false;
-multiple: boolean = false;
-searchable: boolean = false;
-clearable: boolean = false;
+disabled | required | invalid | readonly | loading: boolean = false;
+multiple | searchable | clearable: boolean = false;
 editable: boolean = false;          // Text input trigger instead of button
 allowFreeText: boolean = false;     // attr: allow-free-text
 remote: boolean = false;            // Remote search via @request('select/search')
@@ -37,11 +31,8 @@ placeholder: string = 'Select an option';
 maxHeight: string = '200px';        // attr: max-height
 options: SelectOption[] = [];       // JS only, works alongside <snice-option> children
 readonly labels: NodeList | null;   // Current explicit/wrapping external labels
-readonly type: 'select-one' | 'select-multiple';
-readonly form: HTMLFormElement | null;
-readonly validity: ValidityState;
-readonly validationMessage: string;
-readonly willValidate: boolean;
+readonly type: 'select-one' | 'select-multiple'; form: HTMLFormElement | null;
+readonly validity: ValidityState; validationMessage: string; willValidate: boolean;
 ```
 
 ### snice-option

@@ -18,7 +18,7 @@ Displays a rich preview card for a URL with image, title, description, and site 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `url` | `string` | `''` | Target URL (opens on click) |
-| `title` | `string` | `''` | Preview title (clamped to 2 lines) |
+| `title` | `string` | `''` | Preview title, clamped to 2 lines (JS-only; a `title` attribute is the native tooltip) |
 | `description` | `string` | `''` | Preview description (clamped to 3 lines) |
 | `image` | `string` | `''` | Preview image URL |
 | `siteName` (attr: `site-name`) | `string` | `''` | Site name shown in footer |
@@ -62,11 +62,18 @@ import 'snice/components/link-preview/snice-link-preview';
 
 ```html
 <snice-link-preview
+  id="preview"
   url="https://example.com"
-  title="Example Website"
   description="An example website for demonstration."
   image="https://example.com/og-image.jpg">
 </snice-link-preview>
+```
+
+`title` is a JS-only property. A `title` attribute is the native HTML tooltip and does
+not set the preview heading.
+
+```typescript
+document.getElementById('preview').title = 'Example Website';
 ```
 
 ## Examples
@@ -78,7 +85,6 @@ The default layout stacks the image above the content.
 ```html
 <snice-link-preview
   url="https://snice.dev"
-  title="Snice - Beautiful Decorators for Custom Elements"
   description="Write clean, reactive web components with TypeScript decorators."
   image="https://picsum.photos/600/300"
   site-name="snice.dev">
@@ -93,7 +99,6 @@ Use `variant="horizontal"` to display the image beside the content.
 <snice-link-preview
   variant="horizontal"
   url="https://snice.dev/guide"
-  title="Getting Started Guide"
   description="Learn to build elements step by step."
   site-name="snice.dev">
 </snice-link-preview>
@@ -104,8 +109,8 @@ Use `variant="horizontal"` to display the image beside the content.
 Use the `size` attribute to adjust padding, font sizes, and image dimensions.
 
 ```html
-<snice-link-preview size="small" url="https://example.com" title="Compact Card" description="A short summary."></snice-link-preview>
-<snice-link-preview size="large" url="https://example.com" title="Expanded Card" description="A longer description with more room for content." image="https://picsum.photos/800/400"></snice-link-preview>
+<snice-link-preview size="small" url="https://example.com" description="A short summary."></snice-link-preview>
+<snice-link-preview size="large" url="https://example.com" description="A longer description with more room for content." image="https://picsum.photos/800/400"></snice-link-preview>
 ```
 
 ### Without Image
@@ -115,7 +120,6 @@ When no image is provided, a placeholder link icon is shown.
 ```html
 <snice-link-preview
   url="https://example.com"
-  title="Text-Only Preview"
   description="When no image is provided, a placeholder icon is shown."
   site-name="example.com">
 </snice-link-preview>
@@ -126,7 +130,6 @@ When no image is provided, a placeholder link icon is shown.
 ```html
 <snice-link-preview
   url="https://example.com/article"
-  title="Article with Favicon"
   description="Shows the site favicon next to the site name."
   image="https://picsum.photos/600/300"
   site-name="example.com"
@@ -139,7 +142,6 @@ When no image is provided, a placeholder link icon is shown.
 ```html
 <snice-link-preview
   id="preview"
-  title="Clickable Preview"
   description="Listen for click events."
   url="https://example.com">
 </snice-link-preview>

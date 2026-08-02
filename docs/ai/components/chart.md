@@ -8,7 +8,9 @@ General-purpose chart component with 10 chart types and animations.
 type: 'line'|'bar'|'horizontal-bar'|'area'|'pie'|'donut'|'scatter'|'bubble'|'radar'|'mixed' = 'line';
 datasets: ChartDataset[] = [];    // property only
 labels: string[] = [];            // property only
-options: ChartOptions = {};       // property only
+options: ChartOptions = { responsive: true, maintainAspectRatio: false, legend: {position:'top', clickable:true},
+                          tooltip: {trigger:'hover'}, animation: {enabled:true, duration:500, easing:'ease-out'},
+                          xAxis: {grid:true}, yAxis: {grid:true} };   // property only
 width: number = 0;                // 0 = auto
 height: number = 0;               // 0 = auto
 ```

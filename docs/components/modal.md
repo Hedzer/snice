@@ -14,6 +14,7 @@ A dialog overlay with focus trapping, backdrop dismiss, and keyboard navigation.
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Keyboard Navigation](#keyboard-navigation)
+- [CSS Custom Properties](#css-custom-properties)
 - [Accessibility](#accessibility)
 
 ## Properties

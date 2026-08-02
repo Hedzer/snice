@@ -13,6 +13,8 @@ loading: boolean = false;
 showRememberMe: boolean = true;      // attr: show-remember-me
 showForgotPassword: boolean = true;   // attr: show-forgot-password
 actionText: string = 'Sign In';      // attr: action-text
+alertMessage: string = '';                        // JS only; inline alert above the form
+alertVariant: 'error'|'success'|'' = '';          // JS only; styles alertMessage
 ```
 
 ## Methods
@@ -22,6 +24,8 @@ actionText: string = 'Sign In';      // attr: action-text
 - `reset()` → Clear form, alert, loading
 - `setError(message)` → Show error alert
 - `clearError()` → Clear alert
+- `showAlert(message, 'error'|'success')` → Show inline alert; `setError` is the error-only shorthand
+- `clearAlert()` → Remove inline alert
 
 ## Requests
 
@@ -107,3 +111,10 @@ class AuthController {
 // Event fallback
 login.addEventListener('login-success', () => location.href = '/dashboard');
 ```
+
+## Accessibility
+
+- Inputs use `<label for>`; `autocomplete="username"` / `"current-password"`
+- Required fields carry `required`
+- Enter on the password field submits
+- Loading and disabled states propagate to every input and the submit button

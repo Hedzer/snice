@@ -59,12 +59,12 @@ Siblings of `snice-layout` for the other standard page shapes. All regions are s
 - `snice-layout-sidebar` — app shell: `brand`, `header`, `sidebar`, `page`, `footer`
 - `snice-layout-dashboard` — app shell + toolbar + right rail: `brand`, `header`, `toolbar`, `sidebar`, `page`, `right-sidebar`
 - `snice-layout-blog` — article measure: `brand`, `nav`, `page`, `sidebar`, `footer`
-- `snice-layout-centered` — auth card: `brand`, `page`, `footer`
-- `snice-layout-split` — two panes: `left`, `right` (`direction`, `ratio`)
-- `snice-layout-landing` — marketing bands: `brand`, `nav`, `cta`, `hero`, `page`, `footer` (`use-nav`)
-- `snice-layout-card` — card grid: `header`, `page`, `footer` (`columns`, `gap`)
+- `snice-layout-centered` — auth card: `brand`, `page`, `footer` (`width`: `sm`|`md`|`lg`|`xl`, default `md`)
+- `snice-layout-split` — two panes: `left`, `right` (`direction`: `horizontal` default|`vertical`; `ratio`: `50-50` default|`60-40`|`70-30`|`33-67`|`67-33`)
+- `snice-layout-landing` — marketing bands: `brand`, `nav`, `cta`, `hero`, `page`, `footer` (`use-nav` boolean, default false)
+- `snice-layout-card` — card grid: `header`, `page`, `footer` (`columns`: `1`|`2`|`3` default|`4`|`6`; `gap`: `sm`|`md` default|`lg`|`xl`)
 - `snice-layout-minimal` — `page` only
-- `snice-layout-fullscreen` — layers: `background`, `overlay`, `page`, `controls` (`overlay`)
+- `snice-layout-fullscreen` — layers: `background`, `overlay`, `page`, `controls` (`overlay` boolean, default false)
 - `snice-layout-master-detail` — list + detail: `brand`, `header`, `list`, `detail`, `empty` (`selected`); <641px single pane, back emits `detail-closed`
 - `snice-layout-docs` — three panes: `brand`, `header`, `sidebar`, `page`, `toc`, `footer`; rail drops at 1152px, tree → drawer at 996px; skip link + heading scroll-margin
 - `snice-layout-auth-split` — form + decorative panel: `brand`, `page`, `footer`, `panel` (`panel-position`: `end` default | `start`); panel hidden <768px
@@ -104,13 +104,9 @@ Layouts own the screen. App shells (`sidebar`, `dashboard`, `fullscreen`) are `p
 
 ## CSS Custom Properties
 
-- `--snice-layout-auth-panel-bg` - Layout auth panel background
-- `--snice-layout-control-size` - Layout control size
-- `--snice-layout-docs-header-height` - Layout docs header height
-- `--snice-layout-docs-header-height-compact` - Layout docs header height compact
-
-## Sizing hooks
-
 - `--snice-layout-sidebar-width` (`16rem`), `--snice-layout-rail-collapsed-width` (`3rem`)
 - `--snice-layout-rail-width` (`18rem`), `--snice-layout-measure` (`65ch`), `--snice-layout-container` (`80rem`)
 - `--snice-layout-list-width` (`20rem`), `--snice-layout-docs-nav-width` / `--snice-layout-docs-toc-width` (`18.75rem`), `--snice-layout-auth-width` (`24rem`)
+- `--snice-layout-docs-header-height` (`4rem`), `--snice-layout-docs-header-height-compact` (`3.5rem`) — docs sticky header, compact below 768px
+- `--snice-layout-auth-panel-bg` (`var(--snice-color-surface-container)`) — auth split panel
+- `--snice-layout-control-size` (`2rem`) — sidebar / drawer toggle buttons

@@ -2,19 +2,6 @@
 
 Form-associated ordered string-pair editor. Preserves duplicates, descriptions, Unicode, and row order. Direct `<snice-kv-pair>` children or imperative data API.
 
-## Table of Contents
-
-- [Components](#components)
-- [Properties](#properties)
-- [Methods](#methods)
-- [Events](#events)
-- [Slots](#slots)
-- [CSS Parts](#css-parts)
-- [Basic Usage](#basic-usage)
-- [Examples](#examples)
-- [Keyboard Navigation](#keyboard-navigation)
-- [Accessibility](#accessibility)
-
 ## Components
 
 - `snice-key-value` - Editor/display/FACE control.
@@ -32,19 +19,13 @@ showDescription: boolean = false;      // attr: show-description
 keyPlaceholder: string = 'Key';        // attr: key-placeholder
 valuePlaceholder: string = 'Value';    // attr: value-placeholder
 placeholders: Array<{key:string;value:string}> = []; // JS only
-disabled: boolean = false;
-readonly: boolean = false;
-required: boolean = false;
+disabled | readonly | required: boolean = false;
 name: string = '';
 variant: 'default'|'compact' = 'default';
 mode: 'edit'|'view' = 'edit';
 showCopy: boolean = false;              // attr: show-copy
-readonly type: 'key-value';
-readonly form: HTMLFormElement|null;
-readonly validity: ValidityState;
-readonly validationMessage: string;
-readonly willValidate: boolean;
-readonly labels: NodeList|null;
+readonly type: 'key-value'; form: HTMLFormElement|null; validity: ValidityState;
+readonly validationMessage: string; willValidate: boolean; labels: NodeList|null;
 ```
 
 ```ts

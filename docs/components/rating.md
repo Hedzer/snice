@@ -21,8 +21,8 @@ An interactive star rating input with configurable precision, custom icons, and 
 |----------|------|---------|-------------|
 | `value` | `number` | `0` | Current rating value |
 | `max` | `number` | `5` | Maximum number of stars |
-| `icon` | `string` | `'★'` | Character used for each rating item |
-| `emptyIcon` (attr: `empty-icon`) | `string` | `''` | Optional character for the unfilled layer; empty uses `icon` |
+| `icon` | `string` | `'star'` | Icon for each item: built-in catalogue name, emoji, URL, or image file |
+| `emptyIcon` (attr: `empty-icon`) | `string` | `''` | Optional icon for the unfilled layer; empty uses `icon` |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Display size |
 | `readonly` | `boolean` | `false` | Disable user interaction |
 | `precision` | `'full' \| 'half'` | `'full'` | Click precision (full or half star increments) |
@@ -37,8 +37,8 @@ An interactive star rating input with configurable precision, custom icons, and 
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| `--rating-color` | Filled star color | `var(--snice-color-warning, rgb(234 179 8))` |
-| `--rating-color-empty` | Empty star color | `var(--snice-color-border, rgb(226 226 226))` |
+| `--rating-color` | Filled star color | `rgb(245 158 11)` (not theme-derived) |
+| `--rating-color-empty` | Empty star color | `var(--snice-color-text-tertiary, rgb(115 115 115))` |
 | `--rating-size` | Star size (set automatically by `size` property) | `1.5rem` |
 
 ## CSS Parts

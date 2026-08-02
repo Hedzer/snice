@@ -6,7 +6,7 @@
 // 3. Stamps all HTML in dist/site/
 
 import { cpSync, mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, isAbsolute, relative, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 
@@ -22,6 +22,29 @@ const wipPath = join(root, 'packages', 'components', '.wip');
 const wipList = existsSync(wipPath)
   ? readFileSync(wipPath, 'utf-8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'))
   : [];
+
+function componentBundleForSpecifier(specifier, currentFamily) {
+  const normalized = specifier.replaceAll('\\', '/');
+  const sourceFamily = normalized.match(/(?:^|\/)packages\/components\/src\/([^/]+)\/snice-[^/]+(?:\.ts)?$/)?.[1];
+  if (sourceFamily) return sourceFamily;
+
+  // Local sibling modules such as ./snice-tab.ts belong to the showcase's
+  // family bundle. Cross-family relative imports expose their family in the
+  // directory immediately before the snice-* module.
+  if (/^(?:\.\/)?snice-[^/]+(?:\.ts)?$/.test(normalized)) return currentFamily;
+  const relativeFamily = normalized.match(/(?:^|\/)([^/.][^/]*)\/snice-[^/]+(?:\.ts)?$/)?.[1];
+  if (relativeFamily) return relativeFamily;
+
+  return normalized.match(/snice-([a-z][-a-z0-9]*)/)?.[1] || null;
+}
+
+function componentScript(family, showcase) {
+  const filename = `snice-${family}.min.js`;
+  if (!existsSync(join(publicDir, 'components', filename))) {
+    throw new Error(`Showcase ${showcase} requires missing CDN family bundle: ${filename}`);
+  }
+  return `<script src="/components/${filename}"></script>`;
+}
 
 // 1. Clean and copy website/public/ → dist/site/
 console.log('Copying website/public/ → dist/site/...');
@@ -41,19 +64,18 @@ for (const entry of readdirSync(componentsDir)) {
 
   let html = readFileSync(srcFile, 'utf-8');
 
-  // Rewrite theme.css path (various relative patterns). The theme showcase
-  // historically sits beside theme.css in its source directory, so retain its
-  // existing emitted URL while the other showcases use the site-wide asset.
+  // Rewrite every showcase to the authoritative site-wide theme asset.
   html = html.replace(
     /href="[^"]*theme\/theme\.css"/g,
-    entry === 'theme' ? 'href="theme.css"' : 'href="/theme/theme.css"'
+    'href="/theme/theme.css"'
   );
 
   // Rewrite <script type="module" src="./snice-<name>.ts"> → CDN script tags
   html = html.replace(
-    /<script type="module" src="[^"]*snice-([^"]+)\.ts"><\/script>/g,
-    (match, name) => {
-      return '<script src="/components/snice-runtime.min.js"></script>\n  <script src="/components/snice-' + name + '.min.js"></script>';
+    /<script type="module" src="([^"]*snice-[^"]+\.ts)"><\/script>/g,
+    (match, specifier) => {
+      const family = componentBundleForSpecifier(specifier, entry);
+      return '<script src="/components/snice-runtime.min.js"></script>\n  ' + componentScript(family, entry);
     }
   );
 
@@ -71,16 +93,17 @@ for (const entry of readdirSync(componentsDir)) {
       for (const line of importLines) {
         // import 'snice' or import '../../src/index.ts' → skip (runtime handles it)
         if (/['"]snice['"]/.test(line) || /src\/index/.test(line)) continue;
-        // Extract component name from snice-<name> in the path
-        const m = line.match(/snice-([a-z][-a-z0-9]*)/);
-        if (m) imports.add(m[1]);
+        const specifier = line.match(/['"]([^'"]+)['"]/)?.[1];
+        const family = specifier && componentBundleForSpecifier(specifier, entry);
+        if (family) imports.add(family);
         // import './highlighter.ts' etc → skip (non-component utility)
       }
       // Also catch dynamic imports: await import('...snice-X.ts')
       const dynamicImports = content.match(/import\(['"]([^'"]+)['"]\)/g) || [];
       for (const di of dynamicImports) {
-        const m = di.match(/snice-([a-z][-a-z0-9]*)/);
-        if (m) imports.add(m[1]);
+        const specifier = di.match(/import\(['"]([^'"]+)['"]\)/)?.[1];
+        const family = specifier && componentBundleForSpecifier(specifier, entry);
+        if (family) imports.add(family);
       }
 
       if (imports.size === 0) return match;
@@ -88,7 +111,7 @@ for (const entry of readdirSync(componentsDir)) {
       // Build CDN script tags
       let scripts = '<script src="/components/snice-runtime.min.js"></script>\n';
       for (const comp of imports) {
-        scripts += `  <script src="/components/snice-${comp}.min.js"></script>\n`;
+        scripts += `  ${componentScript(comp, entry)}\n`;
       }
 
       // Keep non-import JS code as a separate script block
@@ -139,6 +162,7 @@ const STAMP_EXT = /\.(?:css|js|json|png|jpe?g|gif|svg|ico|webp|woff2?|md)$/i;
 const EXTERNAL = /^(?:https?:\/\/|\/\/|data:|#|mailto:)/;
 const ATTR_RE = /(?:src|href|content|image|avatar|cover-image|icon|poster)=["']([^"']+)["']/gi;
 const unstamped = [];
+const missingExecutableAssets = [];
 
 function verifySiteDir(dir) {
   for (const entry of readdirSync(dir)) {
@@ -152,6 +176,23 @@ function verifySiteDir(dir) {
       /<snice-code-block\b[^>]*>[\s\S]*?<\/snice-code-block>/gi,
       ''
     );
+    const relativeHtml = relative(siteDir, fullPath);
+    if (!relativeHtml.startsWith(`showcases${sep}`)) {
+      const executableAsset = /<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+\.(?:m?js|css)(?:\?[^"']*)?)["'][^>]*>/gi;
+      let assetMatch;
+      while ((assetMatch = executableAsset.exec(content)) !== null) {
+        const url = assetMatch[1];
+        if (EXTERNAL.test(url)) continue;
+        const cleanUrl = url.split(/[?#]/, 1)[0];
+        const resolved = cleanUrl.startsWith('/')
+          ? resolve(siteDir, `.${cleanUrl}`)
+          : resolve(dirname(fullPath), cleanUrl);
+        const insideSite = relative(siteDir, resolved);
+        if (insideSite.startsWith('..') || isAbsolute(insideSite) || !existsSync(resolved)) {
+          missingExecutableAssets.push(`${fullPath}: ${url}`);
+        }
+      }
+    }
     let m;
     while ((m = ATTR_RE.exec(content)) !== null) {
       const url = m[1];
@@ -173,5 +214,11 @@ if (unstamped.length > 0) {
   process.exit(1);
 }
 
-console.log('All asset references stamped.');
+if (missingExecutableAssets.length > 0) {
+  console.error(`\nFAILED: ${missingExecutableAssets.length} missing executable asset reference(s):\n`);
+  missingExecutableAssets.forEach(asset => console.error('  ' + asset));
+  process.exit(1);
+}
+
+console.log('All executable assets exist and all asset references are stamped.');
 console.log(`Deploy artifact ready at dist/site/ (${showcaseCount} showcases)`);

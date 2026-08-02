@@ -24,6 +24,7 @@ A bell icon with a dropdown notification panel. Displays an unread count badge, 
 | `notifications` | `NotificationItem[]` | `[]` | Array of notification objects to display (set via JS) |
 | `open` | `boolean` | `false` | Whether the dropdown panel is visible |
 | `icon` | `string` | `''` | Custom bell icon (URL, image file, or emoji). Use slot for icon fonts. |
+| `placement` | `'start' \| 'end'` | `'end'` | Side the dropdown panel aligns to |
 
 ## Methods
 
@@ -74,7 +75,7 @@ snice-notification-center::part(panel) {
 | Property | Description |
 |----------|-------------|
 | `--snice-color-primary` | Mark-all-read link color and unread highlight |
-| `--snice-color-primary-subtle` | Unread item background |
+| `--snice-color-primary-subtle-hover` | Unread item background on hover (the base unread tint derives from `--snice-color-primary`) |
 | `--snice-color-danger` | Badge background and dismiss hover color |
 | `--snice-color-text-secondary` | Message text color |
 | `--snice-color-text-tertiary` | Timestamp, empty state text, and dismiss icon color |

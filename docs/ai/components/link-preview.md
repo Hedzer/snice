@@ -6,7 +6,7 @@ Rich URL preview card with image, title, description, and site info.
 
 ```ts
 url: string = '';
-title: string = '';
+title: string = '';    // JS-only; a title attribute is the native tooltip, not this
 description: string = '';
 image: string = '';
 siteName: string = '';  // attr: site-name
@@ -34,16 +34,17 @@ import 'snice/components/link-preview/snice-link-preview';
 ```html
 <!-- Vertical (default) -->
 <snice-link-preview
+  id="preview"
   url="https://example.com"
-  title="Article Title"
   description="Brief summary."
   image="/images/og.jpg"
   site-name="example.com"
   favicon="/icons/favicon.ico">
 </snice-link-preview>
+<script>document.getElementById('preview').title = 'Article Title';</script>
 
 <!-- Horizontal, small -->
 <snice-link-preview variant="horizontal" size="small"
-  url="https://example.com" title="Quick Link" description="Short.">
+  url="https://example.com" description="Short.">
 </snice-link-preview>
 ```

@@ -32,9 +32,10 @@ Individual breadcrumb item (data element, no shadow DOM).
 | Property | Attribute | Type | Default | Description |
 |----------|-----------|------|---------|-------------|
 | `items` | -- | `BreadcrumbItem[]` | `[]` | Array of breadcrumb items (JS property only) |
-| `separator` | `separator` | `'/' \| '>' \| '>>' \| '.' \| '\|'` | `'/'` | Separator between items |
+| `separator` | `separator` | `'/' \| '>' \| '»' \| '•' \| '\|'` | `'/'` | Separator between items |
 | `size` | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Breadcrumb size |
 | `maxItems` | `max-items` | `number` | `0` | Max items to show (0 = show all). Collapsed items show an ellipsis. |
+| `collapsed` | `collapsed` | `boolean` | `true` | Whether the trail is collapsed behind the ellipsis. Clicking the ellipsis sets it `false`; it resets to `true` when `items`, `separator`, or `maxItems` change. Only has an effect once `maxItems` is exceeded. |
 
 ### BreadcrumbItem Interface
 

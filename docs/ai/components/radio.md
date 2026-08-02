@@ -103,3 +103,10 @@ Only the newly selected radio emits. The old member is silently unchecked. Direc
 Slot: `suffix`.
 
 CSS parts: `input`, `radio`, `dot`, `spinner`, `content`, `label`, `description`.
+
+## Accessibility
+
+- Native radio input drives keyboard and AT behavior; one roving tab stop per named group
+- Visible label text associated with the native control; external `<label for>` supports association, focus, activation, cancellation
+- Required group validity and native labels exposed through `ElementInternals`
+- Visible keyboard focus indicator; `aria-invalid` reflects explicit or calculated group invalidity

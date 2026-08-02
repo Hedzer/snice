@@ -49,7 +49,7 @@ A multi-line text input with validation, character counting, and optional auto-g
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `focus()` | `options?: FocusOptions` | Focus the textarea |
+| `focus()` | -- | Focus the textarea |
 | `blur()` | -- | Remove focus |
 | `select()` | -- | Select all text |
 | `checkValidity()` | -- | Check validation, returns `boolean` |

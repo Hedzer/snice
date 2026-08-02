@@ -14,6 +14,7 @@ Text input field with validation, icons, and form association.
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Keyboard Navigation](#keyboard-navigation)
+- [Accessibility](#accessibility)
 
 ## Properties
 

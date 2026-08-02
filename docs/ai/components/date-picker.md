@@ -17,11 +17,8 @@ value: string = '';
 // Maps to the value content attribute and is restored by form reset.
 defaultValue: string = '';
 
-format:
-  | 'mm/dd/yyyy' | 'dd/mm/yyyy'
-  | 'yyyy-mm-dd' | 'yyyy/mm/dd'
-  | 'dd-mm-yyyy' | 'mm-dd-yyyy'
-  | 'mmmm dd, yyyy' = 'mm/dd/yyyy';
+format: 'mm/dd/yyyy' | 'dd/mm/yyyy' | 'yyyy-mm-dd' | 'yyyy/mm/dd'
+      | 'dd-mm-yyyy' | 'mm-dd-yyyy' | 'mmmm dd, yyyy' = 'mm/dd/yyyy';
 
 variant: 'outlined' | 'filled' | 'underlined' = 'outlined';
 size: 'small' | 'medium' | 'large' = 'medium';
@@ -29,14 +26,9 @@ placeholder: string = '';
 label: string = '';
 helperText: string = ''; // helper-text
 errorText: string = '';  // error-text
-disabled: boolean = false;
-readonly: boolean = false;
-loading: boolean = false;
-required: boolean = false;
+disabled | readonly | loading | required | clearable: boolean = false;
 invalid: boolean = false; // presentation only, not constraint validity
-clearable: boolean = false;
-min: string = ''; // canonical YYYY-MM-DD recommended
-max: string = ''; // canonical YYYY-MM-DD recommended
+min: string = ''; max: string = ''; // canonical YYYY-MM-DD recommended
 name: string = '';
 open: boolean = false;
 firstDayOfWeek: number = 0; // first-day-of-week; 0=Sunday
@@ -140,13 +132,7 @@ All component events bubble and are composed. Direct property/default changes, r
 
 ## CSS Parts
 
-- `input`
-- `calendar-toggle`
-- `clear`
-- `spinner`
-- `calendar`
-- `helper-text`
-- `error-text`
+`input`, `calendar-toggle`, `clear`, `spinner`, `calendar`, `helper-text`, `error-text`
 
 ## Keyboard/accessibility
 

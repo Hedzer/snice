@@ -13,6 +13,7 @@ A tabbed interface for organizing content into separate panels, using `<snice-ta
 - [Slots](#slots)
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
+- [CSS Custom Properties](#css-custom-properties)
 - [Examples](#examples)
 
 ## Components

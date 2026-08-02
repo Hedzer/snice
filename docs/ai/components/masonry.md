@@ -44,3 +44,9 @@ import 'snice/components/masonry/snice-masonry';
   <div>Card 2</div>
 </snice-masonry>
 ```
+
+## Accessibility
+
+- Container carries `role="list"` for screen readers
+- Items flow top-to-bottom, left-to-right within CSS columns
+- `break-inside: avoid` keeps an item from splitting across columns

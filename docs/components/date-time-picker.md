@@ -4,6 +4,20 @@
 
 `<snice-date-time-picker>` combines an editable local date-time field, calendar, and time selectors. It is a form-associated custom element with native reset, disabled-fieldset, state-restoration, and constraint-validation behavior.
 
+## Table of Contents
+
+- [Basic usage](#basic-usage)
+- [Local datetime contract](#local-datetime-contract)
+- [Input and display](#input-and-display)
+- [Labels and composite names](#labels-and-composite-names)
+- [Validation](#validation)
+- [Disabled, readonly, and loading states](#disabled-readonly-and-loading-states)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS parts](#css-parts)
+- [Accessibility](#accessibility)
+
 ## Basic usage
 
 ```typescript

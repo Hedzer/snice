@@ -24,8 +24,8 @@ Displays hierarchical data with expandable/collapsible nodes, selection, checkbo
 | `showIcons` (attr: `show-icons`) | `boolean` | `true` | Display node icons |
 | `expandOnClick` (attr: `expand-on-click`) | `boolean` | `false` | Expand/collapse on node click |
 | `nodes` | `TreeNode[]` | `[]` | Array of tree nodes |
-| `selectedNodes` (attr: `selected-nodes`) | `string[]` | `[]` | Selected node IDs |
-| `checkedNodes` (attr: `checked-nodes`) | `string[]` | `[]` | Checked node IDs |
+| `selectedNodes` | `string[]` | `[]` | Selected node IDs (JS-only; no attribute) |
+| `checkedNodes` | `string[]` | `[]` | Checked node IDs (JS-only; no attribute) |
 
 ### TreeNode Interface
 

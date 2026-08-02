@@ -48,11 +48,11 @@ interface DrawStroke {
 
 ## Events
 
-- `draw-start` - Drawing started
-- `draw-end` → `{ stroke }` - Stroke completed
-- `draw-clear` - Canvas cleared
-- `draw-undo` - Undo performed
-- `draw-redo` - Redo performed
+- `draw-start` → `{ draw, point }` - Drawing started
+- `draw-end` → `{ draw, stroke }` - Stroke completed
+- `draw-clear` → `{ draw }` - Canvas cleared
+- `draw-undo` → `{ draw }` - Undo performed
+- `draw-redo` → `{ draw }` - Redo performed
 
 ## CSS Parts
 

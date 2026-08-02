@@ -72,3 +72,10 @@ modal.addEventListener('modal-close', () => console.log('Closed'));
 
 - Escape closes (unless `no-escape-dismiss`)
 - Tab/Shift+Tab cycle focus within modal
+
+## Accessibility
+
+- `role="dialog"` + `aria-modal="true"` + `aria-label`
+- Focus trapped by default (`no-focus-trap` disables); first focusable element focused on open, previous focus restored on close
+- Body scroll locked while open
+- Close button labelled `Close modal`

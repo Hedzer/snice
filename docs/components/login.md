@@ -28,6 +28,8 @@ A complete authentication form with username/password fields, using Snice's @req
 | `showRememberMe` (attr: `show-remember-me`) | `boolean` | `true` | Show "Remember me" checkbox |
 | `showForgotPassword` (attr: `show-forgot-password`) | `boolean` | `true` | Show "Forgot password" link |
 | `actionText` (attr: `action-text`) | `string` | `'Sign In'` | Submit button text |
+| `alertMessage` | `string` | `''` | Inline alert text; set from JS to show a message above the form |
+| `alertVariant` | `'error' \| 'success' \| ''` | `''` | Styling for `alertMessage` |
 
 ## Methods
 
@@ -38,6 +40,8 @@ A complete authentication form with username/password fields, using Snice's @req
 | `setError()` | `message: string` | Display an error message |
 | `clearError()` | -- | Remove error message |
 | `setCredentials()` | `credentials: Partial<LoginCredentials>` | Set form field values |
+| `showAlert()` | `message: string, variant: 'error' \| 'success'` | Show an inline alert above the form; `setError()` is the error-only shorthand |
+| `clearAlert()` | -- | Remove the inline alert |
 
 ## Requests
 

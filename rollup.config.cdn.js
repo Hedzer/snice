@@ -47,6 +47,21 @@ const COMPONENT_CHILDREN = {
   'list': ['list-item'],
   // 'nav': ['nav-item'],
   'stepper': ['stepper-panel'],
+  'layout': [
+    'layout-auth-split',
+    'layout-blog',
+    'layout-card',
+    'layout-centered',
+    'layout-dashboard',
+    'layout-docs',
+    'layout-fullscreen',
+    'layout-landing',
+    'layout-master-detail',
+    'layout-minimal',
+    'layout-sidebar',
+    'layout-split',
+  ],
+  'table': ['header'],
   // 'timeline': ['timeline-item'],
 };
 

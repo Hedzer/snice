@@ -16,6 +16,7 @@ A customizable dropdown selection with single/multiple selection, search filteri
 - [External Labels and Accessible Naming](#external-labels-and-accessible-naming)
 - [Form Integration](#form-integration)
 - [Keyboard Navigation](#keyboard-navigation)
+- [CSS Custom Properties](#css-custom-properties)
 - [Accessibility](#accessibility)
 
 ## Components

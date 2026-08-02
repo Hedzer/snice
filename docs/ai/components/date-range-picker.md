@@ -20,11 +20,8 @@ end: string = '';
 defaultStart: string = '';
 defaultEnd: string = '';
 
-format:
-  | 'mm/dd/yyyy' | 'dd/mm/yyyy'
-  | 'yyyy-mm-dd' | 'yyyy/mm/dd'
-  | 'dd-mm-yyyy' | 'mm-dd-yyyy'
-  | 'mmmm dd, yyyy' = 'mm/dd/yyyy';
+format: 'mm/dd/yyyy' | 'dd/mm/yyyy' | 'yyyy-mm-dd' | 'yyyy/mm/dd'
+      | 'dd-mm-yyyy' | 'mm-dd-yyyy' | 'mmmm dd, yyyy' = 'mm/dd/yyyy';
 
 size: 'small' | 'medium' | 'large' = 'medium';
 variant: 'outlined' | 'filled' | 'underlined' = 'outlined';
@@ -32,14 +29,9 @@ placeholder: string = '';
 label: string = '';
 helperText: string = ''; // helper-text
 errorText: string = '';  // error-text
-disabled: boolean = false;
-readonly: boolean = false;
-loading: boolean = false;
-required: boolean = false;
+disabled | readonly | loading | required | clearable: boolean = false;
 invalid: boolean = false; // presentation only, not constraint validity
-clearable: boolean = false;
-min: string = '';         // canonical YYYY-MM-DD recommended
-max: string = '';         // canonical YYYY-MM-DD recommended
+min: string = ''; max: string = '';   // canonical YYYY-MM-DD recommended
 name: string = '';        // base name for {name}-start and {name}-end
 columns: number = 1;      // supported layouts: 1 or 2
 firstDayOfWeek: number = 0; // first-day-of-week; 0=Sunday

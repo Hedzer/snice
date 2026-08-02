@@ -70,3 +70,10 @@ md.addEventListener('link-click', (e) => {
   console.log('Navigating to:', e.detail.href);
 });
 ```
+
+## Accessibility
+
+- Rendered HTML keeps the semantic heading hierarchy (h1-h6) for screen readers
+- Links in rendered content are keyboard accessible
+- Tables render real `<thead>`/`<tbody>` structure for assistive technology
+- `link-click` lets you take over navigation without losing that behavior

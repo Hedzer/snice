@@ -58,3 +58,10 @@ chart.addEventListener('bar-click', (e) => {
   console.log(`Clicked: ${e.detail.item.label} (${e.detail.item.value})`);
 });
 ```
+
+## Accessibility
+
+- Bars carry data-visualization roles, are focusable, and activate by keyboard
+- `showValues` exposes value labels as screen-reader text
+- Bar types distinguishable by color *and* value label, not color alone
+- Animations respect `prefers-reduced-motion`

@@ -75,7 +75,7 @@ selected: boolean = false;
 --menu-border: var(--snice-color-border, #e5e7eb);
 --menu-shadow: var(--snice-shadow-lg);
 --menu-z-index: var(--snice-z-floating, 1000);
---menu-border-radius: var(--snice-radius-md, 0.375rem);
+--menu-border-radius: var(--snice-border-radius-md, 0.25rem);
 --menu-min-width: 10rem;
 ```
 

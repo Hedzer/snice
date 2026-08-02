@@ -12,6 +12,7 @@ A QR code scanner using device cameras with real-time detection.
 - [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [CSS Parts](#css-parts)
 - [Accessibility](#accessibility)
 
 ## Properties

@@ -62,6 +62,21 @@ describe('Website Build', () => {
       expect(missing).toEqual([]);
     });
 
+    it('should recreate runtime and component support assets from authoritative sources', () => {
+      expect(existsSync(join(publicDir, 'components/snice-runtime.min.js'))).toBe(true);
+      expect(readFileSync(join(publicDir, 'components/pdf.worker.min.mjs'), 'utf8')).toBe(
+        readFileSync(join(root, 'packages/components/src/pdf-viewer/pdf.worker.min.mjs'), 'utf8')
+      );
+      expect(readFileSync(join(publicDir, 'components/grammars/snice.json'), 'utf8')).toBe(
+        readFileSync(join(root, 'packages/components/src/code-block/grammars/snice.json'), 'utf8')
+      );
+    });
+
+    it('should remove stale component artifacts from the generated directory', () => {
+      expect(existsSync(join(publicDir, 'components/snice-metric-table.min.js'))).toBe(false);
+      expect(existsSync(join(publicDir, 'components/README.md'))).toBe(false);
+    });
+
     it('should list all components in the component list', () => {
       // Check each CDN component is either used as a tag (`<snice-xxx>`) or
       // referenced in the in-page navigation (`#comp-xxx`). The page groups

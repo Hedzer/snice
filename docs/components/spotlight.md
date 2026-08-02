@@ -12,6 +12,7 @@ A guided tour and onboarding component that highlights elements on the page with
 - [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [CSS Parts](#css-parts)
 - [Accessibility](#accessibility)
 
 ## Properties
@@ -49,6 +50,7 @@ interface SpotlightStep {
 | `spotlight-step` | `{ index: number, step: SpotlightStep }` | Navigated to a new step |
 | `spotlight-end` | `void` | Tour ended (completed or ended programmatically) |
 | `spotlight-skip` | `{ index: number }` | User skipped the tour at the given step |
+| `spotlight-target-missing` | `{ index: number, step: SpotlightStep }` | A step's target element is no longer in the DOM (e.g. a route change removed it). The popover stops rather than pointing at nothing. |
 
 ## CSS Custom Properties
 

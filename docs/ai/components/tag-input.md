@@ -87,3 +87,9 @@ tagInput.addEventListener('tag-change', (e) => {
   console.log('Tags:', e.detail.value);
 });
 ```
+
+## Accessibility
+
+- `label` supplies the input's accessible name
+- Adding, removing, and selecting tags are all reachable by keyboard (see Keyboard Navigation)
+- Focus returns to the input after a tag is added or removed

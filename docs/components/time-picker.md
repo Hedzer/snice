@@ -4,6 +4,20 @@
 
 `<snice-time-picker>` is an editable, form-associated time control with 12-hour and 24-hour displays, dropdown or inline selectors, optional seconds, range and step constraints, native reset and restoration, and constraint validation.
 
+## Table of Contents
+
+- [Basic usage](#basic-usage)
+- [Time and form-value contract](#time-and-form-value-contract)
+- [Live value and reset default](#live-value-and-reset-default)
+- [Native form lifecycle](#native-form-lifecycle)
+- [External labels and accessible naming](#external-labels-and-accessible-naming)
+- [Validation](#validation)
+- [Display and interaction](#display-and-interaction)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [CSS parts](#css-parts)
+
 ## Basic usage
 
 ```ts

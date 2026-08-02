@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdirSync, cpSync, writeFileSync, readFileSync, readdirSync } from 'fs';
+import { mkdirSync, cpSync, existsSync, writeFileSync, readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,15 +13,9 @@ mkdirSync(join(out, 'theme'), { recursive: true });
 cpSync(join(root, 'packages/components/src/theme/theme.css'), join(out, 'theme/theme.css'));
 
 const cdnDir = join(root, 'dist/cdn');
-const componentsOut = join(out, 'components');
-mkdirSync(componentsOut, { recursive: true });
-mkdirSync(cdnDir, { recursive: true });
-
-const components = readdirSync(cdnDir).filter(c => c !== 'runtime').sort();
-for (const comp of components) {
-  const src = join(cdnDir, comp, `snice-${comp}.min.js`);
-  try { cpSync(src, join(componentsOut, `snice-${comp}.min.js`)); } catch {}
-}
+const components = existsSync(cdnDir)
+  ? readdirSync(cdnDir).filter(component => component !== 'runtime').sort()
+  : [];
 
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8'));
 

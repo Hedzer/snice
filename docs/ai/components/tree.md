@@ -11,8 +11,8 @@ showCheckboxes: boolean = false;  // attr: show-checkboxes
 showIcons: boolean = true;        // attr: show-icons
 expandOnClick: boolean = false;   // attr: expand-on-click
 nodes: TreeNode[] = [];
-selectedNodes: string[] = [];     // attr: selected-nodes
-checkedNodes: string[] = [];      // attr: checked-nodes
+selectedNodes: string[] = [];     // JS-only; no attribute
+checkedNodes: string[] = [];      // JS-only; no attribute
 
 interface TreeNode {
   id: string;

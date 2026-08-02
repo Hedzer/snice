@@ -39,7 +39,7 @@ A ranked list of entries with optional avatars, change indicators, and podium hi
 |----------|------|---------|-------------|
 | `variant` | `'default' \| 'podium' \| 'compact'` | `'default'` | Display variant |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Entry size |
-| `title` | `string` | `''` | Optional title displayed above the list |
+| `title` | `string` | `''` | Optional title above the list (JS-only; a `title` attribute is the native tooltip) |
 
 ## Methods
 
@@ -108,10 +108,17 @@ import 'snice/components/leaderboard/snice-leaderboard';
 ```
 
 ```html
-<snice-leaderboard title="Top Players">
+<snice-leaderboard id="board">
   <snice-leaderboard-entry rank="1" name="Alice" score="2500"></snice-leaderboard-entry>
   <snice-leaderboard-entry rank="2" name="Bob" score="2100"></snice-leaderboard-entry>
 </snice-leaderboard>
+```
+
+`title` is a JS-only property. A `title` attribute is the native HTML tooltip and does
+not set the heading.
+
+```typescript
+document.getElementById('board').title = 'Top Players';
 ```
 
 ## Examples
@@ -121,7 +128,7 @@ import 'snice/components/leaderboard/snice-leaderboard';
 Use `<snice-leaderboard-entry>` elements as children. The parent reads attributes and renders the full UI.
 
 ```html
-<snice-leaderboard variant="podium" title="Season Rankings">
+<snice-leaderboard variant="podium">
   <snice-leaderboard-entry rank="1" name="Alice" score="2,500" avatar="alice.jpg" change="3" highlighted></snice-leaderboard-entry>
   <snice-leaderboard-entry rank="2" name="Bob" score="2,100" change="-1"></snice-leaderboard-entry>
   <snice-leaderboard-entry rank="3" name="Charlie" score="1,800" change="2"></snice-leaderboard-entry>

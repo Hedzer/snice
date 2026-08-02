@@ -7,7 +7,7 @@ Interactive star rating input with full/half precision, custom icons, and keyboa
 ```typescript
 value: number = 0;
 max: number = 5;
-icon: string = '★';
+icon: string = 'star';   // catalogue name, emoji, URL, or image file
 emptyIcon: string = ''; // attr empty-icon; empty falls back to icon
 size: 'small'|'medium'|'large' = 'medium';
 readonly: boolean = false;
@@ -20,8 +20,8 @@ precision: 'full'|'half' = 'full';
 
 ## CSS Custom Properties
 
-- `--rating-color` - Filled star color (`var(--snice-color-warning)`)
-- `--rating-color-empty` - Empty star color (`var(--snice-color-border)`)
+- `--rating-color` - Filled star color (`rgb(245 158 11)`; not theme-derived)
+- `--rating-color-empty` - Empty star color (`var(--snice-color-text-tertiary)`)
 - `--rating-size` - Star size (auto-set by `size`: small=1rem, medium=1.5rem, large=2rem)
 
 ## CSS Parts

@@ -7,10 +7,10 @@ Code display with syntax highlighting, line numbers, copy, and grammar-based for
 ```typescript
 code: string = '';                // Set via slot or property
 language: 'javascript'|'typescript'|'html'|'css'|'json'|'python'|'bash'|'plaintext' = 'plaintext';
-grammar: GrammarDefinition | string | null = null;  // Grammar object or URL to JSON
+grammar: GrammarDefinition | string | null = '';    // Grammar object or URL to JSON
 showLineNumbers: boolean = false;  // attribute: show-line-numbers
 startLine: number = 1;            // attribute: start-line
-highlightLines: number[] = [];    // attribute: highlight-lines
+highlightLines: number[] = [];    // JS-only; no attribute
 copyable: boolean = true;
 filename: string = '';
 format: string = '';              // Formatter name (e.g. "pretty"), or truthy string with setFormatter()

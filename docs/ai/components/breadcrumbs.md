@@ -13,9 +13,10 @@ Navigation breadcrumb trail.
 
 ```typescript
 items: BreadcrumbItem[] = [];                              // JS property only
-separator: '/'|'>'|'>>'|'.'|'|' = '/';
+separator: '/'|'>'|'»'|'•'|'|' = '/';
 size: 'small'|'medium'|'large' = 'medium';
 maxItems: number = 0;                                      // 0 = show all, attr: max-items
+collapsed: boolean = true;                                 // ellipsis state; ellipsis click sets false, resets on items/separator/maxItems change
 ```
 
 ### snice-crumb

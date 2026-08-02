@@ -123,11 +123,12 @@ Set `show-presets` to display a row of preset color swatches for quick selection
 Use the `presets` property to provide your own set of preset colors.
 
 ```html
-<snice-color-picker
-  label="Brand Colors"
-  show-presets
-  presets='["#ff0000", "#00ff00", "#0000ff", "#ffcc00"]'
-></snice-color-picker>
+<snice-color-picker id="brand" label="Brand Colors" show-presets></snice-color-picker>
+```
+
+```typescript
+// presets is a JS-only property -- there is no presets attribute
+document.getElementById('brand').presets = ['#ff0000', '#00ff00', '#0000ff', '#ffcc00'];
 ```
 
 ### Without Text Input

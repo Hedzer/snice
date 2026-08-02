@@ -215,6 +215,33 @@ describe('snice-step-input', () => {
     });
   });
 
+  describe('accessible name', () => {
+    it('should name the spinbutton so it is not announced as a bare value', async () => {
+      el = await createComponent<SniceStepInputElement>('snice-step-input');
+      await wait(50);
+
+      const input = queryShadow<HTMLInputElement>(el, '.step-input__input');
+
+      expect(input.getAttribute('role')).toBe('spinbutton');
+      expect(input.getAttribute('aria-label')).toBeTruthy();
+    });
+
+    it('should prefer an associated label over the fallback name', async () => {
+      const label = document.createElement('label');
+      label.setAttribute('for', 'quantity-field');
+      label.textContent = 'Quantity';
+      document.body.appendChild(label);
+
+      el = await createComponent<SniceStepInputElement>('snice-step-input', { id: 'quantity-field' });
+      await wait(50);
+
+      const input = queryShadow<HTMLInputElement>(el, '.step-input__input');
+
+      expect(input.getAttribute('aria-label')).toBe('Quantity');
+      label.remove();
+    });
+  });
+
   describe('initial clamping', () => {
     it('should clamp initial value above max', async () => {
       el = await createComponent<SniceStepInputElement>('snice-step-input', {

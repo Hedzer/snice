@@ -13,6 +13,7 @@ A navigation menu that renders from placard configurations and integrates with S
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
+- [Placard Structure](#placard-structure)
 
 ## Properties
 

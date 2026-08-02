@@ -200,7 +200,8 @@ When comparing large files, unchanged sections beyond the `context-lines` thresh
 
 - Dark mode support via `[data-theme="dark"]` and `prefers-color-scheme: dark`
 - Line numbers provide clear reference points for discussing specific changes
-- Color coding: added lines highlighted green, removed lines red
+- Added and removed lines carry `+`/`-` gutter markers, so the distinction does not rely on color alone
+- Color coding reinforces the markers: added lines green, removed lines red
 - Word-level diffs highlight the specific words that differ within changed lines
 - Collapsible sections reduce noise; click to expand
 - Stats header provides an immediate +N/-N overview of change scope

@@ -5,7 +5,7 @@ Live camera feed with built-in mobile-style controls.
 ## Properties
 
 ```typescript
-autoStart: boolean = true;                    // attribute: auto-start
+autoStart: boolean = false;                   // attribute: auto-start
 facingMode: 'user'|'environment' = 'user';    // attribute: facing-mode
 mirror: boolean = true;
 controlsPosition: ControlsPosition = 'auto';  // attribute: controls-position

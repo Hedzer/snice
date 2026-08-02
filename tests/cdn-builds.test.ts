@@ -88,6 +88,24 @@ describe('CDN Builds', () => {
       }
     });
 
+    it('bundles every public element in multi-element CDN families', () => {
+      const families = {
+        layout: [
+          'snice-layout', 'snice-layout-auth-split', 'snice-layout-blog',
+          'snice-layout-card', 'snice-layout-centered', 'snice-layout-dashboard',
+          'snice-layout-docs', 'snice-layout-fullscreen', 'snice-layout-landing',
+          'snice-layout-master-detail', 'snice-layout-minimal',
+          'snice-layout-sidebar', 'snice-layout-split'
+        ],
+        table: ['snice-table', 'snice-header']
+      };
+
+      for (const [family, tags] of Object.entries(families)) {
+        const bundle = fs.readFileSync(path.join(outputDir, family, `snice-${family}.min.js`), 'utf8');
+        for (const tag of tags) expect(bundle, `${family} is missing ${tag}`).toContain(tag);
+      }
+    });
+
     testComponents.forEach(componentName => {
       describe(`${componentName} component`, () => {
         const componentDir = path.join(process.cwd(), outputDir, componentName);

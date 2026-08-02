@@ -342,6 +342,35 @@ changeColor(color: string) { this.color = color; return { color }; }
 confirm() { return { color: this.color }; }
 ```
 
+## Event bus
+
+No bus object, no singleton. Bus = `@dispatch` publishing upward + `@on` subscribing at a chosen ancestor. Scope is a DOM node, so it lives and dies with the DOM.
+
+Two publish paths — the choice decides who can hear it:
+- **Bubble from host** — `@dispatch` defaults to `bubbles: true, composed: true`, so it crosses shadow boundaries and passes every ancestor up to `document`. For "this element did something".
+- **Dispatch on a scope** — `@dispatch` takes the same `scope` option as `@on`, firing *on* that target instead of bubbling. For subscribers that are not ancestors (sibling subtree, or a detached host).
+
+```typescript
+@dispatch('bus:cart-added')                     // bubbles from host
+@dispatch('bus:cart-added', { scope: 'global' })  // dispatched on document
+
+@on('bus:cart-added', { scope: 'global' })      // document — app-wide
+@on('bus:cart-added', { scope: 'cart-shell' })  // nearest <cart-shell> — per-instance
+```
+
+Match the halves: a bubbling publish only reaches subscribers on the host's ancestor chain. Sibling subtree → scope the dispatch too, so both meet on the same node. See [scope on @dispatch](#scope-dispatch-target).
+
+Scope choice:
+- `'global'` — genuinely app-wide (auth expiry, theme change, save shortcut)
+- selector string — feature subtree; a second shell elsewhere keeps its own traffic
+- `EventTarget` / resolver — you hold the node, or it moves and must re-resolve
+
+Prefer the narrowest scope that works; `'global'` means every instance hears every message.
+
+`bus:` is a naming convention, not a framework feature. Teardown is automatic — removed on disconnect from the resolved target, re-resolved on reconnect. Unresolvable selector → listener skipped + `console.warn`, never bound to the wrong node. Full table: [scope](#scope-listener-attachment-target).
+
+Need a reply rather than a broadcast → [@request / @respond](./request-response.md).
+
 ## Custom events
 
 Dispatching manually:

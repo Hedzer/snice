@@ -129,6 +129,6 @@ html = html.replace(
 // Footer
 append(footerFile);
 
-const generatedBanner = '<!-- GENERATED FILE — do not edit directly. Source: public/showcases/*.html + public/build-showcases.js -->\n';
+const generatedBanner = '<!-- GENERATED FILE — do not edit directly. Source: website/showcases/**/card.html + tooling/website/build-showcases.js -->\n';
 writeFileSync(join(publicDir, 'components.html'), generatedBanner + html);
 console.log(`Built components.html from ${manifest.files.length} fragments`);

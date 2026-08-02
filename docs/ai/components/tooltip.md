@@ -90,19 +90,13 @@ Observer for `tooltip` attribute on any element. No wrapper element -- safe insi
 
 ### CSS Variable API
 
-| Variable | Default | Description |
-|---|---|---|
-| `--tooltip-position` | `top` | top/bottom/left/right + -start/-end |
-| `--tooltip-trigger` | `hover` | hover, click, focus |
-| `--tooltip-delay` | `0` | Show delay (ms) |
-| `--tooltip-hide-delay` | `0` | Hide delay (ms) |
-| `--tooltip-offset` | `12` | Distance from trigger (px) |
-| `--tooltip-arrow` | (shown) | `none` to hide |
-| `--tooltip-max-width` | `250` | Max width (px) |
-| `--tooltip-z-index` | `10000` | Z-index |
-| `--tooltip-strict-positioning` | (false) | `true` to disable auto-flip |
-| `--tooltip-bg` | `hsl(0 0% 20%)` | Background color |
-| `--tooltip-color` | `white` | Text color |
-| `--tooltip-padding` | `8px 12px` | Content padding |
-| `--tooltip-radius` | `6px` | Border radius |
-| `--tooltip-font-size` | `14px` | Font size |
+- `--tooltip-position` (`top`) — top/bottom/left/right + `-start`/`-end`
+- `--tooltip-trigger` (`hover`) — hover, click, focus
+- `--tooltip-delay` (`0`) / `--tooltip-hide-delay` (`0`) — show / hide delay (ms)
+- `--tooltip-offset` (`12`) — distance from trigger (px)
+- `--tooltip-arrow` (shown) — `none` to hide; `--tooltip-arrow-size` (`6px`) sizes it
+- `--tooltip-max-width` (`250`) — max width (px)
+- `--tooltip-z-index` (`10000`)
+- `--tooltip-strict-positioning` (false) — `true` disables auto-flip
+- `--tooltip-bg` (`hsl(0 0% 20%)`) background / `--tooltip-color` (`white`) text color
+- `--tooltip-padding` (`8px 12px`) content padding, `--tooltip-radius` (`6px`), `--tooltip-font-size` (`14px`)

@@ -10,7 +10,7 @@ view: 'month'|'week'|'day' = 'month';
 events: CalendarEvent[] = [];
 minDate: Date | string = '';           // attribute: min-date
 maxDate: Date | string = '';           // attribute: max-date
-disabledDates: (Date | string)[] = []; // attribute: disabled-dates
+disabledDates: (Date | string)[] = []; // JS-only; no attribute
 highlightToday: boolean = true;        // attribute: highlight-today
 showWeekNumbers: boolean = false;      // attribute: show-week-numbers
 firstDayOfWeek: number = 0;            // attribute: first-day-of-week (0=Sun, 1=Mon)

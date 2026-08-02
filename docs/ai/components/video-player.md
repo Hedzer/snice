@@ -78,6 +78,11 @@ duration: number;               // read-only
 - ArrowRight/ArrowLeft: Seek forward/backward 5s
 - ArrowUp/ArrowDown: Volume up/down 10%
 
+## Accessibility
+
+- Controls carry ARIA labels; current time, duration, and playback state are exposed to AT
+- Transitions respect `prefers-reduced-motion`
+
 ## Basic Usage
 
 ```html

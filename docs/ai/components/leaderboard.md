@@ -12,7 +12,7 @@ Ranked list with podium variant, avatars, change indicators. Dual API: declarati
 ```ts
 variant: 'default'|'podium'|'compact' = 'default';
 size: 'small'|'medium'|'large' = 'medium';
-title: string = '';
+title: string = '';    // JS-only; a title attribute is the native tooltip, not this
 ```
 
 ## Methods
@@ -62,7 +62,7 @@ interface LeaderboardEntry {
 ## Basic Usage
 
 ```html
-<snice-leaderboard variant="podium" title="Top Players">
+<snice-leaderboard id="board" variant="podium">   <!-- title is JS-only: board.title = 'Top Players' -->
   <snice-leaderboard-entry rank="1" name="Alice" score="2500" change="3" highlighted></snice-leaderboard-entry>
   <snice-leaderboard-entry rank="2" name="Bob" score="2100" change="-1"></snice-leaderboard-entry>
 </snice-leaderboard>

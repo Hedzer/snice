@@ -9,6 +9,7 @@ Application layout with header navigation, main content area, and footer.
 - [Methods](#methods)
 - [Slots](#slots)
 - [CSS Parts](#css-parts)
+- [CSS Custom Properties](#css-custom-properties)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Shell variants](#shell-variants)
@@ -68,6 +69,24 @@ snice-layout::part(footer) {
 }
 ```
 
+## CSS Custom Properties
+
+| Property | Default | Applies to |
+|----------|---------|------------|
+| `--snice-layout-sidebar-width` | `16rem` | Expanded sidebar |
+| `--snice-layout-rail-collapsed-width` | `3rem` | Collapsed rail |
+| `--snice-layout-rail-width` | `18rem` | Dashboard right rail |
+| `--snice-layout-measure` | `65ch` | Blog reading measure |
+| `--snice-layout-container` | `80rem` | Landing band inner width |
+| `--snice-layout-list-width` | `20rem` | Master-detail list pane |
+| `--snice-layout-docs-nav-width` | `18.75rem` | Documentation navigation tree |
+| `--snice-layout-docs-toc-width` | `18.75rem` | Documentation on-this-page rail |
+| `--snice-layout-docs-header-height` | `4rem` | Documentation sticky header |
+| `--snice-layout-docs-header-height-compact` | `3.5rem` | Documentation header below 768px |
+| `--snice-layout-auth-width` | `24rem` | Auth split form column |
+| `--snice-layout-auth-panel-bg` | `var(--snice-color-surface-container)` | Auth split decorative panel |
+| `--snice-layout-control-size` | `2rem` | Sidebar and drawer toggle buttons |
+
 ## Basic Usage
 
 ```typescript
@@ -117,15 +136,6 @@ Use the `update()` method to sync navigation with the router.
 ```typescript
 layout.update(appContext, placards, currentRoute, routeParams);
 ```
-
-## CSS Custom Properties
-
-| Property | Description |
-|----------|-------------|
-| `--snice-layout-auth-panel-bg` | Layout auth panel background |
-| `--snice-layout-control-size` | Layout control size |
-| `--snice-layout-docs-header-height` | Layout docs header height |
-| `--snice-layout-docs-header-height-compact` | Layout docs header height compact |
 
 ## Shell variants
 
@@ -266,16 +276,4 @@ it to the leading side.
 | `snice-layout-master-detail` | `selected` | boolean | `false` | A detail is open; drives the single-pane view below 641px |
 | `snice-layout-auth-split` | `panel-position` | `start`, `end` | `end` | Side the brand panel sits on |
 
-### Sizing hooks
-
-| Custom property | Default | Applies to |
-|-----------------|---------|------------|
-| `--snice-layout-sidebar-width` | `16rem` | Expanded sidebar |
-| `--snice-layout-rail-collapsed-width` | `3rem` | Collapsed rail |
-| `--snice-layout-rail-width` | `18rem` | Dashboard right rail |
-| `--snice-layout-measure` | `65ch` | Blog reading measure |
-| `--snice-layout-container` | `80rem` | Landing band inner width |
-| `--snice-layout-list-width` | `20rem` | Master-detail list pane |
-| `--snice-layout-docs-nav-width` | `18.75rem` | Documentation navigation tree |
-| `--snice-layout-docs-toc-width` | `18.75rem` | Documentation on-this-page rail |
-| `--snice-layout-auth-width` | `24rem` | Auth split form column |
+Shell sizing hooks are listed under [CSS Custom Properties](#css-custom-properties).

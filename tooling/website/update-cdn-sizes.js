@@ -49,7 +49,9 @@ const replacements = [
     ]
   },
   {
-    file: 'website/public/guide.html',
+    // guide.html is generated after the CDN build. Update its authored
+    // fragment so a clean website build cannot overwrite the measured value.
+    file: 'website/guide/cdn.html',
     patterns: [
       [/The runtime is ~\d+KB gzipped\. Each component adds ~\d+&ndash;\d+KB\./, `The runtime is ~${runtimeGzKB}KB gzipped. Each component adds ~${minComp}&ndash;${maxComp}KB.`],
     ]

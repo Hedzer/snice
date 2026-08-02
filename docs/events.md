@@ -7,6 +7,7 @@ Event handling in Snice provides two powerful approaches: **template event synta
 - [Template Event Syntax (Preferred for Elements)](#template-event-syntax-preferred-for-elements)
 - [@on Decorator](#on-decorator)
 - [@dispatch Decorator](#dispatch-decorator)
+- [Event Bus](#event-bus)
 - [Custom Events](#custom-events)
 - [Event Delegation](#event-delegation)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
@@ -714,6 +715,78 @@ class ColorPicker extends HTMLElement {
   }
 }
 ```
+
+## Event Bus
+
+Snice has no bus object and no singleton. A bus is `@dispatch` publishing upward and
+`@on` subscribing at a chosen ancestor -- the scope is a DOM node, so it is created and
+torn down with the DOM.
+
+There are two ways to publish, and the choice decides who can hear it.
+
+**Bubble up from the host.** `@dispatch` is `bubbles: true, composed: true` by default, so
+the event crosses shadow boundaries and passes every ancestor on its way to `document`.
+Use this when the event is about *this* element and ancestors may care.
+
+```typescript
+@element('product-tile')
+class ProductTile extends HTMLElement {
+  @dispatch('bus:cart-added')
+  addToCart(sku: string) {
+    return { sku, qty: 1 };
+  }
+}
+```
+
+**Dispatch directly on a scope.** `@dispatch` takes the same `scope` option as `@on`, which
+fires the event *on* that target instead of bubbling from the host. Use this when the
+subscriber is not an ancestor -- a sibling subtree, or a host that may be detached.
+
+```typescript
+@dispatch('bus:cart-added', { scope: 'global' })   // dispatched on document
+add(id: string) { return { id }; }
+```
+
+Subscribe at the scope you want to share.
+
+```typescript
+// App-wide: listens on document
+@on('bus:cart-added', { scope: 'global' })
+onCartAdded(e: CustomEvent) { /* ... */ }
+
+// Feature-scoped: listens on the nearest <cart-shell> ancestor, so a second
+// <cart-shell> elsewhere on the page keeps its own traffic
+@on('bus:cart-added', { scope: 'cart-shell' })
+onCartAdded(e: CustomEvent) { /* ... */ }
+```
+
+Choosing a scope:
+
+| Reach | `scope` | Use when |
+|---|---|---|
+| Whole document | `'global'` | Genuinely app-wide: auth expiry, theme change, save shortcut |
+| A feature subtree | selector string | The event belongs to one shell and must not leak to a sibling instance |
+| A specific node | `EventTarget` / resolver | You already hold the node, or the target moves and must re-resolve |
+
+Prefer the narrowest scope that works. `'global'` means every instance on the page hears
+every message, which is what makes singleton buses hard to reason about.
+
+Match the two halves. A bubbling publish only reaches subscribers that sit on the host's
+ancestor chain; if the subscriber lives in a sibling subtree, scope the dispatch too so
+both meet on the same node. See
+[scope on @dispatch](#scope-controlling-the-dispatch-target).
+
+Name events so the routing is visible at the call site -- the `bus:` prefix above is a
+convention, not a framework feature. Any string works.
+
+Teardown is automatic: the listener is removed on disconnect from whichever target it
+resolved to, and re-resolved on reconnect, so subscribers follow the host when it moves.
+If a selector scope matches no ancestor the listener is skipped with a `console.warn`
+rather than silently binding to the wrong node. See
+[scope](#scope-controlling-the-listener-target) for the full resolution table.
+
+For a request that needs an answer rather than a broadcast, use
+[@request / @respond](./request-response.md) instead.
 
 ## Custom Events
 

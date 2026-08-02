@@ -35,22 +35,13 @@ Snice embeds a small set of Heroicons (MIT © Tailwind Labs) as defaults. Consum
 
 ## Components with built-in defaults
 
-| Component | Where used |
-|-----------|------------|
-| `<snice-alert>` | variant status icon |
-| `<snice-banner>` | variant status icon |
-| `<snice-timeline>` | marker icon (per item variant) |
-| `<snice-image>` | placeholder (no `src`) |
-| `<snice-cell-image>` (table) | placeholder |
-| `<snice-approval-flow>` | step status (pending/approved/rejected/skipped) |
-| `<snice-data-card>` | Edit/Done button |
-| `<snice-kpi>` | trend indicator |
-| `<snice-cell-percentage>` (table) | trend indicator |
-| `<snice-cell-json>` (table) | expand/collapse chevron |
-| `<snice-header>` (table) | sort direction |
-| `<snice-modal>` | close button |
-| `<snice-drawer>` | close button |
-| `<snice-toast>` | close button |
+- Variant status icon: `<snice-alert>`, `<snice-banner>`; `<snice-timeline>` marker (per item variant)
+- Placeholder: `<snice-image>` (no `src`), `<snice-cell-image>` (table)
+- `<snice-approval-flow>` step status (pending/approved/rejected/skipped)
+- Trend indicator: `<snice-kpi>`, `<snice-cell-percentage>` (table)
+- `<snice-cell-json>` expand/collapse chevron; `<snice-header>` sort direction (both table)
+- Close button: `<snice-modal>`, `<snice-drawer>`, `<snice-toast>`
+- `<snice-data-card>` Edit/Done button
 
 ## Importing built-in glyphs directly
 

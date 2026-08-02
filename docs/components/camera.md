@@ -19,7 +19,7 @@ Live camera feed with built-in mobile-style controls, flexible positioning, aspe
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `autoStart` (attr: `auto-start`) | `boolean` | `true` | Auto-start camera on load |
+| `autoStart` (attr: `auto-start`) | `boolean` | `false` | Auto-start camera on load |
 | `facingMode` (attr: `facing-mode`) | `'user' \| 'environment'` | `'user'` | Front or back camera |
 | `mirror` | `boolean` | `true` | Mirror video for front camera |
 | `controlsPosition` (attr: `controls-position`) | `ControlsPosition` | `'auto'` | Control button positioning |

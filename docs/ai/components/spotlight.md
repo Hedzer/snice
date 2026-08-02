@@ -29,6 +29,7 @@ interface SpotlightStep {
 - `spotlight-step` → `{ index, step }`
 - `spotlight-end` → `void`
 - `spotlight-skip` → `{ index }`
+- `spotlight-target-missing` → `{ index, step }` — step target gone (e.g. route change); popover stops instead of pointing at nothing
 
 ## CSS Custom Properties
 
@@ -55,6 +56,7 @@ spotlight.start();
 
 spotlight.addEventListener('spotlight-end', () => console.log('Tour completed'));
 spotlight.addEventListener('spotlight-skip', (e) => console.log(`Skipped at ${e.detail.index}`));
+spotlight.addEventListener('spotlight-target-missing', (e) => console.warn('Missing target', e.detail.step.target));
 ```
 
 ## CSS Parts

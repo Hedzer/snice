@@ -92,8 +92,8 @@ describe('Router Guards', () => {
     const pageElement = container.querySelector(uniqueName);
     expect(pageElement).toBeFalsy();
     // Should show default 403
-    expect(container.innerHTML).toContain('403');
-    expect(container.innerHTML).toContain('Unauthorized');
+    expect(container.textContent).toContain('403');
+    expect(container.textContent).toContain('Unauthorized');
   });
 
   it('a superseded navigation whose guard later denies does not stomp the current page', async () => {
@@ -130,8 +130,10 @@ describe('Router Guards', () => {
 
     // The superseded denial must NOT replace the dashboard with a 403.
     expect(container.querySelector(dashTag)).toBeTruthy();
-    expect(container.innerHTML).not.toContain('403');
-    expect(container.innerHTML).not.toContain('Unauthorized');
+    // textContent, not innerHTML: tag names embed Date.now(), and a timestamp
+    // containing "403" made this assertion fail at random (~1 run in 90).
+    expect(container.textContent).not.toContain('403');
+    expect(container.textContent).not.toContain('Unauthorized');
   });
 
   it('should support guards with context checks', async () => {

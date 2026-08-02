@@ -52,4 +52,19 @@ describe('deployed full showcases', () => {
     }
     expect(failures).toEqual([]);
   });
+
+  it('maps sibling modules to their CDN family bundle', () => {
+    const accordion = readFileSync(join(showcaseDir, 'accordion.html'), 'utf8');
+    expect(accordion).toContain('/components/snice-accordion.min.js');
+    expect(accordion).not.toContain('/components/snice-accordion-item.min.js');
+
+    const layout = readFileSync(join(showcaseDir, 'layout.html'), 'utf8');
+    expect(layout.match(/\/components\/snice-layout\.min\.js/g)).toHaveLength(1);
+    expect(layout).not.toMatch(/\/components\/snice-layout-(?:sidebar|dashboard|docs|blog).*\.min\.js/);
+  });
+
+  it('uses the generated site theme in the theme showcase', () => {
+    const theme = readFileSync(join(showcaseDir, 'theme.html'), 'utf8');
+    expect(theme).toMatch(/href="\/theme\/theme\.css\?v=[a-f0-9]+"/);
+  });
 });

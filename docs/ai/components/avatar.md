@@ -72,11 +72,11 @@ fallbackBackground: string = '';     // attr: fallback-background — overrides 
 
 ### Size Reference
 
-| Size | Dimensions | Font Size |
-|------|-----------|-----------|
-| `xs` | 1.5rem (24px) | 0.625rem |
-| `small` | 2rem (32px) | 0.75rem |
-| `medium` | 2.5rem (40px) | 0.875rem |
-| `large` | 3rem (48px) | 1rem |
-| `xl` | 4rem (64px) | 1.25rem |
-| `xxl` | 6rem (96px) | 2rem |
+Size — dimension / font-size:
+
+- `xs` 1.5rem (24px) / 0.625rem
+- `small` 2rem (32px) / 0.75rem
+- `medium` 2.5rem (40px) / 0.875rem
+- `large` 3rem (48px) / 1rem
+- `xl` 4rem (64px) / 1.25rem
+- `xxl` 6rem (96px) / 2rem

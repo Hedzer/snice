@@ -12,6 +12,7 @@ Provides contextual information when users hover, click, or focus an element. Su
 - [CSS Parts](#css-parts)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
+- [CSS Custom Properties](#css-custom-properties)
 - [Attribute-Based Tooltips](#attribute-based-tooltips)
 
 ## Properties
@@ -231,6 +232,7 @@ This is the primary use case -- adding tooltips without disrupting component str
 | `--tooltip-hide-delay` | `0` | Hide delay in milliseconds |
 | `--tooltip-offset` | `12` | Distance from trigger element in pixels |
 | `--tooltip-arrow` | *(shown)* | Set to `none` to hide the arrow |
+| `--tooltip-arrow-size` | `6px` | Arrow width and height |
 | `--tooltip-max-width` | `250` | Maximum tooltip width in pixels |
 | `--tooltip-z-index` | `10000` | Z-index stacking order |
 | `--tooltip-strict-positioning` | *(false)* | Set to `true` to disable auto-flip |

@@ -19,7 +19,7 @@ General-purpose charting component supporting 10 chart types with animations, in
 | `type` | `ChartType` | `'line'` | Chart type: `'line'`, `'bar'`, `'horizontal-bar'`, `'area'`, `'pie'`, `'donut'`, `'scatter'`, `'bubble'`, `'radar'`, `'mixed'` |
 | `datasets` | `ChartDataset[]` | `[]` | Chart datasets (property only) |
 | `labels` | `string[]` | `[]` | X-axis labels (property only) |
-| `options` | `ChartOptions` | `{}` | Chart options (property only) |
+| `options` | `ChartOptions` | see description | Chart options (property only). Defaults: responsive, no fixed aspect ratio, clickable legend on top, hover tooltip, 500ms ease-out animation, x/y grids on |
 | `width` | `number` | `0` | Chart width (0 = auto) |
 | `height` | `number` | `0` | Chart height (0 = auto) |
 

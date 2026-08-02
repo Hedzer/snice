@@ -12,6 +12,7 @@ An SVG-based force-directed graph visualization for displaying relationships bet
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
 - [Accessibility](#accessibility)
+- [Data Types](#data-types)
 
 ## Properties
 
