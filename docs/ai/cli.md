@@ -52,7 +52,10 @@ Non-blocking architecture suggestions:
 - `@element` -> `src/components/`
 - `@controller` -> `src/controllers/`
 - `@daemon` -> `src/daemons/`
-- several external-effect methods or substantial logic repeated across pages -> extract a controller
+- visual behavior -> element
+- application behavior specific to a set of elements -> controller
+- element orchestration -> page; do not attach a controller to the page host
+- host-free reusable function -> plain module in the project's chosen location
 
 Both `doctor` and `validate` accept `--json`.
 

@@ -1,7 +1,15 @@
 <!-- AI: For the AI-optimized version of this doc, see docs/ai/api.md -->
 # Controllers API Documentation
 
-Controllers handle data fetching, business logic, and server communication separately from visual components. They can be attached to any HTML element, including native elements.
+Controllers hold application behavior specific to a set of elements, including
+their data fetching, business rules, and server communication. They can be
+attached to any HTML element, including native elements.
+
+Visual behavior belongs in elements, application behavior specific to a set of
+elements belongs in a controller, and element orchestration belongs in pages.
+Do not attach a controller to the page host. A host-free reusable function may
+stay a plain module wherever the project keeps it. URL/query parsing belongs in
+`@page({ routes })`, not in a controller.
 
 ## Table of Contents
 - [Basic Usage](#basic-usage)
@@ -125,6 +133,8 @@ Snice attaches immediately. Initial rendering has already completed at that
 point, and waiting for `ready` would otherwise create a self-deadlock because
 `ready` cannot settle until the current handler returns. Attaching to any
 other element still awaits that element's `ready` promise.
+This runtime safeguard does not make attaching a controller to a routed page a
+good architecture; pages should orchestrate directly.
 
 ### Detachment Flow
 
@@ -355,9 +365,11 @@ class FormValidationController implements IController<HTMLFormElement> {
 
 ### Data Fetching Controller
 
-Controllers own data fetching. Pass state through the element's public API and
-dispatch outcome events — do not manipulate its rendered DOM. A production
-controller should also prevent an older response from overwriting a newer one:
+A data-fetching controller is appropriate when the fetch is application behavior
+specific to the elements it controls. Pass state through the element's public
+API and dispatch outcome events — do not manipulate its rendered DOM. A
+production controller should also prevent an older response from overwriting a
+newer one:
 
 ```typescript
 interface Order { id: string; total: number }

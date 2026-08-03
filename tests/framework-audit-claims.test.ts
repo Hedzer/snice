@@ -164,20 +164,6 @@ describe('audit: render/@ready skip when element removed during microtask gap', 
 });
 
 // ---------------------------------------------------------------------------
-// Audit claim 5 (High): router.ts:280 — spinner created inside setTimeout
-// after finally passes, becoming an orphan in the DOM.
-//
-// This is hard to exercise in isolation because it depends on guards
-// resolving in a specific timing window. We smoke-test the scenario
-// conceptually rather than trying to reproduce precise timing.
-// ---------------------------------------------------------------------------
-describe('audit: router spinner orphan', () => {
-  it('(skipped) — router spinner-orphan is hard to reproduce without the full router lifecycle', () => {
-    expect(true).toBe(true);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Audit claim 6 (Medium): on.ts:294 — `once: true` listeners duplicated
 // across shadow root and host; removing one leaves the other armed.
 // ---------------------------------------------------------------------------

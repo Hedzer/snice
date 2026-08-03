@@ -678,7 +678,7 @@ describe('router construction and project architecture guidance', () => {
       "  async loadShipments() { const a = await fetch('/shipments'); sessionStorage.setItem('shipments', await a.text()); }",
       '}'
     ].join('\n');
-    const diagnostics = byRule({ 'src/pages/orders-page.ts': heavy }, 'snice/recommend-page-controller');
+    const diagnostics = byRule({ 'src/pages/orders-page.ts': heavy }, 'snice/recommend-page-decomposition');
     expect(diagnostics).toHaveLength(1);
     expect(diagnostics[0].message).toContain('4 effectful methods');
 
@@ -689,7 +689,7 @@ describe('router construction and project architecture guidance', () => {
       "  render() { return html`<h1>Profile</h1>`; }",
       '}'
     ].join('\n');
-    expect(byRule({ 'src/pages/profile-page.ts': lean }, 'snice/recommend-page-controller')).toEqual([]);
+    expect(byRule({ 'src/pages/profile-page.ts': lean }, 'snice/recommend-page-decomposition')).toEqual([]);
   });
 
   it('detects substantial logic copied across page files', () => {
@@ -705,7 +705,7 @@ describe('router construction and project architecture guidance', () => {
     const diagnostics = byRule({
       'src/pages/alpha-page.ts': "@page({ tag: 'alpha-page', routes: ['/a'] })\nclass AlphaPage extends HTMLElement {\n" + shared + '\n}',
       'src/pages/beta-page.ts': "@page({ tag: 'beta-page', routes: ['/b'] })\nclass BetaPage extends HTMLElement {\n" + shared + '\n}'
-    }, 'snice/recommend-page-controller');
+    }, 'snice/recommend-page-decomposition');
     expect(diagnostics).toHaveLength(2);
     expect(diagnostics.every(diagnostic => diagnostic.message.includes('across 2 page files'))).toBe(true);
   });
@@ -715,7 +715,9 @@ describe('router construction and project architecture guidance', () => {
       expect.objectContaining({ id: 'snice/router-initialization', severity: 'error', category: 'router' }),
       expect.objectContaining({ id: 'snice/page-element-double-decoration', severity: 'error', category: 'router' }),
       expect.objectContaining({ id: 'snice/recommend-project-structure', severity: 'suggestion', category: 'architecture' }),
-      expect.objectContaining({ id: 'snice/recommend-page-controller', severity: 'suggestion', category: 'architecture' })
+      expect.objectContaining({ id: 'snice/recommend-page-decomposition', severity: 'suggestion', category: 'architecture' }),
+      expect.objectContaining({ id: 'snice/controller-on-page-host', severity: 'warning', category: 'architecture' }),
+      expect.objectContaining({ id: 'snice/recommend-route-params', severity: 'suggestion', category: 'router' })
     ]));
   });
 });
@@ -852,7 +854,8 @@ describe('declarative architecture smell checks', () => {
   });
 
   it('detects stale-response guards only when repeated across files', () => {
-    const guarded = (name: string) => [
+    const guarded = (name: string, decorator = '') => [
+      decorator,
       `class ${name} {`,
       '  requestVersion = 0;',
       '  async load() {',
@@ -863,14 +866,220 @@ describe('declarative architecture smell checks', () => {
       '  }',
       '}'
     ].join('\n');
-    const one = analyzeProject({ 'src/pages/a-page.ts': guarded('A') })
+    const one = analyzeProject({ 'src/pages/a-page.ts': guarded('A', "@page({ tag: 'a-page', routes: ['/a'] })") })
       .filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
     expect(one).toEqual([]);
     const two = analyzeProject({
-      'src/pages/a-page.ts': guarded('A'),
-      'src/pages/b-page.ts': guarded('B')
+      'src/pages/a-page.ts': guarded('A', "@page({ tag: 'a-page', routes: ['/a'] })"),
+      'src/pages/b-page.ts': guarded('B', "@page({ tag: 'b-page', routes: ['/b'] })")
     }).filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
     expect(two).toHaveLength(2);
+
+    const shared = analyzeProject({
+      'src/shared/paged-collection.ts': guarded('PagedCollection'),
+      'src/pages/a-page.ts': guarded('A', "@page({ tag: 'a-page', routes: ['/a'] })")
+    }).filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
+    expect(shared).toHaveLength(1);
+    expect(shared[0].file).toBe('src/pages/a-page.ts');
+
+    const plainModules = analyzeProject({
+      'src/anything/paged-collection.ts': guarded('PagedCollection'),
+      'src/elsewhere/latest-request.ts': guarded('LatestRequest')
+    }).filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
+    expect(plainModules).toEqual([]);
+  });
+
+  it('flags styled light roots but accepts explicit light-only renderers', () => {
+    const styled = [
+      "@element('flat-card', { renderRoot: 'light' })",
+      'class FlatCard extends HTMLElement {',
+      '  @styles() theme() { return css`:host { display: block; }`; }',
+      '  @render() template() { return html`<p>flat</p>`; }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(styled, 'src/components/flat-card.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/light-render-root-with-styles', severity: 'suggestion' })
+      ]));
+
+    const nativeFragment = [
+      "@element('table-rows', { renderRoot: 'light' })",
+      'class TableRows extends HTMLElement {',
+      '  @render() template() { return html`<tr><td>row</td></tr>`; }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(nativeFragment, 'src/components/table-rows.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/light-render-root-with-styles')).toEqual([]);
+  });
+
+  it('flags translator-only controllers but not controllers with external behavior', () => {
+    const translator = [
+      "@controller('search-translator')",
+      'class SearchTranslator {',
+      "  @on('input') input(event: Event) { this.changed(event); }",
+      "  @dispatch('search-change') changed(event: Event) { return event; }",
+      '}'
+    ].join('\n');
+    expect(analyzeSource(translator, 'src/controllers/search-translator.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/translator-controller', severity: 'suggestion' })
+      ]));
+
+    const fetching = translator.replace(
+      'class SearchTranslator {',
+      "class SearchTranslator {\n  async load() { return fetch('/search'); }"
+    );
+    expect(analyzeSource(fetching, 'src/controllers/search.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/translator-controller')).toEqual([]);
+
+    const stateful = translator.replace(
+      'class SearchTranslator {',
+      'class SearchTranslator {\n  private lastQuery = "";'
+    );
+    expect(analyzeSource(stateful, 'src/controllers/search.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/translator-controller')).toEqual([]);
+  });
+
+  it('requires an origin guard when a controller listens for an event it dispatches', () => {
+    const controller = (guard: string, on = "@on('data-load')") => [
+      "@controller('paged-fetch')",
+      'class PagedFetch {',
+      `  ${on} load(event: Event) { ${guard} this.dataLoad(); }`,
+      "  @dispatch('data-load') dataLoad() { return {}; }",
+      '}'
+    ].join('\n');
+    expect(analyzeSource(controller(''), 'src/controllers/paged-fetch.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/controller-event-origin', severity: 'warning' })
+      ]));
+    expect(analyzeSource(
+      controller('if (event.target !== this.element) return;'),
+      'src/controllers/paged-fetch.ts'
+    ).filter(diagnostic => diagnostic.ruleId === 'snice/controller-event-origin')).toEqual([]);
+
+    expect(analyzeSource(
+      controller('', "@on(['data-load', 'data-reload'], { capture: true })"),
+      'src/controllers/paged-fetch.ts'
+    )).toEqual(expect.arrayContaining([
+      expect.objectContaining({ ruleId: 'snice/controller-event-origin' })
+    ]));
+
+    expect(analyzeSource(
+      controller('', "@on('data-load', '.reload-button')"),
+      'src/controllers/paged-fetch.ts'
+    ).filter(diagnostic => diagnostic.ruleId === 'snice/controller-event-origin')).toEqual([]);
+  });
+
+  it('keeps URL ownership out of controllers', () => {
+    const source = [
+      "@controller('url-params')",
+      'class UrlParamsController {',
+      "  read() { return new URLSearchParams(window.location.search).get('q'); }",
+      '}'
+    ].join('\n');
+    expect(analyzeSource(source, 'src/controllers/url-params.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/controller-owns-routing', severity: 'warning' })
+      ]));
+  });
+
+  it('rejects self-ready waits without mislabeling same-host controller attach as a deadlock', () => {
+    const deadlock = [
+      "@element('dead-host')",
+      'class DeadHost extends HTMLElement {',
+      '  @ready() async initialize() { await this.ready; }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(deadlock, 'src/components/dead-host.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/self-ready-await', severity: 'error' })
+      ]));
+
+    const supported = [
+      "@element('supported-host')",
+      'class SupportedHost extends HTMLElement {',
+      '  @ready() async initialize() { await attachController(this, HostController); }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(supported, 'src/components/supported-host.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/self-ready-await')).toEqual([]);
+  });
+
+  it('flags trivially true diagnostic probes only in test files', () => {
+    const probe = "it('probe', () => { console.log(document.body); expect(true).toBe(true); });";
+    expect(analyzeSource(probe, 'src/probe.test.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/stray-probe-test', severity: 'warning' })
+      ]));
+    expect(analyzeSource(probe, 'src/probe.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/stray-probe-test')).toEqual([]);
+  });
+
+  it('flags user-input helpers that only poke a value property', () => {
+    const weak = [
+      'function enterSearch(control: HTMLInputElement, value: string) {',
+      '  control.value = value;',
+      '}',
+      "it('searches', () => enterSearch(input, 'query'));"
+    ].join('\n');
+    expect(analyzeSource(weak, 'src/search.test.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/test-helper-value-without-event', severity: 'suggestion' })
+      ]));
+
+    const realistic = weak.replace(
+      '  control.value = value;',
+      "  control.value = value;\n  control.dispatchEvent(new Event('input', { bubbles: true }));"
+    );
+    expect(analyzeSource(realistic, 'src/search.test.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/test-helper-value-without-event')).toEqual([]);
+
+    const propertyContract = "it('sets value', () => { control.value = 'programmatic'; expect(control.value).toBe('programmatic'); });";
+    expect(analyzeSource(propertyContract, 'src/control.test.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/test-helper-value-without-event')).toEqual([]);
+  });
+});
+
+describe('page orchestration checks', () => {
+  const byRule = (source: string, ruleId: string) => analyzeProject({
+    'src/pages/search-page.ts': source
+  }).filter(diagnostic => diagnostic.ruleId === ruleId);
+
+  it('warns when a page attaches a controller to its own host', () => {
+    const source = [
+      "@page({ tag: 'search-page', routes: ['/search?q=:query'] })",
+      'class SearchPage extends HTMLElement {',
+      '  @ready() async boot() { await attachController(this, SearchController); }',
+      '}'
+    ].join('\n');
+    const diagnostics = byRule(source, 'snice/controller-on-page-host');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].fix).toContain('Keep element orchestration in the page');
+  });
+
+  it('recommends declared route params for manual page query plumbing', () => {
+    const source = [
+      "@page({ tag: 'search-page', routes: ['/search'] })",
+      'class SearchPage extends HTMLElement {',
+      "  read() { return new URLSearchParams(location.search).get('q'); }",
+      "  write(q: string) { history.replaceState(null, '', '?q=' + q); }",
+      '}'
+    ].join('\n');
+    const diagnostics = byRule(source, 'snice/recommend-route-params');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].fix).toContain("?q=:query");
+  });
+
+  it('accepts route properties and page-owned orchestration', () => {
+    const source = [
+      "@page({ tag: 'search-page', routes: ['/search?q=:query'] })",
+      'class SearchPage extends HTMLElement {',
+      "  @property() query = '';",
+      "  @ready() async load() { await fetch('/search?q=' + this.query); }",
+      '}'
+    ].join('\n');
+    expect(byRule(source, 'snice/controller-on-page-host')).toEqual([]);
+    expect(byRule(source, 'snice/recommend-route-params')).toEqual([]);
   });
 });
 

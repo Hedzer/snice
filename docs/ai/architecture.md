@@ -4,10 +4,16 @@
 
 **Separation of concerns:**
 - **Cross-cutting:** Router + global context
-- **Pages:** Orchestrate elements, handle URLs
-- **Elements:** Generic visual building blocks — no fetch(), no API calls, no business logic
-- **Controllers:** Specific behavior (data, APIs, business rules) — swappable per element
+- **Elements:** Visual behavior and semantic UI contracts — rendering, internal DOM, focus, keyboard behavior, and visual state
+- **Controllers:** Application behavior specific to a set of elements — data, APIs, storage, business rules, and app-specific reactions that exist for those elements
+- **Pages:** Element orchestration — compose elements, pass properties, handle events, bind controllers, and coordinate the screen
+- **Plain modules:** Host-free reusable functions with explicit inputs; use the project's own folder convention
 - **Daemons:** Explicitly constructed app-owned state/lifecycle objects — addressable through context, never global singletons
+
+These are ownership rules, not synonyms: visual behavior belongs in the element,
+application behavior specific to a set of elements belongs in a controller, and
+element orchestration belongs in the page. Routing is a page concern, but it does
+not define the page role.
 
 **Generic vs Specific:** Elements say *what* they need, controllers decide *how*.
 Swap controllers to change behavior without touching the component.
@@ -27,16 +33,23 @@ Conventional application layout:
 src/
   main.ts
   router.ts
-  pages/          # @page classes; route orchestration and presentation
+  pages/          # @page classes; element orchestration and routing
   components/     # reusable @element visual components
   controllers/    # @controller data, API, and reusable business behavior
   daemons/        # explicitly constructed @daemon state/lifecycle services
 ```
 
-Pages may coordinate a route and perform a small one-off load. Move behavior to
-a controller when a page owns several storage/server/timer operations or when
-substantial non-visual logic is copied across pages. `snice check` reports these
-as architecture suggestions, not errors.
+Pages orchestrate elements. Do not call `attachController(this, ...)` or assign
+`this.controller` on a page; that creates a second owner instead of preserving
+the page's orchestration role. Keep visual behavior in the element. Put
+application behavior specific to a set of elements in a controller and bind it
+where the page composes those elements. A host-free reusable function may stay a
+plain module in the project's chosen location.
+
+Declare route and query state in `@page({ routes })` rather than giving a
+controller `URLSearchParams`, `location`, or `history` responsibilities.
+`snice check` reports these architecture mistakes and conservative page
+decomposition suggestions.
 
 ## Rendering System
 

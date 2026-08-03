@@ -427,6 +427,162 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/light-render-root-with-styles',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Ask for an explicit integration reason before a styled element gives up shadow-root encapsulation.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename) || isTestFilename(context.filename)) return;
+      for (const declaration of findDecoratedClasses(context.source, 'element')) {
+        const header = context.source.slice(declaration.index, declaration.bodyStart);
+        const option = /\b(?:renderRoot\s*:\s*['"]light['"]|shadow\s*:\s*false)/.exec(header);
+        if (!option || !/(?:@styles\b|\bstatic\s+styles\b)/.test(declaration.body)) continue;
+        context.report(declaration.index + option.index, {
+          message: `${declaration.name} opts into light DOM despite owning component styles, so selectors and internals are no longer encapsulated.`,
+          fix: "Use the default shadow render root. Keep renderRoot: 'light' only for a documented integration requirement such as native parser parentage or intentional global-CSS participation."
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/translator-controller',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Recommend keeping internal-event translation in the element contract instead of a controller.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findDecoratedClasses(context.source, 'controller')) {
+        const onMethods = findDecoratedClassMethods(declaration.body, 'on');
+        const dispatchMethods = findDecoratedClassMethods(declaration.body, 'dispatch');
+        if (!onMethods.length || !dispatchMethods.length) continue;
+        const dispatchNames = new Set(dispatchMethods.map(method => method.name));
+        const translationMethods = new Set([
+          ...onMethods.map(method => method.name),
+          ...dispatchNames,
+          'attach',
+          'detach'
+        ]);
+        const translatesEveryHandler = onMethods.every(method =>
+          [...dispatchNames].some(name => new RegExp(`\\bthis\\.${escapeRegExp(name)}\\s*\\(`).test(method.body)) ||
+          /\bthis\.element(?:\?\.|\.)dispatchEvent\s*\(/.test(method.body)
+        );
+        const ownsState = [...inspectElementMembers(declaration.body).fields]
+          .some(name => name !== 'element');
+        const ownsOtherMethods = findClassMethods(declaration.body)
+          .some(method => !translationMethods.has(method.name));
+        const hasExternalBehavior = /\b(?:fetch|setTimeout|setInterval)\s*\(|\bnew\s+(?:WebSocket|EventSource|Worker)\s*\(|\b(?:localStorage|sessionStorage|indexedDB|caches)\b|@(request|respond|state|property)\b/.test(declaration.body);
+        if (!translatesEveryHandler || ownsState || ownsOtherMethods || hasExternalBehavior) continue;
+        context.report(declaration.index, {
+          message: `${declaration.name} only translates element events into other element events and owns no external behavior or state.`,
+          fix: 'Put visual behavior, internal-part handling, and semantic event dispatch in the element itself. Use a controller only for application behavior specific to a set of elements.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/controller-event-origin',
+    severity: 'warning',
+    category: 'events',
+    description: 'Require shared controllers to distinguish their host event from the same event bubbling out of nested hosts.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findDecoratedClasses(context.source, 'controller')) {
+        const dispatched = new Set(
+          findDecoratedClassMethods(declaration.body, 'dispatch')
+            .flatMap(method => firstDecoratorStringArguments(method.decoratorArguments))
+        );
+        if (!dispatched.size) continue;
+        for (const handler of findDecoratedClassMethods(declaration.body, 'on')) {
+          const listened = firstDecoratorStringArguments(handler.decoratorArguments);
+          const onArguments = splitTopLevelArguments(handler.decoratorArguments);
+          const hasSelector = /^\s*(['"])[\s\S]*\1\s*$/.test(onArguments[1] ?? '');
+          if (hasSelector || !listened.some(event => dispatched.has(event))) continue;
+          const parameter = /^\s*([A-Za-z_$][\w$]*)/.exec(handler.parameters)?.[1];
+          if (!parameter || hasHostOriginCheck(handler.body, parameter)) continue;
+          const event = listened.find(name => dispatched.has(name));
+          context.report(declaration.bodyStart + handler.decoratorIndex, {
+            message: `${declaration.name} both listens for and dispatches "${event}" without checking that the event originated on its own host.`,
+            fix: `Guard the handler with if (${parameter}.target !== this.element) return; so the same event from a nested controller host is not handled twice.`
+          });
+        }
+      }
+    }
+  },
+  {
+    id: 'snice/controller-owns-routing',
+    severity: 'warning',
+    category: 'architecture',
+    description: 'Keep route parsing and navigation in routed pages instead of attached controllers.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findDecoratedClasses(context.source, 'controller')) {
+        const routing = /\bnew\s+URLSearchParams\s*\(|\b(?:window\.)?location\.(?:search|hash)\b|\b(?:window\.)?history\.(?:pushState|replaceState)\s*\(/.exec(declaration.body);
+        if (!routing) continue;
+        context.report(declaration.bodyStart + routing.index, {
+          message: `${declaration.name} owns URL parsing or navigation even though routing is page orchestration.`,
+          fix: 'Declare route/query parameters in @page({ routes }), receive them as page properties, and navigate through the Router. Keep the controller element-scoped.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/self-ready-await',
+    severity: 'error',
+    category: 'lifecycle',
+    description: 'Reject awaiting an element\'s own ready promise from one of its @ready handlers.',
+    check(context) {
+      for (const declaration of findSniceElementClasses(context.source)) {
+        for (const method of findDecoratedClassMethods(declaration.body, 'ready', declaration.bodyStart)) {
+          const wait = /\bawait\s+(?:Promise\.resolve\s*\(\s*)?this\.ready\b/.exec(method.body);
+          if (!wait) continue;
+          context.report(method.bodyStart + wait.index, {
+            message: `${declaration.name}.${method.name} awaits this.ready from inside @ready, so each side waits for the other and initialization cannot complete.`,
+            fix: 'Remove the self-wait. @ready already runs after the first render; await a child element\'s ready/rendered promise when child readiness is what the code needs.'
+          });
+        }
+      }
+    }
+  },
+  {
+    id: 'snice/stray-probe-test',
+    severity: 'warning',
+    category: 'testing',
+    description: 'Reject diagnostic test files whose assertions cannot fail.',
+    check(context) {
+      if (!isTestFilename(context.filename)) return;
+      const code = blankStringContents(context.source);
+      for (const match of code.matchAll(/\bexpect\s*\(\s*true\s*\)\s*\.\s*toBe\s*\(\s*true\s*\)/g)) {
+        context.report(match.index, {
+          message: 'This test assertion is always true and looks like an abandoned diagnostic probe.',
+          fix: 'Delete the probe file or replace the assertion with an observable behavior or contract that can fail.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/test-helper-value-without-event',
+    severity: 'suggestion',
+    category: 'testing',
+    description: 'Warn when a test helper that appears to simulate user input only writes a DOM property.',
+    check(context) {
+      if (!isTestFilename(context.filename)) return;
+      for (const helper of findNamedFunctionBodies(context.source)) {
+        if (!/^(?:(?:type|enter|fill|change|check|uncheck|toggle|select|edit|input)|set(?:Input|Field|Control))/i.test(helper.name)) continue;
+        const write = /\b([A-Za-z_$][\w$]*)\s*\.\s*(value|checked)\s*=(?!=|>)/.exec(helper.body);
+        if (!write) continue;
+        const target = escapeRegExp(write[1]);
+        const userSignal = new RegExp(
+          `\\b${target}\\s*\\.\\s*(?:dispatchEvent|click)\\s*\\(|\\b(?:fireEvent|userEvent)\\b|\\b(?:fill|check|uncheck|selectOption)\\s*\\(`
+        );
+        if (userSignal.test(helper.body)) continue;
+        context.report(helper.bodyStart + write.index, {
+          message: `${helper.name}() writes .${write[2]} but emits no event, so it changes mechanism state without simulating a user action.`,
+          fix: 'Dispatch the control\'s documented input/change event after the write, or use the test runner\'s user-interaction helper. Keep direct writes only in tests of the property API itself.'
+        });
+      }
+    }
+  },
+  {
     id: 'snice/observe-target',
     severity: 'error',
     category: 'observers',
@@ -1245,10 +1401,26 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
-    id: 'snice/recommend-page-controller',
+    id: 'snice/recommend-page-decomposition',
     severity: 'suggestion',
     category: 'architecture',
-    description: 'Recommend extracting substantial or repeated non-visual page logic into a controller.',
+    description: 'Recommend decomposing an oversized page without attaching a controller to the page host.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/controller-on-page-host',
+    severity: 'warning',
+    category: 'architecture',
+    description: 'Warn when a routed page imperatively attaches a controller to itself.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/recommend-route-params',
+    severity: 'suggestion',
+    category: 'router',
+    description: 'Recommend declarative page route/query parameters instead of manual URL parsing and history writes.',
     projectOnly: true,
     check() {}
   },
@@ -1403,8 +1575,16 @@ export function analyzeProject(files) {
       continue;
     }
     const analyzable = maskComments(file.source);
+    const staleGuardOwners = ['page', 'element', 'controller'].flatMap(kind =>
+      findDecoratedClasses(analyzable, kind).map(declaration => ({
+        kind,
+        start: declaration.bodyStart,
+        end: declaration.bodyStart + declaration.body.length
+      }))
+    );
     for (const guard of analyzable.matchAll(/\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*\+\+this\.([A-Za-z_$][\w$]*(?:Id|Version|Token|Generation))\b([\s\S]{0,2000}?)\b(?:\1\s*!==?\s*this\.\2|this\.\2\s*!==?\s*\1)/g)) {
-      staleGuards.push({ file, index: guard.index, field: guard[2] });
+      const owner = staleGuardOwners.find(candidate => guard.index >= candidate.start && guard.index < candidate.end);
+      staleGuards.push({ file, index: guard.index, field: guard[2], owner: owner?.kind });
     }
     const provenance = buildSourceProvenance(analyzable);
     routerConstructions.push(
@@ -1657,6 +1837,38 @@ export function analyzeProject(files) {
     if (!declarationsByClass.has(key)) declarationsByClass.set(key, []);
     declarationsByClass.get(key).push(declaration);
   }
+
+  for (const page of pageClasses) {
+    const selfAttachment = /\battachController\s*\(\s*this\s*,|\bthis\.controller\s*=/.exec(page.body);
+    if (selfAttachment) {
+      const index = page.bodyStart + selfAttachment.index;
+      const location = sourceLocation(page.file.source, index);
+      diagnostics.push({
+        severity: 'warning',
+        ruleId: 'snice/controller-on-page-host',
+        message: `${page.name} attaches a controller to its own page host, coupling two lifecycle owners for one route.`,
+        fix: 'Keep element orchestration in the page. Put application behavior specific to a set of elements in a controller and bind it where the page composes those elements. A host-free reusable function may stay a plain module.',
+        file: page.file.filename,
+        line: location.line,
+        column: location.column
+      });
+    }
+
+    const manualRoute = /\bnew\s+URLSearchParams\s*\(|\b(?:window\.)?location\.search\b|\b(?:window\.)?history\.(?:pushState|replaceState)\s*\(/.exec(page.body);
+    if (manualRoute) {
+      const index = page.bodyStart + manualRoute.index;
+      const location = sourceLocation(page.file.source, index);
+      diagnostics.push({
+        severity: 'suggestion',
+        ruleId: 'snice/recommend-route-params',
+        message: `${page.name} parses or writes URL state manually even though route/query parameters can be declared by the page.`,
+        fix: "Declare parameters in @page({ routes: ['/path?q=:query'] }), receive them as page properties before @ready, and call the Router's navigate(path) to write route state. Review docs/ai/routing.md.",
+        file: page.file.filename,
+        line: location.line,
+        column: location.column
+      });
+    }
+  }
   for (const [key, declarations] of declarationsByClass) {
     const page = declarations.find(declaration => declaration.decorator === 'page');
     const element = declarations.find(declaration => declaration.decorator === 'element');
@@ -1751,14 +1963,15 @@ export function analyzeProject(files) {
     }
   }
 
-  if (new Set(staleGuards.map(guard => guard.file.filename)).size >= 2) {
-    for (const guard of staleGuards) {
+  const repeatedStaleGuards = new Set(staleGuards.map(guard => guard.file.filename)).size >= 2;
+  if (repeatedStaleGuards) {
+    for (const guard of staleGuards.filter(candidate => candidate.owner)) {
       const location = sourceLocation(guard.file.source, guard.index);
       diagnostics.push({
         severity: 'suggestion',
         ruleId: 'snice/duplicated-stale-guard',
         message: `A ${guard.field} stale-response guard is repeated across project files.`,
-        fix: 'Extract the shared fetch/loading/error/stale-response lifecycle into a controller under src/controllers/. Review docs/ai/controllers.md.',
+        fix: 'Extract host-free request sequencing into a plain module in the project\'s chosen location. Keep element-specific application behavior in controllers and element orchestration in pages. Review docs/ai/architecture.md.',
         file: guard.file.filename,
         line: location.line,
         column: location.column
@@ -1766,21 +1979,21 @@ export function analyzeProject(files) {
     }
   }
 
-  const pageControllerReported = new Set();
+  const pageDecompositionReported = new Set();
   for (const page of pageClasses) {
     const profile = pageLogicProfile(page.body);
     if (!profile.recommend) continue;
     const location = sourceLocation(page.file.source, page.index);
     diagnostics.push({
       severity: 'suggestion',
-      ruleId: 'snice/recommend-page-controller',
+      ruleId: 'snice/recommend-page-decomposition',
       message: `${page.name} contains substantial non-visual logic (${profile.effectfulMethods} effectful methods, ${profile.effects} external effects, ${profile.decisions} decision points).`,
-      fix: `Keep route orchestration and presentation in the page; move reusable data, business, timer, storage, or server behavior into a controller under src/controllers/. Review docs/ai/controllers.md and docs/ai/architecture.md.`,
+      fix: 'Keep visual behavior in elements, application behavior specific to a set of elements in controllers, and element orchestration in the page. A host-free reusable function may stay a plain module. Review docs/ai/architecture.md.',
       file: page.file.filename,
       line: location.line,
       column: location.column
     });
-    pageControllerReported.add(`${page.file.filename}:${page.index}`);
+    pageDecompositionReported.add(`${page.file.filename}:${page.index}`);
   }
 
   const repeatedPageMethods = new Map();
@@ -1797,18 +2010,18 @@ export function analyzeProject(files) {
     if (files.length < 2) continue;
     for (const { page, method } of occurrences) {
       const reportKey = `${page.file.filename}:${page.index}`;
-      if (pageControllerReported.has(reportKey)) continue;
+      if (pageDecompositionReported.has(reportKey)) continue;
       const location = sourceLocation(page.file.source, method.index);
       diagnostics.push({
         severity: 'suggestion',
-        ruleId: 'snice/recommend-page-controller',
+        ruleId: 'snice/recommend-page-decomposition',
         message: `${method.name}() repeats substantial non-visual logic across ${files.length} page files.`,
-        fix: `Extract the shared behavior into a controller under src/controllers/ and let each page orchestrate it. Also review docs/ai/controllers.md and docs/ai/architecture.md.`,
+        fix: 'Keep visual behavior in elements, application behavior specific to a set of elements in controllers, and element orchestration in pages. Extract this host-free reusable operation into a plain module in the project\'s chosen location. Review docs/ai/architecture.md.',
         file: page.file.filename,
         line: location.line,
         column: location.column
       });
-      pageControllerReported.add(reportKey);
+      pageDecompositionReported.add(reportKey);
     }
   }
 
@@ -2162,10 +2375,12 @@ function findDecoratedClassMethods(body, decoratorName, bodyStart = 0) {
   const pattern = new RegExp(`@${escapeRegExp(decoratorName)}\\b`, 'g');
   for (const match of code.matchAll(pattern)) {
     let cursor = match.index + match[0].length;
+    let decoratorArguments = '';
     while (/\s/.test(code[cursor] ?? '')) cursor++;
     if (code[cursor] === '(') {
       const close = findMatchingDelimiter(code, cursor, '(', ')');
       if (close < 0) continue;
+      decoratorArguments = body.slice(cursor + 1, close);
       cursor = close + 1;
     }
     const signature = /^\s*(?:(?:public|private|protected|static|override)\s+)*(?:async\s+)?([A-Za-z_$][\w$]*)\s*\(/.exec(code.slice(cursor));
@@ -2179,11 +2394,63 @@ function findDecoratedClassMethods(body, decoratorName, bodyStart = 0) {
     if (methodClose < 0) continue;
     methods.push({
       name: signature[1],
+      decoratorIndex: match.index,
+      decoratorArguments,
+      parameters: body.slice(parametersOpen + 1, parametersClose),
       bodyStart: bodyStart + methodOpen + 1,
       body: body.slice(methodOpen + 1, methodClose)
     });
   }
   return methods;
+}
+
+function firstDecoratorStringArguments(argumentsSource) {
+  const first = /^\s*(['"])([^'"]+)\1/.exec(argumentsSource);
+  if (first) return [first[2]];
+  const array = /^\s*\[([^\]]*)\]/.exec(argumentsSource);
+  if (!array) return [];
+  return [...array[1].matchAll(/(['"])([^'"]+)\1/g)].map(match => match[2]);
+}
+
+function splitTopLevelArguments(source) {
+  const argumentsList = [];
+  let start = 0;
+  let quote = '';
+  let escaped = false;
+  let round = 0;
+  let square = 0;
+  let curly = 0;
+  for (let index = 0; index < source.length; index++) {
+    const character = source[index];
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === quote) quote = '';
+      continue;
+    }
+    if (character === '"' || character === "'" || character === '`') {
+      quote = character;
+      continue;
+    }
+    if (character === '(') round++;
+    else if (character === ')') round = Math.max(0, round - 1);
+    else if (character === '[') square++;
+    else if (character === ']') square = Math.max(0, square - 1);
+    else if (character === '{') curly++;
+    else if (character === '}') curly = Math.max(0, curly - 1);
+    else if (character === ',' && round === 0 && square === 0 && curly === 0) {
+      argumentsList.push(source.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  argumentsList.push(source.slice(start).trim());
+  return argumentsList;
+}
+
+function hasHostOriginCheck(body, parameter) {
+  const target = `${escapeRegExp(parameter)}\\s*\\.\\s*target`;
+  const host = 'this\\s*\\.\\s*element';
+  return new RegExp(`(?:${target})\\s*[!=]==?\\s*(?:${host})|(?:${host})\\s*[!=]==?\\s*(?:${target})`).test(body);
 }
 
 function isDirectMemberWrite(body, index, length) {
@@ -2216,6 +2483,23 @@ function findClassMethods(body, bodyStart = 0) {
     });
   }
   return methods;
+}
+
+function findNamedFunctionBodies(source) {
+  const code = blankStringContents(maskComments(source));
+  const functions = [];
+  const pattern = /\bfunction\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)[^{]*\{|\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*(?::[^=\n]+)?=>\s*\{/g;
+  for (const match of code.matchAll(pattern)) {
+    const open = match.index + match[0].lastIndexOf('{');
+    const close = findMatchingDelimiter(code, open, '{', '}');
+    if (close < 0) continue;
+    functions.push({
+      name: match[1] ?? match[2],
+      bodyStart: open + 1,
+      body: source.slice(open + 1, close)
+    });
+  }
+  return functions;
 }
 
 function pageLogicProfile(body) {
@@ -3099,6 +3383,10 @@ function normalizeProjectFiles(files) {
 
 function isFrameworkImplementation(filename) {
   return /(?:^|[/\\])packages[/\\]components[/\\]src(?:[/\\]|$)/.test(filename);
+}
+
+function isTestFilename(filename) {
+  return /(?:^|[/\\])[^/\\]+\.(?:test|spec)\.[cm]?[jt]sx?$/.test(filename);
 }
 
 function sourceLocation(source, index) {

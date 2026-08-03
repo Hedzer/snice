@@ -249,23 +249,18 @@ describe('snice-treemap', () => {
         });
       });
 
-      // Click on the SVG - the event delegation uses data-index
       const rect = queryShadow(treemap as HTMLElement, '.treemap__rect');
       expect(rect).toBeTruthy();
-      // Fire click on SVG since event is delegated there
-      const svg = queryShadow(treemap as HTMLElement, '.treemap__svg');
       const clickEvent = new MouseEvent('click', { bubbles: true });
-      Object.defineProperty(clickEvent, 'target', { value: rect });
-      svg?.dispatchEvent(clickEvent);
+      rect?.dispatchEvent(clickEvent);
 
       const detail = await Promise.race([
         clickPromise,
         wait(200).then(() => null)
       ]);
 
-      // Click events depend on SVG event delegation working in JSDOM
-      // which may not support data-index on SVG elements
-      expect(true).toBe(true);
+      expect(detail).not.toBeNull();
+      expect(detail.node.label).toBe('A');
     });
 
     it('should emit treemap-drill on drill-down', async () => {

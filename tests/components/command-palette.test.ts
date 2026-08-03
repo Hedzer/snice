@@ -181,10 +181,10 @@ describe('snice-command-palette', () => {
   describe('API methods', () => {
     it('should clear search', async () => {
       palette = await createComponent<SniceCommandPaletteElement>('snice-command-palette');
+      (palette as any).searchQuery = 'find me';
       palette.clearSearch();
       await wait(50);
-      // Should not throw
-      expect(true).toBe(true);
+      expect((palette as any).searchQuery).toBe('');
     });
 
     it('should execute command by ID', async () => {

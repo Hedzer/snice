@@ -2,7 +2,15 @@
 
 Mirrors `docs/controllers.md`.
 
-Controllers handle data fetching, business logic, and server communication separately from visual components. Attach to any HTML element, including native elements.
+Controllers hold application behavior specific to a set of elements, including
+their data fetching, business rules, and server communication. Attach to any
+HTML element, including native elements.
+
+Visual behavior belongs in elements, application behavior specific to a set of
+elements belongs in a controller, and element orchestration belongs in pages.
+Do not attach a controller to the page host. A host-free reusable function may
+stay a plain module wherever the project keeps it. URL/query parsing belongs in
+`@page({ routes })`, not in a controller.
 
 ## Basic Usage
 
@@ -79,6 +87,8 @@ Exception to step 4: `await attachController(this, ControllerClass)` inside the
 host's own `@ready` handler attaches immediately because initial render is
 already complete. Awaiting that same host's `ready` would self-deadlock. An
 attachment targeting any other element still waits for the target's `ready`.
+This runtime safeguard does not make attaching a controller to a routed page a
+good architecture; pages should orchestrate directly.
 
 **Detachment flow:**
 1. `detach()` called

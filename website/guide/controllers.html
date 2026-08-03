@@ -1,5 +1,6 @@
 <h3>Controllers</h3>
 <p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
+<p class="desc">Visual behavior belongs in elements. Application behavior specific to a set of elements belongs in a controller. Element orchestration belongs in pages. Do not attach another controller to a page host. A host-free reusable function may stay a plain module wherever the project keeps it.</p>
 <snice-code-block language="snice" grammar="grammars/snice.json">import { controller, on } from 'snice';
 
 @controller('weather')

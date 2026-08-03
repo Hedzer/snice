@@ -101,13 +101,15 @@ Runtime first, then one bundle per component (any order after runtime):
 - Components re-render on any property change (decorated or not)
 
 **Architecture:**
-- **Elements are purely visual** - no fetch(), no API calls, no backend logic
+- **Elements own visual behavior** - no fetch(), no API calls, no backend logic
 - Elements receive data via properties, emit events for actions
-- **Pages orchestrate** - handle routing, call APIs, coordinate elements
-- **Controllers add behavior** - attach to elements for reusable non-visual logic; bind by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`)
+- **Controllers own application behavior specific to a set of elements** - data, APIs, storage, business rules, and app-specific reactions that exist for those elements; bind by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`)
+- **Pages own element orchestration** - compose elements, pass properties, handle events, bind controllers, and coordinate the screen; routing is one concern, not the definition of the role
 - **Daemons hold app-owned state/lifecycle** - construct explicitly, provide through `context.daemons`, communicate by address without importing implementations
 - Conventional folders: `src/pages`, `src/components`, `src/controllers`, `src/daemons`; construct the Router in `src/router.ts` and initialize it from `src/main.ts`
-- Several server/storage/timer operations in one page, or substantial logic copied across pages, belongs in a controller; `snice check` suggests the extraction conservatively
+- Do not attach a controller to a page host; keep the ownership rules distinct: visual behavior in elements, element-specific application behavior in controllers, element orchestration in pages
+- A host-free reusable function may stay a plain module wherever the project keeps it; state plus lifecycle belongs in a daemon
+- Declare query parameters in `@page({ routes: ['/search?q=:query'] })`; do not build a URL-parsing controller for a page
 - Put API calls in pages/controllers/services, not in elements
 
 **Properties:**

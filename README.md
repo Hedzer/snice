@@ -591,11 +591,12 @@ elements in `src/components/`, attached behavior in `src/controllers/`, and
 app-owned services in `src/daemons/`. `src/router.ts` constructs and exports the
 router pieces; `src/main.ts` imports page modules and calls `initialize()`.
 
-Pages orchestrate a route. When several storage/server/timer operations collect
-inside one page, or substantial non-visual logic is repeated across pages, move
-that behavior into a controller. `snice check` reports folder and extraction
-guidance as non-blocking suggestions while treating broken Router construction
-as an error.
+Visual behavior belongs in elements, application behavior specific to a set of
+elements belongs in a controller, and element orchestration belongs in pages.
+Do not attach a controller to the page host. A host-free reusable function may
+stay a plain module in the project's chosen location. `snice check` reports
+page-host controllers, manual URL parsing, and decomposition opportunities while
+treating broken Router construction as an error.
 
 ## Template Syntax
 

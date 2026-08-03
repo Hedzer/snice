@@ -78,15 +78,14 @@ describe('snice-carousel', () => {
   it('should play autoplay', async () => {
     carousel = await createComponent<SniceCarouselElement>('snice-carousel');
     carousel.play();
-    // Just verify it doesn't throw
-    expect(true).toBe(true);
+    expect((carousel as any).autoplayTimer).toBeDefined();
   });
 
   it('should pause autoplay', async () => {
     carousel = await createComponent<SniceCarouselElement>('snice-carousel');
+    carousel.play();
     carousel.pause();
-    // Just verify it doesn't throw
-    expect(true).toBe(true);
+    expect((carousel as any).autoplayTimer).toBeUndefined();
   });
 
   describe('autoplay accessibility', () => {

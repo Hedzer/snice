@@ -55,8 +55,10 @@ npx snice validate    # source analyzer only
 
 It also gives non-blocking architecture suggestions: keep `@page`, `@element`,
 `@controller`, and `@daemon` classes under `src/pages`, `src/components`,
-`src/controllers`, and `src/daemons`; extract clearly service-heavy or repeated
-page logic into a controller. Small route orchestration remains valid page code.
+`src/controllers`, and `src/daemons`; keep visual behavior in elements,
+application behavior specific to a set of elements in controllers, and element
+orchestration in pages. A host-free reusable function may remain a plain module
+wherever the project convention places it.
 
 Both accept `--json` for CI.
 
