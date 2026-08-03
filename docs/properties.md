@@ -81,6 +81,24 @@ Use `reflect: false` for input-only attributes, `attribute: false` for JavaScrip
 
 `@state()` never observes or writes an attribute. `deep: true` tracks nested plain objects, arrays, `Map`, and `Set` using native `Proxy` and `Reflect`; class instances and DOM objects remain intact. Deep observation targets modern evergreen browsers and is not available in Internet Explorer.
 
+### Controlled form properties
+
+When rendering a controlled native or Snice form control, bind its JavaScript
+property. Use `live()` when an owner render must restore state even though the
+bound value equals the last value Snice committed:
+
+```typescript
+import { html, live, state } from 'snice';
+
+@state() name = 'Ada';
+
+html`<snice-input .value=${live(this.name)}></snice-input>`;
+```
+
+`live()` compares with the current DOM property, but it does not watch the DOM
+or schedule a render. See [Live property values](./bindings.md#live-property-values)
+for the modal-reseed example and exact timing.
+
 **Note:** Initial field values (defaults like `name = 'Anonymous'`) are NOT reflected to attributes. Only changes made via the property setter are reflected. Set `attribute: false` to disable attribute sync entirely.
 
 ```typescript

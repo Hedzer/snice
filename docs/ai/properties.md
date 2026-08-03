@@ -80,6 +80,19 @@ Use `reflect: false` for input-only attributes, `attribute: false` for JavaScrip
 - `@state()`: never observes or writes an attribute.
 - `deep: true`: tracks nested plain objects, arrays, `Map`, `Set` via native `Proxy`/`Reflect`; class instances and DOM objects remain intact. Targets modern evergreen browsers — not available in Internet Explorer.
 
+## Controlled form properties
+
+Use a property binding for state -> form control. Wrap it in `live()` only when
+an owner render must overwrite DOM/user drift even if the state value is equal
+to the last committed value:
+
+```typescript
+html`<snice-input .value=${live(this.name)}></snice-input>`;
+```
+
+`live()` does not observe the DOM or cause rendering. It takes effect on the
+next render of the binding's owner. See [Bindings](bindings.md).
+
 **Initial field values (defaults like `name = 'Anonymous'`) are NOT reflected to attributes.** Only changes made via the property setter are reflected. `attribute: false` disables attribute sync entirely.
 
 ```typescript

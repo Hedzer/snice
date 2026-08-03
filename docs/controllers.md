@@ -63,6 +63,11 @@ attachment. Treat it as read-only; the class reference remains authoritative.
 Snice removes the marker when the class detaches or replaces it when another
 controller is bound.
 
+An element hosts **at most one controller**. Attaching a different controller
+always detaches the current one; this is an architectural 1:1 relationship,
+not only a template rebinding detail. Put independent controller behaviors on
+separate host elements (or intentionally compose them inside one controller).
+
 Imperative equivalents:
 
 ```typescript
@@ -113,6 +118,13 @@ interface IController<T extends HTMLElement = HTMLElement> {
 7. Channel/response handlers are set up
 8. Event handlers are set up
 9. `controller-attached` event is dispatched
+
+The step-4 wait has one safe exception: when an element calls
+`await attachController(this, ControllerClass)` from its own `@ready` handler,
+Snice attaches immediately. Initial rendering has already completed at that
+point, and waiting for `ready` would otherwise create a self-deadlock because
+`ready` cannot settle until the current handler returns. Attaching to any
+other element still awaits that element's `ready` promise.
 
 ### Detachment Flow
 
@@ -343,55 +355,117 @@ class FormValidationController implements IController<HTMLFormElement> {
 
 ### Data Fetching Controller
 
-Controllers own data fetching. Pass results to the element via its API or dispatch events — don't manipulate DOM directly:
+Controllers own data fetching. Pass state through the element's public API and
+dispatch outcome events — do not manipulate its rendered DOM. A production
+controller should also prevent an older response from overwriting a newer one:
 
 ```typescript
-@controller('data-fetcher')
-class DataFetcherController implements IController {
-  element: HTMLElement | null = null;
+interface Order { id: string; total: number }
+
+interface OrdersView extends HTMLElement {
+  loading: boolean;
+  error: string;
+  empty: boolean;
+  orders: Order[];
+}
+
+@controller('orders-data')
+export class OrdersDataController implements IController<OrdersView> {
+  element: OrdersView | null = null;
   private abortController?: AbortController;
-  private pollingInterval?: number;
+  private requestVersion = 0;
 
-  async attach(element: HTMLElement) {
-    await this.fetchData();
-
-    // Poll every 30 seconds
-    this.pollingInterval = setInterval(() => this.fetchData(), 30000);
+  async attach(element: OrdersView) {
+    this.element = element;
+    await this.reload();
   }
 
   async detach() {
+    // Invalidates even a fetch implementation that ignores AbortSignal.
+    this.requestVersion++;
     this.abortController?.abort();
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-    }
+    this.abortController = undefined;
   }
 
-  private async fetchData() {
+  async reload() {
+    const host = this.element;
+    if (!host) return;
+
+    const version = ++this.requestVersion;
     this.abortController?.abort();
-    this.abortController = new AbortController();
+    const abortController = new AbortController();
+    this.abortController = abortController;
+
+    host.loading = true;
+    host.error = '';
+    host.empty = false;
 
     try {
-      const response = await fetch('/api/data', {
-        signal: this.abortController.signal
+      const response = await fetch('/api/orders', {
+        signal: abortController.signal
       });
-      const data = await response.json();
+      if (!response.ok) throw new Error(`Orders request failed (${response.status})`);
+      const orders = await response.json() as Order[];
 
-      // Pass data to element — let the element handle rendering
-      this.element?.dispatchEvent(new CustomEvent('data-loaded', {
-        detail: data,
-        bubbles: true
+      // Abort is not enough: adapters/mocks may resolve after cancellation.
+      if (version !== this.requestVersion || this.element !== host) return;
+
+      host.orders = orders;
+      host.empty = orders.length === 0;
+      host.dispatchEvent(new CustomEvent('data-loaded', {
+        detail: { orders, empty: host.empty },
+        bubbles: true,
+        composed: true
       }));
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
-        this.element?.dispatchEvent(new CustomEvent('data-error', {
-          detail: { message: error.message },
-          bubbles: true
-        }));
+    } catch (error) {
+      if (abortController.signal.aborted) return;
+      if (version !== this.requestVersion || this.element !== host) return;
+
+      const message = error instanceof Error ? error.message : String(error);
+      host.orders = [];
+      host.empty = true;
+      host.error = message;
+      host.dispatchEvent(new CustomEvent('data-error', {
+        detail: { message, error },
+        bubbles: true,
+        composed: true
+      }));
+    } finally {
+      if (version === this.requestVersion && this.element === host) {
+        host.loading = false;
       }
     }
   }
 }
 ```
+
+The element owns presentation for every state:
+
+```typescript
+@element('orders-view')
+class OrdersViewElement extends HTMLElement implements OrdersView {
+  @property({ attribute: false }) orders: Order[] = [];
+  @state() loading = false;
+  @state() error = '';
+  @state() empty = false;
+
+  @render()
+  template() {
+    if (this.loading) return html`<snice-spinner label="Loading orders"></snice-spinner>`;
+    if (this.error) return html`<snice-alert variant="error">${this.error}</snice-alert>`;
+    if (this.empty) return html`<snice-empty-state heading="No orders"></snice-empty-state>`;
+    return html`${this.orders.map(order => html`
+      <order-row key=${order.id} .order=${order}></order-row>
+    `)}`;
+  }
+}
+```
+
+This separates responsibilities cleanly: the controller owns transport,
+cancellation, stale-response protection, and outcome events; the element owns
+loading/error/empty/data rendering. A retry button can request `reload()` via a
+small event handled by the controller, or application code can retrieve the
+controller and call its public method.
 
 ### Theme Controller
 

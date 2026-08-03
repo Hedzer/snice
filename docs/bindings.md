@@ -136,6 +136,35 @@ html`<input .value=${live(this.canonicalValue)}>`;
 
 `live()` compares against the element's current property rather than the last value Snice committed. It is only for property bindings. It is useful for controlled fields, normalization, and resetting DOM state after validation; omit it when in-progress browser state should survive unrelated renders.
 
+`live()` does not observe the DOM and does not schedule rendering. It reasserts
+the value only when the template that owns the binding renders for some other
+reason. This is especially useful when reopening a modal should restore the
+same seed value after the user changed only the DOM control:
+
+```typescript
+@state() editorOpen = false;
+@state() seededName = '';
+
+openEditor(name: string) {
+  this.seededName = name;
+  this.editorOpen = true; // opening renders even when name equals the old seed
+}
+
+@render()
+template() {
+  return html`
+    <snice-modal ?open=${this.editorOpen}>
+      <input .value=${live(this.seededName)}>
+    </snice-modal>
+  `;
+}
+```
+
+Without `live()`, reopening with the same `seededName` can leave the user's old
+DOM edit in place because the binding remembers that it already committed that
+seed. If no owner state changes, call the element's documented invalidation
+path; `live()` by itself cannot notice drift.
+
 ## Boolean attributes
 
 A leading question mark controls presence, not a string value:

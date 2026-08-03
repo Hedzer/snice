@@ -49,6 +49,15 @@ Ordinary attributes/comments support multiple expressions. Property, boolean, ev
 - null/undefined/false assigned unchanged; `nothing` assigns undefined; `noChange` skips.
 - Same committed value skips write.
 - `live(value)` compares value to the current DOM property instead of last commit; use only in property bindings when controlled native state must be reasserted after DOM/user mutation.
+- `live()` does not observe DOM mutations or schedule a render. It reasserts only when the owning template renders. A modal open-state change can supply that render when reopening should restore an unchanged seed value.
+
+```typescript
+@state() open = false;
+@state() seed = '';
+@render() template() {
+  return html`<snice-modal ?open=${this.open}><input .value=${live(this.seed)}></snice-modal>`;
+}
+```
 
 ### Boolean attribute `?name=${value}`
 

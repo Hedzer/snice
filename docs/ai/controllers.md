@@ -41,6 +41,7 @@ html`<div controller=${UserController}></div>`  // native elements work too
 - Re-binding the same class reference is a no-op.
 - Binding a different class (or `null`) detaches the old controller first.
 - While a class is bound, its decorator name is reflected as `controller="name"` for DOM inspection. This is a read-only diagnostic marker, not a registry attachment; the class reference owns the element until unbound.
+- Hard constraint: one element hosts at most one controller. A second controller replaces the first. Use separate host elements for independent behaviors, or deliberately compose them in one controller.
 
 Imperative equivalents:
 
@@ -73,6 +74,11 @@ el.controller = UserController;                  // snice elements
 7. Channel/response handlers set up
 8. Event handlers set up
 9. `controller-attached` event dispatched
+
+Exception to step 4: `await attachController(this, ControllerClass)` inside the
+host's own `@ready` handler attaches immediately because initial render is
+already complete. Awaiting that same host's `ready` would self-deadlock. An
+attachment targeting any other element still waits for the target's `ready`.
 
 **Detachment flow:**
 1. `detach()` called
@@ -169,7 +175,77 @@ class FormValidationController implements IController<HTMLFormElement> {
 
 ## Advanced Patterns
 
-- **Data fetching controller** — own `fetch()`/polling/`AbortController`; pass results to the element by dispatching bubbling `CustomEvent`s (e.g. `data-loaded`, `data-error`) rather than manipulating DOM directly.
+### Canonical data-fetching controller
+
+Own transport and races in the controller; expose loading/error/empty/data via
+the element's reactive public API. Dispatch outcome events, never mutate the
+element's rendered DOM.
+
+```typescript
+interface DataHost<T> extends HTMLElement {
+  loading: boolean;
+  error: string;
+  empty: boolean;
+  data: T[];
+}
+
+@controller('data-controller')
+class DataController<T> implements IController<DataHost<T>> {
+  element: DataHost<T> | null = null;
+  private abort?: AbortController;
+  private version = 0;
+
+  async attach(element: DataHost<T>) {
+    this.element = element;
+    await this.reload();
+  }
+
+  async detach() {
+    this.version++;
+    this.abort?.abort();
+  }
+
+  async reload() {
+    const host = this.element;
+    if (!host) return;
+    const version = ++this.version;
+    this.abort?.abort();
+    const abort = this.abort = new AbortController();
+    host.loading = true;
+    host.error = '';
+    host.empty = false;
+
+    try {
+      const response = await fetch('/api/data', { signal: abort.signal });
+      if (!response.ok) throw new Error(`Request failed (${response.status})`);
+      const data = await response.json() as T[];
+      if (version !== this.version || this.element !== host) return;
+      host.data = data;
+      host.empty = data.length === 0;
+      host.dispatchEvent(new CustomEvent('data-loaded', {
+        detail: { data, empty: host.empty }, bubbles: true, composed: true
+      }));
+    } catch (error) {
+      if (abort.signal.aborted || version !== this.version || this.element !== host) return;
+      const message = error instanceof Error ? error.message : String(error);
+      host.data = [];
+      host.empty = true;
+      host.error = message;
+      host.dispatchEvent(new CustomEvent('data-error', {
+        detail: { message, error }, bubbles: true, composed: true
+      }));
+    } finally {
+      if (version === this.version && this.element === host) host.loading = false;
+    }
+  }
+}
+```
+
+Required pieces: abort previous work, increment a version for stale-response
+guarding, reset loading/error/empty before fetch, check version + host identity
+before every commit, expose retry as `reload()`, and render all four states in
+the element.
+
 - **Theme controller** — read/write `localStorage`, toggle `data-theme` attribute on the element via `@on('click', '[data-set-theme]')`.
 - **WebSocket controller** — open connection in `attach()`, reconnect on close with a timer, dispatch `CustomEvent`s on message, close + clear timers in `detach()`. Controllers may expose additional public methods (e.g. `send(data)`) beyond `attach`/`detach`.
 
