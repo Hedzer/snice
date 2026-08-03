@@ -44,6 +44,7 @@ describe('Router', () => {
 
     it('should navigate to registered routes', () => {
       const { page, initialize, navigate } = router;
+      const pushState = vi.spyOn(window.history, 'pushState');
       
       @page({ tag: 'home-page', routes: ['/'] })
       class HomePage extends HTMLElement {
@@ -68,8 +69,27 @@ describe('Router', () => {
       
       // Navigate to about
       navigate('/about');
+      expect(pushState).toHaveBeenCalledWith(null, '', '#/about');
       expect(targetEl.querySelector('about-page')).toBeDefined();
       expect(targetEl.querySelector('home-page')).toBeNull();
+    });
+
+    it('does not add a history entry for the current hash route', async () => {
+      const { page, initialize, navigate } = router;
+
+      @page({ tag: uniqueName('history-home'), routes: ['/'] })
+      class HistoryHome extends HTMLElement {}
+
+      @page({ tag: uniqueName('history-about'), routes: ['/about'] })
+      class HistoryAbout extends HTMLElement {}
+
+      initialize();
+      window.location.hash = '#/about';
+      const pushState = vi.spyOn(window.history, 'pushState');
+      await navigate('/about');
+
+      expect(window.location.hash).toBe('#/about');
+      expect(pushState).not.toHaveBeenCalled();
     });
 
     it('should handle route parameters', async () => {
@@ -186,6 +206,28 @@ describe('Router', () => {
       
       expect(targetEl.querySelector('page-two')).toBeDefined();
       expect(targetEl.querySelector('page-one')).toBeNull();
+    });
+  });
+
+  describe('pushstate routing', () => {
+    it('records programmatic navigation in browser history', async () => {
+      window.history.replaceState(null, '', '/');
+      router = Router({ target: '#app', type: 'pushstate' });
+      const { page, initialize, navigate } = router;
+      const pushState = vi.spyOn(window.history, 'pushState');
+
+      @page({ tag: uniqueName('push-home'), routes: ['/'] })
+      class PushHome extends HTMLElement {}
+
+      const aboutTag = uniqueName('push-about');
+      @page({ tag: aboutTag, routes: ['/about'] })
+      class PushAbout extends HTMLElement {}
+
+      initialize();
+      await navigate('about');
+
+      expect(pushState).toHaveBeenCalledWith(null, '', '/about');
+      expect(targetEl.querySelector(aboutTag)).not.toBeNull();
     });
   });
 

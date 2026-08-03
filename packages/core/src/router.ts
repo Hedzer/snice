@@ -198,7 +198,7 @@ export function Router(options: RouterOptions): RouterInstance {
         contextProviderRoot = null;
         return;
       }
-      navigate(getPath());
+      renderPath(getPath());
     };
 
     switch (options.type) {
@@ -235,7 +235,7 @@ export function Router(options: RouterOptions): RouterInstance {
     setupEventListeners();
 
     const path = getPath();
-    navigate(path);
+    renderPath(path);
   }
 
   function collectPlacards(): void {
@@ -275,7 +275,28 @@ export function Router(options: RouterOptions): RouterInstance {
       case 'hash':
         return win.location.hash.slice(1);
       case 'pushstate':
-        return win.location.pathname;
+        return `${win.location.pathname}${win.location.search}`;
+    }
+  }
+
+  function normalizePath(path: string): string {
+    const withoutHash = path.trim().replace(/^#/, '');
+    if (!withoutHash) return '/';
+    return withoutHash.startsWith('/') ? withoutHash : `/${withoutHash}`;
+  }
+
+  function recordNavigation(path: string): void {
+    switch (options.type) {
+      case 'hash': {
+        const hash = `#${path}`;
+        if (win.location.hash !== hash) win.history.pushState(null, '', hash);
+        break;
+      }
+      case 'pushstate': {
+        const current = `${win.location.pathname}${win.location.search}`;
+        if (current !== path) win.history.pushState(null, '', path);
+        break;
+      }
     }
   }
   
@@ -519,7 +540,7 @@ export function Router(options: RouterOptions): RouterInstance {
    * navigate('/login');
    */
   let navGeneration = 0;
-  async function navigate(path: string): Promise<void> {
+  async function renderPath(path: string): Promise<void> {
     const target = doc.querySelector(options.target);
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
@@ -563,6 +584,12 @@ export function Router(options: RouterOptions): RouterInstance {
     // 404 fallthrough
     const { element, transition, layout } = create404Element();
     await renderPage(target, element, transition, layout, path, {}, stale);
+  }
+
+  async function navigate(path: string): Promise<void> {
+    const normalizedPath = normalizePath(path);
+    recordNavigation(normalizedPath);
+    await renderPath(normalizedPath);
   }
 
   async function performTransition(
