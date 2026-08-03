@@ -2,7 +2,7 @@
 
 ## Class
 - `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?, renderRoot?: 'shadow'|'light', shadow?: 'open'|'closed'|false, delegatesFocus? }`
-- `@page({ tag, routes, guards?, placard? })` - Routable page
+- `@page({ tag, routes, guards?, placard? })` - Routable page. `routes` normally uses ordered strings; optional `{ path, order? }` entries explicitly break specificity ties.
 - `@controller('name')` - Swappable behavior. Required on every controller class. Attach by class (preferred): `controller=${MyController}` in templates, `attachController(el, MyController)`, or `el.controller = MyController`; by string in raw HTML: `controller="name"`. A class attachment reflects this name in the DOM as a diagnostic marker without attaching through the registry.
 - `@daemon` - Marks an explicitly constructed app-context daemon. No name argument; context key is address. Never constructs/registers globally.
 - `@layout('tag-name')` - Page wrapper for routing system

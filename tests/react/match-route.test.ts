@@ -81,6 +81,20 @@ describe('matchRoutes', () => {
     expect(matchRoutes(rs, '/x/y')!.index).toBe(0);
   });
 
+  it('uses optional order before registration order when specificity ties', () => {
+    const rs: RouteConfig[] = [
+      { path: '/:a/:b', index: 0, order: 10 },
+      { path: '/:c/:d', index: 1, order: -10 },
+    ];
+    expect(matchRoutes(rs, '/x/y')!.index).toBe(1);
+  });
+
+  it('rejects a non-finite route order', () => {
+    expect(() => matchRoutes([
+      { path: '/broken', index: 0, order: Number.NaN },
+    ], '/broken')).toThrow('must be a finite number');
+  });
+
   describe('full resolution matrix (a realistic app route table)', () => {
     // A table that exercises every collision the scorer must resolve.
     const table: RouteConfig[] = [

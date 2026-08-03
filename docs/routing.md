@@ -294,7 +294,10 @@ class SettingsPage extends HTMLElement {
 ```typescript
 interface PageOptions {
   tag: string;                       // Custom element tag name
-  routes: string[];                  // Route patterns
+  routes: Array<string | {           // Strings are the normal form
+    path: string;
+    order?: number;                  // Lower wins on a specificity tie
+  }>;
   transition?: Transition;           // Page-specific transition
   guards?: Guard | Guard[];          // Route guards
   layout?: string | false;           // Layout tag, or false to disable
@@ -315,6 +318,30 @@ class UserPage extends HTMLElement {
     return html`<h1>User Page</h1>`;
   }
 }
+```
+
+Routes are sorted by specificity first. If specificity ties, registration
+order wins, including the order of plain strings in one `routes` array. Keep
+that compact syntax for normal pages:
+
+```typescript
+@page({
+  tag: 'work-orders-page',
+  routes: ['/work-orders?status=:status', '/work-orders']
+})
+class WorkOrdersPage extends HTMLElement {}
+```
+
+Object notation is optional. Use it only when a route needs an explicit
+tie-break across registrations; lower `order` values match first. Equal or
+omitted values still preserve registration order.
+
+```typescript
+@page({
+  tag: 'override-page',
+  routes: [{ path: '/:section/:item', order: -10 }]
+})
+class OverridePage extends HTMLElement {}
 ```
 
 ### Route with Parameters
@@ -815,7 +842,7 @@ function Router(options: RouterOptions): {
   page: (pageOptions: PageOptions) => ClassDecorator;
   initialize: () => void;
   navigate: (path: string) => Promise<void>;
-  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[]) => void;
+  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[], layout?: string | false, placard?: Placard | ((ctx: AppContext) => Placard), order?: number) => void;
 }
 ```
 

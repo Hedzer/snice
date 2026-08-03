@@ -3,6 +3,18 @@ import { Placard } from './placard';
 import { Guard } from './guard';
 import { AppContext } from './app-context';
 
+export interface PageRouteOptions {
+  /** Route pattern matched by the router. */
+  path: string;
+
+  /**
+   * Optional priority used only when route specificity ties.
+   * Lower numbers match first. Equal or omitted values preserve registration
+   * order, including the order of entries in PageOptions.routes.
+   */
+  order?: number;
+}
+
 export interface PageOptions {
   /**
    * The tag name of the custom element.
@@ -13,9 +25,13 @@ export interface PageOptions {
 
   /**
    * The routes that will trigger the page element.
+   * String entries are the normal form. Their array order breaks specificity
+   * ties. Use an object entry only when an explicit order is needed across
+   * registrations.
    * @example { routes: ['/login', '/login/:id'] }
+   * @example { routes: [{ path: '/login', order: 10 }] }
    */
-  routes: string[];
+  routes: Array<string | PageRouteOptions>;
 
   /**
    * Optional per-page transition override

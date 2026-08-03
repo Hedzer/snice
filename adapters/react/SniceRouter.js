@@ -1,5 +1,5 @@
 /*!
- * snice v7.1.1
+ * snice v7.2.0
  * A decorator-driven web component library with routing, controllers, daemons, and 130+ UI components. For better coding-agent results, run npx snice init-ai.
  * (c) 2024
  * Released under the MIT License.
@@ -83,6 +83,7 @@ function SniceRouter({ mode, context = {}, layout: defaultLayout, loading, fallb
                 guards.push(...props.guards);
             result.push({
                 path: props.path,
+                order: props.order,
                 page: props.page,
                 guards,
                 guardRedirect: props.guardRedirect,
@@ -99,7 +100,7 @@ function SniceRouter({ mode, context = {}, layout: defaultLayout, loading, fallb
             .map((r) => r.placard);
     }, [parsedRoutes]);
     // Build route configs for matching
-    const routeConfigs = useMemo(() => parsedRoutes.map((r, i) => ({ path: r.path, index: i })), [parsedRoutes]);
+    const routeConfigs = useMemo(() => parsedRoutes.map((r, i) => ({ path: r.path, index: i, order: r.order })), [parsedRoutes]);
     // Navigate function
     const navigate = useCallback((path) => {
         if (mode === 'hash') {

@@ -9,7 +9,7 @@
   shadow?: 'open' | 'closed' | false,
   delegatesFocus?: boolean
 }) // Define custom element
-@page({ tag, routes, guards?, placard? }) // Define routable page
+@page({ tag, routes, guards?, placard? }) // Ordered string routes; optional { path, order? } tie-break entries
 @controller('name') // Define behavior module (required on every controller class)
 // Attach: html`<x-el controller=${MyController}></x-el>` (class, preferred; custom + native els)
 //         attachController(el, MyController) | el.controller = MyController

@@ -137,6 +137,41 @@ describe('Router', () => {
       expect(targetEl.querySelector('post-param')).toBeTruthy();
     });
 
+    it('uses same-page route array order when specificity ties', async () => {
+      const { page, initialize, navigate } = router;
+      const tagName = uniqueName('ordered-query-page');
+
+      @page({
+        tag: tagName,
+        routes: ['/ordered?status=:status', '/ordered']
+      })
+      class OrderedQueryPage extends HTMLElement {}
+
+      initialize();
+      await navigate('/ordered?status=active');
+
+      expect(targetEl.querySelector(tagName)?.getAttribute('status')).toBe('active');
+    });
+
+    it('supports optional route objects for explicit specificity tie-breaking', async () => {
+      const { page, initialize, navigate } = router;
+      const tagName = uniqueName('explicit-order-page');
+
+      @page({
+        tag: tagName,
+        routes: [
+          { path: '/explicit-order', order: 10 },
+          { path: '/explicit-order?status=:status', order: -10 }
+        ]
+      })
+      class ExplicitOrderPage extends HTMLElement {}
+
+      initialize();
+      await navigate('/explicit-order?status=active');
+
+      expect(targetEl.querySelector(tagName)?.getAttribute('status')).toBe('active');
+    });
+
     it('should show default 404 when no 404 page is registered', async () => {
       const { initialize, navigate } = router;
 

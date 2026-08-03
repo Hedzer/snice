@@ -144,7 +144,10 @@ changeTheme(theme: 'light' | 'dark') {
 ```typescript
 interface PageOptions {
   tag: string;                       // custom element tag name
-  routes: string[];                  // route patterns
+  routes: Array<string | {           // strings are the normal form
+    path: string;
+    order?: number;                  // lower wins on a specificity tie
+  }>;
   transition?: Transition;           // page-specific transition
   guards?: Guard | Guard[];          // route guards
   layout?: string | false;           // layout tag, or false to disable
@@ -154,6 +157,25 @@ interface PageOptions {
 
 - Multiple routes: `routes: ['/user', '/users', '/profile']` — all resolve to the same page.
 - Route params: `:name` segments inside a route pattern (see Route Parameters below).
+- Routes are sorted by specificity first. When specificity ties, string entries
+  keep registration order, including their order in one `routes` array.
+- Object notation is optional. Use `{ path, order }` only for an explicit tie-break
+  across registrations; lower `order` values match first. Equal or omitted values
+  still preserve registration order.
+
+```typescript
+@page({
+  tag: 'work-orders-page',
+  routes: ['/work-orders?status=:status', '/work-orders']
+})
+class WorkOrdersPage extends HTMLElement {}
+
+@page({
+  tag: 'override-page',
+  routes: [{ path: '/:section/:item', order: -10 }]
+})
+class OverridePage extends HTMLElement {}
+```
 
 ## Navigation
 
@@ -183,7 +205,7 @@ function Router(options: RouterOptions): {
   page: (pageOptions: PageOptions) => ClassDecorator;
   initialize: () => void;
   navigate: (path: string) => Promise<void>;
-  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[]) => void;
+  register: (route: string, tag: string, transition?: Transition, guards?: Guard | Guard[], layout?: string | false, placard?: Placard | ((ctx: AppContext) => Placard), order?: number) => void;
 }
 ```
 
@@ -191,4 +213,4 @@ function Router(options: RouterOptions): {
 - `initialize(): void` — starts listening for route changes; must be called after all pages are defined.
 - Do not add `@element` to an `@page` class. The Router-returned page decorator
   already registers the custom element and applies Snice element behavior.
-- `register(route: string, tag: string, transition?: Transition, guards?: Guard | Guard[], layout?: string | false, placard?: Placard | ((ctx: AppContext) => Placard)): void` — manually registers a route without the `@page` decorator. Note: the return-type shape above lists `register` with 4 params; this fuller 6-param signature (adding `layout`, `placard`) is documented separately in the source.
+- `register(route, tag, transition?, guards?, layout?, placard?, order?): void` — manually registers a route without `@page`. Lower `order` values win only after specificity ties; omitted/equal order preserves registration order.

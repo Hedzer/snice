@@ -39,7 +39,17 @@ enum RouteResult {
 export function Router(options: RouterOptions): RouterInstance {
   const win = options.window ?? window;
   const doc = options.document ?? document;
-  const routes: { route: Route, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false, placard?: Placard | ((context: AppContext) => Placard) }[] = [];
+  const routes: {
+    route: Route;
+    tag: string;
+    transition?: Transition;
+    guards?: Guard<any> | Guard<any>[];
+    layout?: string | false;
+    placard?: Placard | ((context: AppContext) => Placard);
+    order: number;
+    registrationOrder: number;
+  }[] = [];
+  let nextRegistrationOrder = 0;
   let is_sorted = false;
   let placards: Placard[] = []; // Store collected placards
 
@@ -149,7 +159,11 @@ export function Router(options: RouterOptions): RouterInstance {
       }
 
       // Register the routes with guards, layout, and placard
-      pageOptions.routes.forEach(route => register(route, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout, pageOptions.placard));
+      pageOptions.routes.forEach(route => {
+        const path = typeof route === 'string' ? route : route.path;
+        const order = typeof route === 'string' ? undefined : route.order;
+        register(path, pageOptions.tag, pageOptions.transition, pageOptions.guards, pageOptions.layout, pageOptions.placard, order);
+      });
 
       return constructor;
     }
@@ -159,11 +173,32 @@ export function Router(options: RouterOptions): RouterInstance {
    * Registers a new route with the router.
    * @param {string} route - The route path.
    * @param {string} tag - The custom element tag associated with the route.
+   * @param {number} order - Optional lower-first tie-break after specificity.
    * @example
    * register('/custom-route', 'custom-element');
    */
-  function register(route: string, tag: string, transition?: Transition, guards?: Guard<any> | Guard<any>[], layout?: string | false, placard?: Placard | ((context: AppContext) => Placard)): void {
-    routes.push({ route: new Route(route), tag, transition, guards, layout, placard });
+  function register(
+    route: string,
+    tag: string,
+    transition?: Transition,
+    guards?: Guard<any> | Guard<any>[],
+    layout?: string | false,
+    placard?: Placard | ((context: AppContext) => Placard),
+    order = 0
+  ): void {
+    if (!Number.isFinite(order)) {
+      throw new TypeError(`Route order for "${route}" must be a finite number.`);
+    }
+    routes.push({
+      route: new Route(route),
+      tag,
+      transition,
+      guards,
+      layout,
+      placard,
+      order,
+      registrationOrder: nextRegistrationOrder++
+    });
     is_sorted = false;
 
     switch (route) {
@@ -225,7 +260,11 @@ export function Router(options: RouterOptions): RouterInstance {
 
     const needsSorting = !is_sorted;
     if (needsSorting) {
-      routes.sort((a: any, b: any) => routeSpecificity(b.route.spec) - routeSpecificity(a.route.spec));
+      routes.sort((a, b) =>
+        routeSpecificity(b.route.spec) - routeSpecificity(a.route.spec)
+        || a.order - b.order
+        || a.registrationOrder - b.registrationOrder
+      );
       is_sorted = true;
     }
 

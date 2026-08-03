@@ -10,15 +10,18 @@ export const { page, navigate, initialize } = Router({
 <snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// pages/product.ts — `page` comes from router.ts, not from 'snice'
 import { page } from '../router';
 
-@page({ tag: 'product-page', routes: ['/products/:id'] })
+@page({ tag: 'product-page', routes: ['/products/:id?tab=:tab', '/products/:id'] })
 class ProductPage extends HTMLElement {
   @property() id = '';        // route params arrive as properties
+  @property() tab = '';       // query params do too; no URLSearchParams needed
 
   @render()
   template() {
     return html`&lt;h1&gt;Product ${this.id}&lt;/h1&gt;`;
   }
 }</snice-code-block>
+<p class="desc" style="margin-top:0.75rem">Pages own element orchestration: they compose elements, pass properties, handle events, bind controllers, and coordinate the screen. Routing is one page concern, not the definition of the role. Declare path and query parameters in <code>routes</code>; do not attach a controller to the page host or build a URL-parsing controller for it.</p>
+<p class="desc" style="margin-top:0.75rem">Routes use specificity first and declaration order for ties, so keep the query-bearing string before its bare fallback. Plain strings are the normal form. Optional <code>{ path, order }</code> entries provide an explicit cross-registration tie-break; lower order values match first.</p>
 <snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// main.ts — import pages for their side effects, then start
 import './pages/product';
 import { initialize, navigate } from './router';

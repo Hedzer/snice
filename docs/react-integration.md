@@ -147,6 +147,7 @@ Defines a route within `<SniceRouter>`. The `<Route>` component itself renders n
 | Prop | Type | Description |
 |------|------|-------------|
 | `path` | `string` | URL pattern. Supports dynamic segments: `/users/:id`, `/posts/:slug`. |
+| `order` | `number` | Optional specificity tie-break. Lower values match first; equal or omitted values preserve declaration order. |
 | `page` | `Component \| string` | What to render. React component receives route params as props. String = Snice web component tag name (params set as attributes). |
 | `guard` | `(ctx, params) => boolean \| Promise<boolean>` | Single guard function. |
 | `guards` | `function[]` | Multiple guards — all must pass (AND logic). |

@@ -33,6 +33,7 @@ Deep import: `import { useRequestHandler } from 'snice/react/useRequestHandler'`
 ## Route Props
 
 - `path`: Route pattern (e.g., `/users/:id`)
+- `order`: Optional numeric specificity tie-break; lower values match first. Equal/omitted values preserve declaration order.
 - `page`: React component (receives params as props) OR Snice tag name string (params set as attributes)
 - `guard`: `(ctx, params) => boolean | Promise<boolean>`
 - `guards`: Array of guard functions (AND logic, sequential, short-circuit)

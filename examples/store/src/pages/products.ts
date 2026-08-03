@@ -7,7 +7,7 @@ import { addToCart, getCartTotal, getCartCount } from '../services/cart';
 
 @page({
   tag: 'products-page',
-  routes: ['/products'],
+  routes: ['/products', '/products?category=:activeCategory'],
   placard: { name: 'products', title: 'Products', href: '#/products', icon: 'grid', order: 1 },
 })
 class ProductsPage extends HTMLElement {
@@ -31,12 +31,7 @@ class ProductsPage extends HTMLElement {
 
   @ready()
   load() {
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.split('?')[1] || '');
-    const category = params.get('category') || '';
-    this.activeCategory = category;
-
-    this.products = this.fetchProducts({ category });
+    this.products = this.fetchProducts({ category: this.activeCategory });
     this.categories = getCategories();
     this.loading = false;
   }

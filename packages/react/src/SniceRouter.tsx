@@ -19,6 +19,8 @@ import type { Placard } from './SniceProvider';
 
 export interface RouteProps {
   path: string;
+  /** Lower values win when route specificity ties. Declaration order is the fallback. */
+  order?: number;
   /** React component OR Snice element tag name (string) */
   page: ComponentType<any> | string;
   /** Single guard function */
@@ -59,6 +61,7 @@ export interface SniceRouterProps {
 
 interface ParsedRoute {
   path: string;
+  order?: number;
   page: ComponentType<any> | string;
   guards: Array<(ctx: Record<string, any>, params: Record<string, string>) => boolean | Promise<boolean>>;
   guardRedirect?: string;
@@ -146,6 +149,7 @@ export function SniceRouter({
       if (props.guards) guards.push(...props.guards);
       result.push({
         path: props.path,
+        order: props.order,
         page: props.page,
         guards,
         guardRedirect: props.guardRedirect,
@@ -165,7 +169,7 @@ export function SniceRouter({
 
   // Build route configs for matching
   const routeConfigs = useMemo<RouteConfig[]>(
-    () => parsedRoutes.map((r, i) => ({ path: r.path, index: i })),
+    () => parsedRoutes.map((r, i) => ({ path: r.path, index: i, order: r.order })),
     [parsedRoutes],
   );
 

@@ -21,7 +21,7 @@ export const ANALYZER_CONTRACTS = {
     "componentModules": 188,
     "componentUtilityModules": 31,
     "reactWrappers": 193,
-    "rootExports": 115
+    "rootExports": 116
   },
   "rootExports": [
     "AdoptedOptions",
@@ -48,6 +48,7 @@ export const ANALYZER_CONTRACTS = {
     "OnOptions",
     "OnScope",
     "PageOptions",
+    "PageRouteOptions",
     "PartOptions",
     "Placard",
     "PropertyConverter",

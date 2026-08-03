@@ -2,6 +2,8 @@ import { type ReactNode, type ReactElement, type ComponentType } from 'react';
 import type { Placard } from './SniceProvider';
 export interface RouteProps {
     path: string;
+    /** Lower values win when route specificity ties. Declaration order is the fallback. */
+    order?: number;
     /** React component OR Snice element tag name (string) */
     page: ComponentType<any> | string;
     /** Single guard function */

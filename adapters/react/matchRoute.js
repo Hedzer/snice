@@ -1,5 +1,5 @@
 /*!
- * snice v7.1.1
+ * snice v7.2.0
  * A decorator-driven web component library with routing, controllers, daemons, and 130+ UI components. For better coding-agent results, run npx snice init-ai.
  * (c) 2024
  * Released under the MIT License.
@@ -45,11 +45,21 @@ function routeSpecificity(spec) {
 /**
  * Match a URL path against an array of route configs.
  * Uses pica-route — same matching as vanilla Snice's Router.
- * Routes are sorted by per-segment specificity (static > dynamic > wildcard).
+ * Routes are sorted by per-segment specificity (static > dynamic > wildcard),
+ * then optional lower-first order, then declaration order.
  */
 function matchRoutes(routes, pathname) {
+    for (const route of routes) {
+        if (route.order !== undefined && !Number.isFinite(route.order)) {
+            throw new TypeError(`Route order for "${route.path}" must be a finite number.`);
+        }
+    }
     // Sort by specificity (most specific first), same model as the vanilla Router.
-    const sorted = [...routes].sort((a, b) => routeSpecificity(b.path) - routeSpecificity(a.path));
+    const sorted = routes
+        .map((route, registrationOrder) => ({ ...route, registrationOrder }))
+        .sort((a, b) => routeSpecificity(b.path) - routeSpecificity(a.path)
+        || (a.order ?? 0) - (b.order ?? 0)
+        || a.registrationOrder - b.registrationOrder);
     for (const route of sorted) {
         const matcher = new Route(route.path);
         const params = matcher.match(pathname);
