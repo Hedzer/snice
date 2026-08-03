@@ -106,6 +106,8 @@ Runtime first, then one bundle per component (any order after runtime):
 - **Pages orchestrate** - handle routing, call APIs, coordinate elements
 - **Controllers add behavior** - attach to elements for reusable non-visual logic; bind by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`)
 - **Daemons hold app-owned state/lifecycle** - construct explicitly, provide through `context.daemons`, communicate by address without importing implementations
+- Conventional folders: `src/pages`, `src/components`, `src/controllers`, `src/daemons`; construct the Router in `src/router.ts` and initialize it from `src/main.ts`
+- Several server/storage/timer operations in one page, or substantial logic copied across pages, belongs in a controller; `snice check` suggests the extraction conservatively
 - Put API calls in pages/controllers/services, not in elements
 
 **Properties:**

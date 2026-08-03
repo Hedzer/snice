@@ -44,6 +44,15 @@ npx snice validate           # source analyzer only
 `validate` runs the analyzer over source. Catches mistakes that compile but never work:
 - an `@element`-decorated class that does not extend `HTMLElement` (or a Snice element subclass) — Snice registers/renders only element subclasses
 - deep imports that were never released package paths, e.g. `snice/decorators`
+- Router missing `target`, `type`, or a project-wide `initialize()` call
+- a routed class combining `@page` with redundant `@element`
+
+Non-blocking architecture suggestions:
+- `@page` -> `src/pages/`
+- `@element` -> `src/components/`
+- `@controller` -> `src/controllers/`
+- `@daemon` -> `src/daemons/`
+- several external-effect methods or substantial logic repeated across pages -> extract a controller
 
 Both `doctor` and `validate` accept `--json`.
 

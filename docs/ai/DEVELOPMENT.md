@@ -54,7 +54,9 @@ be strictly greater than 90%. Browser commands manage their own local servers.
 
 ## Dumb-Agent Gauntlet
 
-Internal checker hardening: `npm run gauntlet [-- --sample daemon|events|request-response]`.
+Internal checker hardening: `npm run gauntlet` uses the comprehensive multi-file
+application sample. Focused probes remain available with
+`--sample daemon|events|request-response|router`.
 
 - Inline prompt: `--prompt "..."`; file prompt: `--prompt-file path`.
 - Subset: `--models qwen3-0.6b,lfm2.5-350m`; default: all.
@@ -138,7 +140,7 @@ All CDN builds use the shared runtime (external `snice` imports). Load `snice-ru
 - IIFE: `.js` + `.min.js`
 - Sourcemaps + README
 
-**Size:** Runtime ~30KB gzip, components ~1-110KB each
+**Size:** Runtime ~31KB gzip, components ~1-110KB each
 
 **Features:**
 - Shared runtime (external snice imports)

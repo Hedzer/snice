@@ -50,6 +50,13 @@ npx snice validate    # source analyzer only
 
 - an `@element`-decorated class that does not extend `HTMLElement` (or a Snice element subclass) — Snice registers and renders only element subclasses
 - deep imports that were never released package paths, such as `snice/decorators`
+- a Router without `target`, `type`, or a project-wide `initialize()` call
+- a routed class combining `@page` with redundant `@element`
+
+It also gives non-blocking architecture suggestions: keep `@page`, `@element`,
+`@controller`, and `@daemon` classes under `src/pages`, `src/components`,
+`src/controllers`, and `src/daemons`; extract clearly service-heavy or repeated
+page logic into a controller. Small route orchestration remains valid page code.
 
 Both accept `--json` for CI.
 

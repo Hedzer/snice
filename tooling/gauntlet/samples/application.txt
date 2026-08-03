@@ -1,0 +1,21 @@
+You are building a complete TypeScript application with the Snice web-component framework directly (no React or other UI framework). You have no Snice documentation, source code, examples, skills, or previous attempts. Work only from your existing knowledge and invent APIs when unsure.
+
+Build a small but complete “Session Board” application. Use a conventional multi-file source tree with routing in src/router.ts, routed pages in src/pages/, reusable visual elements in src/components/, controllers in src/controllers/, and daemons in src/daemons/. Add other source files when they make the design clearer; do not collapse the application into one file.
+
+Prioritize these behaviors:
+
+1. Configure a hash-mode router against an #app outlet. Register a home page at / and a user page at /users/:userId, then initialize routing only after the pages are registered. The page decorator must come from the constructed router. Create the #app target when it is missing.
+2. The home page must navigate to user 42. The user page must visibly render its userId route parameter and navigate home. Browser back and forward navigation must keep working.
+3. Define a session daemon that owns a display name and revision. Explicitly instantiate it and provide that instance through the application context; do not make it a global or implicit singleton.
+4. Make a reusable session element available from both pages. It must address the daemon indirectly through context rather than importing or receiving the daemon implementation class.
+5. Use typed request/response communication to read the current session. Use event dispatch/listening communication to request a rename and receive the resulting change notification. Render the current display name and revision, and provide an interactive rename control.
+6. Put shared UI-independent behavior that would otherwise be duplicated between pages or components into a controller. Keep pages focused on route composition and page-specific rendering.
+7. Use Snice decorators, templates, reactive state/properties, event handling, controllers, application context, daemons, request/response, and event dispatch/listening where they naturally fit. The finished app must pass strict TypeScript and a production build without unused declarations.
+
+Output every source file using this exact repeatable format, with no Markdown fences, headings, or explanation outside the file blocks:
+
+<<<FILE: src/path/to/file.ts>>>
+exact file contents
+<<<END FILE>>>
+
+Include every source file needed by the application. Do not output package.json, tsconfig.json, Vite configuration, index.html, or files outside src/.

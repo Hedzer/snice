@@ -1,0 +1,11 @@
+You are writing code for a TypeScript application that uses the Snice web-component framework directly (no React or other UI framework). You have no Snice documentation, source code, examples, skills, or previous attempts. Work only from your existing knowledge and invent APIs when unsure.
+
+Build a small routed application across as many source files as are appropriate. Use conventional folders: put route setup in src/router.ts and pages in src/pages/. You may add components or controllers in their conventional folders when useful. Construct the Snice router against an #app outlet in hash mode, define a home page and a user page whose route contains a userId parameter, and start the router only after both pages are registered. The home page must have an interactive control that navigates to user 42. The user page must visibly render its route parameter and have a control that navigates home. Use Snice page, property, rendering, and navigation APIs; the page decorator must come from the constructed router rather than a package-root import. Create the #app target if the document does not already contain it.
+
+Output every source file using this exact repeatable format, with no Markdown fences, headings, or explanation outside the file blocks:
+
+<<<FILE: src/path/to/file.ts>>>
+exact file contents
+<<<END FILE>>>
+
+Include every source file needed by the application. Do not output package.json, tsconfig.json, Vite configuration, index.html, or files outside src/.

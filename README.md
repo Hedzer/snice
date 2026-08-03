@@ -579,6 +579,19 @@ Router provides its `context` through the same mechanism. There is no implicit
 construction or global registry, and multiple instances remain independent. See
 [Daemons](./docs/daemons.md) for lifecycle, testing, and both communication models.
 
+### Project Organization
+
+Keep application roles easy to find: pages in `src/pages/`, reusable visual
+elements in `src/components/`, attached behavior in `src/controllers/`, and
+app-owned services in `src/daemons/`. `src/router.ts` constructs and exports the
+router pieces; `src/main.ts` imports page modules and calls `initialize()`.
+
+Pages orchestrate a route. When several storage/server/timer operations collect
+inside one page, or substantial non-visual logic is repeated across pages, move
+that behavior into a controller. `snice check` reports folder and extraction
+guidance as non-blocking suggestions while treating broken Router construction
+as an error.
+
 ## Template Syntax
 
 ### Auto-Rendering with Differential Updates

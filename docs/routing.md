@@ -827,6 +827,9 @@ navigate(path: string): Promise<void>
 
 Navigates to the specified path. Uses hash (#) or pushstate depending on router type.
 
+Do not combine `@page` with `@element` on the same class. `@page` already
+registers the custom element and applies Snice element behavior.
+
 ### initialize()
 
 ```typescript

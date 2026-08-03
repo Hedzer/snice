@@ -550,6 +550,157 @@ describe('snice/request-respond-pairing', () => {
   });
 });
 
+describe('router construction and project architecture guidance', () => {
+  const byRule = (files: Record<string, string>, ruleId: string) =>
+    analyzeProject(files).filter(diagnostic => diagnostic.ruleId === ruleId);
+
+  it('requires a Router target as well as its navigation type', () => {
+    const diagnostics = analyzeSource(
+      "import { Router } from 'snice';\nexport const { page, initialize } = Router({ type: 'hash' });",
+      'src/router.ts'
+    ).filter(diagnostic => diagnostic.ruleId === 'snice/router-config');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('target selector');
+  });
+
+  it('accepts a shorthand Router target property', () => {
+    const diagnostics = analyzeSource(
+      "import { Router } from 'snice';\nconst target = '#app';\nRouter({ target, type: 'hash' }).initialize();",
+      'src/router.ts'
+    ).filter(diagnostic => diagnostic.ruleId === 'snice/router-config');
+    expect(diagnostics).toEqual([]);
+  });
+
+  it('requires the Router-returned initialize function to be called project-wide', () => {
+    const diagnostics = byRule({
+      'src/router.ts': "import { Router } from 'snice';\nexport const { page, initialize } = Router({ target: '#app', type: 'hash' });",
+      'src/pages/home-page.ts': "import { page } from '../router';\n@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}"
+    }, 'snice/router-initialization');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].fix).toContain('call initialize()');
+  });
+
+  it('accepts conventional multi-file Router construction and initialization', () => {
+    expect(byRule({
+      'src/router.ts': "import { Router } from 'snice';\nexport const { page, initialize, navigate } = Router({ target: '#app', type: 'hash' });",
+      'src/main.ts': "import './pages/home-page';\nimport { initialize } from './router';\ninitialize();",
+      'src/pages/home-page.ts': "import { page } from '../router';\n@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}"
+    }, 'snice/router-initialization')).toEqual([]);
+  });
+
+  it('accepts initialize destructured from a named Router instance', () => {
+    expect(byRule({
+      'src/router.ts': "import { Router } from 'snice';\nconst router = Router({ target: '#app', type: 'hash' });\nexport const { page, initialize: startRouter } = router;",
+      'src/main.ts': "import './pages/home-page';\nimport { startRouter } from './router';\nstartRouter();",
+      'src/pages/home-page.ts': "import { page } from '../router';\n@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}"
+    }, 'snice/router-initialization')).toEqual([]);
+  });
+
+  it('rejects combining @page and @element without suggesting that the page move to components', () => {
+    const files = {
+      'src/pages/home-page.ts': [
+        "import { element } from 'snice';",
+        "import { page } from '../router';",
+        "@page({ tag: 'home-page', routes: ['/'] })",
+        "@element('home-page')",
+        'class HomePage extends HTMLElement {}'
+      ].join('\n')
+    };
+    const diagnostics = byRule(files, 'snice/page-element-double-decoration');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].fix).toContain('Remove @element');
+    expect(byRule(files, 'snice/recommend-project-structure')).toEqual([]);
+  });
+
+  it('accepts a routed class decorated only with the Router page decorator', () => {
+    expect(byRule({
+      'src/pages/home-page.ts': "import { page } from '../router';\n@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}"
+    }, 'snice/page-element-double-decoration')).toEqual([]);
+  });
+
+  it('recommends conventional folders for every application role', () => {
+    const diagnostics = byRule({
+      'src/main.ts': [
+        "@page({ tag: 'home-page', routes: ['/'] })",
+        'class HomePage extends HTMLElement {}',
+        "@element('user-card')",
+        'class UserCard extends HTMLElement {}',
+        "@controller('session-controller')",
+        'class SessionController {}',
+        '@daemon',
+        'class SessionDaemon {}'
+      ].join('\n')
+    }, 'snice/recommend-project-structure');
+    expect(diagnostics).toHaveLength(4);
+    expect(diagnostics.map(diagnostic => diagnostic.fix)).toEqual(expect.arrayContaining([
+      expect.stringContaining('src/pages/home-page.ts'),
+      expect.stringContaining('src/components/user-card.ts'),
+      expect.stringContaining('src/controllers/session-controller.ts'),
+      expect.stringContaining('src/daemons/session-daemon.ts')
+    ]));
+  });
+
+  it('does not recommend moves for classes already in conventional folders', () => {
+    expect(byRule({
+      'src/pages/home-page.ts': "@page({ tag: 'home-page', routes: ['/'] })\nclass HomePage extends HTMLElement {}",
+      'src/components/user-card.ts': "@element('user-card')\nclass UserCard extends HTMLElement {}",
+      'src/controllers/session-controller.ts': "@controller('session-controller')\nclass SessionController {}",
+      'src/daemons/session-daemon.ts': '@daemon\nclass SessionDaemon {}'
+    }, 'snice/recommend-project-structure')).toEqual([]);
+  });
+
+  it('recommends a controller only for clearly service-heavy page logic', () => {
+    const heavy = [
+      "@page({ tag: 'orders-page', routes: ['/orders'] })",
+      'class OrdersPage extends HTMLElement {',
+      "  async loadOrders() { const a = await fetch('/orders'); localStorage.setItem('orders', await a.text()); }",
+      "  async loadCustomers() { const a = await fetch('/customers'); sessionStorage.setItem('customers', await a.text()); }",
+      "  async loadInvoices() { const a = await fetch('/invoices'); localStorage.setItem('invoices', await a.text()); }",
+      "  async loadShipments() { const a = await fetch('/shipments'); sessionStorage.setItem('shipments', await a.text()); }",
+      '}'
+    ].join('\n');
+    const diagnostics = byRule({ 'src/pages/orders-page.ts': heavy }, 'snice/recommend-page-controller');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('4 effectful methods');
+
+    const lean = [
+      "@page({ tag: 'profile-page', routes: ['/profile'] })",
+      'class ProfilePage extends HTMLElement {',
+      "  async load() { return fetch('/profile'); }",
+      "  render() { return html`<h1>Profile</h1>`; }",
+      '}'
+    ].join('\n');
+    expect(byRule({ 'src/pages/profile-page.ts': lean }, 'snice/recommend-page-controller')).toEqual([]);
+  });
+
+  it('detects substantial logic copied across page files', () => {
+    const shared = [
+      '  normalizeRows(rows: Array<{ active: boolean; name: string }>) {',
+      '    const active = rows.filter(row => row.active);',
+      '    const sorted = active.sort((left, right) => left.name.localeCompare(right.name));',
+      '    const names = sorted.map(row => row.name.trim());',
+      "    if (names.length === 0) return ['No results'];",
+      "    return names.reduce((all, name) => [...all, name], [] as string[]);",
+      '  }'
+    ].join('\n');
+    const diagnostics = byRule({
+      'src/pages/alpha-page.ts': "@page({ tag: 'alpha-page', routes: ['/a'] })\nclass AlphaPage extends HTMLElement {\n" + shared + '\n}',
+      'src/pages/beta-page.ts': "@page({ tag: 'beta-page', routes: ['/b'] })\nclass BetaPage extends HTMLElement {\n" + shared + '\n}'
+    }, 'snice/recommend-page-controller');
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.every(diagnostic => diagnostic.message.includes('across 2 page files'))).toBe(true);
+  });
+
+  it('publishes the architecture rules in the public registry', () => {
+    expect(PROJECT_ANALYZER_RULES).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'snice/router-initialization', severity: 'error', category: 'router' }),
+      expect.objectContaining({ id: 'snice/page-element-double-decoration', severity: 'error', category: 'router' }),
+      expect.objectContaining({ id: 'snice/recommend-project-structure', severity: 'suggestion', category: 'architecture' }),
+      expect.objectContaining({ id: 'snice/recommend-page-controller', severity: 'suggestion', category: 'architecture' })
+    ]));
+  });
+});
+
 describe('non-source content detection', () => {
   it('reports only the non-source error and suppresses other rules', () => {
     const transcript = "User:\nWrite a modal.\n\nAssistant:\n```typescript\nexport const view = html`<dialog>Hi</dialog>`;\n```";

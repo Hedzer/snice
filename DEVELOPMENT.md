@@ -636,9 +636,10 @@ models automatically, then preserves each raw response plus checker,
 TypeScript, and production-build logs under the ignored `.local/` tree.
 
 ```bash
-npm run gauntlet                              # daemon sample, all models
+npm run gauntlet                              # complete application sample, all models
 npm run gauntlet -- --sample events
-npm run gauntlet -- --prompt "Write one complete src/main.ts ..."
+npm run gauntlet -- --sample router
+npm run gauntlet -- --prompt "Build a Snice application ..."
 npm run gauntlet -- --prompt-file ./prompt.txt
 npm run gauntlet -- --models qwen3-0.6b,lfm2.5-350m
 ```
@@ -657,7 +658,7 @@ Bundle any component with the Snice runtime for use without npm install:
 
 - Works in any project (vanilla JS, React, Vue, etc.)
 - No Snice dependency required
-- Runtime ~30KB gzip, components ~1-110KB each
+- Runtime ~31KB gzip, components ~1-110KB each
 - IIFE format for script tags
 
 ### CLI Usage

@@ -19,6 +19,25 @@ Mock controller for tests, real API controller in production — same element.
 - Sideways: Request/Response channels
 - App services: daemon-addressed request/response or dispatch/on
 
+## Project Structure
+
+Conventional application layout:
+
+```text
+src/
+  main.ts
+  router.ts
+  pages/          # @page classes; route orchestration and presentation
+  components/     # reusable @element visual components
+  controllers/    # @controller data, API, and reusable business behavior
+  daemons/        # explicitly constructed @daemon state/lifecycle services
+```
+
+Pages may coordinate a route and perform a small one-off load. Move behavior to
+a controller when a page owns several storage/server/timer operations or when
+substantial non-visual logic is copied across pages. `snice check` reports these
+as architecture suggestions, not errors.
+
 ## Rendering System
 
 **Template compilation:**

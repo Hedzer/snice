@@ -63,7 +63,7 @@ Usage:
   npm run gauntlet -- --prompt-file ./my-prompt.txt
 
 Options:
-  --sample <name>              Use a committed prompt sample (default: daemon)
+  --sample <name>              Use a committed prompt sample (default: application)
   --prompt <text>              Pass an inline prompt verbatim
   --prompt-file <path>         Read a prompt verbatim from a file
   --models <id,id,...|all>     Select models (default: all)
@@ -139,7 +139,7 @@ function readPrompt(options) {
     return { text: readFileSync(path, 'utf8').trim(), source: path, slug: basename(path).replace(/\.[^.]+$/, '') };
   }
 
-  const sample = options.sample ?? 'daemon';
+  const sample = options.sample ?? 'application';
   if (!/^[a-z0-9-]+$/.test(sample)) throw new TypeError(`invalid sample name: ${sample}`);
   const path = join(samplesDirectory, `${sample}.txt`);
   if (!existsSync(path)) {
@@ -467,6 +467,27 @@ export function repeatedOutput(text) {
     while (count < 12 && tail.slice(-(count + 1) * width, -count * width) === unit) count++;
     if (count >= 8) return `${width}-character block repeated ${count} times`;
   }
+
+  // A model can repeat the same phrase with changing indentation, counters,
+  // or short prefixes. That is still exact repetition, but the repeated unit
+  // is no longer aligned with the end of the stream. Sample recent substrings
+  // and count their non-overlapping occurrences anywhere in the tail.
+  for (const width of [48, 96, 192]) {
+    for (let offset = 0; offset <= 480 && offset + width <= tail.length; offset += 32) {
+      const end = tail.length - offset;
+      const unit = tail.slice(end - width, end);
+      if (unit.trim().length < width / 2) continue;
+      let occurrences = 0;
+      let position = 0;
+      while (occurrences < 10) {
+        const found = tail.indexOf(unit, position);
+        if (found === -1) break;
+        occurrences++;
+        position = found + width;
+      }
+      if (occurrences >= 10) return `${width}-character substring repeated ${occurrences} times`;
+    }
+  }
   return null;
 }
 
@@ -532,6 +553,7 @@ export function extractTypeScript(raw) {
   let text = raw.replace(/\u001b\[[0-9;]*m/g, '').trim();
   const assistantMarker = text.lastIndexOf('\nAssistant:');
   if (assistantMarker !== -1) text = text.slice(assistantMarker + '\nAssistant:'.length).trim();
+  else if (text.startsWith('Assistant:')) text = text.slice('Assistant:'.length).trim();
   text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   text = text.replace(/\[Start thinking\][\s\S]*?\[End thinking\]/gi, '').trim();
   const acceptedFenceLabels = new Set(['', 'typescript', 'ts', 'tsx', 'javascript', 'js']);
@@ -543,6 +565,72 @@ export function extractTypeScript(raw) {
   if (fences.length) text = fences[0];
   text = text.replace(/^```[^\n]*\n?/, '').replace(/\n?```$/, '').trim();
   return text;
+}
+
+const generatedSourceExtensions = new Set(['.ts', '.tsx', '.js', '.jsx', '.css']);
+
+function generatedSourcePath(value) {
+  const path = value.trim();
+  if (
+    !path.startsWith('src/') ||
+    path.includes('\\') ||
+    path.includes('\0') ||
+    path.split('/').some(part => !part || part === '.' || part === '..')
+  ) {
+    throw new TypeError(`generated file path must be a safe path below src/: ${value}`);
+  }
+  const extension = [...generatedSourceExtensions].find(candidate => path.endsWith(candidate));
+  if (!extension) {
+    throw new TypeError(`generated file path has an unsupported source extension: ${path}`);
+  }
+  return path;
+}
+
+function unwrapSourceFence(source) {
+  const text = source.trim();
+  const match = text.match(/^```(?:typescript|ts|tsx|javascript|js|css)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i);
+  return (match?.[1] ?? text).trim();
+}
+
+/**
+ * Extracts a generated source tree while retaining the one-file protocol used
+ * by older samples and arbitrary prompts. Multi-file prompts use explicit file
+ * markers so paths can be validated before anything is written to disk.
+ */
+export function extractProjectFiles(raw) {
+  let text = raw.replace(/\u001b\[[0-9;]*m/g, '').trim();
+  const assistantMarker = text.lastIndexOf('\nAssistant:');
+  if (assistantMarker !== -1) text = text.slice(assistantMarker + '\nAssistant:'.length).trim();
+  else if (text.startsWith('Assistant:')) text = text.slice('Assistant:'.length).trim();
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  text = text.replace(/\[Start thinking\][\s\S]*?\[End thinking\]/gi, '').trim();
+  if (!text.includes('<<<FILE:') && !text.includes('<<<END FILE>>>')) {
+    const source = extractTypeScript(raw);
+    return source ? [{ path: 'src/main.ts', source }] : [];
+  }
+
+  const files = [];
+  const paths = new Set();
+  const headers = [...text.matchAll(/^[ \t]*<<<FILE:[ \t]*([^>\r\n]+?)[ \t]*>>>[ \t]*$/gm)];
+  for (let index = 0; index < headers.length; index++) {
+    const header = headers[index];
+    const path = generatedSourcePath(header[1]);
+    if (paths.has(path)) throw new TypeError(`duplicate generated file path: ${path}`);
+    const start = header.index + header[0].length;
+    const next = headers[index + 1]?.index ?? text.length;
+    let section = text.slice(start, next);
+    const endMarker = section.search(/^[ \t]*<<<END FILE>>>[ \t]*$/m);
+    if (endMarker !== -1) section = section.slice(0, endMarker);
+    const source = unwrapSourceFence(section);
+    if (!source) throw new TypeError(`generated file is empty: ${path}`);
+    paths.add(path);
+    files.push({ path, source });
+  }
+
+  if (!files.length) {
+    throw new TypeError('multi-file markers were present but no complete source file could be extracted');
+  }
+  return files;
 }
 
 async function runChecks(projectDirectory) {
@@ -590,12 +678,13 @@ function writeSummary(runDirectory, prompt, results) {
     '',
     `Prompt: ${prompt.source}`,
     '',
-    '| Model | Generation | Checker | TypeScript | Build |',
-    '|---|---:|---:|---:|---:|'
+    '| Model | Generation | Extraction | Checker | TypeScript | Build |',
+    '|---|---:|---:|---:|---:|---:|'
   ];
   for (const result of results) {
     lines.push(
-      `| ${result.model.id} | ${status(result.generation)} | ${status(result.checks?.checker)} | ` +
+      `| ${result.model.id} | ${status(result.generation)} | ${result.extraction.ok ? 'pass' : 'fail'} | ` +
+      `${status(result.checks?.checker)} | ` +
       `${status(result.checks?.typecheck)} | ${status(result.checks?.build)} |`
     );
   }
@@ -617,19 +706,37 @@ async function runModelRound(context, model) {
 
   const rawPath = join(projectDirectory, 'raw-output.txt');
   const raw = existsSync(rawPath) ? readFileSync(rawPath, 'utf8') : '';
-  const source = extractTypeScript(raw);
+  let files = [];
+  let extractionError = null;
+  try {
+    files = extractProjectFiles(raw);
+  } catch (error) {
+    extractionError = error instanceof Error ? error.message : String(error);
+  }
   let checks = null;
-  if (source) {
-    writeFileSync(join(projectDirectory, 'src', 'main.ts'), `${source}\n`);
+  if (files.length) {
+    for (const file of files) {
+      const target = join(projectDirectory, file.path);
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, `${file.source}\n`);
+    }
     checks = await runChecks(projectDirectory);
   } else {
-    writeFileSync(join(projectDirectory, 'extraction.log'), 'No TypeScript source could be extracted from raw-output.txt.\n');
+    writeFileSync(
+      join(projectDirectory, 'extraction.log'),
+      `${extractionError ?? 'No TypeScript source could be extracted from raw-output.txt.'}\n`
+    );
   }
 
   const result = {
     model: { id: model.id, label: model.label, family: model.family, source: model.source },
     generation,
-    extraction: { ok: Boolean(source), bytes: Buffer.byteLength(source) },
+    extraction: {
+      ok: files.length > 0,
+      files: files.map(file => file.path),
+      bytes: files.reduce((total, file) => total + Buffer.byteLength(file.source), 0),
+      ...(extractionError ? { error: extractionError } : {})
+    },
     checks
   };
   writeFileSync(join(projectDirectory, 'result.json'), `${JSON.stringify(result, null, 2)}\n`);

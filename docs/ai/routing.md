@@ -189,4 +189,6 @@ function Router(options: RouterOptions): {
 
 - `navigate(path: string): Promise<void>` — navigates to `path`; uses hash or pushstate depending on router `type`.
 - `initialize(): void` — starts listening for route changes; must be called after all pages are defined.
+- Do not add `@element` to an `@page` class. The Router-returned page decorator
+  already registers the custom element and applies Snice element behavior.
 - `register(route: string, tag: string, transition?: Transition, guards?: Guard | Guard[], layout?: string | false, placard?: Placard | ((ctx: AppContext) => Placard)): void` — manually registers a route without the `@page` decorator. Note: the return-type shape above lists `register` with 4 params; this fuller 6-param signature (adding `layout`, `placard`) is documented separately in the source.

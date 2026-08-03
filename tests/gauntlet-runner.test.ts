@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { GAUNTLET_MODELS, LLAMA_CPP_RUNTIMES } from '../tooling/gauntlet/manifest.js';
 import {
   downloadVerified,
+  extractProjectFiles,
   extractTypeScript,
   listSamples,
   parseGauntletArgs,
@@ -44,7 +45,7 @@ describe('dumb-agent gauntlet', () => {
   });
 
   it('ships multiple blind prompt samples', () => {
-    expect(listSamples()).toEqual(['daemon', 'events', 'request-response']);
+    expect(listSamples()).toEqual(['application', 'daemon', 'events', 'request-response', 'router']);
   });
 
   it('pins every artifact to a size and SHA-256 digest', () => {
@@ -78,10 +79,61 @@ describe('dumb-agent gauntlet', () => {
     expect(extractTypeScript(multiple)).toBe("import { html } from 'snice';\nexport const view = html`ok`;");
   });
 
+  it('extracts a safely bounded multi-file source tree', () => {
+    const raw = `Assistant:
+Here is the project.
+<<<FILE: src/main.ts>>>
+\`\`\`ts
+import './pages/home-page.js';
+\`\`\`
+<<<END FILE>>>
+<<<FILE: src/pages/home-page.ts>>>
+import { html } from 'snice';
+export const view = html\`home\`;
+<<<END FILE>>>`;
+
+    expect(extractProjectFiles(raw)).toEqual([
+      { path: 'src/main.ts', source: "import './pages/home-page.js';" },
+      { path: 'src/pages/home-page.ts', source: "import { html } from 'snice';\nexport const view = html`home`;" }
+    ]);
+  });
+
+  it('uses the next file header as an unambiguous boundary when end markers are omitted', () => {
+    const raw = `User:\nThe format is <<<FILE: src/path.ts>>>.\nAssistant:
+<<<FILE: src/main.ts>>>
+import './router';
+<<<FILE: src/router.ts>>>
+export const route = '/';`;
+
+    expect(extractProjectFiles(raw)).toEqual([
+      { path: 'src/main.ts', source: "import './router';" },
+      { path: 'src/router.ts', source: "export const route = '/';" }
+    ]);
+  });
+
+  it('keeps single-file prompts backward compatible', () => {
+    expect(extractProjectFiles("Assistant:\nimport { html } from 'snice';"))
+      .toEqual([{ path: 'src/main.ts', source: "import { html } from 'snice';" }]);
+  });
+
+  it('rejects unsafe, duplicate, and unsupported generated paths', () => {
+    expect(() => extractProjectFiles('<<<FILE: ../main.ts>>>\ncode\n<<<END FILE>>>'))
+      .toThrow('safe path below src');
+    expect(() => extractProjectFiles(
+      '<<<FILE: src/main.ts>>>\none\n<<<END FILE>>>\n' +
+      '<<<FILE: src/main.ts>>>\ntwo\n<<<END FILE>>>'
+    )).toThrow('duplicate generated file path');
+    expect(() => extractProjectFiles('<<<FILE: src/package.json>>>\n{}\n<<<END FILE>>>'))
+      .toThrow('unsupported source extension');
+  });
+
   it('recognizes degenerate exact-output repetition without a token limit', () => {
     const line = '// Browser Side Session';
     expect(repeatedOutput(`${'useful output\n'.repeat(700)}${`${line}\n`.repeat(20)}`))
       .toContain('line repeated');
+    const phrase = 'The page decorator must come from the constructed router and create the app target.';
+    const unaligned = Array.from({ length: 140 }, (_, index) => `${index}: ${phrase}`).join(' ');
+    expect(repeatedOutput(unaligned)).toContain('substring repeated');
     expect(repeatedOutput('const value = 1;\n'.repeat(20))).toBeNull();
   });
 
@@ -154,12 +206,11 @@ setInterval(() => process.stdout.write(line), 10);
     const { stdout, stderr } = await execFileAsync(process.execPath, [
       join(process.cwd(), 'tooling/testing/run-gauntlet.js'),
       '--dry-run',
-      '--sample', 'events',
       '--models', 'gemma3-270m'
     ]);
     expect(stderr).toBe('');
     expect(stdout).toContain('models: gemma3-270m');
-    expect(stdout).toContain('prompt: sample:events');
+    expect(stdout).toContain('prompt: sample:application');
     expect(stdout).toContain('processes: 1');
   });
 });

@@ -8,9 +8,10 @@ clean/red regression pair.
 ## Quick Start
 
 ```bash
-npm run gauntlet                         # daemon sample, every model
+npm run gauntlet                         # complete application sample, every model
 npm run gauntlet -- --sample events
-npm run gauntlet -- --prompt "Write one complete src/main.ts ..."
+npm run gauntlet -- --sample router
+npm run gauntlet -- --prompt "Build a Snice application ..."
 npm run gauntlet -- --prompt-file ./prompt.txt
 npm run gauntlet -- --list-samples
 ```
@@ -41,16 +42,24 @@ Exactly one prompt source may be selected:
 - `--prompt <text>` passes an inline prompt verbatim.
 - `--prompt-file <path>` passes a file verbatim.
 
-No prompt flag selects the `daemon` sample. Samples deliberately demand one
-complete `src/main.ts` and say that the builder has no Snice docs, source,
-examples, skill, or previous output. Do not add correct API hints to a blind
-sample; docs-informed rounds are separate evidence.
+No prompt flag selects the `application` sample. Every selected model receives
+the exact same resolved prompt. Samples say that the builder has no
+Snice docs, source, examples, skill, or previous output. Single-file samples
+remain useful for focused API probes. Architecture samples may use explicit
+`<<<FILE: src/...>>>` / `<<<END FILE>>>` blocks to generate a safely bounded
+source tree. Do not add correct API hints to a blind sample; docs-informed
+rounds are separate evidence.
 
 Committed samples:
 
+- `application` — the default, multi-file Session Board exercising routing,
+  daemon context, request/response, events, controllers, and conventional
+  project boundaries in one browser-observable application.
 - `daemon` — app-context daemons using request/response and events.
 - `events` — typed dispatch/listen behavior across reusable elements.
 - `request-response` — an element/controller request-response boundary.
+- `router` — Router construction, Router-returned page decorators, route params,
+  navigation, target creation, and initialization order.
 
 ## Models and Scheduling
 
@@ -67,9 +76,9 @@ text checkpoint, so it is not in this local pool.
 
 The scheduler uses at most four model processes by default and divides the
 host CPUs between them. It does not impose a token or elapsed-time limit.
-When the generated stream degenerates into exact repeated lines or blocks,
-the process is stopped and classified as a repetition failure; the entire raw
-stream remains available for diagnosis.
+When the generated stream degenerates into exact repeated lines, aligned
+blocks, or unaligned substrings, the process is stopped and classified as a
+repetition failure; the entire raw stream remains available for diagnosis.
 
 ## What One Invocation Does
 
@@ -81,8 +90,9 @@ stream remains available for diagnosis.
 4. Create one isolated generated project per model under
    `.local/gauntlet/runs/<timestamp>-<prompt>/`.
 5. Give each model only the prompt and preserve its unedited response.
-6. Extract the longest fenced TypeScript block, or the exact assistant reply
-   when no fence exists, into `src/main.ts`.
+6. Extract explicit multi-file source blocks when present, validating every
+   path below `src/`. Otherwise extract the longest fenced TypeScript block, or
+   the exact assistant reply when no fence exists, into `src/main.ts`.
 7. Run `snice check`, strict TypeScript, and a Vite production build, preserving
    every exit status and log.
 
@@ -101,7 +111,9 @@ summary.md
 <model>/
   raw-output.txt
   generation.log
-  src/main.ts
+  src/
+    main.ts
+    ...optional generated modules and folders
   checker.log
   typecheck.log
   build.log

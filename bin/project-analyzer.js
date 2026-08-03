@@ -450,6 +450,12 @@ const RULE_DEFINITIONS = [
               fix: "Add type: 'hash' or type: 'pushstate' to the Router options."
             });
           }
+          if (!/\b(?:target|outlet)\b\s*(?=[:,}])/.test(call.body)) {
+            context.report(call.index, {
+              message: 'Router() requires a target selector for the page outlet.',
+              fix: "Add target: '#app' and ensure that element exists before initialize() runs."
+            });
+          }
           const outletIndex = call.body.search(/\boutlet\s*:/);
           if (outletIndex >= 0 && !/\btarget\s*:/.test(call.body)) {
             context.report(call.bodyStart + outletIndex, {
@@ -1102,6 +1108,38 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
+    id: 'snice/router-initialization',
+    severity: 'error',
+    category: 'router',
+    description: 'Require each constructed Router instance to be initialized.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/page-element-double-decoration',
+    severity: 'error',
+    category: 'router',
+    description: 'Reject combining Router page and element decorators on the same class.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/recommend-project-structure',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Recommend conventional folders for pages, components, controllers, and daemons.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/recommend-page-controller',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Recommend extracting substantial or repeated non-visual page logic into a controller.',
+    projectOnly: true,
+    check() {}
+  },
+  {
     id: 'snice/unused-dependency',
     severity: 'error',
     category: 'configuration',
@@ -1213,6 +1251,9 @@ export function analyzeProject(files) {
   const snicePackageManifests = [];
   const requestChannels = [];
   const respondChannels = new Set();
+  const routerConstructions = [];
+  const architectureDeclarations = [];
+  const pageClasses = [];
   let usesSnice = false;
 
   for (const file of normalized) {
@@ -1223,6 +1264,22 @@ export function analyzeProject(files) {
     }
     const analyzable = maskComments(file.source);
     const provenance = buildSourceProvenance(analyzable);
+    routerConstructions.push(
+      ...findRouterConstructions(analyzable, localsFor(provenance.rootBindings, 'Router'))
+        .map(construction => ({ ...construction, file }))
+    );
+    for (const convention of [
+      { decorator: 'page', folder: 'pages', kind: 'page' },
+      { decorator: 'element', folder: 'components', kind: 'component' },
+      { decorator: 'controller', folder: 'controllers', kind: 'controller' },
+      { decorator: 'daemon', folder: 'daemons', kind: 'daemon' }
+    ]) {
+      for (const declaration of findDecoratedClasses(analyzable, convention.decorator)) {
+        const architectural = { ...declaration, ...convention, file };
+        architectureDeclarations.push(architectural);
+        if (convention.decorator === 'page') pageClasses.push(architectural);
+      }
+    }
     for (const match of analyzable.matchAll(/@request\(\s*['"]([^'"]+)['"]\s*(?:,\s*\{([^}]*)\})?/g)) {
       requestChannels.push({
         file,
@@ -1412,6 +1469,115 @@ export function analyzeProject(files) {
     });
   }
 
+  const projectCode = normalized
+    .filter(file => !/(?:^|[/\\])package\.json$/.test(file.filename))
+    .map(file => maskComments(file.source))
+    .join('\n');
+  for (const construction of routerConstructions) {
+    const initialized = construction.initializers.some(name => hasInvocation(projectCode, name)) ||
+      (construction.instance && new RegExp(
+        `\\b${escapeRegExp(construction.instance)}\\s*\\.\\s*initialize\\s*\\(`
+      ).test(projectCode));
+    if (initialized) continue;
+    const location = sourceLocation(construction.file.source, construction.index);
+    diagnostics.push({
+      severity: 'error',
+      ruleId: 'snice/router-initialization',
+      message: 'Router() is constructed but its initialize() function is never called, so registered pages will not start routing.',
+      fix: 'Export the Router-returned initialize function, import all page modules, then call initialize() from the application entry point. Review docs/ai/routing.md.',
+      file: construction.file.filename,
+      line: location.line,
+      column: location.column
+    });
+  }
+
+  const doubleDecoratedPages = new Set();
+  const declarationsByClass = new Map();
+  for (const declaration of architectureDeclarations) {
+    const key = `${declaration.file.filename}:${declaration.name}`;
+    if (!declarationsByClass.has(key)) declarationsByClass.set(key, []);
+    declarationsByClass.get(key).push(declaration);
+  }
+  for (const [key, declarations] of declarationsByClass) {
+    const page = declarations.find(declaration => declaration.decorator === 'page');
+    const element = declarations.find(declaration => declaration.decorator === 'element');
+    if (!page || !element) continue;
+    doubleDecoratedPages.add(key);
+    const location = sourceLocation(element.file.source, element.index);
+    diagnostics.push({
+      severity: 'error',
+      ruleId: 'snice/page-element-double-decoration',
+      message: `${page.name} combines @page and @element, so Snice element functionality is applied twice.`,
+      fix: 'Remove @element from the routed class; the Router-returned @page decorator registers the custom element and applies element functionality. Review docs/ai/routing.md.',
+      file: element.file.filename,
+      line: location.line,
+      column: location.column
+    });
+  }
+
+  for (const declaration of architectureDeclarations) {
+    const key = `${declaration.file.filename}:${declaration.name}`;
+    if (declaration.decorator === 'element' && doubleDecoratedPages.has(key)) continue;
+    if (isInSourceFolder(declaration.file.filename, declaration.folder)) continue;
+    const target = `src/${declaration.folder}/${camelToKebab(declaration.name)}.ts`;
+    const location = sourceLocation(declaration.file.source, declaration.index);
+    diagnostics.push({
+      severity: 'suggestion',
+      ruleId: 'snice/recommend-project-structure',
+      message: `${declaration.name} is a Snice ${declaration.kind} defined outside the conventional src/${declaration.folder}/ folder.`,
+      fix: `Move the class to ${target} and import it from the application composition root. Review docs/ai/architecture.md.`,
+      file: declaration.file.filename,
+      line: location.line,
+      column: location.column
+    });
+  }
+
+  const pageControllerReported = new Set();
+  for (const page of pageClasses) {
+    const profile = pageLogicProfile(page.body);
+    if (!profile.recommend) continue;
+    const location = sourceLocation(page.file.source, page.index);
+    diagnostics.push({
+      severity: 'suggestion',
+      ruleId: 'snice/recommend-page-controller',
+      message: `${page.name} contains substantial non-visual logic (${profile.effectfulMethods} effectful methods, ${profile.effects} external effects, ${profile.decisions} decision points).`,
+      fix: `Keep route orchestration and presentation in the page; move reusable data, business, timer, storage, or server behavior into a controller under src/controllers/. Review docs/ai/controllers.md and docs/ai/architecture.md.`,
+      file: page.file.filename,
+      line: location.line,
+      column: location.column
+    });
+    pageControllerReported.add(`${page.file.filename}:${page.index}`);
+  }
+
+  const repeatedPageMethods = new Map();
+  for (const page of pageClasses) {
+    for (const method of findClassMethods(page.body, page.bodyStart)) {
+      const fingerprint = sharedLogicFingerprint(method.body);
+      if (!fingerprint) continue;
+      if (!repeatedPageMethods.has(fingerprint)) repeatedPageMethods.set(fingerprint, []);
+      repeatedPageMethods.get(fingerprint).push({ page, method });
+    }
+  }
+  for (const occurrences of repeatedPageMethods.values()) {
+    const files = [...new Set(occurrences.map(({ page }) => page.file.filename))];
+    if (files.length < 2) continue;
+    for (const { page, method } of occurrences) {
+      const reportKey = `${page.file.filename}:${page.index}`;
+      if (pageControllerReported.has(reportKey)) continue;
+      const location = sourceLocation(page.file.source, method.index);
+      diagnostics.push({
+        severity: 'suggestion',
+        ruleId: 'snice/recommend-page-controller',
+        message: `${method.name}() repeats substantial non-visual logic across ${files.length} page files.`,
+        fix: `Extract the shared behavior into a controller under src/controllers/ and let each page orchestrate it. Also review docs/ai/controllers.md and docs/ai/architecture.md.`,
+        file: page.file.filename,
+        line: location.line,
+        column: location.column
+      });
+      pageControllerReported.add(reportKey);
+    }
+  }
+
   if (!usesSnice) {
     for (const manifest of snicePackageManifests) {
       const location = sourceLocation(manifest.source, manifest.index);
@@ -1559,6 +1725,175 @@ function findClassBodies(source) {
     });
   }
   return classes;
+}
+
+function findRouterConstructions(source, routerNames) {
+  const constructions = [];
+  for (const routerName of routerNames) {
+    const escaped = escapeRegExp(routerName);
+    const assigned = new Set();
+    const destructured = new RegExp(
+      `\\b(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escaped}\\s*\\(`,
+      'g'
+    );
+    for (const match of source.matchAll(destructured)) {
+      const initialize = /(?:^|,)\s*initialize(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/
+        .exec(match[1]);
+      constructions.push({
+        index: match.index,
+        initializers: initialize ? [initialize[1] ?? 'initialize'] : [],
+        instance: null
+      });
+      assigned.add(source.indexOf(routerName, match.index));
+    }
+
+    const instance = new RegExp(
+      `\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escaped}\\s*\\(`,
+      'g'
+    );
+    for (const match of source.matchAll(instance)) {
+      const initializers = [];
+      const instanceDestructuring = new RegExp(
+        `\\b(?:export\\s+)?(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escapeRegExp(match[1])}\\b`,
+        'g'
+      );
+      for (const destructuring of source.matchAll(instanceDestructuring)) {
+        const initialize = /(?:^|,)\s*initialize(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/
+          .exec(destructuring[1]);
+        if (initialize) initializers.push(initialize[1] ?? 'initialize');
+      }
+      constructions.push({ index: match.index, initializers, instance: match[1] });
+      assigned.add(source.indexOf(routerName, match.index));
+    }
+
+    for (const call of findObjectCalls(source, routerName)) {
+      if (assigned.has(call.index)) continue;
+      constructions.push({ index: call.index, initializers: [], instance: null });
+    }
+  }
+  return constructions.sort((left, right) => left.index - right.index);
+}
+
+function hasInvocation(source, name) {
+  const pattern = new RegExp(`\\b${escapeRegExp(name)}\\s*\\(`, 'g');
+  for (const match of source.matchAll(pattern)) {
+    const open = source.indexOf('(', match.index);
+    const close = findMatchingDelimiter(source, open, '(', ')');
+    if (close < 0) continue;
+    let next = close + 1;
+    while (/\s/.test(source[next] ?? '')) next++;
+    // A function or method declaration has a body immediately after its
+    // parameter list. Router initializers are zero-argument function calls.
+    if (source[next] !== '{') return true;
+  }
+  return false;
+}
+
+function findDecoratedClasses(source, decoratorName) {
+  const declarations = [];
+  const pattern = new RegExp(`@${escapeRegExp(decoratorName)}\\b`, 'g');
+  for (const match of source.matchAll(pattern)) {
+    let declarationStart = match.index + match[0].length;
+    while (/\s/.test(source[declarationStart] ?? '')) declarationStart++;
+    if (source[declarationStart] === '(') {
+      const close = findMatchingDelimiter(source, declarationStart, '(', ')');
+      if (close < 0) continue;
+      declarationStart = close + 1;
+    }
+    // Class decorators stack above the same declaration. Walk past any
+    // intervening decorators so each Snice role resolves to that class.
+    while (true) {
+      while (/\s/.test(source[declarationStart] ?? '')) declarationStart++;
+      const nextDecorator = /^@[A-Za-z_$][\w$]*/.exec(source.slice(declarationStart));
+      if (!nextDecorator) break;
+      declarationStart += nextDecorator[0].length;
+      while (/\s/.test(source[declarationStart] ?? '')) declarationStart++;
+      if (source[declarationStart] === '(') {
+        const close = findMatchingDelimiter(source, declarationStart, '(', ')');
+        if (close < 0) break;
+        declarationStart = close + 1;
+      }
+    }
+    const declaration = /^\s*(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)[^\{]*\{/
+      .exec(source.slice(declarationStart, declarationStart + 2_000));
+    if (!declaration) continue;
+    const open = declarationStart + declaration.index + declaration[0].lastIndexOf('{');
+    const close = findMatchingDelimiter(source, open, '{', '}');
+    if (close < 0) continue;
+    declarations.push({
+      index: match.index,
+      name: declaration[1],
+      bodyStart: open + 1,
+      body: source.slice(open + 1, close)
+    });
+  }
+  return declarations;
+}
+
+function findClassMethods(body, bodyStart = 0) {
+  const code = blankStringContents(body);
+  const depths = new Uint16Array(code.length + 1);
+  let depth = 0;
+  for (let index = 0; index < code.length; index++) {
+    depths[index] = depth;
+    if (code[index] === '{') depth++;
+    else if (code[index] === '}') depth = Math.max(0, depth - 1);
+  }
+  const methods = [];
+  const pattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|readonly|override|abstract|declare)\s+)*(?:async\s+)?(?:\*\s*)?([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*(?::\s*[^\n{]+)?\s*\{/g;
+  const excluded = new Set(['if', 'for', 'while', 'switch', 'catch', 'with']);
+  for (const match of code.matchAll(pattern)) {
+    const open = match.index + match[0].lastIndexOf('{');
+    if (depths[open] !== 0 || excluded.has(match[1])) continue;
+    const close = findMatchingDelimiter(code, open, '{', '}');
+    if (close < 0) continue;
+    methods.push({
+      name: match[1],
+      index: bodyStart + match.index + match[0].indexOf(match[1]),
+      body: body.slice(open + 1, close)
+    });
+  }
+  return methods;
+}
+
+function pageLogicProfile(body) {
+  const code = blankStringContents(body);
+  const methods = findClassMethods(body);
+  const effectPattern = /\bfetch\s*\(|\bnew\s+(?:WebSocket|EventSource|Worker)\s*\(|\b(?:localStorage|sessionStorage|indexedDB|caches)\b|\b(?:setInterval|setTimeout)\s*\(/g;
+  const effectTest = /\bfetch\s*\(|\bnew\s+(?:WebSocket|EventSource|Worker)\s*\(|\b(?:localStorage|sessionStorage|indexedDB|caches)\b|\b(?:setInterval|setTimeout)\s*\(/;
+  const decisionPattern = /\b(?:if|else\s+if|switch|for|while|try|catch)\b|\.(?:filter|map|reduce|sort|find|some|every)\s*\(/g;
+  const effects = [...code.matchAll(effectPattern)].length;
+  const decisions = [...code.matchAll(decisionPattern)].length;
+  const effectfulMethods = methods.filter(method => {
+    const methodCode = blankStringContents(method.body);
+    return effectTest.test(methodCode);
+  }).length;
+  // A page is supposed to orchestrate. Recommend extraction only when several
+  // separate methods own substantial external/business behavior, or when a
+  // very large page also carries a dense decision tree. One fetch in @ready()
+  // or a small route-state branch remains clean.
+  const recommend = (
+    (effectfulMethods >= 4 && effects >= 6) ||
+    (effectfulMethods >= 3 && effects >= 4 && decisions >= 8) ||
+    (code.length >= 4_000 && effects >= 2 && decisions >= 16)
+  );
+  return { recommend, effectfulMethods, effects, decisions };
+}
+
+function sharedLogicFingerprint(body) {
+  const code = blankStringContents(maskComments(body))
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (code.length < 140 || (code.match(/;/g) ?? []).length < 3) return null;
+  if (!/\bfetch\s*\(|\bnew\s+(?:WebSocket|EventSource|Worker)\s*\(|\b(?:localStorage|sessionStorage|indexedDB)\b|\b(?:if|for|while|switch)\b|\.(?:filter|map|reduce|sort)\s*\(/.test(code)) {
+    return null;
+  }
+  return code;
+}
+
+function isInSourceFolder(filename, folder) {
+  const normalized = filename.replaceAll('\\', '/');
+  return new RegExp(`(?:^|/)src/${escapeRegExp(folder)}(?:/|$)`).test(normalized);
 }
 
 function findMatchingDelimiter(source, start, open, close) {
