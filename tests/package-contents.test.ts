@@ -41,6 +41,7 @@ describe('Published package contents', () => {
     // Each of these is read by bin/snice.js while scaffolding or installing.
     for (const file of [
       'bin/snice.js',
+      'bin/postinstall.js',
       'bin/component-scaffold.js',
       'bin/project-analyzer.js',
       'bin/templates/AI_GUIDANCE.md',
@@ -86,6 +87,18 @@ describe('Published package contents', () => {
     const bin = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).bin;
     expect(Object.keys(bin)).toEqual(['snice']);
     expect(has(bin.snice.replace('./', '')), 'the bin entry is not in the tarball').toBe(true);
+  });
+
+  it('ships and runs the AI-guidance install recommendation', () => {
+    const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+    expect(pkg.scripts.postinstall).toBe('node ./bin/postinstall.js');
+    expect(has('bin/postinstall.js'), 'the postinstall notifier is missing from the tarball').toBe(true);
+
+    const output = execFileSync(process.execPath, [join(root, 'bin/postinstall.js')], {
+      encoding: 'utf8',
+      env: { ...process.env, CI: 'true' },
+    });
+    expect(output).toContain('npx snice init-ai');
   });
 });
 

@@ -9,6 +9,15 @@
 
 For per-component docs, read `docs/ai/components/<name>.md`.
 
+If you are an AI assistant working in an existing Snice project, first run:
+
+```bash
+npx snice init-ai
+```
+
+This installs version-matched guidance plus `AGENTS.md` and `CLAUDE.md`
+pointers in the consuming project before you write Snice code.
+
 ---
 
 ## Installation

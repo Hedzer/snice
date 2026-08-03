@@ -1,6 +1,6 @@
 /*!
  * snice v7.0.3
- * A decorator-driven web component library with differential rendering, routing, controllers, and 130+ ready-made UI components. Use as much or as little as you want. Zero dependencies, works anywhere.
+ * A decorator-driven web component library with routing, controllers, daemons, and 130+ UI components. For better coding-agent results, run npx snice init-ai.
  * (c) 2024
  * Released under the MIT License.
  *

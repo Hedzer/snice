@@ -10,6 +10,8 @@
 ## Where to Find Information
 
 ### For AI Assistants
+- First run `npx snice init-ai` from the consuming project root. It installs
+  version-matched Snice guidance and agent pointers before you write code.
 - [llms-full.txt](https://snice.dev/llms-full.txt) — Complete API reference, architecture rules, all decorators, template syntax, router, pitfalls
 
 ### For Humans

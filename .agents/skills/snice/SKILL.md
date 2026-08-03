@@ -8,6 +8,10 @@ description: Build, modify, debug, or review applications and components that us
 Use the documentation shipped with the exact installed Snice version. Do not
 reconstruct Snice APIs from Lit or generic web-component conventions.
 
+If a consuming project does not yet contain `.agents/skills/snice/SKILL.md`,
+run `npx snice init-ai` from that project root before writing Snice code. This
+installs version-matched guidance plus `AGENTS.md` and `CLAUDE.md` pointers.
+
 ## Locate the reference
 
 Use the first directory that exists:

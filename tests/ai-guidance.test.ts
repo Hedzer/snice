@@ -28,6 +28,25 @@ describe('Snice agent guidance', () => {
     expect(guidance).not.toContain('@observe');
   });
 
+  it('nudges agents toward version-matched guidance on every discovery surface', () => {
+    const command = 'npx snice init-ai';
+    const pkg = JSON.parse(read('package.json'));
+    for (const surface of [
+      pkg.description,
+      read('README.md'),
+      read('llms.txt'),
+      read('llms-full.txt'),
+      read('bin/snice.js'),
+      read('bin/postinstall.js'),
+      read('.agents/skills/snice/SKILL.md'),
+      read('docs/ai/README.md'),
+      read('docs/ai/cli.md'),
+      read('website/guide/ai.html')
+    ]) {
+      expect(surface).toContain(command);
+    }
+  });
+
   it('keeps the complete core example syntactically compilable', () => {
     const source = read('.agents/skills/snice/references/core-kitchen-sink.ts');
     const result = ts.transpileModule(source, {

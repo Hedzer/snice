@@ -49,6 +49,9 @@ Commands:
   generate-component  Print a current Snice element scaffold (use --out to write it).
   build-component  Build a CDN component from a Snice source checkout.
 
+AI setup:
+  npx snice init-ai   Install version-matched guidance before an agent writes Snice code.
+
 Build options:
   --output=<dir>       Output directory (default: ./dist/cdn)
   --format=iife,es     Output formats (default: iife; table: iife,es)
