@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, DIRECT_CONTROLLER, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -66,6 +66,12 @@ export function controller(name: string) {
     registry.set(name, constructor);
     // Mark as controller class for channel decorator detection
     (constructor.prototype as any)[IS_CONTROLLER_CLASS] = true;
+    // Preserve the registry name on the class. Direct class attachments still
+    // skip registry lookup; this is only their inspectable DOM label.
+    Object.defineProperty(constructor, CONTROLLER_REGISTRY_NAME, {
+      value: name,
+      configurable: true
+    });
 
     const pending = snice.pendingControllerAttachments.get(name);
     if (pending) {
@@ -147,6 +153,49 @@ function controllerLabel(controller: string | ControllerClass): string {
     : (controller?.name || '(anonymous controller class)');
 }
 
+/** Registry/decorator name used for a direct class attachment's DOM marker. */
+function directControllerAttributeName(controllerClass: ControllerClass): string {
+  const registeredName = Object.prototype.hasOwnProperty.call(controllerClass, CONTROLLER_REGISTRY_NAME)
+    ? (controllerClass as any)[CONTROLLER_REGISTRY_NAME]
+    : undefined;
+  return typeof registeredName === 'string'
+    ? registeredName
+    : controllerLabel(controllerClass);
+}
+
+/**
+ * Write the inspectable controller marker without feeding it back into the
+ * custom-element attribute channel. Native MutationObservers are asynchronous
+ * and are excluded independently by DIRECT_CONTROLLER.
+ */
+function writeControllerAttribute(element: HTMLElement, value: string | null): void {
+  if (value === null) {
+    if (!element.hasAttribute('controller')) return;
+  } else if (element.getAttribute('controller') === value) {
+    return;
+  }
+
+  (element as any)[CONTROLLER_ATTRIBUTE_SYNC] = true;
+  try {
+    if (value === null) element.removeAttribute('controller');
+    else element.setAttribute('controller', value);
+  } finally {
+    delete (element as any)[CONTROLLER_ATTRIBUTE_SYNC];
+  }
+}
+
+/**
+ * Restore the diagnostic attribute for an attached class controller. Returns
+ * true when the direct class channel owns the element.
+ */
+export function restoreDirectControllerAttribute(element: HTMLElement): boolean {
+  if (!(element as any)[DIRECT_CONTROLLER]) return false;
+  const source = (element as any)[CONTROLLER_NAME_KEY] as string | ControllerClass | undefined;
+  if (typeof source !== 'function') return false;
+  writeControllerAttribute(element, directControllerAttributeName(source));
+  return true;
+}
+
 /**
  * Attaches a controller to an element
  * @param element The element to attach the controller to
@@ -183,12 +232,27 @@ export async function attachController(element: HTMLElement, controller: string 
 
   if (existingSource === controller && existingController) {
     // Already attached and controller exists (name or class reference match)
+    if (typeof controller !== 'string') {
+      restoreDirectControllerAttribute(element);
+    }
     return;
   }
 
   // If there's an existing controller, detach it first
   if (existingController) {
     await detachController(element);
+
+    // Light-DOM reconciliation can issue commit() and reconnected() requests
+    // for the same class while the previous controller is still detaching.
+    // If the other request already installed that exact source, this request
+    // is redundant. Different sources retain the established rapid-switch
+    // behavior and continue through the normal replacement path.
+    const replacement = (element as any)[CONTROLLER_KEY] as IController | undefined;
+    const replacementSource = (element as any)[CONTROLLER_NAME_KEY] as string | ControllerClass | undefined;
+    if (replacement && replacementSource === controller) {
+      if (typeof controller !== 'string') restoreDirectControllerAttribute(element);
+      return;
+    }
   }
 
   let ControllerClass: ControllerClass;
@@ -205,14 +269,17 @@ export async function attachController(element: HTMLElement, controller: string 
     }
   } else {
     ControllerClass = controller;
-    // The class channel owns the element from here on: the attribute /
-    // MutationObserver channel goes inert and its bookkeeping is dropped.
-    (element as any)[DIRECT_CONTROLLER] = true;
-    delete (element as any)[NATIVE_CONTROLLER];
   }
 
   // Create controller instance with unique ID and scope
   const controllerInstance = new ControllerClass();
+  if (typeof controller !== 'string') {
+    // Construction succeeded, so the class channel can safely take ownership.
+    // Setting this before construction would leave a stale observer guard when
+    // a controller constructor throws.
+    (element as any)[DIRECT_CONTROLLER] = true;
+    delete (element as any)[NATIVE_CONTROLLER];
+  }
   snice.controllerIdCounter += 1;
   const controllerId = snice.controllerIdCounter;
   const scope = new ControllerScope();
@@ -234,6 +301,12 @@ export async function attachController(element: HTMLElement, controller: string 
   (element as any)[CONTROLLER_KEY] = controllerInstance;
   (element as any)[CONTROLLER_NAME_KEY] = controller;
   (element as any)[CONTROLLER_OPERATIONS] = scope;
+  if (typeof controller !== 'string') {
+    // The class reference remains the sole attachment authority. This
+    // attribute is diagnostic only; custom-element callbacks and native
+    // MutationObservers are guarded from treating it as a string attachment.
+    restoreDirectControllerAttribute(element);
+  }
 
   // Wait for element to be ready. Race against abort (detachController) and
   // a 30s deadline so a caller that forgets to append the element gets a
@@ -267,6 +340,9 @@ export async function attachController(element: HTMLElement, controller: string 
     // attached — otherwise a later attach short-circuits as "already attached"
     // and a detach would run detach() on it.
     if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
+      if (typeof controller !== 'string') {
+        writeControllerAttribute(element, null);
+      }
       delete (element as any)[CONTROLLER_KEY];
       delete (element as any)[CONTROLLER_NAME_KEY];
       delete (element as any)[CONTROLLER_OPERATIONS];
@@ -326,6 +402,12 @@ export async function detachController(element: HTMLElement): Promise<void> {
   // controller reassignment) finds no instance and returns, instead of running
   // detach() a second time on the same controller. The rest of this function
   // works off the locals captured above.
+  if (typeof controllerSource === 'function') {
+    // Remove the class channel's diagnostic marker while its guards are still
+    // active. A queued native MutationObserver therefore sees no attribute and
+    // cannot resurrect a registry attachment after detach.
+    writeControllerAttribute(element, null);
+  }
   delete (element as any)[CONTROLLER_KEY];
   delete (element as any)[CONTROLLER_NAME_KEY];
   delete (element as any)[CONTROLLER_OPERATIONS];
@@ -418,7 +500,12 @@ export function useNativeElementControllers() {
     // attachController(el, Class)). The class channel owns the element:
     // attribute writes must not attach over it, and insertion sweeps must
     // not detach it.
-    if ((element as any)[DIRECT_CONTROLLER]) return;
+    if ((element as any)[DIRECT_CONTROLLER]) {
+      // External writes cannot replace a class binding. Keep the DOM marker
+      // honest about the class that is actually attached.
+      restoreDirectControllerAttribute(element);
+      return;
+    }
 
     const controllerName = element.getAttribute('controller');
     const currentControllerName = (element as any)[NATIVE_CONTROLLER];

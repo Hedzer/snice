@@ -54,7 +54,14 @@ The `@controller('name')` decorator is still required — it registers the class
 marks it, and flushes pending attachments. Re-binding the same class reference
 is a no-op; binding a different class (or `null`) detaches the old controller
 first. While a class is bound, the class binding owns the element: `controller`
-attribute writes are ignored until the class is unbound.
+attribute writes cannot switch it until the class is unbound.
+
+For inspection in DevTools, Snice reflects the decorator name as a
+`controller="name"` attribute while the class is attached. This marker is
+diagnostic only: it does not resolve the registry or create a second
+attachment. Treat it as read-only; the class reference remains authoritative.
+Snice removes the marker when the class detaches or replaces it when another
+controller is bound.
 
 Imperative equivalents:
 
@@ -467,4 +474,3 @@ element.addEventListener('controller-attached', (e: CustomEvent) => {
 ### Auto-Cleanup
 
 The framework automatically cleans up `@on` handlers, observers, and `@respond` handlers during detach. Manual cleanup in `detach()` is only needed for resources you manage yourself (WebSockets, intervals, manual event listeners).
-

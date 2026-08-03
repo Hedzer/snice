@@ -59,7 +59,7 @@ Ordinary attributes/comments support multiple expressions. Property, boolean, ev
 
 ### Controller `controller=${value}`
 
-- Class decorated with `@controller` (decorator required): attaches directly, registry skipped. Reference-deduped — same class re-render is a no-op; different class or null detaches first. Removes the `controller` attribute; attribute writes ignored while a class is bound.
+- Class decorated with `@controller` (decorator required): attaches directly, registry skipped. Reference-deduped — same class re-render is a no-op; different class or null detaches first. Reflects the decorator name as a read-only diagnostic `controller="name"` marker; the marker never creates a registry attachment.
 - Works on snice elements AND native elements in templates. Not-yet-upgraded custom elements park the class until connectedCallback.
 - String: delegates to `setAttribute` — identical to static `controller="name"`. Interpolated `controller="a-${x}"` is plain attribute interpolation, not this channel.
 - nothing/null/undefined/false/`''`: detach. `noChange`: keep current controller.

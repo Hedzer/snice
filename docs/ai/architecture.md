@@ -92,7 +92,7 @@ as architecture suggestions, not errors.
 4. Attach new controller (class refs skip the registry; reference-deduped)
 5. setupEventHandlers for controller
 6. On detach: cleanupEventHandlers
-- Class bindings own the element: attribute writes ignored while a class is bound
+- Class bindings own the element; their decorator name is reflected as a diagnostic-only `controller="name"` marker
 - Native elements: class bindings attach via ControllerPart; string attrs via MutationObserver
 
 **Daemon lifecycle:**

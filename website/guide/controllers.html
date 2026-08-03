@@ -39,4 +39,5 @@ class WeatherDashboard extends HTMLElement {
   }
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Binding the same class again is a no-op; binding a different one detaches the old controller first.</p>
+<p class="desc">The decorator name is reflected in the DOM as <span class="h"><span class="a">controller</span>=<span class="s">"weather"</span></span> for DevTools. The class reference still owns the attachment; this is a diagnostic marker and cannot double-attach through the registry.</p>
 <p class="desc">In raw HTML, attach by the registered name instead: <span class="h">&lt;stat-card <span class="a">controller</span>=<span class="s">"weather"</span>&gt;&lt;/stat-card&gt;</span></p>

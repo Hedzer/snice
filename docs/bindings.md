@@ -163,7 +163,7 @@ html`<user-list controller=${DataLoader}></user-list>`;
 html`<div controller=${DataLoader}></div>`; // native elements too
 ```
 
-Class values skip the registry and are deduped by reference: re-rendering with the same class is a no-op; a different class (or `null`) detaches the previous controller first. The `@controller('name')` decorator is still required on the class. While a class is bound it owns the element — `controller` attribute writes are ignored and no attribute is reflected. Custom elements that have not upgraded yet hold the class until their `connectedCallback` runs.
+Class values skip the registry and are deduped by reference: re-rendering with the same class is a no-op; a different class (or `null`) detaches the previous controller first. The `@controller('name')` decorator is still required on the class. While a class is bound it owns the element. Snice reflects its decorator name as a diagnostic `controller="name"` attribute for DevTools, but that marker never resolves the registry or creates another attachment; treat it as read-only. Custom elements that have not upgraded yet hold the class until their `connectedCallback` runs.
 
 String values delegate to the attribute channel and behave exactly like a static `controller="name"` attribute. Interpolated forms (`controller="user-${kind}"`) are ordinary attribute interpolation, not this channel.
 

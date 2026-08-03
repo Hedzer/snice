@@ -1946,8 +1946,8 @@ export class PropertyPart extends Part {
  * Accepts a controller class decorated with @controller (attached directly,
  * no registry lookup) or a registry name string (delegated to the attribute
  * channel with the exact semantics of a static controller="name"). While a
- * class is bound it owns the element: the attribute/MutationObserver channel
- * is inert until the class is unbound.
+ * class is bound it owns the element: the decorator name is reflected for
+ * inspection, while the attribute/MutationObserver attach channel stays inert.
  *
  * Renders commit while the tree is detached and connect afterwards, so
  * attachment happens on reconnected()/connected commits; every hook is
@@ -1989,9 +1989,6 @@ export class ControllerPart extends Part {
     }
 
     if (typeof next === 'function') {
-      // Class binding takes over — drop any attribute so the string channel
-      // cannot fight it.
-      if (this.element.hasAttribute('controller')) this.element.removeAttribute('controller');
       if (this.isConnected) {
         this._apply(next);
       } else if (this.element.localName.includes('-') && !el[IS_ELEMENT_CLASS]) {

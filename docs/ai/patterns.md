@@ -80,9 +80,10 @@ class DataLoader implements IController {
 ```
 
 **Class vs string:** class binding is reference-deduped (re-render no-op, swap
-detaches old), removes the `controller` attribute, and owns the element —
-attribute writes are ignored while a class is bound. Strings stay fully
-supported and behave exactly like the static attribute.
+detaches old) and owns the element. It reflects the decorator name as a
+diagnostic `controller="name"` marker, but that marker does not attach through
+the registry. Strings stay fully supported and behave exactly like the static
+attribute.
 
 **Native element controllers** — attach controllers to any HTML element (div, form, table, etc.).
 Enabled automatically when Snice loads — no setup needed.

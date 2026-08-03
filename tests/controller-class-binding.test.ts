@@ -30,15 +30,16 @@ class ClassBindChild extends HTMLElement {}
 function makeControllerClass() {
   const attachSpy = vi.fn();
   const detachSpy = vi.fn();
+  const registeredName = `class-bind-registered-${++uid}`;
 
-  @controller(`class-bind-registered-${++uid}`)
+  @controller(registeredName)
   class TestController {
     element: HTMLElement | null = null;
     async attach(el: HTMLElement) { this.element = el; attachSpy(el); }
     async detach(el: HTMLElement) { this.element = null; detachSpy(el); }
   }
 
-  return { TestController, attachSpy, detachSpy };
+  return { TestController, registeredName, attachSpy, detachSpy };
 }
 
 beforeEach(() => {
@@ -55,13 +56,14 @@ afterEach(() => {
 
 describe('attachController with a class reference', () => {
   it('attaches a decorated class to a plain element', async () => {
-    const { TestController, attachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy } = makeControllerClass();
     const div = document.createElement('div');
 
     await attachController(div, TestController);
 
     expect(attachSpy).toHaveBeenCalledWith(div);
     expect(getController(div)).toBeInstanceOf(TestController);
+    expect(div.getAttribute('controller')).toBe(registeredName);
   });
 
   it('rejects an undecorated class with an error mentioning @controller', async () => {
@@ -98,6 +100,36 @@ describe('attachController with a class reference', () => {
     expect(detachSpy).not.toHaveBeenCalled();
   });
 
+  it('removes the reflected class name on detach', async () => {
+    const { TestController, registeredName } = makeControllerClass();
+    const div = document.createElement('div');
+
+    await attachController(div, TestController);
+    expect(div.getAttribute('controller')).toBe(registeredName);
+
+    await detachController(div);
+    expect(div.hasAttribute('controller')).toBe(false);
+  });
+
+  it('does not claim the element when a class constructor throws', async () => {
+    @controller(`class-bind-throwing-${++uid}`)
+    class ThrowingController {
+      element: HTMLElement | null = null;
+      constructor() { throw new Error('constructor failed'); }
+      async attach() {}
+      async detach() {}
+    }
+    const div = document.createElement('div');
+
+    await expect(attachController(div, ThrowingController)).rejects.toThrow('constructor failed');
+    expect(div.hasAttribute('controller')).toBe(false);
+
+    const fallback = makeControllerClass();
+    await attachController(div, fallback.TestController);
+    expect(fallback.attachSpy).toHaveBeenCalledWith(div);
+    expect(div.getAttribute('controller')).toBe(fallback.registeredName);
+  });
+
   it('swapping class A -> class B detaches A and attaches B', async () => {
     const a = makeControllerClass();
     const b = makeControllerClass();
@@ -109,6 +141,29 @@ describe('attachController with a class reference', () => {
     expect(a.detachSpy).toHaveBeenCalledWith(div);
     expect(b.attachSpy).toHaveBeenCalledWith(div);
     expect(getController(div)).toBeInstanceOf(b.TestController);
+  });
+
+  it('dedupes overlapping requests for the same replacement class', async () => {
+    @controller(`class-bind-slow-detach-${++uid}`)
+    class SlowDetachController {
+      element: HTMLElement | null = null;
+      async attach(element: HTMLElement) { this.element = element; }
+      async detach() {
+        await tick(15);
+        this.element = null;
+      }
+    }
+    const replacement = makeControllerClass();
+    const div = document.createElement('div');
+
+    await attachController(div, SlowDetachController);
+    const first = attachController(div, replacement.TestController);
+    const second = attachController(div, replacement.TestController);
+    await Promise.all([first, second]);
+
+    expect(replacement.attachSpy).toHaveBeenCalledTimes(1);
+    expect(getController(div)).toBeInstanceOf(replacement.TestController);
+    expect(div.getAttribute('controller')).toBe(replacement.registeredName);
   });
 
   it('swapping between a registered string and a class works both directions', async () => {
@@ -200,14 +255,14 @@ describe('controller=${Class} on snice elements', () => {
     expect(getController(childOf(host))).toBeInstanceOf(TestController);
   });
 
-  it('does not set a controller attribute for class bindings', async () => {
-    const { TestController } = makeControllerClass();
+  it('reflects the decorator name for class bindings', async () => {
+    const { TestController, registeredName } = makeControllerClass();
     const host = makeHost();
 
     host.ctrl = TestController;
     await tick();
 
-    expect(childOf(host).hasAttribute('controller')).toBe(false);
+    expect(childOf(host).getAttribute('controller')).toBe(registeredName);
   });
 
   it('re-render with the same class ref does not detach/re-attach', async () => {
@@ -272,7 +327,7 @@ describe('controller=${Class} on snice elements', () => {
     expect(stringAttach).toHaveBeenCalledWith(childOf(host));
   });
 
-  it('swapping string -> class removes the attribute and swaps controllers', async () => {
+  it('swapping string -> class updates the diagnostic attribute and swaps controllers', async () => {
     const stringAttach = vi.fn();
     const stringDetach = vi.fn();
     @controller(`class-bind-swap-out-${++uid}`)
@@ -282,7 +337,7 @@ describe('controller=${Class} on snice elements', () => {
       async detach(el: HTMLElement) { stringDetach(el); }
     }
     const name = `class-bind-swap-out-${uid}`;
-    const { TestController, attachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy } = makeControllerClass();
     const host = makeHost();
 
     host.ctrl = name;
@@ -294,7 +349,7 @@ describe('controller=${Class} on snice elements', () => {
 
     expect(stringDetach).toHaveBeenCalledWith(childOf(host));
     expect(attachSpy).toHaveBeenCalledWith(childOf(host));
-    expect(childOf(host).hasAttribute('controller')).toBe(false);
+    expect(childOf(host).getAttribute('controller')).toBe(registeredName);
   });
 
   it('swapping class -> string detaches the class and attaches by name', async () => {
@@ -321,7 +376,7 @@ describe('controller=${Class} on snice elements', () => {
   });
 
   it('direct property assignment el.controller = Class attaches', async () => {
-    const { TestController, attachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy } = makeControllerClass();
     const el = document.createElement(CHILD_TAG) as any;
     document.body.appendChild(el);
     await tick();
@@ -331,6 +386,7 @@ describe('controller=${Class} on snice elements', () => {
 
     expect(attachSpy).toHaveBeenCalledWith(el);
     expect(el.controller).toBe(TestController);
+    expect(el.getAttribute('controller')).toBe(registeredName);
   });
 
   it('assigning the same class twice attaches once', async () => {
@@ -345,6 +401,25 @@ describe('controller=${Class} on snice elements', () => {
     await tick();
 
     expect(attachSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the reflected class name authoritative without re-attaching', async () => {
+    const { TestController, registeredName, attachSpy, detachSpy } = makeControllerClass();
+    const el = document.createElement(CHILD_TAG) as any;
+    document.body.appendChild(el);
+    await tick();
+
+    el.controller = TestController;
+    await tick();
+    el.setAttribute('controller', 'not-the-attached-controller');
+    expect(el.getAttribute('controller')).toBe(registeredName);
+    el.removeAttribute('controller');
+    expect(el.getAttribute('controller')).toBe(registeredName);
+    await tick();
+
+    expect(getController(el)).toBeInstanceOf(TestController);
+    expect(attachSpy).toHaveBeenCalledTimes(1);
+    expect(detachSpy).not.toHaveBeenCalled();
   });
 
   it('an undecorated class bound in a template reports an error and does not attach', async () => {
@@ -371,10 +446,10 @@ describe('controller=${Class} on snice elements', () => {
 // ---------------------------------------------------------------------------
 
 describe('controller=${Class} on native elements', () => {
-  function makeNativeHost() {
+  function makeNativeHost(renderRoot: 'shadow' | 'light' = 'shadow') {
     const hostTag = uniqueTag('class-bind-native-host');
 
-    @element(hostTag)
+    @element(hostTag, { renderRoot })
     class Host extends HTMLElement {
       @property({ attribute: false }) ctrl: any = null;
       @property({ type: Boolean, attribute: false }) showDiv = true;
@@ -395,10 +470,10 @@ describe('controller=${Class} on native elements', () => {
   }
 
   const targetOf = (host: any) =>
-    host.shadowRoot!.querySelector('.target')! as HTMLElement;
+    (host.shadowRoot ?? host).querySelector('.target')! as HTMLElement;
 
   it('attaches the class to a native div inside a template', async () => {
-    const { TestController, attachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy } = makeControllerClass();
     const host = makeNativeHost();
 
     host.ctrl = TestController;
@@ -406,24 +481,25 @@ describe('controller=${Class} on native elements', () => {
 
     expect(attachSpy).toHaveBeenCalledWith(targetOf(host));
     expect(getController(targetOf(host))).toBeInstanceOf(TestController);
-    expect(targetOf(host).hasAttribute('controller')).toBe(false);
+    expect(targetOf(host).getAttribute('controller')).toBe(registeredName);
   });
 
   it('does not double-mount when the native MutationObserver is active', async () => {
     useNativeElementControllers();
-    const { TestController, attachSpy, detachSpy } = makeControllerClass();
-    const host = makeNativeHost();
+    const { TestController, registeredName, attachSpy, detachSpy } = makeControllerClass();
+    const host = makeNativeHost('light');
 
     host.ctrl = TestController;
     await tick(30);
 
     expect(attachSpy).toHaveBeenCalledTimes(1);
     expect(detachSpy).not.toHaveBeenCalled();
+    expect(targetOf(host).getAttribute('controller')).toBe(registeredName);
   });
 
   it('MutationObserver does not detach a class-attached controller on DOM insertion', async () => {
     useNativeElementControllers();
-    const { TestController, attachSpy, detachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy, detachSpy } = makeControllerClass();
 
     // Imperative class attach on a detached native element, then insert it.
     const div = document.createElement('div');
@@ -435,6 +511,7 @@ describe('controller=${Class} on native elements', () => {
 
     expect(detachSpy).not.toHaveBeenCalled();
     expect(getController(div)).toBeInstanceOf(TestController);
+    expect(div.getAttribute('controller')).toBe(registeredName);
   });
 
   it('a later controller attribute write does not stomp a template class binding', async () => {
@@ -447,8 +524,8 @@ describe('controller=${Class} on native elements', () => {
       async detach() {}
     }
     const name = `class-bind-stomp-${uid}`;
-    const { TestController, detachSpy } = makeControllerClass();
-    const host = makeNativeHost();
+    const { TestController, registeredName, detachSpy } = makeControllerClass();
+    const host = makeNativeHost('light');
 
     host.ctrl = TestController;
     await tick(30);
@@ -459,6 +536,22 @@ describe('controller=${Class} on native elements', () => {
     expect(stringAttach).not.toHaveBeenCalled();
     expect(detachSpy).not.toHaveBeenCalled();
     expect(getController(targetOf(host))).toBeInstanceOf(TestController);
+    expect(targetOf(host).getAttribute('controller')).toBe(registeredName);
+  });
+
+  it('restores a removed diagnostic attribute without re-attaching', async () => {
+    useNativeElementControllers();
+    const { TestController, registeredName, attachSpy, detachSpy } = makeControllerClass();
+    const host = makeNativeHost('light');
+
+    host.ctrl = TestController;
+    await tick(30);
+    targetOf(host).removeAttribute('controller');
+    await tick(30);
+
+    expect(targetOf(host).getAttribute('controller')).toBe(registeredName);
+    expect(attachSpy).toHaveBeenCalledTimes(1);
+    expect(detachSpy).not.toHaveBeenCalled();
   });
 
   it('binding null detaches the native class controller', async () => {
@@ -467,11 +560,13 @@ describe('controller=${Class} on native elements', () => {
 
     host.ctrl = TestController;
     await tick();
+    const target = targetOf(host);
     host.ctrl = null;
     await tick();
 
-    expect(detachSpy).toHaveBeenCalledWith(targetOf(host));
-    expect(getController(targetOf(host))).toBeUndefined();
+    expect(detachSpy).toHaveBeenCalledWith(target);
+    expect(getController(target)).toBeUndefined();
+    expect(target.hasAttribute('controller')).toBe(false);
   });
 
   it('removing the bound subtree detaches the native class controller', async () => {
@@ -610,7 +705,7 @@ describe('class binding on not-yet-upgraded custom elements', () => {
   });
 
   it('connectedCallback picks up a parked class and attaches it', async () => {
-    const { TestController, attachSpy } = makeControllerClass();
+    const { TestController, registeredName, attachSpy } = makeControllerClass();
 
     // Simulate what a template binding does for an element that upgrades
     // later: park the class before the element ever connects.
@@ -624,5 +719,6 @@ describe('class binding on not-yet-upgraded custom elements', () => {
     expect(getController(el)).toBeInstanceOf(TestController);
     expect(el[PENDING_CONTROLLER_BINDING]).toBeUndefined();
     expect(el.controller).toBe(TestController);
+    expect(el.getAttribute('controller')).toBe(registeredName);
   });
 });

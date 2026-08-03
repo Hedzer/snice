@@ -40,7 +40,7 @@ html`<div controller=${UserController}></div>`  // native elements work too
 - `@controller('name')` decorator is still required: registers the class, marks it, flushes pending attachments.
 - Re-binding the same class reference is a no-op.
 - Binding a different class (or `null`) detaches the old controller first.
-- While a class is bound, the class binding owns the element — `controller` attribute writes are ignored until unbound.
+- While a class is bound, its decorator name is reflected as `controller="name"` for DOM inspection. This is a read-only diagnostic marker, not a registry attachment; the class reference owns the element until unbound.
 
 Imperative equivalents:
 

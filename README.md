@@ -228,6 +228,11 @@ html`<user-list controller=${RealTimeUserLoader}></user-list>`
 html`<user-list controller=${CachedUserLoader}></user-list>`
 ```
 
+Class bindings reflect the decorator name in the DOM (for example,
+`controller="real-time-user-loader"`) so DevTools still shows which controller
+is active. The class reference remains the attachment authority; the reflected
+attribute is diagnostic and does not cause a second registry attachment.
+
 Registry names still work everywhere, and are the channel for raw HTML markup:
 
 ```html
