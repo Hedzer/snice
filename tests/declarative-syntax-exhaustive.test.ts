@@ -402,6 +402,10 @@ describe('declarative syntax exhaustive behavior', () => {
       'expressions directly in opening tags are not supported'
     ));
     expect(openingTagErrors).toHaveLength(2);
+    expect(String(openingTagErrors[0][1])).toContain('<test-bare-opening-tag-expression>');
+    expect(String(openingTagErrors[0][1])).toContain('Near "<div ${…}>bad</div>"');
+    expect(String(openingTagErrors[1][1])).toContain('<test-removed-dynamic-component-expression>');
+    expect(String(openingTagErrors[1][1])).toContain('Near "<component ${…}>bad</component>"');
     errors.mockRestore();
   });
 });

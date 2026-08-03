@@ -1,7 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
-import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED } from './symbols';
+import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED, READY_HANDLERS_RUNNING } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
 
@@ -308,52 +308,55 @@ export async function attachController(element: HTMLElement, controller: string 
     restoreDirectControllerAttribute(element);
   }
 
-  // Wait for element to be ready. Race against abort (detachController) and
-  // a 30s deadline so a caller that forgets to append the element gets a
-  // clear error instead of an unresolvable promise.
-  const abort = new AbortController();
-  (element as any)[CONTROLLER_ABORT] = abort;
-  const ATTACH_DEADLINE_MS = 30_000;
+  // Normally a controller waits for its host's full initialization. The sole
+  // exception is attachController(host, ...) from that host's own @ready
+  // handler: awaiting ready there would wait on the current handler itself.
+  if (!(element as any)[READY_HANDLERS_RUNNING]) {
+    // Race against abort (detachController) and a 30s deadline so a caller
+    // that forgets to append the element gets a clear error.
+    const abort = new AbortController();
+    (element as any)[CONTROLLER_ABORT] = abort;
+    const ATTACH_DEADLINE_MS = 30_000;
 
-  try {
-    await Promise.race([
-      (element as any).ready,
-      new Promise<never>((_, reject) => {
-        const onAbort = () => {
-          // Tagged so fire-and-forget call sites can tell this designed
-          // teardown path apart from real attach failures and stay quiet.
-          const error = new Error(`attachController("${controllerName}"): aborted before element was ready (likely detached or never connected)`);
-          error.name = 'ControllerAttachAborted';
-          reject(error);
-        };
-        if (abort.signal.aborted) return onAbort();
-        abort.signal.addEventListener('abort', onAbort, { once: true });
-        const timerId = setTimeout(() => reject(
-          new Error(`attachController("${controllerName}"): element did not become ready within ${ATTACH_DEADLINE_MS}ms (did you forget to appendChild it?)`)
-        ), ATTACH_DEADLINE_MS);
-        abort.signal.addEventListener('abort', () => clearTimeout(timerId), { once: true });
-      }),
-    ]);
-  } catch (error) {
-    // Attach never got past `ready` (aborted or deadline). Roll back the stored
-    // references so nothing is left pointing at a controller that never
-    // attached — otherwise a later attach short-circuits as "already attached"
-    // and a detach would run detach() on it.
-    if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
-      if (typeof controller !== 'string') {
-        writeControllerAttribute(element, null);
+    try {
+      await Promise.race([
+        (element as any).ready,
+        new Promise<never>((_, reject) => {
+          const onAbort = () => {
+            // Tagged so fire-and-forget call sites can tell this designed
+            // teardown path apart from real attach failures and stay quiet.
+            const error = new Error(`attachController("${controllerName}"): aborted before element was ready (likely detached or never connected)`);
+            error.name = 'ControllerAttachAborted';
+            reject(error);
+          };
+          if (abort.signal.aborted) return onAbort();
+          abort.signal.addEventListener('abort', onAbort, { once: true });
+          const timerId = setTimeout(() => reject(
+            new Error(`attachController("${controllerName}"): element did not become ready within ${ATTACH_DEADLINE_MS}ms (did you forget to appendChild it?)`)
+          ), ATTACH_DEADLINE_MS);
+          abort.signal.addEventListener('abort', () => clearTimeout(timerId), { once: true });
+        }),
+      ]);
+    } catch (error) {
+      // Attach never got past `ready` (aborted or deadline). Roll back the
+      // stored references so a later attach does not short-circuit against an
+      // instance whose attach() never ran.
+      if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
+        if (typeof controller !== 'string') {
+          writeControllerAttribute(element, null);
+        }
+        delete (element as any)[CONTROLLER_KEY];
+        delete (element as any)[CONTROLLER_NAME_KEY];
+        delete (element as any)[CONTROLLER_OPERATIONS];
+        if (typeof controller !== 'string') {
+          delete (element as any)[DIRECT_CONTROLLER];
+        }
       }
-      delete (element as any)[CONTROLLER_KEY];
-      delete (element as any)[CONTROLLER_NAME_KEY];
-      delete (element as any)[CONTROLLER_OPERATIONS];
-      if (typeof controller !== 'string') {
-        delete (element as any)[DIRECT_CONTROLLER];
+      throw error;
+    } finally {
+      if ((element as any)[CONTROLLER_ABORT] === abort) {
+        delete (element as any)[CONTROLLER_ABORT];
       }
-    }
-    throw error;
-  } finally {
-    if ((element as any)[CONTROLLER_ABORT] === abort) {
-      delete (element as any)[CONTROLLER_ABORT];
     }
   }
 

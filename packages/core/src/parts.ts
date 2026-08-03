@@ -67,6 +67,24 @@ function isLive(value: any): value is LiveValue {
   return value && value._$liveMarker$ === LIVE_MARKER;
 }
 
+function contextualizeTemplatePreparationError(error: unknown, strings: TemplateStringsArray): Error {
+  if (error instanceof Error && /\bNear "[\s\S]*"\.$/.test(error.message)) return error;
+  const message = error instanceof Error ? error.message : String(error);
+  const source = Array.from(strings).join('${…}').replace(/\s+/g, ' ').trim();
+  const tag = /<([a-z][a-z0-9-]*)>/i.exec(message)?.[1];
+  const binding = /binding "([^"]+)"/i.exec(message)?.[1];
+  const clue = tag ? `<${tag}` : binding ?? '';
+  const clueIndex = clue ? source.indexOf(clue) : -1;
+  const center = clueIndex >= 0 ? clueIndex : 0;
+  const start = Math.max(0, center - 40);
+  const end = Math.min(source.length, center + 80);
+  const prefix = start > 0 ? '…' : '';
+  const suffix = end < source.length ? '…' : '';
+  return new Error(`${message} Near "${prefix}${source.slice(start, end)}${suffix}".`, {
+    cause: error
+  });
+}
+
 /**
  * Check if value is a primitive (can be compared with ===)
  */
@@ -559,9 +577,13 @@ function prepareTemplate(result: TemplateResult): Template {
             attrNamesForParts.push('value');
             htmlParts.push(`value="${marker}"`);
           } else {
+            const nearbyTemplate = (
+              str.slice(-40) + '${…}' + (strings[i + 1] ?? '').slice(0, 40)
+            ).replace(/\s+/g, ' ').trim();
             throw new Error(
               'snice: expressions directly in opening tags are not supported; ' +
-              'use an explicit attribute, property, event, class, style, or named spread binding.'
+              'use an explicit attribute, property, event, class, style, or named spread binding. ' +
+              `Near "${nearbyTemplate}".`
             );
           }
         }
@@ -589,7 +611,12 @@ function prepareTemplate(result: TemplateResult): Template {
     template.innerHTML = html;
   }
 
-  const tmpl = new Template(result, template, attrNamesForParts);
+  let tmpl: Template;
+  try {
+    tmpl = new Template(result, template, attrNamesForParts);
+  } catch (error) {
+    throw contextualizeTemplatePreparationError(error, strings);
+  }
   // Cache the template for reuse
   templateCache.set(strings, tmpl);
   return tmpl;

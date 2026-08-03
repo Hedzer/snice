@@ -16,6 +16,16 @@ import { scheduleAutofocus } from './autofocus';
  */
 let strictRenderErrors = false;
 
+function contextualizeRenderError(element: HTMLElement, error: unknown): unknown {
+  const tag = element.tagName?.toLowerCase() || 'element';
+  const message = error instanceof Error ? error.message : String(error);
+  const contextual = new Error(`snice: render failed for <${tag}>: ${message}`, {
+    cause: error
+  });
+  if (error instanceof Error) contextual.name = error.name;
+  return contextual;
+}
+
 export function setStrictRenderErrors(value: boolean): void {
   strictRenderErrors = value;
 }
@@ -299,8 +309,9 @@ function performRender(
     scheduleAutofocus(element);
     if (cleanupError) throw cleanupError;
   } catch (error) {
-    if (strictRenderErrors) throw error;
-    console.error('Error rendering element:', error);
+    const contextual = contextualizeRenderError(element, error);
+    if (strictRenderErrors) throw contextual;
+    console.error('Error rendering element:', contextual);
   } finally {
     (element as any)[RENDER_DEPTH] = depth;
     resolveRendered(element);

@@ -21,6 +21,10 @@ export const DAEMON_STATE = getSymbol('daemon-state');
 export const READY_PROMISE = getSymbol('ready-promise');
 export const READY_RESOLVE = getSymbol('ready-resolve');
 export const READY_REJECT = getSymbol('ready-reject');
+// True only while an element is executing its own @ready handlers. A
+// controller attached to that same host must not await the promise whose
+// settlement depends on the current handler returning.
+export const READY_HANDLERS_RUNNING = getSymbol('ready-handlers-running');
 export const RENDERED_PROMISE = getSymbol('rendered-promise');
 export const RENDERED_RESOLVE = getSymbol('rendered-resolve');
 // Set when a render is requested but dropped because the element was

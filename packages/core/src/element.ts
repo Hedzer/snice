@@ -7,7 +7,7 @@ import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
@@ -17,7 +17,7 @@ import { AppContext } from './types/app-context';
 import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
 import { createDeepReactive } from './reactive';
-import { getRenderRoot } from './render-root';
+import { ensureRenderRoot, getRenderRoot } from './render-root';
 import { getContext as getAppContext } from './context-provider';
 import { resetHostAutofocus, scheduleAutofocus } from './autofocus';
 
@@ -326,6 +326,23 @@ export function applyElementFunctionality(constructor: any) {
 
       applyStyles(this);
 
+      // Delegated @on handlers must bind inside the render root. Styles used
+      // to create that root as a side effect, leaving styleless renderers to
+      // bind on the host before their shadow root existed. Create only for
+      // declarative renderers here so imperative elements that manage their
+      // own shadow root keep their established lifecycle.
+      if (this[RENDER_METHOD]) {
+        try {
+          ensureRenderRoot(this);
+        } catch {
+          // Defer invalid custom-root diagnostics to the normal render path,
+          // where render errors are contextualized and reported consistently.
+          // There is no usable root to bind delegated handlers to in this
+          // invalid configuration, but the initial render below will surface
+          // the author error without escaping connectedCallback.
+        }
+      }
+
       setupEventHandlers(this, this);
       setupResponseHandlers(this, this);
       setupContextHandler(this);
@@ -396,16 +413,21 @@ export function applyElementFunctionality(constructor: any) {
       let readyFailed = false;
       let readyFailure: unknown;
       if (readyHandlers) {
-        for (const handler of readyHandlers) {
-          try {
-            await handler.method.call(this);
-          } catch (error) {
-            console.error(`Error in @ready handler ${handler.methodName}:`, error);
-            if (!readyFailed) {
-              readyFailed = true;
-              readyFailure = error;
+        this[READY_HANDLERS_RUNNING] = true;
+        try {
+          for (const handler of readyHandlers) {
+            try {
+              await handler.method.call(this);
+            } catch (error) {
+              console.error(`Error in @ready handler ${handler.methodName}:`, error);
+              if (!readyFailed) {
+                readyFailed = true;
+                readyFailure = error;
+              }
             }
           }
+        } finally {
+          delete this[READY_HANDLERS_RUNNING];
         }
       }
 

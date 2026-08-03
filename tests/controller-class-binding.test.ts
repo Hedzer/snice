@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
-  element, property, render, html,
+  element, property, ready, render, html,
   controller, attachController, detachController, getController,
   useNativeElementControllers, cleanupNativeElementControllers,
   PENDING_CONTROLLER_BINDING
@@ -55,6 +55,30 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('attachController with a class reference', () => {
+  it('can attach to its own host from an @ready handler without deadlocking', async () => {
+    const { TestController, attachSpy } = makeControllerClass();
+    const hostTag = uniqueTag('class-bind-ready-self');
+
+    @element(hostTag)
+    class ReadySelfHost extends HTMLElement {
+      @ready()
+      async initializeController() {
+        await attachController(this, TestController);
+      }
+    }
+
+    const host = document.createElement(hostTag) as any;
+    document.body.append(host);
+    const outcome = await Promise.race([
+      host.ready.then(() => 'ready'),
+      tick(100).then(() => 'timeout')
+    ]);
+    host.remove();
+
+    expect(outcome).toBe('ready');
+    expect(attachSpy).toHaveBeenCalledWith(host);
+  });
+
   it('attaches a decorated class to a plain element', async () => {
     const { TestController, registeredName, attachSpy } = makeControllerClass();
     const div = document.createElement('div');
