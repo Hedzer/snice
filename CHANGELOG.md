@@ -1,3 +1,20 @@
+# [7.1.0](https://github.com/Hedzer/snice/compare/v7.0.3...v7.1.0) (2026-08-03)
+
+
+### Bug Fixes
+
+* **ai:** surface project guidance after install ([133f17d](https://github.com/Hedzer/snice/commit/133f17d8c1e8090b65c9a352934669cfbf03bdbe))
+* **core:** remove controller event import cycle ([0770c91](https://github.com/Hedzer/snice/commit/0770c912f942a3ab97449044bb1d2a2bea9859ec))
+* **release:** regenerate ignored site artifacts from tracked sources ([e7243f5](https://github.com/Hedzer/snice/commit/e7243f579c390912acfb397c22259f0d2882b19d))
+* **router:** record programmatic navigation history ([dce2627](https://github.com/Hedzer/snice/commit/dce2627137752e63682b4306565c24be160d4178))
+
+
+### Features
+
+* **core:** add app-context daemons ([9b8664c](https://github.com/Hedzer/snice/commit/9b8664cf446d8fcc5564814d8867b755c65c282d))
+* **tooling:** add comprehensive application gauntlet ([5befc28](https://github.com/Hedzer/snice/commit/5befc28379d62a3dfd2d284ee148d4a3239b2658))
+* **tooling:** add local model gauntlet ([b733925](https://github.com/Hedzer/snice/commit/b7339256b316c5b0ea414bdad0c35856415289bf))
+
 ## [7.0.3](https://github.com/Hedzer/snice/compare/v7.0.2...v7.0.3) (2026-08-01)
 
 
