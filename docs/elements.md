@@ -75,6 +75,27 @@ class FocusCard extends HTMLElement { /* ... */ }
 
 See [Queries](./queries.md) for resolving elements inside the render root.
 
+### Native autofocus
+
+Use the platform `autofocus` attribute or property; no focus controller is needed. Snice applies autofocus after the element is ready and the browser has had a frame to paint, which makes it reliable for late-upgraded custom elements and controls rendered inside open or closed shadow roots.
+
+```html
+<!-- A built-in Snice control forwards focus to its native control. -->
+<snice-input autofocus label="Search"></snice-input>
+```
+
+```typescript
+@element('search-panel')
+class SearchPanel extends HTMLElement {
+  @render()
+  template() {
+    return html`<input autofocus type="search">`;
+  }
+}
+```
+
+For a decorated host without its own effective `focus()` implementation, host-level `autofocus` targets the first native focusable control in its render root. Snice does not add `tabindex`. As with native autofocus, the first candidate wins; focus deliberately established by application code (including an `@ready` handler) is preserved. Assigning `element.autofocus = true` after initialization is also supported.
+
 ## Extending Elements
 
 Elements can extend other elements — including Snice's built-in components. The child inherits the parent's properties, watchers, event handlers, lifecycle hooks, and styles, then adds or overrides its own.

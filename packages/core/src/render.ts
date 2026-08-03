@@ -7,6 +7,7 @@ import { TemplateResult, CSSResult, isTemplateResult, isCSSResult } from './temp
 import { TemplateInstance } from './parts';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
 import { ensureRenderRoot } from './render-root';
+import { scheduleAutofocus } from './autofocus';
 
 /**
  * When true, render errors are rethrown instead of logged, so tests and dev
@@ -221,6 +222,7 @@ function performRender(
       // `once` works without pretending the string tree is a TemplateInstance.
       (element as any)[RENDER_INSTANCE] = null;
       flushRenderCallbacks(element);
+      scheduleAutofocus(element);
       return;
     }
 
@@ -235,6 +237,7 @@ function performRender(
     if (instance && instance.isSameTemplate(result.strings)) {
       instance.update(result.values);
       flushRenderCallbacks(element);
+      scheduleAutofocus(element);
       return;
     }
 
@@ -293,6 +296,7 @@ function performRender(
       cleanupError = error;
     }
     flushRenderCallbacks(element);
+    scheduleAutofocus(element);
     if (cleanupError) throw cleanupError;
   } catch (error) {
     if (strictRenderErrors) throw error;

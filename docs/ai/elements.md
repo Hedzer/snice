@@ -81,6 +81,16 @@ class FocusCard extends HTMLElement { /* ... */ }
 - `createRenderRoot()` override may return the host element or a `ShadowRoot` for a custom policy.
 - See [Queries](queries.md) for resolving elements inside the render root.
 
+### Native `autofocus`
+
+- Use native `autofocus`, never a framework-only `focus` attribute or a timing controller.
+- Snice processes it after `ready` and one animation frame, including late upgrades and native controls rendered inside open/closed shadow roots.
+- Host form controls work directly: `<snice-input autofocus>`.
+- A native descendant in an `@render` template works directly: `<input autofocus>`.
+- If an autofocus host's `focus()` has no effect, Snice focuses its first native focusable render-root descendant without adding `tabindex`.
+- First candidate wins. Existing deliberate focus, including focus set by `@ready`, is preserved.
+- Setting the native property after initialization works: `element.autofocus = true`.
+
 ## Extending Elements
 
 Elements can extend other elements, including Snice's built-in components. Child inherits parent's properties, watchers, event handlers, lifecycle hooks, and styles, then adds/overrides its own.

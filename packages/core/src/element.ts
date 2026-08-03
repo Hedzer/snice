@@ -19,6 +19,7 @@ import { RouteParams } from './types/route-params';
 import { createDeepReactive } from './reactive';
 import { getRenderRoot } from './render-root';
 import { getContext as getAppContext } from './context-provider';
+import { resetHostAutofocus, scheduleAutofocus } from './autofocus';
 
 /**
  * Interface that layout components must implement to receive updates
@@ -91,10 +92,13 @@ export function applyElementFunctionality(constructor: any) {
   const originalDisconnectedCallback = constructor.prototype.disconnectedCallback;
   const originalAttributeChangedCallback = constructor.prototype.attributeChangedCallback;
     
-    // Add 'controller' and all reflected properties to observed attributes
+    // Add framework-managed native/controller attributes and all reflected properties
     const observedAttributes = constructor.observedAttributes || [];
     if (!observedAttributes.includes('controller')) {
       observedAttributes.push('controller');
+    }
+    if (!observedAttributes.includes('autofocus')) {
+      observedAttributes.push('autofocus');
     }
     
     // Add all properties to observed attributes (skip attribute: false)
@@ -248,6 +252,7 @@ export function applyElementFunctionality(constructor: any) {
           this[PENDING_RECONNECT_RENDER] = false;
           requestRender(this);
         }
+        scheduleAutofocus(this);
         return;
       }
 
@@ -416,6 +421,7 @@ export function applyElementFunctionality(constructor: any) {
         this[READY_RESOLVE] = null;
         this[READY_REJECT] = null;
       }
+      scheduleAutofocus(this);
     };
     
     constructor.prototype.disconnectedCallback = async function() {
@@ -469,7 +475,7 @@ export function applyElementFunctionality(constructor: any) {
       clearLifecycleTimers(this, ADOPTED_TIMERS);
     };
     
-    constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string, newValue: string) {
+    constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string | null, newValue: string | null) {
       originalAttributeChangedCallback?.call(this, name, oldValue, newValue);
 
       if (name === 'controller') {
@@ -482,6 +488,11 @@ export function applyElementFunctionality(constructor: any) {
         }
         this.controller = newValue;
         return;
+      }
+
+      if (name === 'autofocus') {
+        if (newValue === null) resetHostAutofocus(this);
+        else if (this[INITIALIZED]) scheduleAutofocus(this);
       }
 
       const properties = constructor[PROPERTIES];
