@@ -1,7 +1,7 @@
 {
   "name": "snice",
   "description": "Build, modify, debug, and review applications using the Snice web-component framework and its React adapters",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "author": {
     "name": "Hedzer"
   },

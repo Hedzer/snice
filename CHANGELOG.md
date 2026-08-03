@@ -1,3 +1,10 @@
+## [7.1.1](https://github.com/Hedzer/snice/compare/v7.1.0...v7.1.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **core:** reflect class controller names in DOM ([72f6da3](https://github.com/Hedzer/snice/commit/72f6da31c7e203cdc06325cb9988c77d45c35654))
+
 # [7.1.0](https://github.com/Hedzer/snice/compare/v7.0.3...v7.1.0) (2026-08-03)
 
 
