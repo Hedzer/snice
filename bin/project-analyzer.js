@@ -19,6 +19,7 @@ const REACT_EXPORTS = new Set(ANALYZER_CONTRACTS.react.exports);
 const REACT_TYPE_EXPORTS = new Set(ANALYZER_CONTRACTS.react.typeExports ?? []);
 const REACT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.react.modulePaths ?? []);
 const COMPONENT_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentModulePaths);
+const COMPONENT_UTILITY_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentUtilityModulePaths ?? []);
 const COMPONENT_TYPE_MODULE_PATHS = new Set(ANALYZER_CONTRACTS.componentTypeModulePaths);
 const COMPONENT_RECOMMENDATIONS = Object.freeze({
   modal: componentRecommendation('modal'),
@@ -315,6 +316,117 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/escaped-quote-in-attribute',
+    severity: 'error',
+    category: 'rendering',
+    description: 'Reject backslash-escaped HTML attribute quotes inside html templates.',
+    check(context) {
+      const htmlNames = localsFor(context.provenance.rootBindings, 'html');
+      for (const finding of findEscapedHtmlAttributeQuotes(context.source, htmlNames)) {
+        context.report(finding.index, {
+          message: `HTML attributes do not support backslash-escaped ${finding.quote} quotes; the quote closes the attribute before the next template expression.`,
+          fix: 'Bind the complete value as a property/attribute expression, use the other quote style where possible, or encode a literal quote as &quot; / &#39;.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/imperative-reseed-instead-of-live',
+    severity: 'suggestion',
+    category: 'rendering',
+    description: 'Recommend live property bindings over imperative writes through @query references.',
+    check(context) {
+      for (const declaration of findSniceElementClasses(context.source)) {
+        if (!/@render\b/.test(declaration.body)) continue;
+        for (const query of declaration.body.matchAll(/@query\s*\([^)]*\)\s*(?:(?:public|private|protected|readonly|declare)\s+)*([A-Za-z_$][\w$]*)/g)) {
+          const referencePattern = new RegExp(`\\bthis\\.${escapeRegExp(query[1])}\\b`, 'g');
+          const references = [...declaration.body.matchAll(referencePattern)];
+          const writes = references.map(reference => {
+            const suffix = declaration.body.slice(reference.index + reference[0].length);
+            const propertyWrite = /^\s*\.(value|start|end)\s*=(?!=|>)/.exec(suffix);
+            return propertyWrite ? { reference, property: propertyWrite[1] } : null;
+          });
+          if (!writes.length || writes.some(write => write === null)) continue;
+          const firstWrite = writes[0];
+          context.report(declaration.bodyStart + firstWrite.reference.index, {
+            message: `${query[1]}.${firstWrite.property} is reseeded imperatively even though this class has a declarative render.`,
+            fix: `Bind .${firstWrite.property}=\${live(state)} in the owning template so unchanged state can be reasserted on render. Review docs/ai/bindings.md.`
+          });
+        }
+      }
+    }
+  },
+  {
+    id: 'snice/paint-method-smell',
+    severity: 'suggestion',
+    category: 'rendering',
+    description: 'Flag once-only renders paired with imperative repaint mutations.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findSniceElementClasses(context.source)) {
+        if (!/@render\s*\(\s*\{[^}]*\bonce\s*:\s*true/.test(declaration.body)) continue;
+        const mutation = /\.hidden\s*=|\.textContent\s*=|\.replaceChildren\s*\(/.exec(declaration.body);
+        if (!mutation) continue;
+        context.report(declaration.bodyStart + mutation.index, {
+          message: `${declaration.name} combines @render({ once: true }) with imperative repaint mutations.`,
+          fix: 'Use ordinary differential @render() with @property/@state inputs; reserve once:true for genuinely static output.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/dom-building-in-element',
+    severity: 'suggestion',
+    category: 'rendering',
+    description: 'Recommend template composition instead of hand-built DOM in declaratively rendered elements.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findSniceElementClasses(context.source)) {
+        if (!/@render\b/.test(declaration.body)) continue;
+        const mutation = /\bdocument\.createElement\s*\(|\.replaceChildren\s*\(/.exec(declaration.body);
+        if (!mutation) continue;
+        context.report(declaration.bodyStart + mutation.index, {
+          message: `${declaration.name} has @render but also builds or replaces DOM imperatively.`,
+          fix: 'Express the nodes in html templates (use map()/repeat() for lists) so lifecycle, bindings, and updates remain declarative.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/raf-focus',
+    severity: 'suggestion',
+    category: 'lifecycle',
+    description: 'Recommend native autofocus or readiness promises over timer-based focus.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const match of context.source.matchAll(/\b(requestAnimationFrame|setTimeout)\s*\([\s\S]{0,240}?\.focus\s*\(/g)) {
+        context.report(match.index, {
+          message: `${match[1]}(...focus()) is a timing workaround for element readiness.`,
+          fix: 'For initial focus, use the native autofocus attribute/property. For imperative focus, await the target\'s ready/rendered promise before calling focus(). Review docs/ai/elements.md.'
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/ambiguous-delegation-selector',
+    severity: 'warning',
+    category: 'events',
+    description: 'Warn when tag-only @on delegation can match multiple instances in one element template.',
+    check(context) {
+      for (const declaration of findSniceElementClasses(context.source)) {
+        for (const handler of declaration.body.matchAll(/@on\s*\(\s*(?:\[[^\]]*\]|['"][^'"]+['"])\s*,\s*['"]([a-z][a-z0-9-]*)['"]/g)) {
+          const tagName = handler[1];
+          const instances = [...declaration.body.matchAll(new RegExp(`<${escapeRegExp(tagName)}(?=\\s|/?>)`, 'g'))];
+          if (instances.length < 2) continue;
+          context.report(declaration.bodyStart + handler.index, {
+            message: `@on delegates to tag-only selector "${tagName}", but ${declaration.name}'s templates contain ${instances.length} matching instances.`,
+            fix: 'Add a role-specific class/data attribute to the intended instance and delegate to that selector, or handle each instance directly in its template.'
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/observe-target',
     severity: 'error',
     category: 'observers',
@@ -361,6 +473,7 @@ const RULE_DEFINITIONS = [
         }
         if (
           COMPONENT_MODULE_PATHS.has(path) ||
+          COMPONENT_UTILITY_MODULE_PATHS.has(path) ||
           ['snice/components/icons', 'snice/components/custom-elements', 'snice/components/theme/theme.css'].includes(path)
         ) continue;
 
@@ -1140,6 +1253,30 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
+    id: 'snice/template-reads-nonreactive-field',
+    severity: 'warning',
+    category: 'rendering',
+    description: 'Warn when a render method reads a mutable local field that cannot schedule a repaint.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/prop-binding-to-undecorated-member',
+    severity: 'warning',
+    category: 'rendering',
+    description: 'Warn when a local custom-element property binding targets a non-reactive field or accessor.',
+    projectOnly: true,
+    check() {}
+  },
+  {
+    id: 'snice/duplicated-stale-guard',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Recommend extracting stale-response guarded fetch plumbing repeated across files.',
+    projectOnly: true,
+    check() {}
+  },
+  {
     id: 'snice/unused-dependency',
     severity: 'error',
     category: 'configuration',
@@ -1254,6 +1391,9 @@ export function analyzeProject(files) {
   const routerConstructions = [];
   const architectureDeclarations = [];
   const pageClasses = [];
+  const reactiveRenderContracts = new Map();
+  const localElementContracts = new Map();
+  const staleGuards = [];
   let usesSnice = false;
 
   for (const file of normalized) {
@@ -1263,6 +1403,9 @@ export function analyzeProject(files) {
       continue;
     }
     const analyzable = maskComments(file.source);
+    for (const guard of analyzable.matchAll(/\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*\+\+this\.([A-Za-z_$][\w$]*(?:Id|Version|Token|Generation))\b([\s\S]{0,2000}?)\b(?:\1\s*!==?\s*this\.\2|this\.\2\s*!==?\s*\1)/g)) {
+      staleGuards.push({ file, index: guard.index, field: guard[2] });
+    }
     const provenance = buildSourceProvenance(analyzable);
     routerConstructions.push(
       ...findRouterConstructions(analyzable, localsFor(provenance.rootBindings, 'Router'))
@@ -1278,6 +1421,22 @@ export function analyzeProject(files) {
         const architectural = { ...declaration, ...convention, file };
         architectureDeclarations.push(architectural);
         if (convention.decorator === 'page') pageClasses.push(architectural);
+        if (convention.decorator === 'page' || convention.decorator === 'element') {
+          reactiveRenderContracts.set(`${file.filename}:${declaration.bodyStart}`, {
+            ...architectural,
+            members: inspectElementMembers(declaration.body)
+          });
+        }
+        if (convention.decorator === 'element') {
+          const tagName = findElementDecoratorTag(analyzable, declaration.index);
+          if (tagName) {
+            localElementContracts.set(tagName, {
+              ...architectural,
+              tagName,
+              members: reactiveRenderContracts.get(`${file.filename}:${declaration.bodyStart}`).members
+            });
+          }
+        }
       }
     }
     for (const match of analyzable.matchAll(/@request\(\s*['"]([^'"]+)['"]\s*(?:,\s*\{([^}]*)\})?/g)) {
@@ -1530,6 +1689,81 @@ export function analyzeProject(files) {
       line: location.line,
       column: location.column
     });
+  }
+
+  for (const contract of reactiveRenderContracts.values()) {
+    const reportedFields = new Set();
+    for (const method of findDecoratedClassMethods(contract.body, 'render', contract.bodyStart)) {
+      for (const read of method.body.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\b/g)) {
+        const name = read[1];
+        if (
+          reportedFields.has(name) ||
+          !contract.members.fields.has(name) ||
+          contract.members.readonly.has(name) ||
+          contract.members.functionFields.has(name) ||
+          contract.members.reactive.has(name) ||
+          isDirectMemberWrite(method.body, read.index, read[0].length)
+        ) continue;
+        reportedFields.add(name);
+        const index = method.bodyStart + read.index;
+        const location = sourceLocation(contract.file.source, index);
+        diagnostics.push({
+          severity: 'warning',
+          ruleId: 'snice/template-reads-nonreactive-field',
+          message: `${contract.name} renders this.${name}, but ${name} is a mutable plain field and changes cannot schedule a repaint.`,
+          fix: `Decorate ${name} with @property() for public input or @state() for internal state, or make it readonly if it is intentionally immutable. Review docs/ai/properties.md.`,
+          file: contract.file.filename,
+          line: location.line,
+          column: location.column
+        });
+      }
+    }
+  }
+
+  if (localElementContracts.size) {
+    const tags = [...localElementContracts.keys()];
+    for (const file of normalized) {
+      if (!/\.[cm]?[jt]sx?$/.test(file.filename)) continue;
+      const analyzable = maskComments(file.source);
+      for (const opening of findOpeningTags(analyzable, tags)) {
+        const contract = localElementContracts.get(opening.name);
+        for (const binding of opening.text.matchAll(/\.([A-Za-z_$][\w$]*)\s*=/g)) {
+          const name = binding[1];
+          if (
+            !contract ||
+            contract.members.reactive.has(name) ||
+            contract.members.invalidatingAccessors.has(name) ||
+            (!contract.members.fields.has(name) && !contract.members.accessors.has(name))
+          ) continue;
+          const index = opening.index + binding.index;
+          const location = sourceLocation(file.source, index);
+          diagnostics.push({
+            severity: 'warning',
+            ruleId: 'snice/prop-binding-to-undecorated-member',
+            message: `.${name} assigns to <${opening.name}>.${name}, but that local member has no @property() or @state() decorator, so assignment alone cannot schedule its render.`,
+            fix: `Decorate ${name} with @property({ attribute: false }) for a JS-only public input (or @state() if it is internal), or make its setter explicitly invalidate the element.`,
+            file: file.filename,
+            line: location.line,
+            column: location.column
+          });
+        }
+      }
+    }
+  }
+
+  if (new Set(staleGuards.map(guard => guard.file.filename)).size >= 2) {
+    for (const guard of staleGuards) {
+      const location = sourceLocation(guard.file.source, guard.index);
+      diagnostics.push({
+        severity: 'suggestion',
+        ruleId: 'snice/duplicated-stale-guard',
+        message: `A ${guard.field} stale-response guard is repeated across project files.`,
+        fix: 'Extract the shared fetch/loading/error/stale-response lifecycle into a controller under src/controllers/. Review docs/ai/controllers.md.',
+        file: guard.file.filename,
+        line: location.line,
+        column: location.column
+      });
+    }
   }
 
   const pageControllerReported = new Set();
@@ -1828,6 +2062,134 @@ function findDecoratedClasses(source, decoratorName) {
     });
   }
   return declarations;
+}
+
+function findSniceElementClasses(source) {
+  const seen = new Set();
+  const declarations = [];
+  for (const decoratorName of ['element', 'page']) {
+    for (const declaration of findDecoratedClasses(source, decoratorName)) {
+      if (seen.has(declaration.bodyStart)) continue;
+      seen.add(declaration.bodyStart);
+      declarations.push(declaration);
+    }
+  }
+  return declarations;
+}
+
+function findElementDecoratorTag(source, index) {
+  return /^@element\s*\(\s*['"]([^'"]+)['"]/.exec(source.slice(index, index + 500))?.[1] ?? null;
+}
+
+function inspectElementMembers(body) {
+  const code = blankStringContents(maskComments(body));
+  const depths = new Uint16Array(code.length + 1);
+  let depth = 0;
+  for (let index = 0; index < code.length; index++) {
+    depths[index] = depth;
+    if (code[index] === '{') depth++;
+    else if (code[index] === '}') depth = Math.max(0, depth - 1);
+  }
+
+  const fields = new Set();
+  const accessors = new Set();
+  const readonly = new Set();
+  const functionFields = new Set();
+  const reactive = new Set();
+  const fieldPattern = /(?:^|\n)\s*((?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*)([A-Za-z_$][\w$]*)\s*[!?]?\s*(?::[^=\n;{]+)?\s*(?==|;)/g;
+  for (const match of code.matchAll(fieldPattern)) {
+    const nameIndex = match.index + match[0].lastIndexOf(match[2]);
+    if (depths[nameIndex] !== 0) continue;
+    fields.add(match[2]);
+    if (/\breadonly\b/.test(match[1])) readonly.add(match[2]);
+  }
+  const functionFieldPattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*([A-Za-z_$][\w$]*)\s*[!?]?\s*(?::[^=\n;{]+)?\s*=\s*(?:async\s*)?(?:\([^\n)]*\)|[A-Za-z_$][\w$]*)\s*=>/g;
+  for (const match of code.matchAll(functionFieldPattern)) {
+    const nameIndex = match.index + match[0].indexOf(match[1]);
+    if (depths[nameIndex] === 0) functionFields.add(match[1]);
+  }
+  const accessorPattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*(?:get|set|accessor)\s+([A-Za-z_$][\w$]*)\b/g;
+  for (const match of code.matchAll(accessorPattern)) {
+    const nameIndex = match.index + match[0].lastIndexOf(match[1]);
+    if (depths[nameIndex] === 0) accessors.add(match[1]);
+  }
+  const decoratedPattern = /@(property|state)\b/g;
+  for (const match of code.matchAll(decoratedPattern)) {
+    if (depths[match.index] !== 0) continue;
+    let cursor = match.index + match[0].length;
+    while (/\s/.test(code[cursor] ?? '')) cursor++;
+    if (code[cursor] === '(') {
+      const close = findMatchingDelimiter(code, cursor, '(', ')');
+      if (close < 0) continue;
+      cursor = close + 1;
+    }
+    const declaration = /^\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*(?:accessor\s+)?([A-Za-z_$][\w$]*)/.exec(code.slice(cursor));
+    if (declaration) reactive.add(declaration[1]);
+  }
+
+  // An undecorated native-style accessor can still be reactive when its
+  // setter updates decorated backing state (directly or through one helper),
+  // or explicitly invalidates the host. Do not tell authors to redecorate
+  // those deliberate APIs.
+  const invalidatingAccessors = new Set();
+  const methods = new Map(findClassMethods(body).map(method => [method.name, method.body]));
+  const reactiveAlternation = [...reactive].map(escapeRegExp).join('|');
+  const writesReactiveState = methodBody => reactiveAlternation &&
+    new RegExp(`\\bthis\\.(?:${reactiveAlternation})\\s*(?:=|\\+\\+|--)`).test(methodBody);
+  const invalidates = methodBody => {
+    if (/\bthis\.(?:invalidate|renderNow)\s*\(/.test(methodBody) || writesReactiveState(methodBody)) return true;
+    for (const call of methodBody.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*\(/g)) {
+      const calledBody = methods.get(call[1]);
+      if (calledBody && writesReactiveState(calledBody)) return true;
+    }
+    return false;
+  };
+  const setterPattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|override)\s+)*set\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/g;
+  for (const match of code.matchAll(setterPattern)) {
+    const nameIndex = match.index + match[0].indexOf(match[1]);
+    if (depths[nameIndex] !== 0) continue;
+    const open = match.index + match[0].lastIndexOf('{');
+    const close = findMatchingDelimiter(code, open, '{', '}');
+    if (close >= 0 && invalidates(body.slice(open + 1, close))) invalidatingAccessors.add(match[1]);
+  }
+
+  return { fields, accessors, readonly, functionFields, reactive, invalidatingAccessors };
+}
+
+function findDecoratedClassMethods(body, decoratorName, bodyStart = 0) {
+  const code = maskComments(body);
+  const methods = [];
+  const pattern = new RegExp(`@${escapeRegExp(decoratorName)}\\b`, 'g');
+  for (const match of code.matchAll(pattern)) {
+    let cursor = match.index + match[0].length;
+    while (/\s/.test(code[cursor] ?? '')) cursor++;
+    if (code[cursor] === '(') {
+      const close = findMatchingDelimiter(code, cursor, '(', ')');
+      if (close < 0) continue;
+      cursor = close + 1;
+    }
+    const signature = /^\s*(?:(?:public|private|protected|static|override)\s+)*(?:async\s+)?([A-Za-z_$][\w$]*)\s*\(/.exec(code.slice(cursor));
+    if (!signature) continue;
+    const parametersOpen = cursor + signature.index + signature[0].lastIndexOf('(');
+    const parametersClose = findMatchingDelimiter(code, parametersOpen, '(', ')');
+    if (parametersClose < 0) continue;
+    const methodOpen = code.indexOf('{', parametersClose);
+    if (methodOpen < 0) continue;
+    const methodClose = findMatchingDelimiter(code, methodOpen, '{', '}');
+    if (methodClose < 0) continue;
+    methods.push({
+      name: signature[1],
+      bodyStart: bodyStart + methodOpen + 1,
+      body: body.slice(methodOpen + 1, methodClose)
+    });
+  }
+  return methods;
+}
+
+function isDirectMemberWrite(body, index, length) {
+  const before = body.slice(Math.max(0, index - 3), index);
+  const after = body.slice(index + length).trimStart();
+  return /(?:\+\+|--)\s*$/.test(before) || /^(?:\+\+|--|(?:[+\-*/%&|^]|\?\?)?=(?!=|>))/.test(after);
 }
 
 function findClassMethods(body, bodyStart = 0) {
@@ -2860,6 +3222,55 @@ function findOpeningTags(source, names) {
     });
   }
   return openings;
+}
+
+/**
+ * Find `\\"` / `\\'` used to "escape" the active HTML attribute delimiter
+ * inside a Snice html`` template. JavaScript cooks away that backslash, while
+ * HTML has no backslash escape, so the browser sees an early closing quote.
+ */
+function findEscapedHtmlAttributeQuotes(source, htmlNames) {
+  if (!htmlNames.length) return [];
+  const names = [...new Set(htmlNames)].map(escapeRegExp).join('|');
+  const starts = new RegExp(`\\b(?:${names})\\s*\``, 'g');
+  const findings = [];
+
+  for (const start of source.matchAll(starts)) {
+    if (source[start.index - 1] === '.') continue;
+    let inTag = false;
+    let attributeQuote = '';
+    for (let index = start.index + start[0].length; index < source.length; index++) {
+      const character = source[index];
+      const next = source[index + 1];
+
+      if (character === '\\') {
+        if (inTag && attributeQuote && next === attributeQuote) {
+          findings.push({ index, quote: attributeQuote });
+          break;
+        }
+        index++;
+        continue;
+      }
+      if (character === '`') break;
+      if (character === '$' && next === '{') {
+        const close = findMatchingDelimiter(source, index + 1, '{', '}');
+        if (close < 0) break;
+        index = close;
+        continue;
+      }
+      if (!inTag) {
+        if (character === '<' && /[A-Za-z!/?]/.test(next ?? '')) inTag = true;
+        continue;
+      }
+      if (attributeQuote) {
+        if (character === attributeQuote) attributeQuote = '';
+        continue;
+      }
+      if (character === '"' || character === "'") attributeQuote = character;
+      else if (character === '>') inTag = false;
+    }
+  }
+  return findings;
 }
 
 function findOpeningTagEnd(source, start) {

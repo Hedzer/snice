@@ -102,6 +102,25 @@ describe('Snice project analyzer API', () => {
     ]);
   });
 
+  it('rejects backslash-escaped quotes inside html attribute values', () => {
+    const invalid = [
+      "import { html } from 'snice';",
+      'const view = html`<user-card description="say \\"${query}\\""></user-card>`;'
+    ].join('\n');
+    expect(
+      analyzeSource(invalid, 'src/view.ts').map(diagnostic => diagnostic.ruleId)
+    ).toContain('snice/escaped-quote-in-attribute');
+
+    const valid = [
+      "import { html } from 'snice';",
+      'const view = html`<user-card .description=${`say "${query}"`}></user-card>`;'
+    ].join('\n');
+    expect(
+      analyzeSource(valid, 'src/view.ts')
+        .filter(diagnostic => diagnostic.ruleId === 'snice/escaped-quote-in-attribute')
+    ).toEqual([]);
+  });
+
   it('does not report examples that only appear in comments', () => {
     const source = [
       "// import { page } from 'snice';",
@@ -698,6 +717,160 @@ describe('router construction and project architecture guidance', () => {
       expect.objectContaining({ id: 'snice/recommend-project-structure', severity: 'suggestion', category: 'architecture' }),
       expect.objectContaining({ id: 'snice/recommend-page-controller', severity: 'suggestion', category: 'architecture' })
     ]));
+  });
+});
+
+describe('local reactive contract checks', () => {
+  const byRule = (files: Record<string, string>, ruleId: string) =>
+    analyzeProject(files).filter(diagnostic => diagnostic.ruleId === ruleId);
+
+  it('flags render reads from mutable plain fields but not reactive or readonly fields', () => {
+    const diagnostics = byRule({
+      'src/components/result-list.ts': [
+        "@element('result-list')",
+        'class ResultList extends HTMLElement {',
+        '  items: string[] = [];',
+        '  readonly heading = "Results";',
+        '  handleSelect = () => this.items[0];',
+        '  @state() selected = 0;',
+        '  @render() template() {',
+        '    return html`<h2>${this.heading}</h2><button @click=${this.handleSelect}>${this.items.length}:${this.selected}</button>`;',
+        '  }',
+        '}'
+      ].join('\n')
+    }, 'snice/template-reads-nonreactive-field');
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('this.items');
+  });
+
+  it('checks routed @page classes as render owners too', () => {
+    const diagnostics = byRule({
+      'src/pages/results-page.ts': [
+        "@page({ tag: 'results-page', routes: ['/results'] })",
+        'class ResultsPage extends HTMLElement {',
+        '  rows: string[] = [];',
+        '  @render() template() { return html`<p>${this.rows.length}</p>`; }',
+        '}'
+      ].join('\n')
+    }, 'snice/template-reads-nonreactive-field');
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('this.rows');
+  });
+
+  it('flags property bindings to local undecorated fields and accessors', () => {
+    const diagnostics = byRule({
+      'src/components/result-list.ts': [
+        "@element('result-list')",
+        'class ResultList extends HTMLElement {',
+        '  items: string[] = [];',
+        '  get filter() { return "all"; }',
+        '  set filter(value: string) {}',
+        '  @property({ attribute: false }) selected: string[] = [];',
+        '  @render() template() { return html`<p>${this.items.length}</p>`; }',
+        '}'
+      ].join('\n'),
+      'src/pages/results-page.ts': [
+        'const view = html`<result-list',
+        '  .items=${items}',
+        '  .filter=${filter}',
+        '  .selected=${selected}',
+        '></result-list>`;'
+      ].join('\n')
+    }, 'snice/prop-binding-to-undecorated-member');
+
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.map(diagnostic => diagnostic.message)).toEqual(expect.arrayContaining([
+      expect.stringContaining('.items'),
+      expect.stringContaining('.filter')
+    ]));
+  });
+
+  it('accepts a custom accessor that invalidates through reactive backing state', () => {
+    const diagnostics = byRule({
+      'src/components/native-like-input.ts': [
+        "@element('native-like-input')",
+        'class NativeLikeInput extends HTMLElement {',
+        '  @state() private valueState = "";',
+        '  get value() { return this.valueState; }',
+        '  set value(next: string) { this.setValue(next); }',
+        '  private setValue(next: string) { this.valueState = next; }',
+        '  @render() template() { return html`<span>${this.valueState}</span>`; }',
+        '}'
+      ].join('\n'),
+      'src/pages/form-page.ts': 'html`<native-like-input .value=${name}></native-like-input>`;'
+    }, 'snice/prop-binding-to-undecorated-member');
+
+    expect(diagnostics).toEqual([]);
+  });
+});
+
+describe('declarative architecture smell checks', () => {
+  it('detects imperative reseeding, once-painting, DOM building, and timer focus', () => {
+    const source = [
+      "import { element, html, query, render } from 'snice';",
+      "@element('legacy-panel')",
+      'class LegacyPanel extends HTMLElement {',
+      "  @query('input') seedInput!: HTMLInputElement;",
+      "  @query('input') input!: HTMLInputElement;",
+      '  @render({ once: true }) template() { return html`<input>`; }',
+      '  paint() {',
+      '    this.seedInput.value = "seed";',
+      '    this.input.hidden = false;',
+      '    const option = document.createElement("option");',
+      '    this.input.replaceChildren(option);',
+      '    requestAnimationFrame(() => this.input.focus());',
+      '  }',
+      '}'
+    ].join('\n');
+    const ids = analyzeSource(source, 'src/components/legacy-panel.ts')
+      .map(diagnostic => diagnostic.ruleId);
+    expect(ids).toEqual(expect.arrayContaining([
+      'snice/imperative-reseed-instead-of-live',
+      'snice/paint-method-smell',
+      'snice/dom-building-in-element',
+      'snice/raf-focus'
+    ]));
+  });
+
+  it('warns when tag-only delegation can match two instances', () => {
+    const source = [
+      "@element('range-page')",
+      'class RangePage extends HTMLElement {',
+      "  @on('daterange-change', 'snice-date-range-picker') changed() {}",
+      '  @render() template() {',
+      '    return html`<snice-date-range-picker></snice-date-range-picker>',
+      '      <snice-modal><snice-date-range-picker></snice-date-range-picker></snice-modal>`;',
+      '  }',
+      '}'
+    ].join('\n');
+    const diagnostics = analyzeSource(source, 'src/pages/range-page.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/ambiguous-delegation-selector');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('2 matching instances');
+  });
+
+  it('detects stale-response guards only when repeated across files', () => {
+    const guarded = (name: string) => [
+      `class ${name} {`,
+      '  requestVersion = 0;',
+      '  async load() {',
+      '    const version = ++this.requestVersion;',
+      '    const response = await fetch("/api/data");',
+      '    if (version !== this.requestVersion) return;',
+      '    return response.json();',
+      '  }',
+      '}'
+    ].join('\n');
+    const one = analyzeProject({ 'src/pages/a-page.ts': guarded('A') })
+      .filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
+    expect(one).toEqual([]);
+    const two = analyzeProject({
+      'src/pages/a-page.ts': guarded('A'),
+      'src/pages/b-page.ts': guarded('B')
+    }).filter(diagnostic => diagnostic.ruleId === 'snice/duplicated-stale-guard');
+    expect(two).toHaveLength(2);
   });
 });
 

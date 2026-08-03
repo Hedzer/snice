@@ -109,6 +109,28 @@ export function buildAnalyzerContracts(root = projectRoot) {
     .map(name => `snice/react/${name.slice(0, -'.d.ts'.length)}`)]
     .sort();
   const componentModulePaths = [...new Set(Object.values(components).map(component => component.modulePath))].sort();
+  const wipComponents = readWipComponents(resolve(root, 'packages/components/.wip'));
+  const componentUtilityModulePaths = walkFiles(componentSourcePath)
+    .map(path => ({
+      path,
+      sourceRelative: relative(componentSourcePath, path).replaceAll('\\', '/')
+    }))
+    .filter(({ sourceRelative }) => {
+      const name = sourceRelative.split('/').at(-1) ?? '';
+      const family = sourceRelative.split('/')[0];
+      return (
+        name.endsWith('.ts') &&
+        !name.endsWith('.d.ts') &&
+        !name.endsWith('.types.ts') &&
+        !name.endsWith('.stories.ts') &&
+        !name.includes('demo') &&
+        !name.includes('controller') &&
+        !wipComponents.has(family)
+      );
+    })
+    .map(({ sourceRelative }) => `snice/components/${sourceRelative.slice(0, -3)}`)
+    .filter(path => !componentModulePaths.includes(path))
+    .sort();
   const componentTypeModulePaths = walkFiles(componentSourcePath)
     .filter(path => path.endsWith('.types.ts'))
     .map(path => {
@@ -126,17 +148,21 @@ export function buildAnalyzerContracts(root = projectRoot) {
       'adapters/react/index.d.ts',
       'adapters/react/components.ts',
       'adapters/react/*.tsx',
+      'packages/components/.wip',
+      'packages/components/src/**/*.ts',
       'packages/components/src/**/*.types.ts'
     ],
     stats: {
       customElements: Object.keys(components).length,
       componentFamilies: new Set(Object.values(components).map(component => component.family)).size,
       componentModules: componentModulePaths.length,
+      componentUtilityModules: componentUtilityModulePaths.length,
       reactWrappers: Object.keys(reactWrappers).length,
       rootExports: rootExports.length
     },
     rootExports,
     componentModulePaths,
+    componentUtilityModulePaths,
     componentTypeModulePaths,
     components: sortObject(components),
     react: {
@@ -305,6 +331,14 @@ function walkFiles(directory) {
     else files.push(path);
   }
   return files;
+}
+
+function readWipComponents(path) {
+  if (!existsSync(path)) return new Set();
+  return new Set(readFileSync(path, 'utf8')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#')));
 }
 
 function collectDecoratedProperties(sourcePath, className) {

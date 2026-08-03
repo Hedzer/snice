@@ -65,6 +65,19 @@ describe('generated analyzer contracts', () => {
     ).toContain('snice/component-import-path');
   });
 
+  it('accepts released component utility modules documented for code-block', () => {
+    for (const modulePath of [
+      'snice/components/code-block/highlighter',
+      'snice/components/code-block/formatters/json'
+    ]) {
+      expect(ANALYZER_CONTRACTS.componentUtilityModulePaths).toContain(modulePath);
+      expect(
+        analyzeSource(`import { helper } from '${modulePath}';`, 'src/code.ts')
+          .filter(diagnostic => diagnostic.ruleId === 'snice/component-import-path')
+      ).toEqual([]);
+    }
+  });
+
   it('accepts every generated package-root export', () => {
     for (const exports of chunks(ANALYZER_CONTRACTS.rootExports, 30)) {
       const source = `import type { ${exports.join(', ')} } from 'snice';`;
