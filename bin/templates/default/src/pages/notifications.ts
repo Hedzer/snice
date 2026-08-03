@@ -1,5 +1,5 @@
 import { page } from '../router';
-import { render, styles, html, css, context, dispose, watch, on } from 'snice';
+import { render, styles, html, css, context, dispose, on, state } from 'snice';
 import type { Placard, Context } from 'snice';
 import type { ApplicationContext } from '../context';
 import { isAuthenticated } from '../guards/auth';
@@ -16,8 +16,8 @@ const placard: Placard = {
 
 @page({ tag: 'notifications-page', routes: ['/notifications'], guards: [isAuthenticated], placard })
 export class NotificationsPage extends HTMLElement {
-  notifications: Notification[] = [];
-  filter: NotificationType | 'all' = 'all';
+  @state() notifications: Notification[] = [];
+  @state() filter: NotificationType | 'all' = 'all';
   private unsubscribe: (() => void) | null = null;
 
   @context()
@@ -36,11 +36,6 @@ export class NotificationsPage extends HTMLElement {
       this.unsubscribe();
       this.unsubscribe = null;
     }
-  }
-
-  @watch('filter')
-  onFilterChange() {
-    // Re-render triggers automatically via property change
   }
 
   get filteredNotifications(): Notification[] {
@@ -124,7 +119,7 @@ export class NotificationsPage extends HTMLElement {
                   key=${notification.id}
                   .variant=${notification.type}
                   dismissible
-                  @dismiss=${() => this.removeNotification(notification.id)}
+                  @alert-dismiss=${() => this.removeNotification(notification.id)}
                 >
                   <strong>${notification.title}</strong>
                   <p>${notification.message}</p>

@@ -1,24 +1,15 @@
-import { element, property, render, styles, html, css, watch, query } from 'snice';
+import { element, property, render, styles, html, css } from 'snice';
 
 @element('notification-badge')
 export class NotificationBadge extends HTMLElement {
   @property({ type: Number }) count = 0;
 
-  @query('.badge') $badge!: HTMLElement;
-
-  @watch('count')
-  onCountChange() {
-    if (this.$badge) {
-      this.$badge.textContent = this.count > 99 ? '99+' : String(this.count);
-      this.$badge.style.display = this.count > 0 ? 'flex' : 'none';
-    }
-  }
-
-  @render({ once: true })
+  @render()
   renderContent() {
-    const display = this.count > 0 ? 'flex' : 'none';
     return html`
-      <span class="badge" style="display: ${display}">${this.count}</span>
+      <if ${this.count > 0}>
+        <span class="badge">${this.count > 99 ? '99+' : this.count}</span>
+      </if>
     `;
   }
 

@@ -1,20 +1,22 @@
-import { element, property, render, styles, on, dispatch, html, css } from 'snice';
+import { debounce, dispatch, element, html, live, property, render, styles, css } from 'snice';
 
 @element('search-bar')
 export class SearchBar extends HTMLElement {
   @property() value = '';
   @property() placeholder = 'Search...';
 
-  @on('input', 'input', { debounce: 300 })
-  handleInput(e: Event) {
-    this.value = (e.target as HTMLInputElement).value;
+  handleInput(e: CustomEvent<{ value: string }>) {
+    this.value = e.detail.value;
+    this.queueSearch();
+  }
+
+  clearSearch() {
+    this.value = '';
     this.dispatchSearch();
   }
 
-  @on('keydown:Escape', 'input')
-  clearSearch(e: Event) {
-    this.value = '';
-    (e.target as HTMLInputElement).value = '';
+  @debounce(300)
+  queueSearch() {
     this.dispatchSearch();
   }
 
@@ -26,17 +28,15 @@ export class SearchBar extends HTMLElement {
   @render()
   renderContent() {
     return html`
-      <div class="search-container">
-        <span class="icon">&#128269;</span>
-        <input
-          type="text"
-          .value=${this.value}
-          placeholder="${this.placeholder}"
-        />
-        <if ${this.value.length > 0}>
-          <button class="clear" @click=${() => { this.value = ''; this.dispatchSearch(); }}>&#10005;</button>
-        </if>
-      </div>
+      <snice-input
+        type="search"
+        clearable
+        prefix-icon="🔍"
+        .value=${live(this.value)}
+        placeholder="${this.placeholder}"
+        @input-input=${this.handleInput}
+        @keydown.escape=${this.clearSearch}
+      ></snice-input>
     `;
   }
 
@@ -47,52 +47,8 @@ export class SearchBar extends HTMLElement {
         display: block;
       }
 
-      .search-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        background: var(--snice-color-surface);
-        border: 1px solid var(--snice-color-border);
-        border-radius: var(--snice-border-radius-lg);
-      }
-
-      .search-container:focus-within {
-        border-color: var(--snice-color-primary);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--snice-color-primary) 15%, transparent);
-      }
-
-      .icon {
-        color: var(--snice-color-text-secondary);
-        font-size: 0.875rem;
-      }
-
-      input {
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 0.875rem;
-        color: var(--snice-color-text);
-      }
-
-      input::placeholder {
-        color: var(--snice-color-text-secondary);
-      }
-
-      .clear {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--snice-color-text-secondary);
-        font-size: 0.75rem;
-        padding: 0.125rem 0.25rem;
-        border-radius: var(--snice-border-radius-md);
-      }
-
-      .clear:hover {
-        background: var(--snice-color-surface-container-low);
-        color: var(--snice-color-text);
+      snice-input {
+        width: 100%;
       }
     `;
   }

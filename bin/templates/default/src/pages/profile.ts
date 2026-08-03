@@ -1,5 +1,5 @@
 import { page } from '../router';
-import { render, styles, html, css, context, dispatch, observe } from 'snice';
+import { render, styles, html, css, context, dispatch, state } from 'snice';
 import type { Placard, Context } from 'snice';
 import type { Principal, User } from '../types/auth';
 import { isAuthenticated } from '../guards/auth';
@@ -16,20 +16,14 @@ const placard: Placard = {
 
 @page({ tag: 'profile-page', routes: ['/profile'], guards: [isAuthenticated], placard })
 export class ProfilePage extends HTMLElement {
-  user: User | null = null;
+  @state() user: User | null = null;
   private ctx?: Context;
-  isMobile = false;
 
   @context()
   handleContext(ctx: Context) {
     this.ctx = ctx;
     const principal = ctx.application.principal as Principal | undefined;
     this.user = principal?.user || null;
-  }
-
-  @observe('media:(max-width: 640px)')
-  handleMediaChange(matches: boolean) {
-    this.isMobile = matches;
   }
 
   @dispatch('user-logout')

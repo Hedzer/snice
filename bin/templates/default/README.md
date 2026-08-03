@@ -61,7 +61,7 @@ src/
     notifications.ts    # Live feed, filters, @watch, keyboard shortcuts
     settings.ts         # Theme toggle, form bindings, @context, Ctrl+S save
     data.ts             # Data table, search-bar, @observe('resize'), filters
-  services/       # Business logic (auth, storage, jwt)
+  services/       # This project's host-free functions (auth, storage, jwt)
   middleware/      # Fetch middleware (auth, error, retry)
   daemons/        # Lifecycle-managed classes (notifications WebSocket)
   guards/         # Route guards (auth)

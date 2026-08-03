@@ -88,7 +88,9 @@ describe('CLI create-app command', () => {
       `node ${join(process.cwd(), 'bin/snice.js')} check . --json`,
       { cwd: appPath, timeout: 30000 }
     );
-    expect(JSON.parse(validation.stdout).ok).toBe(true);
+    const validationResult = JSON.parse(validation.stdout);
+    expect(validationResult.ok).toBe(true);
+    expect(validationResult.issues).toEqual([]);
 
     // Build the app
     console.log('Building app...');

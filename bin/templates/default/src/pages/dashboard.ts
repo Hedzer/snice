@@ -1,5 +1,5 @@
 import { page } from '../router';
-import { render, styles, html, css, context, observe, dispose } from 'snice';
+import { render, styles, html, css, context, observe, dispose, state } from 'snice';
 import type { Placard, Context } from 'snice';
 import type { ApplicationContext } from '../context';
 import { isAuthenticated } from '../guards/auth';
@@ -15,9 +15,9 @@ const placard: Placard = {
 
 @page({ tag: 'dashboard-page', routes: ['/', '/dashboard'], guards: [isAuthenticated], placard })
 export class DashboardPage extends HTMLElement {
-  userName = '';
-  notificationCount = 0;
-  isCompact = false;
+  @state() userName = '';
+  @state() notificationCount = 0;
+  @state() isCompact = false;
   private unsubscribe: (() => void) | null = null;
 
   @context()
@@ -48,7 +48,7 @@ export class DashboardPage extends HTMLElement {
   @render()
   renderContent() {
     return html`
-      <div class="container">
+      <div class="container" class:compact=${this.isCompact}>
         <div class="welcome">
           <h1>Welcome, ${this.userName}!</h1>
           <p class="subtitle">This is your dashboard</p>
@@ -87,12 +87,12 @@ export class DashboardPage extends HTMLElement {
           <snice-card>
             <h3>Architecture</h3>
             <ul>
-              <li><strong>Pages:</strong> Route orchestrators</li>
-              <li><strong>Components:</strong> Reusable UI</li>
-              <li><strong>Controllers:</strong> Behavior modules</li>
-              <li><strong>Services:</strong> Business logic</li>
+              <li><strong>Pages:</strong> Element orchestration</li>
+              <li><strong>Components:</strong> Reusable visual behavior</li>
+              <li><strong>Controllers:</strong> Application behavior for a set of elements</li>
+              <li><strong>Services:</strong> Host-free functions in this project</li>
               <li><strong>Middleware:</strong> Fetch interceptors</li>
-              <li><strong>Daemons:</strong> Lifecycle classes</li>
+              <li><strong>Daemons:</strong> Explicit state and lifecycle</li>
               <li><strong>Guards:</strong> Route protection</li>
             </ul>
           </snice-card>
@@ -102,7 +102,7 @@ export class DashboardPage extends HTMLElement {
             <ul>
               <li><code>@page</code> - Route pages</li>
               <li><code>@element</code> - Custom elements</li>
-              <li><code>@controller</code> - Behavior modules</li>
+              <li><code>@controller</code> - Element-specific application behavior</li>
               <li><code>@context</code> - Global state</li>
               <li><code>@observe</code> - DOM observers</li>
               <li><code>@watch</code> - Property watchers</li>
@@ -138,6 +138,10 @@ export class DashboardPage extends HTMLElement {
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
+      }
+
+      .container.compact {
+        padding: 1rem;
       }
 
       .welcome {

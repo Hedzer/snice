@@ -1,5 +1,5 @@
 import { page } from '../router';
-import { render, styles, context, dispatch, on, html, css } from 'snice';
+import { render, styles, context, dispatch, on, html, css, live, state } from 'snice';
 import type { Placard, Context } from 'snice';
 import { isAuthenticated } from '../guards/auth';
 import type { Principal, User } from '../types/auth';
@@ -17,11 +17,11 @@ const placard: Placard = {
 @page({ tag: 'settings-page', routes: ['/settings'], guards: [isAuthenticated], placard })
 export class SettingsPage extends HTMLElement {
   private ctx?: Context;
-  displayName = '';
-  email = '';
-  theme: 'light' | 'dark' | 'system' = 'system';
-  notificationsEnabled = true;
-  saved = false;
+  @state() displayName = '';
+  @state() email = '';
+  @state() theme: 'light' | 'dark' | 'system' = 'system';
+  @state() notificationsEnabled = true;
+  @state() saved = false;
 
   @context()
   handleContext(ctx: Context) {
@@ -37,12 +37,12 @@ export class SettingsPage extends HTMLElement {
     this.notificationsEnabled = localStorage.getItem('notifications-enabled') !== 'false';
   }
 
-  handleNameInput(e: Event) {
-    this.displayName = (e.target as HTMLInputElement).value;
+  handleNameInput(e: CustomEvent<{ value: string }>) {
+    this.displayName = e.detail.value;
   }
 
-  handleEmailInput(e: Event) {
-    this.email = (e.target as HTMLInputElement).value;
+  handleEmailInput(e: CustomEvent<{ value: string }>) {
+    this.email = e.detail.value;
   }
 
   setTheme(theme: 'light' | 'dark' | 'system') {
@@ -51,8 +51,8 @@ export class SettingsPage extends HTMLElement {
     this.applyTheme(theme);
   }
 
-  toggleNotifications() {
-    this.notificationsEnabled = !this.notificationsEnabled;
+  handleNotificationsChange(e: CustomEvent<{ checked: boolean }>) {
+    this.notificationsEnabled = e.detail.checked;
     localStorage.setItem('notifications-enabled', String(this.notificationsEnabled));
   }
 
@@ -106,7 +106,7 @@ export class SettingsPage extends HTMLElement {
           <div class="form-group">
             <label>Display Name</label>
             <snice-input
-              .value=${this.displayName}
+              .value=${live(this.displayName)}
               @input-input=${this.handleNameInput}
               placeholder="Your name"
             ></snice-input>
@@ -114,7 +114,7 @@ export class SettingsPage extends HTMLElement {
           <div class="form-group">
             <label>Email</label>
             <snice-input
-              .value=${this.email}
+              .value=${live(this.email)}
               @input-input=${this.handleEmailInput}
               placeholder="your@email.com"
             ></snice-input>
@@ -156,8 +156,8 @@ export class SettingsPage extends HTMLElement {
               <p class="toggle-desc">Receive real-time notification alerts</p>
             </div>
             <snice-switch
-              ?checked=${this.notificationsEnabled}
-              @change=${this.toggleNotifications}
+              .checked=${live(this.notificationsEnabled)}
+              @switch-change=${this.handleNotificationsChange}
             ></snice-switch>
           </div>
         </snice-card>

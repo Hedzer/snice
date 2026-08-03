@@ -1,18 +1,16 @@
-import { element, property, render, styles, context, on, dispatch, dispose, html, css, watch, query } from 'snice';
+import { element, render, styles, context, on, dispatch, dispose, html, css, state } from 'snice';
 import type { Context } from 'snice';
 import type { ApplicationContext } from '../context';
 import { logout } from '../services/auth';
 
 @element('app-header')
 export class AppHeader extends HTMLElement {
-  @property() userName = '';
-  @property() userAvatar = '';
-  @property({ type: Boolean }) authenticated = false;
-  @property({ type: Boolean }) menuOpen = false;
-  @property({ type: Number }) notificationCount = 0;
+  @state() userName = '';
+  @state() userAvatar = '';
+  @state() authenticated = false;
+  @state() menuOpen = false;
+  @state() notificationCount = 0;
   private unsubscribeNotifications: (() => void) | null = null;
-
-  @query('.user-menu') $menu!: HTMLElement;
 
   @context()
   handleContext(ctx: Context) {
@@ -34,13 +32,6 @@ export class AppHeader extends HTMLElement {
     if (this.unsubscribeNotifications) {
       this.unsubscribeNotifications();
       this.unsubscribeNotifications = null;
-    }
-  }
-
-  @watch('menuOpen')
-  onMenuToggle() {
-    if (this.$menu) {
-      this.$menu.style.display = this.menuOpen ? 'block' : 'none';
     }
   }
 
@@ -96,7 +87,7 @@ export class AppHeader extends HTMLElement {
               <span class="user-name">${this.userName}</span>
             </button>
 
-            <div class="user-menu" style="display: none">
+            <div class="user-menu" ?hidden=${!this.menuOpen}>
               <a href="#/profile" @click=${() => this.menuOpen = false}>Profile</a>
               <a href="#/settings" @click=${() => this.menuOpen = false}>Settings</a>
               <snice-divider></snice-divider>
@@ -193,6 +184,10 @@ export class AppHeader extends HTMLElement {
         box-shadow: var(--snice-shadow-lg);
         padding: 0.5rem 0;
         z-index: 100;
+      }
+
+      .user-menu[hidden] {
+        display: none;
       }
 
       .user-menu a,

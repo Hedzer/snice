@@ -1,5 +1,5 @@
 import { page } from '../router';
-import { render, styles, observe, property, ready, html, css } from 'snice';
+import { render, styles, observe, ready, html, css, state } from 'snice';
 import type { Placard } from 'snice';
 import { isAuthenticated } from '../guards/auth';
 
@@ -34,19 +34,16 @@ const MOCK_ITEMS: DataItem[] = [
 
 @page({ tag: 'data-page', routes: ['/data'], guards: [isAuthenticated], placard })
 export class DataPage extends HTMLElement {
-  allItems: DataItem[] = [];
-  filteredItems: DataItem[] = [];
-  searchQuery = '';
-  statusFilter: 'all' | 'active' | 'pending' | 'archived' = 'all';
-  @property({ type: Boolean }) loading = true;
+  @state() allItems: DataItem[] = [];
+  @state() filteredItems: DataItem[] = [];
+  @state() searchQuery = '';
+  @state() statusFilter: 'all' | 'active' | 'pending' | 'archived' = 'all';
+  @state() loading = true;
+  @state() compact = false;
 
   @observe('resize')
   handleResize(entries: ResizeObserverEntry[]) {
-    const width = entries[0].contentRect.width;
-    const table = this.shadowRoot?.querySelector('.data-table');
-    if (table) {
-      table.classList.toggle('compact', width < 600);
-    }
+    this.compact = entries[0].contentRect.width < 600;
   }
 
   @ready()
@@ -145,7 +142,7 @@ export class DataPage extends HTMLElement {
             ></snice-empty-state>
           </when>
           <default>
-            <div class="data-table">
+            <div class="data-table" class:compact=${this.compact}>
               <div class="table-header">
                 <span class="col-title">Title</span>
                 <span class="col-status">Status</span>
@@ -158,7 +155,7 @@ export class DataPage extends HTMLElement {
                     <span class="description">${item.description}</span>
                   </div>
                   <div class="col-status">
-                    <span class="status-dot" style="background: ${this.getStatusColor(item.status)}"></span>
+                    <span class="status-dot" style:background=${this.getStatusColor(item.status)}></span>
                     ${item.status}
                   </div>
                   <div class="col-date">${item.createdAt}</div>
