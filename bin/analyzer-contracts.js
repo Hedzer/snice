@@ -18,7 +18,7 @@ export const ANALYZER_CONTRACTS = {
     "componentFamilies": 134,
     "componentModules": 188,
     "reactWrappers": 193,
-    "rootExports": 110
+    "rootExports": 115
   },
   "rootExports": [
     "AdoptedOptions",
@@ -29,6 +29,7 @@ export const ANALYZER_CONTRACTS = {
     "ContextOptions",
     "ControllerClass",
     "CreateRequestHandlerOptions",
+    "DaemonMap",
     "DispatchOptions",
     "Duration",
     "ElementOptions",
@@ -57,6 +58,7 @@ export const ANALYZER_CONTRACTS = {
     "RequestRoute",
     "RequestRouteMap",
     "RespondOptions",
+    "Response",
     "ResponseMiddleware",
     "RouteParams",
     "Router",
@@ -83,6 +85,7 @@ export const ANALYZER_CONTRACTS = {
     "controller",
     "createRequestHandler",
     "css",
+    "daemon",
     "debounce",
     "detachController",
     "dispatch",
@@ -91,6 +94,7 @@ export const ANALYZER_CONTRACTS = {
     "escapeAttr",
     "escapeHtml",
     "getBodyScrollLockCount",
+    "getContext",
     "getController",
     "getSymbol",
     "html",
@@ -107,6 +111,7 @@ export const ANALYZER_CONTRACTS = {
     "once",
     "parseDuration",
     "property",
+    "provideContext",
     "query",
     "queryAll",
     "ready",

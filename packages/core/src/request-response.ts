@@ -1,6 +1,16 @@
-import { CHANNEL_HANDLERS, CLEANUP, IS_CONTROLLER_INSTANCE, RESPOND_METHODS } from './symbols';
+import { CHANNEL_HANDLERS, CLEANUP, RESPOND_METHODS } from './symbols';
 import { RequestOptions } from './types/request-options';
 import { RespondOptions } from './types/respond-options';
+import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target';
+
+/**
+ * Return type for methods decorated with `@request`.
+ *
+ * TypeScript cannot express a method decorator changing an async generator
+ * into a promise-returning method. This pragmatic helper suppresses that
+ * mismatch while documenting the response value for readers and tooling.
+ */
+export type Response<T = any> = T | any;
 
 // @request decorator transforms methods to return Promise<T>
 
@@ -25,6 +35,18 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
         // @request always acts as requester (client side)
         const responseTimeout = options?.timeout ?? 120000; // Default 2 minute timeout
         const discoveryTimeout = options?.discoveryTimeout ?? 50; // Default 50ms discovery timeout
+
+        // Resolve before creating timeout promises. A missing daemon/context
+        // should reject immediately without leaving an orphaned discovery
+        // timer behind.
+        const dispatcher = options?.daemon !== undefined
+          ? requireDaemonTarget(this, options.daemon)
+          : defaultCommunicationTarget(this);
+        if (!dispatcher) {
+          throw new TypeError(
+            `@request('${requestName}') requires an element, attached controller, or provided @daemon instance.`
+          );
+        }
         
         // Create the generator
       const generator = originalMethod.apply(this, args);
@@ -84,9 +106,6 @@ export function request<T = any>(requestName: string, options?: RequestOptions) 
         }
       });
       
-      // Check if this is a controller instance using the symbol
-      const isController = this[IS_CONTROLLER_INSTANCE] === true;
-      const dispatcher = isController && this.element ? this.element : this;
       dispatcher.dispatchEvent(event);
       
       try {
@@ -222,7 +241,7 @@ export function respond(requestName: string, options?: RespondOptions) {
 }
 
 // Helper to setup response handlers for elements and controllers
-export function setupResponseHandlers(instance: any, element: HTMLElement) {
+export function setupResponseHandlers(instance: any, element: EventTarget) {
   const handlers = instance.constructor[CHANNEL_HANDLERS];
   if (!handlers) return;
   
@@ -329,10 +348,20 @@ export function setupResponseHandlers(instance: any, element: HTMLElement) {
         });
     };
     
-    element.addEventListener(eventName, responseHandler as EventListener);
+    let responseTarget = element;
+    if (handler.options?.daemon !== undefined) {
+      try {
+        responseTarget = requireDaemonTarget(instance, handler.options.daemon);
+      } catch (error) {
+        console.warn(`[snice/@respond] ${(error as Error).message} Responder "${handler.channelName}" skipped.`);
+        continue;
+      }
+    }
+
+    responseTarget.addEventListener(eventName, responseHandler as EventListener);
     
     instance[CLEANUP].channels.push(() => {
-      element.removeEventListener(eventName, responseHandler as EventListener);
+      responseTarget.removeEventListener(eventName, responseHandler as EventListener);
     });
   }
 }
@@ -346,4 +375,3 @@ export function cleanupResponseHandlers(instance: any) {
     instance[CLEANUP].channels = [];
   }
 }
-

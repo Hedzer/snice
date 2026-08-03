@@ -43,6 +43,7 @@ tsconfig.json:
 - **Elements** (`@element`): Visual web components with Shadow DOM. Receive data via properties, emit events. NO business logic, NO fetch(), NO API calls.
 - **Pages** (`@page`): Routable views. Handle API calls, orchestrate elements, manage state.
 - **Controllers** (`@controller`): Reusable non-visual behaviors attached to elements. Attach by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`).
+- **Daemons** (`@daemon`): Ordinary app-owned objects with state and lifecycle. Construct explicitly, provide through `context.daemons`, and communicate by string address. No singleton, implicit construction, or global registry.
 - **Layouts** (`@layout`): Persistent page wrappers (nav, sidebar) across route changes.
 
 ---
@@ -61,6 +62,7 @@ tsconfig.json:
 // Attach: html`<x-el controller=${MyController}>` (class, preferred; custom + native els)
 //         attachController(el, MyController) | el.controller = MyController
 //         controller="name" attr — only channel in raw HTML, still supported everywhere
+@daemon // no args; marks explicitly constructed app-context instances
 @layout('tag-name')
 ```
 
@@ -134,10 +136,11 @@ html`<form @submit|prevent=${handler}>...`
 
 // Decorator:
 @on(event, selector?, options?)
-// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target? }
+// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope?, daemon? }
 
-@dispatch(eventName, options?: { debounce?, throttle?, dispatchOnUndefined? })
+@dispatch(eventName, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, daemon? })
 // Fires CustomEvent with return value as detail. Supports async.
+// scope and daemon are mutually exclusive; daemon targets do not support selector delegation.
 ```
 
 ### Communication
@@ -145,14 +148,15 @@ html`<form @submit|prevent=${handler}>...`
 ```typescript
 @request(channel, options?)
 // Async generator: yield payload → await response
-// Options: { timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? }
+// Options: { daemon?, timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? }
 
 @respond(channel, options?)
 // Handle requests. One responder per channel.
+// Options: { daemon?, debounce?, throttle? }
 
 // Example:
 @request('fetch-user')
-async *fetchUser(id: string): any {
+async *fetchUser(id: string): Response<User> {
   const user = await (yield { id });
   return user;
 }
@@ -186,6 +190,13 @@ async handleFetchUser({ id }: { id: string }) {
 Router({ target, type: 'hash' | 'pushstate', context?, layout?, fetcher? })
 // Returns: { page, navigate, initialize }
 // IMPORTANT: `page` from Router(), NOT from 'snice'
+
+const release = provideContext(appRoot, {
+  daemons: { session: new SessionDaemon() }
+});
+getContext(elementOrController); // nearest raw application context
+// Router provides its context beneath target through the same mechanism.
+// Provide before element connect/controller attach; release during teardown.
 ```
 
 ```typescript
@@ -268,13 +279,13 @@ Binding values are channel-specific: attributes stringify, properties preserve J
 
 ```typescript
 import {
-  element, controller, layout,       // class decorators (page from Router)
+  element, controller, daemon, layout, // class decorators (page from Router)
   SniceElement, property, state, watch, context,
   render, styles, html, svg, css, nothing, unsafeHTML,
   repeat,
   query, queryAll,                   // DOM
   on, dispatch,                      // events
-  request, respond,                  // communication
+  request, respond, provideContext, getContext, // communication/context
   observe,                           // observers
   ready, dispose, moved, adopted,    // lifecycle
   Router,                            // routing
@@ -345,6 +356,7 @@ Core variables: `--snice-color-primary`, `-success`, `-warning`, `-danger`, `-ne
 - **JS source of truth**: Never expect `type` to coerce a direct property assignment
 - **Deep reactivity**: Native Proxy/Reflect; modern evergreen browsers, no IE
 - **Elements are visual only**: No fetch/API calls — use pages/controllers
+- **Daemons are explicit**: Always `new` each instance and provide it through app context; never import daemon classes into consumers or assume singleton construction
 - **Boolean attrs**: `"false"` string → `false`
 - **Events**: kebab-case names, `e.detail.value` not `e.target.value`, `CustomEvent` not `Event`
 - **`page`**: Comes from `Router()`, not `'snice'` exports

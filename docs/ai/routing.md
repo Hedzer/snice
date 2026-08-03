@@ -25,7 +25,7 @@ interface RouterOptions {
   document?: Document;               // override document object (testing)
   transition?: Transition;           // global transition config
   layout?: string;                   // default layout tag for all pages
-  context?: any;                     // shared context object across pages/layouts
+  context?: any;                     // app context; may expose daemons
   fetcher?: Fetcher;                 // optional fetch middleware — see docs/ai/fetcher.md
 }
 ```
@@ -43,6 +43,19 @@ class AppContext {
 }
 
 const { page, initialize } = Router({ target: '#app', type: 'hash', context: new AppContext() });
+```
+
+Router also provides the raw app context beneath `target`, using the same
+`provideContext()` mechanism available to non-router applications. Explicitly
+constructed `@daemon` instances may be addressed through `context.daemons`:
+
+```typescript
+const session = new SessionDaemon();
+Router({
+  target: '#app',
+  type: 'hash',
+  context: { daemons: { session } }
+});
 ```
 
 ### Module structure (avoids circular imports)

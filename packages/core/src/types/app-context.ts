@@ -1,9 +1,11 @@
+import type { DaemonMap } from './daemon';
+
 /**
- * Application context interface for cross-cutting concerns.
+ * Application context visible to the framework.
  *
- * This interface defines common application-wide state and services
- * that components, pages, and guards may need to access. All properties
- * are optional, allowing applications to implement only what they need.
+ * Snice only assigns meaning to `daemons`. Other application state remains
+ * deliberately unknown until an application extends this interface or narrows
+ * it to its own context type.
  *
  * Applications can extend this interface to add their own context properties:
  *
@@ -23,62 +25,10 @@
  */
 export interface AppContext {
   /**
-   * Theme management and styling context.
-   * Typically handles dark/light mode, custom themes, and design tokens.
-   *
-   * @example
-   * ```typescript
-   * theme: {
-   *   current: 'dark',
-   *   setTheme: (theme: string) => void,
-   *   isDarkMode: () => boolean
-   * }
-   * ```
+   * Explicitly constructed daemon instances addressable by elements and
+   * controllers through the communication decorators.
    */
-  theme?: any;
+  readonly daemons?: DaemonMap;
 
-  /**
-   * Internationalization and localization context.
-   * Handles language switching, translations, and regional formatting.
-   *
-   * @example
-   * ```typescript
-   * locale: {
-   *   current: 'en-US',
-   *   setLocale: (locale: string) => void,
-   *   t: (key: string) => string
-   * }
-   * ```
-   */
-  locale?: any;
-
-  /**
-   * Authentication and authorization context.
-   * Contains user information, roles, permissions, and auth state.
-   *
-   * @example
-   * ```typescript
-   * principal: {
-   *   user: { id: 1, name: 'John', role: 'admin' },
-   *   isAuthenticated: () => boolean,
-   *   hasRole: (role: string) => boolean
-   * }
-   * ```
-   */
-  principal?: any;
-
-  /**
-   * Application configuration and settings.
-   * Runtime configuration, feature flags, API endpoints, etc.
-   *
-   * @example
-   * ```typescript
-   * config: {
-   *   apiUrl: 'https://api.example.com',
-   *   featureFlags: { newUI: true },
-   *   get: (key: string) => any
-   * }
-   * ```
-   */
-  config?: any;
+  [key: string]: unknown;
 }

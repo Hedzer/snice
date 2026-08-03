@@ -16,15 +16,17 @@
 - https://snice.dev/guide.html — Getting started guide
 - https://snice.dev/components.html — Live interactive component demos
 - https://snice.dev/decorators.html — Decorator reference with examples
+- https://snice.dev/docs.html#daemons — Daemon context, lifecycle, events, and request/response
 
 ## What Snice Is
 
 A TypeScript web component framework using TC39 decorators and configurable shadow/light render roots. Components may extend `HTMLElement` directly or the optional `SniceElement` convention base. There is no virtual DOM; differential rendering patches only changed DOM parts.
 
-Four building blocks:
+Five building blocks:
 - **Elements** (`@element`) — Visual components. Receive data via properties, emit events.
 - **Pages** (`@page`) — Routable views. Handle API calls and orchestration.
 - **Controllers** (`@controller`) — Reusable non-visual behaviors. Attach by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`).
+- **Daemons** (`@daemon`) — Explicitly constructed app-owned state/lifecycle objects. Provide instances through `context.daemons`; consumers communicate by string address without importing the implementation.
 - **Layouts** (`@layout`) — Persistent page wrappers (nav, sidebar).
 
 ## Quick Start
@@ -93,3 +95,4 @@ import { SniceButton } from 'snice/adapters/react';
 - Exact binding-channel and sentinel semantics: https://snice.dev/docs.html#bindings
 - `page` decorator comes from `Router()`, not from `'snice'` exports
 - Elements are visual only — no fetch/API calls (use pages/controllers)
+- Daemons are never singletons or implicitly constructed; create each instance with `new`, provide it before consumers connect, and release the provider during teardown

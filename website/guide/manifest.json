@@ -168,6 +168,11 @@
           "docs": "controllers"
         },
         {
+          "id": "daemons",
+          "title": "Daemons",
+          "docs": "daemons"
+        },
+        {
           "id": "request-respond",
           "title": "Request / Respond",
           "docs": "request-response",

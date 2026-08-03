@@ -7,8 +7,15 @@ export { getSymbol };
 
 export const IS_CONTROLLER_CLASS = getSymbol('is-controller-class');
 export const IS_CONTROLLER_INSTANCE = getSymbol('is-controller-instance');
+export const IS_DAEMON_CLASS = getSymbol('is-daemon-class');
+export const IS_DAEMON_INSTANCE = getSymbol('is-daemon-instance');
 export const IS_ELEMENT_CLASS = getSymbol('is-element-class');
 export const CHANNEL_HANDLERS = getSymbol('channel-handlers');
+
+// Per-instance daemon communication state. Daemon instances are constructed by
+// application code; Snice only creates and manages their private EventTarget
+// when an app context explicitly provides them.
+export const DAEMON_STATE = getSymbol('daemon-state');
 
 // Internal element state symbols
 export const READY_PROMISE = getSymbol('ready-promise');

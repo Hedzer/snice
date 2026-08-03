@@ -15,6 +15,7 @@
 //         attachController(el, MyController) | el.controller = MyController
 //         controller="name" string attr (only channel in raw HTML; still supported everywhere)
 // Class binding: reference-deduped, removes controller attr, attr writes ignored while bound
+@daemon // Explicitly constructed app-context state/lifecycle object; no name or global registration
 @layout('name') // Define page wrapper
 ```
 
@@ -112,13 +113,13 @@ html`
 ```typescript
 @on(event: string | string[], selector?: string, options?: OnOptions)
 // Works in elements + controllers
-// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope? }
+// Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope?, daemon? }
 // target: CSS selector for shadow DOM event delegation
 // scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects listener attachment
 // Keyboard: 'keydown:Enter', 'keydown.escape', 'keydown:ctrl+s', 'keydown:~Space'
 // Supports both ':' and '.' notation
 
-@dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, ...EventInit })
+@dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, daemon?, ...EventInit })
 // Fires CustomEvent after method, detail = return value
 // Supports async methods (dispatches after promise resolves)
 // dispatchOnUndefined: false (default) — skips dispatch if method returns undefined
@@ -142,7 +143,7 @@ html`
 ## Communication
 
 ```typescript
-@request(channel: string, options?: { timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? })
+@request(channel: string, options?: { daemon?, timeout?, discoveryTimeout?, debounce?, throttle?, bubbles?, cancelable? })
 // Request pattern using async generator syntax
 // Method must be async generator that yields payload and receives response
 // Returns Promise<T>
@@ -166,7 +167,7 @@ html`
 //   }
 //   // Usage: const user = await this.fetchUser('123');
 
-@respond(channel: string, options?: { debounce?, throttle? })
+@respond(channel: string, options?: { daemon?, debounce?, throttle? })
 // Respond to requests from @request decorators
 // Method receives payload and returns response
 // Works in both elements and controllers
@@ -180,6 +181,14 @@ html`
 //     const user = await fetch(`/api/users/${payload.id}`).then(r => r.json());
 //     return user;
 //   }
+```
+
+Daemon addressing:
+```typescript
+const release = provideContext(appRoot, { daemons: { session: new SessionDaemon() } });
+const context = getContext(elementOrController);
+// Consumers use { daemon: 'session' }; daemon methods default to their own private target.
+// Provide before connect/attach. Call release() during app/test teardown.
 ```
 
 ## Observers

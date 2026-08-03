@@ -371,6 +371,12 @@ Prefer the narrowest scope that works; `'global'` means every instance hears eve
 
 Need a reply rather than a broadcast → [@request / @respond](./request-response.md).
 
+For stateful objects explicitly supplied by an application context, use
+`{ daemon: 'name' }`. Both halves must target the same daemon address; daemon
+methods themselves default to their own private target. See
+[daemons](./daemons.md). Daemon targets are not DOM scopes: `scope` and
+`daemon` cannot be combined, and selector delegation is unavailable.
+
 ## Custom events
 
 Dispatching manually:

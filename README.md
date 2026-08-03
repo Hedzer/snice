@@ -62,7 +62,7 @@ class RealTimeUserLoader { ... }
 @on('click', 'button') fn(e: Event) { ... }
 @dispatch('value-changed') fn(val: string) => Event Detail
 @context() fn(ctx: Context) { ... }
-@request('user') fn(): () => Request;
+@request('user') async *fn(): Response<User> { return yield {}; }
 @respond('user') fn(req) => Response;
 ```
 
@@ -510,8 +510,8 @@ This pattern is useful when:
 
 ```typescript
 // Controller responds to requests
-@element('app-controller')
-class AppController extends HTMLElement {
+@controller('app-controller')
+class AppController {
   private currentUser = { name: 'Alice', role: 'admin' };
 
   @respond('user')
@@ -523,31 +523,61 @@ class AppController extends HTMLElement {
 // Element makes requests
 @element('user-badge')
 class UserBadge extends HTMLElement {
+  @state() private user: User | null = null;
+
   @request('user')
-  getUser!: () => any;
+  async *getUser(): Response<User> {
+    return yield {};
+  }
 
   @ready()
-  init() {
-    const user = this.getUser();
+  async init() {
+    const user = await this.getUser();
+    this.user = user;
     console.log('Current user:', user);
   }
 
   @render()
   renderContent() {
-    const user = this.getUser();
-    return html`<div>Welcome, ${user.name}!</div>`;
+    return html`<div>Welcome, ${this.user?.name ?? 'Guest'}!</div>`;
   }
 }
-```
 
-**Usage:**
-```html
-<app-controller>
-  <user-badge></user-badge>
-</app-controller>
+// A parent template attaches the responder by class.
+html`<user-badge controller=${AppController}></user-badge>`;
 ```
 
 See [Request/Response documentation](./docs/request-response.md) for details.
+
+### Daemons
+
+Daemons are explicitly constructed, app-owned objects with state and a lifecycle.
+They support both request/response and event communication without requiring an
+element or a global singleton:
+
+```typescript
+@daemon
+class SessionDaemon {
+  @respond('get-session')
+  getSession() { return this.session; }
+
+  @dispatch('session-changed')
+  changed() { return this.session; }
+}
+
+const session = new SessionDaemon();
+const release = provideContext(appRoot, { daemons: { session } });
+
+// Elements/controllers use the context address, not SessionDaemon.
+@request('get-session', { daemon: 'session' })
+async *loadSession(): Response<Session | null> {
+  return yield {};
+}
+```
+
+Router provides its `context` through the same mechanism. There is no implicit
+construction or global registry, and multiple instances remain independent. See
+[Daemons](./docs/daemons.md) for lifecycle, testing, and both communication models.
 
 ## Template Syntax
 
@@ -939,6 +969,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 - [Declarative Rendering](./docs/rendering.md) - Bindings, control flow, reactivity, render roots, and async values
 - [Binding Channels](./docs/bindings.md) - Detailed DOM destinations, value/removal rules, events, spreads, sentinels, and forms
 - [Controllers API](./docs/controllers.md) - Data fetching, business logic, and controller patterns
+- [Daemons](./docs/daemons.md) - Explicit app-context state/lifecycle objects with request/response and event communication
 - [Routing API](./docs/routing.md) - Router setup, pages, route params, and navigation
 - [Guards and Layouts](./docs/guards-and-layouts.md) - Protecting routes, page wrappers, and transitions
 - [Placards API](./docs/placards.md) - Rich page metadata for dynamic navigation and discovery

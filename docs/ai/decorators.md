@@ -4,6 +4,7 @@
 - `@element('tag-name', options?)` - Custom element. Options: `{ formAssociated?, renderRoot?: 'shadow'|'light', shadow?: 'open'|'closed'|false, delegatesFocus? }`
 - `@page({ tag, routes, guards?, placard? })` - Routable page
 - `@controller('name')` - Swappable behavior. Required on every controller class. Attach by class (preferred): `controller=${MyController}` in templates, `attachController(el, MyController)`, or `el.controller = MyController`; by string in raw HTML: `controller="name"`
+- `@daemon` - Marks an explicitly constructed app-context daemon. No name argument; context key is address. Never constructs/registers globally.
 - `@layout('tag-name')` - Page wrapper for routing system
 
 ## Rendering
@@ -30,8 +31,8 @@
 - `@queryAll('selector', { light? })` - NodeList
 
 ## Events
-- `@on('event', 'selector?', options?)` - Delegation, auto-bound. Options: `{ capture?, once?, passive?, preventDefault?, stopPropagation?, debounce?, throttle?, scope? }`
-- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined?, scope?, ...EventInit }`
+- `@on('event', 'selector?', options?)` - Delegation, auto-bound. Options: `{ capture?, once?, passive?, preventDefault?, stopPropagation?, debounce?, throttle?, scope?, daemon? }`
+- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined?, scope?, daemon?, ...EventInit }`
 
 ### scope (on both `@on` and `@dispatch`)
 
@@ -63,9 +64,10 @@ Unresolved scope → `console.warn`, listener not attached / event not dispatche
 Resolver re-runs on reconnect — listeners track DOM moves.
 
 ## Communication
-- `@request(channel, options?)` - Async generator request pattern
-- `@respond(channel, options?)` - Handle requests from `@request`
+- `@request(channel, options?)` - Async generator request pattern; `{ daemon: 'name' }` targets an app-context daemon
+- `@respond(channel, options?)` - Handle requests from `@request`; `{ daemon: 'name' }` installs on that daemon target
 - `@context(options?)` - Receive router navigation context updates
+- `provideContext(root, context)` / `getContext(participant)` - Explicit raw app-context provisioning and lookup
 
 ## Observers
 - `@observe(target, selector?, options?)` - Watch intersection, resize, media query, mutation

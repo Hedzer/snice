@@ -9,6 +9,7 @@
  */
 import {
   ContextAwareFetcher,
+  type Response,
   SniceElement,
   adopted,
   classMap,
@@ -19,6 +20,7 @@ import {
   controller,
   createRequestHandler,
   css,
+  daemon,
   debounce,
   dispatch,
   dispose,
@@ -81,6 +83,23 @@ interface KitchenContext extends AppContext {
   token: string;
 }
 
+@daemon
+class KitchenDaemon {
+  status = 'ready';
+
+  @respond('daemon-status')
+  currentStatus() {
+    return this.status;
+  }
+
+  @dispatch('daemon-status-changed')
+  statusChanged() {
+    return this.status;
+  }
+}
+
+const kitchenDaemon = new KitchenDaemon();
+
 const fetcher = new ContextAwareFetcher();
 fetcher.use('request', function (request, next) {
   const { token } = this.application as KitchenContext;
@@ -96,7 +115,11 @@ export const { page, navigate, initialize } = Router({
   target: '#app',
   type: 'hash',
   layout: 'kitchen-shell',
-  context: { user: null, token: '' } satisfies KitchenContext,
+  context: {
+    user: null,
+    token: '',
+    daemons: { kitchen: kitchenDaemon }
+  } satisfies KitchenContext,
   fetcher
 });
 
@@ -218,6 +241,21 @@ class KitchenView extends SniceElement {
   async *loadUser(id: string): any {
     const user = await (yield { id });
     return user as User;
+  }
+
+  @request('daemon-status', { daemon: 'kitchen' })
+  async *loadDaemonStatus(): Response<string> {
+    return await (yield {});
+  }
+
+  async normalizedDaemonStatus() {
+    const status: string = await this.loadDaemonStatus();
+    return status.toUpperCase();
+  }
+
+  @on('daemon-status-changed', { daemon: 'kitchen' })
+  daemonStatusChanged(event: CustomEvent<string>) {
+    this.status.text = event.detail;
   }
 
   @observe('resize', '.panel')

@@ -94,6 +94,50 @@ Enabled automatically when Snice loads — no setup needed.
 // <table controller="table-loader"></table>
 ```
 
+## Daemon
+
+Ordinary state/lifecycle object owned by the application. Construction and
+teardown stay explicit; consumers use a context address instead of importing
+the implementation class.
+
+```typescript
+@daemon
+class SessionDaemon {
+  session: Session | null = null;
+
+  @respond('session/get')
+  getSession() { return this.session; }
+
+  @on('session/set')
+  setSession(event: CustomEvent<Session>) {
+    this.session = event.detail;
+    this.changed();
+  }
+
+  @dispatch('session/changed')
+  changed() { return this.session; }
+}
+
+const session = new SessionDaemon();
+const release = provideContext(appRoot, { daemons: { session } });
+
+@request('session/get', { daemon: 'session' })
+async *getSession(): Response<Session | null> { return yield {}; }
+
+@dispatch('session/set', { daemon: 'session' })
+setSession(session: Session) { return session; }
+
+@on('session/changed', { daemon: 'session' })
+sessionChanged(event: CustomEvent<Session | null>) {}
+```
+
+- Provide before element connection/controller attachment.
+- Router `context.daemons` uses the same provider automatically.
+- `@request`/`@respond` = one reply; `@dispatch`/`@on` = notifications.
+- `daemon` cannot be combined with DOM `scope`; daemon listeners cannot delegate selectors.
+- Call `release()` during app/test teardown.
+- See `docs/ai/daemons.md`.
+
 ## Page + Router
 
 **Module Structure (avoids circular imports):**
@@ -185,7 +229,7 @@ class API {
 @element('user-profile')
 class UserProfile extends HTMLElement {
   @request('fetch-user')
-  async *fetchUser(id: string): any {
+  async *fetchUser(id: string): Response<User> {
     const user = await (yield { id });  // yield = send request, await = get response
     return user;
   }

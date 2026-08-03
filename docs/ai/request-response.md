@@ -2,7 +2,7 @@
 
 Mirrors `docs/request-response.md`.
 
-Request/response communication between elements and controllers using async generators.
+Request/response communication between elements, controllers, and provided daemons using async generators.
 
 ## Why
 
@@ -27,6 +27,7 @@ function request(requestName: string, options?: RequestOptions): MethodDecorator
 function respond(requestName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
+  daemon?: string;          // named daemon from nearest provided app context
   timeout?: number;          // response timeout ms, default 120000 (2 min)
   discoveryTimeout?: number; // handler discovery timeout ms, default 50
   debounce?: number;
@@ -36,13 +37,19 @@ interface RequestOptions extends EventInit {
 }
 
 interface RespondOptions {
+  daemon?: string;          // install responder on named daemon target
   debounce?: number;
   throttle?: number;
 }
 
-// Recommended type helper for request generator return types (define in your project):
-type RequestResult<T> = AsyncGenerator<any, T, any> | Promise<T>;
+// Public return type for methods decorated with @request:
+type Response<T = any> = T | any;
 ```
+
+TypeScript cannot model a method decorator changing an async generator into a
+promise-returning method. This is a deliberate pragmatic annotation: it keeps
+strict consumers usable and documents `T`; the decorated runtime method
+returns a promise for `T`.
 
 ### Response debounce/throttle
 
@@ -65,6 +72,16 @@ class ProcessingController implements IController {
 }
 ```
 
+Daemon communication uses the same protocol without DOM bubbling:
+
+```typescript
+@request('get-session', { daemon: 'session' })
+async *getSession() { return yield {}; }
+```
+
+The daemon's plain `@respond('get-session')` handles it. See
+[daemons](./daemons.md).
+
 ## Element-Side Requests
 
 ```typescript
@@ -75,7 +92,7 @@ class ProductCard extends HTMLElement {
   @property() price = '';
 
   @request('fetch-product')
-  async *loadProduct(): RequestResult<void> {
+  async *loadProduct(): Response<void> {
     const product = await (yield { id: this.productId });
     this.name = product.name;
     this.price = product.price;
@@ -121,17 +138,17 @@ Elements never call `fetch()` or manage data directly — they yield requests up
 
 ```typescript
 @request('heavy-computation', { discoveryTimeout: 50, timeout: 30000 })
-async *compute(): RequestResult<any> { return await (yield data); }
+async *compute(): Response<any> { return await (yield data); }
 ```
 
 ### Debounce/Throttle
 
 ```typescript
 @request('search', { debounce: 300 })
-async *search(): RequestResult<any[]> { return await (yield { query: this.searchTerm }); }
+async *search(): Response<any[]> { return await (yield { query: this.searchTerm }); }
 
 @request('track', { throttle: 1000 })
-async *trackEvent(): RequestResult<void> { await (yield { event: 'scroll', position: window.scrollY }); }
+async *trackEvent(): Response<void> { await (yield { event: 'scroll', position: window.scrollY }); }
 ```
 
 ## Error Handling
@@ -140,7 +157,7 @@ async *trackEvent(): RequestResult<void> { await (yield { event: 'scroll', posit
 
 ```typescript
 @request('load-data', { timeout: 5000 })
-async *loadData(): RequestResult<void> {
+async *loadData(): Response<void> {
   try {
     this.data = await (yield { id: this.dataId });
     this.error = '';
@@ -201,7 +218,7 @@ class LiveTicker extends HTMLElement {
   @property() symbol = 'BTC';
 
   @request('subscribe-ticker')
-  async *subscribe(): RequestResult<void> { await (yield { symbol: this.symbol }); }
+  async *subscribe(): Response<void> { await (yield { symbol: this.symbol }); }
 
   @on('ticker-update')
   onUpdate(e: CustomEvent) { this.price = e.detail.price; }

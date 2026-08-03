@@ -1,0 +1,33 @@
+<h3>Daemons</h3>
+<p class="desc">A daemon is an ordinary app-owned object with state and a lifecycle. Construct it yourself, provide the instance through app context, and let elements/controllers communicate with its address instead of importing its class.</p>
+<snice-code-block language="snice" grammar="grammars/snice.json">@daemon
+class SessionDaemon {
+  session = null;
+
+  @respond('get-session')
+  getSession() { return this.session; }
+
+  @on('set-session')
+  setSession(event) {
+    this.session = event.detail;
+    this.changed();
+  }
+
+  @dispatch('session-changed')
+  changed() { return this.session; }
+}
+
+const session = new SessionDaemon();
+const release = provideContext(appRoot, { daemons: { session } });</snice-code-block>
+<snice-code-block language="snice" grammar="grammars/snice.json" style="margin-top:0.75rem">// Consumer: the string is a context address, not a class import
+@request('get-session', { daemon: 'session' })
+async *loadSession(): Response&lt;Session | null&gt; {
+  return yield {};
+}
+
+@dispatch('set-session', { daemon: 'session' })
+setSession(session) { return session; }
+
+@on('session-changed', { daemon: 'session' })
+sessionChanged(event) { this.session = event.detail; }</snice-code-block>
+<p class="desc" style="margin-top:0.75rem"><code>@request</code>/<code>@respond</code> handles one reply; <code>@dispatch</code>/<code>@on</code> handles notifications. There is no singleton, implicit construction, or global registry. Provide context before elements connect or controllers attach, and call <code>release()</code> during teardown.</p>

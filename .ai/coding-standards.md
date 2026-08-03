@@ -16,7 +16,7 @@ this.shadowRoot.querySelectorAll(selector)
 ### Event Handling
 ```typescript
 // ✅ USE
-@on('click', { target: '.button' })
+@on('click', '.button')
 handleClick(e: Event) {}
 
 // ✅ Template binding
@@ -70,17 +70,40 @@ handleValueChange(oldVal, newVal) {}
 ```typescript
 // In component — request data and wait
 @request('fetch-table-data')
-fetchData!: (params: { search: string, page: number }) => Promise<TableData>;
+async *fetchData(params: Query): Response<TableData> {
+  return yield params;
+}
 
 // In controller/parent — handle request
 @respond('fetch-table-data')
-async handleDataRequest(req, respond) {
-  const data = await fetch(`/api?search=${req.search}`).then(r => r.json());
-  respond(data);
+async handleDataRequest(req: Query) {
+  return fetch(`/api?search=${req.search}`).then(r => r.json());
 }
 ```
 
 Use only when a component needs to request data and wait for a response.
+
+### Daemons (app-owned state/lifecycle)
+```typescript
+@daemon
+class SessionDaemon {
+  @respond('session/get')
+  getSession() { return this.session; }
+}
+
+// Explicit construction and provisioning; never a singleton or global registry.
+const session = new SessionDaemon();
+const release = provideContext(appRoot, { daemons: { session } });
+
+// Elements/controllers use the address and do not import SessionDaemon.
+@request('session/get', { daemon: 'session' })
+async *getSession(): Response<Session | null> { return yield {}; }
+```
+
+- Provide context before element connection/controller attachment.
+- Use `@request`/`@respond` for one reply and `@dispatch`/`@on` for notifications.
+- Call the provider's `release()` during app/test teardown.
+- Do not combine `daemon` with DOM `scope` or selector delegation.
 
 ---
 

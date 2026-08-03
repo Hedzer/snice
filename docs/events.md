@@ -414,6 +414,9 @@ interface OnOptions {
 
   // Where to attach the listener (see scope section below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
+
+  // Named daemon from the nearest provided app context
+  daemon?: string;
 }
 ```
 
@@ -460,6 +463,9 @@ re-resolves and re-attaches, so resolver-based scopes track DOM moves correctly.
 
 `scope` is compatible with the delegation selector — the listener attaches on the
 scoped target and still matches the selector when an event fires within it.
+
+`daemon` is a separate, non-DOM target. It cannot be combined with `scope` and does
+not support selector delegation. See [Daemons](./daemons.md).
 
 #### Throttling
 
@@ -609,13 +615,15 @@ interface DispatchOptions extends EventInit {
   throttle?: number;             // Throttle dispatch by ms
   // Where to dispatch the event (see scope section below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
+  // Named daemon from the nearest provided app context
+  daemon?: string;
 }
 ```
 
 #### scope — controlling the dispatch target
 
-By default, `@dispatch` calls `this.dispatchEvent(event)` — the event originates from
-the host element. The `scope` option redirects the dispatch to another target so the
+By default, `@dispatch` originates from the element or a controller's host; on a
+daemon it uses that instance's private target. The `scope` option redirects a DOM dispatch so the
 event behaves as if it originated there. Use this with `@on({ scope })` to express
 cross-cutting events without going through bubbling.
 
@@ -650,6 +658,10 @@ If `scope` cannot resolve (selector matches no ancestor, resolver returns `null`
 the event is **not dispatched** and a `console.warn` is emitted. The method's return
 value still flows through `dispatchOnUndefined` / `debounce` / `throttle` semantics
 before the scope check.
+
+Use `{ daemon: 'session' }` to dispatch on an explicitly provided daemon's private
+communication target. `daemon` and `scope` are mutually exclusive. See
+[Daemons](./daemons.md).
 
 ### Debounce/Throttle
 
@@ -787,6 +799,11 @@ rather than silently binding to the wrong node. See
 
 For a request that needs an answer rather than a broadcast, use
 [@request / @respond](./request-response.md) instead.
+
+For app-owned state with an explicit lifecycle, provide an `@daemon` instance and
+use `{ daemon: 'name' }` on both publishers and subscribers. This keeps consumers
+decoupled from the implementation class without introducing a global singleton.
+See [Daemons](./daemons.md).
 
 ## Custom Events
 

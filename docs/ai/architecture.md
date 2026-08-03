@@ -7,6 +7,7 @@
 - **Pages:** Orchestrate elements, handle URLs
 - **Elements:** Generic visual building blocks — no fetch(), no API calls, no business logic
 - **Controllers:** Specific behavior (data, APIs, business rules) — swappable per element
+- **Daemons:** Explicitly constructed app-owned state/lifecycle objects — addressable through context, never global singletons
 
 **Generic vs Specific:** Elements say *what* they need, controllers decide *how*.
 Swap controllers to change behavior without touching the component.
@@ -16,6 +17,7 @@ Mock controller for tests, real API controller in production — same element.
 - Down: Properties
 - Up: Events
 - Sideways: Request/Response channels
+- App services: daemon-addressed request/response or dispatch/on
 
 ## Rendering System
 
@@ -73,6 +75,15 @@ Mock controller for tests, real API controller in production — same element.
 6. On detach: cleanupEventHandlers
 - Class bindings own the element: attribute writes ignored while a class is bound
 - Native elements: class bindings attach via ControllerPart; string attrs via MutationObserver
+
+**Daemon lifecycle:**
+1. Application constructs an `@daemon` class with `new`
+2. `provideContext(root, { daemons })` activates its private communication target
+3. Elements/controllers resolve the nearest context by string address
+4. Provider release removes daemon handlers and deactivates that target
+- Router provides its `context` through the same mechanism
+- Multiple instances of the same class remain independent
+- No implicit construction, registry scan, singleton, start, or stop hook
 
 ## Router System
 
@@ -136,7 +147,7 @@ onChange() { return { value: this.value }; }
 ```typescript
 // Element requests (async generator: yield sends, await receives)
 @request('fetch-data')
-async *fetchData(): any {
+async *fetchData(): Response<Data> {
   return await (yield { id: this.dataId });  // single yield per call
 }
 
@@ -146,6 +157,25 @@ async handleFetch(payload: { id: string }) {
   return await fetch(`/api/${payload.id}`).then(r => r.json());
 }
 // Wiring: html`<my-element controller=${MyController}></my-element>` (or controller="my-controller" in raw HTML)
+```
+
+**Element/Controller ↔ Daemon:** Addressed communication
+```typescript
+@daemon
+class SessionDaemon {
+  @respond('session/get') get() { return this.session; }
+  @dispatch('session/changed') changed() { return this.session; }
+}
+
+const session = new SessionDaemon();
+const release = provideContext(appRoot, { daemons: { session } });
+
+// Consumer imports no daemon implementation class.
+@request('session/get', { daemon: 'session' })
+async *getSession(): Response<Session | null> { return yield {}; }
+
+@on('session/changed', { daemon: 'session' })
+sessionChanged(event: CustomEvent<Session | null>) {}
 ```
 
 **Global State:** Context

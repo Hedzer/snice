@@ -1,6 +1,7 @@
 import { DISPATCH_TIMERS } from './symbols';
 import { DispatchOptions } from './types/dispatch-options';
 import { resolveScope } from './utils';
+import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target';
 
 // @dispatch decorator - auto-dispatches custom events from method return values
 
@@ -41,17 +42,26 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           return;
         }
 
-        // Create event with spread operator for options
+        // Copy only platform EventInit fields; Snice-only decorator options do
+        // not belong in the CustomEvent constructor dictionary.
         const event = new CustomEvent(eventName, {
-          bubbles: true,  // Default to true for component events
-          composed: true, // Allow crossing shadow DOM boundaries
-          ...options,     // Spread all EventInit options
+          bubbles: options?.bubbles ?? true,
+          cancelable: options?.cancelable ?? false,
+          composed: options?.composed ?? true,
           detail
         });
 
-        // Resolve scope target. Default is `this` (host element).
-        // Explicit scope dispatches the event on another target — useful for
-        // 'global' bus events on document, or routing through an ancestor.
+        if (options?.scope !== undefined && options?.daemon !== undefined) {
+          throw new TypeError(
+            `@dispatch('${eventName}') cannot use both scope and daemon.`
+          );
+        }
+
+        if (options?.daemon !== undefined) {
+          requireDaemonTarget(this, options.daemon).dispatchEvent(event);
+          return;
+        }
+
         if (options?.scope !== undefined) {
           const target = resolveScope(this as HTMLElement, options.scope);
           if (!target) {
@@ -64,7 +74,13 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           return;
         }
 
-        this.dispatchEvent(event);
+        const target = defaultCommunicationTarget(this);
+        if (!target) {
+          throw new TypeError(
+            `@dispatch('${eventName}') requires an element, attached controller, or provided @daemon instance.`
+          );
+        }
+        target.dispatchEvent(event);
       };
       
       // Helper to handle timed dispatch

@@ -242,6 +242,7 @@ describe('AI mirrors carry the same API surface', () => {
     queries: ['@query', '@queryAll', 'light'],
     styling: ['@styles', 'css', ':host'],
     controllers: ['@controller', 'attach', 'detach', 'attachController'],
+    daemons: ['@daemon', 'provideContext', 'daemons', '@request', '@dispatch'],
     'request-response': ['@request', '@respond', 'yield'],
     observe: ['@observe', 'intersection', 'resize', 'media', 'mutation'],
     routing: ['@page', 'Router', 'guards', 'layout'],

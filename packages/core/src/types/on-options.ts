@@ -34,4 +34,9 @@ export interface OnOptions {
    * (via `closest()`), a direct EventTarget, or a resolver function.
    */
   scope?: OnScope;
+  /**
+   * Named daemon from the nearest application context. Mutually exclusive
+   * with `scope`; daemon listeners do not support DOM selector delegation.
+   */
+  daemon?: string;
 }

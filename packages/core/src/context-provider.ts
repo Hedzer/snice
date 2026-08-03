@@ -1,0 +1,108 @@
+import { IS_CONTROLLER_INSTANCE, ROUTER_CONTEXT } from './symbols';
+import type { AppContext } from './types/app-context';
+
+const CONTEXT_REQUEST_EVENT = '@context/request';
+
+interface ContextRequestDetail {
+  context?: AppContext;
+}
+
+interface ProviderRecord {
+  listener: EventListener;
+}
+
+const providers = new WeakMap<EventTarget, ProviderRecord>();
+
+/** @internal */
+export function hasContextProvider(root: EventTarget): boolean {
+  return providers.has(root);
+}
+
+function contextTarget(source: unknown): EventTarget | null {
+  if (!source || (typeof source !== 'object' && typeof source !== 'function')) {
+    return null;
+  }
+
+  const value = source as any;
+  if (value[IS_CONTROLLER_INSTANCE] === true) {
+    return value.element && typeof value.element.dispatchEvent === 'function'
+      ? value.element
+      : null;
+  }
+
+  return typeof value.dispatchEvent === 'function' ? value as EventTarget : null;
+}
+
+/**
+ * Installs the low-level application-context provider on a concrete event
+ * boundary. Public callers use provideContext(), which also activates the
+ * daemon instances declared by the context.
+ */
+export function installContextProvider(root: EventTarget, context: AppContext): () => void {
+  if (!root || typeof root.addEventListener !== 'function' || typeof root.removeEventListener !== 'function') {
+    throw new TypeError('provideContext() requires an EventTarget root.');
+  }
+  if (!context || typeof context !== 'object') {
+    throw new TypeError('provideContext() requires an application context object.');
+  }
+  if (providers.has(root)) {
+    throw new Error('This root already provides an application context. Release it before providing another.');
+  }
+
+  const listener: EventListener = (event) => {
+    const request = event as CustomEvent<ContextRequestDetail>;
+    if (!request.detail || request.detail.context !== undefined) return;
+
+    request.detail.context = context;
+    request.preventDefault();
+    request.stopPropagation();
+  };
+
+  root.addEventListener(CONTEXT_REQUEST_EVENT, listener);
+  providers.set(root, { listener });
+
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+
+    const current = providers.get(root);
+    if (current?.listener === listener) {
+      root.removeEventListener(CONTEXT_REQUEST_EVENT, listener);
+      providers.delete(root);
+    }
+  };
+}
+
+/**
+ * Resolves the raw application context visible to an element or controller.
+ * A single composed, bubbling request is answered by the nearest
+ * provideContext() root. Router-injected context remains a fallback for a
+ * detached page or controller that cannot currently reach its provider.
+ */
+export function getContext<T extends AppContext = AppContext>(source: unknown): T | undefined {
+  if (!source || (typeof source !== 'object' && typeof source !== 'function')) {
+    return undefined;
+  }
+
+  const target = contextTarget(source);
+  if (target) {
+    const detail: ContextRequestDetail = {};
+    target.dispatchEvent(new CustomEvent<ContextRequestDetail>(CONTEXT_REQUEST_EVENT, {
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+      detail,
+    }));
+    if (detail.context !== undefined) return detail.context as T;
+  }
+
+  const value = source as any;
+  if (value[ROUTER_CONTEXT] !== undefined) {
+    return value[ROUTER_CONTEXT] as T;
+  }
+  if (value[IS_CONTROLLER_INSTANCE] === true && value.element?.[ROUTER_CONTEXT] !== undefined) {
+    return value.element[ROUTER_CONTEXT] as T;
+  }
+  return undefined;
+}

@@ -20,6 +20,7 @@ export * from './observe-options';
 export * from './request-options';
 export * from './respond-options';
 export * from './snice-global';
+export * from './daemon';
 export * from './placard';
 export * from './guard';
 export * from './route-params';

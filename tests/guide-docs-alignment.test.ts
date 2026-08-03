@@ -123,7 +123,7 @@ describe('Guide covers the framework surface', () => {
   // These are the subsystems a reader cannot ship without. Before this suite
   // existed the guide silently omitted routing, request/respond, and observers.
   const requiredSections = [
-    'controllers', 'request-respond', 'observe',
+    'controllers', 'daemons', 'request-respond', 'observe',
     'pages', 'guards',
     'bindings', 'events', 'ai',
   ];

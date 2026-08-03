@@ -1,7 +1,7 @@
 import { Route } from 'pica-route';
 import { routeSpecificity } from './route-specificity';
 import { applyElementFunctionality } from './element';
-import { ROUTER_CONTEXT, CONTEXT_REQUEST_HANDLER, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER, CONTEXT_UPDATE } from './symbols';
+import { ROUTER_CONTEXT, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER, CONTEXT_UPDATE } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
 import { Transition } from './types/transition';
 import { RouterOptions } from './types/router-options';
@@ -12,6 +12,13 @@ import { RouterInstance } from './types/router-instance';
 import { Placard } from './types/placard';
 import { AppContext } from './types/app-context';
 import { Context } from './types/context';
+import { provideContext } from './app-context';
+import { hasContextProvider } from './context-provider';
+
+// Router historically allows a later Router instance to take over the same
+// target. Track only Router-owned provider releases so that handoff remains
+// explicit without weakening duplicate protection for public provideContext().
+const routerContextProviders = new WeakMap<EventTarget, () => void>();
 
 
 /**
@@ -42,9 +49,37 @@ export function Router(options: RouterOptions): RouterInstance {
   let currentLayoutName: string | null = null; // Track current layout name
   let currentLayoutTimestamp: number | null = null; // Track current layout timestamp
   const context = options.context || {}; // Store context for guards
+  let contextProviderRoot: EventTarget | null = null;
+  let releaseContextProvider: (() => void) | null = null;
 
   // Create Context instance for managing router state
   const navigationContext = new Context(context, [], '', {}, options.fetcher);
+
+  function ensureContextProvider(target: Element): void {
+    if (
+      contextProviderRoot === target
+      && releaseContextProvider
+      && routerContextProviders.get(target) === releaseContextProvider
+    ) return;
+
+    releaseContextProvider?.();
+    routerContextProviders.get(target)?.();
+
+    const releaseProvidedContext = provideContext(target, context as AppContext);
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      releaseProvidedContext();
+      if (routerContextProviders.get(target) === release) {
+        routerContextProviders.delete(target);
+      }
+    };
+
+    releaseContextProvider = release;
+    contextProviderRoot = target;
+    routerContextProviders.set(target, release);
+  }
 
   function getCurrentLayoutElement(target: Element): HTMLElement | null {
     const noCurrentLayout = !currentLayoutName || !currentLayoutTimestamp;
@@ -140,7 +175,29 @@ export function Router(options: RouterOptions): RouterInstance {
 
   function setupEventListeners(): void {
     const handler = () => {
-      if (!doc.querySelector(options.target)) return;
+      const target = doc.querySelector(options.target);
+      if (!target) return;
+
+      // A later Router can explicitly take over the same live root. The old
+      // history listener remains installed for backward compatibility, but it
+      // must no longer navigate or replace the new owner's app context.
+      if (
+        contextProviderRoot === target
+        && releaseContextProvider
+        && routerContextProviders.get(target) !== releaseContextProvider
+      ) return;
+
+      // Router has no public disposal API and historically leaves its history
+      // listener installed. Tests and app shells may replace a target with a
+      // new element using the same selector, then initialize a new Router. In
+      // that case the old listener must yield to the provider already owning
+      // the replacement root instead of stealing it on the next hashchange.
+      if (contextProviderRoot !== target && hasContextProvider(target)) {
+        releaseContextProvider?.();
+        releaseContextProvider = null;
+        contextProviderRoot = null;
+        return;
+      }
       navigate(getPath());
     };
 
@@ -164,6 +221,7 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
+    ensureContextProvider(target);
 
     const needsSorting = !is_sorted;
     if (needsSorting) {
@@ -466,6 +524,7 @@ export function Router(options: RouterOptions): RouterInstance {
     if (!target) {
       throw new Error(`Target element not found: ${options.target}`);
     }
+    ensureContextProvider(target);
 
     const myGen = ++navGeneration;
     const stale = () => myGen !== navGeneration;

@@ -39,6 +39,9 @@ export const {
   part,
   Router,
   controller,
+  daemon,
+  provideContext,
+  getContext,
   useNativeElementControllers,
   on,
   dispatch,
@@ -97,6 +100,9 @@ export const SimpleArray = USE_BUILT ? modules.main.SimpleArray : modules.types!
 // Export symbols (all available in full build)
 export const {
   IS_CONTROLLER_INSTANCE,
+  IS_DAEMON_CLASS,
+  IS_DAEMON_INSTANCE,
+  DAEMON_STATE,
   getSymbol,
   CONTROLLER_KEY,
   CONTROLLER_OPERATIONS,
@@ -167,5 +173,6 @@ export type {
   RespondOptions,
   SniceGlobal
 } from '../packages/core/src/types/index.js';
+export type { Response } from '../packages/core/src/request-response.js';
 
 console.log(`🧪 Testing against: ${USE_BUILT ? 'built distribution files' : 'source files'}`);

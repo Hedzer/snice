@@ -8,6 +8,7 @@ import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './parts';
 import { createDebounced, resolveScope } from './utils';
+import { isDaemonInstance, requireDaemonTarget } from './daemon-target';
 
 // Re-export OnOptions for public API
 export type { OnOptions } from './types/on-options';
@@ -86,7 +87,7 @@ export function on(
       // and child registrations pollute parent (and vice versa) via the
       // prototype chain.
       const eventNames = Array.isArray(eventName) ? eventName : [eventName];
-      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}`;
+      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}::daemon:${opts.daemon ?? ''}`;
 
       if (!Object.prototype.hasOwnProperty.call(constructor, ON_METHODS)) {
         constructor[ON_METHODS] = new Set();
@@ -150,7 +151,7 @@ const NON_BUBBLING_EVENTS = new Set([
  * Setup event listeners for an element or controller instance
  * Called automatically during element connection or controller attachment
  */
-export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
+export function setupEventHandlers(instance: any, targetElement: EventTarget) {
   const handlers = instance.constructor[ON_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
@@ -225,12 +226,34 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
     // Apply key modifier wrapper
     const keyModifierMethod = createKeyModifierHandler(boundMethod);
 
-    // Resolve scope: explicit `scope` option redirects the listener target
-    // to document / ancestor / arbitrary EventTarget. Default = host element.
+    // Resolve an explicit DOM scope or an app-context daemon. They are two
+    // distinct addressing models and may not be combined.
     const hasExplicitScope = handlerOptions.scope !== undefined;
+    const hasDaemon = handlerOptions.daemon !== undefined;
+    if (hasExplicitScope && hasDaemon) {
+      console.warn(
+        `[snice/@on] "${handler.eventName}" cannot use both scope and daemon — listener skipped.`
+      );
+      continue;
+    }
+    if ((hasDaemon || isDaemonInstance(instance)) && handler.selector) {
+      console.warn(
+        `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" on a daemon target — listener skipped.`
+      );
+      continue;
+    }
+
+    const hasExplicitTarget = hasExplicitScope || hasDaemon;
     let scopedTarget: EventTarget | null = null;
-    if (hasExplicitScope) {
-      scopedTarget = resolveScope(targetElement, handlerOptions.scope);
+    if (hasDaemon) {
+      try {
+        scopedTarget = requireDaemonTarget(instance, handlerOptions.daemon);
+      } catch (error) {
+        console.warn(`[snice/@on] ${(error as Error).message} Listener "${handler.eventName}" skipped.`);
+        continue;
+      }
+    } else if (hasExplicitScope) {
+      scopedTarget = resolveScope(targetElement as HTMLElement, handlerOptions.scope);
       if (!scopedTarget) {
         // Dev warning — listener silently dropped when scope cannot resolve.
         // Skip attachment so we don't bind to the wrong target.
@@ -246,7 +269,7 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       // Delegated event handling.
       // - Default eventRoot: shadow root if present, else host element.
       // - With explicit scope: attach to the scoped target instead.
-      const eventRoot: EventTarget = hasExplicitScope
+      const eventRoot: EventTarget = hasExplicitTarget
         ? scopedTarget!
         : ((targetElement as any).shadowRoot || targetElement);
 
@@ -297,7 +320,7 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
       // - Default: shadow root + host element (so events inside shadow and on
       //   the host itself both fire). A per-handler Symbol dedupes.
       // - With explicit scope: attach to the scoped target ONLY (no duplication).
-      const shadowRoot = hasExplicitScope ? null : (targetElement as any).shadowRoot;
+      const shadowRoot = hasExplicitTarget ? null : (targetElement as any).shadowRoot;
 
       // Per-handler private Symbol so dedup is scoped to THIS handler's two
       // listeners (shadowRoot + host). Using Symbol.for() with the method name
@@ -327,7 +350,7 @@ export function setupEventHandlers(instance: any, targetElement: HTMLElement) {
         passive: handlerOptions.passive || false,
       };
 
-      if (hasExplicitScope) {
+      if (hasExplicitTarget) {
         scopedTarget!.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
         instance[CLEANUP].events.push({
           target: scopedTarget!,

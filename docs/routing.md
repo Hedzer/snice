@@ -35,7 +35,7 @@ interface RouterOptions {
   document?: Document;               // Override document object (for testing)
   transition?: Transition;           // Global transition config
   layout?: string;                   // Default layout for all pages
-  context?: any;                     // Router context object (shared state)
+  context?: any;                     // App context (shared state and optional daemons)
   fetcher?: Fetcher;                 // Optional fetch middleware (see docs/fetcher.md)
 }
 ```
@@ -66,6 +66,27 @@ const { page, initialize } = Router({
   context: new AppContext()
 });
 ```
+
+Router provides this application context beneath its target before it connects a
+page. That includes explicitly constructed daemon instances:
+
+```typescript
+const session = new SessionDaemon();
+
+Router({
+  target: '#app',
+  type: 'hash',
+  context: {
+    user: null,
+    daemons: { session }
+  }
+});
+```
+
+This uses the same `provideContext(root, context)` mechanism available to apps
+without Router. Descendant elements and attached controllers address the instance
+as `{ daemon: 'session' }`; they do not import `SessionDaemon`. See
+[Daemons](./daemons.md).
 
 ## Page Components
 

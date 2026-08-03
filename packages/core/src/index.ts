@@ -5,6 +5,8 @@ export { SniceElement } from './snice-element';
 export { context as contextProperty } from './element'; // Deprecated: use @context method decorator instead
 export { Router } from './router';
 export { controller, useNativeElementControllers, attachController, detachController, getController } from './controller';
+export { daemon } from './daemon';
+export { provideContext, getContext } from './app-context';
 import { useNativeElementControllers } from './controller';
 
 // Auto-enable native element controllers in browser environments
@@ -16,6 +18,7 @@ export { observe } from './observe';
 export { on } from './on';
 export type { OnOptions } from './on';
 export { request, respond } from './request-response';
+export type { Response } from './request-response';
 export { createRequestHandler } from './create-request-handler';
 export type { RequestRoute, RequestRouteMap, CreateRequestHandlerOptions } from './create-request-handler';
 export { IS_CONTROLLER_INSTANCE, getSymbol } from './symbols';

@@ -109,7 +109,7 @@ describe('Website Build', () => {
 
     it('should include all decorator documentation', () => {
       const decorators = [
-        '@element', '@page', '@controller', '@property', '@state', '@watch',
+        '@element', '@page', '@controller', '@daemon', '@property', '@state', '@watch',
         '@render', '@styles', '@ready', '@dispose', '@query', '@queryAll',
         '@on', '@dispatch', '@context', '@request', '@respond'
       ];
@@ -130,14 +130,15 @@ describe('Website Build', () => {
         'state', 'deep-state', 'roots',
         'bindings', 'forms', 'spreads',
         'conditionals', 'lists', 'async',
-        'ready', 'dispose'
+        'ready', 'dispose', 'daemons'
       ];
       for (const id of sectionIds) expect(guide).toContain(`id="${id}"`);
 
       const APIs = [
         '@state', 'Proxy', 'Reflect', 'SniceElement',
         '...props', '...attrs', '...events', 'repeat(',
-        '@input=${this.updateQuery}', '@ready', '@dispose'
+        '@input=${this.updateQuery}', '@ready', '@dispose', '@daemon',
+        "daemon: 'session'", 'provideContext('
       ];
       for (const api of APIs) expect(guide).toContain(api);
       expect(guide).toContain('href="docs.html#bindings"');

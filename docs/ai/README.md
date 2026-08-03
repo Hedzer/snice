@@ -41,6 +41,7 @@ for depth; read the aggregates when you want the whole surface at once.
 - `bindings.md` - Exact node, attribute, property, event, class, style, spread, controller, sentinel, and form semantics
 - `events.md` - Template event syntax, `@on`, `@dispatch`, delegation, keyboard filters
 - `controllers.md` - Attaching by class or registry name, lifecycle, cleanup
+- `daemons.md` - Explicit app-context daemon instances and communication
 - `routing.md` - Router setup, pages, params, navigation
 - `guards-and-layouts.md` - Route guards, layouts, page transitions
 
@@ -104,6 +105,7 @@ Runtime first, then one bundle per component (any order after runtime):
 - Elements receive data via properties, emit events for actions
 - **Pages orchestrate** - handle routing, call APIs, coordinate elements
 - **Controllers add behavior** - attach to elements for reusable non-visual logic; bind by class in templates (`controller=${MyController}`, preferred) or by name in raw HTML (`controller="name"`)
+- **Daemons hold app-owned state/lifecycle** - construct explicitly, provide through `context.daemons`, communicate by address without importing implementations
 - Put API calls in pages/controllers/services, not in elements
 
 **Properties:**
@@ -198,7 +200,7 @@ class MyCounter extends HTMLElement {
 - Factory: `const hasRole = (role) => (ctx, params) => ctx.user?.role === role`
 
 **Custom AppContext Types:**
-- Snice's `AppContext` interface has: `theme?`, `locale?`, `principal?`, `config?`
+- Snice assigns meaning only to `AppContext.daemons?`; other keys are `unknown`
 - For custom fields (like `user`), extend snice's AppContext:
   ```typescript
   import type { AppContext as SniceAppContext } from 'snice';

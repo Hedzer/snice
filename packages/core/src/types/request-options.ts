@@ -1,4 +1,6 @@
 export interface RequestOptions extends EventInit {
+  /** Named daemon from the nearest application context. */
+  daemon?: string;
   /**
    * Timeout for waiting for responses (in ms) - defaults to 120000ms (2 minutes)
    */

@@ -18,6 +18,7 @@ import { Placard } from './types/placard';
 import { RouteParams } from './types/route-params';
 import { createDeepReactive } from './reactive';
 import { getRenderRoot } from './render-root';
+import { getContext as getAppContext } from './context-provider';
 
 /**
  * Interface that layout components must implement to receive updates
@@ -974,32 +975,13 @@ export function context() {
               return (this as any)[ROUTER_CONTEXT];
             }
 
-            // Resolve dispatch target
-            const isController = (this as any)[IS_CONTROLLER_INSTANCE] === true;
-            let targetElement = isController && (this as any).element ? (this as any).element : this;
+            const resolved = getAppContext(this);
+            if (resolved === undefined) return undefined;
 
-            // Controller was detached
-            if (!targetElement || !targetElement.dispatchEvent) return undefined;
-
-            // Shadow DOM: dispatch on host for proper bubbling
-            if (targetElement.getRootNode && targetElement.getRootNode() instanceof ShadowRoot) {
-              targetElement = (targetElement.getRootNode() as ShadowRoot).host as HTMLElement;
-            }
-
-            // Request context from parent page
-            const detail: any = { target: this };
-            targetElement.dispatchEvent(new CustomEvent('@context/request', {
-              bubbles: true,
-              cancelable: true,
-              detail
-            }));
-
-            // No context provided
-            if (detail.context === undefined) return undefined;
-
-            // Cache and return
-            (this as any)[ROUTER_CONTEXT] = detail.context;
-            return detail.context;
+            // Explicit providers may be nested or released, so do not cache a
+            // dynamically resolved value. Router-owned context is injected on
+            // the instance and returned by the fast path above.
+            return resolved;
           },
           set() {
             // Context is read-only

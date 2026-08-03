@@ -505,6 +505,33 @@ class HomePage extends HTMLElement { }</snice-code-block>
     </div>
 
     <div class="dec-section">
+      <h3><code>@daemon</code></h3>
+      <p class="desc">Mark an explicitly constructed, app-owned state object for request/response and event communication. No singleton or implicit construction.</p>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">@daemon
+class SessionDaemon {
+  @respond('get-session')
+  getSession() { return this.session; }
+
+  @dispatch('session-changed')
+  changed() { return this.session; }
+}
+
+const session = new SessionDaemon();
+const release = provideContext(appRoot, {
+  daemons: { session }
+});</snice-code-block>
+      <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Elements/controllers use the context address, not the class
+@request('get-session', { daemon: 'session' })
+async *load(): Response&lt;Session | null&gt; {
+  return yield {};
+}
+
+@on('session-changed', { daemon: 'session' })
+changed(event: CustomEvent&lt;Session | null&gt;) { /* ... */ }</snice-code-block>
+      <p class="doc-link"><a href="docs.html#daemons">Full documentation →</a></p>
+    </div>
+
+    <div class="dec-section">
       <h3><code>@property</code>, <code>@state</code> & <code>@watch</code></h3>
       <p class="desc">Separate public attribute/property input from internal state, optionally observe nested collections, and watch changes.</p>
       <snice-code-block language="snice" grammar="grammars/snice.json?v=e716039">// Public property: attribute input + reflection
@@ -1823,6 +1850,7 @@ const docsManifest = [
     { id: 'bindings', file: 'bindings.md', title: 'Binding Channels' },
     { id: 'events', file: 'events.md', title: 'Events' },
     { id: 'controllers', file: 'controllers.md', title: 'Controllers' },
+    { id: 'daemons', file: 'daemons.md', title: 'Daemons' },
     { id: 'routing', file: 'routing.md', title: 'Routing' },
     { id: 'guards-and-layouts', file: 'guards-and-layouts.md', title: 'Guards and Layouts' },
   ]},

@@ -1,7 +1,8 @@
-<!-- AI: For the AI-optimized version of this doc, see docs/ai/patterns.md -->
+<!-- AI: For the AI-optimized version of this doc, see docs/ai/request-response.md -->
 # Request/Response API Documentation
 
-Request/Response provides request/response communication between elements and controllers using async generators.
+Request/Response provides request/response communication between elements,
+controllers, and explicitly provided daemons using async generators.
 
 ## Table of Contents
 - [Why Request/Response?](#why-request-response)
@@ -45,6 +46,7 @@ function request(requestName: string, options?: RequestOptions): MethodDecorator
 function respond(requestName: string, options?: RespondOptions): MethodDecorator
 
 interface RequestOptions extends EventInit {
+  daemon?: string;          // Named daemon from nearest provided app context
   timeout?: number;         // Response timeout in ms (default: 120000ms = 2 minutes)
   discoveryTimeout?: number; // Handler discovery timeout in ms (default: 50ms)
   debounce?: number;        // Debounce requests by specified ms
@@ -54,14 +56,20 @@ interface RequestOptions extends EventInit {
 }
 
 interface RespondOptions {
+  daemon?: string;     // Install responder on named daemon target
   debounce?: number;   // Debounce responses by specified ms
   throttle?: number;   // Throttle responses by specified ms
 }
 
-// Recommended type helper for request generator return types:
-type RequestResult<T> = AsyncGenerator<any, T, any> | Promise<T>;
-// Define this in your project — it satisfies both the generator and the caller
+// Public return type for methods decorated with @request:
+type Response<T = any> = T | any;
 ```
+
+TypeScript cannot model a method decorator changing an async generator into a
+promise-returning method. `Response<T>` is the pragmatic annotation for that
+boundary: it keeps strict projects usable while documenting the response value
+for readers and tooling. At runtime, calling the decorated method returns a
+promise for `T`.
 
 #### Response Debounce/Throttle
 
@@ -92,8 +100,7 @@ Elements use async generators to make requests. The element stays visual — it 
 
 ```typescript
 import { element, request, property, render, html } from 'snice';
-
-type RequestResult<T> = AsyncGenerator<any, T, any> | Promise<T>;
+import type { Response } from 'snice';
 
 @element('product-card')
 class ProductCard extends HTMLElement {
@@ -102,7 +109,7 @@ class ProductCard extends HTMLElement {
   @property() price = '';
 
   @request('fetch-product')
-  async *loadProduct(): RequestResult<void> {
+  async *loadProduct(): Response<void> {
     const product = await (yield { id: this.productId });
     this.name = product.name;
     this.price = product.price;
@@ -164,7 +171,7 @@ The timeout system has **two separate timeouts**:
   discoveryTimeout: 50,   // 50ms to find handler
   timeout: 30000          // 30s for actual processing
 })
-async *compute(): RequestResult<any> {
+async *compute(): Response<any> {
   return await (yield data);
 }
 ```
@@ -174,13 +181,13 @@ async *compute(): RequestResult<any> {
 ```typescript
 // Debounce: wait for typing to stop before searching
 @request('search', { debounce: 300 })
-async *search(): RequestResult<any[]> {
+async *search(): Response<any[]> {
   return await (yield { query: this.searchTerm });
 }
 
 // Throttle: limit analytics to 1 per second
 @request('track', { throttle: 1000 })
-async *trackEvent(): RequestResult<void> {
+async *trackEvent(): Response<void> {
   await (yield { event: 'scroll', position: window.scrollY });
 }
 ```
@@ -196,7 +203,7 @@ class SafeLoader extends HTMLElement {
   @property() data: any = null;
 
   @request('load-data', { timeout: 5000 })
-  async *loadData(): RequestResult<void> {
+  async *loadData(): Response<void> {
     try {
       this.data = await (yield { id: this.dataId });
       this.error = '';
@@ -290,7 +297,7 @@ class LiveTicker extends HTMLElement {
   @property() symbol = 'BTC';
 
   @request('subscribe-ticker')
-  async *subscribe(): RequestResult<void> {
+  async *subscribe(): Response<void> {
     await (yield { symbol: this.symbol });
   }
 
