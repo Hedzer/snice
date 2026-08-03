@@ -127,6 +127,11 @@ document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready
 ```
 
+If an `@ready()` handler throws or returns a rejected promise, `ready` rejects
+with that failure after the handlers finish. Snice also logs the handler name.
+Await `ready` during tests and application setup so initialization failures
+cannot look like successfully rendered, half-initialized elements.
+
 ## Watch Decorator
 
 Use `@watch` to react to property changes. Handlers receive three arguments: `(oldValue, newValue, propertyName)`.

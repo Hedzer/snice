@@ -40,6 +40,13 @@ describe('my-counter', () => {
 
 Awaiting `ready` on an element that never connects will hang; append it to the document first.
 
+`ready` rejects when any `@ready()` handler throws or returns a rejected
+promise. Always await it: the rejection points at the initialization failure
+instead of allowing later assertions to fail against a half-initialized
+element. Snice form controls also retain their native-input/proxy fallback in
+DOM runners such as jsdom that expose only the ARIA subset of
+`ElementInternals`.
+
 ## Reading the DOM
 
 Use the element's render root directly:

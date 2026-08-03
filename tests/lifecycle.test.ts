@@ -342,6 +342,30 @@ describe('element lifecycle', () => {
       expect(order).toEqual(['first', 'second']);
     });
 
+    it('rejects the ready promise when a ready handler fails', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      @element('ready-handler-failure')
+      class ReadyHandlerFailure extends HTMLElement {
+        @ready()
+        async initialize() {
+          await Promise.resolve();
+          throw new Error('ready initialization failed');
+        }
+      }
+
+      const el = document.createElement('ready-handler-failure') as any;
+      const readyPromise = el.ready;
+      document.body.appendChild(el);
+
+      await expect(readyPromise).rejects.toThrow('ready initialization failed');
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error in @ready handler initialize:',
+        expect.any(Error)
+      );
+      errorSpy.mockRestore();
+    });
+
     it('should handle manual cleanup with @dispose', async () => {
       let counter = 0;
       let intervalId: any;

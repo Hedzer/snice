@@ -7,7 +7,7 @@ import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
@@ -119,9 +119,13 @@ export function applyElementFunctionality(constructor: any) {
       get() {
         if (!this[READY_PROMISE]) {
           // Create a pending promise if not yet initialized
-          this[READY_PROMISE] = new Promise<void>((resolve) => {
+          this[READY_PROMISE] = new Promise<void>((resolve, reject) => {
             this[READY_RESOLVE] = resolve;
+            this[READY_REJECT] = reject;
           });
+          // Preserve a rejected ready promise for explicit awaiters without
+          // producing an unhandled rejection when nobody reads `.ready`.
+          this[READY_PROMISE].catch(() => {});
         }
         return this[READY_PROMISE];
       },
@@ -185,9 +189,11 @@ export function applyElementFunctionality(constructor: any) {
       // If ready promise was already created (controller attached before connected), use existing resolve
       // Otherwise create the ready promise now
       if (!this[READY_PROMISE]) {
-        this[READY_PROMISE] = new Promise<void>((resolve) => {
+        this[READY_PROMISE] = new Promise<void>((resolve, reject) => {
           this[READY_RESOLVE] = resolve;
+          this[READY_REJECT] = reject;
         });
+        this[READY_PROMISE].catch(() => {});
       }
 
       // Only run initialization logic once, but re-establish handlers on reconnection
@@ -349,6 +355,7 @@ export function applyElementFunctionality(constructor: any) {
         if (this[READY_RESOLVE]) {
           this[READY_RESOLVE]();
           this[READY_RESOLVE] = null;
+          this[READY_REJECT] = null;
         }
         return;
       }
@@ -375,25 +382,39 @@ export function applyElementFunctionality(constructor: any) {
         if (this[READY_RESOLVE]) {
           this[READY_RESOLVE]();
           this[READY_RESOLVE] = null;
+          this[READY_REJECT] = null;
         }
         return;
       }
 
       // Run @ready handlers serially, awaiting each
+      let readyFailed = false;
+      let readyFailure: unknown;
       if (readyHandlers) {
         for (const handler of readyHandlers) {
           try {
             await handler.method.call(this);
           } catch (error) {
             console.error(`Error in @ready handler ${handler.methodName}:`, error);
+            if (!readyFailed) {
+              readyFailed = true;
+              readyFailure = error;
+            }
           }
         }
       }
 
-      // NOW resolve — render done AND all @ready handlers complete
-      if (this[READY_RESOLVE]) {
+      // NOW settle — render done AND every @ready handler completed. A failed
+      // handler rejects the public signal instead of leaving a half-initialized
+      // element indistinguishable from a successful one.
+      if (readyFailed && this[READY_REJECT]) {
+        this[READY_REJECT](readyFailure);
+        this[READY_RESOLVE] = null;
+        this[READY_REJECT] = null;
+      } else if (this[READY_RESOLVE]) {
         this[READY_RESOLVE]();
         this[READY_RESOLVE] = null;
+        this[READY_REJECT] = null;
       }
     };
     

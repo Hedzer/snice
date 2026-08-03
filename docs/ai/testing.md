@@ -39,6 +39,9 @@ describe('my-counter', () => {
 
 Gotcha: awaiting `ready` on an element that never connects hangs — append it to the document first.
 
+- `ready` rejects with the first thrown/rejected `@ready()` failure; always await it.
+- jsdom's partial `ElementInternals` is supported; form controls keep native-input/proxy fallback behavior when `setFormValue`/`setValidity` are absent.
+
 ## Reading the DOM
 
 ```typescript

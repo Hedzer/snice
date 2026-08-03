@@ -75,6 +75,9 @@ document.body.appendChild(el);
 await (el as any).ready; // Wait for element to be ready
 ```
 
+- A thrown/rejected `@ready()` handler is logged and rejects `ready` with the first failure.
+- Await `ready` in tests/setup to surface half-initialized elements.
+
 ## @watch()
 
 Reacts to property changes. Handler signature: `(oldValue, newValue, propertyName)`.

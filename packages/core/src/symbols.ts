@@ -20,6 +20,7 @@ export const DAEMON_STATE = getSymbol('daemon-state');
 // Internal element state symbols
 export const READY_PROMISE = getSymbol('ready-promise');
 export const READY_RESOLVE = getSymbol('ready-resolve');
+export const READY_REJECT = getSymbol('ready-reject');
 export const RENDERED_PROMISE = getSymbol('rendered-promise');
 export const RENDERED_RESOLVE = getSymbol('rendered-resolve');
 // Set when a render is requested but dropped because the element was
