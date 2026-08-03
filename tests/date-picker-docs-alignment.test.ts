@@ -43,7 +43,7 @@ describe('Date-picker documentation alignment', () => {
   it('keeps canonical form state and validity explicit in implementation source', () => {
     expect(source).toContain("@property({ attribute: 'value' })");
     expect(source).toContain('defaultValue');
-    expect(source).toContain('this.internals.setFormValue(this.value, this.inputValue)');
+    expect(source).toContain('applyElementInternalsFormValue(this.internals, this.value, this.inputValue)');
     expect(source).toContain('formResetCallback()');
     expect(source).toContain('formDisabledCallback(disabled: boolean)');
     expect(source).toContain('formStateRestoreCallback(');

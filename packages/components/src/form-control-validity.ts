@@ -25,6 +25,21 @@ export function hasValidityError(flags: ValidityStateFlags): boolean {
   return validityKeys.some(key => Boolean(flags[key]));
 }
 
+type ElementInternalsFormValue = File | string | FormData | null;
+
+/** Keep ElementInternals form-value updates safe in partial DOM implementations. */
+export function applyElementInternalsFormValue(
+  internals: ElementInternals | undefined,
+  value: ElementInternalsFormValue,
+  state?: ElementInternalsFormValue
+): void {
+  // jsdom and other DOM test implementations can expose the ARIA portion of
+  // ElementInternals without the form-associated custom-element methods.
+  if (!internals || typeof internals.setFormValue !== 'function') return;
+  if (state === undefined) internals.setFormValue(value);
+  else internals.setFormValue(value, state);
+}
+
 /** Keep ElementInternals validity updates identical across form controls. */
 export function applyElementInternalsValidity(
   internals: ElementInternals | undefined,

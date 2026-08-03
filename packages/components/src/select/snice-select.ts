@@ -2,7 +2,7 @@ import { element, property, state, query, queryAll, watch, dispatch, request, re
 import cssContent from './snice-select.css?inline';
 import type { SelectSize, SelectOption, SniceSelectElement } from './snice-select.types';
 import { FormLabelAssociation } from '../form-label-association';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import './snice-option';
 
@@ -524,7 +524,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   private syncFormValue() {
-    this.internals?.setFormValue(this.value, this.value);
+    applyElementInternalsFormValue(this.internals, this.value, this.value);
   }
 
   private get validationProxy(): HTMLInputElement {

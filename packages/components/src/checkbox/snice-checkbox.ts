@@ -1,6 +1,7 @@
 import { element, property, state, query, watch, dispatch, ready, render, styles, html, css, on } from 'snice';
 import cssContent from './snice-checkbox.css?inline';
 import type { CheckboxSize, SniceCheckboxElement } from './snice-checkbox.types';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 @element('snice-checkbox', { formAssociated: true, delegatesFocus: true })
 export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
@@ -312,12 +313,11 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
   }
 
   private syncFormState() {
-    if (this.internals) {
-      this.internals.setFormValue(
-        this.checked ? this.formValue : null,
-        this.checked ? 'checked' : 'unchecked'
-      );
-    }
+    applyElementInternalsFormValue(
+      this.internals,
+      this.checked ? this.formValue : null,
+      this.checked ? 'checked' : 'unchecked'
+    );
     this.syncValidity();
   }
 
@@ -341,14 +341,12 @@ export class SniceCheckbox extends HTMLElement implements SniceCheckboxElement {
     const displayedInvalid = this.invalid || this.constraintInvalid;
     this.input?.setAttribute('aria-invalid', String(displayedInvalid));
     this.checkbox?.classList.toggle('checkbox--invalid', displayedInvalid);
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity({ valueMissing, customError }, message, this.input);
-    } else {
-      this.internals.setValidity({ valueMissing, customError }, message);
-    }
+    applyElementInternalsValidity(
+      this.internals,
+      { valueMissing, customError },
+      hasError ? message : '',
+      this.input
+    );
   }
 
   @dispatch('checkbox-change', { bubbles: true, composed: true })

@@ -3,6 +3,7 @@ import cssContent from './snice-range-slider.css?inline';
 import type { RangeSliderOrientation, SniceRangeSliderElement } from './snice-range-slider.types';
 import { FormLabelAssociation } from '../form-label-association';
 import {
+  applyElementInternalsFormValue,
   applyElementInternalsValidity,
   findFormOwner,
   hasValidityError,
@@ -321,7 +322,7 @@ export class SniceRangeSlider extends HTMLElement implements SniceRangeSliderEle
 
   private syncFormValue() {
     const value = `${this.valueLow},${this.valueHigh}`;
-    this.internals?.setFormValue(value, value);
+    applyElementInternalsFormValue(this.internals, value, value);
   }
 
   private syncFormState() {

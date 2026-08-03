@@ -58,7 +58,7 @@ describe('Key-value documentation alignment', () => {
     expect(source).toContain('formResetCallback()');
     expect(source).toContain('formDisabledCallback(disabled: boolean)');
     expect(source).toContain('formStateRestoreCallback(');
-    expect(source).toContain('setFormValue(this.valueState, this.valueState)');
+    expect(source).toContain('applyElementInternalsFormValue(this.internals, this.valueState, this.valueState)');
     expect(source).toContain('valueMissing');
     expect(source).toContain('badInput');
     expect(source).toContain("get type(): 'key-value'");

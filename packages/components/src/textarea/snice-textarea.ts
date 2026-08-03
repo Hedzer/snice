@@ -1,7 +1,7 @@
 import { element, property, state, query, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-textarea.css?inline';
 import type { TextareaSize, TextareaVariant, TextareaResize, SniceTextareaElement } from './snice-textarea.types';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
 import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-textarea', { formAssociated: true, delegatesFocus: true })
@@ -268,7 +268,7 @@ export class SniceTextarea extends HTMLElement implements SniceTextareaElement {
   }
 
   private syncFormValue() {
-    this.internals?.setFormValue(this.value, this.value);
+    applyElementInternalsFormValue(this.internals, this.value, this.value);
   }
 
   private syncFormState() {

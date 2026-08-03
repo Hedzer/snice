@@ -2,7 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, reconnect, dis
 import cssContent from './snice-file-upload.css?inline';
 import type { FileUploadSize, FileUploadVariant, SniceFileUploadElement } from './snice-file-upload.types';
 import { FormLabelAssociation } from '../form-label-association';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
 @element('snice-file-upload', { formAssociated: true, delegatesFocus: true })
 export class SniceFileUpload extends HTMLElement implements SniceFileUploadElement {
@@ -379,29 +379,27 @@ export class SniceFileUpload extends HTMLElement implements SniceFileUploadEleme
   }
 
   private updateFormValue() {
-    if (!this.internals) return;
-
     if (this.selectedFiles.length === 0) {
-      this.internals.setFormValue(null, '');
+      applyElementInternalsFormValue(this.internals, null, '');
       return;
     }
 
     if (!this.name) {
       const state = new FormData();
       for (const file of this.selectedFiles) state.append('file', file);
-      this.internals.setFormValue(null, state);
+      applyElementInternalsFormValue(this.internals, null, state);
       return;
     }
 
     if (!this.multiple && this.selectedFiles.length === 1) {
       const [file] = this.selectedFiles;
-      this.internals.setFormValue(file, file);
+      applyElementInternalsFormValue(this.internals, file, file);
       return;
     }
 
     const formData = new FormData();
     for (const file of this.selectedFiles) formData.append(this.name, file);
-    this.internals.setFormValue(formData, formData);
+    applyElementInternalsFormValue(this.internals, formData, formData);
   }
 
   private syncFormState() {

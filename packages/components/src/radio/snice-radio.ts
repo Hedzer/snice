@@ -1,6 +1,7 @@
 import { element, property, state, query, on, watch, dispatch, ready, render, styles, html, css } from 'snice';
 import cssContent from './snice-radio.css?inline';
 import type { RadioSize, RadioVariant, SniceRadioElement } from './snice-radio.types';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 @element('snice-radio', { formAssociated: true, delegatesFocus: true })
 export class SniceRadio extends HTMLElement implements SniceRadioElement {
@@ -434,12 +435,11 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
   }
 
   private syncOwnFormState(group = this.findGroupRadios()) {
-    if (this.internals) {
-      this.internals.setFormValue(
-        this.checked ? this.formValue : null,
-        this.checked ? 'checked' : 'unchecked'
-      );
-    }
+    applyElementInternalsFormValue(
+      this.internals,
+      this.checked ? this.formValue : null,
+      this.checked ? 'checked' : 'unchecked'
+    );
     this.syncValidity(group);
   }
 
@@ -465,14 +465,12 @@ export class SniceRadio extends HTMLElement implements SniceRadioElement {
     const displayedInvalid = this.invalid || this.constraintInvalid;
     this.input?.setAttribute('aria-invalid', String(displayedInvalid));
     this.radio?.classList.toggle('radio--invalid', displayedInvalid);
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity({ valueMissing, customError }, message, this.input);
-    } else {
-      this.internals.setValidity({ valueMissing, customError }, message);
-    }
+    applyElementInternalsValidity(
+      this.internals,
+      { valueMissing, customError },
+      hasError ? message : '',
+      this.input
+    );
   }
 
   private syncGroupState() {

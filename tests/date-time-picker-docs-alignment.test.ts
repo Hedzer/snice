@@ -54,7 +54,7 @@ describe('Date-time-picker documentation alignment', () => {
     expect(source).toContain('formResetCallback()');
     expect(source).toContain('formDisabledCallback(disabled: boolean)');
     expect(source).toContain('formStateRestoreCallback(');
-    expect(source).toContain('setFormValue(canonical, this.inputValue)');
+    expect(source).toContain('applyElementInternalsFormValue(this.internals, canonical, this.inputValue)');
     expect(source).toContain('badInput');
     expect(source).toContain('rangeUnderflow');
     expect(source).toContain('rangeOverflow');

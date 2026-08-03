@@ -2,7 +2,7 @@ import { element, property, state, render, styles, dispatch, ready, dispose, rec
 import type { SniceTagInputElement } from './snice-tag-input.types';
 import tagInputStyles from './snice-tag-input.css?inline';
 import { FormLabelAssociation } from '../form-label-association';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
 @element('snice-tag-input', { formAssociated: true, delegatesFocus: true })
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
@@ -174,7 +174,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
   private syncFormValue() {
     const value = JSON.stringify(this.value);
-    this.internals?.setFormValue(value, value);
+    applyElementInternalsFormValue(this.internals, value, value);
   }
 
   private syncFormState() {

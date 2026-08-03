@@ -42,8 +42,9 @@ describe('Radio documentation alignment', () => {
   it('keeps the implementation contract explicit in metadata source', () => {
     expect(source).toContain("@property({ type: Boolean, attribute: 'checked' })");
     expect(source).toContain("@dispatch('radio-change'");
-    expect(source).toContain('this.internals.setFormValue(');
-    expect(source).toContain('this.internals.setValidity({ valueMissing, customError }');
+    expect(source).toContain('applyElementInternalsFormValue(');
+    expect(source).toContain('applyElementInternalsValidity(');
+    expect(source).toContain('{ valueMissing, customError }');
     expect(source).toContain("this.dispatchEvent(new Event('change'");
     expect(source).toContain("root.querySelectorAll('snice-radio')");
   });

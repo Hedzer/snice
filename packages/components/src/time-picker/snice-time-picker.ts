@@ -2,6 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, dispose, recon
 import cssContent from './snice-time-picker.css?inline';
 import type { TimePickerFormat, TimePickerStep, TimePickerVariant, TimePickerSize, SniceTimePickerElement } from './snice-time-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 interface TimeParts {
   hours: number;
@@ -827,11 +828,9 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
 
   private syncFormState() {
     const canonical = this.getCanonicalValue();
-    if (this.internals) {
-      // The first value is the successful-control value. The second preserves
-      // exact visible text for browser history/autofill restoration.
-      this.internals.setFormValue(canonical, this.inputValue);
-    }
+    // The first value is the successful-control value. The second preserves
+    // exact visible text for browser history/autofill restoration.
+    applyElementInternalsFormValue(this.internals, canonical, this.inputValue);
     this.syncValidity();
   }
 
@@ -911,14 +910,7 @@ export class SniceTimePicker extends HTMLElement implements SniceTimePickerEleme
       this.input.classList.toggle('input--invalid', invalid);
     }
 
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity(flags, message, this.input);
-    } else {
-      this.internals.setValidity(flags, message);
-    }
+    applyElementInternalsValidity(this.internals, flags, message, this.input);
   }
 
   private get fallbackFormOwner(): HTMLFormElement | null {

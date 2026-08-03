@@ -2,6 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, reconnect, dis
 import cssContent from './snice-slider.css?inline';
 import type { SliderSize, SliderVariant, SniceSliderElement } from './snice-slider.types';
 import {
+  applyElementInternalsFormValue,
   applyElementInternalsValidity,
   findFormOwner,
   hasValidityError,
@@ -328,7 +329,7 @@ export class SniceSlider extends HTMLElement implements SniceSliderElement {
 
   private syncFormValue() {
     const value = String(this.value);
-    this.internals?.setFormValue(value, value);
+    applyElementInternalsFormValue(this.internals, value, value);
   }
 
   private syncFormState() {

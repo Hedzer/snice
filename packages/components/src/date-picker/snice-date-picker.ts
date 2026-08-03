@@ -2,6 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, dispose, recon
 import cssContent from './snice-date-picker.css?inline';
 import type { DatePickerSize, DatePickerVariant, DateFormat, SniceDatePickerElement, DatePickerValue } from './snice-date-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 @element('snice-date-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceDatePicker extends HTMLElement implements SniceDatePickerElement {
@@ -938,11 +939,9 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
   }
 
   private syncFormState() {
-    if (this.internals) {
-      // Empty controls remain successful controls (`name=` submits ""), while
-      // the restore state keeps the exact visible text for history/autofill.
-      this.internals.setFormValue(this.value, this.inputValue);
-    }
+    // Empty controls remain successful controls (`name=` submits ""), while
+    // the restore state keeps the exact visible text for history/autofill.
+    applyElementInternalsFormValue(this.internals, this.value, this.inputValue);
     this.syncValidity();
   }
 
@@ -985,14 +984,7 @@ export class SniceDatePicker extends HTMLElement implements SniceDatePickerEleme
     this.input?.setCustomValidity(hasError ? message : '');
     this.input?.setAttribute('aria-invalid', String(displayedInvalid));
     this.input?.classList.toggle('input--invalid', displayedInvalid);
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity(flags, message, this.input);
-    } else {
-      this.internals.setValidity(flags, message);
-    }
+    applyElementInternalsValidity(this.internals, flags, message, this.input);
   }
 
   /**

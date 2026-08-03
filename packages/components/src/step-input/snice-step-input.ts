@@ -3,6 +3,7 @@ import cssContent from './snice-step-input.css?inline';
 import type { StepInputSize, SniceStepInputElement } from './snice-step-input.types';
 import { FormLabelAssociation } from '../form-label-association';
 import {
+  applyElementInternalsFormValue,
   applyElementInternalsValidity,
   findFormOwner,
   hasValidityError,
@@ -220,7 +221,7 @@ export class SniceStepInput extends HTMLElement implements SniceStepInputElement
 
   private syncFormValue() {
     const value = String(this.value);
-    this.internals?.setFormValue(value, value);
+    applyElementInternalsFormValue(this.internals, value, value);
   }
 
   private syncFormState() {

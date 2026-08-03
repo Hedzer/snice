@@ -1,7 +1,7 @@
 import { element, property, state, query, on, watch, dispatch, ready, reconnect, dispose, render, styles, html, css } from 'snice';
 import cssContent from './snice-switch.css?inline';
 import type { SwitchSize, SniceSwitchElement } from './snice-switch.types';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-switch', { formAssociated: true, delegatesFocus: true })
@@ -220,7 +220,8 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
   }
 
   private syncFormState() {
-    this.internals?.setFormValue(
+    applyElementInternalsFormValue(
+      this.internals,
       this.checked ? this.value : null,
       this.checked ? 'checked' : 'unchecked'
     );

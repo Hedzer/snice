@@ -2,7 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, reconnect, dis
 import cssContent from './snice-color-picker.css?inline';
 import type { ColorPickerSize, ColorPickerFormat, SniceColorPickerElement } from './snice-color-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError } from '../form-control-validity';
 
 @element('snice-color-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceColorPicker extends HTMLElement implements SniceColorPickerElement {
@@ -359,7 +359,7 @@ export class SniceColorPicker extends HTMLElement implements SniceColorPickerEle
   }
 
   private syncFormValue() {
-    this.internals?.setFormValue(this.value, this.value);
+    applyElementInternalsFormValue(this.internals, this.value, this.value);
   }
 
   private syncFormState() {

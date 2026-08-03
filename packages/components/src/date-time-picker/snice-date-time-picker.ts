@@ -2,6 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, dispose, recon
 import cssContent from './snice-date-time-picker.css?inline';
 import type { DateTimePickerVariant, DateTimePickerTimeFormat, DateTimePickerSize, DateTimePickerDateFormat, SniceDateTimePickerElement } from './snice-date-time-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 interface DateTimeParts {
   year: number;
@@ -1154,11 +1155,9 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
 
   private syncFormState() {
     const canonical = this.getISOValue();
-    if (this.internals) {
-      // The first value is the successful-control value. The second preserves
-      // exact visible text for browser history/autofill restoration.
-      this.internals.setFormValue(canonical, this.inputValue);
-    }
+    // The first value is the successful-control value. The second preserves
+    // exact visible text for browser history/autofill restoration.
+    applyElementInternalsFormValue(this.internals, canonical, this.inputValue);
     this.syncValidity();
   }
 
@@ -1232,14 +1231,7 @@ export class SniceDateTimePicker extends HTMLElement implements SniceDateTimePic
       this.input.classList.toggle('input--invalid', invalid);
     }
 
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity(flags, message, this.input);
-    } else {
-      this.internals.setValidity(flags, message);
-    }
+    applyElementInternalsValidity(this.internals, flags, message, this.input);
   }
 
   private get fallbackFormOwner(): HTMLFormElement | null {

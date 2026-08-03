@@ -2,6 +2,7 @@ import { element, property, state, query, queryAll, watch, dispatch, ready, obse
 import cssContent from './snice-key-value.css?inline';
 import './snice-kv-pair';
 import type { KeyValueItem, KeyValueVariant, KeyValueMode, SniceKeyValueElement, SniceKvPairElement } from './snice-key-value.types';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 @element('snice-key-value', { formAssociated: true, delegatesFocus: true })
 export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
@@ -563,7 +564,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
   }
 
   private syncFormState() {
-    if (this.internals) this.internals.setFormValue(this.valueState, this.valueState);
+    applyElementInternalsFormValue(this.internals, this.valueState, this.valueState);
     this.syncValidity();
     queueMicrotask(() => this.syncValidity());
   }
@@ -574,11 +575,7 @@ export class SniceKeyValue extends HTMLElement implements SniceKeyValueElement {
     const message = this.getValidationMessage(flags);
     const anchor = this.getValidationAnchor(flags);
 
-    if (this.internals) {
-      if (!hasError) this.internals.setValidity({});
-      else if (anchor) this.internals.setValidity(flags, message, anchor);
-      else this.internals.setValidity(flags, message);
-    }
+    applyElementInternalsValidity(this.internals, flags, message, anchor);
 
     const proxy = this.validationProxy;
     proxy.setCustomValidity(hasError ? message : '');

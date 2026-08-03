@@ -8,6 +8,7 @@ import type {
   SniceDateRangePickerElement,
 } from './snice-date-range-picker.types';
 import { FormLabelAssociation } from '../form-label-association';
+import { applyElementInternalsFormValue, applyElementInternalsValidity } from '../form-control-validity';
 
 @element('snice-date-range-picker', { formAssociated: true, delegatesFocus: true })
 export class SniceDateRangePicker extends HTMLElement implements SniceDateRangePickerElement {
@@ -1095,9 +1096,9 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
       const formData = new FormData();
       formData.append(`${this.name}-start`, this.startDate ? this.toCanonicalDate(this.startDate) : '');
       formData.append(`${this.name}-end`, this.endDate ? this.toCanonicalDate(this.endDate) : '');
-      this.internals.setFormValue(formData, JSON.stringify([this.start, this.end]));
-    } else if (this.internals) {
-      this.internals.setFormValue(null);
+      applyElementInternalsFormValue(this.internals, formData, JSON.stringify([this.start, this.end]));
+    } else {
+      applyElementInternalsFormValue(this.internals, null);
     }
     this.syncValidity();
   }
@@ -1157,14 +1158,7 @@ export class SniceDateRangePicker extends HTMLElement implements SniceDateRangeP
     this.input?.setAttribute('aria-invalid', String(displayedInvalid));
     this.input?.classList.toggle('input--invalid', displayedInvalid);
 
-    if (!this.internals) return;
-    if (!hasError) {
-      this.internals.setValidity({});
-    } else if (this.input) {
-      this.internals.setValidity(flags, message, this.input);
-    } else {
-      this.internals.setValidity(flags, message);
-    }
+    applyElementInternalsValidity(this.internals, flags, message, this.input);
   }
 
   /**

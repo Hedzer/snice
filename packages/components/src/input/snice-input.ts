@@ -2,7 +2,7 @@ import { element, property, state, query, watch, dispatch, ready, reconnect, dis
 import { renderIcon } from '../utils';
 import cssContent from './snice-input.css?inline';
 import type { InputType, InputSize, InputVariant, SniceInputElement } from './snice-input.types';
-import { applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
+import { applyElementInternalsFormValue, applyElementInternalsValidity, findFormOwner, hasValidityError, validityFlagsFrom } from '../form-control-validity';
 import { FormLabelAssociation } from '../form-label-association';
 
 @element('snice-input', { formAssociated: true, delegatesFocus: true })
@@ -370,7 +370,7 @@ export class SniceInput extends HTMLElement implements SniceInputElement {
   }
 
   private syncFormValue() {
-    this.internals?.setFormValue(this.value, this.value);
+    applyElementInternalsFormValue(this.internals, this.value, this.value);
   }
 
   private syncFormState() {
