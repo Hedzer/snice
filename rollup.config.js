@@ -31,10 +31,18 @@ const banner = `/*!
  * GENERATED FILE — DO NOT EDIT. Source: src/. Rebuild: npm run build:core
  */`;
 
+function failOnCoreCircularDependency(warning, warn) {
+  if (warning.code === 'CIRCULAR_DEPENDENCY') {
+    throw new Error(`Core build circular dependency: ${warning.message}`);
+  }
+
+  warn(warning);
+}
 
 const baseConfig = {
   input: `${coreSource}/index.ts`,
   external: [],
+  onwarn: failOnCoreCircularDependency,
   plugins: [
     resolve(),
     typescript({
@@ -47,6 +55,7 @@ const baseConfig = {
 const createSubmoduleConfig = (name) => ({
   input: `${coreSource}/${name}.ts`,
   external: [],
+  onwarn: failOnCoreCircularDependency,
   plugins: [
     resolve(),
     typescript({

@@ -6,7 +6,7 @@
 import { CLEANUP, ON_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
-import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './parts';
+import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
 import { createDebounced, resolveScope } from './utils';
 import { isDaemonInstance, requireDaemonTarget } from './daemon-target';
 
