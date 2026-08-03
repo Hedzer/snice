@@ -27,6 +27,10 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    // Component tests import production styles with `?inline`. Without CSS
+    // processing Vitest replaces every stylesheet with an empty string, so a
+    // broken or missing stylesheet can pass the entire unit suite unnoticed.
+    css: true,
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
