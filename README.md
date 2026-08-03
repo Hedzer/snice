@@ -983,6 +983,7 @@ See [DEVELOPMENT.md](./DEVELOPMENT.md) for build system details
 
 ### Developer Documentation
 - [DEVELOPMENT.md](./DEVELOPMENT.md) - Build system, testing, and contributing to Snice
+- [Dumb-agent gauntlet](./.ai/gauntlet.md) - Maintainer-only local model loop for hardening `snice check`
 
 ## License
 

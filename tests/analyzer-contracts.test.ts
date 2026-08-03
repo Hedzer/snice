@@ -334,12 +334,46 @@ describe('Snice dependency usage (project-level)', () => {
     expect(unused[0]).toMatchObject({ severity: 'error', file: 'package.json' });
   });
 
-  it('does not flag a legitimate root import from snice', () => {
-    expect(hasUnused({ 'package.json': manifest(), 'src/main.ts': "import { html } from 'snice';" })).toBe(false);
+  it('flags a namespace import that is never referenced', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.ts': "import * as snice from 'snice';\nexport class SessionDaemon {}"
+    })).toBe(true);
   });
 
-  it('does not flag a legitimate snice/react import', () => {
-    expect(hasUnused({ 'package.json': manifest(), 'src/main.tsx': "import { SniceProvider } from 'snice/react';" })).toBe(false);
+  it('does not flag a referenced namespace import', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.ts': "import * as snice from 'snice';\nexport const view = snice.html`<p>Ready</p>`;"
+    })).toBe(false);
+  });
+
+  it('does not flag a referenced root import from snice', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.ts': "import { html } from 'snice';\nexport const view = html`<p>Ready</p>`;"
+    })).toBe(false);
+  });
+
+  it('does not mistake a namespace name inside a string for code usage', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.ts': "import * as snice from 'snice';\nexport const label = 'snice';"
+    })).toBe(true);
+  });
+
+  it('counts a namespace used inside a template expression', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.ts': "import * as snice from 'snice';\nexport const view = otherTemplate`value: ${snice}`;"
+    })).toBe(false);
+  });
+
+  it('does not flag a referenced snice/react import', () => {
+    expect(hasUnused({
+      'package.json': manifest(),
+      'src/main.tsx': "import { SniceProvider } from 'snice/react';\nexport const Provider = SniceProvider;"
+    })).toBe(false);
   });
 
   it('does not flag a deep component registration import', () => {

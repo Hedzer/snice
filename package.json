@@ -142,6 +142,7 @@
     "test:react": "npm run build:react && npm run test:react:prepared",
     "test:react:prepared": "vitest run tests/react-adapters",
     "test:website": "vitest run tests/website.test.ts",
+    "gauntlet": "node tooling/testing/run-gauntlet.js",
     "test:browser": "npm run test:browser:framework && npm run test:browser:website",
     "test:browser:framework": "npm run build:distribution && npm run test:browser:framework:prepared",
     "test:browser:framework:prepared": "node tooling/testing/run-live-tests.js --workers=4",

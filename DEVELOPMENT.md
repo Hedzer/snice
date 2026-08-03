@@ -617,6 +617,7 @@ npm run test:browsers:install  # Install Chromium, Firefox, and WebKit
 npm run test:browser:framework # Required framework/table E2E in all three engines
 npm run test:browser:website   # Generated deployment E2E in all three engines
 npm run test:browser           # Both browser gates
+npm run gauntlet               # Blind local-model checker gauntlet
 ```
 
 `npm test` runs source and built-distribution suites, CDN and React checks, the
@@ -626,6 +627,25 @@ manage their own local servers. The coverage scope is the rendering engine:
 `element.ts`, `parts.ts`, `reactive.ts`, `render-root.ts`, `render.ts`,
 `repeat.ts`, `snice-element.ts`, and `template.ts`; aggregate statements,
 branches, functions, and lines must each be strictly greater than 90%.
+
+### Dumb-Agent Checker Gauntlet
+
+Maintainers can run small local models as blind Snice builders to find checker
+gaps. The command downloads and verifies its pinned llama.cpp runtime and GGUF
+models automatically, then preserves each raw response plus checker,
+TypeScript, and production-build logs under the ignored `.local/` tree.
+
+```bash
+npm run gauntlet                              # daemon sample, all models
+npm run gauntlet -- --sample events
+npm run gauntlet -- --prompt "Write one complete src/main.ts ..."
+npm run gauntlet -- --prompt-file ./prompt.txt
+npm run gauntlet -- --models qwen3-0.6b,lfm2.5-350m
+```
+
+See [`.ai/gauntlet.md`](./.ai/gauntlet.md) for artifact verification,
+scheduling, samples, output layout, and the required false-positive/
+false-negative classification loop.
 
 ---
 

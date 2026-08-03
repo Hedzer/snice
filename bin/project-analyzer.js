@@ -1105,7 +1105,7 @@ const RULE_DEFINITIONS = [
     id: 'snice/unused-dependency',
     severity: 'error',
     category: 'configuration',
-    description: 'Reject a project that declares the Snice dependency but never imports, registers, or renders it.',
+    description: 'Reject a project that declares the Snice dependency but never uses, registers, or renders it.',
     projectOnly: true,
     check() {}
   },
@@ -1240,7 +1240,12 @@ export function analyzeProject(files) {
       if (COMPONENT_MODULE_PATHS.has(entry.path) && !isTypeOnlyImport(entry)) {
         registrations.add(entry.path);
       }
-      if (entry.path === 'snice' || entry.path.startsWith('snice/')) usesSnice = true;
+      if (
+        (entry.path === 'snice' || entry.path.startsWith('snice/')) &&
+        importHasProjectUse(analyzable, entry)
+      ) {
+        usesSnice = true;
+      }
     }
     if (!usesSnice && findOpeningTags(analyzable, Object.keys(COMPONENT_CONTRACTS)).length) {
       usesSnice = true;
@@ -1413,8 +1418,8 @@ export function analyzeProject(files) {
       diagnostics.push({
         severity: 'error',
         ruleId: 'snice/unused-dependency',
-        message: 'package.json declares the snice dependency, but no project source imports from snice or snice/react, registers a Snice component, or renders a released snice-* custom element.',
-        fix: "Use the dependency (import from 'snice' or 'snice/react', register a component via its 'snice/components/<name>/snice-<name>' path, or render a snice-* element), or remove snice from package.json.",
+        message: 'package.json declares the snice dependency, but no project source references a Snice import, registers a Snice component, or renders a released snice-* custom element.',
+        fix: "Use an imported binding from 'snice' or 'snice/react', add a side-effect registration import from the documented snice/components path, render a released snice-* element, or remove snice from package.json.",
         file: manifest.filename,
         line: location.line,
         column: location.column
@@ -1502,13 +1507,20 @@ export function findImports(source) {
     const statement = source.slice(start.index, start.index + 4000);
     const sideEffect = statement.match(/^\s*import\s*(['"])([^'"]+)\1\s*;?/);
     if (sideEffect) {
-      imports.push({ index: start.index, clause: null, path: sideEffect[2], typeOnly: false });
+      imports.push({
+        index: start.index,
+        end: start.index + sideEffect[0].length,
+        clause: null,
+        path: sideEffect[2],
+        typeOnly: false
+      });
       continue;
     }
     const from = statement.match(/^\s*import\s+(?:type\s+)?([\s\S]*?)\s+from\s*(['"])([^'"]+)\2\s*;?/);
     if (!from || /\n\s*import\b/.test(from[1])) continue;
     imports.push({
       index: start.index,
+      end: start.index + from[0].length,
       clause: from[1].trim(),
       path: from[3],
       typeOnly: /^\s*import\s+type\b/.test(statement)
@@ -1759,6 +1771,120 @@ export function isTypeOnlyImport(entry) {
   if (!braces) return false;
   const specifiers = braces[1].split(',').map(specifier => specifier.trim()).filter(Boolean);
   return specifiers.length > 0 && specifiers.every(specifier => /^type\s+/.test(specifier));
+}
+
+function importHasProjectUse(source, entry) {
+  // Side-effect imports are themselves runtime usage (and are the documented
+  // way to register individual Snice custom elements).
+  if (!entry.clause) return true;
+
+  const namespace = entry.clause.match(/\*\s+as\s+([A-Za-z_$][\w$]*)/);
+  // The observed gauntlet miss is specifically a cargo-culted namespace
+  // import. Named/default import liveness belongs to TypeScript or a linter;
+  // broadening this project rule into an incomplete identifier-use checker
+  // would create false positives for otherwise valid authored imports.
+  if (!namespace) return true;
+
+  const outsideImport = `${source.slice(0, entry.index)}${' '.repeat(entry.end - entry.index)}${source.slice(entry.end)}`;
+  return hasCodeIdentifier(outsideImport, namespace[1]);
+}
+
+function hasCodeIdentifier(source, target) {
+  const stack = [{ kind: 'code', templateExpression: false, braces: 0 }];
+  let index = 0;
+  while (index < source.length) {
+    const frame = stack.at(-1);
+    const character = source[index];
+
+    if (frame.kind === 'quoted') {
+      if (character === '\\') index += 2;
+      else {
+        index++;
+        if (character === frame.quote) stack.pop();
+      }
+      continue;
+    }
+    if (frame.kind === 'regex') {
+      if (character === '\\') {
+        index += 2;
+      } else if (character === '[') {
+        frame.characterClass = true;
+        index++;
+      } else if (character === ']' && frame.characterClass) {
+        frame.characterClass = false;
+        index++;
+      } else if (character === '/' && !frame.characterClass) {
+        index++;
+        while (/[A-Za-z]/.test(source[index] ?? '')) index++;
+        stack.pop();
+      } else {
+        index++;
+      }
+      continue;
+    }
+    if (frame.kind === 'template') {
+      if (character === '\\') {
+        index += 2;
+      } else if (character === '`') {
+        stack.pop();
+        index++;
+      } else if (character === '$' && source[index + 1] === '{') {
+        stack.push({ kind: 'code', templateExpression: true, braces: 1 });
+        index += 2;
+      } else {
+        index++;
+      }
+      continue;
+    }
+
+    if (character === "'" || character === '"') {
+      stack.push({ kind: 'quoted', quote: character });
+      index++;
+      continue;
+    }
+    if (character === '`') {
+      stack.push({ kind: 'template' });
+      index++;
+      continue;
+    }
+    if (character === '/' && startsRegexLiteral(source, index)) {
+      stack.push({ kind: 'regex', characterClass: false });
+      index++;
+      continue;
+    }
+    if (frame.templateExpression && character === '{') {
+      frame.braces++;
+      index++;
+      continue;
+    }
+    if (frame.templateExpression && character === '}') {
+      frame.braces--;
+      index++;
+      if (frame.braces === 0) stack.pop();
+      continue;
+    }
+    if (/[A-Za-z_$]/.test(character)) {
+      let end = index + 1;
+      while (/[\w$]/.test(source[end] ?? '')) end++;
+      if (source.slice(index, end) === target) return true;
+      index = end;
+      continue;
+    }
+    index++;
+  }
+  return false;
+}
+
+function startsRegexLiteral(source, slashIndex) {
+  let previous = slashIndex - 1;
+  while (previous >= 0 && /\s/.test(source[previous])) previous--;
+  if (previous < 0 || /[([{=:;,!?&|+*%^~<>-]/.test(source[previous])) return true;
+  if (!/[\w$]/.test(source[previous])) return false;
+  let start = previous;
+  while (start > 0 && /[\w$]/.test(source[start - 1])) start--;
+  return /^(?:return|case|throw|else|do|typeof|instanceof|in|of|yield|await|void|delete)$/.test(
+    source.slice(start, previous + 1)
+  );
 }
 
 function reactExportReplacement(name) {

@@ -44,12 +44,24 @@ npm run test:browsers:install   # Install Chromium + Firefox + WebKit
 npm run test:browser:framework  # Required framework/table E2E in all 3 engines
 npm run test:browser:website    # Generated deployment E2E in all 3 engines
 npm run test:browser            # Both browser gates
+npm run gauntlet                # Blind local-model checker gauntlet
 ```
 
 `npm test` is intentionally comprehensive. Core coverage is measured across
 `element.ts`, `parts.ts`, `reactive.ts`, `render-root.ts`, `render.ts`,
 `repeat.ts`, `snice-element.ts`, and `template.ts`; every aggregate metric must
 be strictly greater than 90%. Browser commands manage their own local servers.
+
+## Dumb-Agent Gauntlet
+
+Internal checker hardening: `npm run gauntlet [-- --sample daemon|events|request-response]`.
+
+- Inline prompt: `--prompt "..."`; file prompt: `--prompt-file path`.
+- Subset: `--models qwen3-0.6b,lfm2.5-350m`; default: all.
+- Auto-downloads pinned llama.cpp + size/SHA-256-pinned GGUFs into `.local/`.
+- Produces blind raw output plus checker, TypeScript, and Vite logs per model.
+- No token/time cap; exact-output repetition is preserved and classified.
+- Full workflow/classification rules: `.ai/gauntlet.md`.
 
 ## File Structure
 

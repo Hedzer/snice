@@ -1,0 +1,5 @@
+You are writing code for a TypeScript application that uses the Snice web-component framework directly (no React or other UI framework). You have no Snice documentation, source code, examples, skills, or previous attempts. Work only from your existing knowledge and invent APIs when unsure.
+
+Write one complete src/main.ts file. Define a reusable visual product-search element and an attached controller. The element must ask for filtered product data through Snice request/response communication, render loading, success, empty, and failure states, and issue a new request when a search button is activated. The controller must own the in-memory product data and respond to the request. Use strict TypeScript and make the working interaction visible in a browser.
+
+Output only the exact TypeScript file contents with no Markdown fences, headings, explanation, or other files.

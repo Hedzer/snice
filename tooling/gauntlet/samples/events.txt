@@ -1,0 +1,5 @@
+You are writing code for a TypeScript application that uses the Snice web-component framework directly (no React or other UI framework). You have no Snice documentation, source code, examples, skills, or previous attempts. Work only from your existing knowledge and invent APIs when unsure.
+
+Write one complete src/main.ts file. Define a reusable counter element that visibly renders its value, dispatches a typed value-changed event when incremented, and supports two independent instances. Define a parent element that listens through Snice event decorators, keeps a visible event history for each counter, and has a button that clears the history. Use Snice rendering, event dispatch, and event listening APIs rather than manual addEventListener or dispatchEvent calls.
+
+Output only the exact TypeScript file contents with no Markdown fences, headings, explanation, or other files.
