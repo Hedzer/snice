@@ -1,3 +1,19 @@
+# [7.2.0](https://github.com/Hedzer/snice/compare/v7.1.1...v7.2.0) (2026-08-03)
+
+
+### Bug Fixes
+
+* **core:** harden declarative lifecycle diagnostics ([e9512b5](https://github.com/Hedzer/snice/commit/e9512b513f18e2ec7a4710c1d3210965ff7bd64f))
+* **core:** honor native autofocus after rendering ([9892079](https://github.com/Hedzer/snice/commit/98920797a61f95b0ac5b4ec2501218b090c235a3))
+* **core:** reject ready on initialization failure ([002028f](https://github.com/Hedzer/snice/commit/002028f1c5a42f1fade9f1d57235aeeeb2ca90e9))
+* **forms:** support partial ElementInternals ([509da0c](https://github.com/Hedzer/snice/commit/509da0c73dd2c8587d2784b04e37ef05b12a87a5))
+* **test:** load component styles in vitest ([4d62049](https://github.com/Hedzer/snice/commit/4d62049e9cdc4f0c4b7b7fd5be389244bdd3f86f))
+
+
+### Features
+
+* **analyzer:** detect silent declarative failures ([895c60e](https://github.com/Hedzer/snice/commit/895c60ea31e1fb65970478a4688b61206b0b2a5e))
+
 ## [7.1.1](https://github.com/Hedzer/snice/compare/v7.1.0...v7.1.1) (2026-08-03)
 
 
