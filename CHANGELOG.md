@@ -1,3 +1,11 @@
+# [7.3.0](https://github.com/Hedzer/snice/compare/v7.2.0...v7.3.0) (2026-08-04)
+
+
+### Features
+
+* **analyzer:** enforce architecture ownership boundaries ([b7fe990](https://github.com/Hedzer/snice/commit/b7fe9905873520f4ff569a1c4fc87b9136eb69c8))
+* **router:** support explicit route tie breaks ([464647a](https://github.com/Hedzer/snice/commit/464647a2a318373ac921776f4310e8ae3eac4dfa))
+
 # [7.2.0](https://github.com/Hedzer/snice/compare/v7.1.1...v7.2.0) (2026-08-03)
 
 
