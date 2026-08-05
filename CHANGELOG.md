@@ -1,3 +1,11 @@
+# [7.4.0](https://github.com/Hedzer/snice/compare/v7.3.0...v7.4.0) (2026-08-05)
+
+
+### Features
+
+* **cli:** add diagnostic suppressions ([4ba4004](https://github.com/Hedzer/snice/commit/4ba4004350160d5cffe1b94f4fd2aa07f6cef1fe))
+* **core:** improve controller and testing contracts ([e81769e](https://github.com/Hedzer/snice/commit/e81769ec24db22308b87afa5c4345473dddd1c4e))
+
 # [7.3.0](https://github.com/Hedzer/snice/compare/v7.2.0...v7.3.0) (2026-08-04)
 
 
