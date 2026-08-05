@@ -807,7 +807,16 @@ See [Daemons](./daemons.md).
 
 ## Custom Events
 
-### Dispatching Manually
+Prefer `@dispatch` for a static custom event emitted from a Snice element or a
+controller's host. The decorator supplies the standard bubbling and composed
+behavior, uses the method return value as `detail`, and keeps debounce,
+throttle, and scope declarative.
+
+Manual dispatch remains valid when code needs direct access to the Event
+object, a dynamic event name, the cancellation boolean returned by
+`dispatchEvent()`, or a target other than the Snice host.
+
+### Manual Escape Hatch
 
 ```typescript
 @element('manual-dispatcher')

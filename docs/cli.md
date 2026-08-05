@@ -62,6 +62,29 @@ wherever the project convention places it.
 
 Both accept `--json` for CI.
 
+### Diagnostic codes and `.sniceignore`
+
+Every error, warning, and suggestion has a stable code in human and JSON
+output. When a project intentionally accepts a finding, create `.sniceignore`
+in the project root. Prefer the narrowest entry:
+
+```text
+# One exact diagnostic
+snice/prefer-dispatch-decorator src/components/legacy-filter.ts:42:5
+
+# Every instance in one file
+snice/prefer-dispatch-decorator src/components/legacy-filter.ts
+
+# Every instance in the project
+snice/prefer-dispatch-decorator
+```
+
+`code path:line` is also accepted. Paths are project-relative and entries are
+exact rather than glob patterns. Suppressed diagnostics are omitted from both
+text and JSON output and do not affect the exit status. The file applies to
+`check`, `doctor`, and `validate`, including doctor codes such as
+`snice-skill`.
+
 ## AI Setup
 
 ```bash

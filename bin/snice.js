@@ -14,7 +14,7 @@ import {
 import { execFile } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
-import { basename, dirname, join, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { analyzeProject, findImports, isTypeOnlyImport, maskComments } from './project-analyzer.js';
@@ -26,6 +26,7 @@ const packageRoot = join(__dirname, '..');
 const packageJson = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 const argv = process.argv.slice(2);
 const command = argv[0];
+const DIAGNOSTIC_IGNORE_FILENAME = '.sniceignore';
 
 function help() {
   console.log(`Snice CLI ${packageJson.version}
@@ -51,6 +52,9 @@ Commands:
 
 AI setup:
   npx snice init-ai   Install version-matched guidance before an agent writes Snice code.
+
+Diagnostics:
+  .sniceignore        Suppress diagnostic codes globally or at an exact source location.
 
 Build options:
   --output=<dir>       Output directory (default: ./dist/cdn)
@@ -207,21 +211,79 @@ function walkSource(root) {
 }
 
 function validateProject(targetDir, json = false) {
-  const issues = collectValidationIssues(targetDir);
+  const ignored = readDiagnosticIgnores(targetDir);
+  const issues = collectValidationIssues(targetDir, ignored);
   renderValidation(issues, json);
   return issues;
 }
 
-function collectValidationIssues(targetDir) {
+function collectValidationIssues(targetDir, ignored = readDiagnosticIgnores(targetDir)) {
   const sourceRoot = existsSync(join(targetDir, 'src')) ? join(targetDir, 'src') : targetDir;
   const projectFiles = ['package.json', 'tsconfig.json', 'index.html']
     .map(filename => join(targetDir, filename))
     .filter(existsSync);
   const files = [...new Set([...projectFiles, ...walkSource(sourceRoot)])].sort();
-  return analyzeProject(files.map(file => ({
+  const issues = analyzeProject(files.map(file => ({
     filename: file,
     source: readFileSync(file, 'utf8')
   })));
+  return filterIgnoredDiagnostics(issues, ignored, targetDir);
+}
+
+function readDiagnosticIgnores(targetDir) {
+  const path = join(targetDir, DIAGNOSTIC_IGNORE_FILENAME);
+  if (!existsSync(path)) return [];
+
+  const entries = [];
+  for (const authoredLine of readFileSync(path, 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/)) {
+    const line = authoredLine.replace(/\s+#.*$/, '').trim();
+    if (!line || line.startsWith('#')) continue;
+    const separator = line.search(/\s/);
+    const code = separator < 0 ? line : line.slice(0, separator);
+    const locator = separator < 0 ? '' : line.slice(separator).trim();
+    if (!locator) {
+      entries.push({ code });
+      continue;
+    }
+
+    let file = locator;
+    let lineNumber;
+    let column;
+    const exact = /^(.*):(\d+):(\d+)$/.exec(locator);
+    const lineOnly = exact ? null : /^(.*):(\d+)$/.exec(locator);
+    if (exact) {
+      file = exact[1];
+      lineNumber = Number(exact[2]);
+      column = Number(exact[3]);
+    } else if (lineOnly) {
+      file = lineOnly[1];
+      lineNumber = Number(lineOnly[2]);
+    }
+    if (!file) continue;
+    entries.push({ code, file: normalizeDiagnosticPath(file), line: lineNumber, column });
+  }
+  return entries;
+}
+
+function filterIgnoredDiagnostics(diagnostics, ignored, targetDir) {
+  if (!ignored.length) return diagnostics;
+  return diagnostics.filter(diagnostic => !ignored.some(entry => {
+    const code = diagnostic.code ?? diagnostic.ruleId;
+    if (entry.code !== code) return false;
+    if (!entry.file) return true;
+    if (!diagnostic.file) return false;
+    const absolute = isAbsolute(diagnostic.file)
+      ? diagnostic.file
+      : resolve(targetDir, diagnostic.file);
+    if (normalizeDiagnosticPath(relative(targetDir, absolute)) !== entry.file) return false;
+    if (entry.line !== undefined && diagnostic.line !== entry.line) return false;
+    if (entry.column !== undefined && diagnostic.column !== entry.column) return false;
+    return true;
+  }));
+}
+
+function normalizeDiagnosticPath(path) {
+  return path.replaceAll('\\', '/').replace(/^\.\//, '');
 }
 
 function renderValidation(issues, json = false) {
@@ -230,7 +292,7 @@ function renderValidation(issues, json = false) {
   else {
     for (const issue of issues) {
       console.log(
-        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.ruleId}\n` +
+        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.code}\n` +
         `  ${issue.message}\n  ${issue.fix}`
       );
     }
@@ -280,7 +342,8 @@ function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
 }
 
 async function doctor(targetDir, json = false) {
-  const findings = await collectDoctorFindings(targetDir);
+  const ignored = readDiagnosticIgnores(targetDir);
+  const findings = await collectDoctorFindings(targetDir, ignored);
   renderDoctor(findings, json);
   return findings;
 }
@@ -381,7 +444,7 @@ async function probeDecoratorTransform(targetDir, add, projectPackage) {
   }
 }
 
-async function collectDoctorFindings(targetDir) {
+async function collectDoctorFindings(targetDir, ignored = readDiagnosticIgnores(targetDir)) {
   const findings = [];
   const add = (severity, code, message) => findings.push({ severity, code, message });
   const projectPackage = readJson(join(targetDir, 'package.json'));
@@ -443,7 +506,7 @@ async function collectDoctorFindings(targetDir) {
 
   await probeDecoratorTransform(targetDir, add, projectPackage);
 
-  return findings;
+  return filterIgnoredDiagnostics(findings, ignored, targetDir);
 }
 
 function renderDoctor(findings, json = false) {
@@ -451,15 +514,16 @@ function renderDoctor(findings, json = false) {
   const warnings = findings.filter(item => item.severity === 'warning').length;
   if (json) console.log(JSON.stringify({ ok: errors === 0, findings }, null, 2));
   else {
-    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.message}`);
+    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.code} ${finding.message}`);
     console.log(`Doctor finished with ${errors} error(s) and ${warnings} warning(s).`);
   }
   if (errors) process.exitCode = 1;
 }
 
 async function checkProject(targetDir, json = false) {
-  const findings = await collectDoctorFindings(targetDir);
-  const issues = collectValidationIssues(targetDir);
+  const ignored = readDiagnosticIgnores(targetDir);
+  const findings = await collectDoctorFindings(targetDir, ignored);
+  const issues = collectValidationIssues(targetDir, ignored);
   const ok = !findings.some(item => item.severity === 'error') &&
     !issues.some(item => item.severity === 'error');
 
@@ -467,12 +531,12 @@ async function checkProject(targetDir, json = false) {
     console.log(JSON.stringify({ ok, findings, issues }, null, 2));
   } else {
     console.log('Project configuration:');
-    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.message}`);
+    for (const finding of findings) console.log(`[${finding.severity.toUpperCase()}] ${finding.code} ${finding.message}`);
     console.log('\nSnice source:');
     if (!issues.length) console.log('No Snice authoring issues found.');
     for (const issue of issues) {
       console.log(
-        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.ruleId}\n` +
+        `[${issue.severity.toUpperCase()}] ${issue.file ?? ''}:${issue.line}:${issue.column} ${issue.code}\n` +
         `  ${issue.message}\n  ${issue.fix}`
       );
     }

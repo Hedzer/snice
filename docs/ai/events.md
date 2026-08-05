@@ -379,7 +379,13 @@ methods themselves default to their own private target. See
 
 ## Custom events
 
-Dispatching manually:
+Prefer `@dispatch` for a static custom event emitted from a Snice element or a
+controller's host. It supplies the standard bubbling/composed behavior, uses
+the method return value as `detail`, and keeps event timing options declarative.
+
+Manual dispatch remains a valid low-level escape hatch when code needs the
+Event object, a dynamic event name, `dispatchEvent()`'s cancellation boolean,
+or a non-host target:
 
 ```typescript
 notify() {

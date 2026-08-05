@@ -12,22 +12,11 @@ reconstruct Snice APIs from Lit or generic web-component conventions.
 
 Make this decision before creating files or choosing decorators:
 
-- **Visual behavior belongs in the element.** Rendering, internal DOM, focus,
-  keyboard behavior, visual state, and translation of internal-part events into
-  the element's semantic events stay in the `@element` class.
-- **Application behavior specific to a set of elements belongs in a
-  controller.** API/storage access, business rules, and app-specific reactions
-  that exist for those elements stay in an `@controller` class.
-- **Element orchestration belongs in the page.** A `@page` composes elements,
-  passes properties, handles their events, binds their controllers, and
-  coordinates the screen. Routing is one page concern; it is not the definition
-  of the page's role.
+- **Element:** visual behavior, rendering, internal DOM, focus, keyboard behavior, visual state, and semantic events.
+- **Controller:** application behavior specific to a set of elements, including API/storage access and business rules.
+- **Page:** element orchestration: composition, properties, events, controller binding, and screen coordination. Routing is only one page concern.
 
-Do not attach a controller to the page host or move orchestration into a “page
-controller.” Do not move visual behavior into a controller merely to make an
-element smaller. A host-free reusable function may stay a plain module wherever
-the project convention puts it. State plus lifecycle belongs in an explicitly
-constructed `@daemon`, not a singleton.
+Do not attach a controller to a page host, create a “page controller,” or move visual behavior into a controller to shrink an element. Host-free reusable functions may stay plain modules. State plus lifecycle belongs in an explicitly constructed `@daemon`, never a singleton.
 
 Examples: focus/internal buttons → element; element-specific API behavior → controller;
 coordinating search, results, and dialog elements → page; state plus lifecycle → daemon.
@@ -84,6 +73,8 @@ Run `npx snice check` after changing Snice code. It combines package,
 configuration, import, hallucination, and component-recommendation checks.
 Use `npx snice doctor` or `npx snice validate` only when isolating the
 configuration or source half of a failed check.
+
+Diagnostics expose stable codes. After reading the referenced AI docs and verifying intentional acceptance, the agent may record the narrowest suppression in project-root `.sniceignore`: `code path:line:column` (one diagnostic), `code path` (one file), or `code` (global). Use global only when the project rejects the rule. Never suppress merely to pass a gate; comment non-obvious reasons.
 
 ## Verify
 

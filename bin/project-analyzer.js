@@ -807,6 +807,29 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/prefer-dispatch-decorator',
+    severity: 'suggestion',
+    category: 'events',
+    description: 'Prefer @dispatch for static CustomEvents emitted from a Snice host.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+
+      const declarations = [
+        ...findSniceElementClasses(context.source).map(declaration => ({ declaration, role: 'element' })),
+        ...findDecoratedClasses(context.source, 'controller').map(declaration => ({ declaration, role: 'controller' }))
+      ];
+
+      for (const { declaration, role } of declarations) {
+        for (const dispatch of findManualCustomEventDispatches(declaration.body, role)) {
+          context.report(declaration.bodyStart + dispatch.index, {
+            message: `Manual host dispatch of "${dispatch.eventName}" duplicates the standard @dispatch CustomEvent path.`,
+            fix: `Prefer an emitter method decorated with @dispatch('${dispatch.eventName}') and return the detail payload directly. Keep dispatchEvent() when code needs the Event object, a dynamic event name, or the cancellation boolean. Review docs/ai/events.md.`
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/custom-event-contract',
     severity: 'error',
     category: 'events',
@@ -1465,7 +1488,7 @@ const RULE_DEFINITIONS = [
  */
 export const PROJECT_ANALYZER_RULES = Object.freeze(
   RULE_DEFINITIONS.map(({ id, severity, category, description }) =>
-    Object.freeze({ id, severity, category, description })
+    Object.freeze({ id, code: id, severity, category, description })
   )
 );
 
@@ -1476,6 +1499,7 @@ export const PROJECT_ANALYZER_RULES = Object.freeze(
  * @param {string} [filename=''] Optional filename included in every diagnostic.
  * @returns {Array<{
  *   severity: 'error'|'warning'|'suggestion',
+ *   code: string,
  *   ruleId: string,
  *   message: string,
  *   fix: string,
@@ -1499,6 +1523,7 @@ export function analyzeSource(source, filename = '') {
     const location = sourceLocation(source, Math.max(0, nonSource.index));
     return [{
       severity: 'error',
+      code: 'snice/non-source-content',
       ruleId: 'snice/non-source-content',
       message: nonSource.message,
       fix: nonSource.fix,
@@ -1526,6 +1551,7 @@ export function analyzeSource(source, filename = '') {
         seen.add(key);
         const diagnostic = {
           severity: rule.severity,
+          code: rule.id,
           ruleId: rule.id,
           message: detail.message,
           fix: detail.fix,
@@ -2040,7 +2066,9 @@ export function analyzeProject(files) {
     }
   }
 
-  return diagnostics.sort(compareProjectDiagnostics);
+  return diagnostics
+    .map(diagnostic => diagnostic.code ? diagnostic : { ...diagnostic, code: diagnostic.ruleId })
+    .sort(compareProjectDiagnostics);
 }
 
 /**
@@ -2288,6 +2316,61 @@ function findSniceElementClasses(source) {
     }
   }
   return declarations;
+}
+
+/**
+ * Find standalone, static CustomEvent dispatches that @dispatch can express
+ * without changing control flow. Calls whose return value is consumed, whose
+ * event name is dynamic, or whose target is not the Snice host are deliberately
+ * left alone as valid low-level event code.
+ */
+function findManualCustomEventDispatches(body, role) {
+  const dispatches = [];
+  const pattern = role === 'controller'
+    ? /\bthis\s*\.\s*element\s*(?:\?\.\s*|\.\s*)dispatchEvent\s*\(/g
+    : /\bthis\s*\.\s*dispatchEvent\s*\(/g;
+
+  for (const match of body.matchAll(pattern)) {
+    const lineStart = body.lastIndexOf('\n', match.index) + 1;
+    if (body.slice(lineStart, match.index).trim()) continue;
+
+    const dispatchOpen = body.indexOf('(', match.index);
+    const dispatchClose = findMatchingDelimiter(body, dispatchOpen, '(', ')');
+    if (dispatchOpen < 0 || dispatchClose < 0) continue;
+
+    let afterDispatch = dispatchClose + 1;
+    while (body[afterDispatch] === ' ' || body[afterDispatch] === '\t') afterDispatch++;
+    if (body[afterDispatch] !== ';') continue;
+    const lineEnd = body.indexOf('\n', afterDispatch);
+    const remainder = body.slice(afterDispatch + 1, lineEnd < 0 ? body.length : lineEnd);
+    if (remainder.trim()) continue;
+
+    let cursor = dispatchOpen + 1;
+    while (/\s/.test(body[cursor] ?? '')) cursor++;
+    if (!body.startsWith('new', cursor) || /[\w$]/.test(body[cursor + 3] ?? '')) continue;
+    cursor += 3;
+    while (/\s/.test(body[cursor] ?? '')) cursor++;
+    if (!body.startsWith('CustomEvent', cursor) || /[\w$]/.test(body[cursor + 11] ?? '')) continue;
+    cursor += 11;
+    while (/\s/.test(body[cursor] ?? '')) cursor++;
+
+    if (body[cursor] === '<') {
+      const genericClose = findMatchingDelimiter(body, cursor, '<', '>');
+      if (genericClose < 0) continue;
+      cursor = genericClose + 1;
+      while (/\s/.test(body[cursor] ?? '')) cursor++;
+    }
+
+    if (body[cursor] !== '(') continue;
+    cursor++;
+    while (/\s/.test(body[cursor] ?? '')) cursor++;
+    const eventName = /^(['"])([^'"]+)\1/.exec(body.slice(cursor));
+    if (!eventName) continue;
+
+    dispatches.push({ index: match.index, eventName: eventName[2] });
+  }
+
+  return dispatches;
 }
 
 function findElementDecoratorTag(source, index) {

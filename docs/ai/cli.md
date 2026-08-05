@@ -59,6 +59,28 @@ Non-blocking architecture suggestions:
 
 Both `doctor` and `validate` accept `--json`.
 
+## Diagnostic codes and `.sniceignore`
+
+Every error, warning, and suggestion has a stable `code` in JSON and text
+output. Create `.sniceignore` at the project root to suppress an accepted
+diagnostic. Entries are exact; glob patterns are not used.
+
+```text
+# One exact diagnostic (preferred)
+snice/prefer-dispatch-decorator src/components/legacy-filter.ts:42:5
+
+# Every instance in one file
+snice/prefer-dispatch-decorator src/components/legacy-filter.ts
+
+# The rule everywhere in the project
+snice/prefer-dispatch-decorator
+```
+
+`code path:line` is also accepted. Paths are project-relative. A code-only
+entry suppresses the rule globally, including its effect on the command's exit
+status; use it only when the project intentionally rejects that rule. The same
+file applies to `check`, `doctor`, and `validate`.
+
 ## init-ai
 
 ```bash

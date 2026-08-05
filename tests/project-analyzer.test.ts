@@ -51,6 +51,7 @@ describe('Snice project analyzer API', () => {
   it('publishes unique, stable rule metadata', () => {
     const ids = PROJECT_ANALYZER_RULES.map(rule => rule.id);
     expect(new Set(ids).size).toBe(ids.length);
+    expect(PROJECT_ANALYZER_RULES.every(rule => rule.code === rule.id)).toBe(true);
     expect(PROJECT_ANALYZER_RULES).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -77,6 +78,7 @@ describe('Snice project analyzer API', () => {
     expect(JSON.parse(JSON.stringify(analyzeSource(source, 'src/home.ts')))).toEqual([
       {
         severity: 'error',
+        code: 'snice/router-page-source',
         ruleId: 'snice/router-page-source',
         message: "The page decorator is returned by Router(); it is not exported from 'snice'.",
         fix: "Export { page } from the application's router module and import it from that local module.",
@@ -86,6 +88,7 @@ describe('Snice project analyzer API', () => {
       },
       {
         severity: 'suggestion',
+        code: 'snice/recommend-modal',
         ruleId: 'snice/recommend-modal',
         message: 'A native dialog is being used where Snice can provide focus trapping, backdrop dismissal, and accessible modal behavior.',
         fix: 'Review docs/ai/components/modal.md and replace the custom implementation when its contract fits.',
@@ -809,6 +812,59 @@ describe('local reactive contract checks', () => {
 });
 
 describe('declarative architecture smell checks', () => {
+  it('prefers @dispatch for replaceable manual host CustomEvents', () => {
+    const element = [
+      "@element('filter-panel')",
+      'class FilterPanel extends HTMLElement {',
+      '  emit(value: string) {',
+      '    this.dispatchEvent(',
+      "      new CustomEvent<FilterChangeDetail>('filter-change', {",
+      '        detail: { value }, bubbles: true, composed: true',
+      '      })',
+      '    );',
+      '  }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(element, 'src/components/filter-panel.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          code: 'snice/prefer-dispatch-decorator',
+          ruleId: 'snice/prefer-dispatch-decorator',
+          severity: 'suggestion'
+        })
+      ]));
+
+    const controller = [
+      "@controller('filter-controller')",
+      'class FilterController {',
+      '  element: HTMLElement | null = null;',
+      '  emit(value: string) {',
+      "    this.element?.dispatchEvent(new CustomEvent('filter-change', { detail: { value } }));",
+      '  }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(controller, 'src/controllers/filter.ts'))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'snice/prefer-dispatch-decorator' })
+      ]));
+  });
+
+  it('keeps manual dispatch valid when code uses low-level dispatch semantics', () => {
+    const source = [
+      "@element('cancelable-panel')",
+      'class CancelablePanel extends HTMLElement {',
+      '  emit(name: string) {',
+      "    return this.dispatchEvent(new CustomEvent('before-save', { cancelable: true }));",
+      '  }',
+      '  emitDynamic(name: string) {',
+      '    this.dispatchEvent(new CustomEvent(name));',
+      '  }',
+      '}'
+    ].join('\n');
+    expect(analyzeSource(source, 'src/components/cancelable-panel.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/prefer-dispatch-decorator')).toEqual([]);
+  });
+
   it('detects imperative reseeding, once-painting, DOM building, and timer focus', () => {
     const source = [
       "import { element, html, query, render } from 'snice';",
