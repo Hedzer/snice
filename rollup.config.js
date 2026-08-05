@@ -220,6 +220,38 @@ export default [
     ]
   },
 
+  // Opt-in DOM testing compatibility ESM build
+  {
+    ...createSubmoduleConfig('testing-dom'),
+    output: {
+      file: 'dist/testing-dom.esm.js',
+      format: 'es',
+      banner,
+      sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath
+    }
+  },
+
+  // Opt-in DOM testing compatibility CommonJS build
+  {
+    ...createSubmoduleConfig('testing-dom'),
+    output: {
+      file: 'dist/testing-dom.cjs',
+      format: 'cjs',
+      banner,
+      sourcemap: true,
+      sourcemapPathTransform: legacySourceMapPath,
+      exports: 'named'
+    },
+    plugins: [
+      resolve(),
+      typescript({
+        tsconfig: './packages/core/tsconfig.json',
+        declaration: false
+      })
+    ]
+  },
+
   // React integration (source in packages/react/src/, built to dist/react/)
   {
     input: {

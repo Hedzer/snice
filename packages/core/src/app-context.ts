@@ -1,6 +1,12 @@
 import { bindDaemon } from './daemon';
-import { installContextProvider, getContext } from './context-provider';
+import { installContextProvider, getContext, getContextFetch } from './context-provider';
 import type { AppContext } from './types/app-context';
+import type { Context } from './types/context';
+
+export interface ContextProviderOptions {
+  /** Fetch function exposed to descendants through getContextFetch(). */
+  fetch?: typeof globalThis.fetch;
+}
 
 function bindContextDaemons(context: AppContext): () => void {
   const daemonMap = context.daemons;
@@ -38,10 +44,16 @@ function bindContextDaemons(context: AppContext): () => void {
  *
  * Daemon instances must already exist in context.daemons. The returned cleanup
  * removes the provider and deactivates framework communication for daemons no
- * longer provided by any context.
+ * longer provided by any context. An optional fetch function is exposed on the
+ * same boundary through getContextFetch() without modifying the context object.
  */
-export function provideContext(root: EventTarget, context: AppContext): () => void {
-  const releaseProvider = installContextProvider(root, context);
+function provideContextBoundary(
+  root: EventTarget,
+  context: AppContext,
+  options: ContextProviderOptions,
+  navigation?: Context
+): () => void {
+  const releaseProvider = installContextProvider(root, context, options.fetch, navigation);
   let releaseDaemons: (() => void) | undefined;
   try {
     releaseDaemons = bindContextDaemons(context);
@@ -59,4 +71,19 @@ export function provideContext(root: EventTarget, context: AppContext): () => vo
   };
 }
 
-export { getContext };
+export function provideContext(
+  root: EventTarget,
+  context: AppContext,
+  options: ContextProviderOptions = {}
+): () => void {
+  return provideContextBoundary(root, context, options);
+}
+
+/** @internal Router-owned provider including live navigation state. */
+export function provideRouterContext(root: EventTarget, navigation: Context): () => void {
+  return provideContextBoundary(root, navigation.application, {
+    fetch: navigation.fetch,
+  }, navigation);
+}
+
+export { getContext, getContextFetch };

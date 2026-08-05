@@ -57,9 +57,11 @@ variant: 'default'|'rounded'|'text' = 'default';
 
 ```typescript
 import 'snice/components/pagination/snice-pagination';
+import type { PaginationChangeDetail } from 'snice/components/pagination/snice-pagination.types';
 
-pagination.addEventListener('pagination-change', (e) => {
-  console.log('Page:', e.detail.page);
+pagination.addEventListener('pagination-change', (event) => {
+  const { detail } = event as CustomEvent<PaginationChangeDetail>;
+  console.log('Page:', detail.page);
 });
 ```
 

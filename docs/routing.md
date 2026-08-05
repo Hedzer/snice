@@ -88,6 +88,12 @@ without Router. Descendant elements and attached controllers address the instanc
 as `{ daemon: 'session' }`; they do not import `SessionDaemon`. See
 [Daemons](./daemons.md).
 
+That provider boundary supplies the full Router `Context` to `@context()`
+methods on descendant elements and attached controllers. They use `ctx.fetch`
+with the configured request/response middleware without importing the router
+or adding a reserved field to the application context. `getContextFetch()` is
+the lower-level transport-only lookup for explicit non-router providers.
+
 ## Page Components
 
 ### Basic Page
@@ -135,7 +141,10 @@ class HomePage extends HTMLElement {
 
 ### Page with Context
 
-The `@context()` decorator is a **method decorator** that receives context updates from the router. The method is called whenever navigation occurs, with a Context object containing application state and navigation data.
+The `@context()` decorator is a **method decorator** that receives context
+updates from the router on pages, descendant elements, and attached
+controllers. The method is called whenever navigation occurs, with a Context
+object containing application state and navigation data.
 
 ```typescript
 import { context, render, html, Context } from 'snice';

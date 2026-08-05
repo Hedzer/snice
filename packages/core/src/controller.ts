@@ -1,6 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
+import { setupContextHandler, cleanupContextHandler } from './context';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED, READY_HANDLERS_RUNNING } from './symbols';
 import { snice } from './global';
 import { IController, ControllerClass } from './types/i-controller';
@@ -368,6 +369,11 @@ export async function attachController(element: HTMLElement, controller: string 
     await controllerInstance.attach(element);
   });
 
+  // @context has the same managed lifecycle on controllers as @on,
+  // @observe and @respond. Catch up controllers whose async attach completed
+  // after the Router announced the current navigation.
+  await setupContextHandler(controllerInstance, 'microtask');
+
   // Setup @observe observers for controller
   setupObservers(controllerInstance, element);
 
@@ -444,6 +450,9 @@ export async function detachController(element: HTMLElement): Promise<void> {
 
   // Cleanup @on event handlers for controller
   cleanupEventHandlers(controllerInstance);
+
+  // Cleanup @context handlers for controller
+  cleanupContextHandler(controllerInstance);
   
   // Cleanup the controller scope
   if (scope) {

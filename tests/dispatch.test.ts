@@ -110,6 +110,25 @@ describe('@dispatch decorator', () => {
     expect(eventFired).toBe(true);
   });
 
+  it('dispatches by default when the method returns undefined', async () => {
+    @element('test-dispatch-undefined-default')
+    class TestDispatchUndefinedDefault extends HTMLElement {
+      @dispatch('undefined-default')
+      emit() {}
+    }
+
+    const el = document.createElement('test-dispatch-undefined-default') as TestDispatchUndefinedDefault;
+    container.appendChild(el);
+    const received = new Promise<boolean>(resolve => {
+      el.addEventListener('undefined-default', () => {
+        resolve(true);
+      }, { once: true });
+    });
+
+    el.emit();
+    await expect(received).resolves.toBe(true);
+  });
+
   it('should bubble by default', async () => {
     @element('test-dispatch-bubble')
     class TestDispatchBubble extends HTMLElement {

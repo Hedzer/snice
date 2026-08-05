@@ -3,6 +3,34 @@ import { test, expect } from '@playwright/test';
 const demoPath = 'http://localhost:5566/components/input/demo.html';
 
 test.describe('Input Theme Visual Tests', () => {
+  test('input and select follow live light-dark-light theme changes', async ({ page }) => {
+    const cases = [
+      { path: 'input', host: 'snice-input', control: 'input' },
+      { path: 'select', host: 'snice-select', control: '.select-trigger' },
+    ];
+
+    for (const entry of cases) {
+      await page.goto(`http://localhost:5566/components/${entry.path}/demo.html`);
+      const control = page.locator(entry.host).first().locator(entry.control);
+      await expect(control).toBeVisible();
+
+      await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
+      await expect.poll(() => control.evaluate(element =>
+        window.getComputedStyle(element).backgroundColor
+      )).toBe('rgb(255, 255, 255)');
+
+      await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+      await expect.poll(() => control.evaluate(element =>
+        window.getComputedStyle(element).backgroundColor
+      )).toBe('rgb(38, 38, 38)');
+
+      await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
+      await expect.poll(() => control.evaluate(element =>
+        window.getComputedStyle(element).backgroundColor
+      )).toBe('rgb(255, 255, 255)');
+    }
+  });
+
   test('should have visible date/time picker icons in light mode', async ({ page }) => {
     await page.goto(demoPath);
     await page.waitForLoadState('networkidle');

@@ -1,10 +1,14 @@
 import { IS_CONTROLLER_INSTANCE, ROUTER_CONTEXT } from './symbols';
 import type { AppContext } from './types/app-context';
+import type { Context } from './types/context';
 
 const CONTEXT_REQUEST_EVENT = '@context/request';
 
 interface ContextRequestDetail {
+  kind: 'application' | 'fetch' | 'navigation';
   context?: AppContext;
+  fetch?: typeof globalThis.fetch;
+  navigation?: Context;
 }
 
 interface ProviderRecord {
@@ -38,7 +42,12 @@ function contextTarget(source: unknown): EventTarget | null {
  * boundary. Public callers use provideContext(), which also activates the
  * daemon instances declared by the context.
  */
-export function installContextProvider(root: EventTarget, context: AppContext): () => void {
+export function installContextProvider(
+  root: EventTarget,
+  context: AppContext,
+  fetch?: typeof globalThis.fetch,
+  navigation?: Context
+): () => void {
   if (!root || typeof root.addEventListener !== 'function' || typeof root.removeEventListener !== 'function') {
     throw new TypeError('provideContext() requires an EventTarget root.');
   }
@@ -51,9 +60,19 @@ export function installContextProvider(root: EventTarget, context: AppContext): 
 
   const listener: EventListener = (event) => {
     const request = event as CustomEvent<ContextRequestDetail>;
-    if (!request.detail || request.detail.context !== undefined) return;
-
-    request.detail.context = context;
+    if (!request.detail) return;
+    if (request.detail.kind === 'application') {
+      if (request.detail.context !== undefined) return;
+      request.detail.context = context;
+    } else if (request.detail.kind === 'fetch') {
+      if (!fetch || request.detail.fetch !== undefined) return;
+      request.detail.fetch = fetch;
+    } else if (request.detail.kind === 'navigation') {
+      if (!navigation || request.detail.navigation !== undefined) return;
+      request.detail.navigation = navigation;
+    } else {
+      return;
+    }
     request.preventDefault();
     request.stopPropagation();
   };
@@ -87,7 +106,7 @@ export function getContext<T extends AppContext = AppContext>(source: unknown): 
 
   const target = contextTarget(source);
   if (target) {
-    const detail: ContextRequestDetail = {};
+    const detail: ContextRequestDetail = { kind: 'application' };
     target.dispatchEvent(new CustomEvent<ContextRequestDetail>(CONTEXT_REQUEST_EVENT, {
       bubbles: true,
       composed: true,
@@ -105,4 +124,39 @@ export function getContext<T extends AppContext = AppContext>(source: unknown): 
     return value.element[ROUTER_CONTEXT] as T;
   }
   return undefined;
+}
+
+/**
+ * Resolve the fetch function supplied by the nearest context provider.
+ * Router providers expose their ContextAwareFetcher-bound function here;
+ * explicit providers may supply the same dependency for non-router apps and
+ * tests without adding a reserved property to AppContext.
+ */
+export function getContextFetch(source: unknown): typeof globalThis.fetch | undefined {
+  const target = contextTarget(source);
+  if (!target) return undefined;
+
+  const detail: ContextRequestDetail = { kind: 'fetch' };
+  target.dispatchEvent(new CustomEvent<ContextRequestDetail>(CONTEXT_REQUEST_EVENT, {
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+    detail,
+  }));
+  return detail.fetch;
+}
+
+/** @internal Resolve the router Context visible to an element or controller. */
+export function getNavigationContext(source: unknown): Context | undefined {
+  const target = contextTarget(source);
+  if (!target) return undefined;
+
+  const detail: ContextRequestDetail = { kind: 'navigation' };
+  target.dispatchEvent(new CustomEvent<ContextRequestDetail>(CONTEXT_REQUEST_EVENT, {
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+    detail,
+  }));
+  return detail.navigation;
 }

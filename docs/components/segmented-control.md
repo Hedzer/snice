@@ -17,7 +17,7 @@ A multi-option switcher with a sliding indicator. One option is selected at a ti
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `string` | `''` | Selected option value |
+| `value` | `string` | `''` | Selected option value; user selection updates it before `value-change` |
 | `options` | `SegmentedControlOption[]` | `[]` | Array of `{ value, label, icon?, disabled? }` (JS only) |
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Control size |
 | `disabled` | `boolean` | `false` | Disables the entire control |
@@ -38,6 +38,10 @@ interface SegmentedControlOption {
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `value-change` | `{ value: string, previousValue: string, option: SegmentedControlOption, control }` | Selection changed |
+
+`value` is self-mutating. If an owning template must reassert the same
+controlled value after user selection, bind it as `.value=${live(value)}` so
+the next owner render compares against the control's current property.
 
 ## CSS Parts
 

@@ -119,13 +119,14 @@ interface IController<T extends HTMLElement = HTMLElement> {
 
 1. Controller instance is created
 2. `element` property is set
-3. Router context is passed (if available)
+3. Router application context is passed (if available)
 4. Element's `ready` promise is awaited
 5. `attach()` method is called
-6. Observers are set up
-7. Channel/response handlers are set up
-8. Event handlers are set up
-9. `controller-attached` event is dispatched
+6. `@context` handlers are registered and caught up with the current Router context
+7. Observers are set up
+8. Channel/response handlers are set up
+9. Event handlers are set up
+10. `controller-attached` event is dispatched
 
 The step-4 wait has one safe exception: when an element calls
 `await attachController(this, ControllerClass)` from its own `@ready` handler,
@@ -143,8 +144,9 @@ good architecture; pages should orchestrate directly.
 3. Observers are cleaned up
 4. Channel/response handlers are cleaned up
 5. Event handlers are cleaned up
-6. Controller scope is cleaned up
-7. `controller-detached` event is dispatched
+6. `@context` handlers are cleaned up
+7. Controller scope is cleaned up
+8. `controller-detached` event is dispatched
 
 ### Example with Lifecycle Logging
 
@@ -240,7 +242,7 @@ class TableController implements IController<HTMLTableElement> {
 
 ## Resource Cleanup
 
-The framework auto-cleans `@on`, `@observe`, and `@respond` handlers. Clean up your own resources (WebSockets, timers, manual listeners) in `detach`:
+The framework auto-cleans `@on`, `@observe`, `@respond`, and `@context` handlers. Clean up your own resources (WebSockets, timers, manual listeners) in `detach`:
 
 ```typescript
 import { controller, IController } from 'snice';
@@ -372,6 +374,8 @@ production controller should also prevent an older response from overwriting a
 newer one:
 
 ```typescript
+import { context, type Context } from 'snice';
+
 interface Order { id: string; total: number }
 
 interface OrdersView extends HTMLElement {
@@ -384,12 +388,18 @@ interface OrdersView extends HTMLElement {
 @controller('orders-data')
 export class OrdersDataController implements IController<OrdersView> {
   element: OrdersView | null = null;
+  private ctx?: Context;
   private abortController?: AbortController;
   private requestVersion = 0;
 
-  async attach(element: OrdersView) {
+  attach(element: OrdersView) {
     this.element = element;
-    await this.reload();
+  }
+
+  @context()
+  receiveContext(ctx: Context) {
+    this.ctx = ctx;
+    void this.reload();
   }
 
   async detach() {
@@ -397,6 +407,7 @@ export class OrdersDataController implements IController<OrdersView> {
     this.requestVersion++;
     this.abortController?.abort();
     this.abortController = undefined;
+    this.ctx = undefined;
   }
 
   async reload() {
@@ -413,7 +424,9 @@ export class OrdersDataController implements IController<OrdersView> {
     host.empty = false;
 
     try {
-      const response = await fetch('/api/orders', {
+      const ctx = this.ctx;
+      if (!ctx) throw new Error('OrdersDataController requires Router context');
+      const response = await ctx.fetch('/api/orders', {
         signal: abortController.signal
       });
       if (!response.ok) throw new Error(`Orders request failed (${response.status})`);
@@ -450,6 +463,12 @@ export class OrdersDataController implements IController<OrdersView> {
   }
 }
 ```
+
+`@context()` works on controllers as well as elements. It receives the same
+long-lived `Context` instance, including `application`, navigation state, and
+the Router's middleware-aware `fetch`. Managed decorators are activated after
+`attach()`, so start context-dependent work in the `@context()` handler (or in
+an event handled later), not in `attach()`.
 
 The element owns presentation for every state:
 

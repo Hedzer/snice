@@ -47,6 +47,11 @@ const LEGACY_LIT_LIFECYCLE = new Set([
   'performUpdate'
 ]);
 
+const NATIVE_ELEMENT_IDL_MEMBERS = new Set([
+  'autofocus', 'dir', 'hidden', 'id', 'inert', 'lang', 'role', 'slot',
+  'title', 'translate'
+]);
+
 const SNICE_REACT_EVENT_PROPS = new Set([
   'onInputChange', 'onSelectChange', 'onTextareaChange', 'onCheckboxChange',
   'onRadioChange', 'onSliderChange', 'onDateChange', 'onTimeChange',
@@ -526,6 +531,44 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/imperative-controller-attach',
+    severity: 'suggestion',
+    category: 'architecture',
+    description: 'Prefer declarative controller bindings in application templates.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename) || isTestFilename(context.filename)) return;
+      for (const localName of localsFor(context.provenance.rootBindings, 'attachController')) {
+        const pattern = new RegExp(`\\b${escapeRegExp(localName)}\\s*\\(`, 'g');
+        for (const match of context.source.matchAll(pattern)) {
+          context.report(match.index, {
+            message: `${localName}() imperatively attaches a controller in application code even though controller bindings own this lifecycle declaratively.`,
+            fix: 'Bind the decorated class in the owning template with controller=${ControllerClass}. Keep imperative attachment for focused framework tests only. Review docs/ai/controllers.md.'
+          });
+        }
+      }
+    }
+  },
+  {
+    id: 'snice/element-member-shadows-native-idl',
+    severity: 'warning',
+    category: 'properties',
+    description: 'Warn when a Snice element redeclares an inherited HTMLElement IDL member.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename)) return;
+      for (const declaration of findSniceElementClasses(context.source)) {
+        const members = inspectElementMembers(declaration.body);
+        for (const name of new Set([...members.fields, ...members.accessors, ...members.reactive])) {
+          if (!NATIVE_ELEMENT_IDL_MEMBERS.has(name)) continue;
+          const relativeIndex = members.memberIndices.get(name) ?? 0;
+          context.report(declaration.bodyStart + relativeIndex, {
+            message: `${declaration.name}.${name} shadows HTMLElement.${name}, so native reflection/accessibility behavior and Snice property binding can conflict.`,
+            fix: `Rename the application-owned member. If native ${name} semantics are intended, use the inherited HTMLElement property/attribute without redeclaring it.`
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/self-ready-await',
     severity: 'error',
     category: 'lifecycle',
@@ -802,6 +845,28 @@ const RULE_DEFINITIONS = [
         context.report(match.index + match[0].indexOf(match[1]), {
           message: `The ${match[1]} binding passes an object or array through the string-attribute channel.`,
           fix: `Use .${kebabToCamel(match[1])}=\${value} to preserve the value's type and identity.`
+        });
+      }
+    }
+  },
+  {
+    id: 'snice/live-control-value-binding',
+    severity: 'suggestion',
+    category: 'rendering',
+    description: 'Recommend live property bindings for controlled values on verified self-mutating Snice controls.',
+    check(context) {
+      const components = {
+        'snice-input': 'input',
+        'snice-textarea': 'textarea',
+        'snice-segmented-control': 'segmented-control'
+      };
+      for (const opening of findOpeningTags(context.source, Object.keys(components))) {
+        const binding = /(?:^|\s)value\s*=\s*(?:['"])?\$\{/.exec(opening.text);
+        if (!binding) continue;
+        const valueIndex = opening.index + binding.index + binding[0].indexOf('value');
+        context.report(valueIndex, {
+          message: `${opening.name} receives a dynamic value attribute, but its live value can diverge after user interaction.`,
+          fix: `For a controlled value, import live from 'snice' and use .value=\${live(value)} so an owner render compares with the control's current property. Keep value= only for an authored/reset default. Review docs/ai/components/${components[opening.name]}.md and docs/ai/bindings.md.`
         });
       }
     }
@@ -1448,6 +1513,14 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
+    id: 'snice/shadowed-query-route',
+    severity: 'warning',
+    category: 'router',
+    description: 'Warn when same-page string route order makes a query-parameter variant unreachable.',
+    projectOnly: true,
+    check() {}
+  },
+  {
     id: 'snice/template-reads-nonreactive-field',
     severity: 'warning',
     category: 'rendering',
@@ -1889,6 +1962,27 @@ export function analyzeProject(files) {
         ruleId: 'snice/recommend-route-params',
         message: `${page.name} parses or writes URL state manually even though route/query parameters can be declared by the page.`,
         fix: "Declare parameters in @page({ routes: ['/path?q=:query'] }), receive them as page properties before @ready, and call the Router's navigate(path) to write route state. Review docs/ai/routing.md.",
+        file: page.file.filename,
+        line: location.line,
+        column: location.column
+      });
+    }
+
+    const precedingBareRoutes = new Set();
+    for (const route of findPageStringRoutes(page.file.source, page.index)) {
+      const queryIndex = route.spec.indexOf('?');
+      const pathname = queryIndex >= 0 ? route.spec.slice(0, queryIndex) : route.spec;
+      if (queryIndex < 0) {
+        precedingBareRoutes.add(pathname);
+        continue;
+      }
+      if (!precedingBareRoutes.has(pathname)) continue;
+      const location = sourceLocation(page.file.source, route.index);
+      diagnostics.push({
+        severity: 'warning',
+        ruleId: 'snice/shadowed-query-route',
+        message: `${page.name}'s query route "${route.spec}" is shadowed by an earlier "${pathname}" entry with the same specificity, so its query properties never bind.`,
+        fix: `Move "${route.spec}" before "${pathname}" in the routes array, or use route objects with explicit order values when a more complex tie-break is intentional. Review docs/ai/routing.md.`,
         file: page.file.filename,
         line: location.line,
         column: location.column
@@ -2377,6 +2471,32 @@ function findElementDecoratorTag(source, index) {
   return /^@element\s*\(\s*['"]([^'"]+)['"]/.exec(source.slice(index, index + 500))?.[1] ?? null;
 }
 
+function findPageStringRoutes(source, decoratorIndex) {
+  const open = source.indexOf('(', decoratorIndex);
+  if (open < 0) return [];
+  const close = findMatchingDelimiter(source, open, '(', ')');
+  if (close < 0) return [];
+  const argumentsSource = source.slice(open + 1, close);
+  const routesProperty = /\broutes\s*:\s*\[/.exec(argumentsSource);
+  if (!routesProperty) return [];
+  const arrayOpen = open + 1 + routesProperty.index + routesProperty[0].lastIndexOf('[');
+  const arrayClose = findMatchingDelimiter(source, arrayOpen, '[', ']');
+  if (arrayClose < 0 || arrayClose > close) return [];
+
+  const body = source.slice(arrayOpen + 1, arrayClose);
+  const routes = [];
+  let searchFrom = 0;
+  for (const item of splitTopLevelArguments(body)) {
+    const relative = body.indexOf(item, searchFrom);
+    if (relative < 0) continue;
+    searchFrom = relative + item.length;
+    const literal = /^(['"])([^'"]+)\1$/.exec(item);
+    if (!literal) continue;
+    routes.push({ spec: literal[2], index: arrayOpen + 1 + relative });
+  }
+  return routes;
+}
+
 function inspectElementMembers(body) {
   const code = blankStringContents(maskComments(body));
   const depths = new Uint16Array(code.length + 1);
@@ -2392,11 +2512,13 @@ function inspectElementMembers(body) {
   const readonly = new Set();
   const functionFields = new Set();
   const reactive = new Set();
-  const fieldPattern = /(?:^|\n)\s*((?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*)([A-Za-z_$][\w$]*)\s*[!?]?\s*(?::[^=\n;{]+)?\s*(?==|;)/g;
+  const memberIndices = new Map();
+  const fieldPattern = /(?:^|\n)\s*((?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*)([A-Za-z_$][\w$]*)\s*[!?]?\s*(?::[^=\n;]+)?\s*(?==|;)/g;
   for (const match of code.matchAll(fieldPattern)) {
     const nameIndex = match.index + match[0].lastIndexOf(match[2]);
     if (depths[nameIndex] !== 0) continue;
     fields.add(match[2]);
+    if (!memberIndices.has(match[2])) memberIndices.set(match[2], nameIndex);
     if (/\breadonly\b/.test(match[1])) readonly.add(match[2]);
   }
   const functionFieldPattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*([A-Za-z_$][\w$]*)\s*[!?]?\s*(?::[^=\n;{]+)?\s*=\s*(?:async\s*)?(?:\([^\n)]*\)|[A-Za-z_$][\w$]*)\s*=>/g;
@@ -2407,7 +2529,10 @@ function inspectElementMembers(body) {
   const accessorPattern = /(?:^|\n)\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*(?:get|set|accessor)\s+([A-Za-z_$][\w$]*)\b/g;
   for (const match of code.matchAll(accessorPattern)) {
     const nameIndex = match.index + match[0].lastIndexOf(match[1]);
-    if (depths[nameIndex] === 0) accessors.add(match[1]);
+    if (depths[nameIndex] === 0) {
+      accessors.add(match[1]);
+      if (!memberIndices.has(match[1])) memberIndices.set(match[1], nameIndex);
+    }
   }
   const decoratedPattern = /@(property|state)\b/g;
   for (const match of code.matchAll(decoratedPattern)) {
@@ -2420,7 +2545,12 @@ function inspectElementMembers(body) {
       cursor = close + 1;
     }
     const declaration = /^\s*(?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*(?:accessor\s+)?([A-Za-z_$][\w$]*)/.exec(code.slice(cursor));
-    if (declaration) reactive.add(declaration[1]);
+    if (declaration) {
+      reactive.add(declaration[1]);
+      if (!memberIndices.has(declaration[1])) {
+        memberIndices.set(declaration[1], cursor + declaration.index + declaration[0].lastIndexOf(declaration[1]));
+      }
+    }
   }
 
   // An undecorated native-style accessor can still be reactive when its
@@ -2449,7 +2579,7 @@ function inspectElementMembers(body) {
     if (close >= 0 && invalidates(body.slice(open + 1, close))) invalidatingAccessors.add(match[1]);
   }
 
-  return { fields, accessors, readonly, functionFields, reactive, invalidatingAccessors };
+  return { fields, accessors, readonly, functionFields, reactive, invalidatingAccessors, memberIndices };
 }
 
 function findDecoratedClassMethods(body, decoratorName, bodyStart = 0) {

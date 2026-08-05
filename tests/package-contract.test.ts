@@ -14,9 +14,17 @@ const walk = (directory: string): string[] => readdirSync(directory, { withFileT
 describe('published package contract', () => {
   it('orders type conditions before runtime conditions and ships the skill', () => {
     expect(Object.keys(packageJson.exports['.'])).toEqual(['types', 'import', 'require']);
+    expect(Object.keys(packageJson.exports['./testing/dom'])).toEqual(['types', 'import', 'require']);
     expect(Object.keys(packageJson.exports['./components/*'])).toEqual(['types', 'import']);
     expect(packageJson.files).toContain('.agents');
     expect(existsSync(join(root, '.agents/skills/snice/SKILL.md'))).toBe(true);
+  });
+
+  it('ships the opt-in DOM testing compatibility entry point', () => {
+    const exported = packageJson.exports['./testing/dom'];
+    for (const target of Object.values(exported) as string[]) {
+      expect(existsSync(join(root, target)), `missing ${target}`).toBe(true);
+    }
   });
 
   it('resolves every documented deep component import to built JS', () => {

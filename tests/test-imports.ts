@@ -42,6 +42,8 @@ export const {
   daemon,
   provideContext,
   getContext,
+  getContextFetch,
+  ContextAwareFetcher,
   useNativeElementControllers,
   on,
   dispatch,

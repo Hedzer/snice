@@ -170,17 +170,17 @@ import { page } from '../router';  // NOT from 'snice'!
 @page({ tag: 'user-page', routes: ['/users/:id'], guards: [isAuthenticated] })
 class UserPage extends HTMLElement {
   @property() id = '';
-  private appContext?: AppContext;
+  private ctx?: Context;
 
   @context()
   handleContext(ctx: Context) {
-    this.appContext = ctx.application;
+    this.ctx = ctx;
     this.requestRender();
   }
 
   @ready()
   async load() {
-    const user = await fetch(`/api/users/${this.id}`).then(r => r.json());
+    const user = await this.ctx!.fetch(`/api/users/${this.id}`).then(r => r.json());
     // ...
   }
 }
@@ -219,9 +219,14 @@ Mock controller for tests, real API controller in production — same element.
 // Controller responds to requests (receives payload, returns result directly)
 @controller('api')
 class API {
+  private ctx!: Context;
+
+  @context()
+  receiveContext(ctx: Context) { this.ctx = ctx; }
+
   @respond('fetch-user')
   async handleFetchUser(payload: { id: string }) {
-    const user = await fetch(`/api/users/${payload.id}`).then(r => r.json());
+    const user = await this.ctx.fetch(`/api/users/${payload.id}`).then(r => r.json());
     return user;  // Direct return, not callback
   }
 }

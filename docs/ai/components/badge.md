@@ -19,6 +19,10 @@ showZero: boolean = false;          // attr: show-zero — render 0 instead of h
 offset: number = 0;
 ```
 
+The indicator is hidden when there is no dot, non-empty `content`, positive
+`count`, or `showZero`. Slotted content remains available as the element the
+badge would overlay.
+
 ## Methods
 
 - `setBadgeContent(content)` - Set text content

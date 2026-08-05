@@ -24,14 +24,34 @@ const templateCache = new WeakMap<TemplateStringsArray, Template>();
 // Sentinel for "not yet set" - distinct from undefined/null
 const NOT_COMMITTED = Symbol('not-committed');
 
-function markPreUpgradePropertyBinding(element: Element, propertyName: string): void {
+function markPreUpgradePropertyBinding(element: Element, propertyName: string): boolean {
   const tagName = element.localName;
-  if (!tagName?.includes('-')) return;
+  if (!tagName?.includes('-')) return false;
   const registry = element.ownerDocument?.defaultView?.customElements ?? globalThis.customElements;
-  if (registry?.get(tagName)) return;
+  if (registry?.get(tagName)) return false;
   const target = element as any;
   if (!target[PRE_UPGRADE_PROPERTY_BINDINGS]) target[PRE_UPGRADE_PROPERTY_BINDINGS] = new Set<string>();
   target[PRE_UPGRADE_PROPERTY_BINDINGS].add(propertyName);
+  return true;
+}
+
+function commitPropertyValue(element: Element, propertyName: string, value: unknown): void {
+  if (!markPreUpgradePropertyBinding(element, propertyName)) {
+    (element as any)[propertyName] = value;
+    return;
+  }
+
+  // An undefined custom element can inherit a native IDL setter with the same
+  // name. Assignment would invoke that setter (for example HTMLElement.role),
+  // stringify structured data into an attribute, and leave no own value for
+  // @property's upgrade adoption. Park every pre-upgrade binding as the own,
+  // configurable value that the initializer already knows how to replay.
+  Object.defineProperty(element, propertyName, {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    value,
+  });
 }
 
 // noChange sentinel - preserves the currently committed value
@@ -1823,14 +1843,12 @@ export class SpreadPart extends Part {
   private commitProperties(next: Record<string, unknown>): void {
     for (const key of Object.keys(this.committed)) {
       if (!Object.prototype.hasOwnProperty.call(next, key)) {
-        markPreUpgradePropertyBinding(this.element, key);
-        (this.element as any)[key] = undefined;
+        commitPropertyValue(this.element, key, undefined);
       }
     }
     for (const [key, value] of Object.entries(next)) {
       if (Object.is(this.committed[key], value)) continue;
-      markPreUpgradePropertyBinding(this.element, key);
-      (this.element as any)[key] = value === nothing ? undefined : value;
+      commitPropertyValue(this.element, key, value === nothing ? undefined : value);
     }
   }
 
@@ -1954,8 +1972,7 @@ export class PropertyPart extends Part {
     }
 
     this._committedValue = value;
-    markPreUpgradePropertyBinding(this.element, this.name);
-    (this.element as any)[this.name] = value === nothing ? undefined : value;
+    commitPropertyValue(this.element, this.name, value === nothing ? undefined : value);
   }
 
   clear(): void {

@@ -57,17 +57,21 @@ returns a promise for `T`.
 @controller('processing-controller')
 class ProcessingController implements IController {
   element: HTMLElement | null = null;
+  private ctx!: Context;
   async attach() {}
   async detach() {}
 
+  @context()
+  receiveContext(ctx: Context) { this.ctx = ctx; }
+
   @respond('search', { debounce: 300 })
   async handleSearch(query: { term: string }) {
-    return await fetch(`/api/search?q=${encodeURIComponent(query.term)}`).then(r => r.json());
+    return await this.ctx.fetch(`/api/search?q=${encodeURIComponent(query.term)}`).then(r => r.json());
   }
 
   @respond('analytics', { throttle: 1000 })
   async handleAnalytics(event: any) {
-    return await fetch('/api/track', { method: 'POST', body: JSON.stringify(event) });
+    return await this.ctx.fetch('/api/track', { method: 'POST', body: JSON.stringify(event) });
   }
 }
 ```
@@ -117,17 +121,23 @@ How it works:
 @controller('product-controller')
 class ProductController implements IController {
   element: HTMLElement | null = null;
+  private ctx!: Context;
   async attach() {}
   async detach() {}
 
+  @context()
+  receiveContext(ctx: Context) { this.ctx = ctx; }
+
   @respond('fetch-product')
   async handleFetchProduct(request: { id: string }) {
-    return await fetch(`/api/products/${request.id}`).then(r => r.json());
+    return await this.ctx.fetch(`/api/products/${request.id}`).then(r => r.json());
   }
 }
 ```
 
-Elements never call `fetch()` or manage data directly — they yield requests upward and render whatever comes back. Controllers own the data layer.
+Elements stay visual and yield requests upward. A controller owns application
+behavior specific to the elements it controls; the page still owns element
+orchestration.
 
 ## Options
 
@@ -175,7 +185,7 @@ async *loadData(): Response<void> {
 @respond('load-data')
 async handleLoadData(request: { id: string }) {
   if (!request.id) throw new Error('ID is required');
-  const response = await fetch(`/api/data/${request.id}`);
+  const response = await this.ctx.fetch(`/api/data/${request.id}`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   return await response.json();
 }
@@ -189,10 +199,14 @@ async handleLoadData(request: { id: string }) {
 @controller('cached-controller')
 class CachedController implements IController {
   element: HTMLElement | null = null;
+  private ctx!: Context;
   private cache = new Map<string, { data: any; timestamp: number }>();
   private ttl = 60000; // 1 minute
   async attach() {}
   async detach() {}
+
+  @context()
+  receiveContext(ctx: Context) { this.ctx = ctx; }
 
   @respond('fetch-cached')
   async handleFetch(request: { key: string; forceRefresh?: boolean }) {
@@ -200,7 +214,7 @@ class CachedController implements IController {
     if (!request.forceRefresh && cached && Date.now() - cached.timestamp < this.ttl) {
       return { data: cached.data, fromCache: true };
     }
-    const data = await fetch(`/api/${request.key}`).then(r => r.json());
+    const data = await this.ctx.fetch(`/api/${request.key}`).then(r => r.json());
     this.cache.set(request.key, { data, timestamp: Date.now() });
     return { data, fromCache: false };
   }

@@ -5,7 +5,7 @@ Multi-option switcher with sliding indicator. One selected at a time.
 ## Properties
 
 ```typescript
-value: string = '';
+value: string = '';  // user selection updates this before value-change dispatches
 options: SegmentedControlOption[] = [];  // JS only: { value, label, icon?, disabled? }
 size: 'small'|'medium'|'large' = 'medium';
 disabled: boolean = false;
@@ -14,6 +14,10 @@ disabled: boolean = false;
 ## Events
 
 - `value-change` → `{ value: string, previousValue: string, option: SegmentedControlOption, control }`
+
+`value` is self-mutating: selecting an option assigns it before the event is
+dispatched. An owner that must reassert an unchanged value on a later render
+should use a `.value=${live(value)}` property binding.
 
 ## CSS Parts
 

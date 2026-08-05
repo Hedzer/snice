@@ -58,6 +58,12 @@ Router({
 });
 ```
 
+The same boundary supplies the full Router `Context` to `@context()` methods on
+descendant elements and attached controllers. They use `ctx.fetch` with the
+configured request/response middleware without importing the router or adding
+a reserved field to the application context. `getContextFetch()` is the
+lower-level transport-only lookup for explicit non-router providers.
+
 ### Module structure (avoids circular imports)
 
 ```typescript
@@ -88,7 +94,8 @@ class HomePage extends HTMLElement {
 
 ### `@context()` — method decorator
 
-Receives context updates from the router; called on navigation and on `ctx.update()`.
+Receives context updates from the router on pages, descendant elements, and
+attached controllers; called on navigation and on `ctx.update()`.
 
 ```typescript
 @context(options?: { debounce?: number; throttle?: number; once?: boolean })

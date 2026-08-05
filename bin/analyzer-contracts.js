@@ -21,7 +21,7 @@ export const ANALYZER_CONTRACTS = {
     "componentModules": 188,
     "componentUtilityModules": 31,
     "reactWrappers": 193,
-    "rootExports": 116
+    "rootExports": 118
   },
   "rootExports": [
     "AdoptedOptions",
@@ -30,6 +30,7 @@ export const ANALYZER_CONTRACTS = {
     "Context",
     "ContextAwareFetcher",
     "ContextOptions",
+    "ContextProviderOptions",
     "ControllerClass",
     "CreateRequestHandlerOptions",
     "DaemonMap",
@@ -99,6 +100,7 @@ export const ANALYZER_CONTRACTS = {
     "escapeHtml",
     "getBodyScrollLockCount",
     "getContext",
+    "getContextFetch",
     "getController",
     "getSymbol",
     "html",

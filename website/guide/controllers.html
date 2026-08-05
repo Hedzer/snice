@@ -2,26 +2,20 @@
 <p class="desc">Swap behavior on any element without changing its code. A controller attaches logic from the outside.</p>
 <p class="desc">Visual behavior belongs in elements. Application behavior specific to a set of elements belongs in a controller. Element orchestration belongs in pages. Do not attach another controller to a page host. A host-free reusable function may stay a plain module wherever the project keeps it.</p>
 <snice-code-block language="snice" grammar="grammars/snice.json">import { controller, on } from 'snice';
+import { navigate } from '../router';
 
 @controller('weather')
 class WeatherController {
-  async attach(el) {
-    // Called when controller binds to an element
-    const data = await fetch('/api/weather').then(r => r.json());
-    this.city = data.city;
-    el.label = data.city;
-    el.value = `${data.temp}&deg;`;
-  }
+  element = null;
+
+  attach(el) { this.element = el; }
 
   @on('click')
   viewDetails() {
-    // Navigate to the city's weather page
-    navigate(`/weather/${this.city}`);
+    navigate('/weather');
   }
 
-  detach(el) {
-    // Cleanup when controller is removed
-  }
+  detach() {}
 }</snice-code-block>
 <p class="desc" style="margin-top:0.75rem">Attach the class directly — import it, bind it, done.</p>
 <snice-code-block language="snice" grammar="grammars/snice.json">@element('weather-dashboard')

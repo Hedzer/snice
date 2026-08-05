@@ -1,6 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 test('class controller reflection is safe under a real MutationObserver', async ({ page }) => {
+  const attachErrors: string[] = [];
+  page.on('console', message => {
+    if (message.type() === 'error' && message.text().includes('Failed to attach controller')) {
+      attachErrors.push(message.text());
+    }
+  });
+
   await page.goto('/tests/live/fixtures/controller-class-binding-observer.html');
 
   const snapshots = await page.evaluate(async () => {
@@ -58,4 +65,5 @@ test('class controller reflection is safe under a real MutationObserver', async 
       counts: { alphaAttach: 1, alphaDetach: 1, betaAttach: 2, betaDetach: 2 }
     }
   ]);
+  expect(attachErrors).toEqual([]);
 });

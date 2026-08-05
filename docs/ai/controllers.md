@@ -75,13 +75,14 @@ el.controller = UserController;                  // snice elements
 **Attachment flow:**
 1. Controller instance created
 2. `element` property set
-3. Router context passed (if available)
+3. Router application context passed (if available)
 4. Element's `ready` promise awaited
 5. `attach()` called
-6. Observers set up
-7. Channel/response handlers set up
-8. Event handlers set up
-9. `controller-attached` event dispatched
+6. `@context` handlers registered and caught up with the current Router context
+7. Observers set up
+8. Channel/response handlers set up
+9. Event handlers set up
+10. `controller-attached` event dispatched
 
 Exception to step 4: `await attachController(this, ControllerClass)` inside the
 host's own `@ready` handler attaches immediately because initial render is
@@ -96,8 +97,9 @@ good architecture; pages should orchestrate directly.
 3. Observers cleaned up
 4. Channel/response handlers cleaned up
 5. Event handlers cleaned up
-6. Controller scope cleaned up
-7. `controller-detached` event dispatched
+6. `@context` handlers cleaned up
+7. Controller scope cleaned up
+8. `controller-detached` event dispatched
 
 ## Native Element Controllers
 
@@ -113,7 +115,7 @@ Controllers provide specific behaviors (fetch/sort/filter) to generic visual com
 
 ## Resource Cleanup
 
-Framework auto-cleans `@on`, `@observe`, `@respond` handlers. Clean up your own resources (WebSockets, timers, manual listeners) in `detach`:
+Framework auto-cleans `@on`, `@observe`, `@respond`, and `@context` handlers. Clean up your own resources (WebSockets, timers, manual listeners) in `detach`:
 
 ```typescript
 @controller('resource-controller')
@@ -192,6 +194,8 @@ the element's reactive public API. Dispatch outcome events, never mutate the
 element's rendered DOM.
 
 ```typescript
+import { context, type Context } from 'snice';
+
 interface DataHost<T> extends HTMLElement {
   loading: boolean;
   error: string;
@@ -202,17 +206,24 @@ interface DataHost<T> extends HTMLElement {
 @controller('data-controller')
 class DataController<T> implements IController<DataHost<T>> {
   element: DataHost<T> | null = null;
+  private ctx?: Context;
   private abort?: AbortController;
   private version = 0;
 
-  async attach(element: DataHost<T>) {
+  attach(element: DataHost<T>) {
     this.element = element;
-    await this.reload();
+  }
+
+  @context()
+  receiveContext(ctx: Context) {
+    this.ctx = ctx;
+    void this.reload();
   }
 
   async detach() {
     this.version++;
     this.abort?.abort();
+    this.ctx = undefined;
   }
 
   async reload() {
@@ -226,7 +237,9 @@ class DataController<T> implements IController<DataHost<T>> {
     host.empty = false;
 
     try {
-      const response = await fetch('/api/data', { signal: abort.signal });
+      const ctx = this.ctx;
+      if (!ctx) throw new Error('DataController requires Router context');
+      const response = await ctx.fetch('/api/data', { signal: abort.signal });
       if (!response.ok) throw new Error(`Request failed (${response.status})`);
       const data = await response.json() as T[];
       if (version !== this.version || this.element !== host) return;
@@ -250,6 +263,12 @@ class DataController<T> implements IController<DataHost<T>> {
   }
 }
 ```
+
+`@context()` works on controllers as well as elements. It receives the same
+long-lived `Context` instance, including `application`, navigation state, and
+the Router's middleware-aware `fetch`. Managed decorators are activated after
+`attach()`, so start context-dependent work in the `@context()` handler (or in
+an event handled later), not in `attach()`.
 
 Required pieces: abort previous work, increment a version for stale-response
 guarding, reset loading/error/empty before fetch, check version + host identity

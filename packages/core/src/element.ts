@@ -210,7 +210,7 @@ export function applyElementFunctionality(constructor: any) {
         // Re-establish handlers that get cleaned up on disconnect
         setupEventHandlers(this, this);
         setupResponseHandlers(this, this);
-        setupContextHandler(this);
+        void setupContextHandler(this, 'task');
 
         // Re-establish observers that get cleaned up on disconnect
         try {
@@ -345,7 +345,7 @@ export function applyElementFunctionality(constructor: any) {
 
       setupEventHandlers(this, this);
       setupResponseHandlers(this, this);
-      setupContextHandler(this);
+      void setupContextHandler(this, 'task');
 
       this[INITIALIZED] = true;
 

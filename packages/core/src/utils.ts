@@ -335,12 +335,20 @@ export function invokeImmediateWatchers(instance: any, constructor: any): void {
 /**
  * Create a debounced version of a function
  */
-export function createDebounced<T extends (...args: any[]) => any>(fn: T, delay: number): T {
+export function createDebounced<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number
+): T & { cancel(): void } {
   let timer: ReturnType<typeof setTimeout> | null = null;
-  return function(this: any, ...args: any[]) {
+  const debounced = function(this: any, ...args: any[]) {
     if (timer !== null) clearTimeout(timer);
     timer = setTimeout(() => { fn.apply(this, args); timer = null; }, delay);
-  } as T;
+  } as T & { cancel(): void };
+  debounced.cancel = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+  };
+  return debounced;
 }
 
 /**

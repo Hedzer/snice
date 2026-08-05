@@ -272,7 +272,7 @@ updateStatus(status: string) {
 
 ```typescript
 interface DispatchOptions extends EventInit {
-  dispatchOnUndefined?: boolean; // Skip dispatch when return is undefined (default: true)
+  dispatchOnUndefined?: boolean; // Undefined return still dispatches unless false (default: true)
   debounce?: number;             // Debounce dispatch by ms
   throttle?: number;             // Throttle dispatch by ms
   // Where to dispatch the event (see scope below)

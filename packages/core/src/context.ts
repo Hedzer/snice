@@ -2,9 +2,10 @@
  * @context decorator for receiving router context updates
  */
 
-import { CONTEXT_HANDLER, NAVIGATION_CONTEXT_INSTANCE, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_TIMER, CONTEXT_CALLED, CONTEXT_METHODS } from './symbols';
+import { CONTEXT_HANDLER, NAVIGATION_CONTEXT_INSTANCE, CONTEXT_REGISTER, CONTEXT_UNREGISTER, CONTEXT_NOTIFY_ELEMENT, CONTEXT_TIMER, CONTEXT_CALLED, CONTEXT_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { Context } from './types/context';
+import { getNavigationContext } from './context-provider';
 
 const CONTEXT_HANDLERS = getSymbol('context-handlers');
 
@@ -70,23 +71,31 @@ export function context(options: ContextOptions = {}) {
 }
 
 /**
- * Setup context handler for an element instance
- * Called automatically during element connection
+ * Set up context handlers for an element or attached controller.
+ * Called automatically by the corresponding managed lifecycle.
  */
-export function setupContextHandler(element: HTMLElement) {
+export function setupContextHandler(
+  element: object,
+  catchUp: false | 'microtask' | 'task' = false
+): void | Promise<void> {
   const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
   }
 
   // Get the Context instance from the router
-  const ctx = (element as any)[CONTEXT_HANDLER];
+  const ctx = (element as any)[CONTEXT_HANDLER] ?? getNavigationContext(element);
   if (!ctx) {
     return;
   }
 
   // Store the Context instance for cleanup
   (element as any)[NAVIGATION_CONTEXT_INSTANCE] = ctx;
+
+  // A controller can finish attaching after the Router has already announced
+  // the current navigation. Track whether an update arrives during this turn;
+  // if none does, catch it up once from the Context's current state.
+  let receivedContextUpdate = false;
 
   // Register each handler with the Context
   for (const handler of handlers) {
@@ -95,6 +104,7 @@ export function setupContextHandler(element: HTMLElement) {
 
     // Create wrapped method with timing controls
     (element as any)[wrappedMethodName] = function (context: Context) {
+      receivedContextUpdate = true;
       // `once` is tracked PER method (not a single element-level flag) so
       // multiple once handlers on the same element each fire.
       const called: Set<string> = (element as any)[CONTEXT_CALLED] ||
@@ -114,7 +124,7 @@ export function setupContextHandler(element: HTMLElement) {
           // element's other @context handlers would stop receiving updates.
           const ctx = (element as any)[NAVIGATION_CONTEXT_INSTANCE];
           if (ctx && typeof ctx[CONTEXT_UNREGISTER] === 'function') {
-            (ctx[CONTEXT_UNREGISTER] as (element: HTMLElement, methodName?: string) => void)(element, wrappedMethodName);
+            (ctx[CONTEXT_UNREGISTER] as (element: object, methodName?: string) => void)(element, wrappedMethodName);
           }
         }
       };
@@ -148,16 +158,34 @@ export function setupContextHandler(element: HTMLElement) {
 
     // Register with the Context using the wrapped method name
     if (typeof ctx[CONTEXT_REGISTER] === 'function') {
-      (ctx[CONTEXT_REGISTER] as (element: HTMLElement, methodName: string) => void)(element, wrappedMethodName);
+      (ctx[CONTEXT_REGISTER] as (element: object, methodName: string) => void)(element, wrappedMethodName);
     }
+  }
+
+  if (catchUp && typeof ctx[CONTEXT_NOTIFY_ELEMENT] === 'function') {
+    return new Promise<void>((resolve) => {
+      const notifyIfNeeded = () => {
+        try {
+          if (
+            !receivedContextUpdate
+            && (element as any)[NAVIGATION_CONTEXT_INSTANCE] === ctx
+          ) {
+            (ctx[CONTEXT_NOTIFY_ELEMENT] as (element: object) => void)(element);
+          }
+        } finally {
+          resolve();
+        }
+      };
+      if (catchUp === 'task') setTimeout(notifyIfNeeded, 0);
+      else queueMicrotask(notifyIfNeeded);
+    });
   }
 }
 
 /**
- * Cleanup context handler for an element instance
- * Called automatically during element disconnection
+ * Clean up context handlers for an element or attached controller.
  */
-export function cleanupContextHandler(element: HTMLElement) {
+export function cleanupContextHandler(element: object) {
   const handlers = (element.constructor as any)[CONTEXT_HANDLERS];
   if (!handlers || !Array.isArray(handlers) || handlers.length === 0) {
     return;
@@ -182,7 +210,7 @@ export function cleanupContextHandler(element: HTMLElement) {
   // Unregister from Context if available
   const ctx = (element as any)[NAVIGATION_CONTEXT_INSTANCE];
   if (ctx && typeof ctx[CONTEXT_UNREGISTER] === 'function') {
-    (ctx[CONTEXT_UNREGISTER] as (element: HTMLElement) => void)(element);
+    (ctx[CONTEXT_UNREGISTER] as (element: object) => void)(element);
   }
 
   delete (element as any)[NAVIGATION_CONTEXT_INSTANCE];

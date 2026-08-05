@@ -16,10 +16,10 @@ let contextIdCounter = 0;
  * Represents the bundled router state that can notify registered elements of changes
  */
 export class Context {
-  // Stores the SET of wrapped-method names per element so that classes with
+  // Stores the SET of wrapped-method names per subscriber so that classes with
   // multiple @context() handlers register every method, not just the last one.
-  private [REGISTERED_ELEMENTS] = new WeakMap<HTMLElement, Set<string>>();
-  private [REGISTERED_ELEMENTS_SET] = new Set<HTMLElement>();
+  private [REGISTERED_ELEMENTS] = new WeakMap<object, Set<string>>();
+  private [REGISTERED_ELEMENTS_SET] = new Set<object>();
   private [IS_UPDATING] = false;
 
   /**
@@ -63,29 +63,29 @@ export class Context {
   }
 
   /**
-   * Register an element to receive context updates
+   * Register an element or controller to receive context updates
    * @internal Used by @context decorator
    */
-  [CONTEXT_REGISTER](element: HTMLElement, methodName: string): void {
-    const map = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
+  [CONTEXT_REGISTER](element: object, methodName: string): void {
+    const map = this[REGISTERED_ELEMENTS] as WeakMap<object, Set<string>>;
     let names = map.get(element);
     if (!names) {
       names = new Set<string>();
       map.set(element, names);
     }
     names.add(methodName);
-    (this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>).add(element);
+    (this[REGISTERED_ELEMENTS_SET] as Set<object>).add(element);
   }
 
   /**
-   * Unregister an element from receiving context updates. With a methodName,
+   * Unregister a subscriber from context updates. With a methodName,
    * removes only that one handler (so a `once` handler tearing itself down
    * doesn't kill the element's other @context handlers); without one, removes
-   * the element entirely (used on disconnect).
+   * the subscriber entirely (used on disconnect/detach).
    * @internal Used by @context decorator cleanup
    */
-  [CONTEXT_UNREGISTER](element: HTMLElement, methodName?: string): void {
-    const map = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
+  [CONTEXT_UNREGISTER](element: object, methodName?: string): void {
+    const map = this[REGISTERED_ELEMENTS] as WeakMap<object, Set<string>>;
 
     if (methodName !== undefined) {
       const names = map.get(element);
@@ -95,7 +95,7 @@ export class Context {
     }
 
     map.delete(element);
-    (this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>).delete(element);
+    (this[REGISTERED_ELEMENTS_SET] as Set<object>).delete(element);
   }
 
   /**
@@ -127,10 +127,10 @@ export class Context {
 
     this[IS_UPDATING] = true;
 
-    // Notify all registered elements by calling EVERY registered method
+    // Notify all registered subscribers by calling EVERY registered method
     // name on each. Classes with multiple @context() methods get all fired.
-    const elementsSet = this[REGISTERED_ELEMENTS_SET] as Set<HTMLElement>;
-    const elementsMap = this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>;
+    const elementsSet = this[REGISTERED_ELEMENTS_SET] as Set<object>;
+    const elementsMap = this[REGISTERED_ELEMENTS] as WeakMap<object, Set<string>>;
 
     for (const element of elementsSet) {
       const names = elementsMap.get(element);
@@ -150,15 +150,19 @@ export class Context {
   }
 
   /**
-   * Notify a specific element of the current context state
+   * Notify a specific subscriber of the current context state
    * @internal Used by @context decorator
    */
-  [CONTEXT_NOTIFY_ELEMENT](element: HTMLElement): void {
-    const names = (this[REGISTERED_ELEMENTS] as WeakMap<HTMLElement, Set<string>>).get(element);
+  [CONTEXT_NOTIFY_ELEMENT](element: object): void {
+    const names = (this[REGISTERED_ELEMENTS] as WeakMap<object, Set<string>>).get(element);
     if (!names) return;
     for (const methodName of names) {
       if (typeof (element as any)[methodName] === 'function') {
-        (element as any)[methodName](this);
+        try {
+          (element as any)[methodName](this);
+        } catch (error) {
+          console.error(`Error calling @context method ${methodName}:`, error);
+        }
       }
     }
   }

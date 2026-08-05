@@ -433,7 +433,11 @@ setValue(val: string) {
 
 ### Global State
 
-**`@context(options?)`** - Receive router context updates (global state)
+**`@context(options?)`** - Receive Router context updates on pages, descendant
+elements, and attached controllers. Controllers can use the same
+middleware-aware `ctx.fetch` as pages; context-dependent controller startup
+belongs in the `@context()` handler because managed decorators activate after
+`attach()`.
 ```typescript
 // Method decorator that receives context updates
 @context()

@@ -198,7 +198,11 @@ The options object always comes after the property names, so it works with multi
 
 ## @context() Decorator
 
-Receive router context updates. The decorated method is called whenever the router context changes (navigation, app context update, etc.):
+Receive router context updates on pages, descendant elements, and attached
+controllers. The decorated method is called whenever the router context
+changes (navigation, app context update, etc.). A controller's managed
+decorators activate after `attach()`, so context-dependent startup belongs in
+this handler:
 
 ```typescript
 import { element, context, property, render, html } from 'snice';

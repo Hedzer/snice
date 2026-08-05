@@ -159,10 +159,11 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
 
   // Initialize cleanup object if needed
   if (!instance[CLEANUP]) {
-    instance[CLEANUP] = { events: [], channels: [], observers: [] };
-  } else if (!instance[CLEANUP].events) {
-    instance[CLEANUP].events = [];
-  } else if (instance[CLEANUP].events.length > 0) {
+    instance[CLEANUP] = { events: [], eventCancels: [], channels: [], observers: [] };
+  }
+  if (!instance[CLEANUP].events) instance[CLEANUP].events = [];
+  if (!instance[CLEANUP].eventCancels) instance[CLEANUP].eventCancels = [];
+  if (instance[CLEANUP].events.length > 0 || instance[CLEANUP].eventCancels.length > 0) {
     // Events already set up - clean them up first to avoid duplicates
     cleanupEventHandlers(instance);
   }
@@ -198,7 +199,9 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
 
     // Apply debounce (takes precedence over throttle)
     if (handlerOptions.debounce && handlerOptions.debounce > 0) {
-      boundMethod = createDebounced(boundMethod, handlerOptions.debounce);
+      const debounced = createDebounced(boundMethod, handlerOptions.debounce);
+      instance[CLEANUP].eventCancels.push(() => debounced.cancel());
+      boundMethod = debounced;
     } else if (handlerOptions.throttle && handlerOptions.throttle > 0) {
       boundMethod = throttle(boundMethod, handlerOptions.throttle);
     }
@@ -390,6 +393,9 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
  */
 export function cleanupEventHandlers(instance: any) {
   if (!instance[CLEANUP]?.events) return;
+
+  for (const cancel of instance[CLEANUP].eventCancels ?? []) cancel();
+  instance[CLEANUP].eventCancels = [];
 
   for (const { target, eventName, handler, options } of instance[CLEANUP].events) {
     target.removeEventListener(eventName, handler, options);

@@ -24,6 +24,11 @@
       "import": "./dist/transitions.esm.js",
       "require": "./dist/transitions.cjs"
     },
+    "./testing/dom": {
+      "types": "./dist/testing-dom.d.ts",
+      "import": "./dist/testing-dom.esm.js",
+      "require": "./dist/testing-dom.cjs"
+    },
     "./react": {
       "types": "./adapters/react/index.d.ts",
       "import": "./adapters/react/index.js"

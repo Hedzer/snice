@@ -128,7 +128,7 @@ Property bindings preserve type and identity. They are the correct channel for a
 
 ### Live property values
 
-Native controls can mutate their own properties after Snice writes them. Normally, if the bound value has not changed, a later render leaves that user-edited DOM value alone. Wrap a property value in `live()` when the component state must be reasserted even if the bound value itself is unchanged:
+Native controls and stateful custom elements can mutate their own properties after Snice writes them. Normally, if the bound value has not changed, a later render leaves that user- or element-edited DOM value alone. Wrap a property value in `live()` when the owner state must be reasserted even if the bound value itself is unchanged:
 
 ```typescript
 html`<input .value=${live(this.canonicalValue)}>`;

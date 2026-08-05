@@ -720,8 +720,51 @@ describe('router construction and project architecture guidance', () => {
       expect.objectContaining({ id: 'snice/recommend-project-structure', severity: 'suggestion', category: 'architecture' }),
       expect.objectContaining({ id: 'snice/recommend-page-decomposition', severity: 'suggestion', category: 'architecture' }),
       expect.objectContaining({ id: 'snice/controller-on-page-host', severity: 'warning', category: 'architecture' }),
+      expect.objectContaining({ id: 'snice/imperative-controller-attach', severity: 'suggestion', category: 'architecture' }),
+      expect.objectContaining({ id: 'snice/element-member-shadows-native-idl', severity: 'warning', category: 'properties' }),
       expect.objectContaining({ id: 'snice/recommend-route-params', severity: 'suggestion', category: 'router' })
     ]));
+  });
+});
+
+describe('controller and native IDL architecture checks', () => {
+  it('prefers declarative controller bindings in application code but permits test attachment', () => {
+    const source = [
+      "import { attachController as bindController } from 'snice';",
+      'export async function bind(host: HTMLElement) {',
+      '  await bindController(host, OrdersController);',
+      '}'
+    ].join('\n');
+
+    const applicationDiagnostics = analyzeSource(source, 'src/pages/orders-page.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/imperative-controller-attach');
+    expect(applicationDiagnostics).toHaveLength(1);
+    expect(applicationDiagnostics[0].fix).toContain('controller=${ControllerClass}');
+
+    const testDiagnostics = analyzeSource(source, 'src/pages/orders-page.test.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/imperative-controller-attach');
+    expect(testDiagnostics).toEqual([]);
+  });
+
+  it('warns when element state shadows inherited HTMLElement IDL members', () => {
+    const source = [
+      "import { element, property } from 'snice';",
+      "@element('account-card')",
+      'class AccountCard extends HTMLElement {',
+      '  @property({ attribute: false }) role: { id: string } | null = null;',
+      '  private inert = false;',
+      "  @property() accountTitle = '';",
+      '}'
+    ].join('\n');
+
+    const diagnostics = analyzeSource(source, 'src/components/account-card.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl');
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.map(diagnostic => diagnostic.message)).toEqual(expect.arrayContaining([
+      expect.stringContaining('.role shadows HTMLElement.role'),
+      expect.stringContaining('.inert shadows HTMLElement.inert')
+    ]));
+    expect(diagnostics.some(diagnostic => diagnostic.message.includes('accountTitle'))).toBe(false);
   });
 });
 
@@ -863,6 +906,29 @@ describe('declarative architecture smell checks', () => {
     ].join('\n');
     expect(analyzeSource(source, 'src/components/cancelable-panel.ts')
       .filter(diagnostic => diagnostic.ruleId === 'snice/prefer-dispatch-decorator')).toEqual([]);
+  });
+
+  it('recommends live property bindings for controlled self-mutating values', () => {
+    const controlled = [
+      '@render()',
+      'template() {',
+      '  return html`<snice-input value=${this.name}></snice-input>',
+      '    <snice-textarea value="${this.notes}"></snice-textarea>',
+      '    <snice-segmented-control value=${this.period}></snice-segmented-control>`;',
+      '}'
+    ].join('\n');
+    const diagnostics = analyzeSource(controlled, 'src/components/editor.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/live-control-value-binding');
+    expect(diagnostics).toHaveLength(3);
+    expect(diagnostics.every(diagnostic => diagnostic.fix.includes('.value=${live(value)}'))).toBe(true);
+
+    const authoredDefault = "html`<snice-input value=\"initial\"></snice-input>`";
+    expect(analyzeSource(authoredDefault, 'src/components/editor.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/live-control-value-binding')).toEqual([]);
+
+    const liveBinding = "html`<snice-input .value=${live(this.name)}></snice-input>`";
+    expect(analyzeSource(liveBinding, 'src/components/editor.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/live-control-value-binding')).toEqual([]);
   });
 
   it('detects imperative reseeding, once-painting, DOM building, and timer focus', () => {
@@ -1136,6 +1202,29 @@ describe('page orchestration checks', () => {
     ].join('\n');
     expect(byRule(source, 'snice/controller-on-page-host')).toEqual([]);
     expect(byRule(source, 'snice/recommend-route-params')).toEqual([]);
+  });
+
+  it('warns when a bare same-page route shadows a later query variant', () => {
+    const shadowed = [
+      "@page({ tag: 'search-page', routes: ['/search', '/search?q=:query&page=:page'] })",
+      'class SearchPage extends HTMLElement {}'
+    ].join('\n');
+    const diagnostics = byRule(shadowed, 'snice/shadowed-query-route');
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].message).toContain('never bind');
+    expect(diagnostics[0].fix).toContain('Move "/search?q=:query&page=:page" before "/search"');
+
+    const queryFirst = [
+      "@page({ tag: 'search-page', routes: ['/search?q=:query&page=:page', '/search'] })",
+      'class SearchPage extends HTMLElement {}'
+    ].join('\n');
+    expect(byRule(queryFirst, 'snice/shadowed-query-route')).toEqual([]);
+
+    const explicitlyOrdered = [
+      "@page({ tag: 'search-page', routes: [{ path: '/search', order: 10 }, { path: '/search?q=:query', order: -10 }] })",
+      'class SearchPage extends HTMLElement {}'
+    ].join('\n');
+    expect(byRule(explicitlyOrdered, 'snice/shadowed-query-route')).toEqual([]);
   });
 });
 

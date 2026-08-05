@@ -81,16 +81,19 @@ snice-pagination::part(button) {
 
 ```typescript
 import 'snice/components/pagination/snice-pagination';
+import type { PaginationChangeDetail } from 'snice/components/pagination/snice-pagination.types';
 ```
 
 ```html
 <snice-pagination current="1" total="10"></snice-pagination>
+```
 
-<script type="module">
-  document.querySelector('snice-pagination').addEventListener('pagination-change', (e) => {
-    console.log('Page:', e.detail.page, 'Previous:', e.detail.previousPage);
-  });
-</script>
+```typescript
+const pagination = document.querySelector('snice-pagination')!;
+pagination.addEventListener('pagination-change', (event) => {
+  const { detail } = event as CustomEvent<PaginationChangeDetail>;
+  console.log('Page:', detail.page, 'Previous:', detail.previousPage);
+});
 ```
 
 ## Examples

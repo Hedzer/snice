@@ -122,7 +122,7 @@ html`
 @dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, daemon?, ...EventInit })
 // Fires CustomEvent after method, detail = return value
 // Supports async methods (dispatches after promise resolves)
-// dispatchOnUndefined: false (default) — skips dispatch if method returns undefined
+// dispatchOnUndefined: false — skips when return is undefined; omitted/true still dispatches
 // scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects dispatch target
 ```
 
@@ -178,6 +178,8 @@ html`
 // Example:
 //   @respond('fetch-user')
 //   async handleFetchUser(payload: { id: string }) {
+//     const fetch = getContextFetch(this);
+//     if (!fetch) throw new Error('Controller requires context fetch');
 //     const user = await fetch(`/api/users/${payload.id}`).then(r => r.json());
 //     return user;
 //   }
@@ -189,6 +191,14 @@ const release = provideContext(appRoot, { daemons: { session: new SessionDaemon(
 const context = getContext(elementOrController);
 // Consumers use { daemon: 'session' }; daemon methods default to their own private target.
 // Provide before connect/attach. Call release() during app/test teardown.
+```
+
+Context transport:
+```typescript
+const release = provideContext(appRoot, appContext, { fetch: appFetch });
+const fetch = getContextFetch(elementOrController);
+// Router supplies its ContextAwareFetcher-bound Context.fetch automatically.
+// AppContext is not mutated with a reserved transport key.
 ```
 
 ## Observers
@@ -222,6 +232,7 @@ const context = getContext(elementOrController);
 
 @context(options?: { debounce?, throttle?, once? })
 // Method decorator: receives Context on navigation and ctx.update() calls
+// Supported on pages, descendant elements, and attached controllers.
 // Called on: initial load, route change, ctx.update()
 // Example:
 //   @context() handleContext(ctx: Context) {

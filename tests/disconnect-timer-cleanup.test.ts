@@ -1,5 +1,15 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { element, property, render, dispatch, html } from '../packages/core/src/index';
+import {
+  attachController,
+  controller,
+  detachController,
+  dispatch,
+  element,
+  html,
+  on,
+  property,
+  render,
+} from '../packages/core/src/index';
 import { RENDER_TIMERS, PENDING_RECONNECT_RENDER } from '../packages/core/src/symbols';
 
 // A render() or @dispatch() scheduled with debounce/throttle arms a setTimeout
@@ -64,6 +74,56 @@ describe('disconnect clears render/dispatch debounce-throttle timers', () => {
     await new Promise((r) => setTimeout(r, 60));
     // Without cleanup the timer fires this.dispatchEvent on the detached node,
     // reaching the listener still bound to the element.
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('cancels a pending debounced @on handler when the element disconnects', async () => {
+    const handler = vi.fn();
+
+    @element('test-on-timer-leak')
+    class TestOnTimerLeak extends HTMLElement {
+      @render()
+      tpl() { return html`<div></div>`; }
+
+      @on('schedule-work', { debounce: 30 })
+      handleWork() { handler(); }
+    }
+
+    const el = document.createElement('test-on-timer-leak') as any;
+    document.body.appendChild(el);
+    els.push(el);
+    await el.ready;
+
+    el.dispatchEvent(new Event('schedule-work'));
+    el.remove();
+
+    await new Promise((r) => setTimeout(r, 60));
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('cancels a pending debounced @on handler when a controller detaches', async () => {
+    const handler = vi.fn();
+
+    @controller('test-on-controller-timer-leak')
+    class TestOnControllerTimerLeak {
+      element: HTMLElement | null = null;
+      async attach() {}
+      async detach() {}
+
+      @on('schedule-work', { debounce: 30 })
+      handleWork() { handler(); }
+    }
+
+    const el = document.createElement('div') as any;
+    el.ready = Promise.resolve();
+    document.body.appendChild(el);
+    els.push(el);
+    await attachController(el, TestOnControllerTimerLeak);
+
+    el.dispatchEvent(new Event('schedule-work'));
+    await detachController(el);
+
+    await new Promise((r) => setTimeout(r, 60));
     expect(handler).not.toHaveBeenCalled();
   });
 

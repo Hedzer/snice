@@ -47,6 +47,27 @@ element. Snice form controls also retain their native-input/proxy fallback in
 DOM runners such as jsdom that expose only the ARIA subset of
 `ElementInternals`.
 
+## Partial DOM Compatibility
+
+In a simulated DOM, opt into Snice's standards compatibility layer from your
+test setup file:
+
+```typescript
+import 'snice/testing/dom';
+```
+
+The module capability-tests the current DOM and fills only missing IDL
+behavior. For example, jsdom and some happy-dom versions omit the browser's
+reflective `HTMLElement.autofocus` property for generic custom-element hosts;
+the adapter adds that property without replacing an implementation already
+provided by the runner. Application tests can then use
+`element.autofocus = true` exactly as browser code does.
+
+The adapter does not simulate layout, paint, or real focus navigation. Keep a
+browser-test lane for behavior that depends on those capabilities. If a runner
+creates its DOM after module evaluation, import and call
+`installDOMTestingCompatibility(scope)` explicitly.
+
 ## Reading the DOM
 
 Use the element's render root directly:
@@ -86,6 +107,56 @@ await attachController(el, UserController);
 ```
 
 Swapping a controller is the supported way to test an element in isolation: attach a fixture controller that responds on the same channel the production controller uses, and the element itself never changes. See [Request / Response](./request-response.md) and [Controllers](./controllers.md).
+
+When a controller calls `getContext(this)`, install the same application
+context on its host (or an ancestor) before attachment, then release it during
+cleanup:
+
+```typescript
+import { attachController, detachController, provideContext } from 'snice';
+
+const host = document.createElement('user-list');
+document.body.append(host);
+const releaseContext = provideContext(host, {
+  api: { listUsers: async () => [{ id: 'u1' }] }
+}, {
+  fetch: async () => new Response(JSON.stringify([{ id: 'u1' }]))
+});
+
+try {
+  await attachController(host, UserController);
+  // assert controller effects
+} finally {
+  await detachController(host);
+  releaseContext();
+  host.remove();
+}
+```
+
+Assigning the host's own `@context` field does not create a provider;
+`getContext()` resolves the nearest `provideContext()` boundary.
+When production code uses `getContextFetch()`, pass the test fetch function in
+the same provider's third argument as shown above. `Router` supplies its
+middleware-bound fetch function there in an application.
+
+If the controller uses `@context()`, test it beneath a real `Router` target.
+`provideContext()` intentionally provides application state and transport, not
+navigation notifications; using `Router` exercises the same registration,
+initial catch-up, middleware-aware `ctx.fetch`, updates, and detach cleanup as
+production:
+
+```typescript
+const router = Router({ target: '#fixture', context: { accountId: 'a1' }, fetcher });
+
+@router.page({ tag: 'fixture-page', routes: ['/fixture'] })
+class FixturePage extends HTMLElement {}
+
+router.initialize();
+await router.navigate('/fixture');
+const host = document.createElement('user-list');
+document.querySelector('fixture-page')!.append(host);
+await attachController(host, UserController);
+```
 
 ## Validating Source
 

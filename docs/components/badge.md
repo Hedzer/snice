@@ -31,6 +31,10 @@ The badge component displays notification indicators, status markers, and counts
 | `showZero` (attr: `show-zero`) | `boolean` | `false` | Render a zero count instead of hiding the badge |
 | `offset` | `number` | `0` | Offset in pixels from default position |
 
+The indicator is hidden when there is no dot, non-empty `content`, positive
+`count`, or `showZero`. Slotted content remains available as the element the
+badge would overlay.
+
 ## Methods
 
 | Method | Arguments | Description |

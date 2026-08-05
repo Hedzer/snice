@@ -12,7 +12,7 @@ import { RouterInstance } from './types/router-instance';
 import { Placard } from './types/placard';
 import { AppContext } from './types/app-context';
 import { Context } from './types/context';
-import { provideContext } from './app-context';
+import { provideRouterContext } from './app-context';
 import { hasContextProvider } from './context-provider';
 
 // Router historically allows a later Router instance to take over the same
@@ -75,7 +75,7 @@ export function Router(options: RouterOptions): RouterInstance {
     releaseContextProvider?.();
     routerContextProviders.get(target)?.();
 
-    const releaseProvidedContext = provideContext(target, context as AppContext);
+    const releaseProvidedContext = provideRouterContext(target, navigationContext);
     let released = false;
     const release = () => {
       if (released) return;

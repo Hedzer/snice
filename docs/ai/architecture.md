@@ -103,8 +103,9 @@ decomposition suggestions.
 2. ControllerPart commit / attributeChangedCallback detects change
 3. Detach old controller (if any)
 4. Attach new controller (class refs skip the registry; reference-deduped)
-5. setupEventHandlers for controller
-6. On detach: cleanupEventHandlers
+5. Register `@context` and catch up with the current Router context
+6. Set up `@observe`, `@respond`, and `@on` handlers
+7. On detach: clean up every managed decorator
 - Class bindings own the element; their decorator name is reflected as a diagnostic-only `controller="name"` marker
 - Native elements: class bindings attach via ControllerPart; string attrs via MutationObserver
 
@@ -184,9 +185,12 @@ async *fetchData(): Response<Data> {
 }
 
 // Controller responds (receives payload, returns result directly)
+private ctx!: Context;
+@context() receiveContext(ctx: Context) { this.ctx = ctx; }
+
 @respond('fetch-data')
 async handleFetch(payload: { id: string }) {
-  return await fetch(`/api/${payload.id}`).then(r => r.json());
+  return await this.ctx.fetch(`/api/${payload.id}`).then(r => r.json());
 }
 // Wiring: html`<my-element controller=${MyController}></my-element>` (or controller="my-controller" in raw HTML)
 ```

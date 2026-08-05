@@ -48,7 +48,7 @@ Ordinary attributes/comments support multiple expressions. Property, boolean, ev
 - Direct JS assignment; preserves type and identity.
 - null/undefined/false assigned unchanged; `nothing` assigns undefined; `noChange` skips.
 - Same committed value skips write.
-- `live(value)` compares value to the current DOM property instead of last commit; use only in property bindings when controlled native state must be reasserted after DOM/user mutation.
+- `live(value)` compares value to the current DOM property instead of last commit; use only in property bindings when controlled native or custom-element state must be reasserted after the user or element mutates it.
 - `live()` does not observe DOM mutations or schedule a render. It reasserts only when the owning template renders. A modal open-state change can supply that render when reopening should restore an unchanged seed value.
 
 ```typescript

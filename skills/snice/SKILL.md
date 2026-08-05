@@ -65,6 +65,11 @@ type-checks with `npx tsc -p references/tsconfig.kitchen-sink.json` after
 - Import React wrappers from `snice/react`; also register each underlying
   custom element through its documented deep side-effect import.
 - Pass objects and arrays through property bindings, not string attributes.
+- In Router-backed controllers, receive `Context` with `@context()` and use
+  `ctx.fetch` for middleware-aware transport. Managed decorators activate
+  after `attach()`, so context-dependent startup belongs in the `@context()`
+  handler. Do not call bare `fetch`, import the Router into the controller, or
+  invent another context-injection channel.
 - Preserve native form, keyboard, focus, and accessibility behavior.
 - Use the project compiler configuration for TC39 decorators.
 - Do not edit generated distribution, adapter, metadata, or website output.

@@ -120,7 +120,10 @@ Options object always comes after the property names — works with multiple wat
 
 ## @context()
 
-Receives router context updates. Called whenever the router context changes (navigation, app context update, etc.):
+Receives router context updates on pages, descendant elements, and attached
+controllers. Called whenever the router context changes (navigation, app
+context update, etc.). A controller's managed decorators activate after
+`attach()`, so context-dependent startup belongs in this handler:
 
 ```typescript
 @property({ type: Array }) placards: Placard[] = [];

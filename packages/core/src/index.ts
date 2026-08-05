@@ -6,7 +6,8 @@ export { context as contextProperty } from './element'; // Deprecated: use @cont
 export { Router } from './router';
 export { controller, useNativeElementControllers, attachController, detachController, getController } from './controller';
 export { daemon } from './daemon';
-export { provideContext, getContext } from './app-context';
+export { provideContext, getContext, getContextFetch } from './app-context';
+export type { ContextProviderOptions } from './app-context';
 import { useNativeElementControllers } from './controller';
 
 // Auto-enable native element controllers in browser environments

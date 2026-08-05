@@ -30,7 +30,13 @@ const router = Router({ target: '#app', context: { auth: null }, fetcher });
 router.initialize();
 ```
 
-## `ctx.fetch` in pages
+Pages, descendant elements, and attached controllers receive the Router's
+long-lived `Context` through `@context()`; its `ctx.fetch` is the bound,
+middleware-aware function. `getContextFetch(this)` remains the lower-level
+lookup for code using an explicit non-router
+`provideContext(root, appContext, { fetch })` boundary.
+
+## `ctx.fetch` in pages, elements, and controllers
 
 Available on any `Context` obtained via `@context()`; middleware applies automatically:
 
@@ -41,6 +47,31 @@ class UserPage extends HTMLElement {
   @context() handleContext(ctx: Context) { this.ctx = ctx; }
   @ready() async loadUser() {
     const user = await this.ctx.fetch('/api/users/123').then(r => r.json());
+  }
+}
+```
+
+Controllers use the same decorator. Managed decorators are activated after
+`attach()`, so start context-dependent work from the handler:
+
+```typescript
+@controller('user-data')
+class UserDataController implements IController<HTMLElement> {
+  element: HTMLElement | null = null;
+  private ctx?: Context;
+
+  attach(element: HTMLElement) { this.element = element; }
+  detach() { this.ctx = undefined; }
+
+  @context()
+  receiveContext(ctx: Context) {
+    this.ctx = ctx;
+    void this.load();
+  }
+
+  async load() {
+    const response = await this.ctx!.fetch('/api/users');
+    // Commit through the host's public API.
   }
 }
 ```
