@@ -15,6 +15,9 @@ export type AggregatorType = 'sum' | 'avg' | 'min' | 'max' | 'count';
 export type AggregatorFn = (values: any[], rows: any[]) => any;
 export type Aggregator = AggregatorType | AggregatorFn;
 
+/** Full-width custom row renderer for `list` mode. */
+export type ListViewRenderer = (row: any, index: number) => string | HTMLElement;
+
 export interface NumberFormat {
   decimals?: number;
   thousandsSeparator?: boolean;
@@ -461,7 +464,8 @@ export interface SniceTableElement extends HTMLElement {
   setRowHeightCallback(fn: (row: any, index: number) => number): void;
 
   // ── List view ──
-  setListViewRenderer(fn: (row: any, index: number) => string | HTMLElement): void;
+  listRenderer: ListViewRenderer | null;
+  setListViewRenderer(fn: ListViewRenderer): void;
 }
 
 /**

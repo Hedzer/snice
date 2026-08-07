@@ -15,6 +15,7 @@ hoverable:boolean=true; clickable:boolean=false; list:boolean=false; loading:boo
 quickFilter:boolean=false; rowReorder:boolean=false; columnReorder:boolean=false; columnMenu:boolean=false; lazyLoad:boolean=false; // attrs quick-filter/row-reorder/column-reorder/column-menu/lazy-load
 mode: 'local'|'remote' = 'local';
 columns:ColumnDefinition[]=[]; data:any[]=[]; currentSort:{column:string;direction:'asc'|'desc'}[]=[]; selectedRows:number[]=[]; // JS-only; selectedRows are raw-data indices
+listRenderer:((row,index)=>string|HTMLElement)|null=null; // JS-only; full-width custom rows in list mode
 searchText:string=''; searchDebounce:number=500; // searchText JS-only; attr search-debounce
 selectionMode:'none'|'single'|'multiple'='multiple'; selector:string=''; selectorOptions:{value:string;label:string}[]=[]; // attr selection-mode; options JS-only
 groupBy:string|string[]=''; groupDefaults:{expanded?:boolean}={}; // JS-only
@@ -79,6 +80,7 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 - `searchable` filters locally or requests remotely; `quickFilter` shows a model-backed input; `filterable` is the legacy remote selector.
 - Currency uses `snice-cell-currency`. Formatter/valueFormatter, tooltip, base/conditional styles, all declared format aliases, object progress/JSON/sparkline values, sparkline baselines, and already-percent semantics work across Table/declarative/standalone paths.
 - `rowReorder`, `columnReorder`, `lazyLoad`, and its threshold are post-mount reactive. List renderers execute in list mode. Density emits `density-change`.
+- Limits: pagination shows "Showing 1–25 of 60" or numbered `aria-label="Page N"` (no "Page X of Y"); remote has a 150ms debounce, re-requests only on `currentPage`/`currentSort`/`pageSize`, and keeps rows on a failed reload (⚠️ row + empty-state only with no data); local sort/search are client-side on `data` only.
 
 ## Methods
 
@@ -119,16 +121,16 @@ type CellStyle={backgroundColor?:string;color?:string;fontWeight?:'normal'|'bold
 
 ## Slots
 
-- `<snice-table>`: `columns`, `rows`, `header`, `empty-state`; no default slot. `<snice-column>`: default inert content slot. Cells: no slots.
+- `<snice-table>`: `columns`, `rows`, `header`, `empty-state` (cloned into the shadow body on EACH zero-row render — the slotted original is only a template); no default slot. `<snice-column>`: default inert content slot. Cells: no slots.
 - CDN Table bundle includes column, row, and cell dependencies. Grouping/aggregation upgrades declarative rows to the native table model.
 
 ## CSS Parts
 
-- `<snice-table>`: `body`, `superheader`, `controls`, `toolbar`, `pagination`, `filter-button` (column filter trigger), `sort-indicator` (sort direction); `<snice-row>`: `container`, `checkbox-cell`, `cell`; cells: `content`; actions: `action-button`; JSON: `toggle`; tag: `tag`; link/email/phone/location: `link`
+- `<snice-table>`: `body`, `superheader`, `controls`, `toolbar`, `pagination`, `loading-overlay` (refetch spinner while `loading` with rows present), `row` (each native body row), `cell` (each native body cell), `filter-button` (column filter trigger), `sort-indicator` (sort direction); `<snice-row>`: `container`, `checkbox-cell`, `cell`; cells: `content`; actions: `action-button`; JSON: `toggle`; tag: `tag`; link/email/phone/location: `link`
 
 ## CSS Custom Properties
 
-- `--snice-table-body-bg`, `--snice-table-group-header-bg`, `--snice-table-group-header-color`, `--snice-table-group-count-bg`, `--snice-table-group-count-color`, `--snice-table-aggregate-bg`, `--snice-table-aggregate-border-color`, `--snice-table-aggregate-color`, `--snice-table-aggregate-label-color`
+- `--snice-table-body-bg`, `--snice-table-group-header-bg`, `--snice-table-group-header-color`, `--snice-table-group-count-bg`, `--snice-table-group-count-color`, `--snice-table-aggregate-bg`, `--snice-table-aggregate-border-color`, `--snice-table-aggregate-color`, `--snice-table-aggregate-label-color`, `--snice-table-cell-padding`, `--snice-table-cell-border` (vertical; `none` drops grid lines), `--snice-table-row-border` (horizontal)
 
 ## Basic Usage
 

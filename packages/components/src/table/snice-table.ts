@@ -48,7 +48,7 @@ import type { DetailPanelOptions } from './table-master-detail';
 import type { ToolbarOptions } from './table-toolbar';
 import type { TreeDataOptions, TreeRow } from './table-tree-data';
 import type { ColumnGroup } from './table-column-manager';
-import type { ColumnDefinition, SniceTableElement, SelectionMode } from './snice-table.types';
+import type { ColumnDefinition, SniceTableElement, SelectionMode, ListViewRenderer } from './snice-table.types';
 
 /**
  * A single desired body row for the render-path reconciler (Task B). `key`
@@ -520,9 +520,9 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       }
 
       th, td {
-        padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem);
-        border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
-        border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
+        padding: var(--snice-table-cell-padding, var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-sm, 0.75rem));
+        border-bottom: var(--snice-table-row-border, 1px solid var(--snice-color-border, rgb(226 226 226)));
+        border-right: var(--snice-table-cell-border, 1px solid var(--snice-color-border, rgb(226 226 226)));
         text-align: left;
         vertical-align: middle;
         color: var(--snice-color-text, rgb(23 23 23));
@@ -878,6 +878,17 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       :host([loading]) tbody {
         opacity: 0.5;
+      }
+
+      /* Refetch spinner while rows stay on screen (SNICE-142) */
+      .table-loading-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 2;
       }
 
       .no-data {
@@ -1897,6 +1908,32 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @watch('loading')
   handleDataChange() {
     this.renderBody();
+    this.updateLoadingOverlay();
+  }
+
+  /**
+   * Refetch affordance: with rows on screen `loading` only dims the tbody, so
+   * add a spinner overlay (styled via `part="loading-overlay"`). The no-data
+   * load keeps its single spinner message row instead.
+   */
+  private updateLoadingOverlay() {
+    const frame = this.shadowRoot?.querySelector('.table-frame');
+    if (!frame) return;
+    let overlay = frame.querySelector('.table-loading-overlay') as HTMLElement | null;
+    const show = this.loading && this.data.length > 0;
+    if (show && !overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'table-loading-overlay';
+      overlay.setAttribute('part', 'loading-overlay');
+      const spinner = document.createElement('snice-progress');
+      spinner.setAttribute('variant', 'circular');
+      spinner.setAttribute('indeterminate', '');
+      spinner.setAttribute('size', 'small');
+      overlay.appendChild(spinner);
+      frame.appendChild(overlay);
+    } else if (!show && overlay) {
+      overlay.remove();
+    }
   }
 
   @watch('selectedRows')
@@ -4663,16 +4700,24 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
   // ── List View ──
 
-  private listViewRenderer: ((row: any, index: number) => string | HTMLElement) | null = null;
+  /**
+   * Declarative list-mode row renderer — bind via `.listRenderer=${fn}`.
+   * Returning an HTMLElement appends it; anything else becomes text.
+   */
+  @property({ attribute: false })
+  listRenderer: ListViewRenderer | null = null;
 
-  setListViewRenderer(fn: (row: any, index: number) => string | HTMLElement) {
-    this.listViewRenderer = fn;
-    if (this.list) {
-      // The row recycler cannot infer that a callback identity changed from
-      // row data alone. Force fresh rows so list markup replaces table cells.
-      this.renderedRows = new Map();
-      this.renderBody();
-    }
+  @watch('listRenderer', { immediate: false })
+  handleListRendererChange() {
+    if (!this.list) return;
+    // The row recycler cannot infer that a callback identity changed from
+    // row data alone. Force fresh rows so list markup replaces table cells.
+    this.renderedRows = new Map();
+    this.renderBody();
+  }
+
+  setListViewRenderer(fn: ListViewRenderer) {
+    this.listRenderer = fn;
   }
 
   // ── Row creation helper (used by both regular and virtualized rendering) ──
@@ -4680,6 +4725,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   private createRow(rowData: any, index: number, treeRow?: TreeRow): HTMLTableRowElement {
     const tr = document.createElement('tr');
     tr.setAttribute('data-index', String(index));
+    tr.setAttribute('part', 'row');
 
     // Row height
     if (this.rowHeightCallback) {
@@ -4717,11 +4763,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
     const columnsToRender = this.getVisibleColumnDefinitions();
 
-    if (this.list && this.listViewRenderer) {
+    if (this.list && this.listRenderer) {
       const td = document.createElement('td');
       td.className = 'list-view-cell';
       td.colSpan = Math.max(1, columnsToRender.length);
-      const rendered = this.listViewRenderer(rowData, index);
+      const rendered = this.listRenderer(rowData, index);
       if (rendered instanceof HTMLElement) td.appendChild(rendered);
       else td.textContent = rendered == null ? '' : String(rendered);
       tr.appendChild(td);
@@ -4738,6 +4784,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
 
       const td = document.createElement('td');
       td.setAttribute('data-key', column.key);
+      td.setAttribute('part', 'cell');
       const value = rowData[column.key];
 
       this.applyCellPresentation(td, column, value, rowData);

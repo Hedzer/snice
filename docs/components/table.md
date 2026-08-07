@@ -42,8 +42,9 @@ The imperative `columns` and `data` properties are the most complete path. Decla
 | `selectable` | `boolean` | `false` | Enables row selection when `selectionMode` is not `'none'` |
 | `hoverable` | `boolean` | `true` | Highlights rows on hover |
 | `clickable` | `boolean` | `false` | Emits `row-clicked` for non-interactive row clicks |
-| `list` | `boolean` | `false` | Removes vertical cell borders and, when configured with `setListViewRenderer()`, replaces normal data cells with one row-level rendered cell |
-| `loading` | `boolean` | `false` | Fades existing rows or shows an indeterminate progress indicator when no rows are present |
+| `list` | `boolean` | `false` | Removes vertical cell borders and, when configured with `listRenderer` (or `setListViewRenderer()`), replaces normal data cells with one row-level rendered cell |
+| `listRenderer` | `((row, index) => string \| HTMLElement) \| null` | `null` | JS-only row renderer for `list` mode; bind declaratively with `.listRenderer=${fn}` |
+| `loading` | `boolean` | `false` | Fades existing rows and shows a spinner overlay (`loading-overlay` part), or an indeterminate progress indicator when no rows are present |
 | `mode` | `'local' \| 'remote'` | `'local'` | In local mode, sorting and filtering use `data`. In remote mode, search, filter, sort, and server-page changes request `table/data` |
 | `columns` | `ColumnDefinition[]` | `[]` | Reactive JS-only column definitions; assignment schedules header and body rendering |
 | `data` | `any[]` | `[]` | Reactive JS-only rows; assignment schedules body rendering |
@@ -737,16 +738,19 @@ the corresponding user-action event; density is the explicit exception.
 | `<snice-table>` | `controls` | Legacy search/selector controls |
 | `<snice-table>` | `toolbar` | Toolbar installed by `setToolbar()` |
 | `<snice-table>` | `pagination` | Pagination wrapper |
+| `<snice-table>` | `loading-overlay` | Refetch spinner overlay shown while `loading` with rows present |
 | `<snice-row>` | `container` | Standalone declarative row wrapper |
 | `<snice-row>` | `checkbox-cell` | Standalone row selection cell |
 | `<snice-row>` | `cell` | Standalone row data cells |
+| `<snice-table>` | `row` | Each native body row (`<tr>`) |
+| `<snice-table>` | `cell` | Each native body cell (`<td>`) |
 | Cell components | `content` | Inner content on standalone `snice-cell*` elements |
 | `<snice-cell-actions>` | `action-button` | Each standalone action button |
 | `<snice-cell-json>` | `toggle` | JSON expand/collapse button |
 | `<snice-cell-tag>` | `tag` | Rendered tag badge |
 | `<snice-cell-link>`, `<snice-cell-email>`, `<snice-cell-phone>`, `<snice-cell-location>` | `link` | Rendered anchor |
 
-The internal native header/body do not currently expose `header` or `body` parts. Cell components have their own parts when used standalone, but those parts are not forwarded through `<snice-table>`.
+The internal native body exposes `row` and `cell` parts, so page CSS can style body rows and cells directly (e.g. `snice-table::part(cell) { ... }`). Standalone cell-component parts are not forwarded through `<snice-table>`.
 
 ## CSS Custom Properties
 
@@ -761,6 +765,9 @@ The internal native header/body do not currently expose `header` or `body` parts
 | `--snice-table-aggregate-color` | Aggregate value text | `--snice-color-text` |
 | `--snice-table-aggregate-label-color` | Aggregate label text | `--snice-color-text-secondary` |
 | `--snice-table-aggregate-border-color` | Grand-total top border | `--snice-color-border` |
+| `--snice-table-cell-padding` | Body/header cell padding | `--snice-spacing-xs` `--snice-spacing-sm` |
+| `--snice-table-cell-border` | Vertical (right) cell border; set to `none` to drop grid lines | `1px solid --snice-color-border` |
+| `--snice-table-row-border` | Horizontal (bottom) row border | `1px solid --snice-color-border` |
 
 The component also consumes global Snice color, spacing, typography, radius, focus-ring, shadow, and transition tokens.
 
@@ -1149,17 +1156,19 @@ Pinned rows are separate from `data`, use index `-1`, and remain outside sorting
 
 ### List Renderer
 
-`list` removes outer/vertical borders. Add `setListViewRenderer()` to replace
-each row's normal data cells with one full-width custom row. Tool cells such as
+`list` removes outer/vertical borders. Set the `listRenderer` property to
+replace each row's normal data cells with one full-width custom row — in a
+template, bind it with `.listRenderer=${fn}`. The imperative
+`setListViewRenderer()` equivalent remains available. Tool cells such as
 selection and detail toggles remain available.
 
 ```javascript
 table.list = true;
-table.setListViewRenderer((row) => {
+table.listRenderer = (row) => {
   const card = document.createElement('article');
   card.textContent = `${row.name} · ${row.department}`;
   return card;
-});
+};
 ```
 
 ### Loading and Empty States
@@ -1172,7 +1181,7 @@ Use `loading` for progress and the `empty-state` slot for a custom zero-row mess
 </snice-table>
 ```
 
-The slotted empty content is cloned into the table body. Remove `loading` after the request completes so the empty state can appear.
+The slotted empty content is **cloned** into the table body on each zero-row render — the light-DOM original is only a template, so event listeners or state on the slotted node do not carry over, and updating the slotted copy only takes effect on the next zero-row render. Remove `loading` after the request completes so the empty state can appear.
 
 ### Remote Data with Request/Response Events
 
@@ -1337,6 +1346,17 @@ CSV output uses raw row values and skips columns with `exportable: false`.
 Clipboard output uses formatted values by default and copies every filtered row
 when selection is empty. With a selection, both helpers intersect the correct
 raw row identities with the filtered view.
+
+## Limits Worth Knowing
+
+Behaviors that are fixed by design and worth checking against your page's
+contract before adopting the table:
+
+- **Pagination labels.** The built-in `pagination` renders "Showing 1–25 of 60" with plain prev/next-style buttons; `snice-pagination` renders numbered `aria-label="Page N"` buttons. Neither produces a "Page X of Y" contract.
+- **Remote-mode debounce.** `mode="remote"` requests are debounced by a hard-coded 150 ms.
+- **Failed remote loads keep their rows.** With data present, a failed re-request leaves the previous rows on screen; the `⚠️` warning row and the `empty-state` slot only appear when there is no data at all.
+- **Remote re-request triggers.** Remote mode re-requests only on `currentPage`, `currentSort`, and `pageSize` changes. A page that owns its own filter set must reset one of those (e.g. `currentPage`) to drive a refetch.
+- **Local mode is client-side.** `sortable`/`searchable` in local mode sort and filter the rows already in `data` — on a server-paged list that is one page of results.
 
 ## Keyboard Navigation
 
