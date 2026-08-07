@@ -11,7 +11,9 @@ export interface DiffProps extends SniceBaseProps {
     lineNumbers?: any;
     contextLines?: any;
     markers?: any;
+    showModeToggle?: any;
     onDiffComputed?: (event: any) => void;
+    onModeChange?: (event: any) => void;
 }
 /**
  * Diff - React adapter for snice-diff

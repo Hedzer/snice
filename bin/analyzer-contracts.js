@@ -8107,6 +8107,11 @@ export const ANALYZER_CONTRACTS = {
           "property": "oldText",
           "type": "string",
           "literals": []
+        },
+        "show-mode-toggle": {
+          "property": "showModeToggle",
+          "type": "boolean",
+          "literals": []
         }
       },
       "properties": {
@@ -8144,12 +8149,21 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "attribute": "old-text",
           "structured": false
+        },
+        "showModeToggle": {
+          "type": "boolean",
+          "attribute": "show-mode-toggle",
+          "structured": false
         }
       },
       "structuredProperties": [],
       "events": [
         {
           "name": "diff-computed",
+          "type": "CustomEvent<unknown>"
+        },
+        {
+          "name": "mode-change",
           "type": "CustomEvent<unknown>"
         }
       ],
@@ -18364,6 +18378,11 @@ export const ANALYZER_CONTRACTS = {
           "attribute": "list",
           "structured": false
         },
+        "listRenderer": {
+          "type": "ListViewRenderer | null",
+          "attribute": null,
+          "structured": false
+        },
         "loading": {
           "type": "boolean",
           "attribute": "loading",
@@ -24277,10 +24296,12 @@ export const ANALYZER_CONTRACTS = {
           "mode",
           "lineNumbers",
           "contextLines",
-          "markers"
+          "markers",
+          "showModeToggle"
         ],
         "events": {
-          "diff-computed": "onDiffComputed"
+          "diff-computed": "onDiffComputed",
+          "mode-change": "onModeChange"
         },
         "interfaceProps": [
           "oldText",
@@ -24290,7 +24311,9 @@ export const ANALYZER_CONTRACTS = {
           "lineNumbers",
           "contextLines",
           "markers",
-          "onDiffComputed"
+          "showModeToggle",
+          "onDiffComputed",
+          "onModeChange"
         ],
         "formAssociated": false
       },
@@ -27430,7 +27453,8 @@ export const ANALYZER_CONTRACTS = {
           "selectedRows",
           "selectionMode",
           "groupBy",
-          "groupDefaults"
+          "groupDefaults",
+          "listRenderer"
         ],
         "events": {
           "page-change": "onPageChange",
@@ -27489,6 +27513,7 @@ export const ANALYZER_CONTRACTS = {
           "selectionMode",
           "groupBy",
           "groupDefaults",
+          "listRenderer",
           "onPageChange",
           "onTableRowSelectionChanged",
           "onRowClicked",

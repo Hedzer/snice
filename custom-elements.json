@@ -13674,6 +13674,15 @@
                   "text": "unknown"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "showModeToggle",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true",
+              "description": "Show the built-in Unified/Split toggle in the header."
             }
           ],
           "attributes": [
@@ -13732,11 +13741,24 @@
                 "text": "string"
               },
               "reflects": true
+            },
+            {
+              "name": "show-mode-toggle",
+              "fieldName": "showModeToggle",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true,
+              "description": "Show the built-in Unified/Split toggle in the header."
             }
           ],
           "events": [
             {
               "name": "diff-computed",
+              "type": "CustomEvent<unknown>"
+            },
+            {
+              "name": "mode-change",
               "type": "CustomEvent<unknown>"
             }
           ],
@@ -45940,6 +45962,16 @@
             },
             {
               "kind": "method",
+              "name": "handleListRendererChange",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handlePageSizeChange",
               "parameters": [],
               "return": {
@@ -46108,6 +46140,15 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "listRenderer",
+              "type": {
+                "text": "ListViewRenderer | null"
+              },
+              "default": "null",
+              "description": "Declarative list-mode row renderer — bind via `.listRenderer=${fn}`.\nReturning an HTMLElement appends it; anything else becomes text."
             },
             {
               "kind": "field",
@@ -46581,7 +46622,7 @@
               "parameters": [
                 {
                   "name": "fn",
-                  "type": "(row: any, index: number) => string | HTMLElement",
+                  "type": "ListViewRenderer",
                   "optional": false
                 }
               ],
@@ -47235,6 +47276,9 @@
             },
             {
               "name": "header"
+            },
+            {
+              "name": "loading-overlay"
             },
             {
               "name": "superheader"

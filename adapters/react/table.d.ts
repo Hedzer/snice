@@ -50,6 +50,7 @@ export interface TableProps extends SniceBaseProps {
     groupDefaults?: {
         expanded?: boolean;
     };
+    listRenderer?: any;
     onPageChange?: (event: any) => void;
     onTableRowSelectionChanged?: (event: any) => void;
     onRowClicked?: (event: any) => void;

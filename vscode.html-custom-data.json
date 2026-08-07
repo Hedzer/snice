@@ -3334,6 +3334,10 @@
         {
           "name": "old-text",
           "description": "oldText: string"
+        },
+        {
+          "name": "show-mode-toggle",
+          "description": "Show the built-in Unified/Split toggle in the header."
         }
       ]
     },

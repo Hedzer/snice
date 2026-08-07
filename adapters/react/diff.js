@@ -20,8 +20,8 @@ import { createReactAdapter } from './wrapper';
  */
 export const Diff = createReactAdapter({
     tagName: 'snice-diff',
-    properties: ["oldText", "newText", "language", "mode", "lineNumbers", "contextLines", "markers"],
-    events: { "diff-computed": "onDiffComputed" },
+    properties: ["oldText", "newText", "language", "mode", "lineNumbers", "contextLines", "markers", "showModeToggle"],
+    events: { "diff-computed": "onDiffComputed", "mode-change": "onModeChange" },
     formAssociated: false
 });
 //# sourceMappingURL=diff.js.map
