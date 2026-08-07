@@ -293,10 +293,52 @@ describe('snice-switch', () => {
     expect(ctor.formAssociated).toBe(true);
   });
   describe('state label layout', () => {
-    it('widens the track when state labels are authored so the thumb cannot cover them', () => {
-      const css = readFileSync(resolve(process.cwd(), 'packages/components/src/switch/snice-switch.css'), 'utf8');
-      expect(css).toContain(':host([label-on]) .switch-track');
-      expect(css).toContain(':host([label-off]) .switch-track');
+    const css = () => readFileSync(resolve(process.cwd(), 'packages/components/src/switch/snice-switch.css'), 'utf8');
+
+    it('sizes the track to its state labels instead of hardcoding widths', () => {
+      // Tracks declare min-width so the in-flow sizer can widen them to fit
+      // the widest authored label (SNICE-168).
+      expect(css()).toContain('.switch-track-sizer');
+      expect(css()).toMatch(/\.switch-track--medium \{\n  min-width:/);
+      expect(css()).not.toMatch(/\.switch-track--(?:small|medium|large) \{\n  width:/);
+      expect(css()).not.toContain(':host([label-on])');
+    });
+
+    it('derives checked thumb travel from the actual track width', () => {
+      expect(css()).toContain('left: calc(100% - 1rem - 2px)');
+      expect(css()).toContain('left: calc(100% - 1.25rem - 2px)');
+      expect(css()).toContain('left: calc(100% - 1.5rem - 2px)');
+      expect(css()).not.toContain('translateX(');
+    });
+
+    it('renders an invisible in-flow sizer mirroring both labels when authored', async () => {
+      switchEl = await createComponent<SniceSwitchElement>('snice-switch', { 'label-on': 'Open', 'label-off': 'Closed' });
+      const sizer = queryShadow(switchEl as HTMLElement, '.switch-track-sizer') as HTMLElement;
+      expect(sizer).toBeTruthy();
+      expect(sizer.getAttribute('aria-hidden')).toBe('true');
+      const copies = Array.from(sizer.querySelectorAll('span')).map(span => span.textContent?.trim());
+      expect(copies).toEqual(['Open', 'Closed']);
+    });
+
+    it('omits the sizer when no state labels are authored', async () => {
+      switchEl = await createComponent<SniceSwitchElement>('snice-switch');
+      expect(queryShadow(switchEl as HTMLElement, '.switch-track-sizer')).toBeFalsy();
+    });
+
+    it('keeps state label text at full contrast (no blend modes, no faded opacity)', () => {
+      // mix-blend-mode over the primary track and a 0.7 visible opacity both
+      // dropped the tiny bold labels below AA contrast (SNICE-168).
+      expect(css()).not.toContain('mix-blend-mode');
+      expect(css()).toMatch(/\.switch-input:checked ~ \.switch-track \.switch-state-label--on \{\n  opacity: 1;/);
+      expect(css()).toMatch(/\.switch-input:not\(:checked\) ~ \.switch-track \.switch-state-label--off \{\n  opacity: 1;/);
+    });
+
+    it('exposes the state labels as CSS parts', async () => {
+      switchEl = await createComponent<SniceSwitchElement>('snice-switch', { 'label-on': 'On', 'label-off': 'Off' });
+      const onLabel = queryShadow(switchEl as HTMLElement, '.switch-state-label--on') as HTMLElement;
+      const offLabel = queryShadow(switchEl as HTMLElement, '.switch-state-label--off') as HTMLElement;
+      expect(onLabel.getAttribute('part')).toBe('label-on');
+      expect(offLabel.getAttribute('part')).toBe('label-off');
     });
   });
 

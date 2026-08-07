@@ -39749,6 +39749,12 @@
               "name": "label"
             },
             {
+              "name": "label-off"
+            },
+            {
+              "name": "label-on"
+            },
+            {
               "name": "spinner"
             },
             {

@@ -136,6 +136,7 @@ export const StateLabels: Story = {
     makeSw({ 'label-on': 'On',      'label-off': 'Off'     }),
     makeSw({ 'label-on': 'On',      'label-off': 'Off',    checked: true }),
     makeSw({ 'label-on': 'Enabled', 'label-off': 'Disabled', label: 'Feature flag' }),
+    makeSw({ 'label-on': 'Enabled', 'label-off': 'Disabled', label: 'Feature flag (large)', size: 'large', checked: true }),
     makeSw({ 'label-on': 'Yes',     'label-off': 'No',     label: 'Accept cookies', checked: true }),
   ),
 };
@@ -185,7 +186,7 @@ export const AllVariants: Story = {
   ),
 };
 
-// Available CSS Parts: input, track, thumb, spinner, label
+// Available CSS Parts: input, track, thumb, spinner, label, label-on, label-off
 export const CSSPartsStyling: Story = {
   render: () => {
     const wrap = document.createElement('div');

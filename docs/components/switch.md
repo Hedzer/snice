@@ -64,6 +64,8 @@ A toggle switch input for boolean selections. Supports on/off labels, form integ
 | `thumb` | Switch thumb |
 | `spinner` | Loading spinner |
 | `label` | Label text |
+| `label-on` | On-state text inside the track (renders when `label-on` is set) |
+| `label-off` | Off-state text inside the track (renders when `label-off` is set) |
 
 ## Basic Usage
 
@@ -102,10 +104,14 @@ Use `size` to change the switch dimensions.
 
 ### With On/Off Labels
 
-Use `label-on` and `label-off` for text inside the switch track.
+Use `label-on` and `label-off` for text inside the switch track. The track
+sizes itself to the widest label (medium and large sizes; small hides state
+labels), and the thumb's travel follows the actual track width — so long
+labels and `::part(track)` width overrides both stay aligned.
 
 ```html
 <snice-switch label="Dark mode" label-on="ON" label-off="OFF"></snice-switch>
+<snice-switch label="Door" label-on="Open" label-off="Closed"></snice-switch>
 ```
 
 ### Form Integration

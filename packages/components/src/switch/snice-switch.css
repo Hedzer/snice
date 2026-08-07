@@ -50,19 +50,19 @@
   transition: background-color var(--snice-transition-fast, 150ms) ease;
 }
 
-/* Size variants */
+/* Size variants — min-width so authored state labels can widen the track */
 .switch-track--small {
-  width: 2.25rem; /* 36px */
+  min-width: 2.25rem; /* 36px */
   height: 1.25rem; /* 20px */
 }
 
 .switch-track--medium {
-  width: 2.75rem; /* 44px */
+  min-width: 2.75rem; /* 44px */
   height: 1.5rem; /* 24px */
 }
 
 .switch-track--large {
-  width: 3.25rem; /* 52px */
+  min-width: 3.25rem; /* 52px */
   height: 1.75rem; /* 28px */
 }
 
@@ -74,7 +74,7 @@
   background: var(--snice-color-surface-container-lowest, rgb(255 255 255));
   border-radius: 50%;
   box-shadow: var(--snice-shadow-sm, 0 2px 6px 0 rgb(0 0 0 / 0.04), 0 2px 4px -1px rgb(0 0 0 / 0.06));
-  transition: transform var(--snice-transition-fast, 150ms) ease;
+  transition: left var(--snice-transition-fast, 150ms) ease;
   z-index: 2;
 }
 
@@ -99,16 +99,20 @@
   background: var(--snice-color-primary, rgb(37 99 235));
 }
 
+/* Checked offset derives from the actual track width (100%) minus the thumb
+   and inset, so label-widened tracks and ::part(track) width overrides keep
+   the thumb resting at the far end. Matches the old fixed travel exactly at
+   the default track widths. */
 .switch-input:checked ~ .switch-track--small .switch-thumb {
-  transform: translateX(1rem); /* 16px */
+  left: calc(100% - 1rem - 2px);
 }
 
 .switch-input:checked ~ .switch-track--medium .switch-thumb {
-  transform: translateX(1.25rem); /* 20px */
+  left: calc(100% - 1.25rem - 2px);
 }
 
 .switch-input:checked ~ .switch-track--large .switch-thumb {
-  transform: translateX(1.5rem); /* 24px */
+  left: calc(100% - 1.5rem - 2px);
 }
 
 /* Focus state — single box-shadow ring; outline would double up. */
@@ -176,25 +180,43 @@
   color: var(--snice-color-danger, rgb(220 38 38));
 }
 
-/* State labels (on/off text inside the track) */
-.switch-state-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+/* State labels (on/off text inside the track). The sizer spans share the
+   exact typography so the track's intrinsic width matches the painted text. */
+.switch-state-label,
+.switch-track-sizer > span {
   font-size: 0.5rem; /* 8px */
   font-weight: var(--snice-font-weight-bold, 700);
   text-transform: uppercase;
   letter-spacing: var(--snice-tracking-widest, 0.1em);
+}
+
+.switch-state-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   opacity: 0;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
   pointer-events: none;
   z-index: 1;
 }
 
+/* Invisible in-flow copy of both state labels. The track shrink-wraps this,
+   giving it an intrinsic width of thumb + clearance + widest label + inset,
+   so no label can end up under the thumb in either state. */
+.switch-track-sizer {
+  display: grid;
+  visibility: hidden;
+}
+
+.switch-track-sizer > span {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
 .switch-state-label--on {
   left: 0.3125rem; /* 5px - visible when checked (thumb moves right) */
+  /* Same text-on-primary token the button uses; readable in both themes. */
   color: var(--snice-color-text-inverse, rgb(250 250 250));
-  mix-blend-mode: overlay;
 }
 
 .switch-state-label--off {
@@ -202,8 +224,21 @@
   color: var(--snice-color-text, rgb(23 23 23));
 }
 
-.switch-track--medium .switch-state-label {
+.switch-track--medium .switch-state-label,
+.switch-track--medium .switch-track-sizer > span {
   font-size: 0.5625rem; /* 9px */
+}
+
+/* Reserve the space the thumb and label insets occupy around the text:
+   left inset (2px) + thumb width + 4px clearance, then the off-label inset. */
+.switch-track--medium .switch-track-sizer {
+  padding-left: calc(1.25rem + 6px);
+  padding-right: 0.5rem;
+}
+
+.switch-track--large .switch-track-sizer {
+  padding-left: calc(1.5rem + 6px);
+  padding-right: 0.5rem;
 }
 
 .switch-track--medium .switch-state-label--on {
@@ -214,7 +249,8 @@
   right: 0.5rem; /* 8px */
 }
 
-.switch-track--large .switch-state-label {
+.switch-track--large .switch-state-label,
+.switch-track--large .switch-track-sizer > span {
   font-size: 0.625rem; /* 10px */
 }
 
@@ -226,16 +262,20 @@
   right: 0.5rem; /* 8px */
 }
 
+/* Full opacity when visible — the tiny bold text needs every bit of the
+   token pair's contrast (AA for small text). */
 .switch-input:checked ~ .switch-track .switch-state-label--on {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .switch-input:not(:checked) ~ .switch-track .switch-state-label--off {
-  opacity: 0.7;
+  opacity: 1;
 }
 
-/* Hide state labels on small size */
-.switch-track--small .switch-state-label {
+/* Hide state labels on small size; the sizer must not widen the track for
+   text that never paints. */
+.switch-track--small .switch-state-label,
+.switch-track--small .switch-track-sizer {
   display: none;
 }
 
@@ -295,36 +335,4 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
-}
-
-/* State labels need room beside the thumb — widen every size when authored */
-:host([label-on]) .switch-track--small,
-:host([label-off]) .switch-track--small {
-  width: 3rem;
-}
-
-:host([label-on]) .switch-track--medium,
-:host([label-off]) .switch-track--medium {
-  width: 3.5rem;
-}
-
-:host([label-on]) .switch-track--large,
-:host([label-off]) .switch-track--large {
-  width: 4rem;
-}
-
-/* Wider labeled tracks need matching thumb travel */
-:host([label-on]) .switch-input:checked ~ .switch-track--small .switch-thumb,
-:host([label-off]) .switch-input:checked ~ .switch-track--small .switch-thumb {
-  transform: translateX(1.75rem);
-}
-
-:host([label-on]) .switch-input:checked ~ .switch-track--medium .switch-thumb,
-:host([label-off]) .switch-input:checked ~ .switch-track--medium .switch-thumb {
-  transform: translateX(2rem);
-}
-
-:host([label-on]) .switch-input:checked ~ .switch-track--large .switch-thumb,
-:host([label-off]) .switch-input:checked ~ .switch-track--large .switch-thumb {
-  transform: translateX(2.25rem);
 }

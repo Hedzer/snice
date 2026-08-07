@@ -160,8 +160,12 @@ export class SniceSwitch extends HTMLElement implements SniceSwitchElement {
             </if>
           </span>
           <if ${this.labelOn || this.labelOff}>
-            <span class="switch-state-label switch-state-label--on">${this.labelOn}</span>
-            <span class="switch-state-label switch-state-label--off">${this.labelOff}</span>
+            <span class="switch-state-label switch-state-label--on" part="label-on">${this.labelOn}</span>
+            <span class="switch-state-label switch-state-label--off" part="label-off">${this.labelOff}</span>
+            <span class="switch-track-sizer" aria-hidden="true">
+              <span>${this.labelOn}</span>
+              <span>${this.labelOff}</span>
+            </span>
           </if>
         </span>
 

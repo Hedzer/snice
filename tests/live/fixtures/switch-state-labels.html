@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <style>
+      /* The upstream report reproduced at a 14px root font-size. */
+      html { font-size: 14px; }
+      body { margin: 16px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+      #widened::part(track) { width: 8rem; }
+    </style>
+  </head>
+  <body>
+    <snice-switch id="medium-off" size="medium" label-on="On" label-off="Off"></snice-switch>
+    <snice-switch id="medium-long" size="medium" label-on="Open" label-off="Closed"></snice-switch>
+    <snice-switch id="medium-long-checked" size="medium" checked label-on="Open" label-off="Closed"></snice-switch>
+    <snice-switch id="large-long" size="large" label-on="Enabled" label-off="Disabled"></snice-switch>
+    <snice-switch id="large-long-checked" size="large" checked label-on="Enabled" label-off="Disabled"></snice-switch>
+    <snice-switch id="small-labeled" size="small" label-on="On" label-off="Off"></snice-switch>
+    <snice-switch id="small-plain" size="small"></snice-switch>
+    <snice-switch id="widened" size="medium" checked label-on="On" label-off="Off"></snice-switch>
+    <script type="module">
+      import '../../../packages/components/src/switch/snice-switch.ts';
+    </script>
+  </body>
+</html>

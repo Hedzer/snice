@@ -58,6 +58,9 @@ readonly labels: NodeList | null;
 - `thumb` - Switch thumb
 - `spinner` - Loading spinner
 - `label` - Label text
+- `label-on` / `label-off` - State text inside the track (render when set)
+
+State labels: track auto-sizes to the widest label (medium/large; small hides them); checked thumb travel follows actual track width, so `::part(track)` width overrides stay aligned.
 
 ## Basic Usage
 
