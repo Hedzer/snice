@@ -36,8 +36,10 @@ export class SniceOption extends HTMLElement implements SniceOptionElement {
       this.label = this.textContent.trim();
     }
 
-    // If no value is provided, use the label
-    if (!this.value && this.label) {
+    // If no value is provided, use the label. An explicitly authored empty
+    // string is a real value (the standard "no filter" sentinel), not a
+    // missing one — only fall back when the attribute was never set.
+    if (!this.hasAttribute('value') && !this.value && this.label) {
       this.value = this.label;
     }
   }

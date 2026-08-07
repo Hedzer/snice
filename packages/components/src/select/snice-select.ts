@@ -205,6 +205,18 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     return this.childOptions.length > 0 ? this.childOptions : this.options;
   }
 
+  /**
+   * Options that user interactions resolve against. Remote mode renders the
+   * dropdown from `filteredOptions` (server results) while `mergedOptions`
+   * stays empty, so selection, display, and sync-back must look in both.
+   */
+  private get resolvableOptions(): SelectOption[] {
+    if (!this.remote) return this.mergedOptions;
+    const merged = this.mergedOptions;
+    const mergedValues = new Set(merged.map(o => o.value));
+    return [...this.filteredOptions.filter(o => !mergedValues.has(o.value)), ...merged];
+  }
+
   @request('select/search')
   async *performRemoteSearch(query: string): any {
     this.remoteSearching = true;
@@ -857,8 +869,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     if (!this.editableInput) return;
 
     if (this.value) {
-      const allOptions = this.mergedOptions;
-      const match = allOptions.find(opt => opt.value === this.value);
+      const match = this.resolvableOptions.find(opt => opt.value === this.value);
       if (match) {
         this.editableInput.value = match.label;
         this.editableInputValue = match.label;
@@ -1030,8 +1041,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
     const value = optionEl.getAttribute('data-value');
     if (!value) return;
 
-    const allOptions = this.mergedOptions;
-    const option = allOptions.find(opt => opt.value === value);
+    const option = this.resolvableOptions.find(opt => opt.value === value);
     if (option && !option.disabled) {
       if (this.editable) {
         this.handleEditableOptionSelect(option);
@@ -1196,7 +1206,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private updateValueDisplay() {
     if (!this.valueDisplay) return;
 
-    const allOptions = this.mergedOptions;
+    const allOptions = this.resolvableOptions;
     const selectedOptions = allOptions.filter(opt =>
       this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
     );
@@ -1246,7 +1256,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   private updateClearButton() {
     if (!this.clearButton) return;
 
-    const allOptions = this.mergedOptions;
+    const allOptions = this.resolvableOptions;
     const selectedOptions = allOptions.filter(opt =>
       this.multiple ? this.selectedValues.has(opt.value) : opt.value === this.value
     );
@@ -1386,8 +1396,7 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   }
 
   selectOption(value: string) {
-    const allOptions = this.mergedOptions;
-    const option = allOptions.find(opt => opt.value === value);
+    const option = this.resolvableOptions.find(opt => opt.value === value);
     if (option && !option.disabled) {
       if (this.editable) {
         this.handleEditableOptionSelect(option);

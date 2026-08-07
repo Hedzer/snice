@@ -713,6 +713,77 @@ describe('snice-select untrusted option data', () => {
   });
 });
 
+describe('snice-select remote mode selection (SNICE-137)', () => {
+  let container: HTMLElement;
+  let select: any;
+
+  const remoteOptions: SelectOption[] = [
+    { value: '1', label: 'dev (you)' },
+    { value: '2', label: 'alice' },
+  ];
+
+  async function createRemoteSelect(editable = false) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    select = document.createElement('snice-select');
+    select.remote = true;
+    select.searchable = true;
+    if (editable) select.editable = true;
+    container.appendChild(select);
+    await select.ready;
+
+    select.addEventListener('@request/select/search', ((event: CustomEvent) => {
+      event.detail.discovery.resolve();
+      event.detail.data.resolve(remoteOptions);
+    }) as EventListener);
+
+    await select.performRemoteSearch('dev');
+  }
+
+  afterEach(() => {
+    container?.remove();
+  });
+
+  it('selects a remote result on mouse click', async () => {
+    await createRemoteSelect();
+
+    const changeEvents: CustomEvent[] = [];
+    select.addEventListener('select-change', (e: Event) => changeEvents.push(e as CustomEvent));
+
+    const option = select.shadowRoot.querySelector('.select-option') as HTMLElement;
+    expect(option).toBeTruthy();
+    option.click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    expect(select.value).toBe('1');
+    expect(changeEvents.length).toBe(1);
+  });
+
+  it('shows the picked remote label in the trigger instead of the placeholder', async () => {
+    await createRemoteSelect();
+
+    const option = select.shadowRoot.querySelector('.select-option') as HTMLElement;
+    option.click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    const label = select.shadowRoot.querySelector('.select-value--single span');
+    expect(label?.textContent).toBe('dev (you)');
+  });
+
+  it('keeps the human label in the editable input after a remote pick', async () => {
+    await createRemoteSelect(true);
+
+    const option = select.shadowRoot.querySelector('.select-option') as HTMLElement;
+    option.click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    const input = select.shadowRoot.querySelector('.select-editable-input') as HTMLInputElement;
+    expect(select.value).toBe('1');
+    expect(input.value).toBe('dev (you)');
+  });
+});
+
 describe('snice-select editable mode', () => {
   let container: HTMLElement;
 
@@ -880,6 +951,19 @@ describe('snice-option', () => {
   it('should support value attribute', async () => {
     option = await createComponent('snice-option', { value: 'test' });
     expect(option.value).toBe('test');
+  });
+
+  it('should preserve an explicitly authored empty value attribute (SNICE-135)', async () => {
+    // '' is the standard "All / Any / None" sentinel in filter dropdowns —
+    // it is a provided value, not a missing one.
+    option = await createComponent('snice-option', { value: '', label: 'All routines' });
+    expect(option.value).toBe('');
+    expect(option.optionData.value).toBe('');
+  });
+
+  it('should fall back to the label only when no value was provided', async () => {
+    option = await createComponent('snice-option', { label: 'Some Label' });
+    expect(option.value).toBe('Some Label');
   });
 
   it('should have empty label by default', async () => {
