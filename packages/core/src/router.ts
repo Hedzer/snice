@@ -135,8 +135,14 @@ export function Router(options: RouterOptions): RouterInstance {
       // Extend the connectedCallback to add router-specific functionality
       const elementConnectedCallback = constructor.prototype.connectedCallback;
       constructor.prototype.connectedCallback = function() {
-        // Store the Context instance for @context decorated methods to access
-        (this as any)[CONTEXT_HANDLER] = navigationContext;
+        // Store the Context instance for @context decorated methods to access.
+        // Only Router-created elements (marked with ROUTER_CONTEXT during route
+        // resolution, home/404/403 creation) receive the application context —
+        // a bare document.createElement('my-page') in a unit test must stay
+        // inert so the test's own injected context wins.
+        if ((this as any)[ROUTER_CONTEXT] !== undefined) {
+          (this as any)[CONTEXT_HANDLER] = navigationContext;
+        }
 
         // Call the element's connectedCallback first
         elementConnectedCallback?.call(this);
