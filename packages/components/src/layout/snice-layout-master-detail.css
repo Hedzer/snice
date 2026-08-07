@@ -1,4 +1,8 @@
 /* Master-detail shell: list beside detail, single pane below the breakpoint */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);

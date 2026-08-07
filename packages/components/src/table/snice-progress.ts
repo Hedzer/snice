@@ -37,7 +37,11 @@ export class SniceTableProgress extends HTMLElement {
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         display: inline-flex;
         align-items: center;
         width: 100%;

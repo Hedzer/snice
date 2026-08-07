@@ -119,7 +119,11 @@ export class SnicePagination extends HTMLElement {
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         display: inline-block;
         --pagination-gap: 4px;
         --pagination-button-size: 32px;

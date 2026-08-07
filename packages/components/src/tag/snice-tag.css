@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-flex;
   --tag-height: 1.5rem; /* 24px */

@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   --alert-padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-md, 1rem);

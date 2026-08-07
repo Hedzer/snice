@@ -1,4 +1,8 @@
 /* Minimal Layout - Just content */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   font-family: var(--snice-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);

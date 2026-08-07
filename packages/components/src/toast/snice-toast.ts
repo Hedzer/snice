@@ -57,7 +57,11 @@ export class SniceToast extends HTMLElement implements SniceToastElement {
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         pointer-events: auto;
         display: block;
         animation: slideIn 0.3s ease-out;

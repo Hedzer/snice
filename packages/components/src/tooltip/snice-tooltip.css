@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   --tooltip-bg: var(--snice-tooltip-bg, rgb(51 51 51));
   --tooltip-color: var(--snice-tooltip-color, rgb(255 255 255));

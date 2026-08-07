@@ -1,4 +1,8 @@
 /* Date Range Picker Component Styles — matches snice-date-picker exactly */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-block;
   position: relative;

@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   --breadcrumb-font-size: 0.875rem; /* 14px */

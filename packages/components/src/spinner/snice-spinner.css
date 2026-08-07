@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   --spinner-size: 2.5rem;
   --spinner-stroke: 4px;

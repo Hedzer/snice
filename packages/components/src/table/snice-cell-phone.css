@@ -1,4 +1,8 @@
 /* Phone Cell Base */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   color: var(--snice-color-text, rgb(23 23 23));
   display: flex;

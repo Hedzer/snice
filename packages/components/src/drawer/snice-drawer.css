@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   /* Drawer sizes with theme integration and rem units */
   --drawer-width-small: var(--snice-size-drawer-small, 15rem); /* 240px */

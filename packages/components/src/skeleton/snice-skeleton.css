@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   --skeleton-bg: var(--snice-color-surface-container, rgb(241 241 241));

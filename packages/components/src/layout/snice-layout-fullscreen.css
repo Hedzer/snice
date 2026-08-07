@@ -2,6 +2,10 @@
 /* Viewport height lives on the host so an embedding page can override it
    (snice-layout-fullscreen { min-height: 0; height: 100% }) — shadow-internal
    rules cannot be overridden from outside. */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   min-height: 100%;

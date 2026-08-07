@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   --progress-height: 0.5rem; /* 8px */
   --progress-radius: 4px;

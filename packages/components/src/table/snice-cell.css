@@ -2,6 +2,10 @@
  * The td provides vertical centering via vertical-align: middle (set by
  * snice-table) so the host doesn't need its own flex box. Width:100% is
  * required so text-align: right/center happens across the full column. */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   width: 100%;

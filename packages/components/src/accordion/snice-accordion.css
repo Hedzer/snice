@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   --accordion-border-color: var(--snice-color-border, rgb(226 226 226));
   --accordion-border-radius: var(--snice-border-radius-lg, 0.5rem);

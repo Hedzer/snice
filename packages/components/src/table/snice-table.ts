@@ -431,7 +431,11 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         display: block;
         position: relative;
         width: 100%;

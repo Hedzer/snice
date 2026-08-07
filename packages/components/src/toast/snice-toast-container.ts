@@ -29,7 +29,11 @@ export class SniceToastContainer extends HTMLElement implements SniceToastContai
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         position: fixed;
         z-index: 10000;
         pointer-events: none;

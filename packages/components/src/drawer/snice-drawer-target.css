@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: block;
   transition: transform var(--snice-transition-medium, 250ms) var(--snice-ease-in-out, cubic-bezier(0.76, 0, 0.24, 1));

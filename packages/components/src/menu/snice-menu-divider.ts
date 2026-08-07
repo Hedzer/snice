@@ -12,7 +12,11 @@ export class SniceMenuDivider extends HTMLElement {
   @styles()
   styles() {
     return css/*css*/`
-      :host {
+      :host([hidden]) {
+  display: none;
+}
+
+:host {
         display: block;
         padding: 0.25rem 0;
       }

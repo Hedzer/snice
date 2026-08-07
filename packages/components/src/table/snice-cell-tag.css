@@ -1,4 +1,8 @@
 /* Tag Cell — uses same design tokens as snice-chip */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   color: var(--snice-color-text, rgb(23 23 23));
   display: flex;

@@ -1,3 +1,7 @@
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-block;
   --chip-height: 2rem; /* 32px */

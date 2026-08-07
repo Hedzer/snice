@@ -1,4 +1,8 @@
 /* Date Picker Component Styles */
+:host([hidden]) {
+  display: none;
+}
+
 :host {
   display: inline-block;
   position: relative;
