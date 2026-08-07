@@ -180,6 +180,73 @@ describe('ContextAwareFetcher', () => {
     });
   });
 
+  describe('Relative URL Resolution', () => {
+    it('should resolve a relative URL string against the document base instead of throwing', async () => {
+      const ctx = new Context({});
+      const fetchFn = fetcher.create(ctx);
+
+      mockFetch.mockResolvedValue(new Response('test'));
+
+      // Simulate the Node/undici runtime the reporter's suite runs under:
+      // its Request has no document base and throws on relative input.
+      const LenientRequest = globalThis.Request;
+      class StrictRequest extends LenientRequest {
+        constructor(input: any, init?: any) {
+          if (typeof input === 'string') new URL(input); // throws on relative
+          super(input, init);
+        }
+      }
+      globalThis.Request = StrictRequest as any;
+      try {
+        await fetchFn('/api/v1/notes/search?q=x&page=1&limit=25');
+      } finally {
+        globalThis.Request = LenientRequest;
+      }
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const request = mockFetch.mock.calls[0][0] as Request;
+      expect(request.url).toBe(new URL('/api/v1/notes/search?q=x&page=1&limit=25', location.href).href);
+    });
+
+    it('should leave absolute URL strings unchanged', async () => {
+      const ctx = new Context({});
+      const fetchFn = fetcher.create(ctx);
+
+      mockFetch.mockResolvedValue(new Response('test'));
+
+      await fetchFn('https://api.example.com/v1/notes');
+
+      const request = mockFetch.mock.calls[0][0] as Request;
+      expect(request.url).toBe('https://api.example.com/v1/notes');
+    });
+
+    it('should leave Request and URL inputs unchanged', async () => {
+      const ctx = new Context({});
+      const fetchFn = fetcher.create(ctx);
+
+      mockFetch.mockResolvedValue(new Response('test'));
+
+      await fetchFn(new URL('https://example.com/absolute'));
+      expect((mockFetch.mock.calls[0][0] as Request).url).toBe('https://example.com/absolute');
+    });
+
+    it('should run request middleware with the resolved request', async () => {
+      const ctx = new Context({});
+      let seenUrl = '';
+      fetcher.use('request', function(request, next) {
+        seenUrl = request.url;
+        return next();
+      });
+
+      const fetchFn = fetcher.create(ctx);
+      mockFetch.mockResolvedValue(new Response('test'));
+
+      await fetchFn('/api/v1/notes');
+
+      expect(seenUrl).toBe(new URL('/api/v1/notes', location.href).href);
+    });
+  });
+
   describe('Request Middleware Execution', () => {
     it('should execute request middleware before fetch', async () => {
       const executionOrder: string[] = [];

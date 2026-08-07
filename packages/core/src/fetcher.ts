@@ -91,6 +91,16 @@ export class ContextAwareFetcher implements Fetcher {
       input: RequestInfo | URL,
       init?: RequestInit
     ): Promise<Response> {
+      // Relative URLs are the normal case for a browser app, but constructing
+      // a Request from one throws when there is no document base (Node/undici
+      // test runtimes). Resolve against the location base when one exists.
+      if (typeof input === 'string' && typeof location !== 'undefined' && location.href) {
+        try {
+          new URL(input);
+        } catch {
+          input = new URL(input, location.href).href;
+        }
+      }
       const request = new Request(input, init);
 
       // Request middleware chain
