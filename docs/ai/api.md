@@ -199,6 +199,8 @@ const release = provideContext(appRoot, appContext, { fetch: appFetch });
 const fetch = getContextFetch(elementOrController);
 // Router supplies its ContextAwareFetcher-bound Context.fetch automatically.
 // AppContext is not mutated with a reserved transport key.
+// provideContext supplies application state + transport only; it can NEVER
+// satisfy @context() — that requires a real Router (see testing.md).
 ```
 
 ## Observers

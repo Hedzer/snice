@@ -141,8 +141,11 @@ middleware-bound fetch function there in an application.
 
 If the controller uses `@context()`, test it beneath a real `Router` target.
 `provideContext()` intentionally provides application state and transport, not
-navigation notifications; using `Router` exercises the same registration,
-initial catch-up, middleware-aware `ctx.fetch`, updates, and detach cleanup as
+navigation notifications — a `provideContext()` boundary can NEVER satisfy a
+`@context()` handler. The handler simply never fires, with no error, so a
+harness built on `provideContext()` alone shows a silently empty page and a
+green-looking suite. Using `Router` exercises the same registration, initial
+catch-up, middleware-aware `ctx.fetch`, updates, and detach cleanup as
 production:
 
 ```typescript
@@ -157,6 +160,28 @@ const host = document.createElement('user-list');
 document.querySelector('fixture-page')!.append(host);
 await attachController(host, UserController);
 ```
+
+To re-deliver a Context to an already-attached controller — exactly what
+testing a first-delivery guard requires — capture the `Context` on the fixture
+page and call its public `update()`, which re-notifies every registered
+handler:
+
+```typescript
+@router.page({ tag: 'fixture-page', routes: ['/fixture'] })
+class FixturePage extends HTMLElement {
+  ctx?: Context;
+  @context() capture(ctx: Context) { this.ctx = ctx; }
+}
+
+// after attach:
+fixturePage.ctx!.update();
+// assert the guarded controller did NOT start its work again
+```
+
+Two traps: invoking the `@context()` method directly does not work (the
+registered handler is a wrapped method), and `detachController()` nulls
+`element` before any late delivery, so a post-detach assertion must be set up
+before detaching.
 
 ## Validating Source
 

@@ -67,7 +67,7 @@ Resolver re-runs on reconnect — listeners track DOM moves.
 - `@request(channel, options?)` - Async generator request pattern; `{ daemon: 'name' }` targets an app-context daemon
 - `@respond(channel, options?)` - Handle requests from `@request`; `{ daemon: 'name' }` installs on that daemon target
 - `@context(options?)` - Receive router navigation context updates on pages, descendant elements, and attached controllers
-- `provideContext(root, context, { fetch? })` / `getContext(participant)` / `getContextFetch(participant)` - Explicit app-context and transport provisioning/lookup
+- `provideContext(root, context, { fetch? })` / `getContext(participant)` / `getContextFetch(participant)` - Explicit app-context and transport provisioning/lookup. Can NEVER satisfy `@context()` (no navigation notifications); test `@context()` consumers beneath a real `Router`
 
 ## Observers
 - `@observe(target, selector?, options?)` - Watch intersection, resize, media query, mutation

@@ -134,9 +134,10 @@ middleware-bound fetch function there in an application.
 
 If the controller uses `@context()`, test it beneath a real `Router` target.
 `provideContext()` intentionally provides application state and transport, not
-navigation notifications; using `Router` exercises the same registration,
-initial catch-up, middleware-aware `ctx.fetch`, updates, and detach cleanup as
-production:
+navigation notifications — a `provideContext()` boundary can NEVER satisfy a
+`@context()` handler; it simply never fires, with no error. Using `Router`
+exercises the same registration, initial catch-up, middleware-aware
+`ctx.fetch`, updates, and detach cleanup as production:
 
 ```typescript
 const router = Router({ target: '#fixture', context: { accountId: 'a1' }, fetcher });
@@ -150,6 +151,23 @@ const host = document.createElement('user-list');
 document.querySelector('fixture-page')!.append(host);
 await attachController(host, UserController);
 ```
+
+Re-delivering a Context to an already-attached controller (required to test a
+first-delivery guard): capture the `Context` on the fixture page, then call its
+public `update()` — it re-notifies every registered handler.
+
+```typescript
+@router.page({ tag: 'fixture-page', routes: ['/fixture'] })
+class FixturePage extends HTMLElement {
+  ctx?: Context;
+  @context() capture(ctx: Context) { this.ctx = ctx; }
+}
+// after attach: fixturePage.ctx!.update(); then assert no second load.
+```
+
+Traps: calling the `@context()` method directly does nothing useful (the
+registered handler is wrapped); `detachController()` nulls `element` before
+any late delivery.
 
 ## Validating source
 
