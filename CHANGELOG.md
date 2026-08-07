@@ -1,3 +1,21 @@
+# [7.5.0](https://github.com/Hedzer/snice/compare/v7.4.0...v7.5.0) (2026-08-07)
+
+
+### Bug Fixes
+
+* **analyzer:** treat test directories as test code (SNICE-167) ([4c0e133](https://github.com/Hedzer/snice/commit/4c0e1334d5677285f6ee9518bf9094ec177e0df8))
+* **components:** honor the hidden attribute on host-displayed components (SNICE-136) ([1ed7116](https://github.com/Hedzer/snice/commit/1ed711606ac47be27a3f223062aeae683f993bf0))
+* **core:** resolve relative fetch URLs against the document base (SNICE-133) ([29dba96](https://github.com/Hedzer/snice/commit/29dba966a6a5404d20c5797cc9a6e5896edfbe30))
+* **data-card:** open only external links in a new tab (SNICE-167) ([44da64e](https://github.com/Hedzer/snice/commit/44da64e53e7e48beab0e5b5caad1ec3c34ed96ec))
+* **router:** assign Router context only to Router-created pages (SNICE-132) ([5245735](https://github.com/Hedzer/snice/commit/5245735ef1c8f58e875ee9b8a85d4c9f206cc8cf))
+* **select:** keep empty option values and make remote picks selectable (SNICE-135, SNICE-137) ([acd3a3b](https://github.com/Hedzer/snice/commit/acd3a3b629862f45d48f5aac390918c4f92bfbbc))
+
+
+### Features
+
+* **diff:** add show-mode-toggle and mode-change event (SNICE-167) ([67b017d](https://github.com/Hedzer/snice/commit/67b017d8c0b715de77a2fa4c684d5af42beb1c1b))
+* **table:** cell/row styling surface, declarative listRenderer, refetch overlay (SNICE-140, SNICE-141, SNICE-142) ([fc911d7](https://github.com/Hedzer/snice/commit/fc911d72aef6fcdb4ada363e687a07bd071be7bd))
+
 # [7.4.0](https://github.com/Hedzer/snice/compare/v7.3.0...v7.4.0) (2026-08-05)
 
 
