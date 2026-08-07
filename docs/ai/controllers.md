@@ -72,6 +72,8 @@ el.controller = UserController;                  // snice elements
 
 ## Controller Lifecycle
 
+**One controller per element** — binding a different class or `null` detaches the current one first. A page host may not carry a controller, so a resource with several endpoints cannot be split one-controller-per-endpoint on one host; attach each mutation controller to its own trigger element instead.
+
 **Attachment flow:**
 1. Controller instance created
 2. `element` property set
@@ -209,14 +211,20 @@ class DataController<T> implements IController<DataHost<T>> {
   private ctx?: Context;
   private abort?: AbortController;
   private version = 0;
+  private receivedFirstContext = false;
 
   attach(element: DataHost<T>) {
     this.element = element;
   }
 
+  // @context() fires on EVERY context update, not once — gate one-shot work
+  // on the first delivery after attach(). Use `{ once: true }` instead when
+  // the handler itself must never run twice.
   @context()
   receiveContext(ctx: Context) {
     this.ctx = ctx;
+    if (this.receivedFirstContext) return;
+    this.receivedFirstContext = true;
     void this.reload();
   }
 
@@ -224,6 +232,7 @@ class DataController<T> implements IController<DataHost<T>> {
     this.version++;
     this.abort?.abort();
     this.ctx = undefined;
+    this.receivedFirstContext = false;
   }
 
   async reload() {
@@ -270,13 +279,38 @@ the Router's middleware-aware `fetch`. Managed decorators are activated after
 `attach()`, so start context-dependent work in the `@context()` handler (or in
 an event handled later), not in `attach()`.
 
+`@context()` is a subscription, not a one-shot: the handler fires on EVERY
+context update for as long as the controller is attached. "Caught up with the
+current Router context" (attachment flow step 6) is only the first delivery.
+Guard first delivery (as above), pass `{ once: true }`, or diff the update —
+but never start unguarded work in the handler body.
+
 Required pieces: abort previous work, increment a version for stale-response
 guarding, reset loading/error/empty before fetch, check version + host identity
-before every commit, expose retry as `reload()`, and render all four states in
-the element.
+before every commit, expose retry as `reload()`, render all four states in the
+element, and gate one-shot work on the first context delivery (reset the flag
+in `detach()`).
 
 - **Theme controller** — read/write `localStorage`, toggle `data-theme` attribute on the element via `@on('click', '[data-set-theme]')`.
 - **WebSocket controller** — open connection in `attach()`, reconnect on close with a timer, dispatch `CustomEvent`s on message, close + clear timers in `detach()`. Controllers may expose additional public methods (e.g. `send(data)`) beyond `attach`/`detach`.
+
+**Observing a host property.** A controller has no host-property watcher —
+`@observe` is Intersection/Resize/Media/Mutation only, and `attachController`
+installs none. The working pattern: the owning element announces the change
+with `@dispatch`, the controller listens with a plain `@on` (direct handlers
+already listen on the host element):
+
+```typescript
+// element: @dispatch('page-filter', { bubbles: true, composed: true })
+//          emitFilter() { return { filter: this.filter }; }
+// controller:
+@on('page-filter')
+handleFilter(e: CustomEvent) { void this.reload(e.detail.filter); }
+```
+
+Carry every synchronously-written value in the event `detail` — a `.prop`
+binding commits a microtask later, so reading `this.element.filter` inside the
+handler reads the PREVIOUS value.
 
 ## Accessing Controllers
 

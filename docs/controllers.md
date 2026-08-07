@@ -115,6 +115,14 @@ interface IController<T extends HTMLElement = HTMLElement> {
 
 ## Controller Lifecycle
 
+**One controller per element.** An element hosts at most ONE controller at a
+time — binding a different class or `null` detaches the current one first.
+Combined with the rule that a page host may not carry a controller, this means
+a resource with several endpoints cannot be split one-controller-per-endpoint
+on a single host. The workable pattern: attach each mutation controller to its
+own trigger element (a button, a form, a region) and let them share state
+through the element's reactive properties or events.
+
 ### Attachment Flow
 
 1. Controller instance is created
@@ -391,14 +399,20 @@ export class OrdersDataController implements IController<OrdersView> {
   private ctx?: Context;
   private abortController?: AbortController;
   private requestVersion = 0;
+  private receivedFirstContext = false;
 
   attach(element: OrdersView) {
     this.element = element;
   }
 
+  // @context() fires on EVERY context update, not once — gate one-shot work
+  // on the first delivery after attach(). Use `{ once: true }` instead when
+  // the handler itself must never run twice.
   @context()
   receiveContext(ctx: Context) {
     this.ctx = ctx;
+    if (this.receivedFirstContext) return;
+    this.receivedFirstContext = true;
     void this.reload();
   }
 
@@ -408,6 +422,7 @@ export class OrdersDataController implements IController<OrdersView> {
     this.abortController?.abort();
     this.abortController = undefined;
     this.ctx = undefined;
+    this.receivedFirstContext = false;
   }
 
   async reload() {
@@ -469,6 +484,38 @@ long-lived `Context` instance, including `application`, navigation state, and
 the Router's middleware-aware `fetch`. Managed decorators are activated after
 `attach()`, so start context-dependent work in the `@context()` handler (or in
 an event handled later), not in `attach()`.
+
+`@context()` is a subscription, not a one-shot: the handler fires on **every**
+context update for as long as the controller is attached. The initial "caught
+up" delivery is only the first one. Guard first delivery (as the example
+does), pass `{ once: true }`, or diff the update — but never start unguarded
+work in the handler body.
+
+### Observing a host property
+
+A controller has no host-property watcher: `@observe` covers
+Intersection/Resize/Media/Mutation only, and `attachController` installs none.
+The working pattern is for the owning element to announce the change with
+`@dispatch` and the controller to listen with a plain `@on` (direct handlers
+already listen on the host element):
+
+```typescript
+// On the element:
+@dispatch('page-filter', { bubbles: true, composed: true })
+private emitFilter() {
+  return { filter: this.filter };
+}
+
+// On the controller:
+@on('page-filter')
+handleFilter(event: CustomEvent) {
+  void this.reload(event.detail.filter);
+}
+```
+
+Carry every synchronously-written value in the event `detail`. A `.prop`
+binding commits a microtask later, so reading `this.element.filter` inside the
+handler would read the PREVIOUS value.
 
 The element owns presentation for every state:
 
