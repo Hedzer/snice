@@ -16,7 +16,7 @@ interface DataCardField {
   editable?: boolean;                                   // per-field edit override
   group?: string;                                       // section grouping
   icon?: string;                                        // icon prefix
-  href?: string;                                        // for type='link'
+  href?: string;                                        // for type='link'; external origin → target="_blank" rel="noopener"; same-origin → in-place
   badgeVariant?: 'default'|'primary'|'success'|'warning'|'danger';
 }
 ```

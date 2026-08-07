@@ -33,7 +33,7 @@ interface DataCardField {
   editable?: boolean;
   group?: string;
   icon?: string;
-  href?: string;
+  href?: string;  // for type='link'; external origins open in a new tab (target="_blank" rel="noopener"), same-origin hrefs navigate in place
   badgeVariant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
 }
 ```

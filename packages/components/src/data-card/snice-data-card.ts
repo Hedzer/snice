@@ -174,8 +174,20 @@ export class SniceDataCard extends HTMLElement implements SniceDataCardElement {
     const type = field.type || 'text';
 
     if (type === 'link') {
+      const href = field.href || '#';
+      // External origins open in a new tab; same-origin (in-app) routes
+      // navigate in place — a forced _blank strands SPA navigation.
+      let external = false;
+      try {
+        external = new URL(href, location.href).origin !== location.origin;
+      } catch { /* unparsable href: treat as in-app */ }
+      if (external) {
+        return html/*html*/`
+          <a class="field__value field__value--link" part="field-value" href="${href}" target="_blank" rel="noopener">${field.value}</a>
+        `;
+      }
       return html/*html*/`
-        <a class="field__value field__value--link" part="field-value" href="${field.href || '#'}" target="_blank" rel="noopener">${field.value}</a>
+        <a class="field__value field__value--link" part="field-value" href="${href}">${field.value}</a>
       `;
     }
 

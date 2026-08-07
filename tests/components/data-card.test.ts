@@ -78,6 +78,21 @@ describe('snice-data-card', () => {
       expect(link?.getAttribute('href')).toBe('https://example.com');
     });
 
+    it('should open external links in a new tab but keep same-origin links in place', async () => {
+      card = await createComponent<SniceDataCardElement>('snice-data-card');
+      card.fields = [
+        { label: 'Website', value: 'example.com', type: 'link', href: 'https://example.com/page' },
+        { label: 'Order', value: '#1234', type: 'link', href: '/orders/1234' },
+      ];
+      await wait(10);
+      const links = card.shadowRoot!.querySelectorAll('.field__value--link');
+      expect(links[0].getAttribute('target')).toBe('_blank');
+      expect(links[0].getAttribute('rel')).toBe('noopener');
+      // In-app routes must navigate in place — a second tab strands the SPA
+      expect(links[1].getAttribute('target')).toBeNull();
+      expect(links[1].getAttribute('rel')).toBeNull();
+    });
+
     it('should render badge values', async () => {
       card = await createComponent<SniceDataCardElement>('snice-data-card');
       card.fields = [{ label: 'Status', value: 'Active', type: 'badge', badgeVariant: 'success' }];
