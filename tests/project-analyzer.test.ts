@@ -744,6 +744,13 @@ describe('controller and native IDL architecture checks', () => {
     const testDiagnostics = analyzeSource(source, 'src/pages/orders-page.test.ts')
       .filter(diagnostic => diagnostic.ruleId === 'snice/imperative-controller-attach');
     expect(testDiagnostics).toEqual([]);
+
+    // Shared test fixtures live in test directories without .test/.spec
+    // suffixes — they are the "focused framework tests only" case the rule
+    // carves out, so they must not be flagged either.
+    const fixtureDiagnostics = analyzeSource(source, 'tests/fixtures/mount-controller-host.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/imperative-controller-attach');
+    expect(fixtureDiagnostics).toEqual([]);
   });
 
   it('warns when element state shadows inherited HTMLElement IDL members', () => {

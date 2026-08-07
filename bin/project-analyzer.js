@@ -2091,7 +2091,7 @@ export function analyzeProject(files) {
         severity: 'suggestion',
         ruleId: 'snice/duplicated-stale-guard',
         message: `A ${guard.field} stale-response guard is repeated across project files.`,
-        fix: 'Extract host-free request sequencing into a plain module in the project\'s chosen location. Keep element-specific application behavior in controllers and element orchestration in pages. Review docs/ai/architecture.md.',
+        fix: 'Extract host-free request sequencing into a plain module in the project\'s chosen location — the per-controller version guard and host-identity check stay (they answer different questions); only the shared plumbing moves. Keep element-specific application behavior in controllers and element orchestration in pages. Review docs/ai/architecture.md.',
         file: guard.file.filename,
         line: location.line,
         column: location.column
@@ -3599,7 +3599,10 @@ function isFrameworkImplementation(filename) {
 }
 
 function isTestFilename(filename) {
-  return /(?:^|[/\\])[^/\\]+\.(?:test|spec)\.[cm]?[jt]sx?$/.test(filename);
+  if (/(?:^|[/\\])[^/\\]+\.(?:test|spec)\.[cm]?[jt]sx?$/.test(filename)) return true;
+  // Shared fixtures/helpers live in test directories without a .test/.spec
+  // suffix — they are still test code.
+  return /(?:^|[/\\])(?:__tests__|tests?)(?:[/\\]|$)/.test(filename);
 }
 
 function sourceLocation(source, index) {
