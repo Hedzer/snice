@@ -144,6 +144,10 @@ onContextUpdate(ctx: Context) {
 @context({ once: true })      // Only called once, then auto-unregisters
 ```
 
+**Routed-page order:** `@context()` → first render commits → `@ready()`
+(rendered DOM queryable). Normalize incoming route params in `@context()`
+before the first render commits them onto children.
+
 **Context object:**
 - `ctx.application` — App context (theme, auth, config, etc.)
 - `ctx.navigation.route` — Current route path

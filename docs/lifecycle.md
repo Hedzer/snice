@@ -247,6 +247,12 @@ class NavBar extends HTMLElement {
 @context({ once: true })       // Only called once, then auto-unregisters
 ```
 
+**Order for a routed page:** `@context()` fires first (before the first
+render), then the first render commits, then `@ready()` runs with the rendered
+DOM already queryable. A page can therefore normalize or correct an incoming
+route parameter in `@context()` before the first render commits a value onto a
+child element.
+
 The `Context` object provides:
 - `ctx.application` — App context (theme, auth, config, etc.)
 - `ctx.navigation.route` — Current route path

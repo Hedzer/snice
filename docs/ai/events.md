@@ -141,6 +141,9 @@ handleDeleteClick(event: MouseEvent) {
 handleTextInput(event: Event) {}
 ```
 
+- `currentTarget` is the listener's HOST, not the matched element — derive the match with `event.target.closest(selector)`.
+- Shadow retargeting: an event crossing a shadow boundary retargets to the shadow host, so a selector stops matching when rows move into a child component. Listen on the container; carry identity in `detail`.
+
 Keyboard events with `@on` (`:` notation):
 
 ```typescript

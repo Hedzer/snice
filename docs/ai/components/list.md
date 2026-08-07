@@ -4,8 +4,8 @@ List container with search, infinite scroll, and composable list items.
 
 ## Components
 
-- `<snice-list>` - Container with search, infinite scroll, loading
-- `<snice-list-item>` - Individual item with heading, description, slots
+- `<snice-list>` - Container with search, infinite scroll, loading. Slot-fed only; no `items` property.
+- `<snice-list-item>` - Individual item with heading, description, slots. No `href` — put a link in a slot or handle click.
 
 ## Properties
 

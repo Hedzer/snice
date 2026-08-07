@@ -192,7 +192,7 @@ class OverridePage extends HTMLElement {}
 
 ## Route parameters
 
-- `:param` segments in `routes` auto-map to `@property()` fields of the same name on the page element, set before `@ready()` fires.
+- `:param` segments in `routes` auto-map to `@property()` fields of the same name on the page element, set before `@ready()` fires. `@property({ attribute: false })` opts OUT — the Router binds through attributes, so such a field silently keeps its initializer.
 - Multiple `:param`s all populate independently, e.g. `/posts/:postId/comments/:commentId` → `postId`, `commentId` properties.
 - Query params: declare directly in the route pattern, e.g. `routes: ['/search?q=:query']` — extracted as a route param (`ctx.navigation.params.query`), not parsed from `location.search`.
 

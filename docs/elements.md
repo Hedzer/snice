@@ -94,7 +94,9 @@ class SearchPanel extends HTMLElement {
 }
 ```
 
-For a decorated host without its own effective `focus()` implementation, host-level `autofocus` targets the first native focusable control in its render root. Snice does not add `tabindex`. As with native autofocus, the first candidate wins; focus deliberately established by application code (including an `@ready` handler) is preserved. Assigning `element.autofocus = true` after initialization is also supported.
+For a decorated host without its own effective `focus()` implementation, host-level `autofocus` targets the first native focusable control in its render root. Snice does not add `tabindex`. As with native autofocus, the first candidate wins; focus deliberately established by application code (including an `@ready` handler) is preserved. Assigning `element.autofocus = true` after initialization is also supported. The pass also covers a host that first appears in a LATER render (e.g. inside a conditional branch), not only elements present at initial mount.
+
+Under jsdom the `autofocus` IDL property is not implemented, so `element.autofocus = true` is a no-op in tests — Snice's pass reads `hasAttribute('autofocus')`, which makes the attribute form (`?autofocus=${...}` in templates) the testable one.
 
 ## Extending Elements
 

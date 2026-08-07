@@ -354,6 +354,18 @@ class ListController implements IController {
 }
 ```
 
+Two delegation rules worth knowing:
+
+- **`currentTarget` is the listener's host, not the matched element.** Inside
+  `@on('click', '.delete-button')` the handler receives the raw event, so
+  derive the match with `event.target.closest('.delete-button')` when you need
+  the element itself (as above).
+- **Shadow DOM retargeting changes what the selector matches.** An event
+  crossing a shadow boundary is retargeted to the shadow host, so
+  `@on('row-clicked', 'my-row')` stops matching when rows move into a list
+  component — from outside, the event's target is the list host. Listen on the
+  container and carry the row identity in the event `detail` instead.
+
 ### Keyboard Events with @on
 
 ```typescript

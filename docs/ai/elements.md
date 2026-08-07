@@ -89,7 +89,8 @@ class FocusCard extends HTMLElement { /* ... */ }
 - A native descendant in an `@render` template works directly: `<input autofocus>`.
 - If an autofocus host's `focus()` has no effect, Snice focuses its first native focusable render-root descendant without adding `tabindex`.
 - First candidate wins. Existing deliberate focus, including focus set by `@ready`, is preserved.
-- Setting the native property after initialization works: `element.autofocus = true`.
+- Setting the native property after initialization works: `element.autofocus = true`. Also covers hosts first appearing in a LATER render (conditional branches).
+- jsdom implements no `autofocus` property — `element.autofocus = true` no-ops in tests. Snice reads `hasAttribute('autofocus')`; use the attribute form (`?autofocus=${...}`) for testability.
 
 ## Extending Elements
 

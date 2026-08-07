@@ -446,7 +446,11 @@ window.history.go(-2);
 
 ### Accessing Parameters
 
-Route parameters are automatically mapped to element properties:
+Route parameters are automatically mapped to element properties — a `:param`
+segment binds to a **plain `@property()`** of the same name. A field declared
+`@property({ attribute: false })` is opted OUT of route-param binding: the
+Router never sets it and it silently keeps its initializer. (The Router sets
+params through attributes; `attribute: false` fields have none.)
 
 ```typescript
 @page({
