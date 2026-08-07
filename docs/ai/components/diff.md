@@ -8,7 +8,8 @@ Text diff viewer with unified and split (side-by-side) modes, line numbers, coll
 oldText: string = '';            // attr: old-text
 newText: string = '';            // attr: new-text
 language: string = '';           // Language hint (future syntax highlighting)
-mode: 'unified'|'split' = 'unified';
+mode: 'unified'|'split' = 'unified';  // header toggle self-assigns this; announced via mode-change
+showModeToggle: boolean = true;  // attr: show-mode-toggle; "false" hides the built-in Unified/Split toggle
 lineNumbers: boolean = true;     // attr: line-numbers
 contextLines: number = 3;        // attr: context-lines
 markers: boolean = true;         // Show +/- markers column
@@ -33,6 +34,7 @@ interface DiffHunk {
 ## Events
 
 - `diff-computed` → `{ hunks: DiffHunk[], additions: number, deletions: number }`
+- `mode-change` → `{ mode }` — only when the built-in header toggle changes `mode`, not for external assignments
 
 ## CSS Custom Properties
 

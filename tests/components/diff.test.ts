@@ -32,6 +32,46 @@ describe('snice-diff', () => {
     });
   });
 
+  describe('mode toggle (SNICE-167)', () => {
+    it('should announce self-mutated mode changes with a mode-change event', async () => {
+      diff = await createComponent<SniceDiffElement>('snice-diff', {
+        oldText: 'a', newText: 'b'
+      });
+      const events: CustomEvent[] = [];
+      diff.addEventListener('mode-change', (e: Event) => events.push(e as CustomEvent));
+
+      const splitBtn = queryShadow(diff, '.diff-mode-btn:last-child') as HTMLButtonElement;
+      expect(splitBtn).toBeTruthy();
+      splitBtn.click();
+      await wait(10);
+
+      expect(diff.mode).toBe('split');
+      expect(events.length).toBe(1);
+      expect(events[0].detail).toEqual({ mode: 'split' });
+    });
+
+    it('should not fire mode-change when the mode is set from outside', async () => {
+      diff = await createComponent<SniceDiffElement>('snice-diff', {
+        oldText: 'a', newText: 'b'
+      });
+      const events: CustomEvent[] = [];
+      diff.addEventListener('mode-change', (e: Event) => events.push(e as CustomEvent));
+
+      diff.mode = 'split';
+      await wait(10);
+
+      expect(events.length).toBe(0);
+    });
+
+    it('should hide the built-in toggle with show-mode-toggle="false"', async () => {
+      diff = await createComponent<SniceDiffElement>('snice-diff', {
+        oldText: 'a', newText: 'b', 'show-mode-toggle': false
+      });
+      await wait(10);
+      expect(queryShadow(diff, '.diff-mode-toggle')).toBeNull();
+    });
+  });
+
   describe('property: oldText', () => {
     it('should accept oldText property', async () => {
       diff = await createComponent<SniceDiffElement>('snice-diff', {

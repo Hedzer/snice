@@ -19,8 +19,10 @@ export interface SniceDiffElement extends HTMLElement {
   mode: DiffMode;
   lineNumbers: boolean;
   contextLines: number;
+  showModeToggle: boolean;
 }
 
 export interface SniceDiffEventMap {
   'diff-computed': CustomEvent<{ hunks: DiffHunk[]; additions: number; deletions: number }>;
+  'mode-change': CustomEvent<{ mode: DiffMode }>;
 }

@@ -21,7 +21,8 @@ Text diff viewer with unified and split (side-by-side) modes, line numbers, word
 | `oldText` (attr: `old-text`) | `string` | `''` | The original text |
 | `newText` (attr: `new-text`) | `string` | `''` | The modified text |
 | `language` | `string` | `''` | Language hint for future syntax highlighting support |
-| `mode` | `'unified' \| 'split'` | `'unified'` | Display mode: unified inline view or side-by-side split view |
+| `mode` | `'unified' \| 'split'` | `'unified'` | Display mode. The header's built-in toggle self-assigns this property and announces it via `mode-change` |
+| `showModeToggle` (attr: `show-mode-toggle`) | `boolean` | `true` | Show the built-in Unified/Split toggle in the header; set `show-mode-toggle="false"` when the page provides its own switch |
 | `lineNumbers` (attr: `line-numbers`) | `boolean` | `true` | Show line number gutters |
 | `contextLines` (attr: `context-lines`) | `number` | `3` | Number of unchanged lines shown around each change |
 | `markers` | `boolean` | `true` | Show the +/- markers column |
@@ -47,6 +48,7 @@ interface DiffHunk {
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `diff-computed` | `{ hunks: DiffHunk[], additions: number, deletions: number }` | Fired after the diff is calculated, with hunk data and stats |
+| `mode-change` | `{ mode: 'unified' \| 'split' }` | Fired when the built-in header toggle changes `mode`; not fired for external `mode` assignments |
 
 ## CSS Custom Properties
 

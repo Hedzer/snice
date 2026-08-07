@@ -23,6 +23,10 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
   @property({ type: Boolean })
   markers: boolean = true;
 
+  /** Show the built-in Unified/Split toggle in the header. */
+  @property({ type: Boolean, attribute: 'show-mode-toggle' })
+  showModeToggle: boolean = true;
+
   private hunks: DiffHunk[] = [];
   private additions: number = 0;
   private deletions: number = 0;
@@ -57,16 +61,18 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
         <div part="header" class="diff-header">
           <span class="diff-stat-add">+${this.additions}</span>
           <span class="diff-stat-del">-${this.deletions}</span>
-          <div class="diff-mode-toggle">
-            <button
-              class="diff-mode-btn ${!isSplit ? 'active' : ''}"
-              @click=${() => { this.mode = 'unified'; }}
-            >Unified</button>
-            <button
-              class="diff-mode-btn ${isSplit ? 'active' : ''}"
-              @click=${() => { this.mode = 'split'; }}
-            >Split</button>
-          </div>
+          <if ${this.showModeToggle}>
+            <div class="diff-mode-toggle">
+              <button
+                class="diff-mode-btn ${!isSplit ? 'active' : ''}"
+                @click=${() => this.setMode('unified')}
+              >Unified</button>
+              <button
+                class="diff-mode-btn ${isSplit ? 'active' : ''}"
+                @click=${() => this.setMode('split')}
+              >Split</button>
+            </div>
+          </if>
         </div>
         <div part="content" class="diff-content">
           <if ${isSplit}>
@@ -352,6 +358,18 @@ export class SniceDiff extends HTMLElement implements SniceDiffElement {
   @dispatch('diff-computed', { bubbles: true, composed: true })
   private emitDiffComputed() {
     return { hunks: this.hunks, additions: this.additions, deletions: this.deletions };
+  }
+
+  /** User-driven mode switch from the built-in header toggle. */
+  private setMode(mode: DiffMode) {
+    if (mode === this.mode) return;
+    this.mode = mode;
+    this.emitModeChange();
+  }
+
+  @dispatch('mode-change', { bubbles: true, composed: true })
+  private emitModeChange() {
+    return { mode: this.mode };
   }
 }
 
