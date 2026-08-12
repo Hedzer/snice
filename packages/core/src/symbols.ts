@@ -35,10 +35,6 @@ export const PENDING_RECONNECT_RENDER = getSymbol('pending-reconnect-render');
 export const RENDER_DEPTH = getSymbol('render-depth');
 export const RENDER_ROOT = getSymbol('render-root');
 export const ELEMENT_OPTIONS = getSymbol('element-options');
-// Immutable registration metadata used to attribute render errors without
-// retaining or consulting the live host element after rendering begins.
-export const ELEMENT_TAG_NAME = getSymbol('element-tag-name');
-export const ELEMENT_CLASS_NAME = getSymbol('element-class-name');
 export const CONTROLLER = getSymbol('controller');
 export const INITIALIZED = getSymbol('initialized');
 

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const systemChrome = process.env.SNICE_SYSTEM_CHROME;
 if (systemChrome) test.use({ launchOptions: { executablePath: systemChrome } });
 
-test('built host attribution ignores poisoned realm Object prototypes', async ({ page }) => {
+test('built host attribution uses exact registrations without consulting DOM identity properties', async ({ page }) => {
   await page.goto('/guide.html');
 
   const result = await page.evaluate(async () => {
@@ -37,10 +37,67 @@ test('built host attribution ignores poisoned realm Object prototypes', async ({
     );
     const alternateHost = alternateDocument.createElement('browser-context-alt-poison');
 
+    document.adoptNode(alternateHost);
+    const adoptedLabel = captureRenderHostIdentity(alternateHost).label;
+    alternateDocument.adoptNode(alternateHost);
+
+    class UndecoratedSubclass extends PrimaryPoisonElement {}
+    customElements.define('browser-context-undecorated-subclass', UndecoratedSubclass);
+    const subclassLabel = captureRenderHostIdentity(
+      document.createElement('browser-context-undecorated-subclass'),
+    ).label;
+
+    class ExistingExactElement extends HTMLElement {}
+    customElements.define('browser-context-existing-exact', ExistingExactElement);
+    element('browser-context-existing-exact')(
+      ExistingExactElement,
+      { kind: 'class', name: 'ExistingExactElement', metadata: undefined },
+    );
+    const exactExistingLabel = captureRenderHostIdentity(
+      document.createElement('browser-context-existing-exact'),
+    ).label;
+
+    class ExistingConflictElement extends HTMLElement {}
+    customElements.define('browser-context-existing-conflict', ExistingConflictElement);
+    class ConflictingElement extends HTMLElement {}
+    element('browser-context-existing-conflict')(
+      ConflictingElement,
+      { kind: 'class', name: 'ConflictingElement', metadata: undefined },
+    );
+    const conflictingLabel = captureRenderHostIdentity(
+      Object.create(ConflictingElement.prototype),
+    ).label;
+
+    class FailedElement extends HTMLElement {}
+    const ownDefine = Object.getOwnPropertyDescriptor(customElements, 'define');
+    Object.defineProperty(customElements, 'define', {
+      configurable: true,
+      value() { throw new Error('registration failed'); },
+    });
+    let failedRegistrationThrew = false;
+    try {
+      element('browser-context-failed-registration')(
+        FailedElement,
+        { kind: 'class', name: 'FailedElement', metadata: undefined },
+      );
+    } catch {
+      failedRegistrationThrew = true;
+    } finally {
+      if (ownDefine) Object.defineProperty(customElements, 'define', ownDefine);
+      else delete (customElements as any).define;
+    }
+    const failedRegistrationLabel = captureRenderHostIdentity(
+      Object.create(FailedElement.prototype),
+    ).label;
+
     const reads = { ownerDocument: 0, defaultView: 0, customElements: 0 };
     const roots = new Set([Object.prototype, alternateWindow.Object.prototype]);
     let primaryLabel = '';
     let alternateLabel = '';
+    let ownPollutionLabel = '';
+    let interfacePollutionLabel = '';
+    let accessorConstructorLabel = '';
+    let accessorConstructorReads = 0;
     try {
       for (const root of roots) {
         for (const key of Object.keys(reads)) {
@@ -55,6 +112,49 @@ test('built host attribution ignores poisoned realm Object prototypes', async ({
       }
       primaryLabel = captureRenderHostIdentity(primaryHost).label;
       alternateLabel = captureRenderHostIdentity(alternateHost).label;
+
+      for (const key of ['ownerDocument', 'defaultView', 'customElements', 'tagName', 'constructor']) {
+        Object.defineProperty(primaryHost, key, {
+          configurable: true,
+          get() {
+            if (key in reads) reads[key as keyof typeof reads]++;
+            throw new Error(`hostile host ${key}`);
+          },
+        });
+      }
+      ownPollutionLabel = captureRenderHostIdentity(primaryHost).label;
+      for (const key of ['ownerDocument', 'defaultView', 'customElements', 'tagName', 'constructor']) {
+        delete (primaryHost as any)[key];
+      }
+
+      const primaryPrototype = PrimaryPoisonElement.prototype;
+      for (const key of ['ownerDocument', 'defaultView', 'customElements']) {
+        Object.defineProperty(primaryPrototype, key, {
+          configurable: true,
+          get() {
+            reads[key as keyof typeof reads]++;
+            throw new Error(`hostile prototype ${key}`);
+          },
+        });
+      }
+      for (const key of ['contains', 'getRootNode', 'cloneNode']) {
+        Object.defineProperty(primaryPrototype, key, { configurable: true, value() {} });
+      }
+      interfacePollutionLabel = captureRenderHostIdentity(primaryHost).label;
+      for (const key of ['ownerDocument', 'defaultView', 'customElements', 'contains', 'getRootNode', 'cloneNode']) {
+        delete (primaryPrototype as any)[key];
+      }
+
+      const constructorDescriptor = Object.getOwnPropertyDescriptor(primaryPrototype, 'constructor')!;
+      Object.defineProperty(primaryPrototype, 'constructor', {
+        configurable: true,
+        get() {
+          accessorConstructorReads++;
+          throw new Error('hostile prototype constructor');
+        },
+      });
+      accessorConstructorLabel = captureRenderHostIdentity(primaryHost).label;
+      Object.defineProperty(primaryPrototype, 'constructor', constructorDescriptor);
     } finally {
       for (const root of roots) {
         delete (root as any).ownerDocument;
@@ -63,10 +163,34 @@ test('built host attribution ignores poisoned realm Object prototypes', async ({
       }
       frame.remove();
     }
-    return { primaryLabel, alternateLabel, reads };
+    return {
+      primaryLabel,
+      alternateLabel,
+      adoptedLabel,
+      subclassLabel,
+      exactExistingLabel,
+      conflictingLabel,
+      failedRegistrationThrew,
+      failedRegistrationLabel,
+      ownPollutionLabel,
+      interfacePollutionLabel,
+      accessorConstructorLabel,
+      accessorConstructorReads,
+      reads,
+    };
   });
 
   expect(result.primaryLabel).toMatch(/^<browser-context-primary-poison>/);
   expect(result.alternateLabel).toMatch(/^<browser-context-alt-poison>/);
+  expect(result.adoptedLabel).toMatch(/^<browser-context-alt-poison>/);
+  expect(result.subclassLabel).toBe('<element>');
+  expect(result.exactExistingLabel).toMatch(/^<browser-context-existing-exact>/);
+  expect(result.conflictingLabel).toBe('<element>');
+  expect(result.failedRegistrationThrew).toBe(true);
+  expect(result.failedRegistrationLabel).toBe('<element>');
+  expect(result.ownPollutionLabel).toMatch(/^<browser-context-primary-poison>/);
+  expect(result.interfacePollutionLabel).toMatch(/^<browser-context-primary-poison>/);
+  expect(result.accessorConstructorLabel).toBe('<element>');
+  expect(result.accessorConstructorReads).toBe(0);
   expect(result.reads).toEqual({ ownerDocument: 0, defaultView: 0, customElements: 0 });
 });

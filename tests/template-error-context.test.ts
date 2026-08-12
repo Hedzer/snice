@@ -6,6 +6,7 @@ import {
   captureRenderHostIdentity,
   element,
   html,
+  layout,
   property,
   render,
   renderElementNow,
@@ -189,7 +190,9 @@ describe('template authoring error context', () => {
 
     document.adoptNode(host);
     expect(host.ownerDocument).toBe(document);
-    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
     alternate.document.adoptNode(host);
     expect(captureRenderHostIdentity(host).label).toMatch(
       /^<test-context-alt-page>( \(AltPage\))?$/,
@@ -201,7 +204,9 @@ describe('template authoring error context', () => {
       configurable: true,
       get() { ownerDocumentReads++; throw new Error('spoofed ownerDocument'); },
     });
-    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
     expect(ownerDocumentReads).toBe(0);
     if (ownerDocument) Object.defineProperty(host, 'ownerDocument', ownerDocument);
 
@@ -211,7 +216,9 @@ describe('template authoring error context', () => {
       configurable: true,
       get() { defaultViewReads++; throw new Error('spoofed defaultView'); },
     });
-    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
     expect(defaultViewReads).toBe(0);
     if (defaultView) Object.defineProperty(alternate.document, 'defaultView', defaultView);
 
@@ -221,7 +228,9 @@ describe('template authoring error context', () => {
       configurable: true,
       get() { registryReads++; throw new Error('spoofed customElements'); },
     });
-    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
     expect(registryReads).toBe(0);
     if (registry) Object.defineProperty(alternate, 'customElements', registry);
   });
@@ -272,6 +281,93 @@ describe('template authoring error context', () => {
         delete (root as any).customElements;
       }
     }
+  });
+
+  it('uses only an exact registered immediate prototype and never invokes prototype accessors', () => {
+    @element('test-context-exact-base')
+    class ExactBaseElement extends HTMLElement {}
+
+    class UndecoratedSubclass extends ExactBaseElement {}
+    customElements.define('test-context-undecorated-subclass', UndecoratedSubclass);
+    const subclassHost = document.createElement('test-context-undecorated-subclass');
+    expect(captureRenderHostIdentity(subclassHost).label).toBe('<element>');
+
+    const host = document.createElement('test-context-exact-base');
+    const prototype = Object.getPrototypeOf(host);
+    const originalConstructor = Object.getOwnPropertyDescriptor(prototype, 'constructor')!;
+    let constructorReads = 0;
+    Object.defineProperty(prototype, 'constructor', {
+      configurable: true,
+      get() { constructorReads++; throw new Error('hostile prototype constructor'); },
+    });
+    try {
+      expect(captureRenderHostIdentity(host).label).toBe('<element>');
+      expect(constructorReads).toBe(0);
+    } finally {
+      Object.defineProperty(prototype, 'constructor', originalConstructor);
+    }
+  });
+
+  it('ignores DOM-shaped prototype pollution without losing exact registration identity', () => {
+    @element('test-context-interface-shape')
+    class InterfaceShapeElement extends HTMLElement {}
+
+    const host = document.createElement('test-context-interface-shape');
+    const prototype = Object.getPrototypeOf(host);
+    const added = ['ownerDocument', 'defaultView', 'customElements', 'contains', 'getRootNode', 'cloneNode'] as const;
+    const reads = { ownerDocument: 0, defaultView: 0, customElements: 0 };
+    try {
+      for (const key of ['ownerDocument', 'defaultView', 'customElements'] as const) {
+        Object.defineProperty(prototype, key, {
+          configurable: true,
+          get() { reads[key]++; throw new Error(`hostile ${key}`); },
+        });
+      }
+      for (const key of ['contains', 'getRootNode', 'cloneNode'] as const) {
+        Object.defineProperty(prototype, key, { configurable: true, value() {} });
+      }
+
+      expect(captureRenderHostIdentity(host).label).toMatch(/^<test-context-interface-shape>/);
+      expect(reads).toEqual({ ownerDocument: 0, defaultView: 0, customElements: 0 });
+    } finally {
+      for (const key of added) delete (prototype as any)[key];
+    }
+  });
+
+  it('records identity only after successful or exact existing registration', () => {
+    @layout('test-context-registered-layout')
+    class RegisteredLayoutElement extends HTMLElement {}
+    expect(captureRenderHostIdentity(document.createElement('test-context-registered-layout')).label)
+      .toMatch(/^<test-context-registered-layout>/);
+
+    class ExistingExactElement extends HTMLElement {}
+    customElements.define('test-context-existing-exact', ExistingExactElement);
+    element('test-context-existing-exact')(
+      ExistingExactElement,
+      { kind: 'class', name: 'ExistingExactElement', metadata: undefined } as any,
+    );
+    expect(captureRenderHostIdentity(document.createElement('test-context-existing-exact')).label)
+      .toMatch(/^<test-context-existing-exact>/);
+
+    class ExistingConflictElement extends HTMLElement {}
+    customElements.define('test-context-existing-conflict', ExistingConflictElement);
+    class ConflictingElement extends HTMLElement {}
+    element('test-context-existing-conflict')(
+      ConflictingElement,
+      { kind: 'class', name: 'ConflictingElement', metadata: undefined } as any,
+    );
+    expect(captureRenderHostIdentity(new ConflictingElement()).label).toBe('<element>');
+
+    class FailedElement extends HTMLElement {}
+    const define = vi.spyOn(customElements, 'define').mockImplementationOnce(() => {
+      throw new Error('registration failed');
+    });
+    expect(() => element('test-context-failed-registration')(
+      FailedElement,
+      { kind: 'class', name: 'FailedElement', metadata: undefined } as any,
+    )).toThrow('registration failed');
+    define.mockRestore();
+    expect(captureRenderHostIdentity(new FailedElement()).label).toBe('<element>');
   });
 
   it('preserves cause and stack while strict mode rethrows nested parser errors', async () => {

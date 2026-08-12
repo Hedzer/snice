@@ -1,6 +1,7 @@
 import { Route } from 'pica-route';
 import { routeSpecificity } from './route-specificity';
-import { applyElementFunctionality, markElementTag } from './element';
+import { applyElementFunctionality } from './element';
+import { registerRenderHostIdentity } from './render-errors';
 import { ROUTER_CONTEXT, PAGE_TRANSITION, CREATED_AT, PROPERTIES, CONTEXT_HANDLER, CONTEXT_UPDATE } from './symbols';
 import { performTransition as performTransitionUtil } from './transitions';
 import { Transition } from './types/transition';
@@ -127,7 +128,6 @@ export function Router(options: RouterOptions): RouterInstance {
       }
 
       // Apply all element functionality (properties, queries, watchers, controllers, etc.)
-      markElementTag(constructor, pageOptions.tag);
       applyElementFunctionality(constructor);
       
       // Store transition config on constructor for later use
@@ -161,8 +161,12 @@ export function Router(options: RouterOptions): RouterInstance {
       };
       
       // Define the custom element (skip if already registered)
-      if (!win.customElements.get(pageOptions.tag)) {
+      const existing = win.customElements.get(pageOptions.tag);
+      if (!existing) {
         win.customElements.define(pageOptions.tag, constructor);
+        registerRenderHostIdentity(constructor, pageOptions.tag);
+      } else if (existing === constructor) {
+        registerRenderHostIdentity(constructor, pageOptions.tag);
       }
 
       // Register the routes with guards, layout, and placard

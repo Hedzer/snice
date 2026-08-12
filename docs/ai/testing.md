@@ -54,7 +54,7 @@ try {
 ```
 
 - Default: log render failure, retain previous DOM. Strict: synchronously rethrow synchronous render failures.
-- Template authoring errors include the authoritative registered tag, an optional safely available class name, and a nearby static-template excerpt when a host exists. Minified CDN output may correctly report only the tag.
+- Template authoring errors include the authoritative registered tag, an optional safely available class name, and a nearby static-template excerpt when a host exists. Minified CDN output may correctly report only the tag. Attribution is exact-constructor/immediate-prototype metadata recorded after successful Snice registration; undecorated subclasses are generic, and adopted instances retain the registered identity.
 - Host-free preparation stays generic. Runtime does not claim a source filename it cannot know.
 - Original error is `cause`; inspect `cause.stack` for the underlying stack.
 - Promise/AsyncIterable failures happen after the render call and remain `console.error` reports in strict mode; await settlement and assert the `Error` argument.
