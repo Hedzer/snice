@@ -81,6 +81,41 @@ afterEach(() => {
   rmSync(projectDir, { recursive: true, force: true });
 });
 
+describe('snice doctor package manifests', () => {
+  it('rejects JSONC syntax in package.json while accepting it in tsconfig files', () => {
+    write('package.json', `{
+      "name": "doctor-fixture",
+      "version": "0.0.1",
+      "dependencies": { "snice": "^6.0.0" }, // package.json is strict JSON
+    }`);
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "useDefineForClassFields": false,
+      },
+    }`);
+
+    const findings = runDoctorFindings();
+    expect(findings).toContainEqual(expect.objectContaining({
+      severity: 'error',
+      code: 'package-json'
+    }));
+    expect(findings).not.toContainEqual(expect.objectContaining({ code: 'tsconfig' }));
+    expect(findings).not.toContainEqual(expect.objectContaining({ code: 'class-fields' }));
+  });
+
+  it('rejects JSONC syntax in the installed Snice package manifest', () => {
+    write('node_modules/snice/package.json', `{
+      "name": "snice",
+      "version": "6.1.0", // package manifests do not allow comments
+    }`);
+
+    expect(runDoctorFindings()).toContainEqual(expect.objectContaining({
+      severity: 'error',
+      code: 'snice-install'
+    }));
+  });
+});
+
 describe('snice doctor tsconfig chain', () => {
   const configFindings = () =>
     runDoctorFindings().filter(finding =>
@@ -98,11 +133,34 @@ describe('snice doctor tsconfig chain', () => {
     expect(configFindings()).toEqual([]);
   });
 
+  it('accepts comments and trailing commas in a referenced composite config', () => {
+    write('tsconfig.json', `{
+      // Solution-style config; compiler options live in the reference.
+      "files": [],
+      "references": [
+        { "path": "./tsconfig.app.json", },
+      ],
+    }`);
+    write('tsconfig.app.json', `{
+      // TC39 decorators use assignment semantics.
+      "compilerOptions": {
+        /* Required for decorated field initializers. */
+        "useDefineForClassFields": false,
+        "sourceRoot": "https://example.test//source/*literal*/,}",
+      },
+    }`);
+    expect(configFindings()).toEqual([]);
+  });
+
   it('accepts useDefineForClassFields through a relative extends chain', () => {
-    write('tsconfig.json', JSON.stringify({ extends: './tsconfig.base.json' }));
-    write('tsconfig.base.json', JSON.stringify({
-      compilerOptions: { useDefineForClassFields: false }
-    }));
+    write('tsconfig.json', `{
+      "extends": "./tsconfig.base.json", // inherited compiler semantics
+    }`);
+    write('tsconfig.base.json', `{
+      "compilerOptions": {
+        "useDefineForClassFields": false,
+      },
+    }`);
     expect(configFindings()).toEqual([]);
   });
 

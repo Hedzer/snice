@@ -301,9 +301,98 @@ function renderValidation(issues, json = false) {
   return issues;
 }
 
+function parseJsonc(source) {
+  let withoutComments = '';
+  let inString = false;
+  let escaped = false;
+
+  for (let index = source.charCodeAt(0) === 0xFEFF ? 1 : 0; index < source.length; index++) {
+    const character = source[index];
+    const next = source[index + 1];
+
+    if (inString) {
+      withoutComments += character;
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      withoutComments += character;
+      continue;
+    }
+
+    if (character === '/' && next === '/') {
+      withoutComments += '  ';
+      index += 2;
+      while (index < source.length && source[index] !== '\n' && source[index] !== '\r') {
+        withoutComments += ' ';
+        index++;
+      }
+      if (index < source.length) withoutComments += source[index];
+      continue;
+    }
+
+    if (character === '/' && next === '*') {
+      withoutComments += '  ';
+      index += 2;
+      while (index < source.length && !(source[index] === '*' && source[index + 1] === '/')) {
+        withoutComments += source[index] === '\n' || source[index] === '\r' ? source[index] : ' ';
+        index++;
+      }
+      if (index >= source.length) throw new SyntaxError('unterminated JSON block comment');
+      withoutComments += '  ';
+      index++;
+      continue;
+    }
+
+    withoutComments += character;
+  }
+
+  let withoutTrailingCommas = '';
+  inString = false;
+  escaped = false;
+  for (let index = 0; index < withoutComments.length; index++) {
+    const character = withoutComments[index];
+    if (inString) {
+      withoutTrailingCommas += character;
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+    if (character === '"') {
+      inString = true;
+      withoutTrailingCommas += character;
+      continue;
+    }
+    if (character === ',') {
+      let nextIndex = index + 1;
+      while (/\s/.test(withoutComments[nextIndex] ?? '')) nextIndex++;
+      if (withoutComments[nextIndex] === '}' || withoutComments[nextIndex] === ']') {
+        withoutTrailingCommas += ' ';
+        continue;
+      }
+    }
+    withoutTrailingCommas += character;
+  }
+
+  return JSON.parse(withoutTrailingCommas);
+}
+
 function readJson(path) {
   try {
     return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function readJsonc(path) {
+  try {
+    return parseJsonc(readFileSync(path, 'utf8'));
   } catch {
     return null;
   }
@@ -321,7 +410,7 @@ function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
   const target = join(dir, entry);
   if (seen.has(target)) return configs;
   seen.add(target);
-  const data = readJson(target);
+  const data = readJsonc(target);
   if (!data) return configs;
   configs.push(data);
 
