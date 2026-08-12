@@ -555,16 +555,8 @@ const RULE_DEFINITIONS = [
     description: 'Warn when a Snice element redeclares an inherited HTMLElement IDL member.',
     check(context) {
       if (isFrameworkImplementation(context.filename)) return;
-      for (const declaration of findSniceElementClasses(context.source, context.provenance)) {
-        const members = inspectElementMembers(declaration.body);
-        for (const name of new Set([...members.fields, ...members.accessors, ...members.reactive])) {
-          if (!NATIVE_ELEMENT_IDL_MEMBERS.has(name)) continue;
-          const relativeIndex = members.memberIndices.get(name) ?? 0;
-          context.report(declaration.bodyStart + relativeIndex, {
-            message: `${declaration.name}.${name} shadows HTMLElement.${name}, so native reflection/accessibility behavior and Snice property binding can conflict.`,
-            fix: `Rename the application-owned member. If native ${name} semantics are intended, use the inherited HTMLElement property/attribute without redeclaring it.`
-          });
-        }
+      for (const finding of findNativeIdlShadowFindings(context.source, context.provenance)) {
+        context.report(finding.index, finding);
       }
     }
   },
@@ -1696,6 +1688,28 @@ export function analyzeProject(files) {
     }
     const provenance = buildSourceProvenance(analyzable);
     enrichSniceProvenance(provenance, file, normalized);
+    if (!isFrameworkImplementation(file.filename)) {
+      for (const finding of findNativeIdlShadowFindings(analyzable, provenance)) {
+        const location = sourceLocation(file.source, finding.index);
+        const duplicate = diagnostics.some(diagnostic =>
+          diagnostic.ruleId === 'snice/element-member-shadows-native-idl' &&
+          diagnostic.file === file.filename &&
+          diagnostic.line === location.line &&
+          diagnostic.column === location.column
+        );
+        if (!duplicate) {
+          diagnostics.push({
+            severity: 'warning',
+            ruleId: 'snice/element-member-shadows-native-idl',
+            message: finding.message,
+            fix: finding.fix,
+            file: file.filename,
+            line: location.line,
+            column: location.column
+          });
+        }
+      }
+    }
     localClassDeclarations.push(...findClassBodies(analyzable).map(declaration => ({
       ...declaration,
       file,
@@ -2512,15 +2526,10 @@ function findDecoratedClasses(source, decoratorName) {
   return declarations;
 }
 
-function findSniceElementClasses(source, provenance = null) {
+function findSniceElementClasses(source) {
   const seen = new Set();
   const declarations = [];
-  const decoratorNames = new Set([
-    'element',
-    'page',
-    ...provenRootBindingNames(provenance, 'element')
-  ]);
-  for (const decoratorName of decoratorNames) {
+  for (const decoratorName of ['element', 'page']) {
     for (const declaration of findDecoratedClasses(source, decoratorName)) {
       if (seen.has(declaration.bodyStart)) continue;
       seen.add(declaration.bodyStart);
@@ -2528,6 +2537,91 @@ function findSniceElementClasses(source, provenance = null) {
     }
   }
   return declarations;
+}
+
+function parameterDeclaresBinding(parameters, name) {
+  const escaped = escapeRegExp(name);
+  return splitTopLevelArguments(parameters).some(parameter => {
+    const value = parameter.trim().replace(/^\.\.\.\s*/, '');
+    if (new RegExp(`^${escaped}(?=\\s*[?:=,]|\\s*$)`).test(value)) return true;
+    if (!value.startsWith('{') && !value.startsWith('[')) return false;
+    return new RegExp(
+      `(?:^|[,\\[{:])\\s*${escaped}(?=\\s*[,}\\]=?:]|\\s*$)`
+    ).test(value);
+  });
+}
+
+function isImportedDecoratorBindingShadowed(source, bindingName, useIndex) {
+  const controls = new Set(['if', 'for', 'while', 'switch', 'with']);
+  for (let open = source.indexOf('('); open >= 0 && open < useIndex; open = source.indexOf('(', open + 1)) {
+    const close = findMatchingDelimiter(source, open, '(', ')');
+    if (close < 0 || close >= useIndex) continue;
+    let cursor = close + 1;
+    while (/\s/.test(source[cursor] ?? '')) cursor++;
+    if (source[cursor] === ':') {
+      cursor++;
+      while (cursor < source.length && source[cursor] !== '{' && !source.startsWith('=>', cursor)) cursor++;
+    }
+    while (/\s/.test(source[cursor] ?? '')) cursor++;
+    let bodyOpen = -1;
+    if (source.startsWith('=>', cursor)) {
+      cursor += 2;
+      while (/\s/.test(source[cursor] ?? '')) cursor++;
+      if (source[cursor] === '{') bodyOpen = cursor;
+    } else if (source[cursor] === '{') {
+      const prefix = source.slice(Math.max(0, open - 160), open);
+      const preceding = /([A-Za-z_$][\w$]*)\s*$/.exec(prefix)?.[1];
+      if (preceding && !controls.has(preceding)) bodyOpen = cursor;
+    }
+    if (bodyOpen < 0) continue;
+    const bodyClose = findMatchingDelimiter(source, bodyOpen, '{', '}');
+    if (bodyClose < useIndex) continue;
+    if (parameterDeclaresBinding(source.slice(open + 1, close), bindingName)) return true;
+  }
+
+  const escaped = escapeRegExp(bindingName);
+  for (const arrow of source.matchAll(new RegExp(`\\b${escaped}\\s*=>\\s*\\{`, 'g'))) {
+    const bodyOpen = source.indexOf('{', arrow.index);
+    const bodyClose = findMatchingDelimiter(source, bodyOpen, '{', '}');
+    if (bodyOpen < useIndex && useIndex < bodyClose) return true;
+  }
+  return false;
+}
+
+function findProvenSniceElementClasses(source, provenance) {
+  const code = maskNonExecutableCode(source, { preserveTemplateExpressions: true });
+  const decoratorNames = new Set(provenRootBindingNames(provenance, 'element'));
+  const declarations = [];
+  const seen = new Set();
+  for (const decoratorName of decoratorNames) {
+    const bindingName = decoratorName.split('.')[0];
+    for (const declaration of findDecoratedClasses(code, decoratorName)) {
+      if (
+        seen.has(declaration.bodyStart) ||
+        isImportedDecoratorBindingShadowed(code, bindingName, declaration.index)
+      ) continue;
+      seen.add(declaration.bodyStart);
+      declarations.push(declaration);
+    }
+  }
+  return declarations;
+}
+
+function findNativeIdlShadowFindings(source, provenance) {
+  const findings = [];
+  for (const declaration of findProvenSniceElementClasses(source, provenance)) {
+    const members = inspectElementMembers(declaration.body);
+    for (const name of new Set([...members.fields, ...members.accessors, ...members.reactive])) {
+      if (!NATIVE_ELEMENT_IDL_MEMBERS.has(name)) continue;
+      const relativeIndex = members.memberIndices.get(name) ?? 0;
+      findings.push({
+        index: declaration.bodyStart + relativeIndex,
+        message: `${declaration.name}.${name} shadows HTMLElement.${name}, so native reflection/accessibility behavior and Snice property binding can conflict.`,
+        fix: `Rename the application-owned member. If native ${name} semantics are intended, use the inherited HTMLElement property/attribute without redeclaring it.`
+      });
+    }
+  }
+  return findings;
 }
 
 /**
@@ -2844,19 +2938,31 @@ function provenRootBindingNames(provenance, imported) {
 function enrichSniceProvenance(provenance, file, projectFiles) {
   const projectRootNamespaces = new Map();
   for (const entry of provenance.imports) {
+    if (entry.typeOnly) continue;
     if (!entry.path.startsWith('.')) continue;
     const target = resolveProjectSource(file.filename, entry.path, projectFiles);
     if (!target) continue;
     const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
     if (namespace) {
-      const exports = new Set(['property', 'state', 'SniceElement', 'Router'].filter(name =>
+      const exports = new Set(['element', 'property', 'state', 'SniceElement', 'Router'].filter(name =>
         resolvesSniceRootExport(target, name, projectFiles)
       ));
       if (exports.size) projectRootNamespaces.set(namespace[1], exports);
+      for (const exported of sniceRootExportNames(target, 'element', projectFiles)) {
+        const list = provenance.rootBindings.get('element') ?? [];
+        list.push({
+          imported: 'element',
+          local: `${namespace[1]}.${exported}`,
+          index: entry.index,
+          path: entry.path
+        });
+        provenance.rootBindings.set('element', list);
+      }
       continue;
     }
     for (const binding of parseNamedImportEntries(entry.clause)) {
-      for (const imported of ['property', 'state', 'SniceElement', 'Router']) {
+      if (binding.typeOnly) continue;
+      for (const imported of ['element', 'property', 'state', 'SniceElement', 'Router']) {
         if (!resolvesSniceRootExport(target, binding.imported, projectFiles, imported)) continue;
         const list = provenance.rootBindings.get(imported) ?? [];
         list.push({ imported, local: binding.local, index: entry.index, path: entry.path });
@@ -2919,6 +3025,7 @@ function resolvesSniceRootExport(file, exportedName, projectFiles, wanted = expo
   const localNames = new Set(localsFor(provenance.rootBindings, wanted));
   for (const statement of findNamedExportStatements(file.source)) {
     for (const binding of parseNamedImportEntries(`{${statement.bindings}}`)) {
+      if (binding.typeOnly) continue;
       if (binding.local !== exportedName) continue;
       if (statement.path === 'snice') return binding.imported === wanted;
       if (!statement.path && localNames.has(binding.imported)) return true;
@@ -2929,6 +3036,59 @@ function resolvesSniceRootExport(file, exportedName, projectFiles, wanted = expo
     }
   }
   return false;
+}
+
+function sniceRootExportNames(file, wanted, projectFiles, visited = new Set()) {
+  const filename = normalizeModuleFilename(file.filename);
+  if (visited.has(filename)) return new Set();
+  visited.add(filename);
+  const exported = new Set();
+  const provenance = buildSourceProvenance(file.source);
+  const directLocals = new Set(localsFor(provenance.rootBindings, wanted));
+  if (findExportStarStatements(file.source).some(statement => statement.path === 'snice')) {
+    exported.add(wanted);
+  }
+  for (const statement of findNamedExportStatements(file.source)) {
+    for (const binding of parseNamedImportEntries(`{${statement.bindings}}`)) {
+      if (binding.typeOnly) continue;
+      if (statement.path === 'snice' && binding.imported === wanted) {
+        exported.add(binding.local);
+        continue;
+      }
+      if (!statement.path) {
+        if (directLocals.has(binding.imported)) {
+          exported.add(binding.local);
+          continue;
+        }
+        for (const entry of provenance.imports) {
+          if (entry.typeOnly || !entry.path.startsWith('.')) continue;
+          const imported = parseNamedImportEntries(entry.clause)
+            .find(candidate => !candidate.typeOnly && candidate.local === binding.imported);
+          if (!imported) continue;
+          const target = resolveProjectSource(file.filename, entry.path, projectFiles);
+          if (!target) continue;
+          const targetExports = sniceRootExportNames(target, wanted, projectFiles, new Set(visited));
+          if (targetExports.has(imported.imported)) exported.add(binding.local);
+        }
+        continue;
+      }
+      if (statement.path?.startsWith('.')) {
+        const target = resolveProjectSource(file.filename, statement.path, projectFiles);
+        if (!target) continue;
+        const targetExports = sniceRootExportNames(target, wanted, projectFiles, new Set(visited));
+        if (targetExports.has(binding.imported)) exported.add(binding.local);
+      }
+    }
+  }
+  for (const statement of findExportStarStatements(file.source)) {
+    if (!statement.path.startsWith('.')) continue;
+    const target = resolveProjectSource(file.filename, statement.path, projectFiles);
+    if (!target) continue;
+    for (const name of sniceRootExportNames(target, wanted, projectFiles, new Set(visited))) {
+      exported.add(name);
+    }
+  }
+  return exported;
 }
 
 function routeDecoratorNames(provenance, file, projectFiles) {
@@ -3967,10 +4127,11 @@ function parseNamedImportEntries(clause) {
   return braces[1]
     .split(',')
     .map(value => {
+      const typeOnly = /^type\s+/.test(value.trim());
       const cleaned = value.trim().replace(/^type\s+/, '');
       if (!cleaned) return null;
       const [imported, local = imported] = cleaned.split(/\s+as\s+/);
-      return { imported: imported.trim(), local: local.trim() };
+      return { imported: imported.trim(), local: local.trim(), typeOnly };
     })
     .filter(Boolean);
 }
@@ -4047,9 +4208,10 @@ function buildSourceProvenance(source) {
   const componentVariables = new Map();
   for (const entry of imports) {
     const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
-    if (namespace) namespaceBindings.set(namespace[1], entry.path);
-    if (entry.path === 'snice') {
+    if (namespace && !entry.typeOnly) namespaceBindings.set(namespace[1], entry.path);
+    if (entry.path === 'snice' && !entry.typeOnly) {
       for (const binding of parseNamedImportEntries(entry.clause)) {
+        if (binding.typeOnly) continue;
         const list = rootBindings.get(binding.imported) ?? [];
         list.push({ ...binding, index: entry.index, path: entry.path });
         rootBindings.set(binding.imported, list);

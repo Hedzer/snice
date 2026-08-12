@@ -816,6 +816,89 @@ describe('controller and native IDL architecture checks', () => {
       .filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl'))
       .toEqual([]);
   });
+
+  it('requires a runtime Snice decorator binding and ignores shadowed or non-executable lookalikes', () => {
+    const cases = [
+      [
+        "import { element } from 'another-library';",
+        "@element('foreign-card')",
+        'class ForeignCard extends HTMLElement { role = null; }'
+      ].join('\n'),
+      [
+        "import type { element as registerElement } from 'snice';",
+        "@registerElement('type-only-card')",
+        'class TypeOnlyCard extends HTMLElement { role = null; }'
+      ].join('\n'),
+      [
+        "import { type element as registerElement, property } from 'snice';",
+        "@registerElement('type-specifier-card')",
+        'class TypeSpecifierCard extends HTMLElement { role = null; }'
+      ].join('\n'),
+      [
+        "import { element as registerElement } from 'snice';",
+        'function defineLocal(registerElement: (tag: string) => ClassDecorator) {',
+        "  @registerElement('shadowed-card')",
+        '  class ShadowedCard extends HTMLElement { role = null; }',
+        '  return ShadowedCard;',
+        '}'
+      ].join('\n'),
+      [
+        "import * as framework from 'snice';",
+        'function defineLocal(framework: { element: (tag: string) => ClassDecorator }) {',
+        "  @framework.element('shadowed-namespace-card')",
+        '  class ShadowedNamespaceCard extends HTMLElement { inert = false; }',
+        '  return ShadowedNamespaceCard;',
+        '}'
+      ].join('\n'),
+      [
+        "import { element as registerElement } from 'snice';",
+        'const quoted = "@registerElement(\\\'quoted-card\\\') class QuotedCard extends HTMLElement { role = null; }";',
+        'const templated = `@registerElement(\'template-card\') class TemplateCard extends HTMLElement { inert = false; }`;',
+        'const regex = /@registerElement\\(\'regex-card\'\\) class RegexCard extends HTMLElement \\{ role/;',
+        '// @registerElement(\'comment-card\') class CommentCard extends HTMLElement { role = null; }'
+      ].join('\n')
+    ];
+
+    for (const [index, source] of cases.entries()) {
+      const diagnostics = analyzeSource(source, `src/components/negative-${index}.ts`)
+        .filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl');
+      expect(diagnostics, `case ${index}`).toEqual([]);
+    }
+  });
+
+  it('follows direct and namespace aliases through local element re-export chains', () => {
+    const diagnostics = analyzeProject({
+      'src/framework/root.ts': "export { element as baseElement } from 'snice';",
+      'src/framework/elements.ts': "export { baseElement as defineElement } from './root';",
+      'src/components/direct-card.ts': [
+        "import { defineElement as registerElement } from '../framework/elements';",
+        "@registerElement('direct-card')",
+        'class DirectCard extends HTMLElement { role = null; }'
+      ].join('\n'),
+      'src/components/namespace-card.ts': [
+        "import * as framework from '../framework/elements';",
+        "@framework.defineElement('namespace-card')",
+        'class NamespaceCard extends HTMLElement { inert = false; }'
+      ].join('\n')
+    }).filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl');
+
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.every(diagnostic => diagnostic.severity === 'warning')).toBe(true);
+    expect(diagnostics.map(diagnostic => diagnostic.message)).toEqual(expect.arrayContaining([
+      expect.stringContaining('DirectCard.role'),
+      expect.stringContaining('NamespaceCard.inert')
+    ]));
+
+    const typeOnly = analyzeProject({
+      'src/framework/elements.ts': "export { type element as defineElement } from 'snice';",
+      'src/components/type-only-card.ts': [
+        "import { defineElement } from '../framework/elements';",
+        "@defineElement('type-only-reexport-card')",
+        'class TypeOnlyReexportCard extends HTMLElement { role = null; }'
+      ].join('\n')
+    }).filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl');
+    expect(typeOnly).toEqual([]);
+  });
 });
 
 describe('local reactive contract checks', () => {
