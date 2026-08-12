@@ -660,6 +660,12 @@ The same finite, non-negative validation applies. Debounced async methods still
 dispatch only after the method resolves; teardown drops both queued dispatches
 and dispatch work whose async method has not resolved yet.
 
+Each invocation supersedes pending timed work for that decorated method. A
+resolved `0` therefore cancels an older debounce/throttle timer and dispatches
+the new result without delay. For throttle, a suppressed invocation replaces
+the trailing detail and recalculates its deadline as the last actual dispatch
+plus the newly resolved interval.
+
 #### scope — controlling the dispatch target
 
 By default, `@dispatch` originates from the element or a controller's host; on a

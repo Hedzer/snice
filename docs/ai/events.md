@@ -301,6 +301,11 @@ decorated element/controller on every method invocation. Result validation is
 the same as `@on`. Async methods dispatch only after resolution; teardown drops
 queued dispatches and unresolved async dispatch work.
 
+Each invocation supersedes that method's pending timed work. Resolved `0`
+cancels an older timer and dispatches the new result immediately. Throttle
+trailing detail is latest-wins; its deadline is last actual dispatch + the
+newly resolved interval.
+
 ### scope — dispatch target
 
 Default: `this.dispatchEvent(event)` — event originates from the host element. `scope` redirects the dispatch to another target so the event behaves as if it originated there. Use with `@on({ scope })` to express cross-cutting events without bubbling.

@@ -17,6 +17,10 @@ const DISPATCH_GENERATION = getSymbol('dispatch-generation');
  */
 export function dispatch(eventName: string, options?: DispatchOptions) {
   return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
+    // Decorator-instance identity avoids collisions such as event `a_b` on
+    // method `c` versus event `a` on method `b_c`.
+    const timerKey = Symbol(`@dispatch:${eventName}`);
+
     return function (this: any, ...args: any[]) {
       // Resolve against the actual decorated instance for every invocation.
       // Capture the generation before calling an async method so teardown can
@@ -32,16 +36,35 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         this[DISPATCH_TIMERS] = new Map();
       }
 
-      const timerKey = `${eventName}_${_context.name as string}`;
       if (!this[DISPATCH_TIMERS].has(timerKey)) {
         this[DISPATCH_TIMERS].set(timerKey, {
           debounceTimeout: null,
           throttleLastCall: 0,
-          throttleTimeout: null
+          throttleTimeout: null,
+          invocation: 0,
         });
       }
 
       const timers = this[DISPATCH_TIMERS].get(timerKey);
+      const invocation = ++timers.invocation;
+
+      // A new invocation supersedes deferred work for this decorated method.
+      // In particular, a resolver changing debounce to 0 must not leave the
+      // previous positive-delay timer armed. Throttle trailing work is also
+      // rebuilt below using this invocation's freshly resolved interval.
+      if (timers.debounceTimeout) clearTimeout(timers.debounceTimeout);
+      timers.debounceTimeout = null;
+      if (timers.throttleTimeout) clearTimeout(timers.throttleTimeout);
+      timers.throttleTimeout = null;
+      timers.latestDetail = undefined;
+
+      if (debounceDelay && debounceDelay > 0) {
+        // Switching from throttle to debounce starts a new timing regime.
+        timers.throttleLastCall = 0;
+      } else if (!throttleDelay || throttleDelay <= 0) {
+        // An un-timed invocation cancels both old regimes completely.
+        timers.throttleLastCall = 0;
+      }
 
       // Call the original method with preserved this context
       const result = originalMethod.apply(this, args);
@@ -97,8 +120,12 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       // Helper to handle timed dispatch
       const timedDispatch = (detail: any) => {
         if (debounceDelay && debounceDelay > 0) {
-          clearTimeout(timers.debounceTimeout);
-          timers.debounceTimeout = setTimeout(() => doDispatch(detail), debounceDelay);
+          timers.debounceTimeout = setTimeout(() => {
+            timers.debounceTimeout = null;
+            if ((this[DISPATCH_GENERATION] ?? 0) === generation && timers.invocation === invocation) {
+              doDispatch(detail);
+            }
+          }, debounceDelay);
           return;
         }
 
@@ -120,21 +147,28 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         // Record the LATEST detail so the trailing dispatch carries fresh
         // data, not the first-suppressed-call detail captured by closure.
         timers.latestDetail = detail;
-        if (!timers.throttleTimeout) {
-          timers.throttleTimeout = setTimeout(() => {
-            timers.throttleLastCall = Date.now();
-            timers.throttleTimeout = null;
-            const d = timers.latestDetail;
-            timers.latestDetail = undefined;
+        // Always schedule from the last actual dispatch using the interval
+        // resolved for THIS invocation. A later invocation can therefore
+        // lengthen or shorten the pending trailing window coherently.
+        timers.throttleTimeout = setTimeout(() => {
+          timers.throttleLastCall = Date.now();
+          timers.throttleTimeout = null;
+          const d = timers.latestDetail;
+          timers.latestDetail = undefined;
+          if ((this[DISPATCH_GENERATION] ?? 0) === generation && timers.invocation === invocation) {
             doDispatch(d);
-          }, remaining);
-        }
+          }
+        }, remaining);
       };
       
       // Handle async methods
       if (result instanceof Promise) {
         return result.then((resolvedResult: any) => {
-          if ((this[DISPATCH_GENERATION] ?? 0) === generation) {
+          const usesDeferredTiming = (debounceDelay ?? 0) > 0 || (throttleDelay ?? 0) > 0;
+          if (
+            (this[DISPATCH_GENERATION] ?? 0) === generation
+            && (!usesDeferredTiming || timers.invocation === invocation)
+          ) {
             timedDispatch(resolvedResult);
           }
           return resolvedResult;
@@ -165,5 +199,6 @@ export function clearDispatchTimers(instance: any): void {
     t.throttleTimeout = null;
     t.throttleLastCall = 0;
     t.latestDetail = undefined;
+    t.invocation = (t.invocation ?? 0) + 1;
   }
 }

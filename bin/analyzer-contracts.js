@@ -21,7 +21,7 @@ export const ANALYZER_CONTRACTS = {
     "componentModules": 188,
     "componentUtilityModules": 31,
     "reactWrappers": 193,
-    "rootExports": 118
+    "rootExports": 119
   },
   "rootExports": [
     "AdoptedOptions",
@@ -37,6 +37,7 @@ export const ANALYZER_CONTRACTS = {
     "DispatchOptions",
     "Duration",
     "ElementOptions",
+    "EventTiming",
     "Fetcher",
     "Guard",
     "IController",

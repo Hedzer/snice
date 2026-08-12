@@ -407,6 +407,10 @@ export async function detachController(element: HTMLElement): Promise<void> {
     return;
   }
 
+  // Invalidate dispatch work before every teardown path, including an attach
+  // that is still waiting for host readiness and will return early below.
+  clearDispatchTimers(controllerInstance);
+
   // Claim the controller immediately — before any await — so a second detach
   // that overlaps this one (e.g. disconnect's fire-and-forget detach racing a
   // controller reassignment) finds no instance and returns, instead of running
@@ -431,10 +435,6 @@ export async function detachController(element: HTMLElement): Promise<void> {
   if (!(controllerInstance as any)[CONTROLLER_ATTACHED]) {
     return;
   }
-
-  // Drop queued @dispatch signals immediately and invalidate async decorated
-  // methods that have not resolved yet. Detached controllers have no host.
-  clearDispatchTimers(controllerInstance);
 
   // Run detach in the controller's scope
   if (scope) {

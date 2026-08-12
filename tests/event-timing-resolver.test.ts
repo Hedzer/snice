@@ -4,6 +4,7 @@ import {
   controller,
   detachController,
   dispatch,
+  dispose,
   element,
   getController,
   on,
@@ -245,5 +246,203 @@ describe('per-instance event timing resolvers', () => {
     }
     const infinite = document.createElement('timing-infinite-throttle') as InfiniteThrottle;
     expect(() => infinite.emit()).toThrow(/throttle.*finite, non-negative number/i);
+  });
+
+  it('invalidates queued and unresolved dispatch work before awaiting element disposal', async () => {
+    let releaseDispose!: () => void;
+    const disposeGate = new Promise<void>((resolve) => { releaseDispose = resolve; });
+    let releaseMethod!: () => void;
+    const methodGate = new Promise<void>((resolve) => { releaseMethod = resolve; });
+
+    @element('timing-element-teardown')
+    class TimingElementTeardown extends HTMLElement {
+      @dispose()
+      async waitForDispose() { await disposeGate; }
+
+      @dispatch('queued-value', { debounce: 40 })
+      emitQueued(value: number) { return value; }
+
+      @dispatch('async-value', { debounce: 40 })
+      async emitAsync(value: number) {
+        await methodGate;
+        return value;
+      }
+    }
+
+    const target = document.createElement('timing-element-teardown') as TimingElementTeardown;
+    document.body.append(target);
+    await target.ready;
+    const events = vi.fn();
+    target.addEventListener('queued-value', events);
+    target.addEventListener('async-value', events);
+
+    vi.useFakeTimers();
+    target.emitQueued(1);
+    const unresolved = target.emitAsync(2);
+    target.remove();
+
+    await vi.advanceTimersByTimeAsync(50);
+    releaseMethod();
+    await expect(unresolved).resolves.toBe(2);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(events).not.toHaveBeenCalled();
+
+    releaseDispose();
+    await Promise.resolve();
+    document.body.append(target);
+    target.emitQueued(3);
+    await vi.advanceTimersByTimeAsync(40);
+    expect(events).toHaveBeenCalledOnce();
+    expect((events.mock.calls[0][0] as CustomEvent).detail).toBe(3);
+  });
+
+  it('invalidates dispatch work when controller attachment aborts before ready', async () => {
+    let resolveReady!: () => void;
+    const ready = new Promise<void>((resolve) => { resolveReady = resolve; });
+    let releaseMethod!: () => void;
+    const methodGate = new Promise<void>((resolve) => { releaseMethod = resolve; });
+
+    @controller('timing-aborted-controller')
+    class TimingAbortedController {
+      element: HTMLElement | null = null;
+      attach() {}
+      detach() {}
+
+      @dispatch('queued-value', { debounce: 40 })
+      emitQueued(value: number) { return value; }
+
+      @dispatch('async-value', { debounce: 40 })
+      async emitAsync(value: number) {
+        await methodGate;
+        return value;
+      }
+    }
+
+    const host = document.createElement('div') as HTMLElement & { ready: Promise<void> };
+    host.ready = ready;
+    document.body.append(host);
+    const events = vi.fn();
+    host.addEventListener('queued-value', events);
+    host.addEventListener('async-value', events);
+    const attaching = attachController(host, TimingAbortedController);
+    const instance = getController<TimingAbortedController>(host)!;
+
+    vi.useFakeTimers();
+    instance.emitQueued(1);
+    const unresolved = instance.emitAsync(2);
+    await detachController(host);
+    await expect(attaching).rejects.toMatchObject({ name: 'ControllerAttachAborted' });
+
+    await vi.advanceTimersByTimeAsync(50);
+    releaseMethod();
+    await expect(unresolved).resolves.toBe(2);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(events).not.toHaveBeenCalled();
+    resolveReady();
+
+    await attachController(host, TimingAbortedController);
+    const rebound = getController<TimingAbortedController>(host)!;
+    rebound.emitQueued(3);
+    await vi.advanceTimersByTimeAsync(40);
+    expect(events).toHaveBeenCalledOnce();
+    expect((events.mock.calls[0][0] as CustomEvent).detail).toBe(3);
+  });
+
+  it('@dispatch cancels stale debounce when a resolver changes to zero', async () => {
+    @element('timing-debounce-zero')
+    class TimingDebounceZero extends HTMLElement {
+      wait = 100;
+
+      @dispatch('value', { debounce() { return this.wait; } })
+      emit(value: number) { return value; }
+    }
+
+    const target = document.createElement('timing-debounce-zero') as TimingDebounceZero;
+    document.body.append(target);
+    await target.ready;
+    const details: number[] = [];
+    target.addEventListener('value', (event) => details.push((event as CustomEvent).detail));
+
+    vi.useFakeTimers();
+    target.emit(1);
+    target.wait = 0;
+    target.emit(2);
+    expect(details).toEqual([2]);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(details).toEqual([2]);
+  });
+
+  it('@dispatch reschedules throttle trailing work to the newly resolved interval', async () => {
+    @element('timing-throttle-reschedule')
+    class TimingThrottleReschedule extends HTMLElement {
+      wait = 100;
+
+      @dispatch('value', { throttle() { return this.wait; } })
+      emit(value: number) { return value; }
+    }
+
+    const target = document.createElement('timing-throttle-reschedule') as TimingThrottleReschedule;
+    document.body.append(target);
+    await target.ready;
+    const details: number[] = [];
+    target.addEventListener('value', (event) => details.push((event as CustomEvent).detail));
+
+    vi.useFakeTimers();
+    target.emit(1);
+    await vi.advanceTimersByTimeAsync(20);
+    target.emit(2); // trailing deadline: t=100
+    target.wait = 200;
+    await vi.advanceTimersByTimeAsync(10);
+    target.emit(3); // replace detail and move trailing deadline to t=200
+    await vi.advanceTimersByTimeAsync(80);
+    expect(details).toEqual([1]);
+    await vi.advanceTimersByTimeAsync(90);
+    expect(details).toEqual([1, 3]);
+
+    target.wait = 100;
+    await vi.advanceTimersByTimeAsync(10);
+    target.emit(4); // deadline t=300
+    target.wait = 40;
+    await vi.advanceTimersByTimeAsync(10);
+    target.emit(5); // replace t=300 deadline with last-dispatch + 40 = t=240
+    expect(details).toEqual([1, 3]);
+    await vi.advanceTimersByTimeAsync(19);
+    expect(details).toEqual([1, 3]);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(details).toEqual([1, 3, 5]);
+
+    target.wait = 100;
+    await vi.advanceTimersByTimeAsync(10);
+    target.emit(6);
+    target.wait = 0;
+    await vi.advanceTimersByTimeAsync(10);
+    target.emit(7);
+    expect(details).toEqual([1, 3, 5, 7]);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(details).toEqual([1, 3, 5, 7]);
+  });
+
+  it('@dispatch timing state cannot collide across event/method name pairs', async () => {
+    @element('timing-key-collision')
+    class TimingKeyCollision extends HTMLElement {
+      @dispatch('a_b', { debounce: 20 })
+      c(value: number) { return value; }
+
+      @dispatch('a', { debounce: 20 })
+      b_c(value: number) { return value; }
+    }
+
+    const target = document.createElement('timing-key-collision') as TimingKeyCollision;
+    document.body.append(target);
+    await target.ready;
+    const details: string[] = [];
+    target.addEventListener('a_b', (event) => details.push(`a_b:${(event as CustomEvent).detail}`));
+    target.addEventListener('a', (event) => details.push(`a:${(event as CustomEvent).detail}`));
+
+    vi.useFakeTimers();
+    target.c(1);
+    target.b_c(2);
+    await vi.advanceTimersByTimeAsync(20);
+    expect(details.sort()).toEqual(['a:2', 'a_b:1']);
   });
 });

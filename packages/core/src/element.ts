@@ -447,6 +447,10 @@ export function applyElementFunctionality(constructor: any) {
     };
     
     constructor.prototype.disconnectedCallback = async function() {
+      // Invalidate queued and unresolved-async @dispatch work synchronously.
+      // The platform does not await disconnectedCallback, and @dispose may be
+      // async, so waiting until the end permits events from a detached host.
+      clearDispatchTimers(this);
       try {
         disconnectRenderTree(this);
       } catch (error) {
@@ -490,7 +494,6 @@ export function applyElementFunctionality(constructor: any) {
       if (clearRenderTimers(this)) {
         (this as any)[PENDING_RECONNECT_RENDER] = true;
       }
-      clearDispatchTimers(this);
       // @moved / @adopted debounce-throttle timers, likewise dropped so they
       // don't fire on a dead element.
       clearLifecycleTimers(this, MOVED_TIMERS);
