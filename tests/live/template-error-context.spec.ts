@@ -163,6 +163,94 @@ test('built host attribution uses exact registrations without consulting DOM ide
       }
       frame.remove();
     }
+
+    const collisionFrames: HTMLIFrameElement[] = [];
+    const createRouterRealm = () => {
+      const collisionFrame = document.createElement('iframe');
+      document.body.append(collisionFrame);
+      collisionFrames.push(collisionFrame);
+      const collisionWindow = collisionFrame.contentWindow!;
+      const collisionDocument = collisionFrame.contentDocument!;
+      const collisionTarget = collisionDocument.createElement('div');
+      collisionTarget.id = 'app';
+      collisionDocument.body.append(collisionTarget);
+      return { collisionWindow, collisionDocument };
+    };
+    const registerInRealm = (
+      realm: ReturnType<typeof createRouterRealm>,
+      constructor: typeof HTMLElement,
+      tag: string,
+    ) => {
+      Router({
+        target: '#app',
+        type: 'hash',
+        window: realm.collisionWindow,
+        document: realm.collisionDocument,
+      }).page({ tag, routes: ['/'] })(
+        constructor,
+        { kind: 'class', name: constructor.name, metadata: undefined },
+      );
+    };
+
+    const sameRealm = createRouterRealm();
+    registerInRealm(sameRealm, PrimaryPoisonElement, 'browser-context-primary-poison');
+    const sameRegistryHasConstructor = sameRealm.collisionWindow.customElements.get(
+      'browser-context-primary-poison',
+    ) === PrimaryPoisonElement;
+    const sameRegistryTagLabel = captureRenderHostIdentity(primaryHost).label;
+    const sameRegistryTagNewLabel = captureRenderHostIdentity(
+      new PrimaryPoisonElement(),
+    ).label;
+
+    const distinctRealm = createRouterRealm();
+    registerInRealm(distinctRealm, PrimaryPoisonElement, 'browser-context-primary-distinct');
+    const distinctOldLabel = captureRenderHostIdentity(primaryHost).label;
+    const distinctNewLabel = captureRenderHostIdentity(
+      new PrimaryPoisonElement(),
+    ).label;
+
+    const originalAgainRealm = createRouterRealm();
+    registerInRealm(originalAgainRealm, PrimaryPoisonElement, 'browser-context-primary-poison');
+    const permanentAmbiguousLabel = captureRenderHostIdentity(primaryHost).label;
+
+    class PreservedCrossRegistryElement extends HTMLElement {}
+    element('browser-context-preserved-cross-registry')(
+      PreservedCrossRegistryElement,
+      { kind: 'class', name: 'PreservedCrossRegistryElement', metadata: undefined },
+    );
+    const preservedHost = document.createElement('browser-context-preserved-cross-registry');
+    const failedRealm = createRouterRealm();
+    const failedRealmDefine = Object.getOwnPropertyDescriptor(
+      failedRealm.collisionWindow.customElements,
+      'define',
+    );
+    Object.defineProperty(failedRealm.collisionWindow.customElements, 'define', {
+      configurable: true,
+      value() { throw new Error('cross-registry registration failed'); },
+    });
+    let failedCrossRegistryThrew = false;
+    try {
+      registerInRealm(
+        failedRealm,
+        PreservedCrossRegistryElement,
+        'browser-context-preserved-cross-registry-conflict',
+      );
+    } catch {
+      failedCrossRegistryThrew = true;
+    } finally {
+      if (failedRealmDefine) {
+        Object.defineProperty(
+          failedRealm.collisionWindow.customElements,
+          'define',
+          failedRealmDefine,
+        );
+      } else {
+        delete (failedRealm.collisionWindow.customElements as any).define;
+      }
+    }
+    const failedCrossRegistryPreservedLabel = captureRenderHostIdentity(preservedHost).label;
+    collisionFrames.forEach(collisionFrame => collisionFrame.remove());
+
     return {
       primaryLabel,
       alternateLabel,
@@ -176,6 +264,14 @@ test('built host attribution uses exact registrations without consulting DOM ide
       interfacePollutionLabel,
       accessorConstructorLabel,
       accessorConstructorReads,
+      sameRegistryTagLabel,
+      sameRegistryTagNewLabel,
+      sameRegistryHasConstructor,
+      distinctOldLabel,
+      distinctNewLabel,
+      permanentAmbiguousLabel,
+      failedCrossRegistryThrew,
+      failedCrossRegistryPreservedLabel,
       reads,
     };
   });
@@ -192,5 +288,15 @@ test('built host attribution uses exact registrations without consulting DOM ide
   expect(result.interfacePollutionLabel).toMatch(/^<browser-context-primary-poison>/);
   expect(result.accessorConstructorLabel).toBe('<element>');
   expect(result.accessorConstructorReads).toBe(0);
+  expect(result.sameRegistryTagLabel).toMatch(/^<browser-context-primary-poison>/);
+  expect(result.sameRegistryTagNewLabel).toMatch(/^<browser-context-primary-poison>/);
+  expect(result.sameRegistryHasConstructor).toBe(true);
+  expect(result.distinctOldLabel).toBe('<element>');
+  expect(result.distinctNewLabel).toBe('<element>');
+  expect(result.permanentAmbiguousLabel).toBe('<element>');
+  expect(result.failedCrossRegistryThrew).toBe(true);
+  expect(result.failedCrossRegistryPreservedLabel).toMatch(
+    /^<browser-context-preserved-cross-registry>/,
+  );
   expect(result.reads).toEqual({ ownerDocument: 0, defaultView: 0, customElements: 0 });
 });

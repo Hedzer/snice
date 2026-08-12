@@ -370,6 +370,64 @@ describe('template authoring error context', () => {
     expect(captureRenderHostIdentity(new FailedElement()).label).toBe('<element>');
   });
 
+  it('makes distinct successful identities permanently ambiguous across registries', () => {
+    const createRealm = () => {
+      const realm = new Window();
+      const target = realm.document.createElement('div');
+      target.id = 'app';
+      realm.document.body.append(target);
+      return realm;
+    };
+    const decorate = (realm: Window, constructor: typeof HTMLElement, tag: string) => {
+      Router({
+        target: '#app',
+        type: 'hash',
+        window: realm as unknown as Window & typeof globalThis,
+        document: realm.document as unknown as Document,
+      }).page({ tag, routes: ['/'] })(
+        constructor,
+        { kind: 'class', name: constructor.name, metadata: undefined } as any,
+      );
+    };
+
+    const sameOne = createRealm();
+    const sameTwo = createRealm();
+    class SameIdentityPage extends sameOne.HTMLElement {}
+    decorate(sameOne, SameIdentityPage as unknown as typeof HTMLElement, 'test-context-shared-same');
+    const sameHost = sameOne.document.createElement('test-context-shared-same') as HTMLElement;
+    decorate(sameTwo, SameIdentityPage as unknown as typeof HTMLElement, 'test-context-shared-same');
+    expect(captureRenderHostIdentity(sameHost).label).toMatch(/^<test-context-shared-same>/);
+
+    const distinctOne = createRealm();
+    const distinctTwo = createRealm();
+    const distinctThree = createRealm();
+    class DistinctIdentityPage extends distinctOne.HTMLElement {}
+    decorate(distinctOne, DistinctIdentityPage as unknown as typeof HTMLElement, 'test-context-shared-first');
+    const oldHost = distinctOne.document.createElement('test-context-shared-first') as HTMLElement;
+    decorate(distinctTwo, DistinctIdentityPage as unknown as typeof HTMLElement, 'test-context-shared-second');
+    const newHost = distinctTwo.document.createElement('test-context-shared-second') as HTMLElement;
+    expect(captureRenderHostIdentity(oldHost).label).toBe('<element>');
+    expect(captureRenderHostIdentity(newHost).label).toBe('<element>');
+
+    decorate(distinctThree, DistinctIdentityPage as unknown as typeof HTMLElement, 'test-context-shared-first');
+    expect(captureRenderHostIdentity(oldHost).label).toBe('<element>');
+
+    const preservedOne = createRealm();
+    const preservedTwo = createRealm();
+    class PreservedIdentityPage extends preservedOne.HTMLElement {}
+    decorate(preservedOne, PreservedIdentityPage as unknown as typeof HTMLElement, 'test-context-preserved');
+    const preservedHost = preservedOne.document.createElement('test-context-preserved') as HTMLElement;
+    vi.spyOn(preservedTwo.customElements, 'define').mockImplementationOnce(() => {
+      throw new Error('cross-registry registration failed');
+    });
+    expect(() => decorate(
+      preservedTwo,
+      PreservedIdentityPage as unknown as typeof HTMLElement,
+      'test-context-preserved-conflict',
+    )).toThrow('cross-registry registration failed');
+    expect(captureRenderHostIdentity(preservedHost).label).toMatch(/^<test-context-preserved>/);
+  });
+
   it('preserves cause and stack while strict mode rethrows nested parser errors', async () => {
     @element('test-context-strict-nested')
     class ContextStrictNestedElement extends HTMLElement {

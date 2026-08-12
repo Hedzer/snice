@@ -10,10 +10,14 @@ interface RegisteredRenderHostIdentity {
   readonly label: string;
 }
 
-// Keys are weak and values are sanitized primitives. The same frozen value is
-// recorded for the exact constructor and its exact prototype only after the
-// caller has verified successful registration.
-const registeredRenderHosts = new WeakMap<object, RegisteredRenderHostIdentity>();
+const AMBIGUOUS_RENDER_HOST_IDENTITY = Symbol('ambiguous-render-host-identity');
+type RegisteredRenderHostState = RegisteredRenderHostIdentity |
+  typeof AMBIGUOUS_RENDER_HOST_IDENTITY;
+
+// Keys are weak; values contain only a sanitized label or the ambiguity
+// sentinel. The same frozen identity is recorded for the exact constructor
+// and its exact prototype only after the caller verifies registration.
+const registeredRenderHosts = new WeakMap<object, RegisteredRenderHostState>();
 
 export function registerRenderHostIdentity(constructor: unknown, tagName: string): void {
   try {
@@ -32,8 +36,21 @@ export function registerRenderHostIdentity(constructor: unknown, tagName: string
     const identity = Object.freeze({
       label: className ? `<${tagName}> (${className})` : `<${tagName}>`,
     });
-    registeredRenderHosts.set(constructor, identity);
-    registeredRenderHosts.set(prototype, identity);
+    const constructorState = registeredRenderHosts.get(constructor);
+    const prototypeState = registeredRenderHosts.get(prototype);
+    const existingStates = [constructorState, prototypeState].filter(
+      (state): state is RegisteredRenderHostState => state !== undefined,
+    );
+    const ambiguous = existingStates.some(state =>
+      state === AMBIGUOUS_RENDER_HOST_IDENTITY || state.label !== identity.label
+    );
+    const nextState = ambiguous
+      ? AMBIGUOUS_RENDER_HOST_IDENTITY
+      : existingStates[0] ?? identity;
+    // Update both exact keys in the same synchronous registration call. Once
+    // either key is ambiguous, no later registration can restore attribution.
+    registeredRenderHosts.set(constructor, nextState);
+    registeredRenderHosts.set(prototype, nextState);
   } catch {
     // Registration diagnostics are best-effort and must not affect the
     // successful custom-elements registration that already occurred.
@@ -50,7 +67,8 @@ function registeredIdentity(host: HTMLElement): RegisteredRenderHostIdentity | u
   if (typeof constructor !== 'function') return undefined;
   const prototypeIdentity = registeredRenderHosts.get(prototype);
   const constructorIdentity = registeredRenderHosts.get(constructor);
-  return prototypeIdentity && prototypeIdentity === constructorIdentity
+  return prototypeIdentity !== AMBIGUOUS_RENDER_HOST_IDENTITY &&
+    prototypeIdentity === constructorIdentity
     ? prototypeIdentity
     : undefined;
 }
