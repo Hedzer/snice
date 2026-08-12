@@ -68,6 +68,11 @@ describe('Snice project analyzer API', () => {
           id: 'snice/unused-dependency',
           severity: 'error',
           category: 'configuration'
+        }),
+        expect.objectContaining({
+          id: 'snice/route-param-has-no-binding-target',
+          severity: 'error',
+          category: 'router'
         })
       ])
     );
@@ -1209,6 +1214,149 @@ describe('page orchestration checks', () => {
     ].join('\n');
     expect(byRule(source, 'snice/controller-on-page-host')).toEqual([]);
     expect(byRule(source, 'snice/recommend-route-params')).toEqual([]);
+  });
+
+  describe('route parameter binding targets', () => {
+    const ruleId = 'snice/route-param-has-no-binding-target';
+
+    it('requires binding targets for path and query params in string and object routes', () => {
+      const source = [
+        "@page({ tag: 'search-page', routes: [",
+        "  '/teams/:teamId?view=:view',",
+        "  { path: '/orders/:orderId?tab=:tab', order: -10 },",
+        "  '/teams/:teamId/archive'",
+        '] })',
+        'class SearchPage extends HTMLElement {',
+        "  @property() teamId = '';",
+        "  @property({ reflect: false }) orderId = '';",
+        '}'
+      ].join('\n');
+      const diagnostics = byRule(source, ruleId);
+
+      expect(diagnostics).toHaveLength(2);
+      expect(diagnostics.map(diagnostic => diagnostic.message)).toEqual([
+        expect.stringContaining('view'),
+        expect.stringContaining('tab')
+      ]);
+      expect(diagnostics[0]).toMatchObject({
+        code: ruleId,
+        line: 2,
+        column: source.split('\n')[1].indexOf(':view') + 1
+      });
+      expect(diagnostics[0].fix).toContain('@property() view');
+    });
+
+    it('rejects undecorated fields, @state, attribute:false, and unreachable aliases', () => {
+      const source = [
+        "@page({ tag: 'search-page', routes: ['/catalog/:plain/:internal/:disabled/:userId'] })",
+        'class SearchPage extends HTMLElement {',
+        "  plain = '';",
+        "  @state() internal = '';",
+        "  @property({ attribute: false }) disabled = '';",
+        "  @property({ attribute: 'user-id' }) userId = '';",
+        '}'
+      ].join('\n');
+      const diagnostics = byRule(source, ruleId);
+
+      expect(diagnostics).toHaveLength(4);
+      expect(diagnostics.find(diagnostic => diagnostic.message.includes('disabled'))?.message)
+        .toContain('attribute: false');
+      const alias = diagnostics.find(diagnostic => diagnostic.message.includes('userId'))!;
+      expect(alias.message).toContain('user-id');
+      expect(alias.fix).toContain(':user-id');
+      expect(alias.fix).toContain('remove the explicit attribute alias');
+    });
+
+    it('accepts explicit aliases when the Router attribute reaches the property', () => {
+      const source = [
+        "@page({ tag: 'search-page', routes: ['/:account-id?term=:q'] })",
+        'class SearchPage extends HTMLElement {',
+        "  @property({ attribute: 'account-id' }) accountId = '';",
+        "  @property({ attribute: 'q', reflect: false }) query = '';",
+        '}'
+      ].join('\n');
+
+      expect(byRule(source, ruleId)).toEqual([]);
+    });
+
+    it('accounts for SniceElement kebab-case implicit attributes', () => {
+      const mismatched = [
+        "@page({ tag: 'search-page', routes: ['/:userId'] })",
+        'class SearchPage extends SniceElement {',
+        "  @property() userId = '';",
+        '}'
+      ].join('\n');
+      const diagnostics = byRule(mismatched, ruleId);
+      expect(diagnostics).toHaveLength(1);
+      expect(diagnostics[0].message).toContain('user-id');
+      expect(diagnostics[0].fix).toContain(':user-id');
+
+      const matched = mismatched.replace(':userId', ':user-id');
+      expect(byRule(matched, ruleId)).toEqual([]);
+    });
+
+    it('resolves bindable properties inherited from local project classes', () => {
+      const diagnostics = analyzeProject({
+        'src/pages/routed-base.ts': [
+          'export class RoutedBase extends HTMLElement {',
+          "  @property() accountId = '';",
+          '}'
+        ].join('\n'),
+        'src/pages/account-page.ts': [
+          "import { RoutedBase } from './routed-base';",
+          "@page({ tag: 'account-page', routes: ['/accounts/:accountId'] })",
+          'class AccountPage extends RoutedBase {}'
+        ].join('\n')
+      }).filter(diagnostic => diagnostic.ruleId === ruleId);
+
+      expect(diagnostics).toEqual([]);
+    });
+
+    it('does not guess when an external base class may own the binding target', () => {
+      const source = [
+        "@page({ tag: 'search-page', routes: ['/accounts/:accountId'] })",
+        'class SearchPage extends ExternalPage {}'
+      ].join('\n');
+
+      expect(byRule(source, ruleId)).toEqual([]);
+    });
+
+    it('handles literals, splats, optional groups, and duplicate params without false positives', () => {
+      const supported = [
+        "@page({ tag: 'search-page', routes: [",
+        "  '/literal/fixed?mode=list',",
+        "  '/files/*path',",
+        "  '/topics(/:section)/:section'",
+        '] })',
+        'class SearchPage extends HTMLElement {',
+        "  @property() section = '';",
+        '}'
+      ].join('\n');
+      expect(byRule(supported, ruleId)).toEqual([]);
+
+      const duplicatedMissing = [
+        "@page({ tag: 'search-page', routes: ['/:id/:id', { path: '/again/:id', order: 2 }] })",
+        'class SearchPage extends HTMLElement {}'
+      ].join('\n');
+      expect(byRule(duplicatedMissing, ruleId)).toHaveLength(1);
+    });
+
+    it('catches the same disabled binding defect across nine page classes', () => {
+      const files = Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
+        const number = index + 1;
+        return [`src/pages/item-${number}-page.ts`, [
+          `@page({ tag: 'item-${number}-page', routes: ['/items/${number}/:itemId'] })`,
+          `class Item${number}Page extends HTMLElement {`,
+          "  @property({ attribute: false }) itemId = '';",
+          '}'
+        ].join('\n')];
+      }));
+      const diagnostics = analyzeProject(files)
+        .filter(diagnostic => diagnostic.ruleId === ruleId);
+
+      expect(diagnostics).toHaveLength(9);
+      expect(diagnostics.every(diagnostic => diagnostic.message.includes('attribute: false'))).toBe(true);
+    });
   });
 
   it('warns when a bare same-page route shadows a later query variant', () => {

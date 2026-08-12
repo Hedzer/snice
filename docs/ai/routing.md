@@ -192,7 +192,10 @@ class OverridePage extends HTMLElement {}
 
 ## Route parameters
 
-- `:param` segments in `routes` auto-map to `@property()` fields of the same name on the page element, set before `@ready()` fires. `@property({ attribute: false })` opts OUT — the Router binds through attributes, so such a field silently keeps its initializer.
+- `:param` segments in string routes and `{ path, order }` routes bind through attributes before `@ready()` fires; normally declare a plain `@property()` field of the same name.
+- The route-param spelling must match the observed attribute after HTML lowercasing. `HTMLElement`: `:articleId` -> plain `articleId` (`articleid`). `SniceElement`: plain `articleId` observes `article-id`, so use `:article-id` or `@property({ attribute: 'articleId' }) articleId`.
+- Explicit alias: `@property({ attribute: 'article-id' }) articleId` binds from `:article-id`, not `:articleId`.
+- `@property({ attribute: false })` opts OUT — Router cannot set it, so it silently keeps its initializer.
 - Multiple `:param`s all populate independently, e.g. `/posts/:postId/comments/:commentId` → `postId`, `commentId` properties.
 - Query params: declare directly in the route pattern, e.g. `routes: ['/search?q=:query']` — extracted as a route param (`ctx.navigation.params.query`), not parsed from `location.search`.
 

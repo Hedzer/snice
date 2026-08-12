@@ -1513,6 +1513,14 @@ const RULE_DEFINITIONS = [
     check() {}
   },
   {
+    id: 'snice/route-param-has-no-binding-target',
+    severity: 'error',
+    category: 'router',
+    description: 'Require every page route parameter to reach a bindable @property through the Router attribute channel.',
+    projectOnly: true,
+    check() {}
+  },
+  {
     id: 'snice/shadowed-query-route',
     severity: 'warning',
     category: 'router',
@@ -1662,6 +1670,7 @@ export function analyzeProject(files) {
   const routerConstructions = [];
   const architectureDeclarations = [];
   const pageClasses = [];
+  const localClassDeclarations = [];
   const reactiveRenderContracts = new Map();
   const localElementContracts = new Map();
   const staleGuards = [];
@@ -1686,6 +1695,11 @@ export function analyzeProject(files) {
       staleGuards.push({ file, index: guard.index, field: guard[2], owner: owner?.kind });
     }
     const provenance = buildSourceProvenance(analyzable);
+    localClassDeclarations.push(...findClassBodies(analyzable).map(declaration => ({
+      ...declaration,
+      file,
+      routeProperties: inspectRouteProperties(declaration.body, declaration.bodyStart)
+    })));
     routerConstructions.push(
       ...findRouterConstructions(analyzable, localsFor(provenance.rootBindings, 'Router'))
         .map(construction => ({ ...construction, file }))
@@ -1966,6 +1980,76 @@ export function analyzeProject(files) {
         line: location.line,
         column: location.column
       });
+    }
+
+    const bindingEnvironment = resolveRouteBindingEnvironment(page, localClassDeclarations);
+    const reportedRouteAttributes = new Set();
+    for (const route of findPageRoutes(page.file.source, page.index)) {
+      for (const parameter of findRouteParameters(route)) {
+        const routeAttribute = parameter.name.toLowerCase();
+        if (reportedRouteAttributes.has(routeAttribute)) continue;
+
+        const reachable = bindingEnvironment.properties.find(property =>
+          property.attributeKind !== 'false' &&
+          property.attributeKind !== 'unknown' &&
+          routePropertyAttribute(property, bindingEnvironment.naming) === routeAttribute
+        );
+        if (reachable) continue;
+
+        const sameName = bindingEnvironment.properties.find(property => property.name === parameter.name);
+        if (!sameName && !bindingEnvironment.complete) continue;
+        if (sameName?.attributeKind === 'unknown') continue;
+
+        reportedRouteAttributes.add(routeAttribute);
+        const location = sourceLocation(page.file.source, parameter.index);
+        const routeLabel = `:${parameter.name}`;
+        if (sameName?.attributeKind === 'false') {
+          diagnostics.push({
+            severity: 'error',
+            ruleId: 'snice/route-param-has-no-binding-target',
+            message: `Route parameter "${routeLabel}" cannot bind ${page.name}.${sameName.name} because @property({ attribute: false }) disables the attribute channel used by Router.`,
+            fix: `Remove attribute: false so ${sameName.name} is a plain bindable @property(), or remove/rename "${routeLabel}" if the URL value is not a page input. Review docs/ai/routing.md.`,
+            file: page.file.filename,
+            line: location.line,
+            column: location.column
+          });
+          continue;
+        }
+
+        if (sameName) {
+          const observedAttribute = routePropertyAttribute(sameName, bindingEnvironment.naming);
+          const defaultAttribute = defaultRoutePropertyAttribute(sameName.name, bindingEnvironment.naming);
+          const removeAliasFix = sameName.attributeKind === 'alias' && defaultAttribute === routeAttribute
+            ? `remove the explicit attribute alias so @property() ${sameName.name} observes "${routeAttribute}"`
+            : `declare @property({ attribute: '${parameter.name}' }) ${sameName.name} so it observes "${routeAttribute}"`;
+          diagnostics.push({
+            severity: 'error',
+            ruleId: 'snice/route-param-has-no-binding-target',
+            message: `Route parameter "${routeLabel}" sets the "${routeAttribute}" attribute, but ${page.name}.${sameName.name} observes "${observedAttribute}", so Router cannot reach it.`,
+            fix: `Change the route parameter spelling to ":${observedAttribute}", or ${removeAliasFix}. Review docs/ai/routing.md.`,
+            file: page.file.filename,
+            line: location.line,
+            column: location.column
+          });
+          continue;
+        }
+
+        const suggestedName = kebabToCamel(parameter.name);
+        const propertySuggestion = /^[A-Za-z_$][\w$]*$/.test(suggestedName)
+          ? suggestedName === parameter.name
+            ? `Add @property() ${suggestedName} = ''; to ${page.name}`
+            : `Add @property({ attribute: '${parameter.name}' }) ${suggestedName} = ''; to ${page.name}`
+          : `Rename "${routeLabel}" to a valid property name and add a matching plain @property()`;
+        diagnostics.push({
+          severity: 'error',
+          ruleId: 'snice/route-param-has-no-binding-target',
+          message: `Route parameter "${routeLabel}" has no bindable @property on ${page.name}; Router sets the "${routeAttribute}" attribute, which otherwise does not populate page state.`,
+          fix: `${propertySuggestion}, or remove the parameter if the page does not consume it. Review docs/ai/routing.md.`,
+          file: page.file.filename,
+          line: location.line,
+          column: location.column
+        });
+      }
     }
 
     const precedingBareRoutes = new Set();
@@ -2282,13 +2366,15 @@ function findObjectCalls(source, functionName) {
 
 function findClassBodies(source) {
   const classes = [];
-  const pattern = /\bclass\s+[A-Za-z_$][\w$]*\s+extends\s+([A-Za-z_$][\w$]*)[^{]*\{/g;
+  const pattern = /\bclass\s+([A-Za-z_$][\w$]*)\s+extends\s+([A-Za-z_$][\w$]*)[^{]*\{/g;
   for (const match of source.matchAll(pattern)) {
     const open = source.indexOf('{', match.index);
     const close = findMatchingDelimiter(source, open, '{', '}');
     if (close < 0) continue;
     classes.push({
-      base: match[1],
+      index: match.index,
+      name: match[1],
+      base: match[2],
       bodyStart: open + 1,
       body: source.slice(open + 1, close)
     });
@@ -2392,6 +2478,7 @@ function findDecoratedClasses(source, decoratorName) {
     declarations.push({
       index: match.index,
       name: declaration[1],
+      base: /\bextends\s+([A-Za-z_$][\w$]*)/.exec(declaration[0])?.[1] ?? null,
       bodyStart: open + 1,
       body: source.slice(open + 1, close)
     });
@@ -2472,6 +2559,10 @@ function findElementDecoratorTag(source, index) {
 }
 
 function findPageStringRoutes(source, decoratorIndex) {
+  return findPageRoutes(source, decoratorIndex).filter(route => route.kind === 'string');
+}
+
+function findPageRoutes(source, decoratorIndex) {
   const open = source.indexOf('(', decoratorIndex);
   if (open < 0) return [];
   const close = findMatchingDelimiter(source, open, '(', ')');
@@ -2490,11 +2581,156 @@ function findPageStringRoutes(source, decoratorIndex) {
     const relative = body.indexOf(item, searchFrom);
     if (relative < 0) continue;
     searchFrom = relative + item.length;
-    const literal = /^(['"])([^'"]+)\1$/.exec(item);
-    if (!literal) continue;
-    routes.push({ spec: literal[2], index: arrayOpen + 1 + relative });
+    const literal = /^(['"`])([^'"`]*)\1$/.exec(item);
+    if (literal && !(literal[1] === '`' && literal[2].includes('${'))) {
+      routes.push({
+        kind: 'string',
+        spec: literal[2],
+        index: arrayOpen + 1 + relative,
+        specStart: arrayOpen + 1 + relative + 1
+      });
+      continue;
+    }
+    const objectPath = /\bpath\s*:\s*(['"`])([^'"`]*)\1/.exec(item);
+    if (!objectPath || (objectPath[1] === '`' && objectPath[2].includes('${'))) continue;
+    const quoteOffset = objectPath.index + objectPath[0].indexOf(objectPath[1]);
+    routes.push({
+      kind: 'object',
+      spec: objectPath[2],
+      index: arrayOpen + 1 + relative + objectPath.index,
+      specStart: arrayOpen + 1 + relative + quoteOffset + 1
+    });
   }
   return routes;
+}
+
+function findRouteParameters(route) {
+  const parameters = [];
+  for (const match of route.spec.matchAll(/:([\w-]+)/g)) {
+    parameters.push({ name: match[1], index: route.specStart + match.index });
+  }
+  return parameters;
+}
+
+function inspectRouteProperties(body, bodyStart = 0) {
+  const masked = maskComments(body);
+  const code = blankStringContents(masked);
+  const depths = new Uint16Array(code.length + 1);
+  let depth = 0;
+  for (let index = 0; index < code.length; index++) {
+    depths[index] = depth;
+    if (code[index] === '{') depth++;
+    else if (code[index] === '}') depth = Math.max(0, depth - 1);
+  }
+
+  const properties = [];
+  for (const match of code.matchAll(/@property\b/g)) {
+    if (depths[match.index] !== 0) continue;
+    let cursor = match.index + match[0].length;
+    while (/\s/.test(code[cursor] ?? '')) cursor++;
+    let optionsSource = '';
+    let hasArguments = false;
+    if (code[cursor] === '(') {
+      const close = findMatchingDelimiter(masked, cursor, '(', ')');
+      if (close < 0) continue;
+      hasArguments = true;
+      optionsSource = masked.slice(cursor + 1, close).trim();
+      cursor = close + 1;
+    }
+    const declaration = /^\s*((?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*)(?:accessor\s+)?([A-Za-z_$][\w$]*)/
+      .exec(code.slice(cursor));
+    if (!declaration || /\bstatic\b/.test(declaration[1])) continue;
+
+    let attributeKind = 'default';
+    let attribute = null;
+    if (hasArguments && optionsSource) {
+      if (!optionsSource.startsWith('{') || /\.\.\./.test(optionsSource)) {
+        attributeKind = 'unknown';
+      } else {
+        const attributeOption = /\battribute\s*:\s*([^,}]+)/.exec(optionsSource)?.[1].trim();
+        if (attributeOption === 'false') attributeKind = 'false';
+        else if (attributeOption === 'true') attributeKind = 'kebab';
+        else if (attributeOption) {
+          const alias = /^(['"`])([^'"`]*)\1$/.exec(attributeOption);
+          if (alias && !(alias[1] === '`' && alias[2].includes('${'))) {
+            attributeKind = 'alias';
+            attribute = alias[2].toLowerCase();
+          } else {
+            attributeKind = 'unknown';
+          }
+        }
+      }
+    }
+    const nameOffset = cursor + declaration.index + declaration[0].lastIndexOf(declaration[2]);
+    properties.push({
+      name: declaration[2],
+      index: bodyStart + nameOffset,
+      attributeKind,
+      attribute
+    });
+  }
+  return properties;
+}
+
+function resolveRouteBindingEnvironment(page, localClasses) {
+  const propertiesByName = new Map();
+  const visited = new Set();
+  let current = localClasses.find(candidate =>
+    candidate.file.filename === page.file.filename && candidate.bodyStart === page.bodyStart
+  ) ?? {
+    name: page.name,
+    base: page.base,
+    body: page.body,
+    bodyStart: page.bodyStart,
+    file: page.file,
+    routeProperties: inspectRouteProperties(page.body, page.bodyStart)
+  };
+  let naming = 'unknown';
+  let complete = true;
+
+  while (current && !visited.has(`${current.file.filename}:${current.bodyStart}`)) {
+    visited.add(`${current.file.filename}:${current.bodyStart}`);
+    for (const property of current.routeProperties) {
+      if (!propertiesByName.has(property.name)) propertiesByName.set(property.name, property);
+    }
+
+    if (current.base === 'HTMLElement') {
+      naming = 'lowercase';
+      break;
+    }
+    if (current.base === 'SniceElement') {
+      naming = 'kebab';
+      break;
+    }
+    if (!current.base) {
+      complete = false;
+      break;
+    }
+
+    const sameFile = localClasses.filter(candidate =>
+      candidate.file.filename === current.file.filename && candidate.name === current.base
+    );
+    const candidates = sameFile.length === 1
+      ? sameFile
+      : localClasses.filter(candidate => candidate.name === current.base);
+    if (candidates.length !== 1) {
+      complete = false;
+      break;
+    }
+    current = candidates[0];
+  }
+
+  return { properties: [...propertiesByName.values()], naming, complete };
+}
+
+function routePropertyAttribute(property, naming) {
+  if (property.attributeKind === 'alias') return property.attribute;
+  if (property.attributeKind === 'kebab') return camelToKebab(property.name).toLowerCase();
+  return defaultRoutePropertyAttribute(property.name, naming);
+}
+
+function defaultRoutePropertyAttribute(name, naming) {
+  return naming === 'kebab' ? camelToKebab(name).toLowerCase() : name.toLowerCase();
 }
 
 function inspectElementMembers(body) {

@@ -447,10 +447,18 @@ window.history.go(-2);
 ### Accessing Parameters
 
 Route parameters are automatically mapped to element properties — a `:param`
-segment binds to a **plain `@property()`** of the same name. A field declared
+segment normally binds to a **plain `@property()`** of the same name. A field declared
 `@property({ attribute: false })` is opted OUT of route-param binding: the
 Router never sets it and it silently keeps its initializer. (The Router sets
 params through attributes; `attribute: false` fields have none.)
+
+The parameter spelling must reach the property's observed attribute. On an
+`HTMLElement` page, `:articleId` reaches a plain `articleId` property through
+the lowercased `articleid` attribute. A `SniceElement` page uses kebab-case
+implicit attributes, so its plain `articleId` property needs `:article-id` (or
+an explicit `@property({ attribute: 'articleId' })`). Explicit aliases follow
+the same rule: `@property({ attribute: 'article-id' }) articleId` binds from
+`:article-id`, not `:articleId`.
 
 ```typescript
 @page({

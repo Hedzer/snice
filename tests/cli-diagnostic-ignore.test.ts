@@ -82,6 +82,27 @@ describe('.sniceignore diagnostic suppression', () => {
     expect(combined.findings).toEqual([]);
     expect(combined.issues).toEqual([]);
   });
+
+  it('suppresses a route parameter binding-target error by exact location', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    await writeFile(join(sourceDirectory, 'order-page.ts'), [
+      "@page({ tag: 'order-page', routes: ['/orders/:orderId'] })",
+      'class OrderPage extends HTMLElement {}'
+    ].join('\n'));
+
+    const code = 'snice/route-param-has-no-binding-target';
+    const baseline = await validate(projectRoot);
+    const issue = baseline.issues.find((candidate: any) => candidate.code === code);
+    expect(issue).toMatchObject({ file: join(sourceDirectory, 'order-page.ts'), line: 1 });
+
+    await writeFile(
+      join(projectRoot, '.sniceignore'),
+      `${code} src/pages/order-page.ts:${issue.line}:${issue.column}\n`
+    );
+    const ignored = await validate(projectRoot);
+    expect(ignored.issues.filter((candidate: any) => candidate.code === code)).toEqual([]);
+  });
 });
 
 async function validate(root: string) {
