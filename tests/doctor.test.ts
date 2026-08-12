@@ -164,6 +164,60 @@ describe('snice doctor tsconfig chain', () => {
     expect(configFindings()).toEqual([]);
   });
 
+  it('resolves extends relative to a referenced config directory', () => {
+    write('tsconfig.json', JSON.stringify({
+      files: [],
+      references: [{ path: './packages/app/tsconfig.json' }]
+    }));
+    write('packages/app/tsconfig.json', JSON.stringify({
+      extends: './base.json'
+    }));
+    write('packages/app/base.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false }
+    }));
+
+    expect(configFindings()).toEqual([]);
+  });
+
+  it('follows an absolute extends path', () => {
+    const baseConfig = join(projectDir, 'config', 'base.json');
+    write('tsconfig.json', JSON.stringify({ extends: baseConfig }));
+    write('config/base.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false }
+    }));
+
+    expect(configFindings()).toEqual([]);
+  });
+
+  it('resolves nested references relative to each containing config', () => {
+    write('tsconfig.json', JSON.stringify({
+      files: [],
+      references: [{ path: './packages/app' }]
+    }));
+    write('packages/app/tsconfig.json', JSON.stringify({
+      files: [],
+      references: [{ path: './config/build.json' }]
+    }));
+    write('packages/app/config/build.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false }
+    }));
+
+    expect(configFindings()).toEqual([]);
+  });
+
+  it('normalizes config paths so cyclic references terminate safely', () => {
+    write('tsconfig.json', JSON.stringify({
+      files: [],
+      references: [{ path: './packages/app' }]
+    }));
+    write('packages/app/tsconfig.json', JSON.stringify({
+      compilerOptions: { useDefineForClassFields: false },
+      references: [{ path: '../app/../app/../../' }]
+    }));
+
+    expect(configFindings()).toEqual([]);
+  });
+
   it('still warns when no config in the chain sets useDefineForClassFields false', () => {
     write('tsconfig.json', JSON.stringify({
       references: [{ path: './tsconfig.app.json' }]

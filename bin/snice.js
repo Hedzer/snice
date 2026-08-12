@@ -407,16 +407,17 @@ function readJsonc(path) {
  */
 function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
   const configs = [];
-  const target = join(dir, entry);
+  const target = resolve(dir, entry);
   if (seen.has(target)) return configs;
   seen.add(target);
   const data = readJsonc(target);
   if (!data) return configs;
   configs.push(data);
+  const configDir = dirname(target);
 
-  if (typeof data.extends === 'string' && data.extends.startsWith('.')) {
+  if (typeof data.extends === 'string' && (data.extends.startsWith('.') || isAbsolute(data.extends))) {
     const base = data.extends.endsWith('.json') ? data.extends : `${data.extends}.json`;
-    configs.push(...resolveTsconfigChain(dir, base, seen));
+    configs.push(...resolveTsconfigChain(configDir, base, seen));
   }
   if (Array.isArray(data.references)) {
     for (const reference of data.references) {
@@ -424,7 +425,7 @@ function resolveTsconfigChain(dir, entry = 'tsconfig.json', seen = new Set()) {
       const referenced = reference.path.endsWith('.json')
         ? reference.path
         : join(reference.path, 'tsconfig.json');
-      configs.push(...resolveTsconfigChain(dir, referenced, seen));
+      configs.push(...resolveTsconfigChain(configDir, referenced, seen));
     }
   }
   return configs;
