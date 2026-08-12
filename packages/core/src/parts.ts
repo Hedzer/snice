@@ -2,7 +2,7 @@
 import { TemplateResult, CSSResult, HTML_RESULT, CSS_RESULT, isTemplateResult, isUnsafeHTML, UnsafeHTML, nothing, Nothing } from './template';
 import { isRepeatResult } from './repeat';
 import { findRenderHost } from './render-root';
-import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BINDING } from './symbols';
+import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BINDING, PROPERTIES } from './symbols';
 import { attachController, detachController } from './controller';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
 import { contextualizeRenderError, type RenderHostIdentity } from './render-errors';
@@ -29,7 +29,23 @@ function markPreUpgradePropertyBinding(element: Element, propertyName: string): 
   const tagName = element.localName;
   if (!tagName?.includes('-')) return false;
   const registry = element.ownerDocument?.defaultView?.customElements ?? globalThis.customElements;
-  if (registry?.get(tagName)) return false;
+  const registeredConstructor = registry?.get(tagName) as any;
+  if (registeredConstructor) {
+    // Template contents can still contain an unupgraded HTMLElement after the
+    // definition has been registered. Registry presence alone therefore does
+    // not prove that the reactive accessor exists on this clone yet.
+    const isUpgraded = Object.prototype.isPrototypeOf.call(
+      registeredConstructor.prototype,
+      element
+    );
+    if (isUpgraded) return false;
+
+    // A registered non-Snice element (or a Snice element that did not
+    // redeclare this member) must retain the native IDL channel. Parking its
+    // role/title/etc. would replace native reflection with an own expando.
+    const reactiveProperties = registeredConstructor[PROPERTIES] as Map<string, unknown> | undefined;
+    if (!reactiveProperties?.has(propertyName)) return false;
+  }
   const target = element as any;
   if (!target[PRE_UPGRADE_PROPERTY_BINDINGS]) target[PRE_UPGRADE_PROPERTY_BINDINGS] = new Set<string>();
   target[PRE_UPGRADE_PROPERTY_BINDINGS].add(propertyName);

@@ -34,3 +34,36 @@ test('structured property bindings survive native IDL collisions and late upgrad
     after: { same: true, attribute: null, own: false },
   });
 });
+
+test('registered Snice elements preserve native-IDL-colliding bindings from template clones', async ({ page }) => {
+  await page.goto('/guide.html');
+
+  const result = await page.evaluate(async () => {
+    const fixture = await import('/tests/live/fixtures/property-native-idl-late-upgrade.ts');
+    fixture.defineRegisteredNativeIdlScenario();
+    const owner = document.createElement('live-registered-native-idl-owner') as any;
+    document.body.append(owner);
+    await owner.ready;
+
+    const direct = owner.shadowRoot.querySelector('#direct') as any;
+    const spread = owner.shadowRoot.querySelector('#spread') as any;
+    await Promise.all([direct.ready, spread.ready]);
+    return {
+      direct: {
+        same: direct.role === fixture.registeredNativeIdlDirectRole,
+        attribute: direct.getAttribute('role'),
+        own: Object.hasOwn(direct, 'role'),
+      },
+      spread: {
+        same: spread.role === fixture.registeredNativeIdlSpreadRole,
+        attribute: spread.getAttribute('role'),
+        own: Object.hasOwn(spread, 'role'),
+      },
+    };
+  });
+
+  expect(result).toEqual({
+    direct: { same: true, attribute: null, own: false },
+    spread: { same: true, attribute: null, own: false },
+  });
+});
