@@ -8,6 +8,7 @@ import { TemplateInstance } from './parts';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
 import { ensureRenderRoot } from './render-root';
 import { scheduleAutofocus } from './autofocus';
+import { contextualizeRenderError } from './render-errors';
 
 /**
  * When true, render errors are rethrown instead of logged, so tests and dev
@@ -15,16 +16,6 @@ import { scheduleAutofocus } from './autofocus';
  * Production default is false (log and keep the previous DOM).
  */
 let strictRenderErrors = false;
-
-function contextualizeRenderError(element: HTMLElement, error: unknown): unknown {
-  const tag = element.tagName?.toLowerCase() || 'element';
-  const message = error instanceof Error ? error.message : String(error);
-  const contextual = new Error(`snice: render failed for <${tag}>: ${message}`, {
-    cause: error
-  });
-  if (error instanceof Error) contextual.name = error.name;
-  return contextual;
-}
 
 export function setStrictRenderErrors(value: boolean): void {
   strictRenderErrors = value;
@@ -251,7 +242,7 @@ function performRender(
       return;
     }
 
-    const nextInstance = new TemplateInstance(result);
+    const nextInstance = new TemplateInstance(result, element);
     const nextFragment = nextInstance.renderFragment();
 
     // Commit while detached first. A malformed binding can then fail without

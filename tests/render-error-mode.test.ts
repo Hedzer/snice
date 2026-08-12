@@ -71,7 +71,7 @@ describe('strict render error mode', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
       expect(() => { el.blowUp = true; }).toThrow(
-        /render failed for <render-error-test-\d+>: template exploded/
+        /render failed for <render-error-test-\d+> \(TestElement\): template exploded/
       );
       expect(errorSpy).not.toHaveBeenCalled();
     } finally {

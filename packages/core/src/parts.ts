@@ -5,6 +5,7 @@ import { findRenderHost } from './render-root';
 import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BINDING } from './symbols';
 import { attachController, detachController } from './controller';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
+import { contextualizeRenderError } from './render-errors';
 
 // Unique marker for dynamic parts
 // This parses as a comment node but doesn't get escaped in attributes
@@ -646,9 +647,14 @@ function prepareTemplate(result: TemplateResult): Template {
  * Extract the key of a list item rendered from a template with a
  * `key=${...}` binding. Returns undefined for unkeyed items.
  */
-function getItemKey(item: unknown): unknown {
+function getItemKey(item: unknown, renderHost: HTMLElement | null): unknown {
   if (!isTemplateResult(item)) return undefined;
-  const tmpl = prepareTemplate(item as TemplateResult);
+  let tmpl: Template;
+  try {
+    tmpl = prepareTemplate(item as TemplateResult);
+  } catch (error) {
+    throw renderHost ? contextualizeRenderError(renderHost, error) : error;
+  }
   return tmpl.keyIndex === -1 ? undefined : (item as TemplateResult).values[tmpl.keyIndex];
 }
 
@@ -662,9 +668,15 @@ export class TemplateInstance {
   fragment: DocumentFragment | null = null;
   private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
   private regularParts: Array<{part: Part; index: number}> = []; // all other parts with their indices
+  private readonly renderHost: HTMLElement | null;
 
-  constructor(result: TemplateResult) {
-    this.template = prepareTemplate(result);
+  constructor(result: TemplateResult, renderHost: HTMLElement | null = null) {
+    this.renderHost = renderHost;
+    try {
+      this.template = prepareTemplate(result);
+    } catch (error) {
+      throw renderHost ? contextualizeRenderError(renderHost, error) : error;
+    }
     this.strings = result.strings;
   }
 
@@ -716,7 +728,7 @@ export class TemplateInstance {
           case 'node':
             const startNode = nodeMap.get(partDef.startNode!) as Comment;
             const endNode = nodeMap.get(partDef.endNode!) as Comment;
-            part = new NodePart(startNode, endNode);
+            part = new NodePart(startNode, endNode, this.renderHost);
             break;
           case 'attribute':
             const attrElement = nodeMap.get(partDef.element!) as Element;
@@ -948,11 +960,17 @@ export class NodePart extends Part {
   private _asyncCompleted = false;
   private _asyncPaused = false;
   private _committingAsyncValue = false;
+  private readonly renderHost: HTMLElement | null;
 
-  constructor(startNode: Comment, endNode: Comment) {
+  constructor(startNode: Comment, endNode: Comment, renderHost: HTMLElement | null = null) {
     super();
     this.startNode = startNode;
     this.endNode = endNode;
+    this.renderHost = renderHost;
+  }
+
+  private _withRenderContext(error: unknown): unknown {
+    return this.renderHost ? contextualizeRenderError(this.renderHost, error) : error;
   }
 
   commit(value: any): void {
@@ -1074,7 +1092,7 @@ export class NodePart extends Part {
     // Different template or first render: prepare and validate the replacement
     // while it is detached. If a binding throws, the currently
     // committed range remains intact and its lifecycle stays connected.
-    const instance = new TemplateInstance(result);
+    const instance = new TemplateInstance(result, this.renderHost);
     const fragment = instance.renderFragment();
     try {
       instance.update(result.values);
@@ -1125,7 +1143,9 @@ export class NodePart extends Part {
    */
   private _commitIterable(value: Iterable<unknown>, explicitKeys?: readonly unknown[]): void {
     const items = Array.isArray(value) ? (value as unknown[]) : Array.from(value);
-    const newKeys = explicitKeys ? Array.from(explicitKeys) : items.map(getItemKey);
+    const newKeys = explicitKeys
+      ? Array.from(explicitKeys)
+      : items.map(item => getItemKey(item, this.renderHost));
     if (newKeys.length !== items.length) {
       throw new Error('snice: keyed iterable produced a different number of keys and values.');
     }
@@ -1184,7 +1204,7 @@ export class NodePart extends Part {
         const endMarker = document.createComment('');
         this._insertBefore(startMarker);
         this._insertBefore(endMarker);
-        itemPart = new NodePart(startMarker, endMarker);
+        itemPart = new NodePart(startMarker, endMarker, this.renderHost);
         itemParts.push(itemPart);
       } else {
         // Reuse existing NodePart
@@ -1295,7 +1315,7 @@ export class NodePart extends Part {
         const endMarker = document.createComment('');
         parent.insertBefore(startMarker, ref);
         parent.insertBefore(endMarker, ref);
-        part = new NodePart(startMarker, endMarker);
+        part = new NodePart(startMarker, endMarker, this.renderHost);
         newParts[i] = part;
       }
 
@@ -1371,7 +1391,7 @@ export class NodePart extends Part {
       } catch (error) {
         this._asyncRunning = false;
         this._asyncCompleted = true;
-        console.error('snice: async iterable template value failed:', error);
+        console.error('snice: async iterable template value failed:', this._withRenderContext(error));
         return;
       }
       void (async () => {
@@ -1382,7 +1402,9 @@ export class NodePart extends Part {
             this._commitAsyncValue(result.value);
           }
         } catch (error) {
-          if (version === this._asyncVersion) console.error('snice: async iterable template value failed:', error);
+          if (version === this._asyncVersion) {
+            console.error('snice: async iterable template value failed:', this._withRenderContext(error));
+          }
         } finally {
           if (version === this._asyncVersion) {
             this._asyncIterator = null;
@@ -1402,14 +1424,14 @@ export class NodePart extends Part {
         try {
           this._commitAsyncValue(value);
         } catch (error) {
-          console.error('snice: promise template value failed:', error);
+          console.error('snice: promise template value failed:', this._withRenderContext(error));
         }
       },
       error => {
         if (version !== this._asyncVersion) return;
         this._asyncRunning = false;
         this._asyncCompleted = true;
-        console.error('snice: promise template value failed:', error);
+        console.error('snice: promise template value failed:', this._withRenderContext(error));
       }
     );
   }

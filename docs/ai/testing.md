@@ -42,6 +42,23 @@ Gotcha: awaiting `ready` on an element that never connects hangs — append it t
 - `ready` rejects with the first thrown/rejected `@ready()` failure; always await it.
 - jsdom's partial `ElementInternals` is supported; form controls keep native-input/proxy fallback behavior when `setFormValue`/`setValidity` are absent.
 
+## Strict render errors
+
+```typescript
+try {
+  setStrictRenderErrors(true);
+  expect(() => { element.invalid = true; }).toThrow(/<my-element> \(MyElement\)/);
+} finally {
+  setStrictRenderErrors(false);
+}
+```
+
+- Default: log render failure, retain previous DOM. Strict: synchronously rethrow synchronous render failures.
+- Template authoring errors include owning tag/class + nearby static-template excerpt when a host exists.
+- Host-free preparation stays generic. Runtime does not claim a source filename it cannot know.
+- Original error is `cause`; inspect `cause.stack` for the underlying stack.
+- Promise/AsyncIterable failures happen after the render call and remain `console.error` reports in strict mode; await settlement and assert the `Error` argument.
+
 ## Partial DOM compatibility
 
 In a simulated DOM, opt into Snice's standards compatibility layer from the

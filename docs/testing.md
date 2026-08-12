@@ -47,6 +47,25 @@ element. Snice form controls also retain their native-input/proxy fallback in
 DOM runners such as jsdom that expose only the ARIA subset of
 `ElementInternals`.
 
+## Strict Render Errors
+
+Rendering logs failures by default and retains the previous DOM. Tests that need a synchronous render failure to fail the assertion directly can temporarily enable strict mode:
+
+```typescript
+import { setStrictRenderErrors } from 'snice';
+
+try {
+  setStrictRenderErrors(true);
+  expect(() => { element.invalid = true; }).toThrow(/<my-element> \(MyElement\)/);
+} finally {
+  setStrictRenderErrors(false);
+}
+```
+
+Template parse and authoring errors identify the owning component tag and class and include a nearby static-template excerpt when available. The original error is retained as `cause`, so assertions and debugging can inspect its stack. Snice cannot recover a source filename from a runtime tagged-template value and does not fabricate one. A template prepared outside a component render therefore keeps the generic nearby-template diagnostic.
+
+Promise and async-iterable values settle after the synchronous render call has returned, so their failures are reported through `console.error` even while strict mode is enabled. Spy on `console.error`, wait for the deferred value to settle, and assert against the `Error` argument; it carries the same owning-component context.
+
 ## Partial DOM Compatibility
 
 In a simulated DOM, opt into Snice's standards compatibility layer from your

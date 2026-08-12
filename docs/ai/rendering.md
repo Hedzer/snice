@@ -73,6 +73,13 @@ html`${asyncIterable}`
 - Promise/AsyncIterable values work directly in node expressions; stale replaced sources are ignored.
 - Async iterators receive a best-effort `return()` on replacement or disconnect. Promise cancellation stays caller-owned.
 
+## Authoring diagnostics
+
+- Template parse/authoring failures rendered by a Snice element identify the owning `<tag>` and class, plus a nearby static-template excerpt when available.
+- Context follows nested/iterable/async `TemplateResult` values in open/closed shadow roots and light DOM.
+- Host-free preparation stays generic; runtime diagnostics do not invent a source filename or component.
+- Contextual errors retain the original error as `cause` (and therefore its stack).
+
 ## Control flow
 
 ```typescript

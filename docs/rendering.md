@@ -51,6 +51,16 @@ isSafeUrl(objectUrl, { allowed: ['blob:'] });
 
 By default, relative references and absolute `http:`, `https:`, `mailto:`, and `tel:` URLs are accepted. Network-path references must resolve to an allowed protocol. Malformed URLs, raw ASCII control characters, and every other explicit scheme are rejected. Passing `allowed` replaces the absolute-protocol list but does not disable relative references. `snice-button` applies this policy automatically to its `href` property.
 
+### Authoring diagnostics
+
+Malformed declarative syntax fails when its `TemplateResult` is prepared for rendering. When the template belongs to a Snice element, the error identifies the owning host by tag and JavaScript class, then includes a nearby static-template excerpt where possible:
+
+```text
+snice: render failed for <user-editor> (UserEditor): ... Near "<button ${…}>...".
+```
+
+This context follows nested templates, keyed/iterable templates, promises, and async iterables, including templates rendered into open or closed shadow roots and light DOM. A template prepared without a component render host keeps the generic authoring error and nearby excerpt; Snice does not invent a component, source filename, or callsite it cannot know at runtime. Contextual errors retain the original error as `cause`, so its stack remains available for debugging.
+
 ## Bindings
 
 This section is the quick syntax overview. See [Binding Channels](./bindings.md) for the complete value, cleanup, event, spread, sentinel, and form-control semantics.

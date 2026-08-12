@@ -11,13 +11,15 @@ const modules = USE_BUILT ? {
   symbols: await import('../dist/testing.esm.js') as any, // All symbols are in testing build
   transitions: await import('../dist/testing.esm.js') as any, // All transitions are in testing build
   types: null, // Types come from main module in built version
-  controller: null // Controller functions are in main module in built version
+  controller: null, // Controller functions are in main module in built version
+  parts: null // TemplateInstance is included in the testing bundle
 } : {
   main: await import('../packages/core/src/index.js'),
   symbols: await import('../packages/core/src/symbols.js'),
   transitions: await import('../packages/core/src/transitions.js'),
   types: await import('../packages/core/src/types/index.js'),
-  controller: await import('../packages/core/src/controller.js')
+  controller: await import('../packages/core/src/controller.js'),
+  parts: await import('../packages/core/src/parts.js')
 };
 
 // Re-export main APIs that are available in both source and built versions
@@ -98,6 +100,10 @@ export const detectType = internalApis.detectType;
 
 // SimpleArray needs special handling
 export const SimpleArray = USE_BUILT ? modules.main.SimpleArray : modules.types!.SimpleArray;
+
+// Testing-only access to host-free template preparation. This is not part of
+// the public package entry point.
+export const TemplateInstance = USE_BUILT ? modules.main.TemplateInstance : modules.parts!.TemplateInstance;
 
 // Export symbols (all available in full build)
 export const {
