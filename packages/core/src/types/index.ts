@@ -14,6 +14,7 @@ export * from './page-options';
 export * from './router-instance';
 export * from './on-options';
 export * from './dispatch-options';
+export * from './event-timing';
 export * from './i-controller';
 export * from './transition';
 export * from './observe-options';

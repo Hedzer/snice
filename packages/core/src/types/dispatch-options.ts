@@ -1,14 +1,15 @@
 import type { OnScope } from './on-options';
+import type { EventTiming } from './event-timing';
 
 export interface DispatchOptions extends EventInit {
   /**
    * Whether to dispatch even if the method returns undefined (default: true)
    */
   dispatchOnUndefined?: boolean;
-  /** Debounce the dispatch by specified milliseconds */
-  debounce?: number;
-  /** Throttle the dispatch by specified milliseconds */
-  throttle?: number;
+  /** Debounce by milliseconds or resolve milliseconds from this instance */
+  debounce?: EventTiming;
+  /** Throttle by milliseconds or resolve milliseconds from this instance */
+  throttle?: EventTiming;
   /**
    * Where to dispatch the event. Default is the host element.
    * Use `'global'` to dispatch on `document`, a selector for an ancestor

@@ -1,6 +1,7 @@
 import { setupObservers, cleanupObservers } from './observe';
 import { setupResponseHandlers, cleanupResponseHandlers } from './request-response';
 import { setupEventHandlers, cleanupEventHandlers } from './on';
+import { clearDispatchTimers } from './events';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { IS_CONTROLLER_CLASS, IS_CONTROLLER_INSTANCE, CONTROLLER, CONTROLLER_KEY, CONTROLLER_NAME_KEY, CONTROLLER_ID, CONTROLLER_OPERATIONS, NATIVE_CONTROLLER, CONTROLLER_REGISTRY_NAME, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, IS_ELEMENT_CLASS, ROUTER_CONTEXT, CONTROLLER_ABORT, CONTROLLER_ATTACHED, READY_HANDLERS_RUNNING } from './symbols';
 import { snice } from './global';
@@ -431,6 +432,10 @@ export async function detachController(element: HTMLElement): Promise<void> {
     return;
   }
 
+  // Drop queued @dispatch signals immediately and invalidate async decorated
+  // methods that have not resolved yet. Detached controllers have no host.
+  clearDispatchTimers(controllerInstance);
+
   // Run detach in the controller's scope
   if (scope) {
     await scope.runOperation(async () => {
@@ -439,6 +444,9 @@ export async function detachController(element: HTMLElement): Promise<void> {
   } else {
     await controllerInstance.detach(element);
   }
+
+  // detach() itself may have invoked a decorated dispatch method.
+  clearDispatchTimers(controllerInstance);
   
   controllerInstance.element = null;
 

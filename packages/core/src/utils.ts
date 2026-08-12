@@ -1,4 +1,5 @@
 import { SimpleArray, PropertyOptions } from './types';
+import type { EventTiming } from './types/event-timing';
 import { PROPERTY_WATCHERS, PROPERTIES } from './symbols';
 
 /**
@@ -369,6 +370,28 @@ export function createThrottled<T extends (...args: any[]) => any>(fn: T, delay:
       timer = setTimeout(() => { lastCall = Date.now(); timer = null; fn.apply(this, args); }, remaining);
     }
   } as T;
+}
+
+/** Resolve and validate an @on/@dispatch debounce or throttle interval. */
+export function resolveEventTiming(
+  instance: object,
+  timing: EventTiming | undefined,
+  decorator: '@on' | '@dispatch',
+  option: 'debounce' | 'throttle',
+): number | undefined {
+  if (timing === undefined) return undefined;
+
+  const value = typeof timing === 'function'
+    ? timing.call(instance)
+    : timing;
+
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+    throw new TypeError(
+      `${decorator} ${option} must resolve to a finite, non-negative number of milliseconds.`,
+    );
+  }
+
+  return value;
 }
 
 /**

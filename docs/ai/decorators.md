@@ -31,8 +31,9 @@
 - `@queryAll('selector', { light? })` - NodeList
 
 ## Events
-- `@on('event', 'selector?', options?)` - Delegation, auto-bound. Options: `{ capture?, once?, passive?, preventDefault?, stopPropagation?, debounce?, throttle?, scope?, daemon? }`
-- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?, throttle?, dispatchOnUndefined?, scope?, daemon?, ...EventInit }`
+- `@on('event', 'selector?', options?)` - Delegation, auto-bound. Options: `{ capture?, once?, passive?, preventDefault?, stopPropagation?, debounce?: EventTiming, throttle?: EventTiming, scope?, daemon? }`
+- `@dispatch('event-name', options?)` - Emit CustomEvent, detail = return value. Supports async. Options: `{ debounce?: EventTiming, throttle?: EventTiming, dispatchOnUndefined?, scope?, daemon?, ...EventInit }`
+- `EventTiming = number | ((this: any) => number)` - Per-instance resolver. `@on` resolves at listener setup; `@dispatch` resolves per invocation. Must return finite non-negative ms; `0` disables.
 
 ### scope (on both `@on` and `@dispatch`)
 

@@ -1,3 +1,5 @@
+import type { EventTiming } from './event-timing';
+
 /**
  * Resolver for the EventTarget where the listener is attached.
  * - `'global'`: attach to `document` (cross-cutting events)
@@ -22,10 +24,10 @@ export interface OnOptions {
   preventDefault?: boolean;
   /** Automatically call stopPropagation on the event */
   stopPropagation?: boolean;
-  /** Debounce the handler by specified milliseconds */
-  debounce?: number;
-  /** Throttle the handler by specified milliseconds */
-  throttle?: number;
+  /** Debounce by milliseconds or resolve milliseconds from this instance */
+  debounce?: EventTiming;
+  /** Throttle by milliseconds or resolve milliseconds from this instance */
+  throttle?: EventTiming;
   /** CSS selector to target specific elements within shadow root */
   target?: string;
   /**

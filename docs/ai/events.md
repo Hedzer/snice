@@ -184,8 +184,8 @@ interface OnOptions {
   stopPropagation?: boolean;   // Automatically call stopPropagation on the event
 
   // Timing controls
-  debounce?: number;           // Debounce the handler by specified milliseconds
-  throttle?: number;           // Throttle the handler by specified milliseconds
+  debounce?: EventTiming;
+  throttle?: EventTiming;
 
   // Shadow DOM delegation
   target?: string;             // CSS selector to target specific elements within shadow root
@@ -193,7 +193,15 @@ interface OnOptions {
   // Where to attach the listener (see scope below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
 }
+type EventTiming = number | ((this: any) => number);
 ```
+
+- Number intervals remain supported.
+- Resolver: called with the decorated element/controller as `this` when the
+  listener is set up (and set up again after reconnect).
+- Result must be finite and non-negative. `0` disables; invalid/negative/`NaN`
+  throws `TypeError`.
+- Use method/function syntax, not an arrow, to read `this`.
 
 ### scope — listener attachment target
 
@@ -240,6 +248,11 @@ handleScroll(event: Event) {}
 // Debounce input events by 300ms
 @on('input', 'input[type="search"]', { debounce: 300 })
 handleSearch(event: Event) {}
+
+@on('input', 'input[type="search"]', {
+  debounce() { return this.searchDebounce; }
+})
+handleAdaptiveSearch(event: Event) {}
 ```
 
 ## @dispatch decorator
@@ -276,12 +289,17 @@ updateStatus(status: string) {
 ```typescript
 interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean; // Undefined return still dispatches unless false (default: true)
-  debounce?: number;             // Debounce dispatch by ms
-  throttle?: number;             // Throttle dispatch by ms
+  debounce?: EventTiming;
+  throttle?: EventTiming;
   // Where to dispatch the event (see scope below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
 }
 ```
+
+`EventTiming = number | ((this: any) => number)`. A resolver runs against the
+decorated element/controller on every method invocation. Result validation is
+the same as `@on`. Async methods dispatch only after resolution; teardown drops
+queued dispatches and unresolved async dispatch work.
 
 ### scope — dispatch target
 
@@ -321,6 +339,9 @@ If `scope` cannot resolve (selector matches no ancestor, resolver returns `null`
 ```typescript
 @dispatch('search-query', { debounce: 300 })
 emitSearch(query: string) { return { query }; }
+
+@dispatch('search-query', { debounce() { return this.searchDebounce; } })
+emitAdaptiveSearch(query: string) { return { query }; }
 ```
 
 ### Async methods

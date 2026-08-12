@@ -167,6 +167,7 @@ export type {
   RouterInstance,
   OnOptions,
   DispatchOptions,
+  EventTiming,
   IController,
   ControllerClass,
   Transition,

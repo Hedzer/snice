@@ -1,9 +1,11 @@
-import { DISPATCH_TIMERS } from './symbols';
+import { DISPATCH_TIMERS, getSymbol } from './symbols';
 import { DispatchOptions } from './types/dispatch-options';
-import { resolveScope } from './utils';
+import { resolveEventTiming, resolveScope } from './utils';
 import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target';
 
 // @dispatch decorator - auto-dispatches custom events from method return values
+
+const DISPATCH_GENERATION = getSymbol('dispatch-generation');
 
 
 /**
@@ -16,6 +18,15 @@ import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target
 export function dispatch(eventName: string, options?: DispatchOptions) {
   return function (originalMethod: any, _context: ClassMethodDecoratorContext) {
     return function (this: any, ...args: any[]) {
+      // Resolve against the actual decorated instance for every invocation.
+      // Capture the generation before calling an async method so teardown can
+      // invalidate work that has not reached the scheduling step yet.
+      const generation = this[DISPATCH_GENERATION] ?? 0;
+      const debounceDelay = resolveEventTiming(this, options?.debounce, '@dispatch', 'debounce');
+      const throttleDelay = debounceDelay && debounceDelay > 0
+        ? undefined
+        : resolveEventTiming(this, options?.throttle, '@dispatch', 'throttle');
+
       // Create timing wrappers for dispatch (per-instance)
       if (!this[DISPATCH_TIMERS]) {
         this[DISPATCH_TIMERS] = new Map();
@@ -85,19 +96,19 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       
       // Helper to handle timed dispatch
       const timedDispatch = (detail: any) => {
-        if (options?.debounce) {
+        if (debounceDelay && debounceDelay > 0) {
           clearTimeout(timers.debounceTimeout);
-          timers.debounceTimeout = setTimeout(() => doDispatch(detail), options.debounce);
+          timers.debounceTimeout = setTimeout(() => doDispatch(detail), debounceDelay);
           return;
         }
 
-        if (!options?.throttle) {
+        if (!throttleDelay || throttleDelay <= 0) {
           doDispatch(detail);
           return;
         }
 
         const now = Date.now();
-        const remaining = options.throttle - (now - timers.throttleLastCall);
+        const remaining = throttleDelay - (now - timers.throttleLastCall);
 
         if (remaining <= 0) {
           clearTimeout(timers.throttleTimeout);
@@ -123,7 +134,9 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       // Handle async methods
       if (result instanceof Promise) {
         return result.then((resolvedResult: any) => {
-          timedDispatch(resolvedResult);
+          if ((this[DISPATCH_GENERATION] ?? 0) === generation) {
+            timedDispatch(resolvedResult);
+          }
           return resolvedResult;
         });
       }
@@ -141,6 +154,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
  * is a one-shot signal, so pending ones are dropped, not replayed.
  */
 export function clearDispatchTimers(instance: any): void {
+  instance[DISPATCH_GENERATION] = (instance[DISPATCH_GENERATION] ?? 0) + 1;
   const timers = instance[DISPATCH_TIMERS];
   if (!timers) return;
 

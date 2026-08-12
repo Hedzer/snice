@@ -7,7 +7,7 @@ import { CLEANUP, ON_METHODS } from './symbols';
 import { getSymbol } from './symbols';
 import type { OnOptions } from './types/on-options';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
-import { createDebounced, resolveScope } from './utils';
+import { createDebounced, resolveEventTiming, resolveScope } from './utils';
 import { isDaemonInstance, requireDaemonTarget } from './daemon-target';
 
 // Re-export OnOptions for public API
@@ -173,6 +173,10 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
     const currentMethod = (instance as any)[handler.methodName];
     let boundMethod = currentMethod ? currentMethod.bind(instance) : handler.method.bind(instance);
     const handlerOptions = handler.options || {};
+    const debounceDelay = resolveEventTiming(instance, handlerOptions.debounce, '@on', 'debounce');
+    const throttleDelay = debounceDelay && debounceDelay > 0
+      ? undefined
+      : resolveEventTiming(instance, handlerOptions.throttle, '@on', 'throttle');
 
     // Parse event name for key modifiers
     // Supports both dot notation (@keydown.enter) and colon notation (@keydown:Enter)
@@ -198,12 +202,12 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
     if (delimiterIndex <= 0) warnIfModifierMisuse(handler.eventName);
 
     // Apply debounce (takes precedence over throttle)
-    if (handlerOptions.debounce && handlerOptions.debounce > 0) {
-      const debounced = createDebounced(boundMethod, handlerOptions.debounce);
+    if (debounceDelay && debounceDelay > 0) {
+      const debounced = createDebounced(boundMethod, debounceDelay);
       instance[CLEANUP].eventCancels.push(() => debounced.cancel());
       boundMethod = debounced;
-    } else if (handlerOptions.throttle && handlerOptions.throttle > 0) {
-      boundMethod = throttle(boundMethod, handlerOptions.throttle);
+    } else if (throttleDelay && throttleDelay > 0) {
+      boundMethod = throttle(boundMethod, throttleDelay);
     }
 
     // Create event handler with key modifier support

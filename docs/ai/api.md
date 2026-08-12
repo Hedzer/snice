@@ -114,6 +114,8 @@ html`
 @on(event: string | string[], selector?: string, options?: OnOptions)
 // Works in elements + controllers
 // Options: { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope?, daemon? }
+// debounce/throttle: number | function called with decorated instance as `this`
+// @on resolves timing functions at listener setup/reconnect; finite non-negative ms required
 // target: CSS selector for shadow DOM event delegation
 // scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects listener attachment
 // Keyboard: 'keydown:Enter', 'keydown.escape', 'keydown:ctrl+s', 'keydown:~Space'
@@ -122,6 +124,8 @@ html`
 @dispatch(eventName: string, options?: { debounce?, throttle?, dispatchOnUndefined?, scope?, daemon?, ...EventInit })
 // Fires CustomEvent after method, detail = return value
 // Supports async methods (dispatches after promise resolves)
+// Timing functions resolve against the decorated instance per invocation
+// Teardown cancels queued and unresolved-async dispatch work
 // dispatchOnUndefined: false — skips when return is undefined; omitted/true still dispatches
 // scope: 'global' | selector | EventTarget | () => EventTarget | null — redirects dispatch target
 ```
@@ -367,8 +371,9 @@ Full references: [rendering.md](rendering.md) for renderer structure and [bindin
 ```typescript
 interface TemplateResult { readonly _$litType$: number; }
 interface CSSResult { cssText: string; }
-interface OnOptions { debounce?, throttle?, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope? }
-interface DispatchOptions extends EventInit { debounce?, throttle?, dispatchOnUndefined?, scope? }
+type EventTiming = number | ((this: any) => number)
+interface OnOptions { debounce?: EventTiming, throttle?: EventTiming, preventDefault?, stopPropagation?, once?, capture?, passive?, target?, scope? }
+interface DispatchOptions extends EventInit { debounce?: EventTiming, throttle?: EventTiming, dispatchOnUndefined?, scope? }
 type OnScope = 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null)
 interface RenderOptions { debounce?, throttle?, once?, sync?, differential? }
 interface PropertyOptions { type?, attribute?, reflect?, deep?, converter?, hasChanged? }

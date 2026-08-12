@@ -418,8 +418,8 @@ interface OnOptions {
   stopPropagation?: boolean;   // Automatically call stopPropagation on the event
 
   // Timing controls
-  debounce?: number;           // Debounce the handler by specified milliseconds
-  throttle?: number;           // Throttle the handler by specified milliseconds
+  debounce?: EventTiming;      // Debounce the handler
+  throttle?: EventTiming;      // Throttle the handler
 
   // Shadow DOM delegation
   target?: string;             // CSS selector to target specific elements within shadow root
@@ -430,7 +430,15 @@ interface OnOptions {
   // Named daemon from the nearest provided app context
   daemon?: string;
 }
+
+type EventTiming = number | ((this: any) => number);
 ```
+
+Numeric intervals remain supported. A resolver can instead read a value from
+the decorated element or controller instance. For `@on`, it runs when the
+managed listener is set up and again when it is set up after reconnect. The
+resolved value must be a finite, non-negative number; `0` disables that timing
+option, while invalid, negative, and `NaN` values throw `TypeError`.
 
 #### scope — controlling the listener target
 
@@ -521,6 +529,19 @@ class SearchController implements IController {
   }
 }
 ```
+
+Per-instance interval:
+
+```typescript
+@on('input', 'input[type="search"]', {
+  debounce() { return this.searchDebounce; }
+})
+handleSearch(event: Event) { /* ... */ }
+```
+
+Use method syntax (or a normal function), not an arrow, when reading `this`.
+Controllers receive the controller instance as `this`; elements receive the
+element instance.
 
 ### Using @on in Elements (Alternative)
 
@@ -623,14 +644,21 @@ class StatusIndicator extends HTMLElement {
 ```typescript
 interface DispatchOptions extends EventInit {
   dispatchOnUndefined?: boolean; // Undefined return still dispatches unless false (default: true)
-  debounce?: number;             // Debounce dispatch by ms
-  throttle?: number;             // Throttle dispatch by ms
+  debounce?: EventTiming;        // Debounce dispatch
+  throttle?: EventTiming;        // Throttle dispatch
   // Where to dispatch the event (see scope section below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
   // Named daemon from the nearest provided app context
   daemon?: string;
 }
 ```
+
+`EventTiming` is the same `number | ((this: any) => number)` type used by
+`@on`. `@dispatch` resolves it against the decorated instance on every method
+invocation, so an element or controller can change its interval at runtime.
+The same finite, non-negative validation applies. Debounced async methods still
+dispatch only after the method resolves; teardown drops both queued dispatches
+and dispatch work whose async method has not resolved yet.
 
 #### scope — controlling the dispatch target
 
@@ -693,6 +721,15 @@ class SearchBox extends HTMLElement {
   emitSearch(query: string) {
     return { query };
   }
+}
+```
+
+```typescript
+@dispatch('search-query', {
+  debounce() { return this.searchDebounce; }
+})
+emitSearch(query: string) {
+  return { query };
 }
 ```
 
