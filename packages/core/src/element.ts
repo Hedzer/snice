@@ -6,7 +6,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
-import { clearDispatchTimers } from './events';
+import { activateDispatchTimers, beginDispatchTeardown, finishDispatchTeardown } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
@@ -189,6 +189,7 @@ export function applyElementFunctionality(constructor: any) {
     
     
     constructor.prototype.connectedCallback = async function() {
+      activateDispatchTimers(this);
 
       // If ready promise was already created (controller attached before connected), use existing resolve
       // Otherwise create the ready promise now
@@ -450,7 +451,7 @@ export function applyElementFunctionality(constructor: any) {
       // Invalidate queued and unresolved-async @dispatch work synchronously.
       // The platform does not await disconnectedCallback, and @dispose may be
       // async, so waiting until the end permits events from a detached host.
-      clearDispatchTimers(this);
+      const dispatchTeardownGeneration = beginDispatchTeardown(this);
       try {
         disconnectRenderTree(this);
       } catch (error) {
@@ -498,6 +499,10 @@ export function applyElementFunctionality(constructor: any) {
       // don't fire on a dead element.
       clearLifecycleTimers(this, MOVED_TIMERS);
       clearLifecycleTimers(this, ADOPTED_TIMERS);
+      // Hooks may have invoked @dispatch after teardown began. Invalidate only
+      // that disconnected generation: a reconnect above may already own new
+      // timers on the same decorated methods.
+      finishDispatchTeardown(this, dispatchTeardownGeneration);
     };
     
     constructor.prototype.attributeChangedCallback = function(name: string, oldValue: string | null, newValue: string | null) {

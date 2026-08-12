@@ -6,6 +6,12 @@ import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target
 // @dispatch decorator - auto-dispatches custom events from method return values
 
 const DISPATCH_GENERATION = getSymbol('dispatch-generation');
+const DISPATCH_TEARDOWN_GENERATION = getSymbol('dispatch-teardown-generation');
+
+function isDispatchGenerationActive(instance: any, generation: number): boolean {
+  return (instance[DISPATCH_GENERATION] ?? 0) === generation
+    && instance[DISPATCH_TEARDOWN_GENERATION] !== generation;
+}
 
 
 /**
@@ -47,6 +53,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
 
       const timers = this[DISPATCH_TIMERS].get(timerKey);
       const invocation = ++timers.invocation;
+      timers.ownerGeneration = generation;
 
       // A new invocation supersedes deferred work for this decorated method.
       // In particular, a resolver changing debounce to 0 must not leave the
@@ -119,10 +126,12 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       
       // Helper to handle timed dispatch
       const timedDispatch = (detail: any) => {
+        if (!isDispatchGenerationActive(this, generation)) return;
+
         if (debounceDelay && debounceDelay > 0) {
           timers.debounceTimeout = setTimeout(() => {
             timers.debounceTimeout = null;
-            if ((this[DISPATCH_GENERATION] ?? 0) === generation && timers.invocation === invocation) {
+            if (isDispatchGenerationActive(this, generation) && timers.invocation === invocation) {
               doDispatch(detail);
             }
           }, debounceDelay);
@@ -155,7 +164,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           timers.throttleTimeout = null;
           const d = timers.latestDetail;
           timers.latestDetail = undefined;
-          if ((this[DISPATCH_GENERATION] ?? 0) === generation && timers.invocation === invocation) {
+          if (isDispatchGenerationActive(this, generation) && timers.invocation === invocation) {
             doDispatch(d);
           }
         }, remaining);
@@ -166,7 +175,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         return result.then((resolvedResult: any) => {
           const usesDeferredTiming = (debounceDelay ?? 0) > 0 || (throttleDelay ?? 0) > 0;
           if (
-            (this[DISPATCH_GENERATION] ?? 0) === generation
+            isDispatchGenerationActive(this, generation)
             && (!usesDeferredTiming || timers.invocation === invocation)
           ) {
             timedDispatch(resolvedResult);
@@ -187,10 +196,11 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
  * disconnect, so a queued event doesn't fire into a detached node). A dispatch
  * is a one-shot signal, so pending ones are dropped, not replayed.
  */
-export function clearDispatchTimers(instance: any): void {
-  instance[DISPATCH_GENERATION] = (instance[DISPATCH_GENERATION] ?? 0) + 1;
+export function clearDispatchTimers(instance: any): number {
+  const generation = (instance[DISPATCH_GENERATION] ?? 0) + 1;
+  instance[DISPATCH_GENERATION] = generation;
   const timers = instance[DISPATCH_TIMERS];
-  if (!timers) return;
+  if (!timers) return generation;
 
   for (const t of timers.values()) {
     if (t.debounceTimeout) clearTimeout(t.debounceTimeout);
@@ -200,5 +210,46 @@ export function clearDispatchTimers(instance: any): void {
     t.throttleLastCall = 0;
     t.latestDetail = undefined;
     t.invocation = (t.invocation ?? 0) + 1;
+  }
+  return generation;
+}
+
+/** Begin an element disconnect generation; dispatches remain inactive in hooks. */
+export function beginDispatchTeardown(instance: any): number {
+  const generation = clearDispatchTimers(instance);
+  instance[DISPATCH_TEARDOWN_GENERATION] = generation;
+  return generation;
+}
+
+/** Activate a fresh generation when an element reconnects during async teardown. */
+export function activateDispatchTimers(instance: any): void {
+  if (instance[DISPATCH_TEARDOWN_GENERATION] === undefined) return;
+  instance[DISPATCH_GENERATION] = (instance[DISPATCH_GENERATION] ?? 0) + 1;
+  delete instance[DISPATCH_TEARDOWN_GENERATION];
+}
+
+/** Clear only work owned by a completed disconnect generation. */
+export function finishDispatchTeardown(instance: any, generation: number): void {
+  const timers = instance[DISPATCH_TIMERS];
+  if (timers) {
+    for (const t of timers.values()) {
+      if (t.ownerGeneration !== generation) continue;
+      if (t.debounceTimeout) clearTimeout(t.debounceTimeout);
+      if (t.throttleTimeout) clearTimeout(t.throttleTimeout);
+      t.debounceTimeout = null;
+      t.throttleTimeout = null;
+      t.throttleLastCall = 0;
+      t.latestDetail = undefined;
+      t.invocation = (t.invocation ?? 0) + 1;
+    }
+  }
+
+  if ((instance[DISPATCH_GENERATION] ?? 0) === generation) {
+    const inactiveGeneration = generation + 1;
+    instance[DISPATCH_GENERATION] = inactiveGeneration;
+    instance[DISPATCH_TEARDOWN_GENERATION] = inactiveGeneration;
+  } else if (instance[DISPATCH_TEARDOWN_GENERATION] === generation) {
+    // A different lifecycle transition advanced the generation already.
+    delete instance[DISPATCH_TEARDOWN_GENERATION];
   }
 }

@@ -445,4 +445,91 @@ describe('per-instance event timing resolvers', () => {
     await vi.advanceTimersByTimeAsync(20);
     expect(details.sort()).toEqual(['a:2', 'a_b:1']);
   });
+
+  it('drops debounced dispatch work invoked inside @dispose', async () => {
+    let releaseDispose!: () => void;
+    const disposeGate = new Promise<void>((resolve) => { releaseDispose = resolve; });
+
+    @element('timing-dispose-dispatch')
+    class TimingDisposeDispatch extends HTMLElement {
+      @dispatch('disposed-value', { debounce: 30 })
+      emitDisposed() { return 'disposed'; }
+
+      @dispose()
+      async disposeWork() {
+        this.emitDisposed();
+        await disposeGate;
+      }
+    }
+
+    const target = document.createElement('timing-dispose-dispatch') as TimingDisposeDispatch;
+    document.body.append(target);
+    await target.ready;
+    const listener = vi.fn();
+    target.addEventListener('disposed-value', listener);
+
+    vi.useFakeTimers();
+    target.remove();
+    await vi.advanceTimersByTimeAsync(60);
+    expect(listener).not.toHaveBeenCalled();
+    releaseDispose();
+    await Promise.resolve();
+    await vi.runAllTimersAsync();
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('drops debounced dispatch work invoked inside the original disconnectedCallback', async () => {
+    @element('timing-native-disconnect-dispatch')
+    class TimingNativeDisconnectDispatch extends HTMLElement {
+      @dispatch('disconnected-value', { debounce: 30 })
+      emitDisconnected() { return 'disconnected'; }
+
+      disconnectedCallback() {
+        this.emitDisconnected();
+      }
+    }
+
+    const target = document.createElement('timing-native-disconnect-dispatch') as TimingNativeDisconnectDispatch;
+    document.body.append(target);
+    await target.ready;
+    const listener = vi.fn();
+    target.addEventListener('disconnected-value', listener);
+
+    vi.useFakeTimers();
+    target.remove();
+    await vi.advanceTimersByTimeAsync(60);
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('preserves new-generation dispatch work across an immediate reconnect', async () => {
+    let releaseDispose!: () => void;
+    const disposeGate = new Promise<void>((resolve) => { releaseDispose = resolve; });
+
+    @element('timing-reconnect-generation')
+    class TimingReconnectGeneration extends HTMLElement {
+      @dispatch('generation-value', { debounce: 50 })
+      emit(value: string) { return value; }
+
+      @dispose()
+      async disposeWork() {
+        this.emit('old-dispose');
+        await disposeGate;
+      }
+    }
+
+    const target = document.createElement('timing-reconnect-generation') as TimingReconnectGeneration;
+    document.body.append(target);
+    await target.ready;
+    const details: string[] = [];
+    target.addEventListener('generation-value', (event) => details.push((event as CustomEvent).detail));
+
+    vi.useFakeTimers();
+    target.remove();
+    document.body.append(target);
+    target.emit('new-connect');
+    releaseDispose();
+    await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(details).toEqual(['new-connect']);
+  });
 });
