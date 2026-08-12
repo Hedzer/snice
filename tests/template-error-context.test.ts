@@ -226,6 +226,54 @@ describe('template authoring error context', () => {
     if (registry) Object.defineProperty(alternate, 'customElements', registry);
   });
 
+  it('ignores poisoned realm Object prototypes while resolving both registries', () => {
+    @element('test-context-primary-poison')
+    class PrimaryPoisonElement extends HTMLElement {}
+    const primaryHost = document.createElement('test-context-primary-poison');
+
+    const alternate = new Window();
+    const target = alternate.document.createElement('div');
+    target.id = 'app';
+    alternate.document.body.append(target);
+    const router = Router({
+      target: '#app',
+      type: 'hash',
+      window: alternate as unknown as Window & typeof globalThis,
+      document: alternate.document as unknown as Document,
+    });
+    class AltPoisonPage extends alternate.HTMLElement {}
+    router.page({ tag: 'test-context-alt-poison', routes: ['/'] })(
+      AltPoisonPage as unknown as typeof HTMLElement,
+      { kind: 'class', name: 'AltPoisonPage', metadata: undefined } as any,
+    );
+    const alternateHost = alternate.document.createElement('test-context-alt-poison');
+
+    const reads = { ownerDocument: 0, defaultView: 0, customElements: 0 };
+    const roots = new Set<object>([Object.prototype, alternate.Object.prototype]);
+    try {
+      for (const root of roots) {
+        for (const key of Object.keys(reads) as Array<keyof typeof reads>) {
+          Object.defineProperty(root, key, {
+            configurable: true,
+            get() { reads[key]++; throw new Error(`poisoned ${key}`); },
+          });
+        }
+      }
+
+      const primaryLabel = captureRenderHostIdentity(primaryHost).label;
+      const alternateLabel = captureRenderHostIdentity(alternateHost as HTMLElement).label;
+      expect(primaryLabel).toMatch(/^<test-context-primary-poison>/);
+      expect(alternateLabel).toMatch(/^<test-context-alt-poison>/);
+      expect(reads).toEqual({ ownerDocument: 0, defaultView: 0, customElements: 0 });
+    } finally {
+      for (const root of roots) {
+        delete (root as any).ownerDocument;
+        delete (root as any).defaultView;
+        delete (root as any).customElements;
+      }
+    }
+  });
+
   it('preserves cause and stack while strict mode rethrows nested parser errors', async () => {
     @element('test-context-strict-nested')
     class ContextStrictNestedElement extends HTMLElement {

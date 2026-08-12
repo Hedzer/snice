@@ -11,27 +11,86 @@ const SAFE_CLASS = /^[A-Za-z_$][A-Za-z0-9_$]{0,127}$/;
 const AMBIENT_DOCUMENT = typeof document === 'undefined' ? undefined : document;
 const AMBIENT_WINDOW = typeof window === 'undefined' ? undefined : window;
 const AMBIENT_REGISTRY = typeof customElements === 'undefined' ? undefined : customElements;
+const FUNCTION_TO_STRING = Function.prototype.toString;
 
-/** Read platform state without consulting an own or nearer spoofing accessor. */
-function safePlatformValue(object: unknown, key: PropertyKey): unknown {
-  if ((typeof object !== 'object' && typeof object !== 'function') || object === null) return undefined;
-  let current: object | null = object as object;
-  let inheritedGetter: ((this: unknown) => unknown) | undefined;
-  while (current) {
-    const descriptor = Object.getOwnPropertyDescriptor(current, key);
-    if (descriptor) {
-      if ('value' in descriptor) return descriptor.value;
-      // Keep walking so the platform's deeper getter wins over an accessor on
-      // the host or one of its user-authored prototypes.
-      if (current !== object && descriptor.get) inheritedGetter = descriptor.get;
-    }
-    current = Object.getPrototypeOf(current);
-  }
+function isNativeFunction(value: unknown): value is Function {
+  if (typeof value !== 'function') return false;
   try {
-    return inheritedGetter?.call(object);
+    return /\{\s*\[native code\]\s*\}/.test(FUNCTION_TO_STRING.call(value));
   } catch {
-    return undefined;
+    return false;
   }
+}
+
+type PlatformInterface = 'node' | 'document' | 'window' | 'registry';
+
+function hasOwnMethod(prototype: object, key: PropertyKey): boolean {
+  return typeof Object.getOwnPropertyDescriptor(prototype, key)?.value === 'function';
+}
+
+function isPlatformPrototype(prototype: object, kind: PlatformInterface): boolean {
+  switch (kind) {
+    case 'node':
+      return hasOwnMethod(prototype, 'contains') &&
+        hasOwnMethod(prototype, 'getRootNode') &&
+        hasOwnMethod(prototype, 'cloneNode');
+    case 'document':
+      return hasOwnMethod(prototype, 'createElement') &&
+        hasOwnMethod(prototype, 'adoptNode') &&
+        Object.getOwnPropertyDescriptor(prototype, 'implementation') !== undefined;
+    case 'window':
+      return Object.getOwnPropertyDescriptor(prototype, 'document') !== undefined &&
+        Object.getOwnPropertyDescriptor(prototype, 'location') !== undefined &&
+        hasOwnMethod(prototype, 'postMessage');
+    case 'registry':
+      return hasOwnMethod(prototype, 'define') &&
+        hasOwnMethod(prototype, 'get') &&
+        hasOwnMethod(prototype, 'whenDefined') &&
+        hasOwnMethod(prototype, 'upgrade');
+  }
+}
+
+/**
+ * Read data directly from DOM instances or from a structurally identified DOM
+ * interface prototype. The realm's terminal Object/Function prototypes and
+ * arbitrary user accessors are never candidates.
+ */
+function trustedPlatformValue(
+  object: unknown,
+  key: PropertyKey,
+  kind: PlatformInterface,
+): unknown {
+  if ((typeof object !== 'object' && typeof object !== 'function') || object === null) return undefined;
+  const own = Object.getOwnPropertyDescriptor(object, key);
+  if (own && 'value' in own) return own.value;
+  // Window is exposed through an exotic WindowProxy in browsers, where
+  // genuine Web IDL descriptors can be own accessors. Accept that shape only
+  // after it satisfies the same interface signature as a platform prototype.
+  if (isNativeFunction(own?.get) && isPlatformPrototype(object as object, kind)) {
+    try {
+      return own.get.call(object);
+    } catch {
+      return undefined;
+    }
+  }
+
+  let prototype: object | null = Object.getPrototypeOf(object);
+  while (prototype) {
+    const parent = Object.getPrototypeOf(prototype);
+    if (parent === null) break;
+    if (isPlatformPrototype(prototype, kind)) {
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, key);
+      if (!descriptor) return undefined;
+      if ('value' in descriptor) return descriptor.value;
+      try {
+        return descriptor.get?.call(object);
+      } catch {
+        return undefined;
+      }
+    }
+    prototype = parent;
+  }
+  return undefined;
 }
 
 function registeredIdentity(host: HTMLElement): { tag: string; className: string } | null {
@@ -41,13 +100,13 @@ function registeredIdentity(host: HTMLElement): { tag: string; className: string
   const tag = typeof tagDescriptor?.value === 'string' ? tagDescriptor.value : '';
   if (!SAFE_TAG.test(tag)) return null;
 
-  const ownerDocument = safePlatformValue(host, 'ownerDocument');
-  const ownerWindow = safePlatformValue(ownerDocument, 'defaultView') ??
+  const ownerDocument = trustedPlatformValue(host, 'ownerDocument', 'node');
+  const ownerWindow = trustedPlatformValue(ownerDocument, 'defaultView', 'document') ??
     (ownerDocument === AMBIENT_DOCUMENT ? AMBIENT_WINDOW : undefined);
-  const ownerRegistry = safePlatformValue(ownerWindow, 'customElements') ??
+  const ownerRegistry = trustedPlatformValue(ownerWindow, 'customElements', 'window') ??
     (ownerWindow === AMBIENT_WINDOW ? AMBIENT_REGISTRY : undefined);
   const registry = ownerRegistry;
-  const get = safePlatformValue(registry, 'get');
+  const get = trustedPlatformValue(registry, 'get', 'registry');
   const constructor = typeof get === 'function' ? get.call(registry, tag) : undefined;
   if (typeof constructor !== 'function') return null;
 
