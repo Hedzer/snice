@@ -104,6 +104,66 @@ describe('.sniceignore diagnostic suppression', () => {
     expect(ignored.issues.filter((candidate: any) => candidate.code === code)).toEqual([]);
   });
 
+  it('suppresses an exact route error after an astral unicode escape', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    const source = [
+      "@page({ routes: ['/emoji/\\u{1F600}/:missing'] })",
+      'class EmojiPage extends HTMLElement {}'
+    ].join('\n');
+    await writeFile(join(sourceDirectory, 'emoji-page.ts'), source);
+
+    const code = 'snice/route-param-has-no-binding-target';
+    const baseline = await validate(projectRoot);
+    const issue = baseline.issues.find((candidate: any) => candidate.code === code);
+    expect(issue).toMatchObject({
+      file: join(sourceDirectory, 'emoji-page.ts'),
+      line: 1,
+      column: source.split('\n')[0].indexOf(':missing') + 1
+    });
+
+    await writeFile(
+      join(projectRoot, '.sniceignore'),
+      `${code} src/pages/emoji-page.ts:${issue.line}:${issue.column}\n`
+    );
+    const ignored = await validate(projectRoot);
+    expect(ignored.issues.filter((candidate: any) => candidate.code === code)).toEqual([]);
+  });
+
+  it('ignores forged Router provenance in templates while retaining real routes', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    await writeFile(join(projectRoot, 'src/foreign-router.ts'), [
+      'export const page = () => () => {};',
+      'export const docs = `',
+      '${`nested documentation`}',
+      "import { Router } from 'snice';",
+      "export const { page } = Router({ type: 'hash' });",
+      '`;'
+    ].join('\n'));
+    await writeFile(join(projectRoot, 'src/router.ts'), [
+      "import { Router } from 'snice';",
+      "export const { page } = Router({ type: 'hash' });"
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'foreign-page.ts'), [
+      "import { page } from '../foreign-router';",
+      "@page({ routes: ['/:forged'] }) class ForeignPage extends HTMLElement {}"
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'real-page.ts'), [
+      "import { page } from '../router';",
+      "@page({ routes: ['/:realMissing'] }) class RealPage extends HTMLElement {}"
+    ].join('\n'));
+
+    const code = 'snice/route-param-has-no-binding-target';
+    const result = await validate(projectRoot);
+    expect(result.issues.filter((candidate: any) => candidate.code === code)).toEqual([
+      expect.objectContaining({
+        file: join(sourceDirectory, 'real-page.ts'),
+        message: expect.stringContaining(':realMissing')
+      })
+    ]);
+  });
+
   it('reports named splats on an aliased local page decorator', async () => {
     const sourceDirectory = join(projectRoot, 'src/pages');
     await mkdir(sourceDirectory, { recursive: true });

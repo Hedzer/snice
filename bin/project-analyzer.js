@@ -2347,7 +2347,8 @@ function usesComponent(source, recommendation) {
 
 export function findImports(source) {
   const imports = [];
-  for (const start of source.matchAll(/^\s*import\b/gm)) {
+  const code = maskNonExecutableCode(source);
+  for (const start of code.matchAll(/^\s*import\b/gm)) {
     const statement = source.slice(start.index, start.index + 4000);
     const sideEffect = statement.match(/^\s*import\s*(['"])([^'"]+)\1\s*;?/);
     if (sideEffect) {
@@ -2719,18 +2720,20 @@ function parseStaticString(source, start, end) {
       if (source[index + 1] === '\n') index++;
       continue;
     }
+    let emitted;
     if (next === 'x' && /^[0-9a-fA-F]{2}/.test(source.slice(index + 1, index + 3))) {
-      value += String.fromCharCode(parseInt(source.slice(index + 1, index + 3), 16)); index += 2;
+      emitted = String.fromCharCode(parseInt(source.slice(index + 1, index + 3), 16)); index += 2;
     } else if (next === 'u' && source[index + 1] === '{') {
       const braceClose = source.indexOf('}', index + 2);
       const digits = braceClose >= 0 ? source.slice(index + 2, braceClose) : '';
       const codePoint = /^[0-9a-fA-F]{1,6}$/.test(digits) ? parseInt(digits, 16) : -1;
       if (codePoint < 0 || codePoint > 0x10ffff) return null;
-      value += String.fromCodePoint(codePoint); index = braceClose;
+      emitted = String.fromCodePoint(codePoint); index = braceClose;
     } else if (next === 'u' && /^[0-9a-fA-F]{4}/.test(source.slice(index + 1, index + 5))) {
-      value += String.fromCharCode(parseInt(source.slice(index + 1, index + 5), 16)); index += 4;
-    } else value += ({ n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v', 0: '\0' }[next] ?? next);
-    sourceIndices.push(escapeStart);
+      emitted = String.fromCharCode(parseInt(source.slice(index + 1, index + 5), 16)); index += 4;
+    } else emitted = ({ n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v', 0: '\0' }[next] ?? next);
+    value += emitted;
+    for (let unit = 0; unit < emitted.length; unit++) sourceIndices.push(escapeStart);
   }
   return null;
 }
@@ -2859,21 +2862,63 @@ function enrichSniceProvenance(provenance, file, projectFiles) {
   provenance.projectRootNamespaces = projectRootNamespaces;
 }
 
+function readStaticQuotedString(source, quoteIndex) {
+  const quote = source[quoteIndex];
+  if (quote !== "'" && quote !== '"') return null;
+  let escaped = false;
+  for (let index = quoteIndex + 1; index < source.length; index++) {
+    const character = source[index];
+    if (character === '\n' || character === '\r') return null;
+    if (escaped) escaped = false;
+    else if (character === '\\') escaped = true;
+    else if (character === quote) return parseStaticString(source, quoteIndex, index + 1);
+  }
+  return null;
+}
+
+function findNamedExportStatements(source) {
+  const code = maskNonExecutableCode(source);
+  const statements = [];
+  for (const match of code.matchAll(/\bexport\s*\{([^}]*)\}/g)) {
+    const after = match.index + match[0].length;
+    const from = /^\s*from\s*(['"])/.exec(code.slice(after));
+    let path = null;
+    if (from) {
+      const quoteIndex = after + from[0].lastIndexOf(from[1]);
+      const literal = readStaticQuotedString(source, quoteIndex);
+      if (!literal) continue;
+      path = literal.value;
+    }
+    statements.push({ bindings: match[1], path, index: match.index });
+  }
+  return statements;
+}
+
+function findExportStarStatements(source) {
+  const code = maskNonExecutableCode(source);
+  const statements = [];
+  for (const match of code.matchAll(/\bexport\s*\*\s*from\s*(['"])/g)) {
+    const quoteIndex = match.index + match[0].lastIndexOf(match[1]);
+    const literal = readStaticQuotedString(source, quoteIndex);
+    if (literal) statements.push({ path: literal.value, index: match.index });
+  }
+  return statements;
+}
+
 function resolvesSniceRootExport(file, exportedName, projectFiles, wanted = exportedName, visited = new Set()) {
   const key = `${normalizeModuleFilename(file.filename)}:${exportedName}:${wanted}`;
   if (visited.has(key)) return false;
   visited.add(key);
-  const source = maskComments(file.source);
-  if (new RegExp(`export\\s*\\*\\s*from\\s*['"]snice['"]`).test(source) && exportedName === wanted) return true;
-  const provenance = buildSourceProvenance(source);
+  if (findExportStarStatements(file.source).some(statement => statement.path === 'snice') && exportedName === wanted) return true;
+  const provenance = buildSourceProvenance(file.source);
   const localNames = new Set(localsFor(provenance.rootBindings, wanted));
-  for (const statement of source.matchAll(/export\s*\{([^}]*)\}(?:\s*from\s*(['"])([^'"]+)\2)?/g)) {
-    for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+  for (const statement of findNamedExportStatements(file.source)) {
+    for (const binding of parseNamedImportEntries(`{${statement.bindings}}`)) {
       if (binding.local !== exportedName) continue;
-      if (statement[3] === 'snice') return binding.imported === wanted;
-      if (!statement[3] && localNames.has(binding.imported)) return true;
-      if (statement[3]?.startsWith('.')) {
-        const target = resolveProjectSource(file.filename, statement[3], projectFiles);
+      if (statement.path === 'snice') return binding.imported === wanted;
+      if (!statement.path && localNames.has(binding.imported)) return true;
+      if (statement.path?.startsWith('.')) {
+        const target = resolveProjectSource(file.filename, statement.path, projectFiles);
         if (target && resolvesSniceRootExport(target, binding.imported, projectFiles, wanted, visited)) return true;
       }
     }
@@ -2925,8 +2970,8 @@ function routerPageExportNames(file, projectFiles, visited = new Set()) {
   const filename = normalizeModuleFilename(file.filename);
   if (visited.has(filename)) return new Set();
   visited.add(filename);
-  const source = file.source;
-  const provenance = buildSourceProvenance(maskComments(source));
+  const source = maskNonExecutableCode(file.source);
+  const provenance = buildSourceProvenance(file.source);
   enrichSniceProvenance(provenance, file, projectFiles);
   const locals = new Set();
   for (const routerName of provenRootBindingNames(provenance, 'Router')) {
@@ -2955,12 +3000,12 @@ function routerPageExportNames(file, projectFiles, visited = new Set()) {
       }
     }
   }
-  for (const statement of source.matchAll(/export\s*\{([^}]*)\}\s*from\s*(['"])([^'"]+)\2/g)) {
-    if (!statement[3].startsWith('.')) continue;
-    const target = resolveProjectSource(file.filename, statement[3], projectFiles);
+  for (const statement of findNamedExportStatements(file.source)) {
+    if (!statement.path?.startsWith('.')) continue;
+    const target = resolveProjectSource(file.filename, statement.path, projectFiles);
     if (!target) continue;
     const targetExports = routerPageExportNames(target, projectFiles, visited);
-    for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+    for (const binding of parseNamedImportEntries(`{${statement.bindings}}`)) {
       if (targetExports.has(binding.imported)) exported.add(binding.local);
     }
   }
@@ -3147,11 +3192,11 @@ function resolveImportedRouteClass(from, specifier, exportedName, localClasses, 
     );
     results.push(...direct);
     const file = target;
-    for (const statement of file.source.matchAll(/export\s*\{([^}]*)\}(?:\s*from\s*(['"])([^'"]+)\2)?/g)) {
-      for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+    for (const statement of findNamedExportStatements(file.source)) {
+      for (const binding of parseNamedImportEntries(`{${statement.bindings}}`)) {
         if (binding.local !== exportedName) continue;
-        if (statement[3]?.startsWith('.')) {
-          results.push(...resolveImportedRouteClass(file.filename, statement[3], binding.imported, localClasses, projectFiles, visited));
+        if (statement.path?.startsWith('.')) {
+          results.push(...resolveImportedRouteClass(file.filename, statement.path, binding.imported, localClasses, projectFiles, visited));
         } else {
           results.push(...localClasses.filter(candidate =>
             normalizeModuleFilename(candidate.file.filename) === filename && candidate.name === binding.imported
@@ -3661,6 +3706,76 @@ function blankStringContents(source) {
   return output;
 }
 
+/**
+ * Preserve executable tokens and source positions while blanking comments and
+ * literal contents. Provenance scans use this shared view so code examples in
+ * documentation strings cannot manufacture imports, exports, or Router calls.
+ */
+function maskNonExecutableCode(source) {
+  const output = source.split('');
+  const blank = (start, end) => {
+    for (let index = start; index < end; index++) {
+      if (source[index] !== '\n' && source[index] !== '\r') output[index] = ' ';
+    }
+  };
+  const quotedEnd = (start, quote) => {
+    for (let index = start + 1; index < source.length; index++) {
+      if (source[index] === '\\') { index++; continue; }
+      if (quote === '`' && source[index] === '$' && source[index + 1] === '{') {
+        index = templateExpressionEnd(index + 2) - 1;
+        continue;
+      }
+      if (source[index] === quote) return index;
+      if (quote !== '`' && (source[index] === '\n' || source[index] === '\r')) return source.length;
+    }
+    return source.length;
+  };
+  const templateExpressionEnd = start => {
+    let depth = 1;
+    for (let index = start; index < source.length; index++) {
+      if (source[index] === '/' && source[index + 1] === '/') {
+        const newline = source.indexOf('\n', index + 2);
+        index = newline < 0 ? source.length : newline;
+        continue;
+      }
+      if (source[index] === '/' && source[index + 1] === '*') {
+        const close = source.indexOf('*/', index + 2);
+        index = close < 0 ? source.length : close + 1;
+        continue;
+      }
+      if (source[index] === "'" || source[index] === '"' || source[index] === '`') {
+        index = quotedEnd(index, source[index]);
+        continue;
+      }
+      if (source[index] === '{') depth++;
+      else if (source[index] === '}' && --depth === 0) return index + 1;
+    }
+    return source.length;
+  };
+
+  for (let index = 0; index < source.length; index++) {
+    if (source[index] === '/' && source[index + 1] === '/') {
+      const newline = source.indexOf('\n', index + 2);
+      const end = newline < 0 ? source.length : newline;
+      blank(index, end);
+      index = end - 1;
+      continue;
+    }
+    if (source[index] === '/' && source[index + 1] === '*') {
+      const close = source.indexOf('*/', index + 2);
+      const end = close < 0 ? source.length : close + 2;
+      blank(index, end);
+      index = end - 1;
+      continue;
+    }
+    if (source[index] !== "'" && source[index] !== '"' && source[index] !== '`') continue;
+    const end = quotedEnd(index, source[index]);
+    blank(index + 1, end);
+    index = end;
+  }
+  return output.join('');
+}
+
 function isClearlyMismatchedComponent(directory, moduleName) {
   const target = moduleName.slice('snice-'.length);
   const topLevel = new Set([
@@ -3843,6 +3958,7 @@ function reactExportReplacement(name) {
 }
 
 function buildSourceProvenance(source) {
+  const code = maskNonExecutableCode(source);
   const imports = findImports(source);
   const rootBindings = new Map();
   const namespaceBindings = new Map();
@@ -3874,7 +3990,7 @@ function buildSourceProvenance(source) {
   for (const match of source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:document\.)?querySelector(?:<[^>]+>)?\(\s*['"](snice-[a-z0-9-]+)['"]\s*\)/g)) {
     if (COMPONENT_CONTRACTS[match[2]]) componentVariables.set(match[1], match[2]);
   }
-  return { source, imports, rootBindings, namespaceBindings, reactBindings, componentVariables };
+  return { source: code, imports, rootBindings, namespaceBindings, reactBindings, componentVariables };
 }
 
 function normalizeReactExport(name) {

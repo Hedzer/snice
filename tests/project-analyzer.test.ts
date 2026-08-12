@@ -1516,6 +1516,44 @@ describe('page orchestration checks', () => {
       expect(byRule(unresolvedProperty, ruleId)).toEqual([]);
     });
 
+    it('ignores forged Snice provenance inside documentation strings and templates', () => {
+      const foreignPage = analyzeProject({
+        'src/foreign-router.ts': [
+          'export const page = () => () => {};',
+          'export const docs = `',
+          '${`nested documentation`}',
+          "import { Router } from 'snice';",
+          "export const { page } = Router({ type: 'hash' });",
+          '`;'
+        ].join('\n'),
+        'src/foreign-page.ts': [
+          "import { page } from './foreign-router';",
+          "@page({ routes: ['/:not-a-snice-route'] }) class ForeignPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(foreignPage).toEqual([]);
+
+      const realPage = analyzeProject({
+        'src/router.ts': "import { Router } from 'snice'; export const { page } = Router({ type: 'hash' });",
+        'src/foreign-decorators.ts': [
+          'export const property = () => () => {};',
+          `export const docs = "export * from 'snice';";`
+        ].join('\n'),
+        'src/foreign-property-page.ts': [
+          "import { page } from './router';",
+          "import { property as foreignProperty } from './foreign-decorators';",
+          "@page({ routes: ['/:claimed'] }) class ForeignPropertyPage extends HTMLElement {",
+          "  @foreignProperty({ attribute: false }) claimed = '';",
+          '}'
+        ].join('\n'),
+        'src/real-page.ts': [
+          "import { page } from './router';",
+          "@page({ routes: ['/:separateMissing'] }) class RealPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(realPage.map(item => item.message)).toEqual([expect.stringContaining(':separateMissing')]);
+    });
+
     it('uses last-key semantics and defers route objects made uncertain by spreads', () => {
       const source = [
         "@page({ routes: ['/:ignored'], ...unknown, routes: [",
@@ -1566,6 +1604,25 @@ describe('page orchestration checks', () => {
         '}'
       ].join('\n');
       expect(byRule(source, ruleId)).toEqual([]);
+    });
+
+    it('maps route parameter locations after astral unicode escapes by UTF-16 code unit', () => {
+      const source = [
+        "@page({ routes: ['/emoji/\\u{1F600}/:missing',",
+        "  '/archive/\\u{1F4C1}/*rest'] })",
+        'class EscapedLocationPage extends HTMLElement {}'
+      ].join('\n');
+      const diagnostics = byRule(source, ruleId);
+
+      expect(diagnostics).toHaveLength(2);
+      expect(diagnostics[0]).toMatchObject({
+        line: 1,
+        column: source.split('\n')[0].indexOf(':missing') + 1
+      });
+      expect(diagnostics[1]).toMatchObject({
+        line: 2,
+        column: source.split('\n')[1].indexOf('*rest') + 1
+      });
     });
 
     it('only applies SniceElement naming to proven Snice bases', () => {
