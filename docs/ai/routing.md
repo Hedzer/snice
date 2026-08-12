@@ -192,10 +192,12 @@ class OverridePage extends HTMLElement {}
 
 ## Route parameters
 
-- `:param` segments in string routes and `{ path, order }` routes bind through attributes before `@ready()` fires; normally declare a plain `@property()` field of the same name.
+- Named `:param` segments and named splats (`*path`, including optional splats) in string routes and `{ path, order }` routes bind through attributes before `@ready()` fires; normally declare a plain `@property()` field of the same name.
 - The route-param spelling must match the observed attribute after HTML lowercasing. `HTMLElement`: `:articleId` -> plain `articleId` (`articleid`). `SniceElement`: plain `articleId` observes `article-id`, so use `:article-id` or `@property({ attribute: 'articleId' }) articleId`.
 - Explicit alias: `@property({ attribute: 'article-id' }) articleId` binds from `:article-id`, not `:articleId`.
 - `@property({ attribute: false })` opts OUT — Router cannot set it, so it silently keeps its initializer.
+- A reflected native HTMLElement attribute such as `id` is already a binding target. A custom element can also consume a statically declared `observedAttributes` entry in `attributeChangedCallback`; do not redeclare native IDL properties merely to satisfy the analyzer.
+- A subclass field, accessor, or `@state()` member shadows an inherited `@property()` of the same JavaScript name, so it is not an inherited route binding target.
 - Multiple `:param`s all populate independently, e.g. `/posts/:postId/comments/:commentId` → `postId`, `commentId` properties.
 - Query params: declare directly in the route pattern, e.g. `routes: ['/search?q=:query']` — extracted as a route param (`ctx.navigation.params.query`), not parsed from `location.search`.
 

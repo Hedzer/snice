@@ -103,6 +103,29 @@ describe('.sniceignore diagnostic suppression', () => {
     const ignored = await validate(projectRoot);
     expect(ignored.issues.filter((candidate: any) => candidate.code === code)).toEqual([]);
   });
+
+  it('reports named splats on an aliased local page decorator', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    await writeFile(join(projectRoot, 'src/router.ts'), [
+      "import { Router } from 'snice';",
+      "export const { page } = Router({ type: 'hash' });"
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'files-page.ts'), [
+      "import { page as routePage } from '../router';",
+      "@routePage({ tag: 'files-page', routes: ['/files/*path'] })",
+      'class FilesPage extends HTMLElement {}'
+    ].join('\n'));
+
+    const result = await validate(projectRoot);
+    expect(result.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        code: 'snice/route-param-has-no-binding-target',
+        line: 2,
+        message: expect.stringContaining('*path')
+      })
+    ]));
+  });
 });
 
 async function validate(root: string) {

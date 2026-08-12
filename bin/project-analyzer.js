@@ -1698,7 +1698,8 @@ export function analyzeProject(files) {
     localClassDeclarations.push(...findClassBodies(analyzable).map(declaration => ({
       ...declaration,
       file,
-      routeProperties: inspectRouteProperties(declaration.body, declaration.bodyStart)
+      provenance,
+      routeProperties: inspectRouteProperties(declaration.body, declaration.bodyStart, provenance)
     })));
     routerConstructions.push(
       ...findRouterConstructions(analyzable, localsFor(provenance.rootBindings, 'Router'))
@@ -1710,10 +1711,23 @@ export function analyzeProject(files) {
       { decorator: 'controller', folder: 'controllers', kind: 'controller' },
       { decorator: 'daemon', folder: 'daemons', kind: 'daemon' }
     ]) {
-      for (const declaration of findDecoratedClasses(analyzable, convention.decorator)) {
+      const bindingPageNames = convention.decorator === 'page'
+        ? routeDecoratorNames(provenance, file, normalized)
+        : [];
+      const decoratorNames = convention.decorator === 'page'
+        ? [...new Set(['page', ...bindingPageNames])]
+        : [convention.decorator];
+      const declarations = decoratorNames.flatMap(name =>
+        findDecoratedClasses(analyzable, name).map(declaration => ({ ...declaration, routeDecorator: name }))
+      );
+      for (const declaration of declarations.filter((item, index, all) =>
+        all.findIndex(candidate => candidate.bodyStart === item.bodyStart) === index
+      )) {
         const architectural = { ...declaration, ...convention, file };
         architectureDeclarations.push(architectural);
-        if (convention.decorator === 'page') pageClasses.push(architectural);
+        if (convention.decorator === 'page' && bindingPageNames.includes(declaration.routeDecorator)) {
+          pageClasses.push(architectural);
+        }
         if (convention.decorator === 'page' || convention.decorator === 'element') {
           reactiveRenderContracts.set(`${file.filename}:${declaration.bodyStart}`, {
             ...architectural,
@@ -1994,7 +2008,8 @@ export function analyzeProject(files) {
           property.attributeKind !== 'unknown' &&
           routePropertyAttribute(property, bindingEnvironment.naming) === routeAttribute
         );
-        if (reachable) continue;
+        if (reachable || bindingEnvironment.nativeAttributes.has(routeAttribute) ||
+          bindingEnvironment.customAttributes.has(routeAttribute)) continue;
 
         const sameName = bindingEnvironment.properties.find(property => property.name === parameter.name);
         if (!sameName && !bindingEnvironment.complete) continue;
@@ -2002,7 +2017,7 @@ export function analyzeProject(files) {
 
         reportedRouteAttributes.add(routeAttribute);
         const location = sourceLocation(page.file.source, parameter.index);
-        const routeLabel = `:${parameter.name}`;
+        const routeLabel = `${parameter.marker}${parameter.name}`;
         if (sameName?.attributeKind === 'false') {
           diagnostics.push({
             severity: 'error',
@@ -2026,7 +2041,7 @@ export function analyzeProject(files) {
             severity: 'error',
             ruleId: 'snice/route-param-has-no-binding-target',
             message: `Route parameter "${routeLabel}" sets the "${routeAttribute}" attribute, but ${page.name}.${sameName.name} observes "${observedAttribute}", so Router cannot reach it.`,
-            fix: `Change the route parameter spelling to ":${observedAttribute}", or ${removeAliasFix}. Review docs/ai/routing.md.`,
+            fix: `Change the route parameter spelling to "${parameter.marker}${observedAttribute}", or ${removeAliasFix}. Review docs/ai/routing.md.`,
             file: page.file.filename,
             line: location.line,
             column: location.column
@@ -2567,52 +2582,124 @@ function findPageRoutes(source, decoratorIndex) {
   if (open < 0) return [];
   const close = findMatchingDelimiter(source, open, '(', ')');
   if (close < 0) return [];
-  const argumentsSource = source.slice(open + 1, close);
-  const routesProperty = /\broutes\s*:\s*\[/.exec(argumentsSource);
-  if (!routesProperty) return [];
-  const arrayOpen = open + 1 + routesProperty.index + routesProperty[0].lastIndexOf('[');
+  const options = unwrapStaticExpression(source, open + 1, close);
+  if (!options || source[options.start] !== '{') return [];
+  const routes = findStaticObjectProperty(source, options.start, options.end, 'routes');
+  if (!routes) return [];
+  const array = unwrapStaticExpression(source, routes.start, routes.end);
+  if (!array || source[array.start] !== '[') return [];
+  const arrayOpen = array.start;
   const arrayClose = findMatchingDelimiter(source, arrayOpen, '[', ']');
-  if (arrayClose < 0 || arrayClose > close) return [];
+  if (arrayClose < 0 || arrayClose > array.end) return [];
 
   const body = source.slice(arrayOpen + 1, arrayClose);
-  const routes = [];
+  const found = [];
   let searchFrom = 0;
   for (const item of splitTopLevelArguments(body)) {
     const relative = body.indexOf(item, searchFrom);
     if (relative < 0) continue;
     searchFrom = relative + item.length;
-    const literal = /^(['"`])([^'"`]*)\1$/.exec(item);
-    if (literal && !(literal[1] === '`' && literal[2].includes('${'))) {
-      routes.push({
+    const itemBounds = unwrapStaticExpression(source, arrayOpen + 1 + relative, arrayOpen + 1 + relative + item.length);
+    if (!itemBounds) continue;
+    const literal = parseStaticString(source, itemBounds.start, itemBounds.end);
+    if (literal) {
+      found.push({
         kind: 'string',
-        spec: literal[2],
+        spec: literal.value,
         index: arrayOpen + 1 + relative,
-        specStart: arrayOpen + 1 + relative + 1
+        specStart: literal.start,
+        sourceIndices: literal.sourceIndices
       });
       continue;
     }
-    const objectPath = /\bpath\s*:\s*(['"`])([^'"`]*)\1/.exec(item);
-    if (!objectPath || (objectPath[1] === '`' && objectPath[2].includes('${'))) continue;
-    const quoteOffset = objectPath.index + objectPath[0].indexOf(objectPath[1]);
-    routes.push({
+    if (source[itemBounds.start] !== '{') continue;
+    const path = findStaticObjectProperty(source, itemBounds.start, itemBounds.end, 'path');
+    if (!path) continue;
+    const pathBounds = unwrapStaticExpression(source, path.start, path.end);
+    if (!pathBounds) continue;
+    const objectPath = parseStaticString(source, pathBounds.start, pathBounds.end);
+    if (!objectPath) continue;
+    found.push({
       kind: 'object',
-      spec: objectPath[2],
-      index: arrayOpen + 1 + relative + objectPath.index,
-      specStart: arrayOpen + 1 + relative + quoteOffset + 1
+      spec: objectPath.value,
+      index: pathBounds.start,
+      specStart: objectPath.start,
+      sourceIndices: objectPath.sourceIndices
     });
   }
-  return routes;
+  return found;
 }
 
 function findRouteParameters(route) {
   const parameters = [];
-  for (const match of route.spec.matchAll(/:([\w-]+)/g)) {
-    parameters.push({ name: match[1], index: route.specStart + match.index });
+  for (const match of route.spec.matchAll(/(?:[:*])([\w-]+)/g)) {
+    parameters.push({ name: match[1], marker: match[0][0], index: route.sourceIndices?.[match.index] ?? route.specStart + match.index });
   }
   return parameters;
 }
 
-function inspectRouteProperties(body, bodyStart = 0) {
+function unwrapStaticExpression(source, start, end) {
+  while (start < end && /\s/.test(source[start])) start++;
+  while (end > start && /\s/.test(source[end - 1])) end--;
+  while (source[start] === '(') {
+    const close = findMatchingDelimiter(source, start, '(', ')');
+    if (close < 0 || !/^\s*(?:as\s+const\s*)?$/.test(source.slice(close + 1, end))) break;
+    start++;
+    end = close;
+    while (start < end && /\s/.test(source[start])) start++;
+    while (end > start && /\s/.test(source[end - 1])) end--;
+  }
+  const suffix = /\s+as\s+const\s*$/.exec(source.slice(start, end));
+  if (suffix) end = start + suffix.index;
+  while (end > start && /\s/.test(source[end - 1])) end--;
+  return start < end ? { start, end } : null;
+}
+
+function findStaticObjectProperty(source, open, end, wanted) {
+  const close = findMatchingDelimiter(source, open, '{', '}');
+  if (close < 0 || close >= end) return null;
+  const body = source.slice(open + 1, close);
+  let offset = 0;
+  for (const item of splitTopLevelArguments(body)) {
+    const relative = body.indexOf(item, offset);
+    offset = relative + item.length;
+    const absolute = open + 1 + relative;
+    // splitTopLevelArguments already isolates the property; find the first
+    // colon outside a quoted key.
+    const keyMatch = /^\s*(?:([A-Za-z_$][\w$]*)|(['"])(.*?)\2)\s*:/.exec(item);
+    if (!keyMatch) continue;
+    const key = keyMatch[1] ?? keyMatch[3];
+    if (key !== wanted) continue;
+    return { start: absolute + keyMatch[0].length, end: absolute + item.length };
+  }
+  return null;
+}
+
+function parseStaticString(source, start, end) {
+  const quote = source[start];
+  if (!['\'', '"', '`'].includes(quote)) return null;
+  let value = '';
+  const sourceIndices = [];
+  for (let index = start + 1; index < end; index++) {
+    const char = source[index];
+    if (char === quote) return /^\s*$/.test(source.slice(index + 1, end))
+      ? { value, start: start + 1, sourceIndices }
+      : null;
+    if (quote === '`' && char === '$' && source[index + 1] === '{') return null;
+    if (char !== '\\') { value += char; sourceIndices.push(index); continue; }
+    const escapeStart = index;
+    const next = source[++index];
+    if (next === 'x' && /^[0-9a-fA-F]{2}/.test(source.slice(index + 1, index + 3))) {
+      value += String.fromCharCode(parseInt(source.slice(index + 1, index + 3), 16)); index += 2;
+    } else if (next === 'u' && /^[0-9a-fA-F]{4}/.test(source.slice(index + 1, index + 5))) {
+      value += String.fromCharCode(parseInt(source.slice(index + 1, index + 5), 16)); index += 4;
+    } else value += ({ n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v', 0: '\0' }[next] ?? next);
+    sourceIndices.push(escapeStart);
+  }
+  return null;
+}
+
+function inspectRouteProperties(body, bodyStart = 0, provenance = null) {
   const masked = maskComments(body);
   const code = blankStringContents(masked);
   const depths = new Uint16Array(code.length + 1);
@@ -2624,7 +2711,10 @@ function inspectRouteProperties(body, bodyStart = 0) {
   }
 
   const properties = [];
-  for (const match of code.matchAll(/@property\b/g)) {
+  const propertyNames = decoratorBindingNames(provenance, 'property');
+  if (!propertyNames.length) return properties;
+  const pattern = new RegExp(`@(?:${propertyNames.map(escapeRegExp).join('|')})\\b`, 'g');
+  for (const match of code.matchAll(pattern)) {
     if (depths[match.index] !== 0) continue;
     let cursor = match.index + match[0].length;
     while (/\s/.test(code[cursor] ?? '')) cursor++;
@@ -2672,8 +2762,92 @@ function inspectRouteProperties(body, bodyStart = 0) {
   return properties;
 }
 
+function decoratorBindingNames(provenance, imported) {
+  const known = localsFor(provenance?.rootBindings ?? new Map(), imported);
+  if (known.length) return known;
+  const importedLocals = new Set((provenance?.imports ?? []).flatMap(entry =>
+    parseNamedImportEntries(entry.clause).map(binding => binding.local)
+  ));
+  const locallyDeclared = new RegExp(`\\b(?:const|let|var|function|class)\\s+${escapeRegExp(imported)}\\b`)
+    .test(provenance?.source ?? '');
+  return importedLocals.has(imported) || locallyDeclared ? [] : [imported];
+}
+
+function routeDecoratorNames(provenance, file, projectFiles) {
+  const names = [];
+  let barePageImported = false;
+  for (const entry of provenance.imports) {
+    for (const binding of parseNamedImportEntries(entry.clause)) {
+      if (binding.local === 'page') barePageImported = true;
+      if (!entry.path.startsWith('.')) continue;
+      const target = resolveProjectSource(file.filename, entry.path, projectFiles);
+      if (target && routerPageExportNames(target.source).has(binding.imported)) names.push(binding.local);
+    }
+  }
+  const localPageDeclaration = /\b(?:const|let|var|function|class)\s+page\b/.test(provenance.source ?? '');
+  if (!barePageImported && !localPageDeclaration) names.push('page');
+  return [...new Set(names)];
+}
+
+function resolveProjectSource(from, specifier, files) {
+  const base = normalizeModuleFilename(`${from.replaceAll('\\', '/').replace(/\/[^/]*$/, '')}/${specifier}`);
+  const candidates = new Set([base, ...['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts'].map(ext => base + ext),
+    ...['.ts', '.tsx', '.js', '.jsx'].map(ext => `${base}/index${ext}`)]);
+  return files.find(candidate => candidates.has(normalizeModuleFilename(candidate.filename))) ?? null;
+}
+
+function routerPageExportNames(source) {
+  const provenance = buildSourceProvenance(maskComments(source));
+  const locals = new Set();
+  for (const routerName of localsFor(provenance.rootBindings, 'Router')) {
+    const direct = new RegExp(`(?:export\\s+)?(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escapeRegExp(routerName)}\\s*\\(`, 'g');
+    for (const match of source.matchAll(direct)) {
+      const page = /(?:^|,)\s*page(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/.exec(match[1]);
+      if (page) locals.add(page[1] ?? 'page');
+    }
+    const instance = new RegExp(`(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escapeRegExp(routerName)}\\s*\\(`, 'g');
+    for (const match of source.matchAll(instance)) {
+      const destructure = new RegExp(`(?:export\\s+)?(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escapeRegExp(match[1])}\\b`, 'g');
+      for (const binding of source.matchAll(destructure)) {
+        const page = /(?:^|,)\s*page(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/.exec(binding[1]);
+        if (page) locals.add(page[1] ?? 'page');
+      }
+    }
+  }
+  const exported = new Set();
+  for (const local of locals) {
+    if (new RegExp(`export\\s+(?:const|let|var)\\s*\\{[^}]*\\b${escapeRegExp(local)}\\b`).test(source)) exported.add(local);
+    for (const statement of source.matchAll(/export\s*\{([^}]*)\}/g)) {
+      for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+        if (binding.imported === local) exported.add(binding.local);
+      }
+    }
+  }
+  return exported;
+}
+
+function inspectRouteMemberNames(body, provenance) {
+  const code = blankStringContents(maskComments(body));
+  const names = new Set();
+  let depth = 0;
+  const depths = new Uint16Array(code.length + 1);
+  for (let index = 0; index < code.length; index++) {
+    depths[index] = depth;
+    if (code[index] === '{') depth++;
+    else if (code[index] === '}') depth = Math.max(0, depth - 1);
+  }
+  const pattern = /(?:^|[;\n])\s*(?:@[A-Za-z_$][\w$]*(?:\s*\([^)]*\))?\s*)*(?:(?:public|private|protected|readonly|override|declare|abstract)\s+)*(?:accessor\s+|get\s+|set\s+)?([A-Za-z_$][\w$]*)\s*(?:[!?]\s*)?(?=[:=(;])/gm;
+  for (const match of code.matchAll(pattern)) {
+    const nameIndex = match.index + match[0].lastIndexOf(match[1]);
+    if (depths[nameIndex] === 0 && !['constructor', 'static'].includes(match[1])) names.add(match[1]);
+  }
+  for (const property of inspectRouteProperties(body, 0, provenance)) names.add(property.name);
+  return names;
+}
+
 function resolveRouteBindingEnvironment(page, localClasses) {
   const propertiesByName = new Map();
+  const shadowedNames = new Set();
   const visited = new Set();
   let current = localClasses.find(candidate =>
     candidate.file.filename === page.file.filename && candidate.bodyStart === page.bodyStart
@@ -2683,22 +2857,35 @@ function resolveRouteBindingEnvironment(page, localClasses) {
     body: page.body,
     bodyStart: page.bodyStart,
     file: page.file,
-    routeProperties: inspectRouteProperties(page.body, page.bodyStart)
+    provenance: buildSourceProvenance(maskComments(page.file.source)),
+    routeProperties: inspectRouteProperties(page.body, page.bodyStart, buildSourceProvenance(maskComments(page.file.source)))
   };
   let naming = 'unknown';
   let complete = true;
+  let customObserved = null;
+  let hasAttributeCallback = false;
+  let observedAttributesUnknown = false;
 
   while (current && !visited.has(`${current.file.filename}:${current.bodyStart}`)) {
     visited.add(`${current.file.filename}:${current.bodyStart}`);
+    const ownNames = inspectRouteMemberNames(current.body, current.provenance);
     for (const property of current.routeProperties) {
-      if (!propertiesByName.has(property.name)) propertiesByName.set(property.name, property);
+      if (!shadowedNames.has(property.name)) propertiesByName.set(property.name, property);
     }
+    for (const name of ownNames) shadowedNames.add(name);
+    if (customObserved === null) {
+      const observed = inspectObservedAttributes(current.body);
+      if (observed === null) observedAttributesUnknown = true;
+      else if (observed !== undefined) customObserved = observed;
+    }
+    if (/\battributeChangedCallback\s*\(/.test(blankStringContents(maskComments(current.body)))) hasAttributeCallback = true;
 
+    const sniceElementNames = new Set(['SniceElement', ...decoratorBindingNames(current.provenance, 'SniceElement')]);
     if (current.base === 'HTMLElement') {
       naming = 'lowercase';
       break;
     }
-    if (current.base === 'SniceElement') {
+    if (sniceElementNames.has(current.base)) {
       naming = 'kebab';
       break;
     }
@@ -2710,9 +2897,18 @@ function resolveRouteBindingEnvironment(page, localClasses) {
     const sameFile = localClasses.filter(candidate =>
       candidate.file.filename === current.file.filename && candidate.name === current.base
     );
-    const candidates = sameFile.length === 1
-      ? sameFile
-      : localClasses.filter(candidate => candidate.name === current.base);
+    let candidates = sameFile;
+    if (!candidates.length) {
+      const imported = current.provenance.imports.flatMap(entry =>
+        parseNamedImportEntries(entry.clause)
+          .filter(binding => binding.local === current.base && entry.path.startsWith('.'))
+          .map(binding => ({ entry, binding }))
+      );
+      candidates = imported.flatMap(({ entry, binding }) => {
+        const resolved = resolveLocalModule(current.file.filename, entry.path, localClasses);
+        return localClasses.filter(candidate => resolved.has(normalizeModuleFilename(candidate.file.filename)) && candidate.name === binding.imported);
+      });
+    }
     if (candidates.length !== 1) {
       complete = false;
       break;
@@ -2720,7 +2916,51 @@ function resolveRouteBindingEnvironment(page, localClasses) {
     current = candidates[0];
   }
 
-  return { properties: [...propertiesByName.values()], naming, complete };
+  const nativeAttributes = new Set([...NATIVE_ELEMENT_IDL_MEMBERS].map(name => name.toLowerCase()));
+  const customAttributes = hasAttributeCallback && Array.isArray(customObserved)
+    ? new Set(customObserved.map(name => name.toLowerCase()))
+    : new Set();
+  return {
+    properties: [...propertiesByName.values()], naming,
+    complete: complete && !(hasAttributeCallback && observedAttributesUnknown),
+    nativeAttributes,
+    customAttributes
+  };
+}
+
+function normalizeModuleFilename(filename) {
+  const parts = filename.replaceAll('\\', '/').split('/');
+  const normalized = [];
+  for (const part of parts) {
+    if (part === '..') normalized.pop();
+    else if (part !== '.') normalized.push(part);
+  }
+  return normalized.join('/');
+}
+
+function resolveLocalModule(from, specifier, localClasses) {
+  const base = normalizeModuleFilename(`${from.replaceAll('\\', '/').replace(/\/[^/]*$/, '')}/${specifier}`);
+  const candidates = new Set([base, ...['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts'].map(ext => base + ext),
+    ...['.ts', '.tsx', '.js', '.jsx'].map(ext => `${base}/index${ext}`)]);
+  return new Set([...candidates].filter(candidate => localClasses.some(item => normalizeModuleFilename(item.file.filename) === candidate)));
+}
+
+function inspectObservedAttributes(body) {
+  const source = maskComments(body);
+  const declaration = /(?:static\s+get\s+observedAttributes\s*\(\)\s*\{|static\s+observedAttributes\s*=)([\s\S]{0,1000})/.exec(source);
+  if (!declaration) return undefined;
+  const arrayOpen = source.indexOf('[', declaration.index);
+  if (arrayOpen < 0) return null;
+  const arrayClose = findMatchingDelimiter(source, arrayOpen, '[', ']');
+  if (arrayClose < 0) return null;
+  const values = [];
+  for (const item of splitTopLevelArguments(source.slice(arrayOpen + 1, arrayClose))) {
+    const start = arrayOpen + 1 + source.slice(arrayOpen + 1, arrayClose).indexOf(item);
+    const literal = parseStaticString(source, start, start + item.length);
+    if (!literal) return null;
+    values.push(literal.value);
+  }
+  return values;
 }
 
 function routePropertyAttribute(property, naming) {
@@ -3357,7 +3597,7 @@ function buildSourceProvenance(source) {
   for (const match of source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:document\.)?querySelector(?:<[^>]+>)?\(\s*['"](snice-[a-z0-9-]+)['"]\s*\)/g)) {
     if (COMPONENT_CONTRACTS[match[2]]) componentVariables.set(match[1], match[2]);
   }
-  return { imports, rootBindings, reactBindings, componentVariables };
+  return { source, imports, rootBindings, reactBindings, componentVariables };
 }
 
 function normalizeReactExport(name) {

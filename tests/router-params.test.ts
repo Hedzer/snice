@@ -212,4 +212,44 @@ describe('Router URL Parameters', () => {
     // Should show the product ID
     expect(content?.textContent).toBe('Product: 42');
   });
+
+  it('binds named splats through the same attribute channel', async () => {
+    const { page, initialize, navigate } = router;
+
+    @page({ tag: 'splat-page', routes: ['/files/*path'] })
+    class SplatPage extends HTMLElement {
+      @property()
+      path = '';
+    }
+
+    initialize();
+    navigate('/files/folder/report.pdf');
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const element = container.querySelector('splat-page') as SplatPage;
+    expect(element.getAttribute('path')).toBe('folder/report.pdf');
+    expect(element.path).toBe('folder/report.pdf');
+  });
+
+  it('allows a custom observed attribute callback to consume a route value', async () => {
+    const { page, initialize, navigate } = router;
+
+    @page({ tag: 'observed-route-page', routes: ['/tenants/:tenant-id'] })
+    class ObservedRoutePage extends HTMLElement {
+      static get observedAttributes() { return ['tenant-id']; }
+      tenant = '';
+
+      attributeChangedCallback(name: string, _oldValue: string | null, value: string | null) {
+        if (name === 'tenant-id') this.tenant = value ?? '';
+      }
+    }
+
+    initialize();
+    navigate('/tenants/acme');
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const element = container.querySelector('observed-route-page') as ObservedRoutePage;
+    expect(element.getAttribute('tenant-id')).toBe('acme');
+    expect(element.tenant).toBe('acme');
+  });
 });

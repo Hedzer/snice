@@ -46,7 +46,7 @@ npx snice validate           # source analyzer only
 - deep imports that were never released package paths, e.g. `snice/decorators`
 - Router missing `target`, `type`, or a project-wide `initialize()` call
 - a routed class combining `@page` with redundant `@element`
-- route path/query `:param` without a reachable attribute-backed `@property`,
+- route path/query `:param` or named `*splat` without a reachable attribute target,
   including `attribute: false` and mismatched aliases
   (`snice/route-param-has-no-binding-target`)
 

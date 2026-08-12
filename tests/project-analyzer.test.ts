@@ -1329,16 +1329,129 @@ describe('page orchestration checks', () => {
         "  '/topics(/:section)/:section'",
         '] })',
         'class SearchPage extends HTMLElement {',
+        "  @property() path = '';",
         "  @property() section = '';",
         '}'
       ].join('\n');
       expect(byRule(supported, ruleId)).toEqual([]);
 
       const duplicatedMissing = [
-        "@page({ tag: 'search-page', routes: ['/:id/:id', { path: '/again/:id', order: 2 }] })",
+        "@page({ tag: 'search-page', routes: ['/:itemKey/:itemKey', { path: '/again/:itemKey', order: 2 }] })",
         'class SearchPage extends HTMLElement {}'
       ].join('\n');
       expect(byRule(duplicatedMissing, ruleId)).toHaveLength(1);
+    });
+
+    it('uses Snice decorator import provenance, including aliases', () => {
+      const diagnostics = analyzeProject({
+        'src/router.ts': "import { Router } from 'snice'; export const { page } = Router({ type: 'hash' });",
+        'src/pages/aliased.ts': [
+          "import { page as routePage } from '../router';",
+          "import { property as routeProperty } from 'snice';",
+          "import { property as foreignProperty } from 'other-framework';",
+          "@routePage({ tag: 'aliased-page', routes: ['/:good/:bad'] })",
+          'class AliasedPage extends HTMLElement {',
+          "  @routeProperty() good = '';",
+          "  @foreignProperty() bad = '';",
+          '}'
+        ].join('\n')
+      }).filter(diagnostic => diagnostic.ruleId === ruleId);
+      expect(diagnostics).toHaveLength(1);
+      expect(diagnostics[0].message).toContain(':bad');
+
+      const unrelated = [
+        "import { page } from 'other-framework';",
+        "@page({ routes: ['/:missing'] }) class NotASnicePage extends HTMLElement {}"
+      ].join('\n');
+      expect(byRule(unrelated, ruleId)).toEqual([]);
+
+      const localForeignProperty = [
+        'const property = () => () => {};',
+        "@page({ routes: ['/:missing'] }) class LocalDecoratorPage extends HTMLElement {",
+        "  @property() missing = '';",
+        '}'
+      ].join('\n');
+      expect(byRule(localForeignProperty, ruleId)).toHaveLength(1);
+
+      const localForeignPage = [
+        'const page = () => () => {};',
+        "@page({ routes: ['/:missing'] }) class LocalPage extends HTMLElement {}"
+      ].join('\n');
+      expect(byRule(localForeignPage, ruleId)).toEqual([]);
+
+      const sniceAlias = [
+        "import { SniceElement as BaseElement, property as routeProperty } from 'snice';",
+        "@page({ routes: ['/:account-id'] }) class AliasBasePage extends BaseElement {",
+        "  @routeProperty() accountId = '';",
+        '}'
+      ].join('\n');
+      expect(byRule(sniceAlias, ruleId)).toEqual([]);
+    });
+
+    it('lets subclass members shadow inherited binding targets', () => {
+      for (const override of ["@routeState() accountId = '';", "accountId = '';", 'get accountId() { return super.accountId; }']) {
+        const source = [
+          "import { property, state as routeState } from 'snice';",
+          "class Base extends HTMLElement { @property() accountId = ''; }",
+          "@page({ routes: ['/:accountId'] }) class Child extends Base {",
+          `  ${override}`,
+          '}'
+        ].join('\n');
+        expect(byRule(source, ruleId)).toHaveLength(1);
+      }
+    });
+
+    it('requires named splat and optional-splat binding targets', () => {
+      const source = [
+        "@page({ routes: ['/files/*path', '/archive(/*rest)'] })",
+        'class FilesPage extends HTMLElement {}'
+      ].join('\n');
+      expect(byRule(source, ruleId).map(item => item.message)).toEqual([
+        expect.stringContaining('*path'),
+        expect.stringContaining('*rest')
+      ]);
+    });
+
+    it('resolves the imported base declaration without guessing by class name', () => {
+      const files = {
+        'src/good/base.ts': "import { property } from 'snice'; export class Base extends HTMLElement { @property() accountId = ''; }",
+        'src/bad/base.ts': 'export class Base extends HTMLElement {}',
+        'src/pages/page.ts': [
+          "import { Base as RoutedBase } from '../good/base';",
+          "@page({ routes: ['/:accountId'] }) class RoutedPage extends RoutedBase {}"
+        ].join('\n')
+      };
+      expect(analyzeProject(files).filter(item => item.ruleId === ruleId)).toEqual([]);
+      files['src/pages/page.ts'] = files['src/pages/page.ts'].replace('../good/base', '../bad/base');
+      expect(analyzeProject(files).filter(item => item.ruleId === ruleId)).toHaveLength(1);
+    });
+
+    it('parses only static top-level page routes and cooks string escapes', () => {
+      const source = [
+        "@page(({ nested: { routes: ['/:ghost'] }, 'routes': ([",
+        "  '/users/:user\\x49d',",
+        "  { 'path': '/files/*file\\u0049d', meta: { path: '/:nested' } }",
+        '] as const) } as const))',
+        'class StaticPage extends HTMLElement {',
+        "  @property() userId = '';",
+        "  @property() fileId = '';",
+        '}'
+      ].join('\n');
+      expect(byRule(source, ruleId)).toEqual([]);
+    });
+
+    it('accepts native and statically-known custom attribute targets', () => {
+      const valid = [
+        "@page({ routes: ['/:id/:tenant-id'] })",
+        'class AttributePage extends HTMLElement {',
+        "  static get observedAttributes() { return ['tenant-id']; }",
+        '  attributeChangedCallback(name: string, oldValue: string | null, value: string | null) {}',
+        '}'
+      ].join('\n');
+      expect(byRule(valid, ruleId)).toEqual([]);
+
+      const invalid = valid.replace("  attributeChangedCallback(name: string, oldValue: string | null, value: string | null) {}\n", '');
+      expect(byRule(invalid, ruleId)).toHaveLength(1);
     });
 
     it('catches the same disabled binding defect across nine page classes', () => {
