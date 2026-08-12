@@ -3,6 +3,8 @@ import { element, html, property, render } from '../../../packages/core/src/inde
 export const nativeIdlBoundRole = { applicationRole: 'results' };
 export const registeredNativeIdlDirectRole = { applicationRole: 'registered-direct' };
 export const registeredNativeIdlSpreadRole = { applicationRole: 'registered-spread' };
+export const scopedReactiveDirectRole = { applicationRole: 'scoped-reactive-direct' };
+export const scopedReactiveSpreadHidden = { applicationRole: 'scoped-reactive-spread' };
 
 @element('live-native-idl-binding-owner')
 export class LiveNativeIdlBindingOwner extends HTMLElement {
@@ -39,4 +41,44 @@ export function defineRegisteredNativeIdlScenario() {
   }
 
   return { LiveRegisteredNativeIdlChild, LiveRegisteredNativeIdlOwner };
+}
+
+export function defineScopedNativeIdlScenario() {
+  const scopedRegistry = new CustomElementRegistry();
+
+  class LiveScopedNativeIdlChild extends HTMLElement {}
+  scopedRegistry.define('live-scoped-native-idl-child', LiveScopedNativeIdlChild);
+
+  @element('live-scoped-reactive-idl-base')
+  class LiveScopedReactiveIdlBase extends HTMLElement {
+    @property({ attribute: false }) role: any = null;
+    @property({ attribute: false }) hidden: any = null;
+  }
+  class LiveScopedReactiveIdlChild extends LiveScopedReactiveIdlBase {}
+  scopedRegistry.define('live-scoped-reactive-idl-child', LiveScopedReactiveIdlChild);
+
+  @element('live-scoped-native-idl-owner')
+  class LiveScopedNativeIdlOwner extends HTMLElement {
+    @property({ attribute: false }) nativeRole = 'button';
+    @property({ attribute: false }) nativeProps: Record<string, unknown> = { hidden: true };
+
+    createRenderRoot() {
+      return this.attachShadow({
+        mode: 'open',
+        customElementRegistry: scopedRegistry,
+      } as ShadowRootInit & { customElementRegistry: CustomElementRegistry });
+    }
+
+    @render()
+    template() {
+      return html`
+        <live-scoped-native-idl-child data-native-direct .role=${this.nativeRole}></live-scoped-native-idl-child>
+        <live-scoped-native-idl-child data-native-spread ...props=${this.nativeProps}></live-scoped-native-idl-child>
+        <live-scoped-reactive-idl-child data-reactive-direct .role=${scopedReactiveDirectRole}></live-scoped-reactive-idl-child>
+        <live-scoped-reactive-idl-child data-reactive-spread ...props=${{ hidden: scopedReactiveSpreadHidden }}></live-scoped-reactive-idl-child>
+      `;
+    }
+  }
+
+  return { LiveScopedNativeIdlOwner, LiveScopedNativeIdlChild, LiveScopedReactiveIdlChild };
 }

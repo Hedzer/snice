@@ -245,7 +245,12 @@ function performRender(
       return;
     }
 
-    const nextInstance = new TemplateInstance(result, capturedIdentity);
+    const customElementRegistry = renderRoot instanceof ShadowRoot
+      ? (renderRoot as ShadowRoot & {
+          customElementRegistry?: CustomElementRegistry;
+        }).customElementRegistry ?? renderRoot.ownerDocument.defaultView?.customElements ?? null
+      : renderRoot.ownerDocument.defaultView?.customElements ?? null;
+    const nextInstance = new TemplateInstance(result, capturedIdentity, customElementRegistry);
     const nextFragment = nextInstance.renderFragment();
 
     // Commit while detached first. A malformed binding can then fail without

@@ -25,19 +25,66 @@ const templateCache = new WeakMap<TemplateStringsArray, Template>();
 // Sentinel for "not yet set" - distinct from undefined/null
 const NOT_COMMITTED = Symbol('not-committed');
 
-function markPreUpgradePropertyBinding(element: Element, propertyName: string): boolean {
+type PropertyBindingRegistry = Pick<CustomElementRegistry, 'get' | 'whenDefined'>;
+
+const pendingDefinitionRegistries = new WeakMap<Element, PropertyBindingRegistry>();
+
+function isUpgradedBy(element: Element, constructor: CustomElementConstructor): boolean {
+  return Object.prototype.isPrototypeOf.call(constructor.prototype, element);
+}
+
+function flushPreUpgradePropertyBindings(
+  element: Element,
+  registry: PropertyBindingRegistry | null
+): void {
+  const tagName = element.localName;
+  const constructor = tagName && registry?.get(tagName);
+  if (!constructor || !isUpgradedBy(element, constructor)) return;
+
+  const target = element as any;
+  const markedBindings = target[PRE_UPGRADE_PROPERTY_BINDINGS] as Set<string> | undefined;
+  if (!markedBindings?.size) return;
+  for (const propertyName of Array.from(markedBindings)) {
+    // A Snice @property initializer consumes its own marker and expando while
+    // the element upgrades. Anything left belongs to a class that retained
+    // the native/custom property channel, so replay the latest parked value
+    // through that now-upgraded channel.
+    if (Object.prototype.hasOwnProperty.call(target, propertyName)) {
+      const value = target[propertyName];
+      delete target[propertyName];
+      target[propertyName] = value;
+    }
+    markedBindings.delete(propertyName);
+  }
+  delete target[PRE_UPGRADE_PROPERTY_BINDINGS];
+}
+
+function schedulePreUpgradePropertyFlush(
+  element: Element,
+  registry: PropertyBindingRegistry | null
+): void {
+  if (!registry?.whenDefined || pendingDefinitionRegistries.get(element) === registry) return;
+  pendingDefinitionRegistries.set(element, registry);
+  const reference = new WeakRef(element);
+  void registry.whenDefined(element.localName).then(() => {
+    const target = reference.deref();
+    if (target) flushPreUpgradePropertyBindings(target, registry);
+  });
+}
+
+function markPreUpgradePropertyBinding(
+  element: Element,
+  propertyName: string,
+  registry: PropertyBindingRegistry | null
+): boolean {
   const tagName = element.localName;
   if (!tagName?.includes('-')) return false;
-  const registry = element.ownerDocument?.defaultView?.customElements ?? globalThis.customElements;
   const registeredConstructor = registry?.get(tagName) as any;
   if (registeredConstructor) {
     // Template contents can still contain an unupgraded HTMLElement after the
     // definition has been registered. Registry presence alone therefore does
     // not prove that the reactive accessor exists on this clone yet.
-    const isUpgraded = Object.prototype.isPrototypeOf.call(
-      registeredConstructor.prototype,
-      element
-    );
+    const isUpgraded = isUpgradedBy(element, registeredConstructor);
     if (isUpgraded) return false;
 
     // A registered non-Snice element (or a Snice element that did not
@@ -49,11 +96,17 @@ function markPreUpgradePropertyBinding(element: Element, propertyName: string): 
   const target = element as any;
   if (!target[PRE_UPGRADE_PROPERTY_BINDINGS]) target[PRE_UPGRADE_PROPERTY_BINDINGS] = new Set<string>();
   target[PRE_UPGRADE_PROPERTY_BINDINGS].add(propertyName);
+  schedulePreUpgradePropertyFlush(element, registry);
   return true;
 }
 
-function commitPropertyValue(element: Element, propertyName: string, value: unknown): void {
-  if (!markPreUpgradePropertyBinding(element, propertyName)) {
+function commitPropertyValue(
+  element: Element,
+  propertyName: string,
+  value: unknown,
+  registry: PropertyBindingRegistry | null
+): void {
+  if (!markPreUpgradePropertyBinding(element, propertyName, registry)) {
     (element as any)[propertyName] = value;
     return;
   }
@@ -685,9 +738,16 @@ export class TemplateInstance {
   private conditionalParts: Array<{part: Part; index: number}> = []; // if/case parts with their indices
   private regularParts: Array<{part: Part; index: number}> = []; // all other parts with their indices
   readonly #renderIdentity: RenderHostIdentity | null;
+  readonly #customElementRegistry: PropertyBindingRegistry | null;
 
-  constructor(result: TemplateResult, renderIdentity: RenderHostIdentity | null = null) {
+  constructor(
+    result: TemplateResult,
+    renderIdentity: RenderHostIdentity | null = null,
+    customElementRegistry: PropertyBindingRegistry | null =
+      document.defaultView?.customElements ?? globalThis.customElements ?? null
+  ) {
     this.#renderIdentity = renderIdentity;
+    this.#customElementRegistry = customElementRegistry;
     try {
       this.template = prepareTemplate(result);
     } catch (error) {
@@ -749,7 +809,12 @@ export class TemplateInstance {
           case 'node':
             const startNode = nodeMap.get(partDef.startNode!) as Comment;
             const endNode = nodeMap.get(partDef.endNode!) as Comment;
-            part = new NodePart(startNode, endNode, this.#renderIdentity);
+            part = new NodePart(
+              startNode,
+              endNode,
+              this.#renderIdentity,
+              this.#customElementRegistry
+            );
             break;
           case 'attribute':
             const attrElement = nodeMap.get(partDef.element!) as Element;
@@ -757,7 +822,7 @@ export class TemplateInstance {
             break;
           case 'property':
             const propElement = nodeMap.get(partDef.element!) as Element;
-            part = new PropertyPart(propElement, partDef.name!);
+            part = new PropertyPart(propElement, partDef.name!, this.#customElementRegistry);
             break;
           case 'boolean-attribute':
             const boolElement = nodeMap.get(partDef.element!) as Element;
@@ -777,7 +842,7 @@ export class TemplateInstance {
             break;
           case 'spread':
             const spreadElement = nodeMap.get(partDef.element!) as Element;
-            part = new SpreadPart(spreadElement, partDef.name!);
+            part = new SpreadPart(spreadElement, partDef.name!, this.#customElementRegistry);
             break;
           case 'controller':
             const controllerElement = nodeMap.get(partDef.element!) as HTMLElement;
@@ -982,12 +1047,19 @@ export class NodePart extends Part {
   private _asyncPaused = false;
   private _committingAsyncValue = false;
   readonly #renderIdentity: RenderHostIdentity | null;
+  readonly #customElementRegistry: PropertyBindingRegistry | null;
 
-  constructor(startNode: Comment, endNode: Comment, renderIdentity: RenderHostIdentity | null = null) {
+  constructor(
+    startNode: Comment,
+    endNode: Comment,
+    renderIdentity: RenderHostIdentity | null = null,
+    customElementRegistry: PropertyBindingRegistry | null = null
+  ) {
     super();
     this.startNode = startNode;
     this.endNode = endNode;
     this.#renderIdentity = renderIdentity;
+    this.#customElementRegistry = customElementRegistry;
   }
 
   private _withRenderContext(error: unknown): unknown {
@@ -1113,7 +1185,11 @@ export class NodePart extends Part {
     // Different template or first render: prepare and validate the replacement
     // while it is detached. If a binding throws, the currently
     // committed range remains intact and its lifecycle stays connected.
-    const instance = new TemplateInstance(result, this.#renderIdentity);
+    const instance = new TemplateInstance(
+      result,
+      this.#renderIdentity,
+      this.#customElementRegistry
+    );
     const fragment = instance.renderFragment();
     try {
       instance.update(result.values);
@@ -1225,7 +1301,12 @@ export class NodePart extends Part {
         const endMarker = document.createComment('');
         this._insertBefore(startMarker);
         this._insertBefore(endMarker);
-        itemPart = new NodePart(startMarker, endMarker, this.#renderIdentity);
+        itemPart = new NodePart(
+          startMarker,
+          endMarker,
+          this.#renderIdentity,
+          this.#customElementRegistry
+        );
         itemParts.push(itemPart);
       } else {
         // Reuse existing NodePart
@@ -1336,7 +1417,12 @@ export class NodePart extends Part {
         const endMarker = document.createComment('');
         parent.insertBefore(startMarker, ref);
         parent.insertBefore(endMarker, ref);
-        part = new NodePart(startMarker, endMarker, this.#renderIdentity);
+        part = new NodePart(
+          startMarker,
+          endMarker,
+          this.#renderIdentity,
+          this.#customElementRegistry
+        );
         newParts[i] = part;
       }
 
@@ -1863,11 +1949,17 @@ export class SpreadPart extends Part {
   private committed: Record<string, unknown> = {};
   private listeners = new Map<string, SpreadListener>();
   private consumedOnce = new Map<string, unknown>();
+  readonly #customElementRegistry: PropertyBindingRegistry | null;
 
-  constructor(element: Element, name: string) {
+  constructor(
+    element: Element,
+    name: string,
+    customElementRegistry: PropertyBindingRegistry | null = null
+  ) {
     super();
     this.element = element;
     this.name = name;
+    this.#customElementRegistry = customElementRegistry;
   }
 
   commit(value: unknown): void {
@@ -1886,12 +1978,17 @@ export class SpreadPart extends Part {
   private commitProperties(next: Record<string, unknown>): void {
     for (const key of Object.keys(this.committed)) {
       if (!Object.prototype.hasOwnProperty.call(next, key)) {
-        commitPropertyValue(this.element, key, undefined);
+        commitPropertyValue(this.element, key, undefined, this.#customElementRegistry);
       }
     }
     for (const [key, value] of Object.entries(next)) {
       if (Object.is(this.committed[key], value)) continue;
-      commitPropertyValue(this.element, key, value === nothing ? undefined : value);
+      commitPropertyValue(
+        this.element,
+        key,
+        value === nothing ? undefined : value,
+        this.#customElementRegistry
+      );
     }
   }
 
@@ -1968,6 +2065,9 @@ export class SpreadPart extends Part {
   }
 
   reconnected(): void {
+    if (this.name === 'props' || this.name === 'properties') {
+      flushPreUpgradePropertyBindings(this.element, this.#customElementRegistry);
+    }
     if (this.name === 'events' && this.listeners.size === 0) this.commitEvents(this.committed);
   }
 
@@ -1988,11 +2088,17 @@ export class PropertyPart extends Part {
   element: Element;
   readonly name: string;
   private _committedValue: unknown = NOT_COMMITTED;
+  readonly #customElementRegistry: PropertyBindingRegistry | null;
 
-  constructor(element: Element, name: string) {
+  constructor(
+    element: Element,
+    name: string,
+    customElementRegistry: PropertyBindingRegistry | null = null
+  ) {
     super();
     this.element = element;
     this.name = name;
+    this.#customElementRegistry = customElementRegistry;
   }
 
   commit(value: unknown): void {
@@ -2015,7 +2121,16 @@ export class PropertyPart extends Part {
     }
 
     this._committedValue = value;
-    commitPropertyValue(this.element, this.name, value === nothing ? undefined : value);
+    commitPropertyValue(
+      this.element,
+      this.name,
+      value === nothing ? undefined : value,
+      this.#customElementRegistry
+    );
+  }
+
+  reconnected(): void {
+    flushPreUpgradePropertyBindings(this.element, this.#customElementRegistry);
   }
 
   clear(): void {

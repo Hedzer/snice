@@ -93,7 +93,10 @@ describe('pre-upgrade property bindings that collide with native IDL', () => {
     class NativeRoleOwner extends HTMLElement {
       @render()
       template() {
-        return html`<test-registered-native-role-child .role=${'button'}></test-registered-native-role-child>`;
+        return html`
+          <test-registered-native-role-child data-direct .role=${'button'}></test-registered-native-role-child>
+          <test-registered-native-role-child data-spread ...props=${{ hidden: true }}></test-registered-native-role-child>
+        `;
       }
     }
 
@@ -101,10 +104,100 @@ describe('pre-upgrade property bindings that collide with native IDL', () => {
     document.body.append(owner);
     await owner.ready;
 
-    const child = owner.shadowRoot!.querySelector('test-registered-native-role-child') as NativeRoleChild;
-    expect(child.role).toBe('button');
-    expect(child.getAttribute('role')).toBe('button');
-    expect(Object.hasOwn(child, 'role')).toBe(false);
+    const direct = owner.shadowRoot!.querySelector('[data-direct]') as NativeRoleChild;
+    const spread = owner.shadowRoot!.querySelector('[data-spread]') as NativeRoleChild;
+    expect(direct.role).toBe('button');
+    expect(direct.getAttribute('role')).toBe('button');
+    expect(Object.hasOwn(direct, 'role')).toBe(false);
+    expect(spread.hidden).toBe(true);
+    expect(spread.hasAttribute('hidden')).toBe(true);
+    expect(Object.hasOwn(spread, 'hidden')).toBe(false);
+    owner.remove();
+  });
+
+  it('uses the destination shadow root registry for native text and boolean property semantics', async () => {
+    class ScopedNativeChild extends HTMLElement {}
+    const scopedRegistry = {
+      get(name: string) {
+        return name === 'test-scoped-native-idl-child' ? ScopedNativeChild : undefined;
+      }
+    };
+
+    @element('test-scoped-native-idl-owner')
+    class ScopedNativeOwner extends HTMLElement {
+      createRenderRoot() {
+        const root = this.attachShadow({ mode: 'open' });
+        Object.defineProperty(root, 'customElementRegistry', {
+          configurable: true,
+          value: scopedRegistry
+        });
+        return root;
+      }
+
+      @render()
+      template() {
+        return html`
+          <test-scoped-native-idl-child data-direct .role=${'button'}></test-scoped-native-idl-child>
+          <test-scoped-native-idl-child data-spread ...props=${{ hidden: true }}></test-scoped-native-idl-child>
+        `;
+      }
+    }
+
+    const owner = document.createElement('test-scoped-native-idl-owner') as ScopedNativeOwner;
+    document.body.append(owner);
+    await owner.ready;
+
+    const direct = owner.shadowRoot!.querySelector('[data-direct]') as HTMLElement;
+    const spread = owner.shadowRoot!.querySelector('[data-spread]') as HTMLElement;
+    expect(direct.role).toBe('button');
+    expect(direct.getAttribute('role')).toBe('button');
+    expect(Object.hasOwn(direct, 'role')).toBe(false);
+    expect(spread.hidden).toBe(true);
+    expect(spread.hasAttribute('hidden')).toBe(true);
+    expect(Object.hasOwn(spread, 'hidden')).toBe(false);
+    owner.remove();
+  });
+
+  it('keeps only the latest direct and spread values before a late definition', async () => {
+    const first = { applicationRole: 'first' };
+    const latest = { applicationRole: 'latest' };
+
+    @element('test-late-native-idl-update-owner')
+    class LateNativeIdlUpdateOwner extends HTMLElement {
+      @property({ attribute: false }) directRole: any = first;
+      @property({ attribute: false }) spreadProps: Record<string, unknown> = { role: first };
+
+      @render()
+      template() {
+        return html`
+          <test-late-native-idl-update-child data-direct .role=${this.directRole}></test-late-native-idl-update-child>
+          <test-late-native-idl-update-child data-spread ...props=${this.spreadProps}></test-late-native-idl-update-child>
+        `;
+      }
+    }
+
+    const owner = document.createElement('test-late-native-idl-update-owner') as LateNativeIdlUpdateOwner;
+    document.body.append(owner);
+    await owner.ready;
+    owner.directRole = latest;
+    owner.spreadProps = {};
+    await owner.rendered;
+
+    @element('test-late-native-idl-update-child')
+    class LateNativeIdlUpdateChild extends HTMLElement {
+      @property({ attribute: false }) role: any = null;
+    }
+
+    await customElements.whenDefined('test-late-native-idl-update-child');
+    const direct = owner.shadowRoot!.querySelector('[data-direct]') as LateNativeIdlUpdateChild;
+    const spread = owner.shadowRoot!.querySelector('[data-spread]') as LateNativeIdlUpdateChild;
+    await Promise.all([direct.ready, spread.ready]);
+    expect(direct.role).toBe(latest);
+    expect(spread.role).toBeUndefined();
+    expect(direct.getAttribute('role')).toBeNull();
+    expect(spread.getAttribute('role')).toBeNull();
+    expect(Object.hasOwn(direct, 'role')).toBe(false);
+    expect(Object.hasOwn(spread, 'role')).toBe(false);
     owner.remove();
   });
 

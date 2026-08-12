@@ -67,3 +67,105 @@ test('registered Snice elements preserve native-IDL-colliding bindings from temp
     spread: { same: true, attribute: null, own: false },
   });
 });
+
+for (const build of [
+  {
+    name: 'source',
+    fixtureUrl: '/tests/live/fixtures/property-native-idl-late-upgrade.ts',
+    ownerTag: 'live-scoped-native-idl-owner',
+    nativeChildName: 'LiveScopedNativeIdlChild',
+    reactiveChildName: 'LiveScopedReactiveIdlChild',
+  },
+  {
+    name: 'distribution',
+    fixtureUrl: '/tests/live/fixtures/property-native-idl-scoped-distribution.ts',
+    ownerTag: 'dist-scoped-native-idl-owner',
+    nativeChildName: 'DistScopedNativeIdlChild',
+    reactiveChildName: 'DistScopedReactiveIdlChild',
+  },
+] as const) {
+test(`${build.name}: scoped registries preserve native semantics and declared reactive bindings`, async ({ page }) => {
+  await page.goto('/guide.html');
+
+  const result = await page.evaluate(async ({ fixtureUrl, ownerTag, nativeChildName, reactiveChildName }) => {
+    const fixture = await import(fixtureUrl);
+    const definitions = fixture.defineScopedNativeIdlScenario();
+    const owner = document.createElement(ownerTag) as any;
+    document.body.append(owner);
+    await owner.ready;
+
+    const nativeDirect = owner.shadowRoot.querySelector('[data-native-direct]') as any;
+    const nativeSpread = owner.shadowRoot.querySelector('[data-native-spread]') as any;
+    const reactiveDirect = owner.shadowRoot.querySelector('[data-reactive-direct]') as any;
+    const reactiveSpread = owner.shadowRoot.querySelector('[data-reactive-spread]') as any;
+    await Promise.all([reactiveDirect.ready, reactiveSpread.ready]);
+
+    const initial = {
+      upgraded: {
+        nativeDirect: nativeDirect instanceof definitions[nativeChildName],
+        nativeSpread: nativeSpread instanceof definitions[nativeChildName],
+        reactiveDirect: reactiveDirect instanceof definitions[reactiveChildName],
+        reactiveSpread: reactiveSpread instanceof definitions[reactiveChildName],
+      },
+      nativeDirect: {
+        value: nativeDirect.role,
+        attribute: nativeDirect.getAttribute('role'),
+        own: Object.hasOwn(nativeDirect, 'role'),
+      },
+      nativeSpread: {
+        value: nativeSpread.hidden,
+        attribute: nativeSpread.hasAttribute('hidden'),
+        own: Object.hasOwn(nativeSpread, 'hidden'),
+      },
+      reactiveDirect: {
+        same: reactiveDirect.role === fixture.scopedReactiveDirectRole,
+        attribute: reactiveDirect.getAttribute('role'),
+        own: Object.hasOwn(reactiveDirect, 'role'),
+      },
+      reactiveSpread: {
+        same: reactiveSpread.hidden === fixture.scopedReactiveSpreadHidden,
+        attribute: reactiveSpread.getAttribute('hidden'),
+        own: Object.hasOwn(reactiveSpread, 'hidden'),
+      },
+    };
+
+    owner.nativeRole = 'menu';
+    owner.nativeProps = {};
+    await owner.rendered;
+    return {
+      initial,
+      updated: {
+        role: nativeDirect.role,
+        roleAttribute: nativeDirect.getAttribute('role'),
+        hidden: nativeSpread.hidden,
+        hiddenAttribute: nativeSpread.hasAttribute('hidden'),
+        ownRole: Object.hasOwn(nativeDirect, 'role'),
+        ownHidden: Object.hasOwn(nativeSpread, 'hidden'),
+      },
+    };
+  }, build);
+
+  expect(result).toEqual({
+    initial: {
+      upgraded: {
+        nativeDirect: true,
+        nativeSpread: true,
+        reactiveDirect: true,
+        reactiveSpread: true,
+      },
+      nativeDirect: { value: 'button', attribute: 'button', own: false },
+      nativeSpread: { value: true, attribute: true, own: false },
+      reactiveDirect: { same: true, attribute: null, own: false },
+      reactiveSpread: { same: true, attribute: null, own: false },
+    },
+    updated: {
+      role: 'menu',
+      roleAttribute: 'menu',
+      hidden: false,
+      hiddenAttribute: false,
+      ownRole: false,
+      ownHidden: false,
+    },
+  });
+});
+}
