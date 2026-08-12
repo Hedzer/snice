@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Window } from 'happy-dom';
 import {
+  Router,
   TemplateInstance,
   captureRenderHostIdentity,
   element,
@@ -141,6 +143,87 @@ describe('template authoring error context', () => {
     const logged = errors.mock.calls.find(call => call[0] === 'Error rendering element:')?.[1] as Error;
     expect(logged.message).toContain('render failed for <test-context-minified-name>:');
     expect(logged.message).not.toContain('<test-context-minified-name> (');
+  });
+
+  it('attributes alternate-realm Router pages through their owning registry', () => {
+    const alternate = new Window();
+    const target = alternate.document.createElement('div');
+    target.id = 'app';
+    alternate.document.body.append(target);
+    const router = Router({
+      target: '#app',
+      type: 'hash',
+      window: alternate as unknown as Window & typeof globalThis,
+      document: alternate.document as unknown as Document,
+    });
+    const original = new Error('alternate realm render failed');
+
+    class AltPage extends alternate.HTMLElement {
+      @render({ sync: true }) template() { throw original; }
+    }
+    router.page({ tag: 'test-context-alt-page', routes: ['/'] })(
+      AltPage as unknown as typeof HTMLElement,
+      { kind: 'class', name: 'AltPage', metadata: undefined } as any,
+    );
+
+    expect(alternate.customElements.get('test-context-alt-page')).toBe(AltPage);
+    expect(customElements.get('test-context-alt-page')).toBeUndefined();
+    const host = alternate.document.createElement('test-context-alt-page') as HTMLElement;
+    expect(host.isConnected).toBe(false);
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
+
+    setStrictRenderErrors(true);
+    let thrown: Error | undefined;
+    try {
+      renderElementNow(host);
+    } catch (error) {
+      thrown = error as Error;
+    }
+    expect(thrown?.message).toMatch(
+      /^snice: render failed for <test-context-alt-page>( \(AltPage\))?: alternate realm render failed$/,
+    );
+    expect(thrown?.message.match(/snice: render failed for/g)).toHaveLength(1);
+    expect(thrown?.cause).toBe(original);
+
+    document.adoptNode(host);
+    expect(host.ownerDocument).toBe(document);
+    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    alternate.document.adoptNode(host);
+    expect(captureRenderHostIdentity(host).label).toMatch(
+      /^<test-context-alt-page>( \(AltPage\))?$/,
+    );
+
+    const ownerDocument = Object.getOwnPropertyDescriptor(host, 'ownerDocument');
+    let ownerDocumentReads = 0;
+    Object.defineProperty(host, 'ownerDocument', {
+      configurable: true,
+      get() { ownerDocumentReads++; throw new Error('spoofed ownerDocument'); },
+    });
+    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(ownerDocumentReads).toBe(0);
+    if (ownerDocument) Object.defineProperty(host, 'ownerDocument', ownerDocument);
+
+    const defaultView = Object.getOwnPropertyDescriptor(alternate.document, 'defaultView');
+    let defaultViewReads = 0;
+    Object.defineProperty(alternate.document, 'defaultView', {
+      configurable: true,
+      get() { defaultViewReads++; throw new Error('spoofed defaultView'); },
+    });
+    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(defaultViewReads).toBe(0);
+    if (defaultView) Object.defineProperty(alternate.document, 'defaultView', defaultView);
+
+    const registry = Object.getOwnPropertyDescriptor(alternate, 'customElements');
+    let registryReads = 0;
+    Object.defineProperty(alternate, 'customElements', {
+      configurable: true,
+      get() { registryReads++; throw new Error('spoofed customElements'); },
+    });
+    expect(captureRenderHostIdentity(host).label).toBe('<element>');
+    expect(registryReads).toBe(0);
+    if (registry) Object.defineProperty(alternate, 'customElements', registry);
   });
 
   it('preserves cause and stack while strict mode rethrows nested parser errors', async () => {

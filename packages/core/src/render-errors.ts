@@ -8,6 +8,31 @@ export interface RenderHostIdentity {
 
 const SAFE_TAG = /^[a-z][a-z0-9._-]{0,127}$/;
 const SAFE_CLASS = /^[A-Za-z_$][A-Za-z0-9_$]{0,127}$/;
+const AMBIENT_DOCUMENT = typeof document === 'undefined' ? undefined : document;
+const AMBIENT_WINDOW = typeof window === 'undefined' ? undefined : window;
+const AMBIENT_REGISTRY = typeof customElements === 'undefined' ? undefined : customElements;
+
+/** Read platform state without consulting an own or nearer spoofing accessor. */
+function safePlatformValue(object: unknown, key: PropertyKey): unknown {
+  if ((typeof object !== 'object' && typeof object !== 'function') || object === null) return undefined;
+  let current: object | null = object as object;
+  let inheritedGetter: ((this: unknown) => unknown) | undefined;
+  while (current) {
+    const descriptor = Object.getOwnPropertyDescriptor(current, key);
+    if (descriptor) {
+      if ('value' in descriptor) return descriptor.value;
+      // Keep walking so the platform's deeper getter wins over an accessor on
+      // the host or one of its user-authored prototypes.
+      if (current !== object && descriptor.get) inheritedGetter = descriptor.get;
+    }
+    current = Object.getPrototypeOf(current);
+  }
+  try {
+    return inheritedGetter?.call(object);
+  } catch {
+    return undefined;
+  }
+}
 
 function registeredIdentity(host: HTMLElement): { tag: string; className: string } | null {
   const prototype = Object.getPrototypeOf(host);
@@ -16,8 +41,14 @@ function registeredIdentity(host: HTMLElement): { tag: string; className: string
   const tag = typeof tagDescriptor?.value === 'string' ? tagDescriptor.value : '';
   if (!SAFE_TAG.test(tag)) return null;
 
-  const registry = globalThis.customElements;
-  const constructor = registry?.get(tag);
+  const ownerDocument = safePlatformValue(host, 'ownerDocument');
+  const ownerWindow = safePlatformValue(ownerDocument, 'defaultView') ??
+    (ownerDocument === AMBIENT_DOCUMENT ? AMBIENT_WINDOW : undefined);
+  const ownerRegistry = safePlatformValue(ownerWindow, 'customElements') ??
+    (ownerWindow === AMBIENT_WINDOW ? AMBIENT_REGISTRY : undefined);
+  const registry = ownerRegistry;
+  const get = safePlatformValue(registry, 'get');
+  const constructor = typeof get === 'function' ? get.call(registry, tag) : undefined;
   if (typeof constructor !== 'function') return null;
 
   const prototypeDescriptor = Object.getOwnPropertyDescriptor(constructor, 'prototype');
