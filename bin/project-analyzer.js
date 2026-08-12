@@ -3743,6 +3743,13 @@ function maskNonExecutableCode(source) {
         index = close < 0 ? source.length : close + 1;
         continue;
       }
+      if (source[index] === '/' && startsRegexLiteral(source, index)) {
+        const end = regexLiteralEnd(source, index);
+        if (end > index) {
+          index = end - 1;
+          continue;
+        }
+      }
       if (source[index] === "'" || source[index] === '"' || source[index] === '`') {
         index = quotedEnd(index, source[index]);
         continue;
@@ -3767,6 +3774,14 @@ function maskNonExecutableCode(source) {
       blank(index, end);
       index = end - 1;
       continue;
+    }
+    if (source[index] === '/' && startsRegexLiteral(source, index)) {
+      const end = regexLiteralEnd(source, index);
+      if (end > index) {
+        blank(index, end);
+        index = end - 1;
+        continue;
+      }
     }
     if (source[index] !== "'" && source[index] !== '"' && source[index] !== '`') continue;
     const end = quotedEnd(index, source[index]);
@@ -3944,6 +3959,28 @@ function startsRegexLiteral(source, slashIndex) {
   return /^(?:return|case|throw|else|do|typeof|instanceof|in|of|yield|await|void|delete)$/.test(
     source.slice(start, previous + 1)
   );
+}
+
+function regexLiteralEnd(source, slashIndex) {
+  let characterClass = false;
+  for (let index = slashIndex + 1; index < source.length; index++) {
+    const character = source[index];
+    if (character === '\n' || character === '\r') return -1;
+    if (character === '\\') { index++; continue; }
+    if (character === '[' && !characterClass) {
+      characterClass = true;
+      continue;
+    }
+    if (character === ']' && characterClass) {
+      characterClass = false;
+      continue;
+    }
+    if (character !== '/' || characterClass) continue;
+    index++;
+    while (/[A-Za-z]/.test(source[index] ?? '')) index++;
+    return index;
+  }
+  return -1;
 }
 
 function reactExportReplacement(name) {

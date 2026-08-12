@@ -1554,6 +1554,68 @@ describe('page orchestration checks', () => {
       expect(realPage.map(item => item.message)).toEqual([expect.stringContaining(':separateMissing')]);
     });
 
+    it.each([["/'/g", 0], ['/"/i', 1], ['/`/u', 2], ["/[']/", 3], ["/\\'/", 4]])(
+      'keeps real Router provenance after the %s regex literal',
+      (regex, index) => {
+        const diagnostics = analyzeProject({
+          'src/router.ts': [
+            `const marker = ${regex};`,
+            "import { Router as makeRouter } from 'snice';",
+            "export const { page: routePage } = makeRouter({ type: 'hash' });"
+          ].join('\n'),
+          'src/page.ts': [
+            "import { routePage } from './router';",
+            `@routePage({ routes: ['/:missing${index}'] }) class RegexPage extends HTMLElement {}`
+          ].join('\n')
+        }).filter(item => item.ruleId === ruleId);
+        expect(diagnostics).toHaveLength(1);
+        expect(diagnostics[0].message).toContain(`:missing${index}`);
+      }
+    );
+
+    it('distinguishes regexes from operators and ignores template-expression regex text', () => {
+      const diagnostics = analyzeProject({
+        'src/router.ts': [
+          'let total = 12, count = 3;',
+          'const ratio = total / count;',
+          'total /= count;',
+          "const url = 'https://snice.dev/a//b';",
+          'const interpolated = `${/[/\'\"`]/giu.test(url)}`;',
+          "const trailing = /[']/g; // a comment after the regex",
+          "import { Router as makeRouter } from 'snice';",
+          "export const { page: routePage } = makeRouter({ type: 'hash' });"
+        ].join('\n'),
+        'src/page.ts': [
+          "import { routePage } from './router';",
+          "@routePage({ routes: ['/:realMissing'] }) class OperatorPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics.map(item => item.message)).toEqual([expect.stringContaining(':realMissing')]);
+    });
+
+    it('keeps an aliased Router page import after a quote-bearing regex', () => {
+      const diagnostics = analyzeProject({
+        'src/router.ts': "import { Router } from 'snice'; export const { page } = Router({ type: 'hash' });",
+        'src/page.ts': [
+          "const marker = /[\\\"'`]/giu;",
+          "import { page as routePage } from './router';",
+          "@routePage({ routes: ['/:directMissing'] }) class DirectPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics.map(item => item.message)).toEqual([
+        expect.stringContaining(':directMissing')
+      ]);
+    });
+
+    it('does not invent a Snice page after a quote-bearing regex literal', () => {
+      const foreign = [
+        "const marker = /'/;",
+        'const page = () => () => {};',
+        "@page({ routes: ['/:foreign'] }) class ForeignPage extends HTMLElement {}"
+      ].join('\n');
+      expect(byRule(foreign, ruleId)).toEqual([]);
+    });
+
     it('uses last-key semantics and defers route objects made uncertain by spreads', () => {
       const source = [
         "@page({ routes: ['/:ignored'], ...unknown, routes: [",

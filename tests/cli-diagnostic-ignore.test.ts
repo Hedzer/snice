@@ -164,6 +164,32 @@ describe('.sniceignore diagnostic suppression', () => {
     ]);
   });
 
+  it('retains real Router provenance after regex and division expressions', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    await writeFile(join(projectRoot, 'src/router.ts'), [
+      "const single = /'/g, double = /\"/i, tick = /`/u, bracket = /[']/, escaped = /\\'/;",
+      'let total = 12, count = 3;',
+      'const ratio = total / count;',
+      'total /= count;',
+      "const url = 'https://snice.dev/a//b';",
+      'const docs = `${/[/\'\"`]/giu.test(url)}`;',
+      "const trailing = /[']/; // comment",
+      "import { Router as makeRouter } from 'snice';",
+      "export const { page: routePage } = makeRouter({ type: 'hash' });"
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'regex-page.ts'), [
+      "import { routePage } from '../router';",
+      "@routePage({ routes: ['/:regexMissing'] }) class RegexPage extends HTMLElement {}"
+    ].join('\n'));
+
+    const code = 'snice/route-param-has-no-binding-target';
+    const result = await validate(projectRoot);
+    expect(result.issues.filter((candidate: any) => candidate.code === code)).toEqual([
+      expect.objectContaining({ message: expect.stringContaining(':regexMissing') })
+    ]);
+  });
+
   it('reports named splats on an aliased local page decorator', async () => {
     const sourceDirectory = join(projectRoot, 'src/pages');
     await mkdir(sourceDirectory, { recursive: true });
