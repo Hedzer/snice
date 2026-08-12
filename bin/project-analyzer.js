@@ -1695,6 +1695,7 @@ export function analyzeProject(files) {
       staleGuards.push({ file, index: guard.index, field: guard[2], owner: owner?.kind });
     }
     const provenance = buildSourceProvenance(analyzable);
+    enrichSniceProvenance(provenance, file, normalized);
     localClassDeclarations.push(...findClassBodies(analyzable).map(declaration => ({
       ...declaration,
       file,
@@ -1702,7 +1703,7 @@ export function analyzeProject(files) {
       routeProperties: inspectRouteProperties(declaration.body, declaration.bodyStart, provenance)
     })));
     routerConstructions.push(
-      ...findRouterConstructions(analyzable, localsFor(provenance.rootBindings, 'Router'))
+      ...findRouterConstructions(analyzable, provenRootBindingNames(provenance, 'Router'))
         .map(construction => ({ ...construction, file }))
     );
     for (const convention of [
@@ -1996,7 +1997,7 @@ export function analyzeProject(files) {
       });
     }
 
-    const bindingEnvironment = resolveRouteBindingEnvironment(page, localClassDeclarations);
+    const bindingEnvironment = resolveRouteBindingEnvironment(page, localClassDeclarations, normalized);
     const reportedRouteAttributes = new Set();
     for (const route of findPageRoutes(page.file.source, page.index)) {
       for (const parameter of findRouteParameters(route)) {
@@ -2008,22 +2009,28 @@ export function analyzeProject(files) {
           property.attributeKind !== 'unknown' &&
           routePropertyAttribute(property, bindingEnvironment.naming) === routeAttribute
         );
-        if (reachable || bindingEnvironment.nativeAttributes.has(routeAttribute) ||
-          bindingEnvironment.customAttributes.has(routeAttribute)) continue;
+        if (reachable) continue;
 
         const sameName = bindingEnvironment.properties.find(property => property.name === parameter.name);
-        if (!sameName && !bindingEnvironment.complete) continue;
         if (sameName?.attributeKind === 'unknown') continue;
+        if (sameName?.attributeKind === 'default' && bindingEnvironment.naming === 'unknown') continue;
+        if (bindingEnvironment.customAttributes.has(routeAttribute)) continue;
 
         reportedRouteAttributes.add(routeAttribute);
         const location = sourceLocation(page.file.source, parameter.index);
         const routeLabel = `${parameter.marker}${parameter.name}`;
         if (sameName?.attributeKind === 'false') {
+          const disabledBy = sameName.kind === 'state'
+            ? '@state() is internal state and disables the attribute channel used by Router'
+            : '@property({ attribute: false }) disables the attribute channel used by Router';
+          const enableFix = sameName.kind === 'state'
+            ? `Replace @state() with a plain @property() on ${sameName.name}`
+            : `Remove attribute: false so ${sameName.name} is a plain bindable @property()`;
           diagnostics.push({
             severity: 'error',
             ruleId: 'snice/route-param-has-no-binding-target',
-            message: `Route parameter "${routeLabel}" cannot bind ${page.name}.${sameName.name} because @property({ attribute: false }) disables the attribute channel used by Router.`,
-            fix: `Remove attribute: false so ${sameName.name} is a plain bindable @property(), or remove/rename "${routeLabel}" if the URL value is not a page input. Review docs/ai/routing.md.`,
+            message: `Route parameter "${routeLabel}" cannot bind ${page.name}.${sameName.name} because ${disabledBy}.`,
+            fix: `${enableFix}, or remove/rename "${routeLabel}" if the URL value is not a page input. Review docs/ai/routing.md.`,
             file: page.file.filename,
             line: location.line,
             column: location.column
@@ -2048,6 +2055,9 @@ export function analyzeProject(files) {
           });
           continue;
         }
+
+        if (bindingEnvironment.nativeAttributes.has(routeAttribute)) continue;
+        if (!bindingEnvironment.complete) continue;
 
         const suggestedName = kebabToCamel(parameter.name);
         const propertySuggestion = /^[A-Za-z_$][\w$]*$/.test(suggestedName)
@@ -2381,7 +2391,7 @@ function findObjectCalls(source, functionName) {
 
 function findClassBodies(source) {
   const classes = [];
-  const pattern = /\bclass\s+([A-Za-z_$][\w$]*)\s+extends\s+([A-Za-z_$][\w$]*)[^{]*\{/g;
+  const pattern = /\bclass\s+([A-Za-z_$][\w$]*)\s+extends\s+([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)[^{]*\{/g;
   for (const match of source.matchAll(pattern)) {
     const open = source.indexOf('{', match.index);
     const close = findMatchingDelimiter(source, open, '{', '}');
@@ -2474,7 +2484,7 @@ function findDecoratedClasses(source, decoratorName) {
     // intervening decorators so each Snice role resolves to that class.
     while (true) {
       while (/\s/.test(source[declarationStart] ?? '')) declarationStart++;
-      const nextDecorator = /^@[A-Za-z_$][\w$]*/.exec(source.slice(declarationStart));
+      const nextDecorator = /^@[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/.exec(source.slice(declarationStart));
       if (!nextDecorator) break;
       declarationStart += nextDecorator[0].length;
       while (/\s/.test(source[declarationStart] ?? '')) declarationStart++;
@@ -2493,7 +2503,7 @@ function findDecoratedClasses(source, decoratorName) {
     declarations.push({
       index: match.index,
       name: declaration[1],
-      base: /\bextends\s+([A-Za-z_$][\w$]*)/.exec(declaration[0])?.[1] ?? null,
+      base: /\bextends\s+([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/.exec(declaration[0])?.[1] ?? null,
       bodyStart: open + 1,
       body: source.slice(open + 1, close)
     });
@@ -2660,19 +2670,34 @@ function findStaticObjectProperty(source, open, end, wanted) {
   if (close < 0 || close >= end) return null;
   const body = source.slice(open + 1, close);
   let offset = 0;
+  let result = null;
   for (const item of splitTopLevelArguments(body)) {
     const relative = body.indexOf(item, offset);
     offset = relative + item.length;
     const absolute = open + 1 + relative;
+    const trimmed = item.trimStart();
+    // A spread or computed/shorthand key can replace any earlier property.
+    // A later explicit key is certain again because JavaScript uses last-key
+    // semantics for object literals.
+    if (trimmed.startsWith('...') || trimmed.startsWith('[')) {
+      result = null;
+      continue;
+    }
     // splitTopLevelArguments already isolates the property; find the first
     // colon outside a quoted key.
     const keyMatch = /^\s*(?:([A-Za-z_$][\w$]*)|(['"])(.*?)\2)\s*:/.exec(item);
-    if (!keyMatch) continue;
+    if (!keyMatch) {
+      const staticMethodOrShorthand = new RegExp(
+        `^\\s*(?:(?:get|set|async)\\s+)?\\*?\\s*(?:${escapeRegExp(wanted)}|(['"])${escapeRegExp(wanted)}\\1)\\s*(?:\\(|,|$)`
+      );
+      if (staticMethodOrShorthand.test(item)) result = null;
+      continue;
+    }
     const key = keyMatch[1] ?? keyMatch[3];
     if (key !== wanted) continue;
-    return { start: absolute + keyMatch[0].length, end: absolute + item.length };
+    result = { start: absolute + keyMatch[0].length, end: absolute + item.length };
   }
-  return null;
+  return result;
 }
 
 function parseStaticString(source, start, end) {
@@ -2689,8 +2714,19 @@ function parseStaticString(source, start, end) {
     if (char !== '\\') { value += char; sourceIndices.push(index); continue; }
     const escapeStart = index;
     const next = source[++index];
+    if (next === '\n') continue;
+    if (next === '\r') {
+      if (source[index + 1] === '\n') index++;
+      continue;
+    }
     if (next === 'x' && /^[0-9a-fA-F]{2}/.test(source.slice(index + 1, index + 3))) {
       value += String.fromCharCode(parseInt(source.slice(index + 1, index + 3), 16)); index += 2;
+    } else if (next === 'u' && source[index + 1] === '{') {
+      const braceClose = source.indexOf('}', index + 2);
+      const digits = braceClose >= 0 ? source.slice(index + 2, braceClose) : '';
+      const codePoint = /^[0-9a-fA-F]{1,6}$/.test(digits) ? parseInt(digits, 16) : -1;
+      if (codePoint < 0 || codePoint > 0x10ffff) return null;
+      value += String.fromCodePoint(codePoint); index = braceClose;
     } else if (next === 'u' && /^[0-9a-fA-F]{4}/.test(source.slice(index + 1, index + 5))) {
       value += String.fromCharCode(parseInt(source.slice(index + 1, index + 5), 16)); index += 4;
     } else value += ({ n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v', 0: '\0' }[next] ?? next);
@@ -2719,12 +2755,16 @@ function inspectRouteProperties(body, bodyStart = 0, provenance = null) {
     let cursor = match.index + match[0].length;
     while (/\s/.test(code[cursor] ?? '')) cursor++;
     let optionsSource = '';
+    let optionsOpen = -1;
+    let optionsClose = -1;
     let hasArguments = false;
     if (code[cursor] === '(') {
       const close = findMatchingDelimiter(masked, cursor, '(', ')');
       if (close < 0) continue;
       hasArguments = true;
       optionsSource = masked.slice(cursor + 1, close).trim();
+      optionsOpen = cursor + 1;
+      optionsClose = close;
       cursor = close + 1;
     }
     const declaration = /^\s*((?:(?:public|private|protected|static|readonly|override|declare|abstract)\s+)*)(?:accessor\s+)?([A-Za-z_$][\w$]*)/
@@ -2734,17 +2774,25 @@ function inspectRouteProperties(body, bodyStart = 0, provenance = null) {
     let attributeKind = 'default';
     let attribute = null;
     if (hasArguments && optionsSource) {
-      if (!optionsSource.startsWith('{') || /\.\.\./.test(optionsSource)) {
+      if (!optionsSource.startsWith('{')) {
         attributeKind = 'unknown';
       } else {
-        const attributeOption = /\battribute\s*:\s*([^,}]+)/.exec(optionsSource)?.[1].trim();
-        if (attributeOption === 'false') attributeKind = 'false';
+        const objectOpen = masked.indexOf('{', optionsOpen);
+        const attributeProperty = findStaticObjectProperty(masked, objectOpen, optionsClose, 'attribute');
+        const attributeBounds = attributeProperty
+          ? unwrapStaticExpression(masked, attributeProperty.start, attributeProperty.end)
+          : null;
+        const attributeOption = attributeBounds
+          ? masked.slice(attributeBounds.start, attributeBounds.end).trim()
+          : null;
+        if (!attributeProperty && /\.\.\./.test(optionsSource)) attributeKind = 'unknown';
+        else if (attributeOption === 'false') attributeKind = 'false';
         else if (attributeOption === 'true') attributeKind = 'kebab';
         else if (attributeOption) {
-          const alias = /^(['"`])([^'"`]*)\1$/.exec(attributeOption);
-          if (alias && !(alias[1] === '`' && alias[2].includes('${'))) {
+          const alias = parseStaticString(masked, attributeBounds.start, attributeBounds.end);
+          if (alias) {
             attributeKind = 'alias';
-            attribute = alias[2].toLowerCase();
+            attribute = alias.value.toLowerCase();
           } else {
             attributeKind = 'unknown';
           }
@@ -2763,7 +2811,7 @@ function inspectRouteProperties(body, bodyStart = 0, provenance = null) {
 }
 
 function decoratorBindingNames(provenance, imported) {
-  const known = localsFor(provenance?.rootBindings ?? new Map(), imported);
+  const known = provenRootBindingNames(provenance, imported);
   if (known.length) return known;
   const importedLocals = new Set((provenance?.imports ?? []).flatMap(entry =>
     parseNamedImportEntries(entry.clause).map(binding => binding.local)
@@ -2771,6 +2819,66 @@ function decoratorBindingNames(provenance, imported) {
   const locallyDeclared = new RegExp(`\\b(?:const|let|var|function|class)\\s+${escapeRegExp(imported)}\\b`)
     .test(provenance?.source ?? '');
   return importedLocals.has(imported) || locallyDeclared ? [] : [imported];
+}
+
+function provenRootBindingNames(provenance, imported) {
+  return [
+    ...localsFor(provenance?.rootBindings ?? new Map(), imported),
+    ...[...(provenance?.namespaceBindings ?? new Map())]
+      .filter(([, path]) => path === 'snice')
+      .map(([local]) => `${local}.${imported}`),
+    ...[...(provenance?.projectRootNamespaces ?? new Map())]
+      .filter(([, exports]) => exports.has(imported))
+      .map(([local]) => `${local}.${imported}`)
+  ];
+}
+
+function enrichSniceProvenance(provenance, file, projectFiles) {
+  const projectRootNamespaces = new Map();
+  for (const entry of provenance.imports) {
+    if (!entry.path.startsWith('.')) continue;
+    const target = resolveProjectSource(file.filename, entry.path, projectFiles);
+    if (!target) continue;
+    const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
+    if (namespace) {
+      const exports = new Set(['property', 'state', 'SniceElement', 'Router'].filter(name =>
+        resolvesSniceRootExport(target, name, projectFiles)
+      ));
+      if (exports.size) projectRootNamespaces.set(namespace[1], exports);
+      continue;
+    }
+    for (const binding of parseNamedImportEntries(entry.clause)) {
+      for (const imported of ['property', 'state', 'SniceElement', 'Router']) {
+        if (!resolvesSniceRootExport(target, binding.imported, projectFiles, imported)) continue;
+        const list = provenance.rootBindings.get(imported) ?? [];
+        list.push({ imported, local: binding.local, index: entry.index, path: entry.path });
+        provenance.rootBindings.set(imported, list);
+      }
+    }
+  }
+  provenance.projectRootNamespaces = projectRootNamespaces;
+}
+
+function resolvesSniceRootExport(file, exportedName, projectFiles, wanted = exportedName, visited = new Set()) {
+  const key = `${normalizeModuleFilename(file.filename)}:${exportedName}:${wanted}`;
+  if (visited.has(key)) return false;
+  visited.add(key);
+  const source = maskComments(file.source);
+  if (new RegExp(`export\\s*\\*\\s*from\\s*['"]snice['"]`).test(source) && exportedName === wanted) return true;
+  const provenance = buildSourceProvenance(source);
+  const localNames = new Set(localsFor(provenance.rootBindings, wanted));
+  for (const statement of source.matchAll(/export\s*\{([^}]*)\}(?:\s*from\s*(['"])([^'"]+)\2)?/g)) {
+    for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+      if (binding.local !== exportedName) continue;
+      if (statement[3] === 'snice') return binding.imported === wanted;
+      if (!statement[3] && localNames.has(binding.imported)) return true;
+      if (statement[3]?.startsWith('.')) {
+        const target = resolveProjectSource(file.filename, statement[3], projectFiles);
+        if (target && resolvesSniceRootExport(target, binding.imported, projectFiles, wanted, visited)) return true;
+      }
+    }
+  }
+  return false;
 }
 
 function routeDecoratorNames(provenance, file, projectFiles) {
@@ -2781,7 +2889,24 @@ function routeDecoratorNames(provenance, file, projectFiles) {
       if (binding.local === 'page') barePageImported = true;
       if (!entry.path.startsWith('.')) continue;
       const target = resolveProjectSource(file.filename, entry.path, projectFiles);
-      if (target && routerPageExportNames(target.source).has(binding.imported)) names.push(binding.local);
+      if (target && routerPageExportNames(target, projectFiles).has(binding.imported)) names.push(binding.local);
+    }
+    const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
+    if (namespace && entry.path.startsWith('.')) {
+      const target = resolveProjectSource(file.filename, entry.path, projectFiles);
+      if (target) {
+        for (const exported of routerPageExportNames(target, projectFiles)) names.push(`${namespace[1]}.${exported}`);
+      }
+    }
+  }
+  for (const routerName of provenRootBindingNames(provenance, 'Router')) {
+    const escaped = escapeRegExp(routerName);
+    for (const match of provenance.source.matchAll(new RegExp(`(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escaped}\\s*\\(`, 'g'))) {
+      names.push(`${match[1]}.page`);
+    }
+    for (const match of provenance.source.matchAll(new RegExp(`(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escaped}\\s*\\(`, 'g'))) {
+      const page = /(?:^|,)\s*page(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/.exec(match[1]);
+      if (page) names.push(page[1] ?? 'page');
     }
   }
   const localPageDeclaration = /\b(?:const|let|var|function|class)\s+page\b/.test(provenance.source ?? '');
@@ -2796,10 +2921,15 @@ function resolveProjectSource(from, specifier, files) {
   return files.find(candidate => candidates.has(normalizeModuleFilename(candidate.filename))) ?? null;
 }
 
-function routerPageExportNames(source) {
+function routerPageExportNames(file, projectFiles, visited = new Set()) {
+  const filename = normalizeModuleFilename(file.filename);
+  if (visited.has(filename)) return new Set();
+  visited.add(filename);
+  const source = file.source;
   const provenance = buildSourceProvenance(maskComments(source));
+  enrichSniceProvenance(provenance, file, projectFiles);
   const locals = new Set();
-  for (const routerName of localsFor(provenance.rootBindings, 'Router')) {
+  for (const routerName of provenRootBindingNames(provenance, 'Router')) {
     const direct = new RegExp(`(?:export\\s+)?(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*${escapeRegExp(routerName)}\\s*\\(`, 'g');
     for (const match of source.matchAll(direct)) {
       const page = /(?:^|,)\s*page(?:\s*:\s*([A-Za-z_$][\w$]*))?(?=\s*,|\s*$)/.exec(match[1]);
@@ -2818,15 +2948,26 @@ function routerPageExportNames(source) {
   for (const local of locals) {
     if (new RegExp(`export\\s+(?:const|let|var)\\s*\\{[^}]*\\b${escapeRegExp(local)}\\b`).test(source)) exported.add(local);
     for (const statement of source.matchAll(/export\s*\{([^}]*)\}/g)) {
+      const after = source.slice(statement.index + statement[0].length);
+      if (/^\s*from\b/.test(after)) continue;
       for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
         if (binding.imported === local) exported.add(binding.local);
       }
     }
   }
+  for (const statement of source.matchAll(/export\s*\{([^}]*)\}\s*from\s*(['"])([^'"]+)\2/g)) {
+    if (!statement[3].startsWith('.')) continue;
+    const target = resolveProjectSource(file.filename, statement[3], projectFiles);
+    if (!target) continue;
+    const targetExports = routerPageExportNames(target, projectFiles, visited);
+    for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+      if (targetExports.has(binding.imported)) exported.add(binding.local);
+    }
+  }
   return exported;
 }
 
-function inspectRouteMemberNames(body, provenance) {
+function inspectRouteStateNames(body, provenance) {
   const code = blankStringContents(maskComments(body));
   const names = new Set();
   let depth = 0;
@@ -2836,16 +2977,25 @@ function inspectRouteMemberNames(body, provenance) {
     if (code[index] === '{') depth++;
     else if (code[index] === '}') depth = Math.max(0, depth - 1);
   }
-  const pattern = /(?:^|[;\n])\s*(?:@[A-Za-z_$][\w$]*(?:\s*\([^)]*\))?\s*)*(?:(?:public|private|protected|readonly|override|declare|abstract)\s+)*(?:accessor\s+|get\s+|set\s+)?([A-Za-z_$][\w$]*)\s*(?:[!?]\s*)?(?=[:=(;])/gm;
+  const stateNames = decoratorBindingNames(provenance, 'state');
+  if (!stateNames.length) return names;
+  const pattern = new RegExp(`@(?:${stateNames.map(escapeRegExp).join('|')})\\b`, 'g');
   for (const match of code.matchAll(pattern)) {
-    const nameIndex = match.index + match[0].lastIndexOf(match[1]);
-    if (depths[nameIndex] === 0 && !['constructor', 'static'].includes(match[1])) names.add(match[1]);
+    if (depths[match.index] !== 0) continue;
+    let cursor = match.index + match[0].length;
+    while (/\s/.test(code[cursor] ?? '')) cursor++;
+    if (code[cursor] === '(') {
+      const close = findMatchingDelimiter(code, cursor, '(', ')');
+      if (close < 0) continue;
+      cursor = close + 1;
+    }
+    const declaration = /^\s*(?:(?:public|private|protected|readonly|override|declare|abstract)\s+)*(?:accessor\s+)?([A-Za-z_$][\w$]*)/.exec(code.slice(cursor));
+    if (declaration) names.add(declaration[1]);
   }
-  for (const property of inspectRouteProperties(body, 0, provenance)) names.add(property.name);
   return names;
 }
 
-function resolveRouteBindingEnvironment(page, localClasses) {
+function resolveRouteBindingEnvironment(page, localClasses, projectFiles) {
   const propertiesByName = new Map();
   const shadowedNames = new Set();
   const visited = new Set();
@@ -2863,24 +3013,35 @@ function resolveRouteBindingEnvironment(page, localClasses) {
   let naming = 'unknown';
   let complete = true;
   let customObserved = null;
+  let observedAttributesDeclared = false;
   let hasAttributeCallback = false;
   let observedAttributesUnknown = false;
 
   while (current && !visited.has(`${current.file.filename}:${current.bodyStart}`)) {
     visited.add(`${current.file.filename}:${current.bodyStart}`);
-    const ownNames = inspectRouteMemberNames(current.body, current.provenance);
+    if (hasUnresolvedRelativeRouteDecorator(current.body, current.provenance)) complete = false;
+    const stateNames = inspectRouteStateNames(current.body, current.provenance);
+    for (const name of stateNames) {
+      if (!shadowedNames.has(name)) {
+        propertiesByName.set(name, { name, attributeKind: 'false', attribute: null, kind: 'state' });
+      }
+      shadowedNames.add(name);
+    }
     for (const property of current.routeProperties) {
       if (!shadowedNames.has(property.name)) propertiesByName.set(property.name, property);
+      shadowedNames.add(property.name);
     }
-    for (const name of ownNames) shadowedNames.add(name);
-    if (customObserved === null) {
+    if (!observedAttributesDeclared) {
       const observed = inspectObservedAttributes(current.body);
-      if (observed === null) observedAttributesUnknown = true;
-      else if (observed !== undefined) customObserved = observed;
+      if (observed !== undefined) {
+        observedAttributesDeclared = true;
+        if (observed === null) observedAttributesUnknown = true;
+        else customObserved = observed;
+      }
     }
-    if (/\battributeChangedCallback\s*\(/.test(blankStringContents(maskComments(current.body)))) hasAttributeCallback = true;
+    if (hasOwnAttributeChangedCallback(current.body)) hasAttributeCallback = true;
 
-    const sniceElementNames = new Set(['SniceElement', ...decoratorBindingNames(current.provenance, 'SniceElement')]);
+    const sniceElementNames = new Set(provenRootBindingNames(current.provenance, 'SniceElement'));
     if (current.base === 'HTMLElement') {
       naming = 'lowercase';
       break;
@@ -2904,10 +3065,16 @@ function resolveRouteBindingEnvironment(page, localClasses) {
           .filter(binding => binding.local === current.base && entry.path.startsWith('.'))
           .map(binding => ({ entry, binding }))
       );
-      candidates = imported.flatMap(({ entry, binding }) => {
-        const resolved = resolveLocalModule(current.file.filename, entry.path, localClasses);
-        return localClasses.filter(candidate => resolved.has(normalizeModuleFilename(candidate.file.filename)) && candidate.name === binding.imported);
-      });
+      candidates = imported.flatMap(({ entry, binding }) =>
+        resolveImportedRouteClass(current.file.filename, entry.path, binding.imported, localClasses, projectFiles)
+      );
+      const namespaceBase = /^([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)$/.exec(current.base);
+      if (namespaceBase) {
+        const path = current.provenance.namespaceBindings.get(namespaceBase[1]);
+        if (path?.startsWith('.')) {
+          candidates.push(...resolveImportedRouteClass(current.file.filename, path, namespaceBase[2], localClasses, projectFiles));
+        }
+      }
     }
     if (candidates.length !== 1) {
       complete = false;
@@ -2928,6 +3095,29 @@ function resolveRouteBindingEnvironment(page, localClasses) {
   };
 }
 
+function hasUnresolvedRelativeRouteDecorator(body, provenance) {
+  const proven = new Set([
+    ...provenRootBindingNames(provenance, 'property'),
+    ...provenRootBindingNames(provenance, 'state')
+  ]);
+  const code = blankStringContents(maskComments(body));
+  for (const entry of provenance.imports) {
+    if (!entry.path.startsWith('.')) continue;
+    const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
+    if (namespace) {
+      for (const member of ['property', 'state']) {
+        const name = `${namespace[1]}.${member}`;
+        if (!proven.has(name) && new RegExp(`@${escapeRegExp(name)}\\b`).test(code)) return true;
+      }
+      continue;
+    }
+    for (const binding of parseNamedImportEntries(entry.clause)) {
+      if (!proven.has(binding.local) && new RegExp(`@${escapeRegExp(binding.local)}\\b`).test(code)) return true;
+    }
+  }
+  return false;
+}
+
 function normalizeModuleFilename(filename) {
   const parts = filename.replaceAll('\\', '/').split('/');
   const normalized = [];
@@ -2945,22 +3135,106 @@ function resolveLocalModule(from, specifier, localClasses) {
   return new Set([...candidates].filter(candidate => localClasses.some(item => normalizeModuleFilename(item.file.filename) === candidate)));
 }
 
+function resolveImportedRouteClass(from, specifier, exportedName, localClasses, projectFiles, visited = new Set()) {
+  const target = resolveProjectSource(from, specifier, projectFiles);
+  const key = `${from}:${specifier}:${exportedName}`;
+  if (visited.has(key) || !target) return [];
+  visited.add(key);
+  const results = [];
+  for (const filename of [normalizeModuleFilename(target.filename)]) {
+    const direct = localClasses.filter(candidate =>
+      normalizeModuleFilename(candidate.file.filename) === filename && candidate.name === exportedName
+    );
+    results.push(...direct);
+    const file = target;
+    for (const statement of file.source.matchAll(/export\s*\{([^}]*)\}(?:\s*from\s*(['"])([^'"]+)\2)?/g)) {
+      for (const binding of parseNamedImportEntries(`{${statement[1]}}`)) {
+        if (binding.local !== exportedName) continue;
+        if (statement[3]?.startsWith('.')) {
+          results.push(...resolveImportedRouteClass(file.filename, statement[3], binding.imported, localClasses, projectFiles, visited));
+        } else {
+          results.push(...localClasses.filter(candidate =>
+            normalizeModuleFilename(candidate.file.filename) === filename && candidate.name === binding.imported
+          ));
+        }
+      }
+    }
+  }
+  return results.filter((candidate, index, all) =>
+    all.findIndex(item => item.file.filename === candidate.file.filename && item.bodyStart === candidate.bodyStart) === index
+  );
+}
+
 function inspectObservedAttributes(body) {
   const source = maskComments(body);
-  const declaration = /(?:static\s+get\s+observedAttributes\s*\(\)\s*\{|static\s+observedAttributes\s*=)([\s\S]{0,1000})/.exec(source);
-  if (!declaration) return undefined;
-  const arrayOpen = source.indexOf('[', declaration.index);
-  if (arrayOpen < 0) return null;
-  const arrayClose = findMatchingDelimiter(source, arrayOpen, '[', ']');
-  if (arrayClose < 0) return null;
+  const code = blankStringContents(source);
+  const depths = lexicalBraceDepths(code);
+  const getterPattern = /(?:^|[;\n])\s*(?:(?:public|protected|private)\s+)?static\s+get\s+observedAttributes\s*\(\s*\)\s*\{/g;
+  const fieldPattern = /(?:^|[;\n])\s*(?:(?:public|protected|private)\s+)?static\s+(?:readonly\s+)?observedAttributes\s*=/g;
+  const getters = [...code.matchAll(getterPattern)].filter(match => depths[match.index] === 0);
+  const fields = [...code.matchAll(fieldPattern)].filter(match => depths[match.index] === 0);
+  if (getters.length + fields.length > 1) return null;
+  for (const declaration of getters) {
+    const open = code.indexOf('{', declaration.index);
+    const close = findMatchingDelimiter(source, open, '{', '}');
+    if (close < 0) return null;
+    const getterBody = source.slice(open + 1, close);
+    const returnStatement = /^\s*return\s+([\s\S]*?);?\s*$/.exec(blankStringContents(getterBody));
+    if (!returnStatement) return null;
+    const returnIndex = getterBody.search(/\breturn\b/) + 'return'.length;
+    let expressionEnd = close;
+    while (/\s/.test(source[expressionEnd - 1] ?? '')) expressionEnd--;
+    if (source[expressionEnd - 1] === ';') expressionEnd--;
+    const expression = unwrapStaticExpression(source, open + 1 + returnIndex, expressionEnd);
+    return expression ? parseStaticStringArray(source, expression.start, expression.end) : null;
+  }
+  for (const declaration of fields) {
+    const equals = code.indexOf('=', declaration.index);
+    let end = code.indexOf(';', equals + 1);
+    if (end < 0) end = code.indexOf('\n', equals + 1);
+    if (end < 0) end = code.length;
+    const expression = unwrapStaticExpression(source, equals + 1, end);
+    return expression ? parseStaticStringArray(source, expression.start, expression.end) : null;
+  }
+  return undefined;
+}
+
+function parseStaticStringArray(source, start, end) {
+  if (source[start] !== '[') return null;
+  const arrayClose = findMatchingDelimiter(source, start, '[', ']');
+  if (arrayClose < 0 || !/^\s*$/.test(source.slice(arrayClose + 1, end))) return null;
   const values = [];
-  for (const item of splitTopLevelArguments(source.slice(arrayOpen + 1, arrayClose))) {
-    const start = arrayOpen + 1 + source.slice(arrayOpen + 1, arrayClose).indexOf(item);
-    const literal = parseStaticString(source, start, start + item.length);
+  const body = source.slice(start + 1, arrayClose);
+  let offset = 0;
+  for (const item of splitTopLevelArguments(body)) {
+    const relative = body.indexOf(item, offset);
+    offset = relative + item.length;
+    const itemStart = start + 1 + relative;
+    const literal = parseStaticString(source, itemStart, itemStart + item.length);
     if (!literal) return null;
     values.push(literal.value);
   }
   return values;
+}
+
+function lexicalBraceDepths(code) {
+  const depths = new Uint16Array(code.length + 1);
+  let depth = 0;
+  for (let index = 0; index < code.length; index++) {
+    depths[index] = depth;
+    if (code[index] === '{') depth++;
+    else if (code[index] === '}') depth = Math.max(0, depth - 1);
+  }
+  return depths;
+}
+
+function hasOwnAttributeChangedCallback(body) {
+  const code = blankStringContents(maskComments(body));
+  const depths = lexicalBraceDepths(code);
+  for (const match of code.matchAll(/(?:^|[;\n])\s*(?:(?:public|protected|private|override)\s+)*(?:async\s+)?attributeChangedCallback\s*\(/g)) {
+    if (depths[match.index] === 0) return true;
+  }
+  return false;
 }
 
 function routePropertyAttribute(property, naming) {
@@ -3571,9 +3845,12 @@ function reactExportReplacement(name) {
 function buildSourceProvenance(source) {
   const imports = findImports(source);
   const rootBindings = new Map();
+  const namespaceBindings = new Map();
   const reactBindings = [];
   const componentVariables = new Map();
   for (const entry of imports) {
+    const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)$/.exec(entry.clause ?? '');
+    if (namespace) namespaceBindings.set(namespace[1], entry.path);
     if (entry.path === 'snice') {
       for (const binding of parseNamedImportEntries(entry.clause)) {
         const list = rootBindings.get(binding.imported) ?? [];
@@ -3597,7 +3874,7 @@ function buildSourceProvenance(source) {
   for (const match of source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:document\.)?querySelector(?:<[^>]+>)?\(\s*['"](snice-[a-z0-9-]+)['"]\s*\)/g)) {
     if (COMPONENT_CONTRACTS[match[2]]) componentVariables.set(match[1], match[2]);
   }
-  return { source, imports, rootBindings, reactBindings, componentVariables };
+  return { source, imports, rootBindings, namespaceBindings, reactBindings, componentVariables };
 }
 
 function normalizeReactExport(name) {

@@ -50,8 +50,9 @@ npx snice validate           # source analyzer only
   including `attribute: false` and mismatched aliases
   (`snice/route-param-has-no-binding-target`)
 
-Route-param inheritance: uniquely identifiable local base classes are resolved.
-Missing-target findings are deferred for unresolved/ambiguous external bases;
+Route-param inheritance follows proven local declarations, direct relative
+re-exports, and named or namespace Snice imports. Missing-target findings are
+deferred for unresolved/ambiguous bases or dynamic route/attribute contracts;
 locally visible disabled or mismatched properties are still reported.
 
 Non-blocking architecture suggestions:

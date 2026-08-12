@@ -107,13 +107,14 @@ describe('.sniceignore diagnostic suppression', () => {
   it('reports named splats on an aliased local page decorator', async () => {
     const sourceDirectory = join(projectRoot, 'src/pages');
     await mkdir(sourceDirectory, { recursive: true });
-    await writeFile(join(projectRoot, 'src/router.ts'), [
+    await writeFile(join(projectRoot, 'src/router-core.ts'), [
       "import { Router } from 'snice';",
       "export const { page } = Router({ type: 'hash' });"
     ].join('\n'));
+    await writeFile(join(projectRoot, 'src/router.ts'), "export { page } from './router-core';\n");
     await writeFile(join(sourceDirectory, 'files-page.ts'), [
-      "import { page as routePage } from '../router';",
-      "@routePage({ tag: 'files-page', routes: ['/files/*path'] })",
+      "import * as routes from '../router';",
+      "@routes.page({ tag: 'files-page', routes: ['/files/*path'] })",
       'class FilesPage extends HTMLElement {}'
     ].join('\n'));
 

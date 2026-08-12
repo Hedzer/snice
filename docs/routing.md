@@ -447,7 +447,8 @@ window.history.go(-2);
 ### Accessing Parameters
 
 Route parameters are automatically mapped to element properties — a `:param`
-segment normally binds to a **plain `@property()`** of the same name. A field declared
+segment or named splat such as `*path` (including an optional splat) normally
+binds to a **plain `@property()`** of the same name. A field declared
 `@property({ attribute: false })` is opted OUT of route-param binding: the
 Router never sets it and it silently keeps its initializer. (The Router sets
 params through attributes; `attribute: false` fields have none.)
@@ -459,6 +460,18 @@ implicit attributes, so its plain `articleId` property needs `:article-id` (or
 an explicit `@property({ attribute: 'articleId' })`). Explicit aliases follow
 the same rule: `@property({ attribute: 'article-id' }) articleId` binds from
 `:article-id`, not `:articleId`.
+
+A reflected native HTMLElement attribute such as `id` is already reachable
+when no Snice property overrides it. An explicit
+`@property({ attribute: false }) id` or differently aliased `id` overrides that
+native channel, so `:id` no longer populates the property. A statically declared
+`observedAttributes` entry paired with `attributeChangedCallback` can also
+consume a route attribute.
+
+Inheritance follows Snice's decorator transformation: a subclass `@state()`
+member disables an inherited `@property()` channel of the same name, while a
+plain field initializer or authored accessor still uses the inherited
+transformed property accessor and remains bindable.
 
 ```typescript
 @page({

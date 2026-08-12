@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Router, property, render, html } from '../packages/core/src';
+import { Router, property, state, render, html } from '../packages/core/src';
 
 describe('Router URL Parameters', () => {
   let container: HTMLElement;
@@ -251,5 +251,66 @@ describe('Router URL Parameters', () => {
     const element = container.querySelector('observed-route-page') as ObservedRoutePage;
     expect(element.getAttribute('tenant-id')).toBe('acme');
     expect(element.tenant).toBe('acme');
+  });
+
+  it('keeps inherited @property binding through a subclass field initializer', async () => {
+    const { page, initialize, navigate } = router;
+    class FieldBase extends HTMLElement { @property() accountId = ''; }
+
+    @page({ tag: 'field-override-page', routes: ['/field/:accountId'] })
+    class FieldOverridePage extends FieldBase { accountId = 'initial'; }
+
+    initialize();
+    navigate('/field/acme');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    expect((container.querySelector('field-override-page') as FieldOverridePage).accountId).toBe('acme');
+  });
+
+  it('keeps inherited @property binding through a subclass accessor', async () => {
+    const { page, initialize, navigate } = router;
+    class AccessorBase extends HTMLElement { @property() accountId = ''; }
+
+    @page({ tag: 'accessor-override-page', routes: ['/accessor/:accountId'] })
+    class AccessorOverridePage extends AccessorBase {
+      get accountId() { return 'authored'; }
+      set accountId(_value: string) {}
+    }
+
+    initialize();
+    navigate('/accessor/acme');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    expect((container.querySelector('accessor-override-page') as AccessorOverridePage).accountId).toBe('acme');
+  });
+
+  it('lets a subclass @state override disable an inherited attribute binding', async () => {
+    const { page, initialize, navigate } = router;
+    class StateBase extends HTMLElement { @property() accountId = ''; }
+
+    @page({ tag: 'state-override-page', routes: ['/state/:accountId'] })
+    class StateOverridePage extends StateBase { @state() accountId = 'initial'; }
+
+    initialize();
+    navigate('/state/acme');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    const element = container.querySelector('state-override-page') as StateOverridePage;
+    expect(element.getAttribute('accountid')).toBe('acme');
+    expect(element.accountId).toBe('initial');
+  });
+
+  it('does not use native id reflection after an explicit disabled property override', async () => {
+    const { page, initialize, navigate } = router;
+
+    @page({ tag: 'disabled-native-id-page', routes: ['/disabled-id/:id'] })
+    class DisabledNativeIdPage extends HTMLElement {
+      @property({ attribute: false })
+      id = 'initial';
+    }
+
+    initialize();
+    navigate('/disabled-id/acme');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    const element = container.querySelector('disabled-native-id-page') as DisabledNativeIdPage;
+    expect(element.getAttribute('id')).toBe('acme');
+    expect(element.id).toBe('initial');
   });
 });

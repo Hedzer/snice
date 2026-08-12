@@ -52,15 +52,17 @@ npx snice validate    # source analyzer only
 - deep imports that were never released package paths, such as `snice/decorators`
 - a Router without `target`, `type`, or a project-wide `initialize()` call
 - a routed class combining `@page` with redundant `@element`
-- a path or query `:param` whose page has no reachable attribute-backed
-  `@property` (`snice/route-param-has-no-binding-target`), including
+- a path/query `:param` or named `*splat` whose page has no reachable attribute
+  target (`snice/route-param-has-no-binding-target`), including
   `attribute: false` and mismatched explicit aliases
 
-The route-param check follows uniquely identifiable local base classes, so an
-inherited bindable property satisfies it. It deliberately defers a missing-
-target error when a page extends an unresolved or ambiguous external base that
-may provide the property; locally visible disabled or mismatched properties are
-still diagnosed.
+The route-param check follows proven local declarations, direct relative
+re-exports, and named or namespace Snice imports, so an inherited bindable
+property satisfies it. It deliberately defers a missing-target error for an
+unresolved/ambiguous base or dynamic route/attribute contract; locally visible
+disabled or mismatched properties are still diagnosed. Native reflected IDL
+attributes such as an unmodified `id`, and statically known custom
+`observedAttributes` handlers, also satisfy the attribute target.
 
 It also gives non-blocking architecture suggestions: keep `@page`, `@element`,
 `@controller`, and `@daemon` classes under `src/pages`, `src/components`,
