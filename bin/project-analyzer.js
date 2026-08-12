@@ -555,7 +555,7 @@ const RULE_DEFINITIONS = [
     description: 'Warn when a Snice element redeclares an inherited HTMLElement IDL member.',
     check(context) {
       if (isFrameworkImplementation(context.filename)) return;
-      for (const declaration of findSniceElementClasses(context.source)) {
+      for (const declaration of findSniceElementClasses(context.source, context.provenance)) {
         const members = inspectElementMembers(declaration.body);
         for (const name of new Set([...members.fields, ...members.accessors, ...members.reactive])) {
           if (!NATIVE_ELEMENT_IDL_MEMBERS.has(name)) continue;
@@ -2512,10 +2512,15 @@ function findDecoratedClasses(source, decoratorName) {
   return declarations;
 }
 
-function findSniceElementClasses(source) {
+function findSniceElementClasses(source, provenance = null) {
   const seen = new Set();
   const declarations = [];
-  for (const decoratorName of ['element', 'page']) {
+  const decoratorNames = new Set([
+    'element',
+    'page',
+    ...provenRootBindingNames(provenance, 'element')
+  ]);
+  for (const decoratorName of decoratorNames) {
     for (const declaration of findDecoratedClasses(source, decoratorName)) {
       if (seen.has(declaration.bodyStart)) continue;
       seen.add(declaration.bodyStart);

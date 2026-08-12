@@ -778,6 +778,44 @@ describe('controller and native IDL architecture checks', () => {
     ]));
     expect(diagnostics.some(diagnostic => diagnostic.message.includes('accountTitle'))).toBe(false);
   });
+
+  it('recognizes aliased and namespace @element decorators when checking native IDL shadows', () => {
+    const aliased = [
+      "import { element as registerElement, property } from 'snice';",
+      "@registerElement('account-card')",
+      'class AccountCard extends HTMLElement {',
+      '  @property({ attribute: false }) role: { id: string } | null = null;',
+      '}'
+    ].join('\n');
+    const namespaced = [
+      "import * as framework from 'snice';",
+      "@framework.element('account-panel')",
+      'class AccountPanel extends HTMLElement {',
+      '  inert = false;',
+      '}'
+    ].join('\n');
+
+    const diagnostics = [
+      ...analyzeSource(aliased, 'src/components/account-card.ts'),
+      ...analyzeSource(namespaced, 'src/components/account-panel.ts')
+    ].filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl');
+
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.every(diagnostic => diagnostic.severity === 'warning')).toBe(true);
+    expect(diagnostics.map(diagnostic => diagnostic.message)).toEqual(expect.arrayContaining([
+      expect.stringContaining('AccountCard.role'),
+      expect.stringContaining('AccountPanel.inert')
+    ]));
+
+    const unrelatedNamespace = [
+      "import * as framework from 'another-library';",
+      "@framework.element('not-snice')",
+      'class NotSnice extends HTMLElement { role = null; }'
+    ].join('\n');
+    expect(analyzeSource(unrelatedNamespace, 'src/components/not-snice.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/element-member-shadows-native-idl'))
+      .toEqual([]);
+  });
 });
 
 describe('local reactive contract checks', () => {
