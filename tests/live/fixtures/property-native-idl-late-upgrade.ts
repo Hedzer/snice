@@ -48,6 +48,7 @@ export function defineScopedNativeIdlScenario() {
 
   class LiveScopedNativeIdlChild extends HTMLElement {}
   scopedRegistry.define('live-scoped-native-idl-child', LiveScopedNativeIdlChild);
+  class LiveScopedLateNativeIdlChild extends HTMLElement {}
 
   @element('live-scoped-reactive-idl-base')
   class LiveScopedReactiveIdlBase extends HTMLElement {
@@ -74,11 +75,23 @@ export function defineScopedNativeIdlScenario() {
       return html`
         <live-scoped-native-idl-child data-native-direct .role=${this.nativeRole}></live-scoped-native-idl-child>
         <live-scoped-native-idl-child data-native-spread ...props=${this.nativeProps}></live-scoped-native-idl-child>
+        <live-scoped-late-native-idl-child data-late-native-direct .role=${'switch'}></live-scoped-late-native-idl-child>
+        <live-scoped-late-native-idl-child data-late-native-spread ...props=${{ hidden: true }}></live-scoped-late-native-idl-child>
         <live-scoped-reactive-idl-child data-reactive-direct .role=${scopedReactiveDirectRole}></live-scoped-reactive-idl-child>
         <live-scoped-reactive-idl-child data-reactive-spread ...props=${{ hidden: scopedReactiveSpreadHidden }}></live-scoped-reactive-idl-child>
       `;
     }
   }
 
-  return { LiveScopedNativeIdlOwner, LiveScopedNativeIdlChild, LiveScopedReactiveIdlChild };
+  return {
+    LiveScopedNativeIdlOwner,
+    LiveScopedNativeIdlChild,
+    LiveScopedReactiveIdlChild,
+    async defineLateNativeIdlChild() {
+      scopedRegistry.define('live-scoped-late-native-idl-child', LiveScopedLateNativeIdlChild);
+      await scopedRegistry.whenDefined('live-scoped-late-native-idl-child');
+      await Promise.resolve();
+      return LiveScopedLateNativeIdlChild;
+    },
+  };
 }

@@ -96,6 +96,8 @@ test(`${build.name}: scoped registries preserve native semantics and declared re
 
     const nativeDirect = owner.shadowRoot.querySelector('[data-native-direct]') as any;
     const nativeSpread = owner.shadowRoot.querySelector('[data-native-spread]') as any;
+    const lateNativeDirect = owner.shadowRoot.querySelector('[data-late-native-direct]') as any;
+    const lateNativeSpread = owner.shadowRoot.querySelector('[data-late-native-spread]') as any;
     const reactiveDirect = owner.shadowRoot.querySelector('[data-reactive-direct]') as any;
     const reactiveSpread = owner.shadowRoot.querySelector('[data-reactive-spread]') as any;
     await Promise.all([reactiveDirect.ready, reactiveSpread.ready]);
@@ -117,6 +119,14 @@ test(`${build.name}: scoped registries preserve native semantics and declared re
         attribute: nativeSpread.hasAttribute('hidden'),
         own: Object.hasOwn(nativeSpread, 'hidden'),
       },
+      lateNative: {
+        directValue: lateNativeDirect.role,
+        directAttribute: lateNativeDirect.getAttribute('role'),
+        directOwn: Object.hasOwn(lateNativeDirect, 'role'),
+        spreadValue: lateNativeSpread.hidden,
+        spreadAttribute: lateNativeSpread.hasAttribute('hidden'),
+        spreadOwn: Object.hasOwn(lateNativeSpread, 'hidden'),
+      },
       reactiveDirect: {
         same: reactiveDirect.role === fixture.scopedReactiveDirectRole,
         attribute: reactiveDirect.getAttribute('role'),
@@ -129,11 +139,24 @@ test(`${build.name}: scoped registries preserve native semantics and declared re
       },
     };
 
+    const LateNativeIdlChild = await definitions.defineLateNativeIdlChild();
+    const lateDefined = {
+      directUpgraded: lateNativeDirect instanceof LateNativeIdlChild,
+      directValue: lateNativeDirect.role,
+      directAttribute: lateNativeDirect.getAttribute('role'),
+      directOwn: Object.hasOwn(lateNativeDirect, 'role'),
+      spreadUpgraded: lateNativeSpread instanceof LateNativeIdlChild,
+      spreadValue: lateNativeSpread.hidden,
+      spreadAttribute: lateNativeSpread.hasAttribute('hidden'),
+      spreadOwn: Object.hasOwn(lateNativeSpread, 'hidden'),
+    };
+
     owner.nativeRole = 'menu';
     owner.nativeProps = {};
     await owner.rendered;
     return {
       initial,
+      lateDefined,
       updated: {
         role: nativeDirect.role,
         roleAttribute: nativeDirect.getAttribute('role'),
@@ -155,8 +178,26 @@ test(`${build.name}: scoped registries preserve native semantics and declared re
       },
       nativeDirect: { value: 'button', attribute: 'button', own: false },
       nativeSpread: { value: true, attribute: true, own: false },
+      lateNative: {
+        directValue: 'switch',
+        directAttribute: null,
+        directOwn: true,
+        spreadValue: true,
+        spreadAttribute: false,
+        spreadOwn: true,
+      },
       reactiveDirect: { same: true, attribute: null, own: false },
       reactiveSpread: { same: true, attribute: null, own: false },
+    },
+    lateDefined: {
+      directUpgraded: true,
+      directValue: 'switch',
+      directAttribute: 'switch',
+      directOwn: false,
+      spreadUpgraded: true,
+      spreadValue: true,
+      spreadAttribute: true,
+      spreadOwn: false,
     },
     updated: {
       role: 'menu',
