@@ -53,13 +53,13 @@ By default, relative references and absolute `http:`, `https:`, `mailto:`, and `
 
 ### Authoring diagnostics
 
-Malformed declarative syntax fails when its `TemplateResult` is prepared for rendering. When the template belongs to a Snice element, the error identifies the owning host by tag and JavaScript class, then includes a nearby static-template excerpt where possible:
+Malformed declarative syntax fails when its `TemplateResult` is prepared for rendering. When the template belongs to a Snice element, the error identifies the owning host by its authoritative registered tag and, when safely available, its JavaScript class, then includes a nearby static-template excerpt where possible:
 
 ```text
 snice: render failed for <user-editor> (UserEditor): ... Near "<button ${…}>...".
 ```
 
-This context follows nested templates, keyed/iterable templates, promises, and async iterables, including templates rendered into open or closed shadow roots and light DOM. A template prepared without a component render host keeps the generic authoring error and nearby excerpt; Snice does not invent a component, source filename, or callsite it cannot know at runtime. Contextual errors retain the original error as `cause`, so its stack remains available for debugging.
+Minified CDN builds commonly strip constructor names, so a tag-only identity such as `<user-editor>` is normal and intentional. This context follows nested templates, keyed/iterable templates, promises, and async iterables, including templates rendered into open or closed shadow roots and light DOM. A template prepared without a component render host keeps the generic authoring error and nearby excerpt; Snice does not invent a component, source filename, or callsite it cannot know at runtime. Contextual errors retain the original error as `cause`, so its stack remains available for debugging.
 
 ## Bindings
 

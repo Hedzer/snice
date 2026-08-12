@@ -104,6 +104,12 @@ export const SimpleArray = USE_BUILT ? modules.main.SimpleArray : modules.types!
 // Testing-only access to host-free template preparation. This is not part of
 // the public package entry point.
 export const TemplateInstance = USE_BUILT ? modules.main.TemplateInstance : modules.parts!.TemplateInstance;
+export const captureRenderHostIdentity = USE_BUILT
+  ? modules.main.captureRenderHostIdentity
+  : (await import('../packages/core/src/render-errors.js')).captureRenderHostIdentity;
+export const renderElementNow = USE_BUILT
+  ? modules.main.renderElementNow
+  : (await import('../packages/core/src/render.js')).renderElementNow;
 
 // Export symbols (all available in full build)
 export const {

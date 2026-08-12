@@ -62,7 +62,7 @@ try {
 }
 ```
 
-Template parse and authoring errors identify the owning component tag and class and include a nearby static-template excerpt when available. The original error is retained as `cause`, so assertions and debugging can inspect its stack. Snice cannot recover a source filename from a runtime tagged-template value and does not fabricate one. A template prepared outside a component render therefore keeps the generic nearby-template diagnostic.
+Template parse and authoring errors identify the owning component by its authoritative registered tag and, when safely available, its class, and include a nearby static-template excerpt. Minified CDN constructors may have no class name, so tests should accept tag-only attribution. The original error is retained as `cause`, so assertions and debugging can inspect its stack. Snice cannot recover a source filename from a runtime tagged-template value and does not fabricate one. A template prepared outside a component render therefore keeps the generic nearby-template diagnostic.
 
 Promise and async-iterable values settle after the synchronous render call has returned, so their failures are reported through `console.error` even while strict mode is enabled. Spy on `console.error`, wait for the deferred value to settle, and assert against the `Error` argument; it carries the same owning-component context.
 

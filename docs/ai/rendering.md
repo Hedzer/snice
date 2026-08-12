@@ -75,7 +75,7 @@ html`${asyncIterable}`
 
 ## Authoring diagnostics
 
-- Template parse/authoring failures rendered by a Snice element identify the owning `<tag>` and class, plus a nearby static-template excerpt when available.
+- Template parse/authoring failures rendered by a Snice element identify the authoritative registered `<tag>` and, when safely available, the class, plus a nearby static-template excerpt when available. Minified CDN constructors may have no class name, so tag-only attribution is expected.
 - Context follows nested/iterable/async `TemplateResult` values in open/closed shadow roots and light DOM.
 - Host-free preparation stays generic; runtime diagnostics do not invent a source filename or component.
 - Contextual errors retain the original error as `cause` (and therefore its stack).

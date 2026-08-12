@@ -7,7 +7,7 @@ import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
 import { clearDispatchTimers } from './events';
-import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
+import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, ELEMENT_TAG_NAME, ELEMENT_CLASS_NAME, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
 import { WatchOptions } from './types/watch-options';
@@ -637,6 +637,29 @@ function mergeParentMetadata(constructor: any) {
   }
 }
 
+/** Record a decorator/Router-owned tag without putting it on element instances. */
+export function markElementTag(constructor: any, tagName: string): void {
+  const existing = Object.getOwnPropertyDescriptor(constructor.prototype, ELEMENT_TAG_NAME);
+  if (existing?.value === tagName) return;
+  Object.defineProperty(constructor.prototype, ELEMENT_TAG_NAME, {
+    value: tagName,
+    configurable: false,
+    enumerable: false,
+    writable: false,
+  });
+  const nameDescriptor = Object.getOwnPropertyDescriptor(constructor, 'name');
+  const className = typeof nameDescriptor?.value === 'string' &&
+    /^[A-Za-z_$][A-Za-z0-9_$]{0,127}$/.test(nameDescriptor.value)
+    ? nameDescriptor.value
+    : '';
+  Object.defineProperty(constructor.prototype, ELEMENT_CLASS_NAME, {
+    value: className,
+    configurable: false,
+    enumerable: false,
+    writable: false,
+  });
+}
+
 function defineElement(tagName: string, constructor: any, context: ClassDecoratorContext, options?: ElementOptions) {
   // Merge metadata from parent @element classes (inheritance support)
   mergeParentMetadata(constructor);
@@ -682,6 +705,7 @@ function defineElement(tagName: string, constructor: any, context: ClassDecorato
     (constructor.prototype as any)[RENDER_METHOD] = constructor.prototype.render;
     (constructor.prototype as any)[RENDER_OPTIONS] = constructor.renderOptions || {};
   }
+  markElementTag(constructor, tagName);
   applyElementFunctionality(constructor);
   if (customElements.get(tagName)) {
     if ((globalThis as any).SNICE_DEBUG) console.warn(`[snice] "${tagName}" is already registered. Skipping.`);

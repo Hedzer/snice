@@ -204,6 +204,20 @@ describe('CDN Runtime Builds', () => {
         console.log(`  Runtime minified: ${sizeKB.toFixed(2)} KB`);
       }
     });
+
+    it('keeps tag-based render diagnostics without preserving minified class names', () => {
+      const runtime = fs.readFileSync(path.join(runtimeDir, 'snice-runtime.min.js'), 'utf8');
+      const button = fs.readFileSync(
+        path.join(process.cwd(), outputDir, 'button', 'snice-button.min.js'),
+        'utf8',
+      );
+      expect(runtime).toContain('snice: render failed for ');
+      expect(button).toContain('snice-button');
+      const className = new Function(
+        `${runtime}\n${button}\nreturn customElements.get('snice-button').name;`,
+      )();
+      expect(className).toBe('');
+    });
   });
 
   describe('CDN Component Output', () => {

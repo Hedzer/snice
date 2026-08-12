@@ -8,7 +8,7 @@ import { TemplateInstance } from './parts';
 import { RENDER_METHOD, RENDER_OPTIONS, RENDER_INSTANCE, RENDER_TIMERS, RENDER_CALLBACKS, STYLES_METHOD, STYLES_APPLIED, PARENT_STYLES_METHODS, PENDING_RECONNECT_RENDER, RENDER_DEPTH, RENDERED_PROMISE, RENDERED_RESOLVE } from './symbols';
 import { ensureRenderRoot } from './render-root';
 import { scheduleAutofocus } from './autofocus';
-import { contextualizeRenderError } from './render-errors';
+import { captureRenderHostIdentity, contextualizeRenderError } from './render-errors';
 
 /**
  * When true, render errors are rethrown instead of logged, so tests and dev
@@ -170,6 +170,8 @@ function performRender(
   options: RenderOptions,
   precomputedResult?: any
 ): void {
+  const capturedIdentity = captureRenderHostIdentity(element);
+  let renderIdentity = capturedIdentity;
   const hasPrecomputedResult = arguments.length >= 3;
   const renderMethod = (element as any)[RENDER_METHOD];
   if (!renderMethod) {
@@ -236,13 +238,14 @@ function performRender(
     let instance = (element as any)[RENDER_INSTANCE] as TemplateInstance | undefined;
 
     if (instance && instance.isSameTemplate(result.strings)) {
+      renderIdentity = instance.getRenderHostIdentity() ?? capturedIdentity;
       instance.update(result.values);
       flushRenderCallbacks(element);
       scheduleAutofocus(element);
       return;
     }
 
-    const nextInstance = new TemplateInstance(result, element);
+    const nextInstance = new TemplateInstance(result, capturedIdentity);
     const nextFragment = nextInstance.renderFragment();
 
     // Commit while detached first. A malformed binding can then fail without
@@ -300,7 +303,7 @@ function performRender(
     scheduleAutofocus(element);
     if (cleanupError) throw cleanupError;
   } catch (error) {
-    const contextual = contextualizeRenderError(element, error);
+    const contextual = contextualizeRenderError(renderIdentity, error);
     if (strictRenderErrors) throw contextual;
     console.error('Error rendering element:', contextual);
   } finally {

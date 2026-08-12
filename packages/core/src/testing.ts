@@ -55,3 +55,5 @@ export { parseAttributeValue, detectType } from './utils';
 // Export the low-level template instance only from the dedicated testing
 // bundle so renderer tests can exercise host-free template preparation.
 export { TemplateInstance } from './parts';
+export { captureRenderHostIdentity } from './render-errors';
+export { renderElementNow } from './render';
