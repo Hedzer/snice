@@ -53,16 +53,21 @@ npx snice validate    # source analyzer only
 - a Router without `target`, `type`, or a project-wide `initialize()` call
 - a routed class combining `@page` with redundant `@element`
 - a path/query `:param` or named `*splat` whose page has no reachable attribute
-  target (`snice/route-param-has-no-binding-target`), including
+  target (`snice/route-param-has-no-binding-target`, warning), including
   `attribute: false` and mismatched explicit aliases
 
 The route-param check follows proven local declarations, direct relative
 re-exports, and named or namespace Snice imports, so an inherited bindable
-property satisfies it. It deliberately defers a missing-target error for an
+property satisfies it. It deliberately defers a missing-target warning for an
 unresolved/ambiguous base or dynamic route/attribute contract; locally visible
 disabled or mismatched properties are still diagnosed. Native reflected IDL
 attributes such as an unmodified `id`, and statically known custom
 `observedAttributes` handlers, also satisfy the attribute target.
+
+The route-param rule is non-blocking because its dependency-free static lexer
+cannot model every valid JavaScript/TypeScript grammar edge. Treat the warning
+as a strong prompt to verify the Router attribute channel; `validate` and
+`check` fail only when another error-level diagnostic is present.
 
 It also gives non-blocking architecture suggestions: keep `@page`, `@element`,
 `@controller`, and `@daemon` classes under `src/pages`, `src/components`,

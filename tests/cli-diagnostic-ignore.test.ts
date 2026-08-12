@@ -83,7 +83,7 @@ describe('.sniceignore diagnostic suppression', () => {
     expect(combined.issues).toEqual([]);
   });
 
-  it('suppresses a route parameter binding-target error by exact location', async () => {
+  it('suppresses a route parameter binding-target warning by exact location', async () => {
     const sourceDirectory = join(projectRoot, 'src/pages');
     await mkdir(sourceDirectory, { recursive: true });
     await writeFile(join(sourceDirectory, 'order-page.ts'), [
@@ -104,7 +104,7 @@ describe('.sniceignore diagnostic suppression', () => {
     expect(ignored.issues.filter((candidate: any) => candidate.code === code)).toEqual([]);
   });
 
-  it('suppresses an exact route error after an astral unicode escape', async () => {
+  it('suppresses an exact route warning after an astral unicode escape', async () => {
     const sourceDirectory = join(projectRoot, 'src/pages');
     await mkdir(sourceDirectory, { recursive: true });
     const source = [
@@ -187,6 +187,47 @@ describe('.sniceignore diagnostic suppression', () => {
     const result = await validate(projectRoot);
     expect(result.issues.filter((candidate: any) => candidate.code === code)).toEqual([
       expect.objectContaining({ message: expect.stringContaining(':regexMissing') })
+    ]);
+  });
+
+  it('handles control-body and divisor regexes in real and foreign Router provenance', async () => {
+    const sourceDirectory = join(projectRoot, 'src/pages');
+    await mkdir(sourceDirectory, { recursive: true });
+    await writeFile(join(projectRoot, 'src/router.ts'), [
+      "const text = '', condition = false, values = [];",
+      "if (condition) /'/.test(text);",
+      'while (condition) /"/.test(text);',
+      'for (const value of values) /`/.test(value);',
+      "do /[']/.test(text); while (condition);",
+      "if (condition) /x/.test(text); else /\\'/.test(text);",
+      'const ratio = 12 / /["\'`]/.test(text);',
+      "import { Router as makeRouter } from 'snice';",
+      "export const { page: routePage, initialize } = makeRouter({ target: '#app', type: 'hash' });",
+      'initialize();'
+    ].join('\n'));
+    await writeFile(join(projectRoot, 'src/foreign-router.ts'), [
+      "const text = '', condition = false;",
+      "if (condition) /'/.test(text);",
+      "const docs = 'import { Router as makeRouter } from \"snice\"; export const { page: routePage } = makeRouter({ type: \"hash\" });';",
+      'export const routePage = () => () => {};'
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'control-page.ts'), [
+      "import { routePage } from '../router';",
+      "@routePage({ routes: ['/:controlMissing'] }) class ControlPage extends HTMLElement {}"
+    ].join('\n'));
+    await writeFile(join(sourceDirectory, 'foreign-control-page.ts'), [
+      "import { routePage } from '../foreign-router';",
+      "@routePage({ routes: ['/:foreignControl'] }) class ForeignPage extends HTMLElement {}"
+    ].join('\n'));
+
+    const code = 'snice/route-param-has-no-binding-target';
+    const result = await validate(projectRoot);
+    expect(result.valid).toBe(true);
+    expect(result.issues.filter((candidate: any) => candidate.code === code)).toEqual([
+      expect.objectContaining({
+        severity: 'warning',
+        message: expect.stringContaining(':controlMissing')
+      })
     ]);
   });
 

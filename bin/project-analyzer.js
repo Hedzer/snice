@@ -1514,9 +1514,9 @@ const RULE_DEFINITIONS = [
   },
   {
     id: 'snice/route-param-has-no-binding-target',
-    severity: 'error',
+    severity: 'warning',
     category: 'router',
-    description: 'Require every page route parameter to reach a bindable @property through the Router attribute channel.',
+    description: 'Warn when a page route parameter has no statically reachable binding target through the Router attribute channel.',
     projectOnly: true,
     check() {}
   },
@@ -2027,7 +2027,7 @@ export function analyzeProject(files) {
             ? `Replace @state() with a plain @property() on ${sameName.name}`
             : `Remove attribute: false so ${sameName.name} is a plain bindable @property()`;
           diagnostics.push({
-            severity: 'error',
+            severity: 'warning',
             ruleId: 'snice/route-param-has-no-binding-target',
             message: `Route parameter "${routeLabel}" cannot bind ${page.name}.${sameName.name} because ${disabledBy}.`,
             fix: `${enableFix}, or remove/rename "${routeLabel}" if the URL value is not a page input. Review docs/ai/routing.md.`,
@@ -2045,7 +2045,7 @@ export function analyzeProject(files) {
             ? `remove the explicit attribute alias so @property() ${sameName.name} observes "${routeAttribute}"`
             : `declare @property({ attribute: '${parameter.name}' }) ${sameName.name} so it observes "${routeAttribute}"`;
           diagnostics.push({
-            severity: 'error',
+            severity: 'warning',
             ruleId: 'snice/route-param-has-no-binding-target',
             message: `Route parameter "${routeLabel}" sets the "${routeAttribute}" attribute, but ${page.name}.${sameName.name} observes "${observedAttribute}", so Router cannot reach it.`,
             fix: `Change the route parameter spelling to "${parameter.marker}${observedAttribute}", or ${removeAliasFix}. Review docs/ai/routing.md.`,
@@ -2066,7 +2066,7 @@ export function analyzeProject(files) {
             : `Add @property({ attribute: '${parameter.name}' }) ${suggestedName} = ''; to ${page.name}`
           : `Rename "${routeLabel}" to a valid property name and add a matching plain @property()`;
         diagnostics.push({
-          severity: 'error',
+          severity: 'warning',
           ruleId: 'snice/route-param-has-no-binding-target',
           message: `Route parameter "${routeLabel}" has no bindable @property on ${page.name}; Router sets the "${routeAttribute}" attribute, which otherwise does not populate page state.`,
           fix: `${propertySuggestion}, or remove the parameter if the page does not consume it. Review docs/ai/routing.md.`,
@@ -3711,7 +3711,7 @@ function blankStringContents(source) {
  * literal contents. Provenance scans use this shared view so code examples in
  * documentation strings cannot manufacture imports, exports, or Router calls.
  */
-function maskNonExecutableCode(source) {
+function maskNonExecutableCode(source, { preserveTemplateExpressions = false } = {}) {
   const output = source.split('');
   const blank = (start, end) => {
     for (let index = start; index < end; index++) {
@@ -3721,73 +3721,205 @@ function maskNonExecutableCode(source) {
   const quotedEnd = (start, quote) => {
     for (let index = start + 1; index < source.length; index++) {
       if (source[index] === '\\') { index++; continue; }
-      if (quote === '`' && source[index] === '$' && source[index + 1] === '{') {
-        index = templateExpressionEnd(index + 2) - 1;
-        continue;
-      }
       if (source[index] === quote) return index;
       if (quote !== '`' && (source[index] === '\n' || source[index] === '\r')) return source.length;
     }
     return source.length;
   };
-  const templateExpressionEnd = start => {
-    let depth = 1;
-    for (let index = start; index < source.length; index++) {
-      if (source[index] === '/' && source[index + 1] === '/') {
+  const controlBodies = new Set(['if', 'while', 'for', 'with']);
+  const expressionKeywords = new Set([
+    'await', 'case', 'delete', 'do', 'else', 'in', 'instanceof', 'new',
+    'of', 'return', 'throw', 'typeof', 'void', 'yield'
+  ]);
+  const controlParens = new Set(['if', 'while', 'for', 'with', 'switch', 'catch']);
+
+  const scanTemplate = start => {
+    let rawStart = start + 1;
+    for (let index = start + 1; index < source.length; index++) {
+      if (source[index] === '\\') { index++; continue; }
+      if (source[index] === '`') {
+        if (preserveTemplateExpressions) blank(rawStart, index);
+        return index;
+      }
+      if (source[index] !== '$' || source[index + 1] !== '{') continue;
+      if (preserveTemplateExpressions) blank(rawStart, index);
+      index = scanCode(index + 2, true) - 1;
+      rawStart = index + 1;
+    }
+    if (preserveTemplateExpressions) blank(rawStart, source.length);
+    return source.length;
+  };
+
+  const scanCode = (start, templateExpression = false) => {
+    let expectExpression = true;
+    let expectStatement = !templateExpression;
+    let pendingControl = null;
+    let templateBraceDepth = templateExpression ? 1 : 0;
+    const parens = [];
+    const braces = [];
+
+    for (let index = start; index < source.length;) {
+      const character = source[index];
+      if (/\s/.test(character)) { index++; continue; }
+
+      if (character === '/' && source[index + 1] === '/') {
         const newline = source.indexOf('\n', index + 2);
-        index = newline < 0 ? source.length : newline;
+        const end = newline < 0 ? source.length : newline;
+        blank(index, end);
+        index = end;
         continue;
       }
-      if (source[index] === '/' && source[index + 1] === '*') {
+      if (character === '/' && source[index + 1] === '*') {
         const close = source.indexOf('*/', index + 2);
-        index = close < 0 ? source.length : close + 1;
+        const end = close < 0 ? source.length : close + 2;
+        blank(index, end);
+        index = end;
         continue;
       }
-      if (source[index] === '/' && startsRegexLiteral(source, index)) {
-        const end = regexLiteralEnd(source, index);
-        if (end > index) {
-          index = end - 1;
+      if (character === "'" || character === '"') {
+        const end = quotedEnd(index, character);
+        blank(index + 1, end);
+        index = end < source.length ? end + 1 : end;
+        expectExpression = false;
+        expectStatement = false;
+        pendingControl = null;
+        continue;
+      }
+      if (character === '`') {
+        const end = scanTemplate(index);
+        if (!preserveTemplateExpressions) blank(index + 1, end);
+        index = end < source.length ? end + 1 : end;
+        expectExpression = false;
+        expectStatement = false;
+        pendingControl = null;
+        continue;
+      }
+      if (character === '/') {
+        if (source[index + 1] === '=') {
+          index += 2;
+          expectExpression = true;
+          expectStatement = false;
+          pendingControl = null;
           continue;
         }
-      }
-      if (source[index] === "'" || source[index] === '"' || source[index] === '`') {
-        index = quotedEnd(index, source[index]);
+        if (expectExpression) {
+          const end = regexLiteralEnd(source, index);
+          if (end > index) {
+            blank(index, end);
+            index = end;
+            expectExpression = false;
+            expectStatement = false;
+            pendingControl = null;
+            continue;
+          }
+        }
+        index++;
+        expectExpression = true;
+        expectStatement = false;
+        pendingControl = null;
         continue;
       }
-      if (source[index] === '{') depth++;
-      else if (source[index] === '}' && --depth === 0) return index + 1;
+      if (/[A-Za-z_$]/.test(character)) {
+        let end = index + 1;
+        while (/[\w$]/.test(source[end] ?? '')) end++;
+        const word = source.slice(index, end);
+        if (word === 'await' && pendingControl === 'for') {
+          expectExpression = true;
+          expectStatement = false;
+        } else if (controlParens.has(word)) {
+          pendingControl = word;
+          expectExpression = true;
+          expectStatement = false;
+        } else {
+          pendingControl = null;
+          expectExpression = expressionKeywords.has(word);
+          expectStatement = word === 'do' || word === 'else';
+        }
+        index = end;
+        continue;
+      }
+      if (/\d/.test(character)) {
+        index++;
+        while (/[\w.]/.test(source[index] ?? '')) index++;
+        expectExpression = false;
+        expectStatement = false;
+        pendingControl = null;
+        continue;
+      }
+      if (character === '(') {
+        parens.push(pendingControl);
+        pendingControl = null;
+        expectExpression = true;
+        expectStatement = false;
+        index++;
+        continue;
+      }
+      if (character === ')') {
+        const control = parens.pop();
+        expectExpression = controlBodies.has(control);
+        expectStatement = controlBodies.has(control);
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if (character === '{') {
+        braces.push(expectStatement);
+        if (templateExpression) templateBraceDepth++;
+        expectExpression = true;
+        expectStatement = true;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if (character === '}') {
+        if (templateExpression && --templateBraceDepth === 0) return index + 1;
+        const block = braces.pop() ?? false;
+        expectExpression = block;
+        expectStatement = block;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if (character === '[') {
+        expectExpression = true;
+        expectStatement = false;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if (character === ']') {
+        expectExpression = false;
+        expectStatement = false;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if ((character === '+' || character === '-') && source[index + 1] === character) {
+        index += 2;
+        pendingControl = null;
+        continue;
+      }
+      if ('=,:;!?&|+-*%^~<>'.includes(character)) {
+        expectExpression = true;
+        expectStatement = character === ';' && parens.length === 0;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      if (character === '.') {
+        expectExpression = false;
+        expectStatement = false;
+        pendingControl = null;
+        index++;
+        continue;
+      }
+      pendingControl = null;
+      index++;
     }
     return source.length;
   };
 
-  for (let index = 0; index < source.length; index++) {
-    if (source[index] === '/' && source[index + 1] === '/') {
-      const newline = source.indexOf('\n', index + 2);
-      const end = newline < 0 ? source.length : newline;
-      blank(index, end);
-      index = end - 1;
-      continue;
-    }
-    if (source[index] === '/' && source[index + 1] === '*') {
-      const close = source.indexOf('*/', index + 2);
-      const end = close < 0 ? source.length : close + 2;
-      blank(index, end);
-      index = end - 1;
-      continue;
-    }
-    if (source[index] === '/' && startsRegexLiteral(source, index)) {
-      const end = regexLiteralEnd(source, index);
-      if (end > index) {
-        blank(index, end);
-        index = end - 1;
-        continue;
-      }
-    }
-    if (source[index] !== "'" && source[index] !== '"' && source[index] !== '`') continue;
-    const end = quotedEnd(index, source[index]);
-    blank(index + 1, end);
-    index = end;
-  }
+  scanCode(0);
   return output.join('');
 }
 
@@ -3864,101 +3996,8 @@ function importHasProjectUse(source, entry) {
 }
 
 function hasCodeIdentifier(source, target) {
-  const stack = [{ kind: 'code', templateExpression: false, braces: 0 }];
-  let index = 0;
-  while (index < source.length) {
-    const frame = stack.at(-1);
-    const character = source[index];
-
-    if (frame.kind === 'quoted') {
-      if (character === '\\') index += 2;
-      else {
-        index++;
-        if (character === frame.quote) stack.pop();
-      }
-      continue;
-    }
-    if (frame.kind === 'regex') {
-      if (character === '\\') {
-        index += 2;
-      } else if (character === '[') {
-        frame.characterClass = true;
-        index++;
-      } else if (character === ']' && frame.characterClass) {
-        frame.characterClass = false;
-        index++;
-      } else if (character === '/' && !frame.characterClass) {
-        index++;
-        while (/[A-Za-z]/.test(source[index] ?? '')) index++;
-        stack.pop();
-      } else {
-        index++;
-      }
-      continue;
-    }
-    if (frame.kind === 'template') {
-      if (character === '\\') {
-        index += 2;
-      } else if (character === '`') {
-        stack.pop();
-        index++;
-      } else if (character === '$' && source[index + 1] === '{') {
-        stack.push({ kind: 'code', templateExpression: true, braces: 1 });
-        index += 2;
-      } else {
-        index++;
-      }
-      continue;
-    }
-
-    if (character === "'" || character === '"') {
-      stack.push({ kind: 'quoted', quote: character });
-      index++;
-      continue;
-    }
-    if (character === '`') {
-      stack.push({ kind: 'template' });
-      index++;
-      continue;
-    }
-    if (character === '/' && startsRegexLiteral(source, index)) {
-      stack.push({ kind: 'regex', characterClass: false });
-      index++;
-      continue;
-    }
-    if (frame.templateExpression && character === '{') {
-      frame.braces++;
-      index++;
-      continue;
-    }
-    if (frame.templateExpression && character === '}') {
-      frame.braces--;
-      index++;
-      if (frame.braces === 0) stack.pop();
-      continue;
-    }
-    if (/[A-Za-z_$]/.test(character)) {
-      let end = index + 1;
-      while (/[\w$]/.test(source[end] ?? '')) end++;
-      if (source.slice(index, end) === target) return true;
-      index = end;
-      continue;
-    }
-    index++;
-  }
-  return false;
-}
-
-function startsRegexLiteral(source, slashIndex) {
-  let previous = slashIndex - 1;
-  while (previous >= 0 && /\s/.test(source[previous])) previous--;
-  if (previous < 0 || /[([{=:;,!?&|+*%^~<>-]/.test(source[previous])) return true;
-  if (!/[\w$]/.test(source[previous])) return false;
-  let start = previous;
-  while (start > 0 && /[\w$]/.test(source[start - 1])) start--;
-  return /^(?:return|case|throw|else|do|typeof|instanceof|in|of|yield|await|void|delete)$/.test(
-    source.slice(start, previous + 1)
-  );
+  const code = maskNonExecutableCode(source, { preserveTemplateExpressions: true });
+  return new RegExp(`(?:^|[^\\w$])${escapeRegExp(target)}(?![\\w$])`).test(code);
 }
 
 function regexLiteralEnd(source, slashIndex) {

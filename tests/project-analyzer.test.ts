@@ -71,7 +71,7 @@ describe('Snice project analyzer API', () => {
         }),
         expect.objectContaining({
           id: 'snice/route-param-has-no-binding-target',
-          severity: 'error',
+          severity: 'warning',
           category: 'router'
         })
       ])
@@ -1614,6 +1614,111 @@ describe('page orchestration checks', () => {
         "@page({ routes: ['/:foreign'] }) class ForeignPage extends HTMLElement {}"
       ].join('\n');
       expect(byRule(foreign, ruleId)).toEqual([]);
+    });
+
+    it('keeps real Router provenance after control-statement regexes and a regex divisor', () => {
+      const diagnostics = analyzeProject({
+        'src/router.ts': [
+          "const text = '', condition = false, values = [];",
+          "if (condition) /'/.test(text);",
+          'while (condition) /"/.test(text);',
+          'for (const value of values) /`/.test(value);',
+          "do /[']/.test(text); while (condition);",
+          "if (condition) /x/.test(text); else /\\'/.test(text);",
+          'const ratio = 12 / /["\'`]/.test(text);',
+          "import { Router as makeRouter } from 'snice';",
+          "export const { page: routePage } = makeRouter({ type: 'hash' });"
+        ].join('\n'),
+        'src/page.ts': [
+          "import { routePage } from './router';",
+          "@routePage({ routes: ['/:controlMissing'] }) class ControlPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics).toEqual([
+        expect.objectContaining({ severity: 'warning', message: expect.stringContaining(':controlMissing') })
+      ]);
+    });
+
+    it('does not accept forged Router provenance exposed by a control-body regex', () => {
+      const diagnostics = analyzeProject({
+        'src/foreign-router.ts': [
+          "const text = '', condition = false;",
+          "if (condition) /'/.test(text);",
+          "const docs = 'import { Router as makeRouter } from \"snice\"; export const { page: routePage } = makeRouter({ type: \"hash\" });';",
+          'export const routePage = () => () => {};'
+        ].join('\n'),
+        'src/page.ts': [
+          "import { routePage } from './foreign-router';",
+          "@routePage({ routes: ['/:foreignControl'] }) class ForeignPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics).toEqual([]);
+    });
+
+    it.each([
+      "if (condition) /'/.test(text);",
+      'while (condition) /"/.test(text);',
+      'for (; condition;) /`/.test(text);',
+      "do /[']/.test(text); while (condition);",
+      "if (condition) /x/.test(text); else /\\'/.test(text);",
+      "if (condition) {} /'/.test(text);",
+      "async function scan() { for await (const value of []) /'/.test(value); }",
+      'const value = total / /["\'`]/.test(text);',
+      "const value = total++ / /'/.test(text);",
+      "const value = condition ? /'/.test(text) : /\"/.test(text);",
+      "function matcher() { return /'/.test(text); }"
+    ])('tracks expression state for %s', statement => {
+      const diagnostics = analyzeProject({
+        'src/router.ts': [
+          "let condition = false, text = '', total = 12;",
+          statement,
+          "import { Router as makeRouter } from 'snice';",
+          "export const { page: routePage } = makeRouter({ type: 'hash' });"
+        ].join('\n'),
+        'src/page.ts': [
+          "import { routePage } from './router';",
+          "@routePage({ routes: ['/:matrixMissing'] }) class MatrixPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics.map(item => item.message)).toEqual([expect.stringContaining(':matrixMissing')]);
+    });
+
+    it.each(['+', '-', '*', '/', '%', '**', '<<', '>>', '>>>', '&', '|', '^', '&&', '||', '??', '<', '>', '<=', '>=', '==', '===', '!=', '!=='])(
+      'does not confuse the %s binary operator with a regex start',
+      operator => {
+        const diagnostics = analyzeProject({
+          'src/router.ts': [
+            "let left = 12, right = 3, text = '';",
+            `const value = left ${operator} right; const marker = /'/.test(text);`,
+            "import { Router as makeRouter } from 'snice';",
+            "export const { page: routePage } = makeRouter({ type: 'hash' });"
+          ].join('\n'),
+          'src/page.ts': [
+            "import { routePage } from './router';",
+            "@routePage({ routes: ['/:operatorMissing'] }) class OperatorPage extends HTMLElement {}"
+          ].join('\n')
+        }).filter(item => item.ruleId === ruleId);
+        expect(diagnostics.map(item => item.message)).toEqual([expect.stringContaining(':operatorMissing')]);
+      }
+    );
+
+    it.each([
+      "if (condition) /'/.test(text);",
+      'const value = total / /["\'`]/.test(text);'
+    ])('rejects forged foreign Router provenance after %s', statement => {
+      const diagnostics = analyzeProject({
+        'src/foreign-router.ts': [
+          "let condition = false, text = '', total = 12;",
+          statement,
+          "const docs = 'import { Router as makeRouter } from \"snice\"; export const { page: routePage } = makeRouter({ type: \"hash\" });';",
+          'export const routePage = () => () => {};'
+        ].join('\n'),
+        'src/page.ts': [
+          "import { routePage } from './foreign-router';",
+          "@routePage({ routes: ['/:foreignMatrix'] }) class ForeignPage extends HTMLElement {}"
+        ].join('\n')
+      }).filter(item => item.ruleId === ruleId);
+      expect(diagnostics).toEqual([]);
     });
 
     it('uses last-key semantics and defers route objects made uncertain by spreads', () => {

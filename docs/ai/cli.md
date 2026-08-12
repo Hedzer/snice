@@ -48,12 +48,15 @@ npx snice validate           # source analyzer only
 - a routed class combining `@page` with redundant `@element`
 - route path/query `:param` or named `*splat` without a reachable attribute target,
   including `attribute: false` and mismatched aliases
-  (`snice/route-param-has-no-binding-target`)
+  (`snice/route-param-has-no-binding-target`, non-blocking warning)
 
 Route-param inheritance follows proven local declarations, direct relative
 re-exports, and named or namespace Snice imports. Missing-target findings are
 deferred for unresolved/ambiguous bases or dynamic route/attribute contracts;
 locally visible disabled or mismatched properties are still reported.
+The rule stays warning-level because the dependency-free static lexer cannot
+model every valid JavaScript/TypeScript grammar edge; verify the Router
+attribute channel, but this finding alone does not fail `validate` or `check`.
 
 Non-blocking architecture suggestions:
 - `@page` -> `src/pages/`
