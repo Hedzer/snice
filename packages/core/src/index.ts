@@ -17,7 +17,11 @@ if (typeof document !== 'undefined') {
 export { dispatch } from './events';
 export { observe } from './observe';
 export { on } from './on';
-export type { OnOptions } from './on';
+// Keep root event types explicit. NodeNext does not resolve the directory-star
+// declaration export below as a source of named package exports.
+export type { OnOptions } from './types/on-options';
+export type { DispatchOptions } from './types/dispatch-options';
+export type { EventTiming } from './types/event-timing';
 export { request, respond } from './request-response';
 export type { Response } from './request-response';
 export { createRequestHandler } from './create-request-handler';

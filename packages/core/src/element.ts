@@ -6,7 +6,7 @@ import { setupEventHandlers, cleanupEventHandlers } from './on';
 import { setupContextHandler, cleanupContextHandler } from './context';
 import { parseAttributeValue, detectType, valueToAttribute, getAttrName, ensureSet, ensureObj, invokeWatchers, invokeImmediateWatchers, validateWatchedProperties, notEqual } from './utils';
 import { requestRender, applyStyles, clearRenderTimers, disconnectRenderTree, reconnectRenderTree } from './render';
-import { activateDispatchTimers, beginDispatchTeardown, finishDispatchTeardown } from './events';
+import { activateDispatchTimers, beginDispatchTeardown, createDispatchTeardownContext, finishDispatchTeardown } from './events';
 import { IS_ELEMENT_CLASS, IS_CONTROLLER_INSTANCE, READY_PROMISE, READY_RESOLVE, READY_REJECT, READY_HANDLERS_RUNNING, RENDERED_PROMISE, RENDERED_RESOLVE, CONTROLLER, DIRECT_CONTROLLER, CONTROLLER_ATTRIBUTE_SYNC, PENDING_CONTROLLER_BINDING, PROPERTIES, PROPERTY_VALUES, PROPERTY_DEFAULTS, PROPERTY_WRAPPERS, PROPERTIES_INITIALIZED, PRE_INIT_PROPERTY_VALUES, PRE_UPGRADE_PROPERTY_BINDINGS, PROPERTY_WATCHERS, PROPERTY_DEFINERS, EXPLICITLY_SET_PROPERTIES, SETTING_FROM_PROPERTY, ROUTER_CONTEXT, READY_HANDLERS, DISPOSE_HANDLERS, RECONNECT_HANDLERS, INITIALIZED, MOVED_HANDLERS, ADOPTED_HANDLERS, MOVED_TIMERS, ADOPTED_TIMERS, RENDER_METHOD, RENDER_OPTIONS, ELEMENT_OPTIONS, WATCH_METHODS, READY_METHODS, DISPOSE_METHODS, RECONNECT_METHODS, MOVED_METHODS, ADOPTED_METHODS, PENDING_RECONNECT_RENDER, SNICE_ELEMENT_BASE } from './symbols';
 import { QueryOptions } from './types/query-options';
 import { PropertyOptions, StateOptions } from './types/property-options';
@@ -452,6 +452,7 @@ export function applyElementFunctionality(constructor: any) {
       // The platform does not await disconnectedCallback, and @dispose may be
       // async, so waiting until the end permits events from a detached host.
       const dispatchTeardownGeneration = beginDispatchTeardown(this);
+      const dispatchTeardownContext = createDispatchTeardownContext(this, dispatchTeardownGeneration);
       try {
         disconnectRenderTree(this);
       } catch (error) {
@@ -462,7 +463,7 @@ export function applyElementFunctionality(constructor: any) {
       if (disposeHandlers) {
         for (const handler of disposeHandlers) {
           try {
-            await handler.method.call(this);
+            await handler.method.call(dispatchTeardownContext);
           } catch (error) {
             console.error(`Error in @dispose handler ${handler.methodName}:`, error);
           }
@@ -471,7 +472,7 @@ export function applyElementFunctionality(constructor: any) {
       
       // Call original user-defined disconnectedCallback
       if (originalDisconnectedCallback) {
-        originalDisconnectedCallback.call(this);
+        originalDisconnectedCallback.call(dispatchTeardownContext);
       }
       if (this[CONTROLLER]) {
         detachController(this).catch(error => {

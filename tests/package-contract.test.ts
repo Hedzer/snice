@@ -1,5 +1,7 @@
 // @vitest-environment node
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -24,6 +26,43 @@ describe('published package contract', () => {
     const exported = packageJson.exports['./testing/dom'];
     for (const target of Object.values(exported) as string[]) {
       expect(existsSync(join(root, target)), `missing ${target}`).toBe(true);
+    }
+  });
+
+  it('exposes event option types to a fresh NodeNext consumer', () => {
+    const consumer = mkdtempSync(join(tmpdir(), 'snice-nodenext-types-'));
+    try {
+      mkdirSync(join(consumer, 'node_modules'), { recursive: true });
+      symlinkSync(root, join(consumer, 'node_modules', 'snice'), 'junction');
+      writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module' }));
+      writeFileSync(join(consumer, 'index.ts'), `
+        import type { EventTiming, DispatchOptions, OnOptions } from 'snice';
+        const timing: EventTiming = function () { return 25; };
+        const dispatch: DispatchOptions = { debounce: timing };
+        const on: OnOptions = { throttle: timing };
+        void [dispatch, on];
+      `);
+      writeFileSync(join(consumer, 'tsconfig.json'), JSON.stringify({
+        compilerOptions: {
+          target: 'ES2022',
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
+          strict: true,
+          noEmit: true,
+          // This contract is the root package's named type surface. Snice's
+          // declarations predate NodeNext's explicit-extension diagnostics,
+          // which are a separate package-wide migration.
+          skipLibCheck: true,
+        },
+        files: ['index.ts'],
+      }));
+
+      execFileSync(join(root, 'node_modules', '.bin', 'tsc'), ['-p', join(consumer, 'tsconfig.json')], {
+        cwd: consumer,
+        stdio: 'pipe',
+      });
+    } finally {
+      rmSync(consumer, { recursive: true, force: true });
     }
   });
 

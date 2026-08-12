@@ -7,6 +7,18 @@ import { defaultCommunicationTarget, requireDaemonTarget } from './daemon-target
 
 const DISPATCH_GENERATION = getSymbol('dispatch-generation');
 const DISPATCH_TEARDOWN_GENERATION = getSymbol('dispatch-teardown-generation');
+const DISPATCH_CONTEXT_INSTANCE = getSymbol('dispatch-context-instance');
+const DISPATCH_CONTEXT_GENERATION = getSymbol('dispatch-context-generation');
+
+function platformOwnsMethod(property: PropertyKey): boolean {
+  if (typeof HTMLElement === 'undefined') return false;
+  let prototype: object | null = HTMLElement.prototype;
+  while (prototype) {
+    if (Object.prototype.hasOwnProperty.call(prototype, property)) return true;
+    prototype = Object.getPrototypeOf(prototype);
+  }
+  return false;
+}
 
 function isDispatchGenerationActive(instance: any, generation: number): boolean {
   return (instance[DISPATCH_GENERATION] ?? 0) === generation
@@ -28,22 +40,34 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
     const timerKey = Symbol(`@dispatch:${eventName}`);
 
     return function (this: any, ...args: any[]) {
+      const instance = this[DISPATCH_CONTEXT_INSTANCE] ?? this;
       // Resolve against the actual decorated instance for every invocation.
       // Capture the generation before calling an async method so teardown can
       // invalidate work that has not reached the scheduling step yet.
-      const generation = this[DISPATCH_GENERATION] ?? 0;
-      const debounceDelay = resolveEventTiming(this, options?.debounce, '@dispatch', 'debounce');
-      const throttleDelay = debounceDelay && debounceDelay > 0
-        ? undefined
-        : resolveEventTiming(this, options?.throttle, '@dispatch', 'throttle');
+      const generation = this[DISPATCH_CONTEXT_GENERATION]
+        ?? instance[DISPATCH_GENERATION]
+        ?? 0;
 
-      // Create timing wrappers for dispatch (per-instance)
-      if (!this[DISPATCH_TIMERS]) {
-        this[DISPATCH_TIMERS] = new Map();
+      // A teardown receiver keeps the generation that owned its lifecycle
+      // callback across `await`. Once a reconnect advances the instance, a
+      // stale continuation may still run its method body, but it must not
+      // inspect or supersede the current generation's dispatch state.
+      if (!isDispatchGenerationActive(instance, generation)) {
+        return originalMethod.apply(this, args);
       }
 
-      if (!this[DISPATCH_TIMERS].has(timerKey)) {
-        this[DISPATCH_TIMERS].set(timerKey, {
+      const debounceDelay = resolveEventTiming(instance, options?.debounce, '@dispatch', 'debounce');
+      const throttleDelay = debounceDelay && debounceDelay > 0
+        ? undefined
+        : resolveEventTiming(instance, options?.throttle, '@dispatch', 'throttle');
+
+      // Create timing wrappers for dispatch (per-instance)
+      if (!instance[DISPATCH_TIMERS]) {
+        instance[DISPATCH_TIMERS] = new Map();
+      }
+
+      if (!instance[DISPATCH_TIMERS].has(timerKey)) {
+        instance[DISPATCH_TIMERS].set(timerKey, {
           debounceTimeout: null,
           throttleLastCall: 0,
           throttleTimeout: null,
@@ -51,7 +75,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         });
       }
 
-      const timers = this[DISPATCH_TIMERS].get(timerKey);
+      const timers = instance[DISPATCH_TIMERS].get(timerKey);
       const invocation = ++timers.invocation;
       timers.ownerGeneration = generation;
 
@@ -126,12 +150,12 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
       
       // Helper to handle timed dispatch
       const timedDispatch = (detail: any) => {
-        if (!isDispatchGenerationActive(this, generation)) return;
+        if (!isDispatchGenerationActive(instance, generation)) return;
 
         if (debounceDelay && debounceDelay > 0) {
           timers.debounceTimeout = setTimeout(() => {
             timers.debounceTimeout = null;
-            if (isDispatchGenerationActive(this, generation) && timers.invocation === invocation) {
+            if (isDispatchGenerationActive(instance, generation) && timers.invocation === invocation) {
               doDispatch(detail);
             }
           }, debounceDelay);
@@ -164,7 +188,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
           timers.throttleTimeout = null;
           const d = timers.latestDetail;
           timers.latestDetail = undefined;
-          if (isDispatchGenerationActive(this, generation) && timers.invocation === invocation) {
+          if (isDispatchGenerationActive(instance, generation) && timers.invocation === invocation) {
             doDispatch(d);
           }
         }, remaining);
@@ -175,7 +199,7 @@ export function dispatch(eventName: string, options?: DispatchOptions) {
         return result.then((resolvedResult: any) => {
           const usesDeferredTiming = (debounceDelay ?? 0) > 0 || (throttleDelay ?? 0) > 0;
           if (
-            isDispatchGenerationActive(this, generation)
+            isDispatchGenerationActive(instance, generation)
             && (!usesDeferredTiming || timers.invocation === invocation)
           ) {
             timedDispatch(resolvedResult);
@@ -219,6 +243,29 @@ export function beginDispatchTeardown(instance: any): number {
   const generation = clearDispatchTimers(instance);
   instance[DISPATCH_TEARDOWN_GENERATION] = generation;
   return generation;
+}
+
+/**
+ * Give one disconnect lifecycle a stable receiver token. The Proxy is local to
+ * that callback chain, so native browser async continuations retain the token
+ * without Node-only async context. Platform methods remain bound to the real
+ * element to satisfy Web IDL receiver checks.
+ */
+export function createDispatchTeardownContext(instance: any, generation: number): any {
+  return new Proxy(instance, {
+    get(target, property) {
+      if (property === DISPATCH_CONTEXT_INSTANCE) return target;
+      if (property === DISPATCH_CONTEXT_GENERATION) return generation;
+      const value = Reflect.get(target, property, target);
+      if (typeof value === 'function' && platformOwnsMethod(property)) {
+        return value.bind(target);
+      }
+      return value;
+    },
+    set(target, property, value) {
+      return Reflect.set(target, property, value, target);
+    },
+  });
 }
 
 /** Activate a fresh generation when an element reconnects during async teardown. */

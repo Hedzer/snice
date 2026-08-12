@@ -532,4 +532,111 @@ describe('per-instance event timing resolvers', () => {
     await vi.advanceTimersByTimeAsync(50);
     expect(details).toEqual(['new-connect']);
   });
+
+  it('does not let an old async @dispose continuation supersede reconnected dispatch work', async () => {
+    let releaseDispose!: () => void;
+    const disposeGate = new Promise<void>((resolve) => { releaseDispose = resolve; });
+
+    @element('timing-late-dispose-generation')
+    class TimingLateDisposeGeneration extends HTMLElement {
+      @dispatch('late-dispose-value', { debounce: 50 })
+      emit(value: string) { return value; }
+
+      @dispose()
+      async disposeWork() {
+        await disposeGate;
+        this.emit('old-dispose');
+      }
+    }
+
+    const target = document.createElement('timing-late-dispose-generation') as TimingLateDisposeGeneration;
+    document.body.append(target);
+    await target.ready;
+    const details: string[] = [];
+    target.addEventListener('late-dispose-value', (event) => details.push((event as CustomEvent).detail));
+
+    vi.useFakeTimers();
+    target.remove();
+    document.body.append(target);
+    target.emit('new-connect');
+    releaseDispose();
+    await Promise.resolve();
+    await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(details).toEqual(['new-connect']);
+  });
+
+  it('does not let a delayed original disconnectedCallback supersede reconnected dispatch work', async () => {
+    let releaseDispose!: () => void;
+    const disposeGate = new Promise<void>((resolve) => { releaseDispose = resolve; });
+
+    @element('timing-late-native-generation')
+    class TimingLateNativeGeneration extends HTMLElement {
+      @dispatch('late-native-value', { debounce: 50 })
+      emit(value: string) { return value; }
+
+      @dispose()
+      async disposeWork() {
+        await disposeGate;
+      }
+
+      disconnectedCallback() {
+        this.emit('old-native');
+      }
+    }
+
+    const target = document.createElement('timing-late-native-generation') as TimingLateNativeGeneration;
+    document.body.append(target);
+    await target.ready;
+    const details: string[] = [];
+    target.addEventListener('late-native-value', (event) => details.push((event as CustomEvent).detail));
+
+    vi.useFakeTimers();
+    target.remove();
+    document.body.append(target);
+    target.emit('new-connect');
+    releaseDispose();
+    await Promise.resolve();
+    await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(details).toEqual(['new-connect']);
+  });
+
+  it('keeps each reconnect generation isolated across repeated async teardowns', async () => {
+    const releases: Array<() => void> = [];
+
+    @element('timing-repeated-generation')
+    class TimingRepeatedGeneration extends HTMLElement {
+      disconnect = 0;
+
+      @dispatch('repeated-generation-value', { debounce: 40 })
+      emit(value: string) { return value; }
+
+      @dispose()
+      async disposeWork() {
+        const disconnect = ++this.disconnect;
+        await new Promise<void>((resolve) => { releases.push(resolve); });
+        this.emit(`old-${disconnect}`);
+      }
+    }
+
+    const target = document.createElement('timing-repeated-generation') as TimingRepeatedGeneration;
+    document.body.append(target);
+    await target.ready;
+    const details: string[] = [];
+    target.addEventListener('repeated-generation-value', (event) => details.push((event as CustomEvent).detail));
+    vi.useFakeTimers();
+
+    for (const cycle of [1, 2]) {
+      target.remove();
+      document.body.append(target);
+      target.emit(`new-${cycle}`);
+      releases.shift()!();
+      await Promise.resolve();
+      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(40);
+    }
+
+    expect(details).toEqual(['new-1', 'new-2']);
+  });
 });
