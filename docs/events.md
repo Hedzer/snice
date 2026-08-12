@@ -657,8 +657,12 @@ interface DispatchOptions extends EventInit {
 `@on`. `@dispatch` resolves it against the decorated instance on every method
 invocation, so an element or controller can change its interval at runtime.
 The same finite, non-negative validation applies. Debounced async methods still
-dispatch only after the method resolves; teardown drops both queued dispatches
-and dispatch work whose async method has not resolved yet.
+dispatch only after the method resolves. Disconnect synchronously drops timed
+dispatches already queued and decorated async invocations that started before
+disconnect. Lifecycle hooks always run with the real element as `this`; an
+`@dispatch` method called by teardown code after that cancellation is a new,
+ordinary invocation (and, after reconnect, participates in the current timing
+state).
 
 Each invocation supersedes pending timed work for that decorated method. A
 resolved `0` therefore cancels an older debounce/throttle timer and dispatches

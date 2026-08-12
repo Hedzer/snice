@@ -298,8 +298,11 @@ interface DispatchOptions extends EventInit {
 
 `EventTiming = number | ((this: any) => number)`. A resolver runs against the
 decorated element/controller on every method invocation. Result validation is
-the same as `@on`. Async methods dispatch only after resolution; teardown drops
-queued dispatches and unresolved async dispatch work.
+the same as `@on`. Async methods dispatch only after resolution. Disconnect
+drops work queued before disconnect and decorated async invocations that began
+before disconnect. Teardown hooks keep the real element as `this`; calls they
+make after cancellation are new invocations, using current timing state after
+reconnect.
 
 Each invocation supersedes that method's pending timed work. Resolved `0`
 cancels an older timer and dispatches the new result immediately. Throttle

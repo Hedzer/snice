@@ -151,6 +151,18 @@ afterEach(() => {
 });
 
 describe('snice-radio rendering and public state', () => {
+  it('keeps the real receiver and constructor during disconnect coordination', async () => {
+    const radio = await createRadio();
+    const Radio = radio.constructor as typeof HTMLElement & { scheduleRootSync?: Function };
+
+    expect(typeof Radio.scheduleRootSync).toBe('function');
+    radio.remove();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(radio.constructor).toBe(Radio);
+  });
+
   it('renders a native radio with native-compatible defaults', async () => {
     const radio = await createRadio();
     const input = inputFor(radio);
