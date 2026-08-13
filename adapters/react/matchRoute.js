@@ -42,6 +42,72 @@ function routeSpecificity(spec) {
     return score;
 }
 
+const EMPTY_QUERY_MARKER = '__snice_empty_query_value__';
+const QUERY_PARAM_PATTERN = /=:[\w-]+\)?$/;
+function containsDecodedMarker(url, marker) {
+    if (url.includes(marker))
+        return true;
+    const queryIndex = url.indexOf('?');
+    if (queryIndex === -1)
+        return false;
+    return url.slice(queryIndex + 1).split('&').some(part => {
+        try {
+            return decodeURIComponent(part).includes(marker);
+        }
+        catch {
+            return false;
+        }
+    });
+}
+function emptyQueryMarker(route, url) {
+    let marker = EMPTY_QUERY_MARKER;
+    while (route.spec.includes(marker) || containsDecodedMarker(url, marker)) {
+        marker += '_';
+    }
+    return marker;
+}
+function fillEmptyQueryParams(route, url, marker) {
+    const urlQueryIndex = url.indexOf('?');
+    const routeQueryIndex = route.spec.indexOf('?');
+    if (urlQueryIndex === -1 || routeQueryIndex === -1)
+        return null;
+    const urlParts = url.slice(urlQueryIndex + 1).split('&');
+    const routeParts = route.spec.slice(routeQueryIndex + 1).split('&');
+    let changed = false;
+    const normalizedParts = urlParts.map((part, index) => {
+        if (part.endsWith('=') && QUERY_PARAM_PATTERN.test(routeParts[index] ?? '')) {
+            changed = true;
+            return `${part}${marker}`;
+        }
+        return part;
+    });
+    if (!changed)
+        return null;
+    return `${url.slice(0, urlQueryIndex + 1)}${normalizedParts.join('&')}`;
+}
+/**
+ * Match through pica-route while preserving legal empty query parameter values.
+ * pica-route 1.1.2 rejects an empty param and therefore discards the whole route.
+ * Keep this compatibility shim in sync with packages/core/src/route-match.ts.
+ */
+function matchRoute(route, url) {
+    const directMatch = route.match(url);
+    if (directMatch !== false)
+        return directMatch;
+    const marker = emptyQueryMarker(route, url);
+    const normalizedUrl = fillEmptyQueryParams(route, url, marker);
+    if (normalizedUrl === null)
+        return false;
+    const params = route.match(normalizedUrl);
+    if (params === false)
+        return false;
+    for (const name of Object.keys(params)) {
+        if (params[name] === marker)
+            params[name] = '';
+    }
+    return params;
+}
+
 /**
  * Match a URL path against an array of route configs.
  * Uses pica-route — same matching as vanilla Snice's Router.
@@ -62,7 +128,7 @@ function matchRoutes(routes, pathname) {
         || a.registrationOrder - b.registrationOrder);
     for (const route of sorted) {
         const matcher = new Route(route.path);
-        const params = matcher.match(pathname);
+        const params = matchRoute(matcher, pathname);
         if (params !== false) {
             return {
                 index: route.index,

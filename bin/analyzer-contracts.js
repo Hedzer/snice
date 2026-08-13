@@ -21891,6 +21891,7 @@ export const ANALYZER_CONTRACTS = {
       "snice/react/rating",
       "snice/react/receipt",
       "snice/react/recipe",
+      "snice/react/route-match",
       "snice/react/route-specificity",
       "snice/react/row",
       "snice/react/sankey",
