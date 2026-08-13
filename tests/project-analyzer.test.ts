@@ -1144,8 +1144,7 @@ describe('declarative architecture smell checks', () => {
     expect(plainModules).toEqual([]);
   });
 
-  // Expected-failure contract for the requested static rule.
-  it.fails('flags an unguarded load started by an every-update @context handler (B-25)', () => {
+  it('flags an unguarded load started by an every-update @context handler (B-25)', () => {
     const source = [
       "@controller('orders-controller')",
       'class OrdersController {',
@@ -1166,6 +1165,50 @@ describe('declarative architecture smell checks', () => {
 
     expect(diagnostics).toHaveLength(1);
     expect(diagnostics[0].fix).toMatch(/first delivery|once/i);
+  });
+
+  it('accepts explicit one-shot and first-delivery context load guards', () => {
+    const controller = (contextDecorator: string, handlerBody: string) => [
+      "@controller('orders-controller')",
+      'class OrdersController {',
+      `  ${contextDecorator}`,
+      '  receiveContext(ctx: Context) {',
+      handlerBody,
+      '  }',
+      '  async reload() {}',
+      '}'
+    ].join('\n');
+
+    const once = controller('@context({ once: true })', [
+      '    this.ctx = ctx;',
+      '    void this.reload();'
+    ].join('\n'));
+    const guarded = controller('@context()', [
+      '    this.ctx = ctx;',
+      '    if (this.receivedFirstContext) return;',
+      '    this.receivedFirstContext = true;',
+      '    void this.reload();'
+    ].join('\n'));
+
+    for (const source of [once, guarded]) {
+      expect(analyzeSource(source, 'src/controllers/orders-controller.ts')
+        .filter(diagnostic => diagnostic.ruleId === 'snice/unguarded-context-load')).toEqual([]);
+    }
+  });
+
+  it('does not treat ordinary context updates as load work', () => {
+    const source = [
+      "@controller('title-controller')",
+      'class TitleController {',
+      '  @context()',
+      '  receiveContext(ctx: Context) {',
+      '    this.element.title = ctx.currentRoute;',
+      '  }',
+      '}'
+    ].join('\n');
+
+    expect(analyzeSource(source, 'src/controllers/title-controller.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/unguarded-context-load')).toEqual([]);
   });
 
   it('flags styled light roots but accepts explicit light-only renderers', () => {

@@ -531,6 +531,38 @@ const RULE_DEFINITIONS = [
     }
   },
   {
+    id: 'snice/unguarded-context-load',
+    severity: 'warning',
+    category: 'lifecycle',
+    description: 'Warn when a controller starts repeatable load work from an unguarded @context handler.',
+    check(context) {
+      if (isFrameworkImplementation(context.filename) || isTestFilename(context.filename)) return;
+      for (const declaration of findDecoratedClasses(context.source, 'controller')) {
+        for (const method of findDecoratedClassMethods(declaration.body, 'context', declaration.bodyStart)) {
+          if (/\bonce\s*:\s*true\b/.test(method.decoratorArguments)) continue;
+
+          const body = blankStringContents(maskComments(method.body));
+          const load = /\b(?:void\s+|await\s+)?this\.((?:re)?load|refresh|fetch)(?:[A-Z_$][\w$]*)?\s*\(/.exec(body);
+          if (!load) continue;
+
+          const beforeLoad = body.slice(0, load.index);
+          const statementPrefix = beforeLoad.slice(Math.max(
+            beforeLoad.lastIndexOf(';'),
+            beforeLoad.lastIndexOf('\n')
+          ) + 1);
+          const hasGuard = /\b(?:if|switch|for|while)\s*\(|\breturn\b/.test(beforeLoad)
+            || /(?:&&|\|\||\?)/.test(statementPrefix);
+          if (hasGuard) continue;
+
+          context.report(method.bodyStart + load.index, {
+            message: `${declaration.name}.${method.name} starts ${load[1]} work from @context(), which fires on every context update while attached.`,
+            fix: 'Add an explicit first-delivery guard reset in detach(), pass @context({ once: true }) for a true one-shot, or diff the context update before loading. Review docs/ai/controllers.md.'
+          });
+        }
+      }
+    }
+  },
+  {
     id: 'snice/imperative-controller-attach',
     severity: 'suggestion',
     category: 'architecture',

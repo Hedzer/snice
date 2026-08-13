@@ -49,6 +49,9 @@ npx snice validate           # source analyzer only
 - route path/query `:param` or named `*splat` without a reachable attribute target,
   including `attribute: false` and mismatched aliases
   (`snice/route-param-has-no-binding-target`, non-blocking warning)
+- controller `@context()` handlers that start load/reload/refresh/fetch work
+  without `{ once: true }`, a first-delivery guard, or an update diff
+  (`snice/unguarded-context-load`, non-blocking warning)
 
 Route-param inheritance follows proven local declarations, direct relative
 re-exports, and named or namespace Snice imports. Missing-target findings are

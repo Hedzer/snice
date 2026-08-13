@@ -55,6 +55,9 @@ npx snice validate    # source analyzer only
 - a path/query `:param` or named `*splat` whose page has no reachable attribute
   target (`snice/route-param-has-no-binding-target`, warning), including
   `attribute: false` and mismatched explicit aliases
+- a controller `@context()` handler that starts load/reload/refresh/fetch work
+  without `{ once: true }`, a first-delivery guard, or an update diff
+  (`snice/unguarded-context-load`, warning)
 
 The route-param check follows proven local declarations, direct relative
 re-exports, and named or namespace Snice imports, so an inherited bindable
