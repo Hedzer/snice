@@ -153,8 +153,7 @@ describe('Router', () => {
       expect(targetEl.querySelector(tagName)?.getAttribute('status')).toBe('active');
     });
 
-    // Expected-failure contract: remove `.fails` when the pica-route fix lands.
-    it.fails('binds an empty query value without discarding the other params (B-30)', async () => {
+    it('binds an empty query value without discarding the other params (B-30)', async () => {
       const { page, initialize, navigate } = router;
       const tagName = uniqueName('empty-query-page');
 

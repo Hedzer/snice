@@ -1,5 +1,6 @@
 import { Route, type RouteParams } from 'pica-route';
 import { routeSpecificity } from './route-specificity';
+import { matchRoute } from './route-match';
 
 export interface RouteConfig {
   path: string;
@@ -37,7 +38,7 @@ export function matchRoutes(routes: RouteConfig[], pathname: string): MatchResul
 
   for (const route of sorted) {
     const matcher = new Route(route.path);
-    const params = matcher.match(pathname);
+    const params = matchRoute(matcher, pathname);
     if (params !== false) {
       return {
         index: route.index,

@@ -15,6 +15,7 @@ import { AppContext } from './types/app-context';
 import { Context } from './types/context';
 import { provideRouterContext } from './app-context';
 import { hasContextProvider } from './context-provider';
+import { matchRoute } from './route-match';
 
 // Router historically allows a later Router instance to take over the same
 // target. Track only Router-owned provider releases so that handoff remains
@@ -447,7 +448,7 @@ export function Router(options: RouterOptions): RouterInstance {
 
   async function resolveRoute(path: string, target: Element, stale?: () => boolean): Promise<{ result: RouteResult; element?: HTMLElement; transition?: Transition; layout?: string | false; routeParams?: RouteParams }> {
     for (const route of routes) {
-      const params = route.route.match(path);
+      const params = matchRoute(route.route, path);
       const isMatch = params !== false;
       if (!isMatch) {
         continue;

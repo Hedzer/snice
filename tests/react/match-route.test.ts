@@ -22,6 +22,38 @@ describe('matchRoutes', () => {
     expect(result!.params).toEqual({ id: '42' });
   });
 
+  it('binds an empty query value without discarding later params', () => {
+    const result = matchRoutes([
+      { path: '/pinned?q=:q&type=:type&page=:page', index: 0 },
+      { path: '/pinned', index: 1 },
+    ], '/pinned?q=&type=company&page=1');
+
+    expect(result).toEqual({
+      index: 0,
+      params: { q: '', type: 'company', page: '1' },
+      path: '/pinned?q=:q&type=:type&page=:page',
+    });
+  });
+
+  it('does not confuse a real marker-like value with an empty query value', () => {
+    const result = matchRoutes([
+      { path: '/pinned?q=:q&type=:type', index: 0 },
+    ], '/pinned?q=&type=__snice_empty_query_value__');
+
+    expect(result?.params).toEqual({
+      q: '',
+      type: '__snice_empty_query_value__',
+    });
+  });
+
+  it('preserves an empty value in an optional query group', () => {
+    const result = matchRoutes([
+      { path: '/pinned(?q=:q)', index: 0 },
+    ], '/pinned?q=');
+
+    expect(result?.params).toEqual({ q: '' });
+  });
+
   it('should match root path', () => {
     const result = matchRoutes(routes, '/');
     expect(result).not.toBeNull();
