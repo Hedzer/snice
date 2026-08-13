@@ -784,6 +784,42 @@ describe('snice-select remote mode selection (SNICE-137)', () => {
   });
 });
 
+describe('snice-select remote mode interaction boundaries', () => {
+  let container: HTMLElement;
+
+  afterEach(() => {
+    container?.remove();
+  });
+
+  // Expected-failure contract: remove `.fails` with the interaction guard fix.
+  it.fails('does not search when a disabled editable select receives input (B-31)', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const select = document.createElement('snice-select') as SniceSelectElement;
+    select.editable = true;
+    select.remote = true;
+    select.disabled = true;
+    select.searchDebounce = 0;
+    container.appendChild(select);
+    await select.ready;
+
+    const searches: string[] = [];
+    select.addEventListener('@request/select/search', ((event: CustomEvent) => {
+      searches.push(event.detail.payload.query);
+      event.detail.discovery.resolve();
+      event.detail.data.resolve([]);
+    }) as EventListener);
+
+    const input = queryShadow(select as HTMLElement, '.select-editable-input') as HTMLInputElement;
+    input.value = 'alice';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    expect(searches).toEqual([]);
+  });
+});
+
 describe('snice-select editable mode', () => {
   let container: HTMLElement;
 

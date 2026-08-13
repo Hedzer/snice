@@ -279,6 +279,41 @@ describe('controller=${Class} on snice elements', () => {
     expect(getController(childOf(host))).toBeInstanceOf(TestController);
   });
 
+  // Expected-failure contract: remove `.fails` once placeholder attributes stay inert.
+  it.fails('mounts several cold-load class bindings without spurious attach errors (B-17)', async () => {
+    const { TestController, attachSpy } = makeControllerClass();
+    const hostTag = uniqueTag('class-bind-cold-load');
+
+    @element(hostTag)
+    class ColdLoadHost extends HTMLElement {
+      @render()
+      template() {
+        return html`
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+          <class-bind-child-el controller=${TestController}></class-bind-child-el>
+        `;
+      }
+    }
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const host = document.createElement(hostTag) as ColdLoadHost;
+      document.body.appendChild(host);
+      await host.ready;
+      await vi.waitFor(() => expect(attachSpy).toHaveBeenCalledTimes(6));
+
+      expect(errorSpy.mock.calls.filter(args =>
+        String(args[0]).includes('Failed to attach controller')
+      )).toEqual([]);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
   it('reflects the decorator name for class bindings', async () => {
     const { TestController, registeredName } = makeControllerClass();
     const host = makeHost();

@@ -1144,6 +1144,30 @@ describe('declarative architecture smell checks', () => {
     expect(plainModules).toEqual([]);
   });
 
+  // Expected-failure contract for the requested static rule.
+  it.fails('flags an unguarded load started by an every-update @context handler (B-25)', () => {
+    const source = [
+      "@controller('orders-controller')",
+      'class OrdersController {',
+      '  element: HTMLElement | null = null;',
+      '  attach(element: HTMLElement) { this.element = element; }',
+      '  detach() { this.element = null; }',
+      '  @context()',
+      '  receiveContext(ctx: Context) {',
+      '    this.ctx = ctx;',
+      '    void this.load();',
+      '  }',
+      '  async load() { return this.ctx.fetch("/api/orders"); }',
+      '}'
+    ].join('\n');
+
+    const diagnostics = analyzeSource(source, 'src/controllers/orders-controller.ts')
+      .filter(diagnostic => diagnostic.ruleId === 'snice/unguarded-context-load');
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].fix).toMatch(/first delivery|once/i);
+  });
+
   it('flags styled light roots but accepts explicit light-only renderers', () => {
     const styled = [
       "@element('flat-card', { renderRoot: 'light' })",

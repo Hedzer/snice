@@ -153,6 +153,36 @@ describe('Router', () => {
       expect(targetEl.querySelector(tagName)?.getAttribute('status')).toBe('active');
     });
 
+    // Expected-failure contract: remove `.fails` when the pica-route fix lands.
+    it.fails('binds an empty query value without discarding the other params (B-30)', async () => {
+      const { page, initialize, navigate } = router;
+      const tagName = uniqueName('empty-query-page');
+
+      @page({
+        tag: tagName,
+        routes: [
+          '/field-pinned?q=:q&type=:type&page=:page&limit=:limit',
+          '/field-pinned'
+        ]
+      })
+      class EmptyQueryPage extends HTMLElement {}
+
+      initialize();
+      await navigate('/field-pinned?q=&type=company&page=1&limit=25');
+
+      const pageElement = targetEl.querySelector(tagName);
+      expect(pageElement).toBeTruthy();
+      expect(Object.fromEntries(['q', 'type', 'page', 'limit'].map(name => [
+        name,
+        pageElement!.getAttribute(name)
+      ]))).toEqual({
+        q: '',
+        type: 'company',
+        page: '1',
+        limit: '25'
+      });
+    });
+
     it('supports optional route objects for explicit specificity tie-breaking', async () => {
       const { page, initialize, navigate } = router;
       const tagName = uniqueName('explicit-order-page');
