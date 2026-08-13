@@ -721,6 +721,8 @@ export class SniceSelect extends HTMLElement implements SniceSelectElement {
   // ── Editable mode handlers ──
 
   private handleEditableInput(e: Event) {
+    if (this.interactionDisabled || this.readonly) return;
+
     const input = e.target as HTMLInputElement;
     this.editableInputValue = input.value;
 

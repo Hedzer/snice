@@ -791,8 +791,7 @@ describe('snice-select remote mode interaction boundaries', () => {
     container?.remove();
   });
 
-  // Expected-failure contract: remove `.fails` with the interaction guard fix.
-  it.fails('does not search when a disabled editable select receives input (B-31)', async () => {
+  it('does not search when a disabled editable select receives input (B-31)', async () => {
     container = document.createElement('div');
     document.body.appendChild(container);
 
