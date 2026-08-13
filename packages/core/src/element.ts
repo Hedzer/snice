@@ -21,6 +21,7 @@ import { ensureRenderRoot, getRenderRoot } from './render-root';
 import { getContext as getAppContext } from './context-provider';
 import { resetHostAutofocus, scheduleAutofocus } from './autofocus';
 import { registerRenderHostIdentity } from './render-errors';
+import { hasTemplateMarker } from './template-marker';
 
 /**
  * Interface that layout components must implement to receive updates
@@ -504,6 +505,10 @@ export function applyElementFunctionality(constructor: any) {
       originalAttributeChangedCallback?.call(this, name, oldValue, newValue);
 
       if (name === 'controller') {
+        // Parsing a dynamic controller binding briefly creates this marker
+        // attribute on the inert template element. It is renderer metadata,
+        // not a registry name, so it must never start an attachment.
+        if (hasTemplateMarker(newValue)) return;
         // A class attachment reflects its decorator name for DOM diagnostics,
         // but the class reference remains the only attachment authority.
         if (this[CONTROLLER_ATTRIBUTE_SYNC]) return;

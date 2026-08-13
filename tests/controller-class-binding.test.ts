@@ -279,8 +279,7 @@ describe('controller=${Class} on snice elements', () => {
     expect(getController(childOf(host))).toBeInstanceOf(TestController);
   });
 
-  // Expected-failure contract: remove `.fails` once placeholder attributes stay inert.
-  it.fails('mounts several cold-load class bindings without spurious attach errors (B-17)', async () => {
+  it('mounts several cold-load class bindings without spurious attach errors (B-17)', async () => {
     const { TestController, attachSpy } = makeControllerClass();
     const hostTag = uniqueTag('class-bind-cold-load');
 
@@ -716,13 +715,21 @@ describe('string controller path remains intact', () => {
       }
     }
 
-    const host = document.createElement(hostTag) as any;
-    document.body.appendChild(host);
-    await tick(30);
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const host = document.createElement(hostTag) as any;
+      document.body.appendChild(host);
+      await tick(30);
 
-    const child = host.shadowRoot!.querySelector(CHILD_TAG)!;
-    expect(child.getAttribute('controller')).toBe(fullName);
-    expect(stringAttach).toHaveBeenCalledWith(child);
+      const child = host.shadowRoot!.querySelector(CHILD_TAG)!;
+      expect(child.getAttribute('controller')).toBe(fullName);
+      expect(stringAttach).toHaveBeenCalledWith(child);
+      expect(errorSpy.mock.calls.filter(args =>
+        String(args[0]).includes('Failed to attach controller')
+      )).toEqual([]);
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 });
 

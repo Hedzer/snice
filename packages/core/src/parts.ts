@@ -6,18 +6,12 @@ import { PRE_UPGRADE_PROPERTY_BINDINGS, IS_ELEMENT_CLASS, PENDING_CONTROLLER_BIN
 import { attachController, detachController } from './controller';
 import { parseKeyboardFilter, matchesKeyboardFilter, warnIfModifierMisuse, type KeyboardFilter } from './keyboard-filter';
 import { contextualizeRenderError, type RenderHostIdentity } from './render-errors';
-
-// Unique marker for dynamic parts
-// This parses as a comment node but doesn't get escaped in attributes
-const marker = `snice$${Math.random().toFixed(9).slice(2)}$`;
-const markerMatch = '?' + marker;
-// A true comment, not a processing instruction (<?...>): in HTML content both
-// parse to the same comment node, but PIs are dropped inside foreign content
-// (<svg>), which would silently kill any node binding inside an svg block.
-const nodeMarker = `<!--${markerMatch}-->`;
-// Escape the `$` chars — as a bare RegExp they'd be end anchors and the
-// pattern would never match, so marker-bearing text/comments never split.
-const markerRegex = new RegExp(marker.replace(/\$/g, '\\$'), 'g');
+import {
+  templateMarker as marker,
+  templateMarkerMatch as markerMatch,
+  templateMarkerRegex as markerRegex,
+  templateNodeMarker as nodeMarker
+} from './template-marker';
 
 // Template cache - templates with same string array can be reused
 const templateCache = new WeakMap<TemplateStringsArray, Template>();
