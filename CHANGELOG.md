@@ -1,3 +1,10 @@
+## [7.5.1](https://github.com/Hedzer/snice/compare/v7.5.0...v7.5.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **switch:** size the track to its state labels and tie thumb travel to track width (SNICE-168) ([84a0a9a](https://github.com/Hedzer/snice/commit/84a0a9a5d1e67b7cc136e41a587c14932ef6c35f))
+
 # [7.5.0](https://github.com/Hedzer/snice/compare/v7.4.0...v7.5.0) (2026-08-07)
 
 
