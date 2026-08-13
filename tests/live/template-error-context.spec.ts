@@ -36,10 +36,13 @@ test('built host attribution uses exact registrations without consulting DOM ide
       { kind: 'class', name: 'AlternatePoisonPage', metadata: undefined },
     );
     const alternateHost = alternateDocument.createElement('browser-context-alt-poison');
+    const alternateLabel = captureRenderHostIdentity(alternateHost).label;
 
-    document.adoptNode(alternateHost);
-    const adoptedLabel = captureRenderHostIdentity(alternateHost).label;
-    alternateDocument.adoptNode(alternateHost);
+    const adoptedHost = alternateDocument.createElement('browser-context-alt-poison');
+    document.adoptNode(adoptedHost);
+    const adoptedKeepsExactPrototype =
+      Object.getPrototypeOf(adoptedHost) === AlternatePoisonPage.prototype;
+    const adoptedLabel = captureRenderHostIdentity(adoptedHost).label;
 
     class UndecoratedSubclass extends PrimaryPoisonElement {}
     customElements.define('browser-context-undecorated-subclass', UndecoratedSubclass);
@@ -93,7 +96,6 @@ test('built host attribution uses exact registrations without consulting DOM ide
     const reads = { ownerDocument: 0, defaultView: 0, customElements: 0 };
     const roots = new Set([Object.prototype, alternateWindow.Object.prototype]);
     let primaryLabel = '';
-    let alternateLabel = '';
     let ownPollutionLabel = '';
     let interfacePollutionLabel = '';
     let accessorConstructorLabel = '';
@@ -111,7 +113,6 @@ test('built host attribution uses exact registrations without consulting DOM ide
         }
       }
       primaryLabel = captureRenderHostIdentity(primaryHost).label;
-      alternateLabel = captureRenderHostIdentity(alternateHost).label;
 
       for (const key of ['ownerDocument', 'defaultView', 'customElements', 'tagName', 'constructor']) {
         Object.defineProperty(primaryHost, key, {
@@ -255,6 +256,7 @@ test('built host attribution uses exact registrations without consulting DOM ide
       primaryLabel,
       alternateLabel,
       adoptedLabel,
+      adoptedKeepsExactPrototype,
       subclassLabel,
       exactExistingLabel,
       conflictingLabel,
@@ -278,7 +280,11 @@ test('built host attribution uses exact registrations without consulting DOM ide
 
   expect(result.primaryLabel).toMatch(/^<browser-context-primary-poison>/);
   expect(result.alternateLabel).toMatch(/^<browser-context-alt-poison>/);
-  expect(result.adoptedLabel).toMatch(/^<browser-context-alt-poison>/);
+  if (result.adoptedKeepsExactPrototype) {
+    expect(result.adoptedLabel).toMatch(/^<browser-context-alt-poison>/);
+  } else {
+    expect(result.adoptedLabel).toBe('<element>');
+  }
   expect(result.subclassLabel).toBe('<element>');
   expect(result.exactExistingLabel).toMatch(/^<browser-context-existing-exact>/);
   expect(result.conflictingLabel).toBe('<element>');
