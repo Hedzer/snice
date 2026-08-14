@@ -37,8 +37,17 @@ interface CalendarEvent {
   title: string;
   start: Date | string;
   end?: Date | string;
-  color?: string;
+  color?: string;      // bar background
+  className?: string;  // extra class(es) on the bars, also exposed as ::part names
+  avatar?: string | CalendarEventAvatar; // string is shorthand for { src }
+  tooltip?: string;    // static tooltip text for the bars
   data?: any;
+}
+
+interface CalendarEventAvatar {
+  src?: string;   // image URL
+  name?: string;  // initials fallback (rendered with <snice-avatar>)
+  alt?: string;
 }
 ```
 
@@ -109,8 +118,53 @@ Use the `events` property to display events on the calendar.
 ```typescript
 calendar.events = [
   { id: 1, title: 'Team Meeting', start: new Date(2024, 5, 15, 10, 0), color: '#2196f3' },
-  { id: 2, title: 'Project Deadline', start: new Date(2024, 5, 20), color: '#f44336' }
+  { id: 2, title: 'Project Deadline', start: new Date(2024, 5, 20), color: '#f44336' },
+  { id: 3, title: 'Conference', start: new Date(2024, 5, 18), end: new Date(2024, 5, 24), color: '#16a34a' }
 ];
+```
+
+Events render as continuous stripes, the way professional calendars draw them:
+an event with an `end` date spans all of its days as one bar per week row,
+chopped at week boundaries with squared corners so consecutive rows read as a
+single bar (the title repeats on each row). Concurrent events stack into
+lanes — earlier start first, longer event first on ties. Up to three lanes are
+shown; days with deeper stacks get a `+N more` chip. Each bar exposes a
+`part="event-bar"` for styling and dispatches `calendar-event-click` when
+clicked.
+
+Bars are styleable per event: `color` sets the background, `avatar` renders a
+small `<snice-avatar>` at the start of each bar (`part="event-avatar"`) — an
+image when `src` is given, initials from `name` otherwise — and `className` is
+added to the bar's classes **and** its part list, so a specific kind of event
+can be themed from outside the component:
+
+```css
+snice-calendar::part(event-bar) { font-weight: 500; }
+snice-calendar::part(urgent) { background: crimson; }
+```
+
+```typescript
+calendar.events = [
+  { id: 1, title: 'Incident review', start: '2024-06-18', className: 'urgent',
+    avatar: { src: '/avatars/sre-lead.png', name: 'Robin Kim' } }
+];
+```
+
+### Event Tooltips
+
+A per-event `tooltip` string shows on hover. For rich or lazily-loaded
+content, set the `eventTooltip` provider on the calendar — it runs when the
+pointer enters a bar and may return text, a DOM node, or a promise of either;
+results that resolve after the pointer left are discarded. The provider wins
+over `event.tooltip`. The overlay exposes `part="event-tooltip"`.
+
+```typescript
+calendar.eventTooltip = async (event) => {
+  const details = await fetchEventDetails(event.id);
+  const node = document.createElement('div');
+  node.innerHTML = `<strong>${event.title}</strong><p>${details.attendees} attendees</p>`;
+  return node;
+};
 ```
 
 ### Date Restrictions

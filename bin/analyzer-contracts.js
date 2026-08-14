@@ -1400,6 +1400,14 @@ export const ANALYZER_CONTRACTS = {
           "type": "string",
           "literals": []
         },
+        "loading": {
+          "property": "loading",
+          "type": "'lazy' | 'eager'",
+          "literals": [
+            "lazy",
+            "eager"
+          ]
+        },
         "name": {
           "property": "name",
           "type": "string",
@@ -1446,6 +1454,11 @@ export const ANALYZER_CONTRACTS = {
         "fallbackColor": {
           "type": "string",
           "attribute": "fallback-color",
+          "structured": false
+        },
+        "loading": {
+          "type": "'lazy' | 'eager'",
+          "attribute": "loading",
           "structured": false
         },
         "name": {
@@ -2468,6 +2481,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "unknown[]",
           "attribute": null,
           "structured": true
+        },
+        "eventTooltip": {
+          "type": "CalendarEventTooltip | null",
+          "attribute": null,
+          "structured": false
         },
         "firstDayOfWeek": {
           "type": "number",
@@ -22266,6 +22284,7 @@ export const ANALYZER_CONTRACTS = {
           "name",
           "size",
           "shape",
+          "loading",
           "fallbackColor",
           "fallbackBackground"
         ],
@@ -22276,6 +22295,7 @@ export const ANALYZER_CONTRACTS = {
           "name",
           "size",
           "shape",
+          "loading",
           "fallbackColor",
           "fallbackBackground"
         ],
@@ -22585,7 +22605,8 @@ export const ANALYZER_CONTRACTS = {
           "highlightToday",
           "showWeekNumbers",
           "firstDayOfWeek",
-          "locale"
+          "locale",
+          "eventTooltip"
         ],
         "events": {
           "calendar-change": "onCalendarChange",
@@ -22602,6 +22623,7 @@ export const ANALYZER_CONTRACTS = {
           "showWeekNumbers",
           "firstDayOfWeek",
           "locale",
+          "eventTooltip",
           "onCalendarChange",
           "onCalendarEventClick"
         ],

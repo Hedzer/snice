@@ -14,6 +14,7 @@ export interface CalendarProps extends SniceBaseProps {
     showWeekNumbers?: any;
     firstDayOfWeek?: any;
     locale?: any;
+    eventTooltip?: any;
     onCalendarChange?: (event: any) => void;
     onCalendarEventClick?: (event: any) => void;
 }

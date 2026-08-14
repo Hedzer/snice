@@ -48,8 +48,21 @@ locale: string = 'en-US';
 import 'snice/components/calendar/snice-calendar';
 
 calendar.events = [
-  { id: 1, title: 'Meeting', start: new Date(), color: '#2196f3' }
+  { id: 1, title: 'Meeting', start: new Date(), color: '#2196f3' },
+  { id: 2, title: 'Conf', start: '2026-06-04', end: '2026-06-10' } // ranged
 ];
+// Ranged events render as continuous stripes: one bar per week row, chopped
+// at week boundaries (squared corners on the continuing side, title repeats).
+// Concurrent events stack into lanes (start asc, longer first on ties);
+// max 3 lanes, deeper stacks collapse to a per-day "+N more" chip.
+// Bars: part="event-bar", click -> calendar-event-click.
+// Styling: color -> background; avatar?: string | {src?,name?,alt?} ->
+// <snice-avatar> on each bar (part="event-avatar"; name -> initials fallback);
+// className?: string -> added to bar classes AND part list, so
+// ::part(<className>) themes specific events from outside.
+// Tooltips: event.tooltip?: string (static), or on the element:
+//   eventTooltip: (event) => string | Node | Promise<string | Node>  // lazy/rich; wins over event.tooltip
+// Stale async results discarded on pointer-leave. Overlay part="event-tooltip".
 
 calendar.addEventListener('calendar-change', (e) => {
   console.log('Selected:', e.detail.value);

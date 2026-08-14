@@ -19,6 +19,9 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
   @property({  })
   shape: AvatarShape = 'circle';
 
+  @property({  })
+  loading: 'lazy' | 'eager' = 'lazy';
+
   @property({ attribute: 'fallback-color',  })
   fallbackColor = '#ffffff';
 
@@ -49,7 +52,7 @@ export class SniceAvatar extends HTMLElement implements SniceAvatarElement {
           <img part="image" class="${imageClasses}"
                src="${this.src}"
                alt="${this.alt || this.name}"
-               loading="lazy"
+               loading="${this.loading}"
                @load=${this.handleImageLoad}
                @error=${this.handleImageError}>
         </if>

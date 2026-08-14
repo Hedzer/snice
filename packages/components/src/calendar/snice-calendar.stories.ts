@@ -117,6 +117,11 @@ export const WithEvents: Story = {
       { id: 2, title: 'Lunch', start: addDays(today, 2), color: '#16a34a' },
       { id: 3, title: 'Review', start: addDays(today, 3), end: addDays(today, 5), color: '#dc2626' },
       { id: 4, title: 'Deploy', start: addDays(today, 7), color: '#7c3aed' },
+      { id: 5, title: 'Offsite', start: addDays(today, 9), end: addDays(today, 16), color: '#0891b2' },
+      {
+        id: 6, title: 'On call', start: addDays(today, 12), end: addDays(today, 14), color: '#7c3aed',
+        avatar: { name: 'Sam Reyes' }, tooltip: 'Pager rotation — reachable on #incidents',
+      },
     ];
     wrap.appendChild(el);
     return wrap;

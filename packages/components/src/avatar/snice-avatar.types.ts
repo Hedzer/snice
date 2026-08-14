@@ -7,6 +7,8 @@ export interface SniceAvatarElement extends HTMLElement {
   name: string;
   size: AvatarSize;
   shape: AvatarShape;
+  /** Image loading strategy; default 'lazy'. */
+  loading: 'lazy' | 'eager';
   fallbackColor: string;
   fallbackBackground: string;
   getInitials(name: string): string;

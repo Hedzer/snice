@@ -18,6 +18,7 @@ alt: string = '';                    // Alt text (falls back to `name`)
 name: string = '';                   // User's name (initials + color generation)
 size: 'xs'|'small'|'medium'|'large'|'xl'|'xxl' = 'medium';
 shape: 'circle'|'square'|'rounded' = 'circle';
+loading: 'lazy'|'eager' = 'lazy';   // img loading strategy
 fallbackColor: string = '#ffffff';   // attr: fallback-color — text color for initials
 fallbackBackground: string = '';     // attr: fallback-background — overrides auto-color
 ```

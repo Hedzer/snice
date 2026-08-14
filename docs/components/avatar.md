@@ -22,6 +22,7 @@ Displays a user profile image with automatic fallback to name-based initials or 
 | `name` | `string` | `''` | User's name (used for initials and color generation) |
 | `size` | `'xs' \| 'small' \| 'medium' \| 'large' \| 'xl' \| 'xxl'` | `'medium'` | Avatar size |
 | `shape` | `'circle' \| 'square' \| 'rounded'` | `'circle'` | Avatar shape |
+| `loading` | `'lazy' \| 'eager'` | `'lazy'` | Image loading strategy; use `eager` for above-the-fold or tiny thumbnail avatars |
 | `fallbackColor` (attr: `fallback-color`) | `string` | `'#ffffff'` | Text color for initials fallback |
 | `fallbackBackground` (attr: `fallback-background`) | `string` | `''` | Background color for initials fallback (overrides auto-color) |
 

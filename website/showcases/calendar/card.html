@@ -14,11 +14,13 @@
 
 &lt;script&gt;
   cal.events = [
-    { date: '2026-02-20', label: 'Sprint Review',
-      color: '#3b82f6' },
-    { date: '2026-02-25', label: 'Release',
-      color: '#22c55e' },
-    { date: '2026-03-01', label: 'Planning',
+    { id: 1, title: 'Sprint Review', start: inDays(1),
+      color: '#3b82f6', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
+      name: 'Dana Ives' } },
+    { id: 2, title: 'Conference',
+      start: inDays(3), end: inDays(9),
+      color: '#22c55e', tooltip: 'Berlin, hall 2' },
+    { id: 3, title: 'Planning', start: inDays(4),
       color: '#f59e0b' }
   ];
 &lt;/script&gt;</snice-code-block>
@@ -26,15 +28,18 @@
       </div>
     </div>
 <script>
-// Initialize calendar with events
+// Initialize calendar with events relative to today, so the current month
+// always demos the continuous stripes, avatars, and tooltips.
     customElements.whenDefined('snice-calendar').then(() => {
       const cal = document.getElementById('demo-calendar');
       if (cal) {
+        const inDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
         cal.events = [
-          { id: 1, title: 'Sprint Review', start: '2026-02-20', color: '#3b82f6' },
-          { id: 2, title: 'Release v4.6', start: '2026-02-25', color: '#22c55e' },
-          { id: 3, title: 'Planning', start: '2026-03-01', color: '#f59e0b' },
-          { id: 4, title: 'Demo Day', start: '2026-02-28', color: '#8b5cf6' }
+          { id: 1, title: 'Sprint Review', start: inDays(1), color: '#3b82f6', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7',
+      name: 'Dana Ives' } },
+          { id: 2, title: 'Conference', start: inDays(3), end: inDays(9), color: '#22c55e', tooltip: 'Berlin, hall 2' },
+          { id: 3, title: 'Planning', start: inDays(4), color: '#f59e0b' },
+          { id: 4, title: 'Demo Day', start: inDays(6), color: '#8b5cf6' }
         ];
       }
     });

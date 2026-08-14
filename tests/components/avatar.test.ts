@@ -104,6 +104,17 @@ describe('snice-avatar', () => {
       // Check the attribute (Happy DOM doesn't properly set the property)
       expect(imgEl?.getAttribute('loading')).toBe('lazy');
     });
+
+    it('supports loading="eager" for above-the-fold or thumbnail avatars', async () => {
+      avatar = await createComponent<SniceAvatarElement>('snice-avatar', {
+        src: '/test-avatar.jpg',
+        loading: 'eager'
+      });
+      await wait(200);
+
+      const imgEl = queryShadow(avatar as HTMLElement, '.avatar-image') as HTMLImageElement;
+      expect(imgEl?.getAttribute('loading')).toBe('eager');
+    });
   });
 
   describe('fallback display', () => {

@@ -9,6 +9,7 @@ export interface AvatarProps extends SniceBaseProps {
     name?: any;
     size?: any;
     shape?: any;
+    loading?: any;
     fallbackColor?: any;
     fallbackBackground?: any;
 }

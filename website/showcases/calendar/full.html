@@ -47,7 +47,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <section>
     <h2>Default (month view)</h2>
-    <snice-calendar></snice-calendar>
+    <snice-calendar id="cal-default"></snice-calendar>
   </section>
 
   <section>
@@ -134,12 +134,33 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
 
+    // Default calendar: a realistic month — stripes, initials avatars
+    // (rendered with <snice-avatar>), and lazy rich tooltips.
+    const calDefault = document.getElementById('cal-default');
+    calDefault.events = [
+      { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7', name: 'Dana Ives' } },
+      { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon' },
+      { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a' },
+      { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: 'assets/avatars/pravatar-40-bob.jpg?v=80938d7', name: 'Sam Reyes' } },
+    ];
+    calDefault.eventTooltip = async (event) => {
+      // Simulates fetching details on demand; may return rich DOM content.
+      await new Promise((r) => setTimeout(r, 120));
+      const rich = document.createElement('div');
+      const range = event.end ? `${fmt(new Date(event.start))} → ${fmt(new Date(event.end))}` : fmt(new Date(event.start));
+      rich.innerHTML = `<strong>${event.title}</strong><br><small>${range}</small>`;
+      return rich;
+    };
+
     // Events
     document.getElementById('cal-events').events = [
       { id: 1, title: 'Meeting', start: addDays(today, 1), color: '#2563eb' },
       { id: 2, title: 'Lunch', start: addDays(today, 2), color: '#16a34a' },
       { id: 3, title: 'Review', start: addDays(today, 3), end: addDays(today, 5), color: '#dc2626' },
       { id: 4, title: 'Deploy', start: addDays(today, 7), color: '#7c3aed' },
+      // Ranges stripe continuously across their days and chop at week
+      // boundaries with squared corners — professional-calendar style.
+      { id: 5, title: 'Offsite', start: addDays(today, 9), end: addDays(today, 16), color: '#0891b2' },
     ];
 
     // Disabled dates

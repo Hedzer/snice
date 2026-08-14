@@ -2620,6 +2620,14 @@
             },
             {
               "kind": "field",
+              "name": "loading",
+              "type": {
+                "text": "'lazy' | 'eager'"
+              },
+              "default": "'lazy'"
+            },
+            {
+              "kind": "field",
               "name": "name",
               "type": {
                 "text": "string"
@@ -2673,6 +2681,14 @@
               "fieldName": "fallbackColor",
               "type": {
                 "text": "string"
+              },
+              "reflects": true
+            },
+            {
+              "name": "loading",
+              "fieldName": "loading",
+              "type": {
+                "text": "'lazy' | 'eager'"
               },
               "reflects": true
             },
@@ -5150,6 +5166,14 @@
             },
             {
               "kind": "field",
+              "name": "eventTooltip",
+              "type": {
+                "text": "CalendarEventTooltip | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "firstDayOfWeek",
               "type": {
                 "text": "number"
@@ -5434,6 +5458,9 @@
           "slots": [],
           "cssParts": [],
           "cssProperties": [
+            {
+              "name": "--avatar-size"
+            },
             {
               "name": "--disabled"
             },

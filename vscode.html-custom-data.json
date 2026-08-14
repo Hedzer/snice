@@ -430,6 +430,18 @@
           "description": "fallbackColor: string"
         },
         {
+          "name": "loading",
+          "description": "loading: 'lazy' | 'eager'",
+          "values": [
+            {
+              "name": "lazy"
+            },
+            {
+              "name": "eager"
+            }
+          ]
+        },
+        {
           "name": "name",
           "description": "name: string"
         },
