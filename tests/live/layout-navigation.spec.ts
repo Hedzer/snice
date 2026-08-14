@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Layout Navigation', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/tests/live/fixtures/layout-navigation.html');
+    await page.goto('/tests/live/fixtures/layout/navigation.html');
     await page.waitForSelector('#app');
   });
 

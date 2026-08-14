@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 const builds = [
   {
     name: 'source',
-    fixtureUrl: '/tests/live/fixtures/no-styles-delegation.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/no-styles-delegation.ts',
     tag: 'no-styles-delegation-source'
   },
   {
     name: 'distribution',
-    fixtureUrl: '/tests/live/fixtures/no-styles-delegation-distribution.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/no-styles-delegation-distribution.ts',
     tag: 'no-styles-delegation-distribution'
   }
 ] as const;

@@ -8,10 +8,10 @@ test('class controller reflection is safe under a real MutationObserver', async 
     }
   });
 
-  await page.goto('/tests/live/fixtures/controller-class-binding-observer.html');
+  await page.goto('/tests/live/fixtures/framework/controller-class-binding-observer.html');
 
   const snapshots = await page.evaluate(async () => {
-    const fixture = await import('/tests/live/fixtures/controller-class-binding-observer.ts');
+    const fixture = await import('/tests/live/fixtures/framework/controller-class-binding-observer.ts');
     return fixture.runClassControllerObserverProof();
   });
 

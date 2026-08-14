@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('setAttribute updates the property and triggers render', async ({ page }) => {
-  await page.goto('/tests/live/fixtures/property-attribute-render.html');
+  await page.goto('/tests/live/fixtures/framework/property-attribute-render.html');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(600);
 

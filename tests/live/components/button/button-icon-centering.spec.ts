@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 //    line-height; the icon's rendered line box must simply be centered.
 // 2. The SVG case must stay non-zero so the original fix never regresses.
 
-const fixture = '/tests/live/fixtures/button-icon-centering.html';
+const fixture = '/tests/live/fixtures/button/icon-centering.html';
 
 test.describe('circle button icon centering', () => {
   test.beforeEach(async ({ page }) => {

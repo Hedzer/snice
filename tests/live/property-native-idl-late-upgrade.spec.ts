@@ -4,7 +4,7 @@ test('structured property bindings survive native IDL collisions and late upgrad
   await page.goto('/guide.html');
 
   const result = await page.evaluate(async () => {
-    const fixture = await import('/tests/live/fixtures/property-native-idl-late-upgrade.ts');
+    const fixture = await import('/tests/live/fixtures/framework/property-native-idl-late-upgrade.ts');
     const owner = document.createElement('live-native-idl-binding-owner') as any;
     document.body.append(owner);
     await owner.ready;
@@ -39,7 +39,7 @@ test('registered Snice elements preserve native-IDL-colliding bindings from temp
   await page.goto('/guide.html');
 
   const result = await page.evaluate(async () => {
-    const fixture = await import('/tests/live/fixtures/property-native-idl-late-upgrade.ts');
+    const fixture = await import('/tests/live/fixtures/framework/property-native-idl-late-upgrade.ts');
     fixture.defineRegisteredNativeIdlScenario();
     const owner = document.createElement('live-registered-native-idl-owner') as any;
     document.body.append(owner);
@@ -71,14 +71,14 @@ test('registered Snice elements preserve native-IDL-colliding bindings from temp
 for (const build of [
   {
     name: 'source',
-    fixtureUrl: '/tests/live/fixtures/property-native-idl-late-upgrade.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/property-native-idl-late-upgrade.ts',
     ownerTag: 'live-scoped-native-idl-owner',
     nativeChildName: 'LiveScopedNativeIdlChild',
     reactiveChildName: 'LiveScopedReactiveIdlChild',
   },
   {
     name: 'distribution',
-    fixtureUrl: '/tests/live/fixtures/property-native-idl-scoped-distribution.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/property-native-idl-scoped-distribution.ts',
     ownerTag: 'dist-scoped-native-idl-owner',
     nativeChildName: 'DistScopedNativeIdlChild',
     reactiveChildName: 'DistScopedReactiveIdlChild',

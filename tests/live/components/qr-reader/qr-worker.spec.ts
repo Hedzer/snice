@@ -6,7 +6,7 @@ test.describe('QR Worker Test', () => {
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
     page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
 
-    await page.goto('/tests/live/fixtures/qr-worker.html');
+    await page.goto('/tests/live/fixtures/qr-reader/qr-worker.html');
   });
 
   test('should load and communicate with worker', async ({ page }) => {

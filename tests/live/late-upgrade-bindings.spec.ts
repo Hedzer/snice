@@ -49,13 +49,13 @@ async function exerciseLateUpgrade(page: Page, fixtureUrl: string, hostTag: stri
 for (const build of [
   {
     name: 'source',
-    fixtureUrl: '/tests/live/fixtures/late-upgrade-bindings.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/late-upgrade-bindings.ts',
     hostTag: 'late-upgrade-binding-host',
     childTag: 'late-upgrade-binding-child'
   },
   {
     name: 'distribution',
-    fixtureUrl: '/tests/live/fixtures/late-upgrade-bindings-distribution.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/late-upgrade-bindings-distribution.ts',
     hostTag: 'dist-late-upgrade-binding-host',
     childTag: 'dist-late-upgrade-binding-child'
   }

@@ -19,7 +19,7 @@ function right(box: Box): number {
 
 test.describe('Snice Switch state label layout', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/tests/live/fixtures/switch-state-labels.html');
+    await page.goto('/tests/live/fixtures/switch/state-labels.html');
     await page.waitForFunction(() => {
       const switches = Array.from(document.querySelectorAll('snice-switch'));
       return switches.length === 8

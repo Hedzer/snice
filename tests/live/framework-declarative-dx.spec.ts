@@ -806,7 +806,7 @@ test.describe('declarative rendering framework in a real browser', () => {
   test('runs the complete customer workflow through the built ESM distribution', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {
-      const fixture = await import('/tests/live/fixtures/built-customer-declarative.ts');
+      const fixture = await import('/tests/live/fixtures/framework/built-customer-declarative.ts');
       return fixture.exerciseBuiltCustomerScenario();
     });
 
@@ -837,7 +837,7 @@ test.describe('declarative rendering framework in a real browser', () => {
   test('reconciles the built repeat implementation in table, select, and SVG contexts', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {
-      const fixture = await import('/tests/live/fixtures/built-customer-declarative.ts');
+      const fixture = await import('/tests/live/fixtures/framework/built-customer-declarative.ts');
       return fixture.exerciseBuiltRepeatContextsScenario();
     });
 
@@ -854,7 +854,7 @@ test.describe('declarative rendering framework in a real browser', () => {
   test('handles stale, completed, cancelled, and restarted async values through the built ESM distribution', async ({ page }) => {
     await page.goto('/guide.html');
     const result = await page.evaluate(async () => {
-      const fixture = await import('/tests/live/fixtures/built-customer-declarative.ts');
+      const fixture = await import('/tests/live/fixtures/framework/built-customer-declarative.ts');
       return fixture.exerciseBuiltAsyncLifecycleScenario();
     });
 

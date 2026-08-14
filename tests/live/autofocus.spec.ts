@@ -3,13 +3,13 @@ import { expect, test, type Page } from '@playwright/test';
 const builds = [
   {
     name: 'source',
-    fixtureUrl: '/tests/live/fixtures/autofocus.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/autofocus.ts',
     hostTag: 'autofocus-source-host',
     closedTag: 'autofocus-source-closed-host'
   },
   {
     name: 'distribution',
-    fixtureUrl: '/tests/live/fixtures/autofocus-distribution.ts',
+    fixtureUrl: '/tests/live/fixtures/framework/autofocus-distribution.ts',
     hostTag: 'autofocus-distribution-host',
     closedTag: 'autofocus-distribution-closed-host'
   }

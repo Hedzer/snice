@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('List Input Overflow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/tests/live/fixtures/list-input-overflow.html');
+    await page.goto('/tests/live/fixtures/list/input-overflow.html');
     await page.waitForLoadState('networkidle');
     // Wait for components to be defined
     await page.waitForFunction(() => {
