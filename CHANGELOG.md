@@ -1,3 +1,17 @@
+# [7.8.0](https://github.com/Hedzer/snice/compare/v7.7.0...v7.8.0) (2026-08-14)
+
+
+### Bug Fixes
+
+* **controller:** install responders before the ready gate to break attach cycles ([42660dd](https://github.com/Hedzer/snice/commit/42660ddbdc3a495df38dfe6b8479a284e8ff8071))
+* **events:** registration identity per decoration site so stacked [@on](https://github.com/on) options never collapse ([cdf9b99](https://github.com/Hedzer/snice/commit/cdf9b9994f0f0e2af301057550be768261585afb))
+* **tag-input:** keep programmatic value assignment silent ([200a713](https://github.com/Hedzer/snice/commit/200a713695292e7d25ffbc9b49d65fcb175416f2))
+
+
+### Features
+
+* **calendar:** make the +N more chip a styleable, clickable control ([6f4c63f](https://github.com/Hedzer/snice/commit/6f4c63f604f306e0b761611fc49d31388d4396ef))
+
 # [7.7.0](https://github.com/Hedzer/snice/compare/v7.6.0...v7.7.0) (2026-08-14)
 
 

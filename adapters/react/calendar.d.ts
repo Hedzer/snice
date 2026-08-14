@@ -20,6 +20,7 @@ export interface CalendarProps extends SniceBaseProps {
     eventPopover?: any;
     onCalendarChange?: (event: any) => void;
     onCalendarEventClick?: (event: any) => void;
+    onCalendarMoreClick?: (event: any) => void;
 }
 /**
  * Calendar - React adapter for snice-calendar

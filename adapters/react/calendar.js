@@ -21,7 +21,7 @@ import { createReactAdapter } from './wrapper';
 export const Calendar = createReactAdapter({
     tagName: 'snice-calendar',
     properties: ["value", "view", "events", "minDate", "maxDate", "disabledDates", "highlightToday", "showWeekNumbers", "firstDayOfWeek", "locale", "noDaySelect", "cellSizing", "eventTooltip", "eventPopover"],
-    events: { "calendar-change": "onCalendarChange", "calendar-event-click": "onCalendarEventClick" },
+    events: { "calendar-change": "onCalendarChange", "calendar-event-click": "onCalendarEventClick", "calendar-more-click": "onCalendarMoreClick" },
     formAssociated: false
 });
 //# sourceMappingURL=calendar.js.map
