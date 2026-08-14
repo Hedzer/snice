@@ -2451,6 +2451,11 @@ export const ANALYZER_CONTRACTS = {
           "type": "Date",
           "literals": []
         },
+        "no-day-select": {
+          "property": "noDaySelect",
+          "type": "boolean",
+          "literals": []
+        },
         "show-week-numbers": {
           "property": "showWeekNumbers",
           "type": "boolean",
@@ -2515,6 +2520,11 @@ export const ANALYZER_CONTRACTS = {
         "minDate": {
           "type": "Date",
           "attribute": "min-date",
+          "structured": false
+        },
+        "noDaySelect": {
+          "type": "boolean",
+          "attribute": "no-day-select",
           "structured": false
         },
         "showWeekNumbers": {
@@ -22611,6 +22621,7 @@ export const ANALYZER_CONTRACTS = {
           "showWeekNumbers",
           "firstDayOfWeek",
           "locale",
+          "noDaySelect",
           "eventTooltip",
           "eventPopover"
         ],
@@ -22629,6 +22640,7 @@ export const ANALYZER_CONTRACTS = {
           "showWeekNumbers",
           "firstDayOfWeek",
           "locale",
+          "noDaySelect",
           "eventTooltip",
           "eventPopover",
           "onCalendarChange",

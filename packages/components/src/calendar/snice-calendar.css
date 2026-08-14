@@ -117,6 +117,19 @@
   border-left: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
+/* no-day-select: display-only cells — no click affordance, no hover state */
+.calendar__day--static {
+  cursor: default;
+}
+
+.calendar__day--static:hover {
+  background: var(--snice-color-surface, rgb(255 255 255));
+}
+
+.calendar__day--static.calendar__day--today:hover {
+  background: var(--snice-color-primary-subtle, rgb(239 246 255));
+}
+
 .calendar__day--other-month {
   background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text-tertiary, rgb(115 115 115));

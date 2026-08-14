@@ -38,6 +38,9 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @property({ attribute: 'locale' })
   locale = 'en-US';
 
+  @property({ type: Boolean, attribute: 'no-day-select' })
+  noDaySelect = false;
+
   @property({ attribute: false })
   eventTooltip: CalendarEventTooltip | null = null;
 
@@ -404,7 +407,8 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       const isOtherMonth = date.getMonth() !== currentMonth;
       const isToday = this.highlightToday && this.isToday(date);
-      const isSelected = this.isSelected(date);
+      // Display-only mode never shows a selection highlight.
+      const isSelected = !this.noDaySelect && this.isSelected(date);
       const isDisabled = this.isDisabled(date);
 
       // Update classes (preserving role)
@@ -413,6 +417,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       if (isToday) cell.classList.add('calendar__day--today');
       if (isSelected) cell.classList.add('calendar__day--selected');
       if (isDisabled) cell.classList.add('calendar__day--disabled');
+      if (this.noDaySelect) cell.classList.add('calendar__day--static');
 
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-selected', isSelected ? 'true' : 'false');
@@ -750,6 +755,8 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   }
 
   private handleDayClick(date: Date) {
+    // Display-only calendars: days are not selectable at all.
+    if (this.noDaySelect) return;
     if (this.isDisabled(date)) return;
 
     this.value = date;
@@ -799,6 +806,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @watch('value')
   @watch('events')
   @watch('eventTooltip')
+  @watch('noDaySelect')
   handlePropertyChange() {
     if (this.grid) {
       this.updateView();

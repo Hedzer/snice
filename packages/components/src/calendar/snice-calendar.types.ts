@@ -77,6 +77,12 @@ export interface SniceCalendarElement extends HTMLElement {
   showWeekNumbers: boolean;
   firstDayOfWeek: number;
   locale: string;
+  /**
+   * Display-only mode: clicking a day neither selects/highlights it nor
+   * fires `calendar-change`. Event bars stay interactive.
+   * Attribute: `no-day-select`.
+   */
+  noDaySelect: boolean;
 
   goToToday(): void;
   goToDate(date: Date | string): void;

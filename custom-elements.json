@@ -5359,6 +5359,14 @@
               }
             },
             {
+              "kind": "field",
+              "name": "noDaySelect",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
               "kind": "method",
               "name": "previousDay",
               "parameters": [],
@@ -5455,6 +5463,14 @@
               "reflects": true
             },
             {
+              "name": "no-day-select",
+              "fieldName": "noDaySelect",
+              "type": {
+                "text": "boolean"
+              },
+              "reflects": true
+            },
+            {
               "name": "show-week-numbers",
               "fieldName": "showWeekNumbers",
               "type": {
@@ -5503,6 +5519,9 @@
             },
             {
               "name": "--selected"
+            },
+            {
+              "name": "--static"
             },
             {
               "name": "--today"

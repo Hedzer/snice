@@ -987,6 +987,10 @@
           "description": "minDate: Date"
         },
         {
+          "name": "no-day-select",
+          "description": "noDaySelect: boolean"
+        },
+        {
           "name": "show-week-numbers",
           "description": "showWeekNumbers: boolean"
         },

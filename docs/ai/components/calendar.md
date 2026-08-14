@@ -15,6 +15,7 @@ highlightToday: boolean = true;        // attribute: highlight-today
 showWeekNumbers: boolean = false;      // attribute: show-week-numbers
 firstDayOfWeek: number = 0;            // attribute: first-day-of-week (0=Sun, 1=Mon)
 locale: string = 'en-US';
+noDaySelect: boolean = false;          // attribute: no-day-select — display-only: day clicks don't select/highlight or fire calendar-change; event bars stay interactive
 ```
 
 ## Methods

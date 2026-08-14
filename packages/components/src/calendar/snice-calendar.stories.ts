@@ -129,6 +129,20 @@ export const WithEvents: Story = {
   },
 };
 
+// h2: no-day-select (display-only)
+export const NoDaySelectDisplayOnly: Story = {
+  render: () => {
+    const el = document.createElement('snice-calendar');
+    el.style.cssText = 'max-width:400px;';
+    el.setAttribute('no-day-select', '');
+    (el as any).events = [
+      { id: 'n1', title: 'All hands', start: addDays(today, 2), color: '#2563eb' },
+      { id: 'n2', title: 'Freeze', start: addDays(today, 4), end: addDays(today, 8), color: '#dc2626' },
+    ];
+    return el;
+  },
+};
+
 // h2: With disabled dates
 export const WithDisabledDates: Story = {
   render: () => {

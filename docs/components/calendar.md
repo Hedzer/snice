@@ -25,6 +25,7 @@ Display and select dates with event support, date restrictions, and locale-aware
 | `maxDate` (attr: `max-date`) | `Date \| string` | `''` | Maximum selectable date |
 | `disabledDates` | `(Date \| string)[]` | `[]` | Disabled dates (JS-only; no attribute) |
 | `highlightToday` (attr: `highlight-today`) | `boolean` | `true` | Highlight today's date |
+| `noDaySelect` (attr: `no-day-select`) | `boolean` | `false` | Display-only mode: day clicks neither select/highlight nor fire `calendar-change`; event bars stay interactive |
 | `showWeekNumbers` (attr: `show-week-numbers`) | `boolean` | `false` | Show week numbers |
 | `firstDayOfWeek` (attr: `first-day-of-week`) | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 | `locale` | `string` | `'en-US'` | Locale for formatting |
