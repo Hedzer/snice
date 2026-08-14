@@ -55,7 +55,12 @@ A chip/tag-style input field where users can add tags by typing and pressing Ent
 |-------|--------|-------------|
 | `tag-add` | `{ tag: string, value: string[] }` | A new tag was added |
 | `tag-remove` | `{ tag: string, index: number, value: string[] }` | A tag was removed |
-| `tag-change` | `{ value: string[] }` | The tag list changed (add or remove) |
+| `tag-change` | `{ value: string[] }` | A tag was added or removed |
+
+`tag-add`, `tag-remove`, and `tag-change` describe tag edits: typing, removing a
+tag, selecting a suggestion, `addTag()`, and `removeTag()`. Assigning `value`,
+calling `clear()`, form reset, and form restoration change the tags silently, so
+binding `value` to the `tag-change` payload never re-enters.
 
 ## CSS Parts
 

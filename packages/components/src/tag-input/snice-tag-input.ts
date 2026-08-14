@@ -8,7 +8,6 @@ import { applyElementInternalsFormValue, applyElementInternalsValidity, findForm
 export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   internals!: ElementInternals;
   private dirtyValue = false;
-  private suppressValueEvent = false;
   private customValidationMessage = '';
   private readonly labelAssociation: FormLabelAssociation;
   private validationInput?: HTMLInputElement;
@@ -36,7 +35,8 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   }
 
   /**
-   * Live tags. Assignments do not rewrite the authored reset default.
+   * Live tags. Assignments do not rewrite the authored reset default and do
+   * not emit `tag-change`; only tag edits do.
    * @public
    */
   get value(): string[] {
@@ -44,7 +44,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   }
 
   set value(value: string[]) {
-    this.setValue(value, true, true);
+    this.setValue(value, true);
   }
 
   /** JSON-backed `value` content attribute and form-reset default. */
@@ -71,7 +71,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     try {
       const value = JSON.parse(state);
       if (Array.isArray(value)) {
-        this.setValue(value.map(String), true, false);
+        this.setValue(value.map(String), true);
         this.clearDraft();
       }
     } catch {
@@ -157,18 +157,13 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   }
 
   private applyDefaultValue() {
-    this.setValue(this.defaultValue, false, false);
+    this.setValue(this.defaultValue, false);
   }
 
-  private setValue(value: unknown, dirty: boolean, emit: boolean) {
+  private setValue(value: unknown, dirty: boolean) {
     if (!Array.isArray(value)) return;
     if (dirty) this.dirtyValue = true;
-    this.suppressValueEvent = !emit;
-    try {
-      this.valueState = value.map(String);
-    } finally {
-      this.suppressValueEvent = false;
-    }
+    this.valueState = value.map(String);
     this.syncFormState();
   }
 
@@ -242,7 +237,6 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
   handleValueChange() {
     this.syncFormState();
     this.syncValidityAfterRender();
-    if (!this.suppressValueEvent) this.emitChange();
   }
 
   @watch('defaultValue', { immediate: false })
@@ -339,6 +333,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
 
     this.value = [...this.value, trimmed];
     this.emitAdd(trimmed);
+    this.emitChange();
   }
 
   removeTag(index: number): void {
@@ -346,6 +341,7 @@ export class SniceTagInput extends HTMLElement implements SniceTagInputElement {
     const removed = this.value[index];
     this.value = this.value.filter((_, i) => i !== index);
     this.emitRemove(removed, index);
+    this.emitChange();
   }
 
   clear(): void {

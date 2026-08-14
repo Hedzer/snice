@@ -51,6 +51,10 @@ readonly labels: NodeList | null;
 - `tag-remove` -> `{ tag: string; index: number; value: string[] }`
 - `tag-change` -> `{ value: string[] }`
 
+Emitted only by tag edits (`addTag()`, `removeTag()`, and the user actions that
+call them). Assigning `value`, `clear()`, reset, and restoration are silent, so a
+`.value` binding fed from `tag-change` cannot loop.
+
 ## CSS Parts
 
 - `base` - Outer wrapper div
