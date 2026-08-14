@@ -1,3 +1,16 @@
+# [7.7.0](https://github.com/Hedzer/snice/compare/v7.6.0...v7.7.0) (2026-08-14)
+
+
+### Bug Fixes
+
+* **button:** size registry svg icons inside circle buttons ([ada5a93](https://github.com/Hedzer/snice/commit/ada5a93ab93ef4394a13dd529f66db51d6566315))
+* **tests:** absolute source paths in relocated live fixtures ([a53345a](https://github.com/Hedzer/snice/commit/a53345a9bd0968f99fac011da98fcf3ef9555103))
+
+
+### Features
+
+* **table:** fill explicit heights so the grid occupies the whole box ([459a94b](https://github.com/Hedzer/snice/commit/459a94b9f99e2505f6008d81ede32b1a88563bad))
+
 # [7.6.0](https://github.com/Hedzer/snice/compare/v7.5.0...v7.6.0) (2026-08-14)
 
 
