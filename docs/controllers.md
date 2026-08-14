@@ -128,15 +128,15 @@ through the element's reactive properties or events.
 1. Controller instance is created
 2. `element` property is set
 3. Router application context is passed (if available)
-4. Element's `ready` promise is awaited
-5. `attach()` method is called
-6. `@context` handlers are registered and caught up with the current Router context
-7. Observers are set up
-8. Channel/response handlers are set up
+4. Channel/response handlers (`@respond`) are set up
+5. Element's `ready` promise is awaited
+6. `attach()` method is called
+7. `@context` handlers are registered and caught up with the current Router context
+8. Observers are set up
 9. Event handlers are set up
 10. `controller-attached` event is dispatched
 
-The step-4 wait has one safe exception: when an element calls
+The step-5 wait has one safe exception: when an element calls
 `await attachController(this, ControllerClass)` from its own `@ready` handler,
 Snice attaches immediately. Initial rendering has already completed at that
 point, and waiting for `ready` would otherwise create a self-deadlock because
@@ -144,6 +144,57 @@ point, and waiting for `ready` would otherwise create a self-deadlock because
 other element still awaits that element's `ready` promise.
 This runtime safeguard does not make attaching a controller to a routed page a
 good architecture; pages should orchestrate directly.
+
+#### Responders Are Reachable Before the Host Is Ready
+
+`@respond` handlers are installed at step 4, *before* the wait — the same
+ordering elements use, where `@respond` is installed on connection rather than
+at `ready`. This matters for the common shape where a host's `@ready` waits on
+a child that makes a request as it mounts:
+
+```typescript
+@element('report-host')
+class ReportHost extends HTMLElement {
+  @ready()
+  async onReady() {
+    // The host cannot finish becoming ready until the child does...
+    await this.chart.ready;
+  }
+
+  @render()
+  renderContent() { return html`<report-chart></report-chart>`; }
+}
+
+@element('report-chart')
+class ReportChart extends HTMLElement {
+  @request('report-data')
+  async *load(): Response<void> {
+    // ...and the child cannot finish until something answers this.
+    this.data = await (yield { range: '30d' });
+  }
+
+  @ready()
+  async onReady() { await this.load(); }
+}
+```
+
+With `<report-host controller="report-controller">` answering `report-data`, the
+child's request reaches the controller while the host's `ready` is still
+pending: discovery resolves immediately, the request releases the step-5 wait,
+and the responder runs once `attach()` and the remaining setup have completed.
+If the responder were only installed after `ready`, the two sides would wait on
+each other until a timeout fired and the attachment would fail outright.
+
+The responder *body* still never runs before `attach()`, so anything the
+controller builds in `attach()` is safe to use inside a `@respond` method.
+
+`@respond('name', { daemon: 'x' })` has one extra condition. A daemon target is
+resolved through the host's app context, which is unreachable while the host is
+still disconnected — the shape where `attachController(el, Controller)` runs
+before `el` is appended. When the context already resolves, the daemon-scoped
+responder registers at step 4 with every other responder; when it does not, it
+registers after `attach()` instead of being dropped, exactly where it registered
+before.
 
 ### Detachment Flow
 

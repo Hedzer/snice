@@ -78,20 +78,36 @@ el.controller = UserController;                  // snice elements
 1. Controller instance created
 2. `element` property set
 3. Router application context passed (if available)
-4. Element's `ready` promise awaited
-5. `attach()` called
-6. `@context` handlers registered and caught up with the current Router context
-7. Observers set up
-8. Channel/response handlers set up
+4. Channel/response handlers (`@respond`) set up
+5. Element's `ready` promise awaited
+6. `attach()` called
+7. `@context` handlers registered and caught up with the current Router context
+8. Observers set up
 9. Event handlers set up
 10. `controller-attached` event dispatched
 
-Exception to step 4: `await attachController(this, ControllerClass)` inside the
+Exception to step 5: `await attachController(this, ControllerClass)` inside the
 host's own `@ready` handler attaches immediately because initial render is
 already complete. Awaiting that same host's `ready` would self-deadlock. An
 attachment targeting any other element still waits for the target's `ready`.
 This runtime safeguard does not make attaching a controller to a routed page a
 good architecture; pages should orchestrate directly.
+
+`@respond` is installed at step 4, before the wait — the same ordering elements
+use (an element installs `@respond` on connection, not at `ready`). A child's
+mount-time `@request` therefore finds the controller even while the host is
+still becoming ready: discovery resolves immediately, the request releases the
+step-5 wait, and the handler runs once `attach()` and the remaining setup are
+done. Without that ordering, a host whose `@ready` awaits a child that requests
+on mount would deadlock — the child waits for a responder that is waiting for
+the host's `ready` — and the attachment would fail. The responder body still
+never runs before `attach()`, so state built there is safe to use.
+
+`@respond('name', { daemon })` needs the host's app context to resolve its
+target, and that context is unreachable while the host is still disconnected
+(`attachController(el, C)` before `appendChild`). Resolvable → registered at
+step 4 like the rest; not resolvable → registered after step 6 instead of being
+dropped.
 
 **Detachment flow:**
 1. `detach()` called

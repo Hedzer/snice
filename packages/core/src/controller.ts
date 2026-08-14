@@ -310,6 +310,36 @@ export async function attachController(element: HTMLElement, controller: string 
     restoreDirectControllerAttribute(element);
   }
 
+  // @respond handlers are installed before the readiness gate below, exactly
+  // as elements install theirs in connectedCallback. A child's mount-time
+  // @request can be the very thing keeping the host from becoming ready, so
+  // the responder has to be reachable while `ready` is still pending. Such a
+  // request also releases the gate — it proves the host subtree is live and
+  // that something is blocked on this attachment — and is answered once
+  // attach() and the remaining setup have run.
+  //
+  // A `@respond({ daemon })` handler resolves its target through the host's app
+  // context, which is unreachable while the host is still disconnected (attach
+  // before appendChild). Those are deferred here and registered by the second
+  // pass past the gate, where they behaved correctly before this ordering.
+  let requestClaimed = false;
+  let releaseReadyGate: (() => void) | undefined;
+  let completeAttach!: () => void;
+  let failAttach!: (error: unknown) => void;
+  const attached = new Promise<void>((resolve, reject) => {
+    completeAttach = resolve;
+    failAttach = reject;
+  });
+  attached.catch(() => {}); // No requester when nothing was claimed
+  setupResponseHandlers(controllerInstance, element, {
+    deferUnresolvableDaemons: true,
+    claim: () => {
+      requestClaimed = true;
+      releaseReadyGate?.();
+      return attached;
+    },
+  });
+
   // Normally a controller waits for its host's full initialization. The sole
   // exception is attachController(host, ...) from that host's own @ready
   // handler: awaiting ready there would wait on the current handler itself.
@@ -323,6 +353,10 @@ export async function attachController(element: HTMLElement, controller: string 
     try {
       await Promise.race([
         (element as any).ready,
+        new Promise<void>(resolve => {
+          if (requestClaimed) return resolve();
+          releaseReadyGate = resolve;
+        }),
         new Promise<never>((_, reject) => {
           const onAbort = () => {
             // Tagged so fire-and-forget call sites can tell this designed
@@ -341,8 +375,10 @@ export async function attachController(element: HTMLElement, controller: string 
       ]);
     } catch (error) {
       // Attach never got past `ready` (aborted or deadline). Roll back the
-      // stored references so a later attach does not short-circuit against an
-      // instance whose attach() never ran.
+      // stored references and the early responders so a later attach does not
+      // short-circuit against an instance whose attach() never ran.
+      cleanupResponseHandlers(controllerInstance);
+      failAttach(error);
       if ((element as any)[CONTROLLER_KEY] === controllerInstance) {
         if (typeof controller !== 'string') {
           writeControllerAttribute(element, null);
@@ -365,24 +401,34 @@ export async function attachController(element: HTMLElement, controller: string 
   // Past `ready` — mark the controller so detach knows attach was actually run.
   (controllerInstance as any)[CONTROLLER_ATTACHED] = true;
 
-  // Run attach in the controller's scope
-  await scope.runOperation(async () => {
-    await controllerInstance.attach(element);
-  });
+  try {
+    // Run attach in the controller's scope
+    await scope.runOperation(async () => {
+      await controllerInstance.attach(element);
+    });
 
-  // @context has the same managed lifecycle on controllers as @on,
-  // @observe and @respond. Catch up controllers whose async attach completed
-  // after the Router announced the current navigation.
-  await setupContextHandler(controllerInstance, 'microtask');
+    // @context has the same managed lifecycle on controllers as @on,
+    // @observe and @respond. Catch up controllers whose async attach completed
+    // after the Router announced the current navigation.
+    await setupContextHandler(controllerInstance, 'microtask');
 
-  // Setup @observe observers for controller
-  setupObservers(controllerInstance, element);
+    // Setup @observe observers for controller
+    setupObservers(controllerInstance, element);
 
-  // Setup @channel handlers for controller
-  setupResponseHandlers(controllerInstance, element);
+    // Second @respond pass: registers only what the pre-gate pass deferred —
+    // daemon-scoped responders whose app context was not resolvable yet.
+    setupResponseHandlers(controllerInstance, element);
 
-  // Setup @on event handlers for controller
-  setupEventHandlers(controllerInstance, element);
+    // Setup @on event handlers for controller
+    setupEventHandlers(controllerInstance, element);
+  } catch (error) {
+    // A claimed request must not wait on an attachment that never completed.
+    failAttach(error);
+    throw error;
+  }
+
+  // Answer whatever was claimed while the host was still becoming ready.
+  completeAttach();
 
   element.dispatchEvent(new CustomEvent('controller-attached', {
     detail: { name: controllerName, controller: controllerInstance }

@@ -240,11 +240,45 @@ export function respond(requestName: string, options?: RespondOptions) {
   };
 }
 
-// Helper to setup response handlers for elements and controllers
-export function setupResponseHandlers(instance: any, element: EventTarget) {
+export interface SetupResponseHandlerOptions {
+  /**
+   * Runs on every incoming request and must settle before the responder method
+   * is invoked. Controllers use it to accept requests that arrive while their
+   * host is still becoming ready: discovery resolves at once, the answer
+   * follows as soon as the controller is attached.
+   */
+  claim?: () => Promise<void>;
+  /**
+   * Keep a `@respond({ daemon })` handler unregistered — and silent — when its
+   * daemon is not resolvable yet, instead of warning and dropping it. A caller
+   * that registers early (before the host is connected or ready) passes this
+   * and calls `setupResponseHandlers` again later; the second call registers
+   * whatever was deferred and warns then if it is still unresolvable.
+   */
+  deferUnresolvableDaemons?: boolean;
+}
+
+// Which handler descriptors an instance has already registered, so a second
+// setup pass only picks up what the first one deferred.
+const registeredHandlers = new WeakMap<object, Set<unknown>>();
+
+/**
+ * Helper to setup response handlers for elements and controllers.
+ *
+ * Safe to call more than once for the same instance: a handler already
+ * registered is skipped rather than double-bound.
+ */
+export function setupResponseHandlers(instance: any, element: EventTarget, options?: SetupResponseHandlerOptions) {
   const handlers = instance.constructor[CHANNEL_HANDLERS];
   if (!handlers) return;
-  
+
+  const claim = options?.claim;
+  let registered = registeredHandlers.get(instance);
+  if (!registered) {
+    registered = new Set();
+    registeredHandlers.set(instance, registered);
+  }
+
   // Store cleanup functions
   // Initialize cleanup object if needed
   if (!instance[CLEANUP]) {
@@ -252,6 +286,7 @@ export function setupResponseHandlers(instance: any, element: EventTarget) {
   }
   
   for (const handler of handlers) {
+    if (registered.has(handler)) continue;
     const boundMethod = handler.method.bind(instance);
     const eventName = `@request/${handler.channelName}`;
     
@@ -338,7 +373,11 @@ export function setupResponseHandlers(instance: any, element: EventTarget) {
       discovery.resolve();
       
       // Call the timed responder method and handle the result
-      Promise.resolve(timedMethod(payload))
+      const answer = claim
+        ? Promise.resolve(claim()).then(() => timedMethod(payload))
+        : Promise.resolve(timedMethod(payload));
+
+      answer
         .then(result => {
           data.resolve(result);
         })
@@ -353,13 +392,19 @@ export function setupResponseHandlers(instance: any, element: EventTarget) {
       try {
         responseTarget = requireDaemonTarget(instance, handler.options.daemon);
       } catch (error) {
+        // The app context reaches a controller through its host element, so it
+        // can be unreachable while the host is still disconnected. Leave the
+        // handler for the later pass instead of dropping it permanently.
+        if (options?.deferUnresolvableDaemons) continue;
         console.warn(`[snice/@respond] ${(error as Error).message} Responder "${handler.channelName}" skipped.`);
+        registered.add(handler);
         continue;
       }
     }
 
+    registered.add(handler);
     responseTarget.addEventListener(eventName, responseHandler as EventListener);
-    
+
     instance[CLEANUP].channels.push(() => {
       responseTarget.removeEventListener(eventName, responseHandler as EventListener);
     });
@@ -368,6 +413,7 @@ export function setupResponseHandlers(instance: any, element: EventTarget) {
 
 // Helper to cleanup response handlers
 export function cleanupResponseHandlers(instance: any) {
+  registeredHandlers.delete(instance);
   if (instance[CLEANUP]?.channels) {
     for (const cleanup of instance[CLEANUP].channels) {
       cleanup();
