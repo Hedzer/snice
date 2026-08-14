@@ -52,7 +52,7 @@ interface ColumnDefinition {
   key:string; label:string; type?:ColumnType; align?:'left'|'center'|'right'; width?:string; flex?:number; minWidth?:number; maxWidth?:number;
   sortable?:boolean; filterable?:boolean; resizable?:boolean; reorderable?:boolean; hideable?:boolean; pinnable?:boolean; pinned?:'left'|'right'|false;
   editable?:boolean; exportable?:boolean; editorType?:'text'|'number'|'date'|'boolean'|'select'; selectOptions?:{value:string;label:string}[];
-  formatter?:(value:any,row?:any)=>string; valueGetter?:(value:any,row:any)=>any; valueFormatter?:(value:any,row:any)=>string;
+  formatter?:(value:any,row?:any)=>string; valueGetter?:(value:any,row:any)=>any; /* runs for display, sort, aggregation */ valueFormatter?:(value:any,row:any)=>string;
   valueParser?:(value:string,row:any)=>any; valueSetter?:(value:any,row:any)=>any; sortComparator?:(a:any,b:any,direction:'asc'|'desc')=>number;
   colSpan?:number|((value:any,row:any)=>number); aggregate?:Aggregator; renderCell?:(value:any,row:any,column:ColumnDefinition)=>HTMLElement|string;
   renderEditor?:(value:any,row:any,column:ColumnDefinition,commit:(v:any)=>void,cancel:()=>void)=>HTMLElement;

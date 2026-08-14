@@ -1285,6 +1285,58 @@ describe('snice-table', () => {
       expect(table.columns[0].valueParser).toBeDefined();
       expect(table.columns[0].valueSetter).toBeDefined();
     });
+
+    it('should render body cells through valueGetter when key is not a row field', async () => {
+      table = await createTable({
+        columns: [{
+          key: 'company', label: 'Company', type: 'text', sortable: true,
+          valueGetter: (_v: any, row: any) => row.companyName,
+        }],
+        data: [{ companyName: 'Acme' }, { companyName: 'Globex' }],
+      });
+
+      const cells = Array.from(queryShadowAll(table as HTMLElement, 'tbody td[data-key="company"]'));
+      expect(cells.length).toBe(2);
+      const texts = cells.map(td => (td.querySelector('[value]')?.getAttribute('value')
+        ?? td.textContent?.trim() ?? ''));
+      expect(texts).toEqual(['Acme', 'Globex']);
+    });
+
+    it('should render body cells through valueGetter deriving from the raw value', async () => {
+      table = await createTable({
+        columns: [{
+          key: 'name', label: 'Name', type: 'text',
+          valueGetter: (v: any) => v?.toUpperCase(),
+        }],
+        data: [{ name: 'alice' }, { name: 'bob' }],
+      });
+
+      const cells = Array.from(queryShadowAll(table as HTMLElement, 'tbody td[data-key="name"]'));
+      const texts = cells.map(td => (td.querySelector('[value]')?.getAttribute('value')
+        ?? td.textContent?.trim() ?? ''));
+      expect(texts).toEqual(['ALICE', 'BOB']);
+    });
+
+    it('sorts and renders the same derived value', async () => {
+      table = await createTable({
+        columns: [{
+          key: 'company', label: 'Company', type: 'text', sortable: true,
+          valueGetter: (_v: any, row: any) => row.companyName,
+        }],
+        data: [{ companyName: 'Globex' }, { companyName: 'Acme' }],
+      });
+      table.currentSort = [{ column: 'company', direction: 'asc' }];
+      table.sortLocalData();
+      await wait(20);
+      table.renderBody();
+      await wait(20);
+
+      expect(table.data.map((r: any) => r.companyName)).toEqual(['Acme', 'Globex']);
+      const cells = Array.from(queryShadowAll(table as HTMLElement, 'tbody td[data-key="company"]'));
+      const texts = cells.map(td => (td.querySelector('[value]')?.getAttribute('value')
+        ?? td.textContent?.trim() ?? ''));
+      expect(texts).toEqual(['Acme', 'Globex']);
+    });
   });
 
   // ── Feature 23: Cell Editing ──

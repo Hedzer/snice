@@ -153,7 +153,8 @@ Column capability flags default to enabled unless explicitly set to `false` when
 `formatter` is the row-aware display override for every built-in cell.
 `valueFormatter` is the fallback display formatter and is also used by the
 editing pipeline, aggregate output, and formatted clipboard export.
-`valueGetter` participates in local sorting and aggregation. `valueParser` and
+`valueGetter` derives the working value for cell display, local sorting, and
+aggregation. `valueParser` and
 `valueSetter` run during editing; a setter may return either the final field
 value or an updated row object.
 

@@ -4785,7 +4785,10 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       const td = document.createElement('td');
       td.setAttribute('data-key', column.key);
       td.setAttribute('part', 'cell');
-      const value = rowData[column.key];
+      const rawValue = rowData[column.key];
+      // Display path must run the same valueGetter the sort/grouping/editor
+      // paths already apply.
+      const value = column.valueGetter ? column.valueGetter(rawValue, rowData) : rawValue;
 
       this.applyCellPresentation(td, column, value, rowData);
 

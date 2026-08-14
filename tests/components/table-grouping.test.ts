@@ -781,7 +781,9 @@ describe('snice-table grouping integration', () => {
     const totalCell = queryShadow(table,
       'tr.group-aggregate-row[data-agg-scope="table"] td[data-key="salary"] snice-cell-text') as any;
     expect(totalCell.shadowRoot.querySelector('.cell-content')?.textContent?.trim()).toBe('Total 920');
-    expect(getterCalls).toBe(PEOPLE.length);
+    // Once per row for aggregation + once per row for body-cell display;
+    // the aggregate row itself must not rerun the getter (guarded above).
+    expect(getterCalls).toBe(PEOPLE.length * 2);
   });
 
   it('keeps grouped keyboard bounds aligned with tool and hidden columns', async () => {
