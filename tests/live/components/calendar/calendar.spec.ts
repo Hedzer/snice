@@ -61,6 +61,16 @@ test.describe('Snice Calendar grid geometry', () => {
           }
         });
 
+        // Rows without an event-lane reservation must be square: cell height
+        // equals the column width (within a border-rounding tolerance).
+        rows.forEach((row, w) => {
+          if (row.some(c => c.style.getPropertyValue('--calendar-week-lanes'))) return;
+          const r = row[0].getBoundingClientRect();
+          if (Math.abs(r.height - r.width) > 2) {
+            problems.push(`cal[${calIdx}] week ${w}: not square (${Math.round(r.width)}x${Math.round(r.height)})`);
+          }
+        });
+
         // Every event bar must sit fully inside its own week row's box.
         const bars = [...grid.querySelectorAll('.calendar__event-bar')] as HTMLElement[];
         bars.forEach(bar => {
