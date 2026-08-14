@@ -129,6 +129,27 @@ export const WithEvents: Story = {
   },
 };
 
+// h2: Event popovers (click an event)
+export const EventPopovers: Story = {
+  render: () => {
+    const el = document.createElement('snice-calendar');
+    el.style.cssText = 'max-width:400px;';
+    (el as any).events = [
+      { id: 'p1', title: 'Kickoff', start: addDays(today, 1), color: '#2563eb',
+        popover: 'Project kickoff — room 2, bring the roadmap.' },
+      { id: 'p2', title: 'Audit', start: addDays(today, 3), end: addDays(today, 6), color: '#dc2626', popover: true },
+      { id: 'p3', title: 'Retro', start: addDays(today, 8), color: '#16a34a' },
+    ];
+    (el as any).eventPopover = async (event: any) => {
+      await new Promise((r) => setTimeout(r, 250));
+      const card = document.createElement('div');
+      card.innerHTML = `<strong>${event.title}</strong><p style="margin:0.4rem 0">Loaded lazily · 4 auditors</p>`;
+      return card;
+    };
+    return el;
+  },
+};
+
 // h2: no-day-select (display-only)
 export const NoDaySelectDisplayOnly: Story = {
   render: () => {

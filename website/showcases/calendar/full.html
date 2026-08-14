@@ -89,6 +89,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <section>
+    <h2>Event popovers (click an event)</h2>
+    <snice-calendar id="cal-popover"></snice-calendar>
+  </section>
+
+  <section>
     <h2>no-day-select (display-only)</h2>
     <snice-calendar id="cal-noselect" no-day-select></snice-calendar>
   </section>
@@ -176,6 +181,27 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       // boundaries with squared corners — professional-calendar style.
       { id: 5, title: 'Offsite', start: addDays(today, 9), end: addDays(today, 16), color: '#0891b2' },
     ];
+
+    // Event popovers: strictly per-event opt-in. "Kickoff" carries inline
+    // content; "Audit" resolves lazily via the eventPopover provider (the
+    // calendar/event-popover @request channel works the same way from a
+    // controller). "Retro" has no popover — clicking it only dispatches
+    // calendar-event-click.
+    const calPopover = document.getElementById('cal-popover');
+    calPopover.events = [
+      { id: 'p1', title: 'Kickoff', start: addDays(today, 1), color: '#2563eb',
+        popover: 'Project kickoff — room 2, bring the roadmap.' },
+      { id: 'p2', title: 'Audit', start: addDays(today, 3), end: addDays(today, 6), color: '#dc2626', popover: true },
+      { id: 'p3', title: 'Retro', start: addDays(today, 8), color: '#16a34a' },
+    ];
+    calPopover.eventPopover = async (event) => {
+      await new Promise((r) => setTimeout(r, 250)); // simulated fetch
+      const card = document.createElement('div');
+      card.innerHTML = `<strong>${event.title}</strong>
+        <p style="margin:0.4rem 0">${fmt(new Date(event.start))} → ${fmt(new Date(event.end || event.start))} · 4 auditors</p>
+        <snice-button size="small">Open checklist</snice-button>`;
+      return card;
+    };
 
     // Display-only: days don't select, events still open/click.
     document.getElementById('cal-noselect').events = [
