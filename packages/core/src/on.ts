@@ -93,7 +93,7 @@ export function on(
       // and child registrations pollute parent (and vice versa) via the
       // prototype chain.
       const eventNames = Array.isArray(eventName) ? eventName : [eventName];
-      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}::daemon:${opts.daemon ?? ''}`;
+      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}::daemon:${opts.daemon ?? ''}::light:${opts.light ?? ''}::shadow:${opts.shadow ?? ''}`;
 
       if (!Object.prototype.hasOwnProperty.call(constructor, ON_METHODS)) {
         constructor[ON_METHODS] = new Set();
@@ -277,60 +277,51 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       }
     }
 
+    // Tree toggles — the same light/shadow pair @query uses. Both default to
+    // true: direct listeners attach in both trees, delegated listeners match
+    // in both. An explicit scope/daemon owns the listener target outright, so
+    // the flags are meaningless there and ignored with a warning.
+    const inShadow = handlerOptions.shadow !== false;
+    const inLight = handlerOptions.light !== false;
+    if (hasExplicitTarget
+        && (handlerOptions.light !== undefined || handlerOptions.shadow !== undefined)) {
+      console.warn(
+        `[snice/@on] light/shadow are ignored for "${handler.eventName}" — an explicit scope/daemon owns the listener target.`
+      );
+    }
+    if (!hasExplicitTarget && !inShadow && !inLight) {
+      console.warn(
+        `[snice/@on] "${handler.eventName}" disables both light and shadow — listener skipped.`
+      );
+      continue;
+    }
+
     // Main event handler with error handling and event delegation
     if (handler.selector) {
-      // Delegated event handling.
-      // - Default eventRoot: shadow root if present, else host element.
-      // - With explicit scope: attach to the scoped target instead.
-      const eventRoot: EventTarget = hasExplicitTarget
-        ? scopedTarget!
-        : ((targetElement as any).shadowRoot || targetElement);
+      // Delegated event handling. Listener roots by tree toggle:
+      // - shadow → the shadow root (when present)
+      // - light  → the host element (hears light-DOM bubbles)
+      // - explicit scope: the scoped target only
+      const componentShadowRoot = (targetElement as any).shadowRoot;
+      const delegationRoots: EventTarget[] = hasExplicitTarget
+        ? [scopedTarget!]
+        : [
+            ...(inShadow && componentShadowRoot ? [componentShadowRoot] : []),
+            ...(inLight ? [targetElement] : []),
+          ];
 
-      // Delegation matches only elements visible in the listener's own tree
-      // scope: a shadow-root listener matches its shadow tree, anything else
-      // matches its containing document/root. This mirrors native retargeting
-      // (child-component internals never match) while still matching a shadow
-      // wrapper when the click lands on light-DOM content slotted into it —
-      // `target.closest()` alone cannot cross that slot boundary.
-      const treeScope: Node = eventRoot instanceof ShadowRoot
-        ? eventRoot
-        : ((eventRoot as Node).getRootNode?.() ?? document);
+      if (delegationRoots.length === 0) {
+        console.warn(
+          `[snice/@on] "${handler.eventName}" cannot delegate "${handler.selector}" — no shadow root and light disabled; listener skipped.`
+        );
+        continue;
+      }
 
-      const findDelegateMatch = (event: Event): Element | null => {
-        if (typeof event.composedPath !== 'function') {
-          // Fallback for environments without composedPath: ancestor walk.
-          const target = event.target as HTMLElement;
-          return (target.matches && target.matches(handler.selector) && target)
-            || (target.closest && target.closest(handler.selector))
-            || null;
-        }
-        for (const node of event.composedPath()) {
-          const el = node as Element;
-          if (el === eventRoot) break;
-          if (el.nodeType !== 1) continue;
-          if (el.getRootNode() !== treeScope) continue;
-          if (el.matches(handler.selector)) return el;
-        }
-        return null;
-      };
-
-      const delegatedHandler = (event: Event) => {
-        const matchingElement = findDelegateMatch(event);
-
-        if (!matchingElement) return;
-
-        if (handlerOptions.preventDefault) event.preventDefault();
-        if (handlerOptions.stopPropagation) {
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-        }
-
-        try {
-          keyModifierMethod(event);
-        } catch (error) {
-          console.error(`Error in event handler ${handler.methodName}:`, error);
-        }
-      };
+      // One event can reach more than one root (e.g. a slotted click seen by
+      // both the shadow root and the host); a per-handler Symbol keeps the
+      // handler to one invocation per event. The symbol is only stamped on a
+      // match so a non-matching root never blocks the other.
+      const handledSymbol = Symbol();
 
       // Auto-enable capture for non-bubbling events when using delegation
       const needsCapture = NON_BUBBLING_EVENTS.has(baseEventName);
@@ -344,20 +335,81 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         passive: handlerOptions.passive || false,
       };
 
-      eventRoot.addEventListener(baseEventName, delegatedHandler, listenerOptions);
+      for (const eventRoot of delegationRoots) {
+        // Delegation matches only elements visible in the listener's own tree
+        // scope: a shadow-root listener matches its shadow tree, anything else
+        // matches its containing document/root. This mirrors native retargeting
+        // (child-component internals never match) while still matching a shadow
+        // wrapper when the click lands on light-DOM content slotted into it —
+        // `target.closest()` alone cannot cross that slot boundary.
+        const treeScope: Node = eventRoot instanceof ShadowRoot
+          ? eventRoot
+          : ((eventRoot as Node).getRootNode?.() ?? document);
 
-      instance[CLEANUP].events.push({
-        target: eventRoot,
-        eventName: baseEventName,
-        handler: delegatedHandler,
-        options: listenerOptions,
-      });
+        const findDelegateMatch = (event: Event): Element | null => {
+          if (typeof event.composedPath !== 'function') {
+            // Fallback for environments without composedPath: ancestor walk.
+            const target = event.target as HTMLElement;
+            return (target.matches && target.matches(handler.selector) && target)
+              || (target.closest && target.closest(handler.selector))
+              || null;
+          }
+          for (const node of event.composedPath()) {
+            const el = node as Element;
+            if (el === eventRoot) break;
+            if (el.nodeType !== 1) continue;
+            if (el.getRootNode() !== treeScope) continue;
+            if (el.matches(handler.selector)) return el;
+          }
+          return null;
+        };
+
+        const delegatedHandler = (event: Event) => {
+          if ((event as any)[handledSymbol]) return;
+
+          const matchingElement = findDelegateMatch(event);
+          if (!matchingElement) return;
+          (event as any)[handledSymbol] = true;
+
+          if (handlerOptions.preventDefault) event.preventDefault();
+          if (handlerOptions.stopPropagation) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+          }
+
+          try {
+            keyModifierMethod(event);
+          } catch (error) {
+            console.error(`Error in event handler ${handler.methodName}:`, error);
+          }
+        };
+
+        eventRoot.addEventListener(baseEventName, delegatedHandler, listenerOptions);
+
+        instance[CLEANUP].events.push({
+          target: eventRoot,
+          eventName: baseEventName,
+          handler: delegatedHandler,
+          options: listenerOptions,
+        });
+      }
     } else {
       // Direct event handling.
       // - Default: shadow root + host element (so events inside shadow and on
       //   the host itself both fire). A per-handler Symbol dedupes.
+      // - light/shadow narrow the attachment: shadow → the shadow root
+      //   listener, light → the host listener.
       // - With explicit scope: attach to the scoped target ONLY (no duplication).
-      const shadowRoot = hasExplicitTarget ? null : (targetElement as any).shadowRoot;
+      const shadowRoot = (hasExplicitTarget || !inShadow)
+        ? null
+        : (targetElement as any).shadowRoot;
+
+      if (!hasExplicitTarget && !shadowRoot && !inLight) {
+        console.warn(
+          `[snice/@on] "${handler.eventName}" requests shadow only but the element has no shadow root — listener skipped.`
+        );
+        continue;
+      }
 
       // Per-handler private Symbol so dedup is scoped to THIS handler's two
       // listeners (shadowRoot + host). Using Symbol.for() with the method name
@@ -409,14 +461,17 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         });
       }
 
-      // Also listen on host element (for clicks on host itself or when no shadow root)
-      targetElement.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
-      instance[CLEANUP].events.push({
-        target: targetElement,
-        eventName: baseEventName,
-        handler: wrappedMethod,
-        options: listenerOptions,
-      });
+      // Also listen on host element (for clicks on host itself, light-DOM
+      // bubbles, or when no shadow root) — unless light is disabled.
+      if (inLight) {
+        targetElement.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
+        instance[CLEANUP].events.push({
+          target: targetElement,
+          eventName: baseEventName,
+          handler: wrappedMethod,
+          options: listenerOptions,
+        });
+      }
     }
   }
 }

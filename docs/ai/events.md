@@ -142,7 +142,8 @@ handleTextInput(event: Event) {}
 ```
 
 - `currentTarget` is the listener's HOST, not the matched element — derive the match with `event.target.closest(selector)`.
-- Shadow retargeting: an event crossing a shadow boundary retargets to the shadow host, so a selector stops matching when rows move into a child component. Listen on the container; carry identity in `detail`.
+- Delegation matches in both the shadow tree and the light DOM by default; narrow with `light`/`shadow` (see OnOptions). Clicks on content slotted into a matching shadow wrapper match that wrapper.
+- Shadow retargeting: an event crossing a shadow boundary retargets to the shadow host, so a selector never matches a child component's internals. Listen on the container; carry identity in `detail`.
 
 Keyboard events with `@on` (`:` notation):
 
@@ -187,8 +188,15 @@ interface OnOptions {
   debounce?: EventTiming;
   throttle?: EventTiming;
 
-  // Shadow DOM delegation
-  target?: string;             // CSS selector to target specific elements within shadow root
+  // Delegation
+  target?: string;             // CSS selector for delegation; same as the positional selector argument
+
+  // Tree toggles — same light/shadow pair as @query; both default to true.
+  // Direct: shadow → shadow-root listener, light → host listener.
+  // Delegated: which tree(s) the selector matches in.
+  // Both false → warn + skip. Ignored (warned) with scope/daemon.
+  light?: boolean;
+  shadow?: boolean;
 
   // Where to attach the listener (see scope below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);

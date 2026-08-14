@@ -66,6 +66,36 @@ describe('@on target option — slotted content (jsdom)', () => {
     expect(calls).toEqual([1]);
   });
 
+  it('fires once when a selector matches in both trees for one event', async () => {
+    const calls: number[] = [];
+    const t = tag('on-target-dualmatch');
+
+    @element(t)
+    class C extends HTMLElement {
+      @on('click', '.hit')
+      h() { calls.push(1); }
+
+      @render()
+      renderContent() {
+        return html`<div class="hit"><slot name="trigger"></slot></div>`;
+      }
+    }
+
+    const el = document.createElement(t);
+    const slotted = document.createElement('button');
+    slotted.slot = 'trigger';
+    slotted.className = 'hit';
+    el.appendChild(slotted);
+    container.appendChild(el);
+    await (el as any).ready;
+
+    // The click matches `.hit` on the slotted button (light tree) AND on the
+    // shadow wrapper — the handler must still run exactly once.
+    click(slotted);
+    await settle();
+    expect(calls).toEqual([1]);
+  });
+
   it('slotted clicks do not match when the slot sits outside the selector', async () => {
     const calls: number[] = [];
     const t = tag('on-target-slotted-miss');

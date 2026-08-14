@@ -354,17 +354,23 @@ class ListController implements IController {
 }
 ```
 
-Two delegation rules worth knowing:
+Three delegation rules worth knowing:
 
 - **`currentTarget` is the listener's host, not the matched element.** Inside
   `@on('click', '.delete-button')` the handler receives the raw event, so
   derive the match with `event.target.closest('.delete-button')` when you need
   the element itself (as above).
+- **Delegation matches in both trees by default.** The selector matches
+  elements in the component's shadow tree and its light-DOM children. A click
+  on content slotted into a matching shadow wrapper matches that wrapper.
+  Narrow the search with the `light`/`shadow` options — the same tree toggles
+  `@query` uses (see [@on Options](#on-options)).
 - **Shadow DOM retargeting changes what the selector matches.** An event
   crossing a shadow boundary is retargeted to the shadow host, so
   `@on('row-clicked', 'my-row')` stops matching when rows move into a list
-  component — from outside, the event's target is the list host. Listen on the
-  container and carry the row identity in the event `detail` instead.
+  component — from outside, the event's target is the list host. A selector
+  never matches a child component's internals. Listen on the container and
+  carry the row identity in the event `detail` instead.
 
 ### Keyboard Events with @on
 
@@ -421,8 +427,12 @@ interface OnOptions {
   debounce?: EventTiming;      // Debounce the handler
   throttle?: EventTiming;      // Throttle the handler
 
-  // Shadow DOM delegation
-  target?: string;             // CSS selector to target specific elements within shadow root
+  // Delegation
+  target?: string;             // CSS selector for delegation; same as the positional selector argument
+
+  // Tree toggles — the same light/shadow pair @query uses; both default to true
+  light?: boolean;             // Listen in the light DOM (host element + light children)
+  shadow?: boolean;            // Listen in the shadow tree (the component's shadow root)
 
   // Where to attach the listener (see scope section below)
   scope?: 'global' | string | EventTarget | ((this: HTMLElement) => EventTarget | null);
@@ -439,6 +449,29 @@ the decorated element or controller instance. For `@on`, it runs when the
 managed listener is set up and again when it is set up after reconnect. The
 resolved value must be a finite, non-negative number; `0` disables that timing
 option, while invalid, negative, and `NaN` values throw `TypeError`.
+
+#### light / shadow — choosing the tree
+
+`light` and `shadow` are the same tree toggles `@query` uses. Both default to
+`true`, so `@on` hears events from the shadow tree and the light DOM alike.
+Set one to `false` to narrow the listener:
+
+```typescript
+// Only the component's shadow tree
+@on('click', '.item', { light: false })
+onShadowItem(e: MouseEvent) { /* ... */ }
+
+// Only light-DOM children (and the host itself)
+@on('click', '.item', { shadow: false })
+onLightItem(e: MouseEvent) { /* ... */ }
+```
+
+For direct handlers the flags choose where the listener attaches: `shadow`
+controls the shadow-root listener, `light` controls the host listener. For
+delegated handlers they choose which tree(s) the selector matches in. Setting
+both to `false` warns and skips the listener, and the flags are ignored (with
+a warning) when `scope` or `daemon` is set — those own the listener target
+outright.
 
 #### scope — controlling the listener target
 

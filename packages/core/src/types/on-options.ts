@@ -28,8 +28,20 @@ export interface OnOptions {
   debounce?: EventTiming;
   /** Throttle by milliseconds or resolve milliseconds from this instance */
   throttle?: EventTiming;
-  /** CSS selector to target specific elements within shadow root */
+  /** CSS selector for event delegation; equivalent to the positional selector argument */
   target?: string;
+  /**
+   * Listen in the light DOM (the host element and its light-DOM children).
+   * Same tree toggle as @query. Defaults to true; combine with `shadow` to
+   * pick light, shadow, or both. Ignored when `scope`/`daemon` is set.
+   */
+  light?: boolean;
+  /**
+   * Listen in the shadow tree (the component's shadow root).
+   * Same tree toggle as @query. Defaults to true; combine with `light` to
+   * pick light, shadow, or both. Ignored when `scope`/`daemon` is set.
+   */
+  shadow?: boolean;
   /**
    * Where to attach the listener. Default is the host element.
    * Use `'global'` for document-wide events, a selector for an ancestor
