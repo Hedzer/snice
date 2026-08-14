@@ -16,7 +16,9 @@ export type OnScope =
 export interface OnOptions {
   /** Use capture phase instead of bubble phase */
   capture?: boolean;
-  /** Remove listener after first trigger */
+  /** Run the handler exactly once, then remove every listener it registered.
+   *  Events that don't match the delegation selector or key filter don't
+   *  consume it. */
   once?: boolean;
   /** Passive listener (can't preventDefault) */
   passive?: boolean;

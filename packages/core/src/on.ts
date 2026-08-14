@@ -223,16 +223,22 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       keyFilter = parseKeyboardFilter(keyModifier);
     }
 
-    const createKeyModifierHandler = (method: Function): Function => {
+    // Returns whether the method actually ran, so `once` can be managed
+    // manually: native `once` consumes the listener on ANY invocation — a
+    // non-matching key or (with multiple tree listeners) a different root
+    // would either eat the single firing or allow a second one.
+    const createKeyModifierHandler = (method: Function): ((event: Event) => boolean) => {
       if (!keyFilter) {
-        return method;
+        return (event: Event) => { method(event); return true; };
       }
 
       return (event: Event) => {
         const keyEvent = event as KeyboardEvent;
         if (matchesKeyboardFilter(keyEvent, keyFilter)) {
           method(event);
+          return true;
         }
+        return false;
       };
     };
 
@@ -257,25 +263,6 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
     }
 
     const hasExplicitTarget = hasExplicitScope || hasDaemon;
-    let scopedTarget: EventTarget | null = null;
-    if (hasDaemon) {
-      try {
-        scopedTarget = requireDaemonTarget(instance, handlerOptions.daemon);
-      } catch (error) {
-        console.warn(`[snice/@on] ${(error as Error).message} Listener "${handler.eventName}" skipped.`);
-        continue;
-      }
-    } else if (hasExplicitScope) {
-      scopedTarget = resolveScope(targetElement as HTMLElement, handlerOptions.scope);
-      if (!scopedTarget) {
-        // Dev warning — listener silently dropped when scope cannot resolve.
-        // Skip attachment so we don't bind to the wrong target.
-        console.warn(
-          `[snice/@on] scope did not resolve for "${handler.eventName}" on ${handler.methodName} — listener skipped.`
-        );
-        continue;
-      }
-    }
 
     // Tree toggles — the same light/shadow pair @query uses. Both default to
     // true: direct listeners attach in both trees, delegated listeners match
@@ -294,6 +281,26 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         `[snice/@on] "${handler.eventName}" disables both light and shadow — listener skipped.`
       );
       continue;
+    }
+
+    let scopedTarget: EventTarget | null = null;
+    if (hasDaemon) {
+      try {
+        scopedTarget = requireDaemonTarget(instance, handlerOptions.daemon);
+      } catch (error) {
+        console.warn(`[snice/@on] ${(error as Error).message} Listener "${handler.eventName}" skipped.`);
+        continue;
+      }
+    } else if (hasExplicitScope) {
+      scopedTarget = resolveScope(targetElement as HTMLElement, handlerOptions.scope);
+      if (!scopedTarget) {
+        // Dev warning — listener silently dropped when scope cannot resolve.
+        // Skip attachment so we don't bind to the wrong target.
+        console.warn(
+          `[snice/@on] scope did not resolve for "${handler.eventName}" on ${handler.methodName} — listener skipped.`
+        );
+        continue;
+      }
     }
 
     // Main event handler with error handling and event delegation
@@ -329,10 +336,20 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         ? handlerOptions.capture
         : needsCapture;
 
+      // `once` is managed manually (never native): the handler fires exactly
+      // once — a non-matching event or key must not consume it, and a match
+      // must retire the listeners on EVERY root, not just the one that fired.
       const listenerOptions: AddEventListenerOptions = {
         capture: useCapture,
-        once: handlerOptions.once || false,
+        once: false,
         passive: handlerOptions.passive || false,
+      };
+
+      const listenerGroup: Array<{ target: EventTarget; handler: EventListener }> = [];
+      const removeGroup = () => {
+        for (const entry of listenerGroup) {
+          entry.target.removeEventListener(baseEventName, entry.handler, listenerOptions);
+        }
       };
 
       for (const eventRoot of delegationRoots) {
@@ -377,14 +394,19 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
             event.stopImmediatePropagation();
           }
 
+          let fired = false;
           try {
-            keyModifierMethod(event);
+            fired = keyModifierMethod(event);
           } catch (error) {
+            // A throw can only escape user code, so the handler DID run.
+            fired = true;
             console.error(`Error in event handler ${handler.methodName}:`, error);
           }
+          if (fired && handlerOptions.once) removeGroup();
         };
 
         eventRoot.addEventListener(baseEventName, delegatedHandler, listenerOptions);
+        listenerGroup.push({ target: eventRoot, handler: delegatedHandler });
 
         instance[CLEANUP].events.push({
           target: eventRoot,
@@ -419,6 +441,22 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
       // shadow boundary.
       const handledSymbol = Symbol();
 
+      // `once` is managed manually (never native): a key-filtered handler must
+      // not be consumed by a non-matching key, and with listeners in two trees
+      // the first real firing must retire BOTH, not just the one that fired.
+      const listenerOptions: AddEventListenerOptions = {
+        capture: handlerOptions.capture || false,
+        once: false,
+        passive: handlerOptions.passive || false,
+      };
+
+      const listenerGroup: Array<{ target: EventTarget; handler: EventListener }> = [];
+      const removeGroup = () => {
+        for (const entry of listenerGroup) {
+          entry.target.removeEventListener(baseEventName, entry.handler, listenerOptions);
+        }
+      };
+
       const wrappedMethod = (event: Event) => {
         if ((event as any)[handledSymbol]) return;
         (event as any)[handledSymbol] = true;
@@ -426,52 +464,39 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         if (handlerOptions.preventDefault) event.preventDefault();
         if (handlerOptions.stopPropagation) event.stopPropagation();
 
+        let fired = false;
         try {
-          keyModifierMethod(event);
+          fired = keyModifierMethod(event);
         } catch (error) {
+          // A throw can only escape user code, so the handler DID run.
+          fired = true;
           console.error(`Error in event handler ${handler.methodName}:`, error);
         }
+        if (fired && handlerOptions.once) removeGroup();
       };
 
-      const listenerOptions: AddEventListenerOptions = {
-        capture: handlerOptions.capture || false,
-        once: handlerOptions.once || false,
-        passive: handlerOptions.passive || false,
+      const attach = (target: EventTarget) => {
+        target.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
+        listenerGroup.push({ target, handler: wrappedMethod });
+        instance[CLEANUP].events.push({
+          target,
+          eventName: baseEventName,
+          handler: wrappedMethod,
+          options: listenerOptions,
+        });
       };
 
       if (hasExplicitTarget) {
-        scopedTarget!.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
-        instance[CLEANUP].events.push({
-          target: scopedTarget!,
-          eventName: baseEventName,
-          handler: wrappedMethod,
-          options: listenerOptions,
-        });
+        attach(scopedTarget!);
         continue;
       }
 
-      if (shadowRoot) {
-        // Listen on shadow root for events inside shadow DOM
-        shadowRoot.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
-        instance[CLEANUP].events.push({
-          target: shadowRoot,
-          eventName: baseEventName,
-          handler: wrappedMethod,
-          options: listenerOptions,
-        });
-      }
+      // Listen on shadow root for events inside shadow DOM
+      if (shadowRoot) attach(shadowRoot);
 
       // Also listen on host element (for clicks on host itself, light-DOM
       // bubbles, or when no shadow root) — unless light is disabled.
-      if (inLight) {
-        targetElement.addEventListener(baseEventName, wrappedMethod as EventListener, listenerOptions);
-        instance[CLEANUP].events.push({
-          target: targetElement,
-          eventName: baseEventName,
-          handler: wrappedMethod,
-          options: listenerOptions,
-        });
-      }
+      if (inLight) attach(targetElement);
     }
   }
 }

@@ -416,7 +416,7 @@ class EditorController implements IController {
 interface OnOptions {
   // Standard event listener options
   capture?: boolean;           // Use capture phase instead of bubble phase
-  once?: boolean;              // Remove listener after first trigger
+  once?: boolean;              // Handler runs exactly once; non-matching selector/key events don't consume it
   passive?: boolean;           // Passive listener (can't preventDefault)
 
   // Automatic event handling
