@@ -151,6 +151,11 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     return { event, calendar: this };
   }
 
+  @dispatch('calendar-more-click', { bubbles: true, composed: true })
+  private dispatchMoreClick(date: Date, count: number) {
+    return { date, count, calendar: this };
+  }
+
   @styles()
   styles() {
     return css/*css*/`${cssContent}`;
@@ -624,9 +629,23 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       if (count === 0) return;
       const cell = this.dayCells[i];
       if (!cell) return;
+      const date = days[i];
       const more = document.createElement('div');
       more.className = 'calendar__more';
+      more.setAttribute('part', 'more-chip');
       more.textContent = `+${count} more`;
+      // The chip is its own control: it reports its day and hidden count, and
+      // its clicks never fall through to the day cell's selection handler.
+      more.setAttribute('role', 'button');
+      more.setAttribute('tabindex', '0');
+      more.setAttribute('aria-label',
+        `${count} more event${count === 1 ? '' : 's'} on ${date.toLocaleDateString(this.locale, { dateStyle: 'full' })}`);
+      more.onclick = (e) => this.handleMoreClick(date, count, e);
+      more.onkeydown = (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        this.handleMoreClick(date, count, e);
+      };
       cell.appendChild(more);
     });
 
@@ -767,6 +786,11 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   private handleEventClick(event: CalendarEvent, e: Event) {
     e.stopPropagation();
     this.dispatchEventClick(event);
+  }
+
+  private handleMoreClick(date: Date, count: number, e: Event) {
+    e.stopPropagation();
+    this.dispatchMoreClick(date, count);
   }
 
   private getMonthDays(): Date[] {

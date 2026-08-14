@@ -5519,6 +5519,10 @@
             {
               "name": "calendar-event-click",
               "type": "CustomEvent<unknown>"
+            },
+            {
+              "name": "calendar-more-click",
+              "type": "CustomEvent<unknown>"
             }
           ],
           "slots": [],
@@ -48400,7 +48404,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "Live tags. Assignments do not rewrite the authored reset default."
+              "description": "Live tags. Assignments do not rewrite the authored reset default and do\nnot emit `tag-change`; only tag edits do."
             },
             {
               "kind": "field",

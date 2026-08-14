@@ -2568,6 +2568,10 @@ export const ANALYZER_CONTRACTS = {
         {
           "name": "calendar-event-click",
           "type": "CustomEvent<unknown>"
+        },
+        {
+          "name": "calendar-more-click",
+          "type": "CustomEvent<unknown>"
         }
       ],
       "slots": []
@@ -22641,7 +22645,8 @@ export const ANALYZER_CONTRACTS = {
         ],
         "events": {
           "calendar-change": "onCalendarChange",
-          "calendar-event-click": "onCalendarEventClick"
+          "calendar-event-click": "onCalendarEventClick",
+          "calendar-more-click": "onCalendarMoreClick"
         },
         "interfaceProps": [
           "value",
@@ -22659,7 +22664,8 @@ export const ANALYZER_CONTRACTS = {
           "eventTooltip",
           "eventPopover",
           "onCalendarChange",
-          "onCalendarEventClick"
+          "onCalendarEventClick",
+          "onCalendarMoreClick"
         ],
         "formAssociated": false
       },

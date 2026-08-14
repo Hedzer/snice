@@ -33,12 +33,15 @@ cellSizing: 'square'|'stretch' = 'square'; // attribute: cell-sizing — square:
 
 - `calendar-change` -> `{ value: Date, calendar: SniceCalendarElement }`
 - `calendar-event-click` -> `{ event: CalendarEvent, calendar: SniceCalendarElement }`
+- `calendar-more-click` -> `{ date: Date, count: number, calendar: SniceCalendarElement }` — "+N more" chip clicked; does NOT fire `calendar-change`
 
 ## CSS Parts
 
 - `base` - Main calendar container
 - `header` - Header with title and navigation buttons
 - `grid` - Day cells grid
+- `more-chip` - Per-day "+N more" overflow chip
+- `event-bar` / `event-avatar` / `event-tooltip` / `event-popover` - Event bar internals
 
 ## Basic Usage
 
@@ -57,6 +60,11 @@ calendar.events = [
 // at week boundaries (squared corners on the continuing side, title repeats).
 // Concurrent events stack into lanes (start asc, longer first on ties);
 // max 3 lanes, deeper stacks collapse to a per-day "+N more" chip.
+// Chip: part="more-chip", role="button" tabindex=0 (Enter/Space), click ->
+// calendar-more-click { date, count }; the click never falls through to day
+// selection. Use it to open your own day/agenda view:
+//   calendar.addEventListener('calendar-more-click',
+//     (e) => showDay(e.detail.date, e.detail.count));
 // Bars: part="event-bar", click -> calendar-event-click.
 // Styling: color -> background; avatar?: string | {src?,name?,alt?} ->
 // <snice-avatar> on each bar (part="event-avatar"; name -> initials fallback);

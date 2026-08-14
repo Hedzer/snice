@@ -41,6 +41,12 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     snice-calendar {
       max-width: 400px;
     }
+    .demo-status {
+      min-height: 1.25rem;
+      margin-top: 0.5rem;
+      color: var(--snice-color-text-tertiary, #888);
+      font-size: 0.75rem;
+    }
   </style>
 </head>
 <body>
@@ -149,6 +155,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <section>
     <h2>Many events (overflow with +N more)</h2>
     <snice-calendar id="cal-overflow"></snice-calendar>
+    <div id="overflow-status" class="demo-status" role="status" aria-live="polite">Click the "+N more" chip — it reports its day and hidden count.</div>
   </section>
 
   <script type="module">
@@ -243,15 +250,23 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       { id: 3, title: 'Event C', start: d, color: '#16a34a' },
     ];
 
-    // Overflow
+    // Overflow: the "+N more" chip is its own control — part="more-chip",
+    // keyboard-reachable, and it dispatches calendar-more-click { date, count }
+    // without selecting the day.
     const od = addDays(today, 4);
-    document.getElementById('cal-overflow').events = [
+    const calOverflow = document.getElementById('cal-overflow');
+    calOverflow.events = [
       { id: 1, title: 'Alpha', start: od, color: '#dc2626' },
       { id: 2, title: 'Beta', start: od, color: '#2563eb' },
       { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
       { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
       { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
     ];
+    calOverflow.addEventListener('calendar-more-click', (e) => {
+      const { date, count } = e.detail;
+      document.getElementById('overflow-status').textContent =
+        `${count} hidden event${count === 1 ? '' : 's'} on ${fmt(date)} — open your own day view here.`;
+    });
   </script>
 </body>
 </html>

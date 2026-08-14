@@ -287,8 +287,19 @@
   position: absolute;
   bottom: var(--snice-spacing-3xs, 0.125rem);
   left: var(--snice-spacing-2xs, 0.25rem);
-  font-size: var(--snice-font-size-2xs, 0.625rem);
-  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-medium, 500);
+  color: var(--snice-color-text, rgb(23 23 23));
+  cursor: pointer;
+}
+
+.calendar__more:hover {
+  text-decoration: underline;
+}
+
+.calendar__more:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
 .calendar__week-number {

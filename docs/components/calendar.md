@@ -75,6 +75,7 @@ interface CalendarEventAvatar {
 |-------|--------|-------------|
 | `calendar-change` | `{ value: Date, calendar: SniceCalendarElement }` | Fired when selected date changes |
 | `calendar-event-click` | `{ event: CalendarEvent, calendar: SniceCalendarElement }` | Fired when an event is clicked |
+| `calendar-more-click` | `{ date: Date, count: number, calendar: SniceCalendarElement }` | Fired when a day's `+N more` chip is clicked (or activated with Enter/Space). The day is not selected and `calendar-change` does not fire |
 
 ## CSS Parts
 
@@ -85,6 +86,11 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `base` | The main calendar container |
 | `header` | The header with month title and navigation buttons |
 | `grid` | The day cells grid |
+| `more-chip` | A day's `+N more` overflow chip |
+| `event-bar` | An event stripe (plus any `className` you set on the event) |
+| `event-avatar` | The `<snice-avatar>` rendered at the start of an event bar |
+| `event-tooltip` | The shared tooltip overlay shown on event hover |
+| `event-popover` | The popover opened by a `popover`-enabled event |
 
 ```css
 snice-calendar::part(base) {
@@ -134,6 +140,24 @@ lanes — earlier start first, longer event first on ties. Up to three lanes are
 shown; days with deeper stacks get a `+N more` chip. Each bar exposes a
 `part="event-bar"` for styling and dispatches `calendar-event-click` when
 clicked.
+
+The `+N more` chip is a control of its own: it exposes `part="more-chip"`, is
+keyboard-reachable (`role="button"`, Enter/Space), and dispatches
+`calendar-more-click` with the day it belongs to and how many events are
+hidden there. Its click never falls through to day selection, so opening a
+day view does not change the selected date:
+
+```typescript
+calendar.addEventListener('calendar-more-click', (e) => {
+  // e.detail.date  -> the day whose events overflowed
+  // e.detail.count -> how many events are hidden on that day
+  showDayAgenda(e.detail.date, calendar.getEventsForDate(e.detail.date));
+});
+```
+
+```css
+snice-calendar::part(more-chip) { color: #2563eb; }
+```
 
 Bars are styleable per event: `color` sets the background, `avatar` renders a
 small `<snice-avatar>` at the start of each bar (`part="event-avatar"`) — an
