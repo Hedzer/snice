@@ -456,7 +456,6 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       cell.querySelector('.calendar__more')?.remove();
       cell.style.removeProperty('--calendar-week-lanes');
       cell.style.removeProperty('--calendar-week-more');
-      cell.classList.remove('calendar__day--stacked');
     });
 
     if (!this.events || this.events.length === 0) return;
@@ -639,9 +638,6 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         if (!cell) continue;
         cell.style.setProperty('--calendar-week-lanes', String(weekLaneCounts[week]));
         if (weekHasMore) cell.style.setProperty('--calendar-week-more', '1rem');
-        // Stacked rows size by their reservation; aspect-ratio would
-        // transfer the height into a min-width and overflow the column.
-        cell.classList.add('calendar__day--stacked');
       }
     }
   }

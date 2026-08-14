@@ -77,13 +77,14 @@
 }
 
 .calendar__day {
-  aspect-ratio: 1;
-  /* Rows grow with their event-lane stack so stripes never spill out:
-     day-number strip + lanes + optional "+N more" chip. min-width: 0 stops
-     aspect-ratio from transferring that min-height into a min-width that
-     would overflow the column track. */
+  /* Cells stretch to their grid row, and the row is as tall as the largest
+     cell min-height — so every cell in a week row is identical and rows
+     tile without gaps. The reservation grows with the week's event-lane
+     stack (day-number strip + lanes + optional "+N more" chip). NEVER size
+     cells with aspect-ratio: it transfers heights into min-widths and
+     desynchronizes cell heights within a row. */
   min-width: 0;
-  min-height: max(3rem, calc(2.125rem
+  min-height: max(4.25rem, calc(2.125rem
     + var(--calendar-week-lanes, 0) * 1.375rem
     + var(--calendar-week-more, 0rem)));
   padding: var(--snice-spacing-xs, 0.5rem);
@@ -96,12 +97,6 @@
   background: var(--snice-color-surface, rgb(255 255 255));
   color: var(--snice-color-text, rgb(23 23 23));
   overflow: hidden;
-}
-
-/* Stacked rows size by their lane reservation; aspect-ratio would transfer
-   the taller height into a min-width and overflow the column track. */
-.calendar__day--stacked {
-  aspect-ratio: auto;
 }
 
 .calendar__day:hover {
