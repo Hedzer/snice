@@ -1,3 +1,57 @@
+# [7.6.0](https://github.com/Hedzer/snice/compare/v7.5.0...v7.6.0) (2026-08-14)
+
+
+### Bug Fixes
+
+* **calendar:** size week rows uniformly via cell reservations, not aspect-ratio ([87869ef](https://github.com/Hedzer/snice/commit/87869efd6f95be63d3810d0d33d060356d3c1617))
+* **calendar:** square day cells via container-derived row minimums ([980d218](https://github.com/Hedzer/snice/commit/980d218dd28d50238870a453fc90a79e9f887b8d))
+* **cli:** handle regex literals in provenance scans ([e670e0f](https://github.com/Hedzer/snice/commit/e670e0f0121d52fb9cac3c7346335b4c98620ef7))
+* **cli:** harden route binding provenance ([d8f9581](https://github.com/Hedzer/snice/commit/d8f95816a8aec2ed25733167fb8a7f93ddc3f503))
+* **cli:** harden route provenance masking ([bfc57a5](https://github.com/Hedzer/snice/commit/bfc57a59156ecd1ac7281523ac01686f4aaa01b8))
+* **cli:** make route binding analysis sound ([46e1344](https://github.com/Hedzer/snice/commit/46e13443a64d7770fc66f9eb11f653eee02e097a))
+* **cli:** parse JSONC project configs ([54dfd09](https://github.com/Hedzer/snice/commit/54dfd0909cf7d6b809fa5fca41f42adff36b5999))
+* **cli:** prove element decorator provenance ([7c6bb2d](https://github.com/Hedzer/snice/commit/7c6bb2db10c93ad6a56f771341828587e0d525dd))
+* **cli:** resolve aliased element decorators ([730860b](https://github.com/Hedzer/snice/commit/730860b1267cdf385b19fccff66b09323e52297e))
+* **cli:** resolve nested tsconfig paths locally ([34d130d](https://github.com/Hedzer/snice/commit/34d130d658f9f3cedd8c6ab39d70cc7390438963))
+* **cli:** track regex expression contexts ([b7b6368](https://github.com/Hedzer/snice/commit/b7b63686d7d96f3658dd14f1e3715ecf094d45c6))
+* **controller:** ignore template markers during attach ([94c0dce](https://github.com/Hedzer/snice/commit/94c0dce082b5e42c0fcdad750aec831b70a6e217))
+* **events:** bind teardown dispatch generations ([6427c91](https://github.com/Hedzer/snice/commit/6427c9135acf1b5643874b5a058fa59cb137e127))
+* **events:** harden dynamic dispatch timing ([3e74b48](https://github.com/Hedzer/snice/commit/3e74b48def03b058a499c08a62ed2e93b92c61fc))
+* **events:** implement [@on](https://github.com/on) target option as delegation selector ([97c329d](https://github.com/Hedzer/snice/commit/97c329df77a9ca31b929d4b743c5b9195187470f))
+* **events:** isolate disconnect dispatch generations ([1db5b5b](https://github.com/Hedzer/snice/commit/1db5b5bac7e6fab833b3bcd0c452a6c3d9a87059))
+* **events:** make [@on](https://github.com/on) once fire exactly once across trees and key filters ([33c60d0](https://github.com/Hedzer/snice/commit/33c60d08f8067405a76d567805c8f2b66b16fe54))
+* **events:** restore native lifecycle receivers ([568aeab](https://github.com/Hedzer/snice/commit/568aeab7518bd071608ae9d34fea010fbe0da427))
+* **rendering:** identify hosts in template errors ([16e4c09](https://github.com/Hedzer/snice/commit/16e4c0964c91868ecc280f8e8b60aa13c31a0b2c))
+* **rendering:** isolate template error identity ([63bd492](https://github.com/Hedzer/snice/commit/63bd49208f1f2d8f08f760b1b7d0b863aef0e122))
+* **rendering:** make host identity collisions ambiguous ([a2f7851](https://github.com/Hedzer/snice/commit/a2f78515cff874bba038d499b4b04ae9c5171823))
+* **rendering:** preserve registered clone bindings ([e479054](https://github.com/Hedzer/snice/commit/e479054f1e0e75c998caa988423823d0af622799))
+* **rendering:** register host error identity weakly ([f4c7135](https://github.com/Hedzer/snice/commit/f4c71357163ea0bdfb7f884c38c7353f07adc272))
+* **rendering:** resolve host registry realm ([39bb919](https://github.com/Hedzer/snice/commit/39bb919960df07ef23fdd9c58a079443a5ec6e17))
+* **rendering:** respect scoped element registries ([716d431](https://github.com/Hedzer/snice/commit/716d4310ba9334ff830a62adcb331abccc910bfe))
+* **rendering:** trust realm DOM descriptors ([935b32d](https://github.com/Hedzer/snice/commit/935b32d7deb37f62702408cec65ac65f3d117371))
+* **router:** preserve empty query parameters ([996fbac](https://github.com/Hedzer/snice/commit/996fbacf917bdc1b562da82a3c3e37e4bac31f2b))
+* **select:** gate disabled remote input ([dea1e57](https://github.com/Hedzer/snice/commit/dea1e570ebee0082e529474154557a7f05b49e92))
+* **switch:** size the track to its state labels and tie thumb travel to track width (SNICE-168) ([84a0a9a](https://github.com/Hedzer/snice/commit/84a0a9a5d1e67b7cc136e41a587c14932ef6c35f))
+* **table:** apply valueGetter when rendering body cells ([723c6f1](https://github.com/Hedzer/snice/commit/723c6f1d71a93495664b0a5ef5c3368829409389))
+* **testing:** exclude gitignored .research checkouts from vitest globs ([78de286](https://github.com/Hedzer/snice/commit/78de286003d7883100fd2b68d86ce07ed2c88814))
+
+
+### Features
+
+* **analyzer:** flag unguarded context loads ([d2f37c2](https://github.com/Hedzer/snice/commit/d2f37c2461cc21810d0811107a2dede4320401af))
+* **calendar:** cell-sizing option for square or stretch day cells ([5587017](https://github.com/Hedzer/snice/commit/55870170f6cc2a87197706df0b452f815e94eaba))
+* **calendar:** no-day-select display-only mode ([25d05f3](https://github.com/Hedzer/snice/commit/25d05f37222a17c152bd1b89021c3a9ed19c7711))
+* **calendar:** per-event click popovers with lazy request-driven content ([e4d26a6](https://github.com/Hedzer/snice/commit/e4d26a63097ce6be4d07fd8129bd08df0290a8ac))
+* **calendar:** stripe events continuously with lanes, avatars, and lazy tooltips ([e62bc44](https://github.com/Hedzer/snice/commit/e62bc44a0bcb88c92cdb6321561dbba5d5c822bb))
+* **cli:** validate route parameter bindings ([9eaec11](https://github.com/Hedzer/snice/commit/9eaec11d6b5b98ebc801f8531a73f9f1d5c3bc57))
+* **events:** add light/shadow tree toggles to [@on](https://github.com/on) ([2b5d0dd](https://github.com/Hedzer/snice/commit/2b5d0dd74d30c89ec2134d02062ff444ac21cce6))
+* **events:** support per-instance timing resolvers ([0c0a02c](https://github.com/Hedzer/snice/commit/0c0a02c9bd761e9e32c6c6687f817903b1efb7f3))
+
+
+### Performance Improvements
+
+* **build:** parallelize the CDN bundle build with cached worker threads ([b04ffcc](https://github.com/Hedzer/snice/commit/b04ffcc8eb57bdf8f9dcd5dd2d82379578e7a493))
+
 ## [7.5.1](https://github.com/Hedzer/snice/compare/v7.5.0...v7.5.1) (2026-08-07)
 
 
