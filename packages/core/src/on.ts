@@ -15,6 +15,9 @@ export type { OnOptions } from './types/on-options';
 
 const ON_HANDLERS = getSymbol('on-handlers');
 
+// Per-decoration-site counter — see the registration identity note in `on()`.
+let registrationCount = 0;
+
 /**
  * @on decorator for listening to events
  *
@@ -81,19 +84,45 @@ export function on(
     selector = opts.target;
   }
 
+  const eventNames = Array.isArray(eventName) ? eventName : [eventName];
+
+  // Registration identity — derived from EVERY decorator argument, so no
+  // option can be forgotten here and silently collapse two distinct stacked
+  // @on decorators into one (that is how { debounce: 300 } stacked on a plain
+  // @on for the same event used to lose one of its two registrations).
+  // Options are serialized generically (sorted, so literal key order doesn't
+  // matter); values that can't be compared by value — an EventTarget or a
+  // resolver function passed as `scope` — fall back to this decoration site's
+  // own id, which is stable across instances but unique per @on application.
+  const siteId = `site:${++registrationCount}`;
+  let optionSignature = '';
+  let hasOpaqueOption = false;
+  for (const key of Object.keys(opts).sort()) {
+    const value = (opts as any)[key];
+    if (value === undefined) continue;
+    if (value !== null && (typeof value === 'object' || typeof value === 'function')) {
+      hasOpaqueOption = true;
+      continue;
+    }
+    optionSignature += `${key}=${String(value)};`;
+  }
+  const argumentKey = `${eventNames.join(',')}::${selector ?? ''}::${optionSignature}${hasOpaqueOption ? `::${siteId}` : ''}`;
+
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
+    // Same decoration, same method name → same registration. A subclass that
+    // re-declares an identically decorated method must NOT add a second
+    // listener on top of the one its parent's initializer already registered.
+    const registrationKey = `${methodName}::${argumentKey}`;
+
     context.addInitializer(function(this: any) {
       const constructor = this.constructor as any;
 
-      // Dedup by registration identity (method + events + selector), NOT by
-      // method reference alone — stacked @on decorators share one method and
-      // must each register. Use hasOwnProperty so subclasses get their OWN
-      // Set instead of inheriting — otherwise parent and child share state
-      // and child registrations pollute parent (and vice versa) via the
-      // prototype chain.
-      const eventNames = Array.isArray(eventName) ? eventName : [eventName];
-      const registrationKey = `${methodName}::${eventNames.join(',')}::${selector ?? ''}::daemon:${opts.daemon ?? ''}::light:${opts.light ?? ''}::shadow:${opts.shadow ?? ''}`;
+      // Dedup by registration identity, NOT by method reference — stacked @on
+      // decorators share one method and must each register. Use hasOwnProperty
+      // so subclasses get their OWN Set instead of inheriting — otherwise
+      // parent and child share state and child registrations pollute parent
+      // (and vice versa) via the prototype chain.
 
       if (!Object.prototype.hasOwnProperty.call(constructor, ON_METHODS)) {
         constructor[ON_METHODS] = new Set();
