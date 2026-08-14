@@ -1,6 +1,9 @@
-import { element, property, styles, dispatch, ready, watch, css } from 'snice';
+import { element, property, styles, dispatch, ready, watch, css, request, dispose } from 'snice';
 import '../avatar/snice-avatar';
-import type { SniceCalendarElement, CalendarView, CalendarEvent, CalendarEventTooltip } from './snice-calendar.types';
+import type {
+  SniceCalendarElement, CalendarView, CalendarEvent, CalendarEventTooltip,
+  CalendarEventPopoverProvider,
+} from './snice-calendar.types';
 import cssContent from './snice-calendar.css?inline';
 
 @element('snice-calendar')
@@ -38,10 +41,24 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @property({ attribute: false })
   eventTooltip: CalendarEventTooltip | null = null;
 
+  @property({ attribute: false })
+  eventPopover: CalendarEventPopoverProvider | null = null;
+
   private displayDate = new Date();
   private tooltipEl!: HTMLElement;
   private tooltipToken = 0;
   private tooltipBar: HTMLElement | null = null;
+  private popoverEl!: HTMLElement;
+  private popoverToken = 0;
+  private popoverBar: HTMLElement | null = null;
+  private boundPopoverEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && this.popoverBar) this.closeEventPopover();
+  };
+  private boundPopoverOutside = (e: MouseEvent) => {
+    if (!this.popoverBar) return;
+    if (e.composedPath().includes(this.popoverEl)) return;
+    this.closeEventPopover({ returnFocus: false });
+  };
   private container!: HTMLElement;
   private header!: HTMLElement;
   private grid!: HTMLElement;
@@ -233,10 +250,101 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.tooltipEl.id = 'calendar-event-tooltip';
     this.tooltipEl.hidden = true;
 
+    // Interactive click-to-open popover for event details. One shared panel,
+    // anchored per bar; content may load lazily (provider or the
+    // calendar/event-popover request channel).
+    this.popoverEl = document.createElement('div');
+    this.popoverEl.className = 'calendar__popover';
+    this.popoverEl.setAttribute('part', 'event-popover');
+    this.popoverEl.setAttribute('role', 'dialog');
+    this.popoverEl.setAttribute('aria-label', 'Event details');
+    this.popoverEl.tabIndex = -1;
+    this.popoverEl.hidden = true;
+
     this.container.appendChild(this.header);
     this.container.appendChild(this.grid);
     this.container.appendChild(this.tooltipEl);
+    this.container.appendChild(this.popoverEl);
     shadow.appendChild(this.container);
+  }
+
+  /**
+   * Dynamic popover channel: yields `{ event }` so any
+   * `@respond('calendar/event-popover')` controller can return the content.
+   */
+  @request('calendar/event-popover')
+  private async *requestEventPopoverContent(event: CalendarEvent): any {
+    return await (yield { event });
+  }
+
+  private async openEventPopover(bar: HTMLElement, event: CalendarEvent) {
+    const token = ++this.popoverToken;
+    this.hideEventTooltip();
+
+    // Anchor + loading shell first, so slow content still feels responsive.
+    this.popoverBar = bar;
+    this.popoverEl.replaceChildren();
+    const loading = document.createElement('div');
+    loading.className = 'calendar__popover-loading';
+    loading.textContent = 'Loading…';
+    this.popoverEl.appendChild(loading);
+    this.popoverEl.hidden = false;
+    this.positionPopover(bar);
+    document.addEventListener('keydown', this.boundPopoverEscape, true);
+    document.addEventListener('mousedown', this.boundPopoverOutside, true);
+
+    let content: string | Node | undefined;
+    try {
+      if (event.popover !== true && event.popover) {
+        content = typeof event.popover === 'function' ? event.popover() : event.popover;
+      } else if (this.eventPopover) {
+        content = await this.eventPopover(event);
+      } else {
+        content = await this.requestEventPopoverContent(event);
+      }
+    } catch {
+      // No responder discovered (or the provider failed) — close quietly.
+      content = undefined;
+    }
+
+    if (token !== this.popoverToken) return; // closed (or replaced) meanwhile
+
+    if (content == null) {
+      console.warn(
+        `[snice-calendar] event "${String(event.id)}" enables a popover but no content was provided — set eventPopover, event.popover content, or a @respond('calendar/event-popover') handler.`
+      );
+      this.closeEventPopover({ returnFocus: false });
+      return;
+    }
+
+    if (typeof content === 'string') this.popoverEl.textContent = content;
+    else this.popoverEl.replaceChildren(content);
+    this.positionPopover(bar);
+    this.popoverEl.focus();
+  }
+
+  private positionPopover(bar: HTMLElement) {
+    const rect = bar.getBoundingClientRect();
+    this.popoverEl.style.left = `${Math.max(4, rect.left)}px`;
+    this.popoverEl.style.top = `${rect.bottom + 6}px`;
+  }
+
+  closeEventPopover(options: { returnFocus?: boolean } = {}): void {
+    if (!this.popoverBar) return;
+    this.popoverToken++;
+    const bar = this.popoverBar;
+    this.popoverBar = null;
+    this.popoverEl.hidden = true;
+    this.popoverEl.replaceChildren();
+    document.removeEventListener('keydown', this.boundPopoverEscape, true);
+    document.removeEventListener('mousedown', this.boundPopoverOutside, true);
+    if (options.returnFocus !== false && bar.isConnected) bar.focus();
+  }
+
+  @dispose()
+  cleanupPopover() {
+    document.removeEventListener('keydown', this.boundPopoverEscape, true);
+    document.removeEventListener('mousedown', this.boundPopoverOutside, true);
   }
 
   private async showEventTooltip(bar: HTMLElement, event: CalendarEvent) {
@@ -337,6 +445,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
    * professional calendars.
    */
   private renderEventStripes(days: Date[]) {
+    this.closeEventPopover({ returnFocus: false }); // anchors are re-created
     this.grid.querySelectorAll('.calendar__event-bar').forEach(el => el.remove());
     this.dayCells.forEach(cell => {
       cell.querySelector('.calendar__more')?.remove();
@@ -478,7 +587,27 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         } else {
           bar.title = item.event.title;
         }
-        bar.onclick = (e) => this.handleEventClick(item.event, e);
+
+        // Popover: strictly per-event opt-in — without `popover`, a click
+        // only dispatches calendar-event-click and no request is issued.
+        if (item.event.popover) {
+          bar.setAttribute('role', 'button');
+          bar.setAttribute('tabindex', '0');
+          bar.setAttribute('aria-haspopup', 'dialog');
+          bar.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              this.openEventPopover(bar, item.event);
+            }
+          };
+          bar.onclick = (e) => {
+            this.handleEventClick(item.event, e);
+            this.openEventPopover(bar, item.event);
+          };
+        } else {
+          bar.onclick = (e) => this.handleEventClick(item.event, e);
+        }
         this.grid.appendChild(bar);
       }
     }

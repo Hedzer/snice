@@ -17,6 +17,20 @@ export interface CalendarEventAvatar {
 export type CalendarEventTooltip =
   (event: CalendarEvent) => string | Node | Promise<string | Node>;
 
+/** Inline popover content for an event: text, a node, or a node factory. */
+export type CalendarEventPopoverContent = string | Node | (() => Node);
+
+/**
+ * Lazy popover content provider, called when a bar with `popover` enabled is
+ * clicked. May return text, a DOM node, or a promise of either; results that
+ * resolve after the popover closed are discarded. When no provider is set,
+ * the calendar issues a `@request('calendar/event-popover')` with
+ * `{ event }` instead, so any `@respond('calendar/event-popover')` controller
+ * can supply the content.
+ */
+export type CalendarEventPopoverProvider =
+  (event: CalendarEvent) => string | Node | Promise<string | Node>;
+
 export interface CalendarEvent {
   id: string | number;
   title: string;
@@ -33,6 +47,13 @@ export interface CalendarEvent {
   avatar?: string | CalendarEventAvatar;
   /** Static tooltip text for this event's bars. */
   tooltip?: string;
+  /**
+   * Click-to-open popover for this event's bars. Absent/false: clicking only
+   * dispatches `calendar-event-click`. `true`: content resolves dynamically
+   * (element `eventPopover` provider, else the `calendar/event-popover`
+   * request channel). String/Node/factory: inline content.
+   */
+  popover?: boolean | CalendarEventPopoverContent;
   data?: any;
 }
 
@@ -42,6 +63,13 @@ export interface SniceCalendarElement extends HTMLElement {
   events: CalendarEvent[];
   /** Lazy/rich tooltip provider for event bars; wins over `event.tooltip`. */
   eventTooltip: CalendarEventTooltip | null;
+  /**
+   * Lazy/rich popover provider for bars whose event has `popover` enabled.
+   * Wins over the `calendar/event-popover` request channel.
+   */
+  eventPopover: CalendarEventPopoverProvider | null;
+  /** Close any open event popover. */
+  closeEventPopover(): void;
   minDate: Date | string;
   maxDate: Date | string;
   disabledDates: (Date | string)[];

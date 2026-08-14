@@ -139,10 +139,19 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     const calDefault = document.getElementById('cal-default');
     calDefault.events = [
       { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7', name: 'Dana Ives' } },
-      { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon' },
-      { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a' },
+      { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon', popover: true },
+      { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a', popover: 'Ships v7.6 — changelog in #releases' },
       { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: 'assets/avatars/pravatar-40-bob.jpg?v=80938d7', name: 'Sam Reyes' } },
     ];
+    // Click-to-open popover, loaded lazily (popover: true events only).
+    calDefault.eventPopover = async (event) => {
+      await new Promise((r) => setTimeout(r, 200));
+      const card = document.createElement('div');
+      card.innerHTML = `<strong>${event.title}</strong>
+        <p style="margin:0.5rem 0">${fmt(new Date(event.start))} → ${fmt(new Date(event.end || event.start))}</p>
+        <snice-button size="small">Open agenda</snice-button>`;
+      return card;
+    };
     calDefault.eventTooltip = async (event) => {
       // Simulates fetching details on demand; may return rich DOM content.
       await new Promise((r) => setTimeout(r, 120));

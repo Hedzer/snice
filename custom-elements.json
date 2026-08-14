@@ -5149,12 +5149,46 @@
           },
           "members": [
             {
+              "kind": "method",
+              "name": "cleanupPopover",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "closeEventPopover",
+              "parameters": [
+                {
+                  "name": "options",
+                  "type": "{ returnFocus?: boolean }",
+                  "optional": true
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
               "kind": "field",
               "name": "disabledDates",
               "type": {
                 "text": "unknown[]"
               },
               "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "eventPopover",
+              "type": {
+                "text": "CalendarEventPopoverProvider | null"
+              },
+              "default": "null"
             },
             {
               "kind": "field",

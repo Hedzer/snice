@@ -204,6 +204,33 @@
   overflow: hidden;
 }
 
+.calendar__popover {
+  position: fixed;
+  z-index: var(--snice-z-floating, 1000);
+  min-width: 14rem;
+  max-width: 22rem;
+  padding: var(--snice-spacing-sm, 0.75rem);
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-radius: var(--snice-border-radius-md, 0.25rem);
+  background: var(--snice-color-surface, rgb(255 255 255));
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  line-height: 1.5;
+  box-shadow: var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+}
+
+.calendar__popover:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--snice-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1)),
+    0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.calendar__popover-loading {
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+  font-size: var(--snice-font-size-xs, 0.75rem);
+}
+
 .calendar__tooltip {
   position: fixed;
   z-index: var(--snice-z-floating, 1000);

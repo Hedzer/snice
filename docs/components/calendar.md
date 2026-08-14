@@ -41,6 +41,7 @@ interface CalendarEvent {
   className?: string;  // extra class(es) on the bars, also exposed as ::part names
   avatar?: string | CalendarEventAvatar; // string is shorthand for { src }
   tooltip?: string;    // static tooltip text for the bars
+  popover?: boolean | string | Node | (() => Node); // click-to-open details card (see Event Popovers)
   data?: any;
 }
 
@@ -166,6 +167,59 @@ calendar.eventTooltip = async (event) => {
   return node;
 };
 ```
+
+### Event Popovers
+
+Tooltips are for glancing; popovers are for interacting. An event that sets
+`popover` opens a click-anchored details card (`role="dialog"`,
+`part="event-popover"`) that holds focus, and closes on Escape (focus returns
+to the bar) or an outside click. `calendar-event-click` still dispatches.
+Popovers are **strictly per-event opt-in** — events without `popover` never
+open a card and never issue a request.
+
+Content resolves in this order:
+
+1. **Inline** — `popover` is a string, a Node, or a Node factory.
+2. **Provider** — `popover: true` and the element's `eventPopover` callback:
+   `(event) => string | Node | Promise<string | Node>`. A loading state shows
+   while a promise is pending; results arriving after close are discarded.
+3. **Request channel** — `popover: true` with no provider issues
+   `@request('calendar/event-popover')` with `{ event }`; any
+   `@respond('calendar/event-popover')` controller can return the content.
+   With no responder either, the card closes and a dev warning is logged.
+
+```typescript
+// Inline
+calendar.events = [
+  { id: 1, title: 'Standup', start: '2024-06-18', popover: 'Room 4, 10:00' }
+];
+
+// Lazy provider
+calendar.events = [{ id: 2, title: 'Conf', start: '2024-06-20', popover: true }];
+calendar.eventPopover = async (event) => detailsCard(await fetchEvent(event.id));
+
+// Request channel — the calendar stays generic, a controller owns the data
+@controller('agenda-controller')
+class AgendaController implements IController {
+  element: HTMLElement | null = null;
+  private ctx!: Context;
+  async attach() {}
+  async detach() {}
+
+  @context()
+  receiveContext(ctx: Context) { this.ctx = ctx; }
+
+  @respond('calendar/event-popover')
+  async details({ event }: { event: CalendarEvent }) {
+    const data = await this.ctx.fetch(`/api/events/${event.id}`).then(r => r.json());
+    return renderDetailsCard(data);
+  }
+}
+```
+
+Bars with a popover are keyboard-operable (`role="button"`, `tabindex="0"`,
+Enter/Space opens). Close programmatically with
+`calendar.closeEventPopover()`.
 
 ### Date Restrictions
 

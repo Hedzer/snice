@@ -63,6 +63,14 @@ calendar.events = [
 // Tooltips: event.tooltip?: string (static), or on the element:
 //   eventTooltip: (event) => string | Node | Promise<string | Node>  // lazy/rich; wins over event.tooltip
 // Stale async results discarded on pointer-leave. Overlay part="event-tooltip".
+// Popovers (click-to-open, interactive; STRICT per-event opt-in):
+//   event.popover?: boolean | string | Node | (() => Node)
+//   Resolution: inline content -> element eventPopover(event) => string|Node|Promise
+//   -> @request('calendar/event-popover') {event} (answer with @respond) -> warn+close.
+//   role="dialog" part="event-popover"; Escape/outside-click dismiss, focus returns
+//   to bar; loading state while pending; stale results discarded.
+//   Bars with popover: role="button" tabindex=0, Enter/Space opens.
+//   calendar-event-click still fires. closeEventPopover() closes programmatically.
 
 calendar.addEventListener('calendar-change', (e) => {
   console.log('Selected:', e.detail.value);

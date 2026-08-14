@@ -2477,6 +2477,11 @@ export const ANALYZER_CONTRACTS = {
           "attribute": null,
           "structured": true
         },
+        "eventPopover": {
+          "type": "CalendarEventPopoverProvider | null",
+          "attribute": null,
+          "structured": false
+        },
         "events": {
           "type": "unknown[]",
           "attribute": null,
@@ -22606,7 +22611,8 @@ export const ANALYZER_CONTRACTS = {
           "showWeekNumbers",
           "firstDayOfWeek",
           "locale",
-          "eventTooltip"
+          "eventTooltip",
+          "eventPopover"
         ],
         "events": {
           "calendar-change": "onCalendarChange",
@@ -22624,6 +22630,7 @@ export const ANALYZER_CONTRACTS = {
           "firstDayOfWeek",
           "locale",
           "eventTooltip",
+          "eventPopover",
           "onCalendarChange",
           "onCalendarEventClick"
         ],

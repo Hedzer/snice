@@ -121,6 +121,7 @@ export const WithEvents: Story = {
       {
         id: 6, title: 'On call', start: addDays(today, 12), end: addDays(today, 14), color: '#7c3aed',
         avatar: { name: 'Sam Reyes' }, tooltip: 'Pager rotation — reachable on #incidents',
+        popover: 'Rotation: Sam Reyes → Dana Ives. Escalation: #incidents.',
       },
     ];
     wrap.appendChild(el);
