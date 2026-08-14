@@ -356,7 +356,7 @@ ${packageJson.license}
  * Discover all available components in the components directory
  * @returns {string[]} Array of component names
  */
-function discoverComponents() {
+export function discoverComponents() {
   const componentsDir = 'packages/components/src';
   const components = [];
   const wip = getWipComponents();

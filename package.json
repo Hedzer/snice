@@ -117,7 +117,7 @@
     "build:distribution": "rm -rf dist && npm run generate:metadata && rollup -c && npm run build:types && node tooling/build/embed-sourcemap-sources.mjs dist",
     "build:types": "tsc --project packages/components/tsconfig.json --emitDeclarationOnly && cp packages/components/custom-elements.d.ts dist/components/custom-elements.d.ts",
     "prebuild:cdn": "test -f dist/index.esm.js || npm run build:distribution",
-    "build:cdn": "rollup -c rollup.config.cdn.js && node tooling/website/sync-component-assets.js && node tooling/website/update-cdn-sizes.js",
+    "build:cdn": "node tooling/build/parallel-cdn-build.mjs && node tooling/website/sync-component-assets.js && node tooling/website/update-cdn-sizes.js",
     "prebuild:react": "test -f dist/index.d.ts || npm run build:distribution",
     "build:react": "npm run generate:react-adapters && tsc --project adapters/react/tsconfig.json && node tooling/build/embed-sourcemap-sources.mjs adapters/react",
     "build:testing": "rollup -c rollup.config.test.js && node tooling/build/embed-sourcemap-sources.mjs dist",
