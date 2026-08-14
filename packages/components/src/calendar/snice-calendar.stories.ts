@@ -164,6 +164,19 @@ export const NoDaySelectDisplayOnly: Story = {
   },
 };
 
+// h2: cell-sizing: square (default) vs stretch
+export const CellSizingSquareVsStretch: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:1rem;';
+    const square = document.createElement('snice-calendar');
+    const stretch = document.createElement('snice-calendar');
+    stretch.setAttribute('cell-sizing', 'stretch');
+    wrap.append(square, stretch);
+    return wrap;
+  },
+};
+
 // h2: With disabled dates
 export const WithDisabledDates: Story = {
   render: () => {

@@ -63,7 +63,9 @@ test.describe('Snice Calendar grid geometry', () => {
 
         // Rows without an event-lane reservation must be square: cell height
         // equals the column width (within a border-rounding tolerance).
+        // cell-sizing="stretch" calendars opt out of the square minimum.
         rows.forEach((row, w) => {
+          if (cal.cellSizing === 'stretch') return;
           if (row.some(c => c.style.getPropertyValue('--calendar-week-lanes'))) return;
           const r = row[0].getBoundingClientRect();
           if (Math.abs(r.height - r.width) > 2) {

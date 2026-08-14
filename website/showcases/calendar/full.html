@@ -99,6 +99,20 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   </section>
 
   <section>
+    <h2>cell-sizing: square (default) vs stretch</h2>
+    <div class="side-by-side">
+      <div>
+        <h2>cell-sizing=square</h2>
+        <snice-calendar></snice-calendar>
+      </div>
+      <div>
+        <h2>cell-sizing=stretch</h2>
+        <snice-calendar cell-sizing="stretch"></snice-calendar>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <h2>With disabled dates</h2>
     <snice-calendar id="cal-disabled"></snice-calendar>
   </section>

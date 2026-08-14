@@ -967,6 +967,18 @@
       "description": "SniceCalendar custom element.",
       "attributes": [
         {
+          "name": "cell-sizing",
+          "description": "cellSizing: 'square' | 'stretch'",
+          "values": [
+            {
+              "name": "square"
+            },
+            {
+              "name": "stretch"
+            }
+          ]
+        },
+        {
           "name": "first-day-of-week",
           "description": "firstDayOfWeek: number"
         },

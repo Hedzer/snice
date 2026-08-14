@@ -26,6 +26,7 @@ Display and select dates with event support, date restrictions, and locale-aware
 | `disabledDates` | `(Date \| string)[]` | `[]` | Disabled dates (JS-only; no attribute) |
 | `highlightToday` (attr: `highlight-today`) | `boolean` | `true` | Highlight today's date |
 | `noDaySelect` (attr: `no-day-select`) | `boolean` | `false` | Display-only mode: day clicks neither select/highlight nor fire `calendar-change`; event bars stay interactive |
+| `cellSizing` (attr: `cell-sizing`) | `'square' \| 'stretch'` | `'square'` | `square` keeps day cells as tall as the column is wide; `stretch` lets rows collapse to their content and event-lane reservation |
 | `showWeekNumbers` (attr: `show-week-numbers`) | `boolean` | `false` | Show week numbers |
 | `firstDayOfWeek` (attr: `first-day-of-week`) | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 | `locale` | `string` | `'en-US'` | Locale for formatting |

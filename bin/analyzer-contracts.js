@@ -2426,6 +2426,14 @@ export const ANALYZER_CONTRACTS = {
       "sourceModule": "dist/components/calendar/snice-calendar.js",
       "family": "calendar",
       "attributes": {
+        "cell-sizing": {
+          "property": "cellSizing",
+          "type": "'square' | 'stretch'",
+          "literals": [
+            "square",
+            "stretch"
+          ]
+        },
         "first-day-of-week": {
           "property": "firstDayOfWeek",
           "type": "number",
@@ -2477,6 +2485,11 @@ export const ANALYZER_CONTRACTS = {
         }
       },
       "properties": {
+        "cellSizing": {
+          "type": "'square' | 'stretch'",
+          "attribute": "cell-sizing",
+          "structured": false
+        },
         "disabledDates": {
           "type": "unknown[]",
           "attribute": null,
@@ -22622,6 +22635,7 @@ export const ANALYZER_CONTRACTS = {
           "firstDayOfWeek",
           "locale",
           "noDaySelect",
+          "cellSizing",
           "eventTooltip",
           "eventPopover"
         ],
@@ -22641,6 +22655,7 @@ export const ANALYZER_CONTRACTS = {
           "firstDayOfWeek",
           "locale",
           "noDaySelect",
+          "cellSizing",
           "eventTooltip",
           "eventPopover",
           "onCalendarChange",

@@ -116,6 +116,14 @@
   border-left: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
+/* cell-sizing="stretch": rows collapse to content + event-lane reservation
+   instead of the square column-width minimum. */
+.calendar__day--stretch {
+  min-height: max(3rem, calc(2.125rem
+    + var(--calendar-week-lanes, 0) * 1.375rem
+    + var(--calendar-week-more, 0rem)));
+}
+
 /* no-day-select: display-only cells — no click affordance, no hover state */
 .calendar__day--static {
   cursor: default;

@@ -83,6 +83,12 @@ export interface SniceCalendarElement extends HTMLElement {
    * Attribute: `no-day-select`.
    */
   noDaySelect: boolean;
+  /**
+   * Day-cell sizing: 'square' keeps cells as tall as the column is wide;
+   * 'stretch' lets rows collapse to their content and event-lane
+   * reservation. Attribute: `cell-sizing`.
+   */
+  cellSizing: 'square' | 'stretch';
 
   goToToday(): void;
   goToDate(date: Date | string): void;

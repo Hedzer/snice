@@ -41,6 +41,9 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @property({ type: Boolean, attribute: 'no-day-select' })
   noDaySelect = false;
 
+  @property({ attribute: 'cell-sizing' })
+  cellSizing: 'square' | 'stretch' = 'square';
+
   @property({ attribute: false })
   eventTooltip: CalendarEventTooltip | null = null;
 
@@ -418,6 +421,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       if (isSelected) cell.classList.add('calendar__day--selected');
       if (isDisabled) cell.classList.add('calendar__day--disabled');
       if (this.noDaySelect) cell.classList.add('calendar__day--static');
+      if (this.cellSizing === 'stretch') cell.classList.add('calendar__day--stretch');
 
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-selected', isSelected ? 'true' : 'false');
@@ -803,6 +807,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @watch('events')
   @watch('eventTooltip')
   @watch('noDaySelect')
+  @watch('cellSizing')
   handlePropertyChange() {
     if (this.grid) {
       this.updateView();

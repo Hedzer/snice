@@ -5149,6 +5149,14 @@
           },
           "members": [
             {
+              "kind": "field",
+              "name": "cellSizing",
+              "type": {
+                "text": "'square' | 'stretch'"
+              },
+              "default": "'square'"
+            },
+            {
               "kind": "method",
               "name": "cleanupPopover",
               "parameters": [],
@@ -5422,6 +5430,14 @@
             }
           ],
           "attributes": [
+            {
+              "name": "cell-sizing",
+              "fieldName": "cellSizing",
+              "type": {
+                "text": "'square' | 'stretch'"
+              },
+              "reflects": true
+            },
             {
               "name": "first-day-of-week",
               "fieldName": "firstDayOfWeek",
