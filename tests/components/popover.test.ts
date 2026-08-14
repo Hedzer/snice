@@ -52,6 +52,9 @@ describe('snice-popover', () => {
       expect(popover.open).toBe(false);
     });
 
+    // Slotted-trigger clicks are covered in popover-slotted-jsdom.test.ts;
+    // happy-dom cannot propagate events across slot boundaries.
+
     it.each([['Enter'], [' ']])('toggles on %s keydown', async (key) => {
       popover = await createComponent<SnicePopoverElement>('snice-popover');
       const trigger = queryShadow(popover as HTMLElement, '.popover__trigger') as HTMLElement;
@@ -101,6 +104,52 @@ describe('snice-popover', () => {
       document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
       await wait(50);
       expect(popover.open).toBe(true);
+    });
+  });
+
+  describe('panel interaction (trigger target delegation)', () => {
+    it('does not toggle when clicking inside the open panel', async () => {
+      popover = await createComponent<SnicePopoverElement>('snice-popover');
+      popover.show();
+      await wait(50);
+      expect(popover.open).toBe(true);
+
+      const content = queryShadow(popover as HTMLElement, '.popover__content') as HTMLElement;
+      content.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(50);
+      expect(popover.open).toBe(true);
+    });
+
+    it('does not toggle on Enter keydown inside the panel', async () => {
+      popover = await createComponent<SnicePopoverElement>('snice-popover');
+      popover.show();
+      await wait(50);
+
+      const content = queryShadow(popover as HTMLElement, '.popover__content') as HTMLElement;
+      content.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await wait(50);
+      expect(popover.open).toBe(true);
+    });
+
+    it('stays closed when a slotted button calls hide()', async () => {
+      popover = await createComponent<SnicePopoverElement>('snice-popover');
+      const applyBtn = document.createElement('button');
+      applyBtn.addEventListener('click', () => popover.hide());
+      (popover as HTMLElement).appendChild(applyBtn);
+
+      popover.show();
+      await wait(50);
+      expect(popover.open).toBe(true);
+
+      const states: boolean[] = [];
+      (popover as HTMLElement).addEventListener('popover-open', () => states.push(true));
+      (popover as HTMLElement).addEventListener('popover-close', () => states.push(false));
+
+      applyBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+      await wait(50);
+
+      expect(popover.open).toBe(false);
+      expect(states).toEqual([false]);
     });
   });
 

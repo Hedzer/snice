@@ -75,6 +75,12 @@ export function on(
     opts = options;
   }
 
+  // `target` is the options-object spelling of the positional selector; fold it
+  // into the same delegation path. The positional argument wins when both are given.
+  if (!selector && opts.target) {
+    selector = opts.target;
+  }
+
   return function (originalMethod: any, context: ClassMethodDecoratorContext) {
     const methodName = context.name as string;
     context.addInitializer(function(this: any) {
@@ -280,12 +286,36 @@ export function setupEventHandlers(instance: any, targetElement: EventTarget) {
         ? scopedTarget!
         : ((targetElement as any).shadowRoot || targetElement);
 
+      // Delegation matches only elements visible in the listener's own tree
+      // scope: a shadow-root listener matches its shadow tree, anything else
+      // matches its containing document/root. This mirrors native retargeting
+      // (child-component internals never match) while still matching a shadow
+      // wrapper when the click lands on light-DOM content slotted into it —
+      // `target.closest()` alone cannot cross that slot boundary.
+      const treeScope: Node = eventRoot instanceof ShadowRoot
+        ? eventRoot
+        : ((eventRoot as Node).getRootNode?.() ?? document);
+
+      const findDelegateMatch = (event: Event): Element | null => {
+        if (typeof event.composedPath !== 'function') {
+          // Fallback for environments without composedPath: ancestor walk.
+          const target = event.target as HTMLElement;
+          return (target.matches && target.matches(handler.selector) && target)
+            || (target.closest && target.closest(handler.selector))
+            || null;
+        }
+        for (const node of event.composedPath()) {
+          const el = node as Element;
+          if (el === eventRoot) break;
+          if (el.nodeType !== 1) continue;
+          if (el.getRootNode() !== treeScope) continue;
+          if (el.matches(handler.selector)) return el;
+        }
+        return null;
+      };
+
       const delegatedHandler = (event: Event) => {
-        const target = event.target as HTMLElement;
-        const matchingElement =
-          (target.matches && target.matches(handler.selector) && target) ||
-          (target.closest && target.closest(handler.selector)) ||
-          null;
+        const matchingElement = findDelegateMatch(event);
 
         if (!matchingElement) return;
 
