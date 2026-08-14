@@ -44,6 +44,26 @@ test.describe('circle button icon centering', () => {
     expect(Math.abs(delta.dy)).toBeLessThanOrEqual(1.5);
   });
 
+  test('registry icon on a circle button stays inside the circle', async ({ page }) => {
+    // `.button--circle .icon { width: auto }` (added so text glyphs center)
+    // must not leave a registry SVG unconstrained: auto parent + svg
+    // width:100% is circular, and the SVG falls back to its 300px replaced
+    // default — a giant icon escaping the button.
+    const box = await page.evaluate(() => {
+      const host = document.querySelector('#registry-icon')!;
+      const button = host.shadowRoot!.querySelector('button')!;
+      const svg = host.shadowRoot!.querySelector('.icon svg')!;
+      const circle = button.getBoundingClientRect();
+      const icon = svg.getBoundingClientRect();
+      return { circle, icon };
+    });
+
+    expect(box.icon.width).toBeGreaterThan(10);
+    expect(box.icon.height).toBeGreaterThan(10);
+    expect(box.icon.width).toBeLessThanOrEqual(box.circle.width);
+    expect(box.icon.height).toBeLessThanOrEqual(box.circle.height);
+  });
+
   test('viewBox-only SVG icon still renders at a visible size', async ({ page }) => {
     const box = await page.evaluate(() => {
       const svg = document.querySelector('#svg-icon svg')!;

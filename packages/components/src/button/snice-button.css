@@ -441,6 +441,14 @@
   height: auto;
 }
 
+/* width: auto above lets text glyphs center, but a registry SVG inside an
+   auto-sized parent has no box to fill (svg { width: 100% } is circular) and
+   falls back to its 300px replaced default — keep SVGs glyph-sized. */
+.button--circle .icon svg {
+  width: 1.25em;
+  height: 1.25em;
+}
+
 .button--circle .icon-slot ::slotted(*) {
   font-size: 1.25em;
   line-height: 1;
