@@ -48,6 +48,7 @@ export default defineConfig({
       'rollup.config.test.js',
       '.debug',
       '.local',
+      '.research',
       '.claude/worktrees'
     ],
   },
