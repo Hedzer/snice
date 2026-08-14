@@ -46024,6 +46024,16 @@
             },
             {
               "kind": "method",
+              "name": "handleFrameResize",
+              "parameters": [],
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "handleGroupByChange",
               "parameters": [],
               "return": {
