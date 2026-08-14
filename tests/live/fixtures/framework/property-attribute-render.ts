@@ -1,4 +1,4 @@
-import { element, html, property, render } from '../../../packages/core/src/index';
+import { element, html, property, render } from '/packages/core/src/index';
 
 @element('test-attr')
 class TestAttributeElement extends HTMLElement {

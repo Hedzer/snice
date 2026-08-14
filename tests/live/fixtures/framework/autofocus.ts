@@ -1,4 +1,4 @@
-import { element, html, query, render } from '../../../packages/core/src/index';
+import { element, html, query, render } from '/packages/core/src/index';
 
 function autofocusTemplate(kind: string) {
   return html`

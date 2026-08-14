@@ -1,4 +1,4 @@
-import { Router, html, render } from '../../../packages/core/src/index';
+import { Router, html, render } from '/packages/core/src/index';
 
 const requestedType = new URL(location.href).searchParams.get('type');
 const type = requestedType === 'pushstate' ? 'pushstate' : 'hash';

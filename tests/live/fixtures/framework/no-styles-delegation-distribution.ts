@@ -1,4 +1,4 @@
-import { element, html, on, render } from '../../../dist/index.esm.js';
+import { element, html, on, render } from '/dist/index.esm.js';
 
 @element('no-styles-delegation-distribution')
 export class NoStylesDelegationDistribution extends HTMLElement {

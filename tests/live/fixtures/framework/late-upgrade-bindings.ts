@@ -1,4 +1,4 @@
-import { element, html, property, render } from '../../../packages/core/src/index';
+import { element, html, property, render } from '/packages/core/src/index';
 
 export const directValue = { source: 'direct' };
 export const spreadValue = { source: 'spread' };

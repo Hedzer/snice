@@ -1,4 +1,4 @@
-import { element, html, property, render } from '../../../dist/index.esm.js';
+import { element, html, property, render } from '/dist/index.esm.js';
 
 export const scopedReactiveDirectRole = { applicationRole: 'dist-scoped-reactive-direct' };
 export const scopedReactiveSpreadHidden = { applicationRole: 'dist-scoped-reactive-spread' };

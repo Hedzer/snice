@@ -1,4 +1,4 @@
-import { SniceElement, element, html, repeat, state, svg } from '../../../dist/index.esm.js';
+import { SniceElement, element, html, repeat, state, svg } from '/dist/index.esm.js';
 
 @element('test-built-customer-declarative')
 class BuiltCustomerDeclarative extends SniceElement {

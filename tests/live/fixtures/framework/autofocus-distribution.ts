@@ -1,4 +1,4 @@
-import { element, html, query, render } from '../../../dist/index.esm.js';
+import { element, html, query, render } from '/dist/index.esm.js';
 
 function autofocusTemplate(kind: string) {
   return html`

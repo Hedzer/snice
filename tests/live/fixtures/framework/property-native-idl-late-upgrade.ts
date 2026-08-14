@@ -1,4 +1,4 @@
-import { element, html, property, render } from '../../../packages/core/src/index';
+import { element, html, property, render } from '/packages/core/src/index';
 
 export const nativeIdlBoundRole = { applicationRole: 'results' };
 export const registeredNativeIdlDirectRole = { applicationRole: 'registered-direct' };

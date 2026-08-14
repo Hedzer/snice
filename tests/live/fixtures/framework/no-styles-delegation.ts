@@ -1,4 +1,4 @@
-import { element, html, on, render } from '../../../packages/core/src/index';
+import { element, html, on, render } from '/packages/core/src/index';
 
 @element('no-styles-delegation-source')
 export class NoStylesDelegationSource extends HTMLElement {

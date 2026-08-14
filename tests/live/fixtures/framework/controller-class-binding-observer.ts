@@ -6,7 +6,7 @@ import {
   property,
   render,
   useNativeElementControllers
-} from '../../../packages/core/src/index';
+} from '/packages/core/src/index';
 
 export const alphaName = 'live-class-controller-alpha';
 export const betaName = 'live-class-controller-beta';

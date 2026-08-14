@@ -14,7 +14,7 @@
       const imageData = context.getImageData(0, 0, 64, 64);
       const append = message => { log.textContent += `${message}\n`; };
       append('Creating worker');
-      const worker = new Worker(new URL('../../../packages/components/src/qr-reader/qr-worker.ts', import.meta.url), { type: 'module' });
+      const worker = new Worker(new URL('/packages/components/src/qr-reader/qr-worker.ts', import.meta.url), { type: 'module' });
       worker.addEventListener('error', event => append(`✗ Worker error: ${event.message}`));
       worker.addEventListener('message', () => append('Test Summary'));
       append('Sending image data to worker');
