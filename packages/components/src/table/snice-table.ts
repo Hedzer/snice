@@ -1,4 +1,4 @@
-import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose, on } from 'snice';
+import { element, property, query, request, dispatch, watch, render, styles, html, css, ready, dispose, on, observe } from 'snice';
 import '../input/snice-input';
 import '../select/snice-select';
 import '../button/snice-button';
@@ -539,6 +539,27 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
       /* Remove bottom border on last body row */
       tbody tr:last-child td {
         border-bottom: none;
+      }
+
+      /* Height fill: when the host is taller than its rows, an inert filler
+         row (cloned from the last data row, so column widths and pinning
+         track the table engine) keeps the column grid running to the bottom
+         edge instead of the borders cutting off where the rows end. */
+      tbody tr.table-fill-row {
+        pointer-events: none;
+      }
+
+      tbody tr.table-fill-row td {
+        border-bottom: none;
+        padding: 0;
+      }
+
+      :host([striped]) tbody tr.table-fill-row {
+        background: transparent;
+      }
+
+      :host([hoverable]) tbody tr.table-fill-row:hover {
+        background: transparent;
       }
 
       th {
@@ -1572,6 +1593,13 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     }
 
     container.appendChild(controlsDiv);
+  }
+
+  // Re-derive the fill row whenever the frame's box changes (host resized,
+  // fullscreen toggled) — the leftover space below the rows changes with it.
+  @observe('resize', '.table-frame')
+  handleFrameResize() {
+    this.updateFillRow();
   }
 
   @ready()
@@ -2631,6 +2659,45 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
     if (this.pagination) {
       this.renderPagination();
     }
+
+    this.updateFillRow();
+  }
+
+  /**
+   * When the host is taller than its rows, append an inert filler row so the
+   * column grid runs to the bottom edge of the frame. Cloned from the last
+   * data row, so column widths, pinning, and alignment track the table
+   * engine natively. Removed entirely when content fills (or overflows) the
+   * frame, restoring the plain last-row styling.
+   */
+  private updateFillRow() {
+    const frame = this.shadowRoot?.querySelector('.table-frame') as HTMLElement | null;
+    const tableEl = frame?.querySelector('table') as HTMLElement | null;
+    const tbody = tableEl?.querySelector('tbody');
+    if (!frame || !tableEl || !tbody) return;
+
+    tbody.querySelector('tr.table-fill-row')?.remove();
+    if (this.list && this.listRenderer) return;
+
+    const rows = tbody.querySelectorAll('tr[data-index]');
+    const lastRow = rows[rows.length - 1] as HTMLElement | undefined;
+    if (!lastRow) return;
+
+    const leftover = Math.floor(frame.clientHeight - tableEl.offsetHeight);
+    if (leftover <= 1) return;
+
+    const fill = lastRow.cloneNode(true) as HTMLElement;
+    fill.className = 'table-fill-row';
+    for (const attr of ['data-index', 'data-selected', 'role', 'aria-rowindex', 'aria-selected', 'tabindex', 'id']) {
+      fill.removeAttribute(attr);
+    }
+    fill.setAttribute('aria-hidden', 'true');
+    fill.querySelectorAll('td').forEach(td => {
+      td.replaceChildren();
+      for (const attr of ['role', 'aria-colindex', 'tabindex', 'aria-selected']) td.removeAttribute(attr);
+    });
+    fill.style.height = `${leftover}px`;
+    tbody.appendChild(fill);
   }
 
   // ── Task B: render-path reconciler ──────────────────────────────────────

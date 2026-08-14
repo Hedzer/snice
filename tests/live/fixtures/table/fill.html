@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+  </head>
+  <body>
+    <!-- Explicit height, few rows: the grid must fill the whole box. -->
+    <snice-table id="sized" style="height: 14rem"></snice-table>
+
+    <!-- Explicit height, many rows: content overflows, no fill row. -->
+    <snice-table id="overflow" style="height: 10rem"></snice-table>
+
+    <script type="module">
+      import '/packages/components/src/table/snice-table.ts';
+
+      const columns = [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'role', label: 'Role', type: 'text' },
+        { key: 'salary', label: 'Salary', type: 'text' },
+      ];
+      const row = (i) => ({ name: `Person ${i}`, role: 'Engineer', salary: `$${100 + i}k` });
+
+      const sized = document.getElementById('sized');
+      sized.columns = columns;
+      sized.data = [row(1), row(2), row(3)];
+
+      const overflow = document.getElementById('overflow');
+      overflow.columns = columns;
+      overflow.data = Array.from({ length: 30 }, (_, i) => row(i));
+    </script>
+  </body>
+</html>

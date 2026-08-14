@@ -180,7 +180,7 @@ export class TableKeyboard {
     }
 
     // Body rows
-    const bodyRows = table.querySelectorAll('tbody tr:not(.virtual-spacer)');
+    const bodyRows = table.querySelectorAll('tbody tr:not(.virtual-spacer):not(.table-fill-row)');
     bodyRows.forEach((row, i) => {
       row.setAttribute('role', 'row');
       row.setAttribute('aria-rowindex', String(this.ariaRowOffset + i + 2)); // +2 for 1-based + header
