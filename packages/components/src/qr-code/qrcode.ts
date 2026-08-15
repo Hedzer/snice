@@ -10,7 +10,7 @@ interface QRCodeOptions {
   typeNumber?: number;
   colorDark?: string;
   colorLight?: string;
-  correctLevel?: ErrorCorrectionLevel;
+  correctLevel?: ErrorCorrectionLevel | number;
   useSVG?: boolean;
   dotStyle?: DotStyle;
   margin?: number;
@@ -22,8 +22,24 @@ const MODE_ALPHA_NUM = 1 << 1;
 const MODE_8BIT_BYTE = 1 << 2;
 const MODE_KANJI = 1 << 3;
 
-// Error correction level mapping
+// Error correction level mapping — the values are the QR standard's format-info
+// bits, so M is legitimately 0 and must never be treated as "unset".
 const ErrorLevel = { L: 1, M: 0, Q: 3, H: 2 };
+const ERROR_LEVEL_VALUES = [ErrorLevel.L, ErrorLevel.M, ErrorLevel.Q, ErrorLevel.H];
+
+/**
+ * Accept either a documented level letter ('L'|'M'|'Q'|'H') or an already
+ * mapped format-info value and return the format-info value. Anything
+ * unrecognised falls back to H, the safest level.
+ */
+function normalizeCorrectLevel(level: ErrorCorrectionLevel | number | undefined | null): number {
+  if (typeof level === 'string') {
+    const mapped = ErrorLevel[level as ErrorCorrectionLevel];
+    return mapped === undefined ? ErrorLevel.H : mapped;
+  }
+  if (typeof level === 'number' && ERROR_LEVEL_VALUES.includes(level)) return level;
+  return ErrorLevel.H;
+}
 
 // Galois field mathematics for error correction
 const GaloisField = (() => {
@@ -1088,7 +1104,7 @@ export class QRCode {
   }
 
   makeCode(sText: string): void {
-    const correctLevel = (this.options as any).correctLevel || ErrorLevel.H;
+    const correctLevel = normalizeCorrectLevel(this.options.correctLevel);
     this.qrCodeModel = new QRCodeModel(
       getTypeNumber(sText, correctLevel),
       correctLevel
