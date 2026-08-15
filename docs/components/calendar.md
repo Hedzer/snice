@@ -68,6 +68,7 @@ interface CalendarEventAvatar {
 | `nextDay()` | -- | `void` | Navigate to next day |
 | `getDisplayedMonth()` | -- | `{ month: number; year: number }` | Get currently displayed month |
 | `getEventsForDate()` | `date: Date \| string` | `CalendarEvent[]` | Get events for specific date |
+| `closeEventPopover()` | `options?: { returnFocus?: boolean }` | — | Closes the shared overlay — either an event popover or the `+N more` day panel |
 
 ## Events
 
@@ -75,7 +76,7 @@ interface CalendarEventAvatar {
 |-------|--------|-------------|
 | `calendar-change` | `{ value: Date, calendar: SniceCalendarElement }` | Fired when selected date changes |
 | `calendar-event-click` | `{ event: CalendarEvent, calendar: SniceCalendarElement }` | Fired when an event is clicked |
-| `calendar-more-click` | `{ date: Date, count: number, calendar: SniceCalendarElement }` | Fired when a day's `+N more` chip is clicked (or activated with Enter/Space). The day is not selected and `calendar-change` does not fire |
+| `calendar-more-click` | `{ date: Date, count: number, calendar: SniceCalendarElement }` | Fired when a day's `+N more` chip is clicked (or activated with Enter/Space). The day is not selected and `calendar-change` does not fire. **Cancelable** — calling `preventDefault()` suppresses the [built-in day panel](#the-n-more-chip-and-its-built-in-day-panel) |
 
 ## CSS Parts
 
@@ -87,6 +88,10 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `header` | The header with month title and navigation buttons |
 | `grid` | The day cells grid |
 | `more-chip` | A day's `+N more` overflow chip |
+| `more-panel-date` | The date heading inside the chip's built-in day panel |
+| `more-list` | The list of hidden events inside the chip's built-in day panel |
+| `more-item` | One hidden-event entry in that list |
+| `more-dot` | The colour dot on a hidden-event entry |
 | `week-number` | A week-number cell in the `show-week-numbers` column |
 | `week-number-header` | The empty corner cell above the week-number column |
 | `event-bar` | An event stripe (plus any `className` you set on the event) |
@@ -183,22 +188,86 @@ under 4.5rem) keep the uneven row the reservation produces. When there is no
 layout to measure at all (a headless DOM, a detached or `display: none`
 calendar) the calendar falls back to three lanes.
 
+### Sizing inside a constrained host
+
+The month fits its own host box. A host that gives the calendar less height
+than the square baseline would like does not clip the bottom weeks:
+
+- **Auto height (the default).** The week rows take the square baseline and a
+  busy row grows by its lane reservation; the host ends up as tall as that
+  comes to.
+- **A definite height with room to spare.** The six rows share the surplus and
+  the lane budget grows with them.
+- **A height that is too small** — an inline `height`, a `max-height`, an
+  `aspect-ratio`, or a sized flex/grid parent — the rows are capped at their
+  equal share of the room under the header, so all six weeks stay inside the
+  box. The lane budget follows the compressed row: events that no longer fit
+  collapse into the `+N more` chip rather than being drawn past the bottom of
+  their cell, and a row too short for even one lane shows the chip alone.
+
+Two limits are worth knowing:
+
+- The calendar can only measure **its own** box. An ancestor that clips or
+  scrolls while leaving the calendar's own height unconstrained (a fixed-height
+  wrapper with `overflow: hidden` around an auto-height calendar, or a flex item
+  without `min-height: 0`) is invisible to it — put the constraint on the
+  calendar, not around it.
+- A week row can never be shorter than its own padding and rules (~17px at the
+  default spacing). Below roughly a 200px host the rows have compressed as far
+  as they physically can and the grid overflows again rather than stacking one
+  week over the next.
+- `view="week"` and `view="day"` set their own, much taller row minimums and are
+  not capped.
+
+A month grid is a header, a weekday strip and six square-ish week rows, so its
+natural box is **taller than it is wide**. `aspect-ratio: 1` on the host is
+therefore not a neutral size hint — it asks the grid to give up about a week and
+a half of height, and everything the calendar can still show has to be squeezed
+into what is left. Constrain the width and let the height follow:
+
+```html
+<snice-calendar style="min-width: 360px; max-width: 26rem; width: 100%"></snice-calendar>
+```
+
+### The `+N more` chip and its built-in day panel
+
 The `+N more` chip is a control of its own: it exposes `part="more-chip"`, is
 keyboard-reachable (`role="button"`, Enter/Space), and dispatches
 `calendar-more-click` with the day it belongs to and how many events are
 hidden there. Its click never falls through to day selection, so opening a
-day view does not change the selected date:
+day view does not change the selected date.
+
+The chip does something useful on its own — no wiring required. Activating it
+opens the calendar's shared overlay listing exactly the events that day hid:
+
+- The panel is the same element the event popover uses (`role="dialog"`,
+  `part="event-popover"`), so it dismisses on Escape or an outside press,
+  takes focus while open, and hands focus back to the chip when it closes.
+- Its `aria-label` names the day. Inside are a date heading
+  (`part="more-panel-date"`) and a list (`part="more-list"`) of buttons
+  (`part="more-item"`), each showing the event's colour dot
+  (`part="more-dot"`) and title.
+- Clicking an entry fires `calendar-event-click`. If that event carries
+  `popover` content the same overlay drills into it; otherwise the panel
+  closes.
+
+To replace the default with your own day view, cancel the event:
 
 ```typescript
 calendar.addEventListener('calendar-more-click', (e) => {
+  e.preventDefault();          // the built-in panel does not open
   // e.detail.date  -> the day whose events overflowed
   // e.detail.count -> how many events are hidden on that day
   showDayAgenda(e.detail.date, calendar.getEventsForDate(e.detail.date));
 });
 ```
 
+Leave the event uncancelled and both happen: your listener runs and the panel
+still opens.
+
 ```css
 snice-calendar::part(more-chip) { color: #2563eb; }
+snice-calendar::part(more-item) { font-size: 0.9rem; }
 ```
 
 Bars are styleable per event: `color` sets the background, `avatar` renders a

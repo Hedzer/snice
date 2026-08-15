@@ -274,9 +274,36 @@ export const ManyEventsOverflowWithNMore: Story = {
       { id: 2, title: 'Beta', start: od, color: '#2563eb' },
       { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
       { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
-      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
+      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b', popover: 'Epsilon — 16:00, room 4' },
     ];
     wrap.appendChild(el);
+    return wrap;
+  },
+};
+
+// h2: Overriding the +N more default
+export const OverridingTheNMoreDefault: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+    const el = document.createElement('snice-calendar');
+    el.style.cssText = 'max-width:400px;';
+    const status = document.createElement('div');
+    status.textContent = 'preventDefault() cancels the built-in day panel.';
+    const od = addDays(today, 4);
+    (el as any).events = [
+      { id: 1, title: 'Alpha', start: od, color: '#dc2626' },
+      { id: 2, title: 'Beta', start: od, color: '#2563eb' },
+      { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
+      { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
+      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
+    ];
+    el.addEventListener('calendar-more-click', (e: any) => {
+      e.preventDefault();
+      status.textContent =
+        `${e.detail.count} hidden events — routed to the app's own day view.`;
+    });
+    wrap.append(el, status);
     return wrap;
   },
 };

@@ -163,7 +163,13 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
   <section>
     <h2>Many events (overflow with +N more)</h2>
     <snice-calendar id="cal-overflow"></snice-calendar>
-    <div id="overflow-status" class="demo-status" role="status" aria-live="polite">Click the "+N more" chip — it reports its day and hidden count.</div>
+    <div id="overflow-status" class="demo-status" role="status" aria-live="polite">Click the "+N more" chip: with no wiring at all, the calendar opens its built-in day panel listing the hidden events. Click one to fire <code>calendar-event-click</code> — Epsilon carries popover content, so it drills straight into its details.</div>
+  </section>
+
+  <section>
+    <h2>Overriding the +N more default</h2>
+    <snice-calendar id="cal-overflow-custom"></snice-calendar>
+    <div id="overflow-custom-status" class="demo-status" role="status" aria-live="polite">Same events, but this calendar calls <code>event.preventDefault()</code> on <code>calendar-more-click</code> — the built-in panel never opens and the app routes the day somewhere of its own.</div>
   </section>
 
   <section>
@@ -266,26 +272,40 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
     // Overflow: the "+N more" chip is its own control — part="more-chip",
     // keyboard-reachable, and it dispatches calendar-more-click { date, count }
-    // without selecting the day.
+    // without selecting the day. No listener is needed for it to do something:
+    // the chip's built-in default opens the shared overlay with the day's
+    // hidden events, and an entry with popover content drills into it.
     const od = addDays(today, 4);
-    const calOverflow = document.getElementById('cal-overflow');
-    calOverflow.events = [
+    const overflowEvents = [
       { id: 1, title: 'Alpha', start: od, color: '#dc2626' },
       { id: 2, title: 'Beta', start: od, color: '#2563eb' },
       { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
       { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
-      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
+      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b', popover: 'Epsilon — 16:00, room 4' },
     ];
+    const calOverflow = document.getElementById('cal-overflow');
+    calOverflow.events = overflowEvents.map(e => ({ ...e }));
+
+    calOverflow.addEventListener('calendar-event-click', (e) => {
+      document.getElementById('overflow-status').textContent =
+        `${e.detail.event.title} picked from the built-in day panel.`;
+    });
+
+    // The same events, with the default suppressed: preventDefault() on
+    // calendar-more-click cancels the built-in panel, leaving the day to the
+    // application's own view.
+    const calOverflowCustom = document.getElementById('cal-overflow-custom');
+    calOverflowCustom.events = overflowEvents.map(e => ({ ...e }));
+    calOverflowCustom.addEventListener('calendar-more-click', (e) => {
+      e.preventDefault();
+      const { date, count } = e.detail;
+      document.getElementById('overflow-custom-status').textContent =
+        `${count} hidden event${count === 1 ? '' : 's'} on ${fmt(date)} — the built-in panel was cancelled; open your own day view here.`;
+    });
     // Adaptive lanes: identical events, but the host hands this calendar a
     // height — the week rows share it and the derived lane budget grows, so
     // the same stack that collapses above is shown in full here.
-    document.getElementById('cal-tall').events = calOverflow.events.map(e => ({ ...e }));
-
-    calOverflow.addEventListener('calendar-more-click', (e) => {
-      const { date, count } = e.detail;
-      document.getElementById('overflow-status').textContent =
-        `${count} hidden event${count === 1 ? '' : 's'} on ${fmt(date)} — open your own day view here.`;
-    });
+    document.getElementById('cal-tall').events = overflowEvents.map(e => ({ ...e }));
   </script>
 </body>
 </html>

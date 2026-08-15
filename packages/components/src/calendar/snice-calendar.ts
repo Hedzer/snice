@@ -168,9 +168,24 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     return { event, calendar: this };
   }
 
-  @dispatch('calendar-more-click', { bubbles: true, composed: true })
-  private dispatchMoreClick(date: Date, count: number) {
-    return { date, count, calendar: this };
+  /**
+   * `calendar-more-click` carries a default action (the built-in day panel),
+   * so it is cancelable and the component has to read the result of the
+   * dispatch. `@dispatch` accepts `cancelable` — it is EventInit passthrough —
+   * but the decorated method returns the detail, not `dispatchEvent`'s
+   * boolean, so a cancelable default action cannot be observed through it.
+   * Dispatched by hand for that reason, the same way `snice-link`'s `navigate`
+   * and `snice-stepper`'s `step-change` are.
+   *
+   * @returns `false` when a listener called `preventDefault()`.
+   */
+  private dispatchMoreClick(date: Date, count: number): boolean {
+    return this.dispatchEvent(new CustomEvent('calendar-more-click', {
+      detail: { date, count, calendar: this },
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
   }
 
   @styles()
@@ -327,22 +342,41 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     return await (yield { event });
   }
 
-  private async openEventPopover(bar: HTMLElement, event: CalendarEvent) {
+  /**
+   * Opens the shared overlay, empty, anchored on `anchor`, and arms its
+   * Escape / outside-press dismissal. Both panels the calendar owns — the
+   * event popover and the "+N more" day list — go through here, so they share
+   * one dismissal contract and one focus-return target.
+   *
+   * @returns the token identifying this opening; async content must check it
+   *          against `popoverToken` before painting.
+   */
+  private beginPopover(anchor: HTMLElement, label: string): number {
     const token = ++this.popoverToken;
     this.hideEventTooltip();
-
-    // Anchor + loading shell first, so slow content still feels responsive.
-    this.popoverBar = bar;
+    // A trigger that advertises aria-haspopup owes the reader the panel's
+    // state too — and the previous anchor is stale the moment this one opens
+    // (an entry in the day panel re-anchors the overlay on the same chip).
+    this.setAnchorExpanded(this.popoverBar, false);
+    this.setAnchorExpanded(anchor, true);
+    this.popoverBar = anchor;
+    this.popoverEl.setAttribute('aria-label', label);
     this.popoverEl.replaceChildren();
+    this.popoverEl.hidden = false;
+    this.syncOverlayLift();
+    document.addEventListener('keydown', this.boundPopoverEscape, true);
+    document.addEventListener('mousedown', this.boundPopoverOutside, true);
+    return token;
+  }
+
+  private async openEventPopover(bar: HTMLElement, event: CalendarEvent) {
+    // Anchor + loading shell first, so slow content still feels responsive.
+    const token = this.beginPopover(bar, event.title || 'Event details');
     const loading = document.createElement('div');
     loading.className = 'calendar__popover-loading';
     loading.textContent = 'Loading…';
     this.popoverEl.appendChild(loading);
-    this.popoverEl.hidden = false;
-    this.syncOverlayLift();
     this.positionPopover(bar);
-    document.addEventListener('keydown', this.boundPopoverEscape, true);
-    document.addEventListener('mousedown', this.boundPopoverOutside, true);
 
     let content: string | Node | undefined;
     try {
@@ -372,6 +406,71 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     else this.popoverEl.replaceChildren(content);
     this.positionPopover(bar);
     this.popoverEl.focus();
+  }
+
+  /**
+   * The "+N more" chip's built-in default action: the day's hidden events,
+   * listed in the shared overlay.
+   *
+   * Wiring `calendar-more-click` is an application concern, but a chip that
+   * visibly does nothing when clicked reads as broken, so the component owns a
+   * sensible default. It is only a default — the event is cancelable, and
+   * `preventDefault()` leaves the day to the app.
+   */
+  private openMorePanel(chip: HTMLElement, date: Date, hidden: CalendarEvent[]) {
+    const dayLabel = date.toLocaleDateString(this.locale, { dateStyle: 'full' });
+    this.beginPopover(chip,
+      `${hidden.length} more event${hidden.length === 1 ? '' : 's'} on ${dayLabel}`);
+
+    const heading = document.createElement('p');
+    heading.className = 'calendar__more-date';
+    heading.setAttribute('part', 'more-panel-date');
+    heading.textContent = dayLabel;
+
+    const list = document.createElement('ul');
+    list.className = 'calendar__more-list';
+    list.setAttribute('part', 'more-list');
+    // Explicit: `list-style: none` drops the implicit list role in WebKit.
+    list.setAttribute('role', 'list');
+
+    for (const event of hidden) {
+      const item = document.createElement('li');
+      const entry = document.createElement('button');
+      entry.type = 'button';
+      entry.className = 'calendar__more-item';
+      entry.setAttribute('part', 'more-item');
+
+      const dot = document.createElement('span');
+      dot.className = 'calendar__more-dot';
+      dot.setAttribute('part', 'more-dot');
+      dot.setAttribute('aria-hidden', 'true');
+      if (event.color) dot.style.background = event.color;
+
+      const title = document.createElement('span');
+      title.className = 'calendar__more-title';
+      title.textContent = event.title;
+
+      entry.append(dot, title);
+      entry.onclick = (e) => this.handleMorePanelEntry(chip, event, e);
+      item.appendChild(entry);
+      list.appendChild(item);
+    }
+
+    this.popoverEl.append(heading, list);
+    this.positionPopover(chip);
+    this.popoverEl.focus();
+  }
+
+  /**
+   * A panel entry behaves like the event's own stripe: it reports the click,
+   * and drills into the event's popover when it has one. Without popover
+   * content there is nothing further to show, so the panel closes and hands
+   * focus back to the chip.
+   */
+  private handleMorePanelEntry(chip: HTMLElement, event: CalendarEvent, e: Event) {
+    this.handleEventClick(event, e);
+    if (event.popover) this.openEventPopover(chip, event);
+    else this.closeEventPopover();
   }
 
   /**
@@ -429,6 +528,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     if (!this.popoverBar) return;
     this.popoverToken++;
     const bar = this.popoverBar;
+    this.setAnchorExpanded(bar, false);
     this.popoverBar = null;
     this.popoverEl.hidden = true;
     this.popoverEl.replaceChildren();
@@ -436,6 +536,15 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     document.removeEventListener('keydown', this.boundPopoverEscape, true);
     document.removeEventListener('mousedown', this.boundPopoverOutside, true);
     if (options.returnFocus !== false && bar.isConnected) bar.focus();
+  }
+
+  /** Keeps a popup trigger's `aria-expanded` in step with the overlay. Guarded
+   *  on `aria-haspopup` so only the anchors that actually advertise a popup —
+   *  the "+N more" chip and an event bar carrying popover content — claim the
+   *  state; a plain bar is not a trigger and must not report one. */
+  private setAnchorExpanded(anchor: HTMLElement | null, expanded: boolean) {
+    if (!anchor?.hasAttribute('aria-haspopup')) return;
+    anchor.setAttribute('aria-expanded', String(expanded));
   }
 
   @dispose()
@@ -647,6 +756,18 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
    *  detached, `display: none`). */
   private static readonly DEFAULT_EVENT_LANES = 3;
   /**
+   * Height a single lane physically occupies, measured from the top of the
+   * cell: the bar sits 1.875rem down and is 1.125rem tall.
+   *
+   * LANE_STACK_TOP_REM + LANE_HEIGHT_REM (3.5rem) is the *budgeted* cost of a
+   * lane — it carries a bottom gap so the next lane has somewhere to go. This
+   * is the smaller number the budget falls back to when the row cannot grow:
+   * the point below which a drawn lane would be clipped by its own cell.
+   */
+  private static readonly LANE_MIN_FIT_REM = 3;
+  /** Height the "+N more" chip itself occupies at the bottom of the cell. */
+  private static readonly MORE_CHIP_FIT_REM = 1.125;
+  /**
    * Narrowest segment, in rem, that still carries an event avatar.
    *
    * A one-day chip in a 400px month grid is ~57px wide; the avatar, its gap,
@@ -676,13 +797,25 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       const depth = SniceCalendar.DEFAULT_EVENT_LANES;
       return { fit: depth, withMore: depth, height: 0, rem };
     }
-    if (this.cellSizing === 'stretch'
+    if (this.cellSizing === 'stretch' && !this.rowCapped
       && height <= SniceCalendar.STRETCH_FLOOR_REM * rem + 1) {
       return { fit: Infinity, withMore: Infinity, height, rem };
     }
-    const lanesIn = (reserve: number) => Math.max(1, Math.floor(
-      (height / rem - SniceCalendar.LANE_STACK_TOP_REM - reserve)
-      / SniceCalendar.LANE_HEIGHT_REM));
+    const lanesIn = (reserve: number) => {
+      const budgeted = Math.floor(
+        (height / rem - SniceCalendar.LANE_STACK_TOP_REM - reserve)
+        / SniceCalendar.LANE_HEIGHT_REM);
+      if (budgeted >= 1) return budgeted;
+      // Below the budgeted floor a row that can still grow always draws one
+      // lane — the reservation at the end of renderEventStripes buys it the
+      // height. A capped row has no such recourse, so the lane is drawn only
+      // when it already fits; otherwise the day collapses entirely into its
+      // chip rather than painting a stripe its cell will clip.
+      if (!this.rowCapped) return 1;
+      const needed = SniceCalendar.LANE_MIN_FIT_REM
+        + (reserve > 0 ? SniceCalendar.MORE_CHIP_FIT_REM : 0);
+      return height / rem >= needed ? 1 : 0;
+    };
     return {
       fit: lanesIn(0),
       withMore: lanesIn(SniceCalendar.MORE_CHIP_REM),
@@ -690,6 +823,80 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       rem,
     };
   }
+
+  /** True while `--calendar-row-cap` is holding the week rows below the size
+   *  they would take of their own accord. */
+  private rowCapped = false;
+
+  /**
+   * Fits the six week rows inside a host that constrains the calendar's
+   * height.
+   *
+   * The square baseline sizes a week row from the *column width*
+   * (`100cqw / 7`), which says nothing about how much height the host has
+   * given the grid. A host that hands down a definite height — the components
+   * page's `aspect-ratio: 1` card is the reported case — therefore gets a grid
+   * whose min-content height exceeds its box: the grid overflows, and whatever
+   * clips it (that card's `overflow: hidden`) takes the bottom weeks of the
+   * month with it.
+   *
+   * The room the grid has and the room it wants are both measurable, so the
+   * fix is to compare them and publish the per-row ceiling when they disagree.
+   * With no constraint the container's height IS its content height, the two
+   * agree, and nothing is published — square cells and the growable lane
+   * reservation are untouched. Measured with the cap cleared, so it never
+   * feeds back on itself.
+   *
+   * Month view only. The cap divides the room into WEEK_ROWS equal shares and
+   * lands as a definite `grid-template-rows` track; the week and day views
+   * carry their own taller `min-height` at higher specificity, so a definite
+   * track there would leave every cell overflowing its own row and painting
+   * over the next one. They keep the pre-cap behaviour — the var stays unset,
+   * the tracks stay `auto`.
+   */
+  private syncRowCap() {
+    this.grid.style.removeProperty('--calendar-row-cap');
+    this.rowCapped = false;
+    if (this.view !== 'month') return;
+
+    // The host's own content box, not just the container's: `.calendar`'s
+    // `height: 100%` resolves to auto against a host sized by `max-height`,
+    // so the container reports the height it WANTED and only the host box is
+    // actually clamped. Whichever is smaller is the room there really is.
+    const hostStyle = getComputedStyle(this);
+    const hostRoom = this.clientHeight
+      - parseFloat(hostStyle.paddingTop) - parseFloat(hostStyle.paddingBottom);
+    const room = Math.min(this.container.clientHeight, hostRoom)
+      - this.header.getBoundingClientRect().height;
+    const wanted = this.grid.getBoundingClientRect().height;
+    // No layout to measure (headless, detached, display:none) — or the rows
+    // already fit, which is every unconstrained calendar.
+    if (!(room > 0) || !(wanted > 0) || wanted <= room + 0.5) return;
+
+    const weekdayHeight = (this.grid.querySelector('.calendar__weekday') as
+      HTMLElement | null)?.getBoundingClientRect().height ?? 0;
+    // A cell cannot be shorter than its own padding and rules, so a cap below
+    // that floor buys no height — it only detaches the rows from their tracks
+    // and stacks each week on top of the next. Below the floor the calendar
+    // has compressed as far as it physically can: it overflows a host that
+    // short, the way it always did, rather than rendering weeks over weeks.
+    const cell = this.dayCells[0];
+    const cellStyle = cell ? getComputedStyle(cell) : null;
+    const cellFloor = cellStyle
+      ? parseFloat(cellStyle.paddingTop) + parseFloat(cellStyle.paddingBottom)
+        + parseFloat(cellStyle.borderTopWidth)
+        + parseFloat(cellStyle.borderBottomWidth)
+      : 0;
+    const cap = Math.max(
+      (room - weekdayHeight) / SniceCalendar.WEEK_ROWS, cellFloor);
+    if (!(cap > 0)) return;
+
+    this.rowCapped = true;
+    this.grid.style.setProperty('--calendar-row-cap', `${cap}px`);
+  }
+
+  /** Week rows in a month grid. */
+  private static readonly WEEK_ROWS = 6;
 
   /**
    * Render events as continuous stripes: one bar per (event × week row),
@@ -708,6 +915,9 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       cell.style.removeProperty('--calendar-week-lanes');
       cell.style.removeProperty('--calendar-week-more');
     });
+    // Before anything is measured and regardless of whether this month has
+    // events: an empty calendar in a short host overflows too.
+    this.syncRowCap();
 
     if (!this.events || this.events.length === 0) return;
 
@@ -755,7 +965,10 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     resolved.sort((a, b) =>
       a.startTime - b.startTime || b.duration - a.duration || a.order - b.order);
 
-    const hiddenPerDay = new Array(dayTimes.length).fill(0);
+    // The events each day dropped, in the order they stack — the chip reports
+    // the count, and its built-in panel lists them.
+    const hiddenPerDay: CalendarEvent[][] =
+      Array.from({ length: dayTimes.length }, () => []);
     const weekCount = Math.floor(dayTimes.length / 7);
     const weekLaneCounts = new Array(weekCount).fill(0);
     // Measured before a single bar or reservation goes back in, so the budget
@@ -797,7 +1010,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       for (const { item, lane, segStart, segEnd } of placed) {
         if (lane >= visibleLanes) {
-          for (let i = segStart; i <= segEnd; i++) hiddenPerDay[i]++;
+          for (let i = segStart; i <= segEnd; i++) hiddenPerDay[i].push(item.event);
           continue;
         }
 
@@ -894,7 +1107,8 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       }
     }
 
-    hiddenPerDay.forEach((count, i) => {
+    hiddenPerDay.forEach((hidden, i) => {
+      const count = hidden.length;
       if (count === 0) return;
       const cell = this.dayCells[i];
       if (!cell) return;
@@ -903,17 +1117,20 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       more.className = 'calendar__more';
       more.setAttribute('part', 'more-chip');
       more.textContent = `+${count} more`;
-      // The chip is its own control: it reports its day and hidden count, and
-      // its clicks never fall through to the day cell's selection handler.
+      // The chip is its own control: it reports its day and hidden count,
+      // opens the day panel unless the app cancels it, and its clicks never
+      // fall through to the day cell's selection handler.
       more.setAttribute('role', 'button');
       more.setAttribute('tabindex', '0');
+      more.setAttribute('aria-haspopup', 'dialog');
+      more.setAttribute('aria-expanded', 'false');
       more.setAttribute('aria-label',
         `${count} more event${count === 1 ? '' : 's'} on ${date.toLocaleDateString(this.locale, { dateStyle: 'full' })}`);
-      more.onclick = (e) => this.handleMoreClick(date, count, e);
+      more.onclick = (e) => this.handleMoreClick(date, more, hidden, e);
       more.onkeydown = (e) => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
-        this.handleMoreClick(date, count, e);
+        this.handleMoreClick(date, more, hidden, e);
       };
       cell.appendChild(more);
     });
@@ -929,7 +1146,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     for (let week = 0; week < weekCount; week++) {
       if (weekLaneCounts[week] === 0) continue;
       const weekHasMore = hiddenPerDay
-        .slice(week * 7, week * 7 + 7).some(count => count > 0);
+        .slice(week * 7, week * 7 + 7).some(hidden => hidden.length > 0);
       const needed = (SniceCalendar.LANE_STACK_TOP_REM
         + weekLaneCounts[week] * SniceCalendar.LANE_HEIGHT_REM
         + (weekHasMore ? SniceCalendar.MORE_CHIP_REM : 0)) * budget.rem;
@@ -1073,9 +1290,14 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.dispatchEventClick(event);
   }
 
-  private handleMoreClick(date: Date, count: number, e: Event) {
+  private handleMoreClick(
+    date: Date, chip: HTMLElement, hidden: CalendarEvent[], e: Event,
+  ) {
     e.stopPropagation();
-    this.dispatchMoreClick(date, count);
+    // The app gets first refusal: preventDefault() means it is opening its own
+    // day view and the built-in panel must stay out of the way.
+    if (!this.dispatchMoreClick(date, hidden.length)) return;
+    this.openMorePanel(chip, date, hidden);
   }
 
   private getMonthDays(): Date[] {

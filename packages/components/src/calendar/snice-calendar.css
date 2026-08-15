@@ -91,8 +91,14 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
   /* Row 1 is the weekday header. Sizing it min-content (not auto) keeps it out
      of `align-content: stretch`, so surplus height from a definite-height host
-     goes to the six week rows alone. */
-  grid-template-rows: min-content;
+     goes to the six week rows alone.
+     The six week rows are `auto` — the behaviour they had as implicit tracks —
+     until a constrained host publishes --calendar-row-cap. Named explicitly so
+     that cap is a definite TRACK size: min-height alone still lets a row grow
+     to its cell's min-content (Firefox rounds a day-number strip a pixel
+     taller than Chromium), and six of those pixels put the month back outside
+     its host. */
+  grid-template-rows: min-content repeat(6, var(--calendar-row-cap, auto));
   flex: 1 1 auto;
   /* Containing block for the event bars: absolutely-positioned grid items
      still land in their grid area, but stop contributing to row sizing — a
@@ -128,12 +134,23 @@
      shorter than the one lane that is always drawn — 3.5rem, or 4.5rem once
      the chip claims its strip. Never size cells with aspect-ratio: it
      transfers heights into min-widths and desynchronizes cell heights within
-     a row. */
+     a row.
+
+     --calendar-row-cap is the ceiling a height-constrained host imposes: the
+     share of the host's height each of the six week rows may take. Without it
+     the square baseline is a floor the host cannot argue with, so an
+     `aspect-ratio: 1` (or otherwise short) host overflows and whatever clips
+     it eats the bottom weeks of the month. The component sets the cap only
+     while the rows genuinely do not fit — see syncRowCap() — so an
+     unconstrained calendar keeps square cells and its growable lane
+     reservation. */
   box-sizing: border-box;
   min-width: 0;
-  min-height: max(calc(100cqw / 7), 3rem, calc(2.125rem
-    + var(--calendar-week-lanes, 0) * 1.375rem
-    + var(--calendar-week-more, 0rem)));
+  min-height: min(
+    max(calc(100cqw / 7), 3rem, calc(2.125rem
+      + var(--calendar-week-lanes, 0) * 1.375rem
+      + var(--calendar-week-more, 0rem))),
+    var(--calendar-row-cap, 100000px));
   padding: var(--snice-spacing-xs, 0.5rem);
   border: 1px solid var(--snice-color-border, rgb(226 226 226));
   border-top: none;
@@ -170,9 +187,11 @@
 /* cell-sizing="stretch": rows collapse to content + event-lane reservation
    instead of the square column-width minimum. */
 .calendar__day--stretch {
-  min-height: max(3rem, calc(2.125rem
-    + var(--calendar-week-lanes, 0) * 1.375rem
-    + var(--calendar-week-more, 0rem)));
+  min-height: min(
+    max(3rem, calc(2.125rem
+      + var(--calendar-week-lanes, 0) * 1.375rem
+      + var(--calendar-week-more, 0rem))),
+    var(--calendar-row-cap, 100000px));
 }
 
 /* no-day-select: display-only cells — no click affordance, no hover state */
@@ -312,6 +331,67 @@
   font-size: var(--snice-font-size-xs, 0.75rem);
 }
 
+/* The chip's built-in day panel: the hidden events, in the same overlay the
+   event popover uses, so dismissal and focus behave identically. */
+.calendar__more-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--snice-spacing-3xs, 0.125rem);
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.calendar__more-item {
+  display: flex;
+  align-items: center;
+  gap: var(--snice-spacing-xs, 0.5rem);
+  width: 100%;
+  padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
+  border: none;
+  border-radius: var(--snice-border-radius-sm, 0.125rem);
+  background: transparent;
+  color: var(--snice-color-text, rgb(23 23 23));
+  font-family: inherit;
+  font-size: var(--snice-font-size-sm, 0.875rem);
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--snice-transition-fast, 150ms) ease;
+}
+
+.calendar__more-item:hover {
+  background: var(--snice-color-surface-container-low, rgb(250 250 250));
+}
+
+.calendar__more-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
+}
+
+.calendar__more-dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--snice-color-primary, rgb(37 99 235));
+}
+
+.calendar__more-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.calendar__more-date {
+  margin: 0 0 var(--snice-spacing-2xs, 0.25rem);
+  font-size: var(--snice-font-size-xs, 0.75rem);
+  font-weight: var(--snice-font-weight-semibold, 600);
+  color: var(--snice-color-text-secondary, rgb(82 82 82));
+}
+
 .calendar__tooltip {
   /* Anchored inside `.calendar` — see the note on that rule. */
   position: absolute;
@@ -383,11 +463,13 @@
 }
 
 .calendar--week-numbers .calendar__day {
-  min-height: max(
-    calc((100cqw - var(--calendar-week-number-width, 2.25rem)) / 7), 3rem,
-    calc(2.125rem
-      + var(--calendar-week-lanes, 0) * 1.375rem
-      + var(--calendar-week-more, 0rem)));
+  min-height: min(
+    max(
+      calc((100cqw - var(--calendar-week-number-width, 2.25rem)) / 7), 3rem,
+      calc(2.125rem
+        + var(--calendar-week-lanes, 0) * 1.375rem
+        + var(--calendar-week-more, 0rem))),
+    var(--calendar-row-cap, 100000px));
 }
 
 .calendar__week-number {

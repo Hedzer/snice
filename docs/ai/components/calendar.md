@@ -33,7 +33,11 @@ cellSizing: 'square'|'stretch' = 'square'; // attribute: cell-sizing — square:
 
 - `calendar-change` -> `{ value: Date, calendar: SniceCalendarElement }`
 - `calendar-event-click` -> `{ event: CalendarEvent, calendar: SniceCalendarElement }`
-- `calendar-more-click` -> `{ date: Date, count: number, calendar: SniceCalendarElement }` — "+N more" chip clicked; does NOT fire `calendar-change`
+- `calendar-more-click` -> `{ date: Date, count: number, calendar: SniceCalendarElement }` — "+N more" chip clicked; does NOT fire `calendar-change`. **Cancelable**: `preventDefault()` suppresses the built-in day panel (see "+N more" default action)
+
+## Methods (overlay)
+
+- `closeEventPopover(options?: { returnFocus?: boolean })` - Closes the shared overlay (event popover or "+N more" day panel)
 
 ## CSS Parts
 
@@ -41,6 +45,7 @@ cellSizing: 'square'|'stretch' = 'square'; // attribute: cell-sizing — square:
 - `header` - Header with title and navigation buttons
 - `grid` - Day cells grid
 - `more-chip` - Per-day "+N more" overflow chip
+- `more-list` / `more-item` / `more-dot` / `more-panel-date` - Built-in "+N more" day panel internals
 - `week-number` / `week-number-header` - Week-number column cells (`show-week-numbers`)
 - `event-bar` / `event-avatar` / `event-tooltip` / `event-popover` - Event bar internals
 
@@ -64,9 +69,12 @@ calendar.events = [
 // "Event-lane budget"); deeper stacks collapse to a per-day "+N more" chip.
 // Chip: part="more-chip", role="button" tabindex=0 (Enter/Space), click ->
 // calendar-more-click { date, count }; the click never falls through to day
-// selection. Use it to open your own day/agenda view:
-//   calendar.addEventListener('calendar-more-click',
-//     (e) => showDay(e.detail.date, e.detail.count));
+// selection. Built-in default action, no wiring required — see
+// '"+N more" default action' below. Replace it with your own day/agenda view:
+//   calendar.addEventListener('calendar-more-click', (e) => {
+//     e.preventDefault();                       // cancels the built-in panel
+//     showDay(e.detail.date, e.detail.count);
+//   });
 // Bars: part="event-bar", click -> calendar-event-click.
 // Styling: color -> background; avatar?: string | {src?,name?,alt?} ->
 // <snice-avatar> on each bar (part="event-avatar"; name -> initials fallback);
@@ -103,6 +111,28 @@ calendar.addEventListener('calendar-change', (e) => {
 });
 ```
 
+## "+N more" Default Action
+
+Clicking (or Enter/Space on) the chip opens the shared overlay listing that
+day's hidden events — no listener required.
+
+- Panel = the same `.calendar__popover` element the event popover uses:
+  `role="dialog"`, `part="event-popover"`, Escape / outside-press dismiss,
+  focus moves into the panel and returns to the chip on close.
+- `aria-label` names the day; `part="more-panel-date"` heading + `part="more-list"`
+  (`role="list"`) of `<button part="more-item">` entries, each a
+  `part="more-dot"` colour dot (`event.color`) plus the title.
+- Entry click -> `calendar-event-click`; if the event has `popover` content the
+  same overlay drills into it, otherwise the panel closes.
+- Suppress with `preventDefault()` on `calendar-more-click`:
+
+```typescript
+calendar.addEventListener('calendar-more-click', (e) => {
+  e.preventDefault();      // built-in panel does not open
+  openMyDayView(e.detail.date);
+});
+```
+
 ## Event-Lane Budget
 
 Visible lanes per week = how many fit the day cell's height. No flat cap.
@@ -125,6 +155,39 @@ Notes:
 ```typescript
 // Same events, more visible lanes:
 calendar.style.height = '40rem';
+```
+
+## Sizing In A Constrained Host
+
+The month fits its own host box — the bottom weeks are not clipped.
+
+- Host height is **auto** (default): week rows take the square baseline
+  (`100cqw / 7`), and a busy row grows by its lane reservation. The host's
+  height is whatever that adds up to.
+- Host height is **larger** than that: the six rows share the surplus and the
+  lane budget grows with them.
+- Host height is **smaller** (`height`, `max-height`, `aspect-ratio`, a sized
+  flex/grid parent): the rows are capped at their equal share of the room under
+  the header, so all six weeks stay inside the box. The lane budget follows the
+  compressed row — events that no longer fit collapse into the "+N more" chip
+  instead of being drawn outside their cell, and a row too short for even one
+  lane shows the chip alone.
+
+Limits:
+- Measures its OWN box only. An ancestor that clips/scrolls while the calendar's
+  height stays auto (fixed wrapper + `overflow:hidden`, flex item without
+  `min-height:0`) is undetectable — constrain the calendar, not the wrapper.
+- Row floor = the cell's own padding + rules (~17px default). Under a ~200px
+  host the grid overflows again rather than stacking week over week.
+- `view="week"` / `view="day"` keep their own taller row minimums; not capped.
+
+Authoring note: a month grid is a header, a weekday strip and six square-ish
+week rows, so its natural box is TALLER than it is wide. `aspect-ratio: 1` on
+the host is not a neutral size hint — it asks the grid to lose ~1.5 week rows.
+Constrain the width and let the height follow:
+
+```html
+<snice-calendar style="min-width: 360px; max-width: 26rem; width: 100%"></snice-calendar>
 ```
 
 ## Keyboard Navigation

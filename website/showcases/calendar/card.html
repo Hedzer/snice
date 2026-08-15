@@ -3,7 +3,12 @@
       <p class="comp-desc">Date picker calendar with events and scheduled slots</p>
       <div class="comp-split">
         <div class="comp-split-demo demo-center" style="justify-content:center">
-          <snice-calendar id="demo-calendar" highlight-today style="min-width:360px;aspect-ratio:1"></snice-calendar>
+          <!-- No aspect-ratio: a month is a header, a weekday strip and six
+               square-ish week rows, so its natural box is taller than it is
+               wide. Squaring the host asked the grid to live in ~85px less
+               height than it needs and the card's overflow:hidden ate the
+               last two weeks. Width only; the height is the calendar's own. -->
+          <snice-calendar id="demo-calendar" highlight-today style="min-width:360px;max-width:26rem;width:100%"></snice-calendar>
         </div>
         <div class="comp-split-code">
           <span class="code-lang">javascript</span>
