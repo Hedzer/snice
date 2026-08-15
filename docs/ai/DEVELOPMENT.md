@@ -107,9 +107,10 @@ npm run test:matrix:visual -- --grep squish     # all other flags pass through
   before starting Playwright: a listener is not a server, and a wedged :5566
   (vite rebuilds components synchronously on source change) otherwise surfaces
   as hundreds of `net::ERR_ABORTED` specs instead of one clear message.
-- Layout: `tests/live/matrix/<component>/<component>-visual.spec.ts`, each
-  driving `tests/live/fixtures/<component>/matrix.html` (fixtures, NOT
-  showcases). A fixture exposes `window.matrix.mount(combo)` and owns anything
+- Layout: `tests/live/matrix/<component>/<component>-visual.spec.ts` (the table
+  alone splits into `matrix-{local,remote,marquee}.spec.ts`), each driving
+  `tests/live/fixtures/<component>/matrix.html` (fixtures, NOT showcases). A
+  fixture exposes `window.matrix.mount(combo)` and owns anything
   carrying functions — column definitions, callbacks — which cannot cross the
   Playwright boundary.
 - Size the specs to the component: the table is the ceiling, not the template.
@@ -131,10 +132,10 @@ differs VISIBLY (`striped` once applied correctly while painting two luminance
 points from the dark surface). Keep every marquee set small — screenshots are
 the expensive layer. New combinations go in the layer-1 generator.
 
-**Known defects are pinned, never softened** (`.ai/fuzzing.md` policy). Most
-components' specs use `test.fail()` with the finding written above it — the
-Playwright counterpart of the DOM matrix's `it.fails`. The table harness uses
-`WAIVERS` in `matrix-harness.ts`, stricter still because one combo reports many
+**Known defects are pinned, never softened** (`.ai/fuzzing.md` policy). A
+component's specs pin theirs with `test.fail()` and the finding written above
+it — the Playwright counterpart of the DOM matrix's `it.fails`. The table
+harness uses `WAIVERS` in `matrix-harness.ts`, stricter still because one combo reports many
 problems: a waiver names the EXACT message it excuses, every other problem in
 the same combo still fails, and a waiver whose message stops appearing fails
 itself so it must be deleted. Currently pinned there:

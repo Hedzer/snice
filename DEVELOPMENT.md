@@ -699,7 +699,9 @@ fixture page at `tests/live/fixtures/<component>/matrix.html`. Those pages are
 fixtures, not showcases: they demonstrate nothing to a reader and exist only so
 that a measurement means something.
 
-The table is the tier's ceiling and its worked example. Its specs mirror the DOM
+The table is the tier's ceiling and its worked example, and the one component
+whose specs are split by delivery mode rather than named for it
+(`matrix-local`, `matrix-remote`, `matrix-marquee`). They mirror the DOM
 matrix's dimensions exactly — `{local, remote}` x six pipelines x three delivery
 patterns x all 32 vectors of `{virtualize, height, squish, striped,
 selectable}`, the full 1152-combo product — driven in Chromium against
@@ -775,8 +777,8 @@ the wall time by three.
 **Known component defects are pinned, not softened.** The matrix policy in
 `.ai/fuzzing.md` says a combo that diverges from the docs is a finding: keep the
 correct assertion, pin it against a finding id, and report it. The DOM matrix
-uses `it.fails` for that, and most components' visual specs use its Playwright
-equivalent, `test.fail()` with the finding written above it.
+uses `it.fails` for that; a component's visual specs use its Playwright
+equivalent, `test.fail()`, with the finding written above it.
 
 The table harness goes one step stricter, because a combo there reports many
 problems at once and `test.fail()` would mark the whole test expected-to-fail
