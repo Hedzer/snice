@@ -15,12 +15,13 @@
  * and `item-price` is its line total, formatted as currency.
  *
  * FINDINGS
- *   MATRIX-receipt-1  A per-item `discount` renders its line in EVERY variant,
- *                     not only `detailed`. `renderItem()` gates `sku` and
- *                     `note` on `this.variant === 'detailed'` but computes
- *                     `hasDiscount` from the item alone. Pinned below with
- *                     `it.fails` for the eight non-detailed variants; the
- *                     assertion is the documented one and is NOT weakened.
+ *   MATRIX-receipt-1  FIXED. A per-item `discount` used to render its line in
+ *                     EVERY variant, not only `detailed`: `renderItem()` gated
+ *                     `sku` and `note` on `this.variant === 'detailed'` but
+ *                     computed `hasDiscount` from the item alone. The gate now
+ *                     covers all three extras, so the eight non-detailed
+ *                     variants no longer need the `it.fails` pin. The
+ *                     assertion never changed.
  */
 import { describe, it, afterEach } from 'vitest';
 import { mount, cleanup, cross, part, parts, text, Problems, expectClean } from './matrix-utils';
@@ -44,17 +45,16 @@ describe('receipt matrix: item lines', () => {
     const wantsItemDiscount = detailed && (item.discount ?? 0) > 0;
 
     /**
-     * MATRIX-receipt-1: the per-item discount line escapes the `detailed`
-     * gate, so every other variant paints it too. The expectation below stays
-     * the documented one; only the wrapper records that it currently fails.
+     * MATRIX-receipt-1 (fixed): the per-item discount line used to escape the
+     * `detailed` gate, so every other variant painted it too. The combo below
+     * is the regression guard and runs unpinned.
      */
-    const pinned = combo.shape === 'item-discount' && !detailed;
-    const runner = pinned ? it.fails : it;
-    const name = pinned
+    const regression = combo.shape === 'item-discount' && !detailed;
+    const name = regression
       ? `${combo.id}: item extras render only in the detailed variant [MATRIX-receipt-1]`
       : `${combo.id}: item extras render only in the detailed variant`;
 
-    runner(name, async () => {
+    it(name, async () => {
       const el = await mount('snice-receipt', {
         attrs: { variant: combo.variant },
         props: { merchant: MERCHANT, items },

@@ -181,11 +181,14 @@ export class SniceReceipt extends HTMLElement implements SniceReceiptElement {
 
   private renderItem(item: ReceiptItem): unknown {
     const lineTotal = item.quantity * item.price;
-    const hasDiscount = (item.discount || 0) > 0;
     const showQty = item.quantity !== 1;
     const isDetailed = this.variant === 'detailed';
     const hasSku = isDetailed && item.sku;
     const hasNote = isDetailed && item.note;
+    // SKU, notes, and per-item discounts are `detailed`-only (receipt.md).
+    // The discount still counts toward the subtotal in every variant; only its
+    // per-line rendering is gated.
+    const hasDiscount = isDetailed && (item.discount || 0) > 0;
 
     return html/*html*/`
       <div class="receipt__item" part="item">

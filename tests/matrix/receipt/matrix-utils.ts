@@ -29,6 +29,7 @@
  */
 import { expect } from 'vitest';
 import { createComponent, wait } from '../../components/test-utils';
+import { exactPart, exactParts } from '../part-exact';
 
 export { wait, createComponent };
 
@@ -143,19 +144,34 @@ export function all<T extends Element = HTMLElement>(el: HTMLElement, selector: 
   return [...shadow(el).querySelectorAll<T>(selector)];
 }
 
-/** The single element exposing a documented CSS part, or null. */
+/**
+ * The single element exposing a documented CSS part, or null.
+ *
+ * Token matching is done by hand rather than with `[part~="name"]`: happy-dom
+ * also answers that selector with hyphen-prefixed neighbours, so `item` would
+ * collect `item-name`/`item-qty`/`item-price` too and a rendered-item count
+ * would assert against a number the component never produced. See
+ * `tests/matrix/part-exact.ts`.
+ */
 export function part<T extends Element = HTMLElement>(el: HTMLElement, name: string): T | null {
-  return shadow(el).querySelector<T>(`[part~="${name}"]`);
+  return exactPart<T>(el, name);
 }
 
 /** Every element exposing a documented CSS part, in document order. */
 export function parts<T extends Element = HTMLElement>(el: HTMLElement, name: string): T[] {
-  return [...shadow(el).querySelectorAll<T>(`[part~="${name}"]`)];
+  return exactParts<T>(el, name);
 }
 
-/** Collapsed text content — the string a reader would actually see. */
+/**
+ * Collapsed text content — the string a reader would actually see.
+ *
+ * Only ordinary whitespace collapses. U+00A0 is content, not layout: an
+ * `Intl.NumberFormat` amount carries one between the number and its currency
+ * symbol in most locales, and folding it into a plain space would make a
+ * correctly formatted amount compare equal to a wrong one.
+ */
 export function text(node: Element | null | undefined): string {
-  return (node?.textContent ?? '').replace(/\s+/g, ' ').trim();
+  return (node?.textContent ?? '').replace(/[ \t\n\r\f\v]+/g, ' ').trim();
 }
 
 export function partText(el: HTMLElement, name: string): string {
