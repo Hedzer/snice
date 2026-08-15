@@ -5,9 +5,10 @@ export default defineConfig({
   // Keep Playwright discovery out of the Vitest *.test.ts suite while still
   // including the dedicated website browser test.
   testMatch: ['**/*.spec.ts', 'website-render.test.ts'],
-  // The true-visual table matrix is an ON-DEMAND tier and must never be pulled
-  // into the required browser gate. `testDir: '.'` above would otherwise sweep
-  // it in, because `npm run test:browser:framework` targets all of tests/live.
+  // The true-visual component matrices (one directory per component under
+  // live/matrix/) are an ON-DEMAND tier and must never be pulled into the
+  // required browser gate. `testDir: '.'` above would otherwise sweep them in,
+  // because `npm run test:browser:framework` targets all of tests/live.
   // It runs only through `npm run test:matrix:visual`
   // (tests/playwright.matrix.config.ts).
   testIgnore: ['live/matrix/**'],

@@ -23,7 +23,8 @@
  *   - either way, require the fixture page itself to return 200 before running,
  *     because a listener is not a server and a wedged one fails as hundreds of
  *     unexplained `net::ERR_ABORTED` specs.
- * Storybook is never needed: this tier drives one fixture page of its own.
+ * Storybook is never needed: this tier drives its own fixture pages under
+ * tests/live/fixtures/<component>/.
  */
 import { spawn } from 'child_process';
 import net from 'net';
