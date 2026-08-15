@@ -11,7 +11,7 @@ deps: []
 Decide whether table's non-eager `setData()` plus required `renderBody()` call is still the clearest imperative contract.
 
 ## Notes
-- `.ai/coding-standards.md` records the current intentional behavior: reactive `table.data = ...` is eager, while unpaired `setData()` requires `renderBody()`.
+- `.ai/style.md` records the current intentional behavior: reactive `table.data = ...` is eager, while unpaired `setData()` requires `renderBody()`.
 - This is not a claim that current behavior is broken; it is a DX review of two update channels with surprising asymmetry.
 - Source-plus-built tests and performance characteristics must be preserved under any decision.
 

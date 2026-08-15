@@ -8,7 +8,7 @@ const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
 const human = read('docs/components/table.md');
 const ai = read('docs/ai/components/table.md');
-const standards = read('.ai/coding-standards.md');
+const standards = read('.ai/style.md');
 const publicShowcase = read('website/showcases/table/card.html');
 const fullShowcase = read('website/showcases/table/full.html');
 const stories = read('packages/components/src/table/snice-table.stories.ts');

@@ -35,6 +35,7 @@ npm run generate:react-tests     # Generate test files
 ```bash
 npm test                        # Required complete gate (source+built+browser+site)
 npm run test:source             # Tests importing package sources
+npm run test:matrix             # Table feature-combination matrix (fuzz tier, opt-in)
 npm run test:distribution       # Fresh build, then same tests against dist/
 npm run test:cdn                # Fresh CDN build + artifact/runtime tests
 npm run test:react              # Fresh adapters + React tests
@@ -52,6 +53,32 @@ npm run gauntlet                # Blind local-model checker gauntlet
 `repeat.ts`, `snice-element.ts`, and `template.ts`; every aggregate metric must
 be strictly greater than 90%. Browser commands manage their own local servers.
 
+## Test Tiers
+
+| Tier | Command | Cost | When |
+|------|---------|------|------|
+| Everyday | `vitest run` / `npm run test:source` | ~26s for `tests/components` | Every change |
+| Matrix (fuzz) | `npm run test:matrix` | ~100s, 52 files | Any table rendering change; once inside `npm test` |
+| Visual | Playwright (`tests/live`) | Slowest | On request |
+
+- `vitest.config.ts` `test.exclude` drops `tests/components/table-matrix` from
+  the default include, the same way `tests/live` is dropped. Plain `vitest run`
+  no longer pays its ~102s.
+- `npm run test:matrix` = `vitest run --config vitest.matrix.config.ts`. That
+  config inherits `vitest.config.ts` and replaces `exclude` with the base list
+  minus the matrix directory (mergeConfig concatenates arrays, so inheriting it
+  would keep the entry that hides the suite). It throws if the base config stops
+  excluding the directory, so the matrix can never silently run twice.
+- `tests/components/table-matrix-smoke.test.ts` stays IN the default include:
+  one combo per slice family rotated across {local, remote} x
+  {valueGetter, formatter}, plus the marquee regressions. Budget ~4s — add new
+  combos to the matrix, not to the smoke file.
+- Helper modules under `tests/components/table-matrix/` (`matrix-utils.ts`, the
+  per-slice `*-support.ts`) stay importable from outside the directory; the
+  exclusion removes files from test COLLECTION, not from module resolution.
+- `npm test` runs the matrix as its own `table matrix suite` stage, exactly
+  once, source-flavoured (see `tooling/testing/run-full-tests.js`).
+
 ## Dumb-Agent Gauntlet
 
 Internal checker hardening: `npm run gauntlet` uses the comprehensive multi-file
@@ -63,7 +90,7 @@ application sample. Focused probes remain available with
 - Auto-downloads pinned llama.cpp + size/SHA-256-pinned GGUFs into `.local/`.
 - Produces blind raw output plus checker, TypeScript, and Vite logs per model.
 - No token/time cap; exact-output repetition is preserved and classified.
-- Full workflow/classification rules: `.ai/gauntlet.md`.
+- Full workflow/classification rules: `.ai/testing.md`.
 
 ## File Structure
 
@@ -140,7 +167,7 @@ All CDN builds use the shared runtime (external `snice` imports). Load `snice-ru
 - IIFE: `.js` + `.min.js`
 - Sourcemaps + README
 
-**Size:** Runtime ~34KB gzip, components ~1-118KB each
+**Size:** Runtime ~34KB gzip, components ~1-119KB each
 
 **Features:**
 - Shared runtime (external snice imports)

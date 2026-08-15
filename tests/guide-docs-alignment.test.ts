@@ -154,7 +154,7 @@ describe('Guide covers the framework surface', () => {
 describe('Guide examples dogfood the framework', () => {
   // Imperative in Snice means YOU drive the DOM updates — via @query/@watch —
   // not that you drop into native JS. Event wiring, observers, lifecycle and
-  // dispatch stay on decorators in both modes. See .ai/coding-standards.md.
+  // dispatch stay on decorators in both modes. See .ai/style.md.
   const banned: Array<[string, RegExp, string]> = [
     ['addEventListener', /\baddEventListener\s*\(/, 'use @on'],
     ['removeEventListener', /\bremoveEventListener\s*\(/, '@on cleans up automatically'],

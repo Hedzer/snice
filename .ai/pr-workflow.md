@@ -16,7 +16,7 @@ These happen automatically during `npm run release`:
       >90% core-engine coverage, Chromium/Firefox/WebKit, generated deployment)
 - [ ] Build succeeds: `npm run build`
 - [ ] New components: removed from `packages/components/.wip`
-- [ ] New components: docs, showcases, React adapters all complete (see `component-checklist.md`)
+- [ ] New components: docs, showcases, React adapters all complete (see `workflow.md`)
 
 ## Manual Review After Release
 - [ ] Website live at snice.dev with correct version

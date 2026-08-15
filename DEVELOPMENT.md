@@ -606,6 +606,7 @@ testComponent({
 ```bash
 npm test                       # Complete required gate (source+built+browser+site)
 npm run test:source            # Test package source files
+npm run test:matrix            # Table feature-combination matrix (opt-in fuzz tier)
 npm run test:distribution      # Fresh build, then test dist/ output
 npm run test:cdn               # Fresh CDN build + artifact/runtime tests
 npm run test:react             # Fresh adapters + React tests
@@ -628,6 +629,60 @@ manage their own local servers. The coverage scope is the rendering engine:
 `repeat.ts`, `snice-element.ts`, and `template.ts`; aggregate statements,
 branches, functions, and lines must each be strictly greater than 90%.
 
+### Test Tiers
+
+Not every suite belongs in the loop you run after every keystroke. There are
+three tiers, and the difference between them is who asks for them.
+
+| Tier | Command | Cost | When to run it |
+|------|---------|------|----------------|
+| Everyday | `vitest run`, `npm run test:source` | ~26s for `tests/components` | Every change |
+| Matrix (fuzz) | `npm run test:matrix` | ~100s across 52 files | Any change to table rendering — and once inside `npm test` |
+| Visual | Playwright (`tests/live`, `npm run test:browser`) | Slowest | When asked for, and in the full gate |
+
+**The everyday tier is deliberately screenshot-free and matrix-free.** The table
+feature-combination matrix in `tests/components/table-matrix/` crosses every
+table feature against every other one and asserts exact rendered output. It is
+worth its ~102s when you have touched the table, and it is pure tax when you
+have not — so `vitest.config.ts` excludes the directory from the default
+include, exactly the way `tests/live` is excluded. Plain `vitest run` and
+`npm run test:source` no longer pay for it.
+
+**Running the matrix is an explicit act:**
+
+```bash
+npm run test:matrix     # all 52 matrix files
+```
+
+That script points Vitest at `vitest.matrix.config.ts`, which inherits
+everything from `vitest.config.ts` and then replaces the `exclude` list with the
+base list minus the matrix directory. (Replaces, not merges: Vitest's
+`mergeConfig` concatenates arrays, so an inherited `exclude` would still contain
+the entry that hides the suite.) The config fails loudly if the base config ever
+stops excluding the directory, so the matrix cannot silently end up running
+twice.
+
+**The everyday loop still gets a taste.**
+`tests/components/table-matrix-smoke.test.ts` lives outside the excluded
+directory, so it stays in the default include. It runs one combo per slice
+family — columns, delivery, editing, filtering, grouping, height-fill,
+pagination, selection, sorting, tree-detail, typed-cells, virtualization —
+rotated across `{local, remote} x {valueGetter, formatter}` so all four cells
+are covered, plus the marquee regressions the matrix exists to pin (in-place
+mutation repaint, same-reference re-render, sort-on-delivery, the empty and
+loading states, and the virtualizer's paint commit). Its budget is roughly four
+seconds. It is a smoke test, not a substitute: new combinations belong in the
+matrix, not in the smoke file.
+
+Excluding the directory removes its files from test *collection* only, not from
+module resolution — the smoke file imports `matrix-utils` and the per-slice
+`*-support.ts` helpers straight out of `tests/components/table-matrix/` and
+asserts through the matrix's own oracles.
+
+In the full gate, the matrix runs as its own `table matrix suite` stage exactly
+once, next to the source suite rather than per artifact flavour; see the comment
+in `tooling/testing/run-full-tests.js` for why.
+
 ### Dumb-Agent Checker Gauntlet
 
 Maintainers can run small local models as blind Snice builders to find checker
@@ -644,7 +699,7 @@ npm run gauntlet -- --prompt-file ./prompt.txt
 npm run gauntlet -- --models qwen3-0.6b,lfm2.5-350m
 ```
 
-See [`.ai/gauntlet.md`](./.ai/gauntlet.md) for artifact verification,
+See [`.ai/testing.md`](./.ai/testing.md) for artifact verification,
 scheduling, samples, output layout, and the required false-positive/
 false-negative classification loop.
 
@@ -658,7 +713,7 @@ Bundle any component with the Snice runtime for use without npm install:
 
 - Works in any project (vanilla JS, React, Vue, etc.)
 - No Snice dependency required
-- Runtime ~34KB gzip, components ~1-118KB each
+- Runtime ~34KB gzip, components ~1-119KB each
 - IIFE format for script tags
 
 ### CLI Usage
@@ -868,6 +923,7 @@ npm run build:website:full     # Build CDN assets and website
 ```bash
 npm test                       # Complete source+built+coverage+browser+site gate
 npm run test:source            # Test package source files
+npm run test:matrix            # Table feature-combination matrix (opt-in fuzz tier)
 npm run test:distribution      # Build and test dist/ output
 npm run test:cdn               # Test CDN bundles
 npm run test:react             # Test React wrappers

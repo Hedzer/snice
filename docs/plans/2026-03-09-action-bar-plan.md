@@ -10,7 +10,7 @@
 
 **Design doc:** `docs/plans/2026-03-09-action-bar-design.md`
 
-**Component checklist:** `.ai/component-checklist.md` — verify ALL items before marking complete.
+**Component checklist:** `.ai/workflow.md` — verify ALL items before marking complete.
 
 ## REQUIRED READING — Complete ALL before writing any code
 
@@ -22,13 +22,13 @@
 3. `docs/ai/DEVELOPMENT.md` — build system, testing, component file structure, adding components checklist, CDN builds, React adapters, test generation, component template
 
 ### Internal coding standards (read third — these are mandatory)
-4. `.ai/coding-standards.md` — REQUIRED decorator patterns (@query, @on, @dispatch, @ready, @dispose, @observe, @watch, @request/@respond), CSS theme integration with fallbacks, units (rem vs px), two-tier variable pattern, container component dual API, dos and don'ts
-5. `.ai/component-checklist.md` — every item must be satisfied before component is complete
-6. `.ai/component-docs-guide.md` — exact doc format for both human and AI docs, section order, writing rules
-7. `.ai/notes.md` — project organization (customer-facing vs internal), file naming, camera/timer rules, scroll spy notes
-8. `.ai/playwright-testing.md` — E2E testing rules, .debug/ only for temp files, always headless
+4. `.ai/style.md` — REQUIRED decorator patterns (@query, @on, @dispatch, @ready, @dispose, @observe, @watch, @request/@respond), CSS theme integration with fallbacks, units (rem vs px), two-tier variable pattern, container component dual API, dos and don'ts
+5. `.ai/workflow.md` — every item must be satisfied before component is complete
+6. `.ai/style.md` — exact doc format for both human and AI docs, section order, writing rules
+7. `.ai/gotchas.md` — project organization (customer-facing vs internal), file naming, camera/timer rules, scroll spy notes
+8. `.ai/testing.md` — E2E testing rules, .debug/ only for temp files, always headless
 9. `.ai/tasks.md` — has pending tasks list AND required snice decorator patterns reference at the bottom
-10. `.ai/release-checklist.md` — release process, when to manually update llms.txt
+10. `.ai/pr-workflow.md` — release process, when to manually update llms.txt
 
 ### Design spec (read fourth)
 11. `docs/plans/2026-03-09-action-bar-design.md` — the design spec for this component
@@ -110,7 +110,7 @@ git commit -m "feat(action-bar): add type definitions"
 
 **Files:**
 - Create: `components/action-bar/snice-action-bar.css`
-- Reference: `.ai/coding-standards.md` for theme token patterns, units, fallbacks
+- Reference: `.ai/style.md` for theme token patterns, units, fallbacks
 
 **Step 1: Read theme.css for available tokens**
 
@@ -511,11 +511,11 @@ git commit -m "feat(action-bar): add full showcase"
 **Files:**
 - Create: `docs/components/action-bar.md` (human-friendly)
 - Create: `docs/ai/components/action-bar.md` (token-efficient)
-- Reference: `.ai/component-docs-guide.md` for exact format
+- Reference: `.ai/style.md` for exact format
 
 **Step 1: Write human docs**
 
-Follow the section order from component-docs-guide.md:
+Follow the section order from `.ai/style.md`:
 1. Title + tag name
 2. One-sentence description
 3. Basic usage
@@ -646,7 +646,7 @@ Expected: ALL PASS
 
 **Step 6: Verify against component checklist**
 
-Run through every item in `.ai/component-checklist.md`:
+Run through every item in `.ai/workflow.md`:
 - [ ] Pre-implementation items
 - [ ] Implementation items
 - [ ] Testing items

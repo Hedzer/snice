@@ -89,7 +89,7 @@ describe('Snice agent guidance', () => {
       read('.agents/skills/snice/SKILL.md'),
       read('bin/templates/AI_GUIDANCE.md'),
       read('docs/ai/README.md'),
-      read('.ai/coding-standards.md')
+      read('.ai/style.md')
     ].join('\n');
     expect(files).not.toMatch(/No [`]?@state/);
     expect(files).not.toMatch(/No [`]?reflect/);

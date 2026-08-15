@@ -41,7 +41,7 @@ select-all), ~4 s full renderBody @10k, ~6.6 s per sort click (render-bound),
    snice-cell-actions.css:40 uses var(--snice-color-text, rgb(23 23 23 / .05))
    — theme token as background, tint only as unreachable fallback.
 6. **row-clicked not composed.** snice-table.ts:2191-2193 raw dispatchEvent
-   without bubbles/composed, violating .ai/coding-standards.md; invisible
+   without bubbles/composed, violating .ai/style.md; invisible
    outside shadow boundaries.
 7. **Error state unwired.** Failed remote load only console.errors
    (snice-table.ts:252-254) then shows generic "No data". A designed

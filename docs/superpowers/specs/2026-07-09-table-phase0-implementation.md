@@ -9,7 +9,7 @@ the same discipline:
 - Test homes: `tests/components/table-*.test.ts` (one themed file per concern,
   matching existing `table-filter.test.ts` style; helpers may mirror the
   `createTable` helper in `tests/components/table.test.ts`).
-- Conventions: read `.ai/coding-standards.md` first. No `lit` mentions. CSS
+- Conventions: read `.ai/style.md` first. No `lit` mentions. CSS
   always `var(--snice-*, fallback)` with exact theme.css defaults.
 - Verify after each task: `npx vitest run tests/components/` green, zero new
   stderr. Do NOT run the full npm test (the coordinator does that between
@@ -176,7 +176,7 @@ d. **Sticky header** — primary path: `thead th` get `position: sticky; top: 0`
   disjoint regions but still run sequentially; 2 and 3 both live in the
   keyboard/virtualizer seam and MUST follow 1/4).
 - Full `npm test` + commit between tasks is the coordinator's job.
-- Each agent reads: `.ai/coding-standards.md`, this spec, parent design spec.
+- Each agent reads: `.ai/style.md`, this spec, parent design spec.
 
 ## Task 5 — real-browser e2e findings (added 2026-07-10; dispatch after Task 3)
 

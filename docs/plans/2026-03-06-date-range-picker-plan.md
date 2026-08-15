@@ -14,8 +14,8 @@
 - Date-picker types: `components/date-picker/snice-date-picker.types.ts` (type patterns)
 - Date-picker tests: `tests/components/date-picker.test.ts` (test patterns)
 - Test utils: `tests/components/test-utils.ts` (`createComponent`, `queryShadow`, `wait`)
-- Coding standards: `.ai/coding-standards.md` (decorator patterns, CSS token rules)
-- Component checklist: `.ai/component-checklist.md` (completion criteria)
+- Coding standards: `.ai/style.md` (decorator patterns, CSS token rules)
+- Component checklist: `.ai/workflow.md` (completion criteria)
 - Design doc: `docs/plans/2026-03-06-date-range-picker-design.md`
 
 ---
@@ -157,7 +157,7 @@ Base calendar styles on `components/date-picker/snice-date-picker.css`. Key addi
 - `.presets` — preset button list
 - `.calendar-body` — flex container for presets + calendar grid(s)
 
-All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in px. See `.ai/coding-standards.md` for full token reference.
+All CSS must use `var(--snice-*, fallback)` pattern. Spacing in rem, borders in px. See `.ai/style.md` for full token reference.
 
 ```css
 /* Date Range Picker Component Styles */
@@ -987,7 +987,7 @@ If anything failed, fix and commit.
 
 **Step 1: Write human docs**
 
-Follow the format in `.ai/component-docs-guide.md`. Section order: Title, Description, Basic Usage, Importing, Examples (basic, formats, sizes, variants, dual column, presets, constraints, states), Slots, Properties, Events, Methods, CSS Custom Properties.
+Follow the format in `.ai/style.md`. Section order: Title, Description, Basic Usage, Importing, Examples (basic, formats, sizes, variants, dual column, presets, constraints, states), Slots, Properties, Events, Methods, CSS Custom Properties.
 
 **Step 2: Write AI docs**
 

@@ -159,7 +159,7 @@ Features: 7, 8, 9, 10, 12, 17, 21, 26, 33, 36, 37, 38
 
 ## Component Checklist
 
-Each phase must satisfy `.ai/component-checklist.md` before moving on. Key items:
+Each phase must satisfy `.ai/workflow.md` before moving on. Key items:
 
 - Types in `snice-table.types.ts`
 - CSS with `var(--snice-*, fallback)`, rem for spacing, px for borders
