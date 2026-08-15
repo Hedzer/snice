@@ -18,7 +18,7 @@ Display and select dates with event support, date restrictions, and locale-aware
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `value` | `Date \| string` | `new Date()` | Selected date |
+| `value` | `Date \| string \| null` | `null` | Selected date. `null` means nothing is selected — a fresh calendar marks today via `highlightToday`, it does not select it |
 | `view` | `'month' \| 'week' \| 'day'` | `'month'` | Calendar view |
 | `events` | `CalendarEvent[]` | `[]` | Calendar events |
 | `minDate` (attr: `min-date`) | `Date \| string` | `''` | Minimum selectable date |
@@ -26,8 +26,8 @@ Display and select dates with event support, date restrictions, and locale-aware
 | `disabledDates` | `(Date \| string)[]` | `[]` | Disabled dates (JS-only; no attribute) |
 | `highlightToday` (attr: `highlight-today`) | `boolean` | `true` | Highlight today's date |
 | `noDaySelect` (attr: `no-day-select`) | `boolean` | `false` | Display-only mode: day clicks neither select/highlight nor fire `calendar-change`; event bars stay interactive |
-| `cellSizing` (attr: `cell-sizing`) | `'square' \| 'stretch'` | `'square'` | `square` keeps day cells as tall as the column is wide; `stretch` lets rows collapse to their content and event-lane reservation |
-| `showWeekNumbers` (attr: `show-week-numbers`) | `boolean` | `false` | Show week numbers |
+| `cellSizing` (attr: `cell-sizing`) | `'square' \| 'stretch'` | `'square'` | `square` keeps day cells as tall as the column is wide; `stretch` lets rows collapse to their content. Either way the cell's height is what sets how many event lanes are visible — see [Event lanes and the `+N more` chip](#event-lanes-and-the-n-more-chip) |
+| `showWeekNumbers` (attr: `show-week-numbers`) | `boolean` | `false` | Add a leading week-number column — see [With week numbers](#with-week-numbers) |
 | `firstDayOfWeek` (attr: `first-day-of-week`) | `number` | `0` | First day of week (0=Sun, 1=Mon) |
 | `locale` | `string` | `'en-US'` | Locale for formatting |
 
@@ -87,8 +87,10 @@ Style internal elements from outside the shadow DOM using `::part()`.
 | `header` | The header with month title and navigation buttons |
 | `grid` | The day cells grid |
 | `more-chip` | A day's `+N more` overflow chip |
+| `week-number` | A week-number cell in the `show-week-numbers` column |
+| `week-number-header` | The empty corner cell above the week-number column |
 | `event-bar` | An event stripe (plus any `className` you set on the event) |
-| `event-avatar` | The `<snice-avatar>` rendered at the start of an event bar |
+| `event-avatar` | The `<snice-avatar>` at the start of an event bar (segments ≥ `4.5rem` only) |
 | `event-tooltip` | The shared tooltip overlay shown on event hover |
 | `event-popover` | The popover opened by a `popover`-enabled event |
 
@@ -136,10 +138,50 @@ Events render as continuous stripes, the way professional calendars draw them:
 an event with an `end` date spans all of its days as one bar per week row,
 chopped at week boundaries with squared corners so consecutive rows read as a
 single bar (the title repeats on each row). Concurrent events stack into
-lanes — earlier start first, longer event first on ties. Up to three lanes are
-shown; days with deeper stacks get a `+N more` chip. Each bar exposes a
+lanes — earlier start first, longer event first on ties. How many lanes are
+visible is derived from the room a day cell has, week by week (see
+[Event lanes and the `+N more` chip](#event-lanes-and-the-n-more-chip)); days
+with deeper stacks get a `+N more` chip. Each bar exposes a
 `part="event-bar"` for styling and dispatches `calendar-event-click` when
 clicked.
+
+### Event lanes and the `+N more` chip
+
+There is no fixed lane limit. Each week shows as many 1.375rem lanes as fit in
+its day cells, above the 2.125rem day-number strip, keeping 1rem for the
+`+N more` chip when the stack runs deeper than the cell; at least one lane is
+always drawn. So the visible depth follows whatever gives the cell its height:
+
+- **`cell-sizing="square"` (the default).** The cell is as tall as the column is
+  wide (`100cqw / 7`), so a wider calendar shows more lanes. Note the built-in
+  `max-width: 37.5rem`: at the widest default calendar a cell is about 5.4rem,
+  which affords two lanes (one once the chip claims its strip). Lift the cap
+  with `snice-calendar::part(base) { max-width: none }`, or give the calendar a
+  height, to go deeper. Narrow calendars therefore show fewer stripes than the
+  flat three-lane cap this replaced — give the calendar room if you want more.
+- **A height of your own.** Give the calendar a definite height — an inline
+  `height`, a CSS rule, or a sized flex/grid parent — and its six week rows
+  share the room under the header. A full-page calendar shows seven or eight
+  stripes a day instead of collapsing them into a chip:
+
+  ```css
+  snice-calendar { height: 100%; }   /* inside a sized layout slot */
+  ```
+
+- **`cell-sizing="stretch"` with no height imposed.** Rows collapse to their
+  content, so there is no budget to run out of: every lane is drawn and no chip
+  appears.
+
+The count is re-derived whenever the calendar's box changes, so resizing the
+window or the layout slot is enough — you do not need to re-assign `events`.
+
+A busy week does not grow taller than the rest of the grid as long as its cells
+can hold the stack they show: one lane needs 3.5rem, and one lane plus the
+`+N more` chip needs 4.5rem. Below that the row still stretches to that floor —
+so with the default square sizing, calendars under roughly 500px wide (a cell
+under 4.5rem) keep the uneven row the reservation produces. When there is no
+layout to measure at all (a headless DOM, a detached or `display: none`
+calendar) the calendar falls back to three lanes.
 
 The `+N more` chip is a control of its own: it exposes `part="more-chip"`, is
 keyboard-reachable (`role="button"`, Enter/Space), and dispatches
@@ -170,6 +212,14 @@ snice-calendar::part(event-bar) { font-weight: 500; }
 snice-calendar::part(urgent) { background: crimson; }
 ```
 
+The title is the payload and the avatar is an adornment, so a bar only carries
+the avatar when its segment has room for both. A segment narrower than `4.5rem`
+— a single day in a 400px-wide month grid is about 57px — renders the title
+alone and halves its inline padding to hand the title every pixel; the bar is
+marked `calendar__event-bar--compact` for styling. The measurement is per
+segment, so the same event keeps its avatar in a week where it spans several
+days, and the decision is re-taken whenever the calendar is resized.
+
 ```typescript
 calendar.events = [
   { id: 1, title: 'Incident review', start: '2024-06-18', className: 'urgent',
@@ -183,7 +233,9 @@ A per-event `tooltip` string shows on hover. For rich or lazily-loaded
 content, set the `eventTooltip` provider on the calendar — it runs when the
 pointer enters a bar and may return text, a DOM node, or a promise of either;
 results that resolve after the pointer left are discarded. The provider wins
-over `event.tooltip`. The overlay exposes `part="event-tooltip"`.
+over `event.tooltip`. The overlay exposes `part="event-tooltip"`, and paints on
+the shared tooltip surface — `--snice-tooltip-bg` / `--snice-tooltip-color`
+(the same pair `<snice-tooltip>` uses) restyle it in both themes.
 
 ```typescript
 calendar.eventTooltip = async (event) => {
@@ -247,6 +299,28 @@ Bars with a popover are keyboard-operable (`role="button"`, `tabindex="0"`,
 Enter/Space opens). Close programmatically with
 `calendar.closeEventPopover()`.
 
+### Overlay Placement
+
+Both overlays — the hover tooltip and the click popover — are anchored inside
+the calendar's own box (`::part(base)`), not to the viewport. The host declares
+`contain: layout style`, which makes it the containing block for any
+`position: fixed` descendant, so a viewport-anchored overlay would be offset by
+the calendar's own position on the page. They are placed next to their bar
+(popover below, tooltip above), flipped to the other side when the viewport
+edge is in the way, and clamped to it horizontally.
+
+Layout containment also makes the host a stacking context, so an open overlay
+cannot paint above content that follows the calendar on its own. While a
+tooltip or popover is showing, the host therefore carries an `overlay-open`
+attribute and lifts itself with `z-index: var(--snice-z-floating, 1000)`. The
+attribute is set and cleared by the component — treat it as read-only state,
+and match on it to restyle the lift:
+
+```css
+/* Keep the calendar under a sticky app header while an overlay is open. */
+snice-calendar[overlay-open] { z-index: 20; }
+```
+
 ### Date Restrictions
 
 Use `min-date` and `max-date` to constrain the selectable date range.
@@ -283,13 +357,30 @@ Use the `locale` attribute for locale-aware date formatting.
 <snice-calendar locale="fr-FR"></snice-calendar>
 ```
 
-### With Week Numbers
+### With week numbers
 
-Set `show-week-numbers` to display ISO week numbers.
+Set `show-week-numbers` to add a leading column that numbers each week row.
 
 ```html
 <snice-calendar show-week-numbers></snice-calendar>
 ```
+
+The numbering follows the start of the week:
+
+- `first-day-of-week="1"` (Monday) numbers weeks by **ISO-8601** — week 1 is the
+  week holding the year's first Thursday, so a January grid can open on week 52
+  or 53 of the previous year.
+- Any other start of week uses the common civil rule: **the week containing
+  January 1 is week 1**, counted from the year the week ends in.
+
+```html
+<!-- ISO week numbers, Monday-first -->
+<snice-calendar show-week-numbers first-day-of-week="1" locale="de-DE"></snice-calendar>
+```
+
+Style the column with `::part(week-number)` and `::part(week-number-header)`, or
+resize it with the `--calendar-week-number-width` custom property (default
+`2.25rem`).
 
 ### Programmatic Navigation
 

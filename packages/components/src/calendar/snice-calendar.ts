@@ -1,4 +1,4 @@
-import { element, property, styles, dispatch, ready, watch, css, request, dispose } from 'snice';
+import { element, property, styles, dispatch, ready, watch, observe, css, request, dispose } from 'snice';
 import '../avatar/snice-avatar';
 import type {
   SniceCalendarElement, CalendarView, CalendarEvent, CalendarEventTooltip,
@@ -8,8 +8,14 @@ import cssContent from './snice-calendar.css?inline';
 
 @element('snice-calendar')
 export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
+  /**
+   * The selected day, or `null` for "nothing selected yet" — the state a
+   * calendar starts in. A default of today would paint the selected
+   * background over today's own highlight, making `highlight-today` invisible
+   * and announcing `aria-selected` for a choice the user never made.
+   */
   @property({ type: Date })
-  value: Date | string = new Date();
+  value: Date | string | null = null;
 
   @property({ attribute: 'view' })
   view: CalendarView = 'month';
@@ -69,7 +75,18 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   private header!: HTMLElement;
   private grid!: HTMLElement;
   private dayCells: HTMLElement[] = [];
+  private weekNumberHeader!: HTMLElement;
+  private weekNumberCells: HTMLElement[] = [];
   private focusedDate: Date | null = null;
+
+  /**
+   * Columns the day grid is shifted by. The week-number column occupies the
+   * grid's first column, so every explicitly-placed child — weekday headers,
+   * day cells, event stripes — moves one column right while it is shown.
+   */
+  private get columnOffset(): number {
+    return this.showWeekNumbers ? 1 : 0;
+  }
 
   private computeRovingIndex(days: Date[]): number {
     // Prefer: focused → selected → today → first in-month day
@@ -222,7 +239,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       weekdayEl.className = 'calendar__weekday';
       weekdayEl.textContent = day;
       weekdayEl.style.gridRow = '1';
-      weekdayEl.style.gridColumn = String(i + 1);
+      weekdayEl.style.gridColumn = String(i + 1 + this.columnOffset);
       this.grid.appendChild(weekdayEl);
     });
 
@@ -242,7 +259,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
       dayCell.setAttribute('tabindex', i === 0 ? '0' : '-1');
 
       dayCell.style.gridRow = String(Math.floor(i / 7) + 2);
-      dayCell.style.gridColumn = String((i % 7) + 1);
+      dayCell.style.gridColumn = String((i % 7) + 1 + this.columnOffset);
 
       const dayNumber = document.createElement('div');
       dayNumber.className = 'calendar__day-number';
@@ -250,6 +267,28 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       this.grid.appendChild(dayCell);
       this.dayCells.push(dayCell);
+    }
+
+    // Week-number column: a header corner cell plus one row header per week
+    // row, all in the reserved first column. Built once here and attached only
+    // while `show-week-numbers` is on, so a calendar without it carries no
+    // extra nodes.
+    this.weekNumberHeader = document.createElement('div');
+    this.weekNumberHeader.className =
+      'calendar__week-number calendar__week-number--header';
+    this.weekNumberHeader.setAttribute('part', 'week-number-header');
+    this.weekNumberHeader.setAttribute('aria-hidden', 'true');
+    this.weekNumberHeader.style.gridRow = '1';
+    this.weekNumberHeader.style.gridColumn = '1';
+
+    for (let week = 0; week < 6; week++) {
+      const weekCell = document.createElement('div');
+      weekCell.className = 'calendar__week-number';
+      weekCell.setAttribute('part', 'week-number');
+      weekCell.setAttribute('role', 'rowheader');
+      weekCell.style.gridRow = String(week + 2);
+      weekCell.style.gridColumn = '1';
+      this.weekNumberCells.push(weekCell);
     }
 
     // Shared tooltip overlay for event bars — one element, repositioned per
@@ -300,6 +339,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     loading.textContent = 'Loading…';
     this.popoverEl.appendChild(loading);
     this.popoverEl.hidden = false;
+    this.syncOverlayLift();
     this.positionPopover(bar);
     document.addEventListener('keydown', this.boundPopoverEscape, true);
     document.addEventListener('mousedown', this.boundPopoverOutside, true);
@@ -334,10 +374,55 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.popoverEl.focus();
   }
 
+  /**
+   * Places an overlay at a point given in viewport coordinates.
+   *
+   * `:host` declares `contain: layout`, which makes the host — not the
+   * viewport — the containing block for its `position: fixed` descendants, so
+   * viewport coordinates written straight into `left`/`top` land the overlay a
+   * whole host-offset down the page. The overlays are `position: absolute`
+   * inside `.calendar` instead, and the target is converted into that box
+   * here, which is correct with or without the containment.
+   */
+  private placeOverlay(el: HTMLElement, viewportX: number, viewportY: number) {
+    // The containing block is the container's PADDING box, while the rect is
+    // its border box — `clientLeft`/`clientTop` are the border widths between
+    // them. They are 0 by default and non-zero only when a consumer borders
+    // the documented `::part(base)`, which would otherwise shift both overlays
+    // off their bar by that width.
+    const origin = this.container.getBoundingClientRect();
+    el.style.left = `${viewportX - origin.left - this.container.clientLeft}px`;
+    el.style.top = `${viewportY - origin.top - this.container.clientTop}px`;
+  }
+
+  /** Gap between a bar and its overlay, and the minimum viewport margin. */
+  private static readonly OVERLAY_GAP = 6;
+  private static readonly OVERLAY_EDGE = 4;
+
+  /** Clamps an overlay's left edge into the viewport. */
+  private clampOverlayX(left: number, width: number): number {
+    const edge = SniceCalendar.OVERLAY_EDGE;
+    const vw = window.innerWidth || 0;
+    return Math.max(edge, vw > 0 ? Math.min(left, vw - width - edge) : left);
+  }
+
   private positionPopover(bar: HTMLElement) {
     const rect = bar.getBoundingClientRect();
-    this.popoverEl.style.left = `${Math.max(4, rect.left)}px`;
-    this.popoverEl.style.top = `${rect.bottom + 6}px`;
+    const width = this.popoverEl.offsetWidth;
+    const height = this.popoverEl.offsetHeight;
+    const gap = SniceCalendar.OVERLAY_GAP;
+    const edge = SniceCalendar.OVERLAY_EDGE;
+    const vh = window.innerHeight || 0;
+
+    let y = rect.bottom + gap;
+    if (vh > 0 && y + height > vh - edge) {
+      // No room under the bar — flip above it, or pin to the bottom margin
+      // when the panel is taller than either side.
+      const above = rect.top - gap - height;
+      y = above >= edge ? above : Math.max(edge, vh - height - edge);
+    }
+
+    this.placeOverlay(this.popoverEl, this.clampOverlayX(rect.left, width), y);
   }
 
   closeEventPopover(options: { returnFocus?: boolean } = {}): void {
@@ -347,6 +432,7 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.popoverBar = null;
     this.popoverEl.hidden = true;
     this.popoverEl.replaceChildren();
+    this.syncOverlayLift();
     document.removeEventListener('keydown', this.boundPopoverEscape, true);
     document.removeEventListener('mousedown', this.boundPopoverOutside, true);
     if (options.returnFocus !== false && bar.isConnected) bar.focus();
@@ -382,11 +468,24 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.tooltipEl.hidden = false;
     this.tooltipBar = bar;
     bar.setAttribute('aria-describedby', this.tooltipEl.id);
+    this.syncOverlayLift();
+    this.positionTooltip(bar);
+  }
 
-    // Fixed positioning above the bar, clamped to the viewport.
+  private positionTooltip(bar: HTMLElement) {
     const rect = bar.getBoundingClientRect();
-    this.tooltipEl.style.left = `${Math.max(4, rect.left)}px`;
-    this.tooltipEl.style.top = `${Math.max(4, rect.top - this.tooltipEl.offsetHeight - 6)}px`;
+    const gap = SniceCalendar.OVERLAY_GAP;
+    const edge = SniceCalendar.OVERLAY_EDGE;
+
+    // Above the bar, or under it when the top of the viewport is in the way.
+    let y = rect.top - this.tooltipEl.offsetHeight - gap;
+    if (y < edge) y = rect.bottom + gap;
+
+    this.placeOverlay(
+      this.tooltipEl,
+      this.clampOverlayX(rect.left, this.tooltipEl.offsetWidth),
+      y,
+    );
   }
 
   private hideEventTooltip() {
@@ -394,6 +493,17 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.tooltipEl.hidden = true;
     this.tooltipBar?.removeAttribute('aria-describedby');
     this.tooltipBar = null;
+    this.syncOverlayLift();
+  }
+
+  /**
+   * Marks the host while a tooltip or popover is showing. Layout containment
+   * makes the host a stacking context, so an overlay can only paint above what
+   * follows the calendar if the host itself is lifted — see
+   * `:host([overlay-open])` in the stylesheet.
+   */
+  private syncOverlayLift() {
+    this.toggleAttribute('overlay-open', !!this.popoverBar || !!this.tooltipBar);
   }
 
   private updateView() {
@@ -405,6 +515,10 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     // Update day cells
     const days = this.getMonthDays();
     const currentMonth = this.displayDate.getMonth();
+
+    // The week-number column shifts every explicitly-placed grid child, so it
+    // is resolved before the cells are positioned.
+    this.syncWeekNumberColumn(days);
 
     // Resolve which cell should be tab-stoppable (roving tabindex).
     const rovingIndex = this.computeRovingIndex(days);
@@ -421,6 +535,10 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
 
       // Update classes (preserving role)
       cell.className = 'calendar__day';
+      // The week's first cell draws the grid's left edge. A class, not
+      // :nth-child — the week-number column adds siblings that would shift
+      // any positional selector.
+      if (i % 7 === 0) cell.classList.add('calendar__day--week-start');
       if (isOtherMonth) cell.classList.add('calendar__day--other-month');
       if (isToday) cell.classList.add('calendar__day--today');
       if (isSelected) cell.classList.add('calendar__day--selected');
@@ -447,16 +565,140 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     this.renderEventStripes(days);
   }
 
-  /** Visible stacking depth for event stripes; deeper lanes collapse into a
-   *  per-day "+N more" chip. */
-  private static readonly MAX_EVENT_LANES = 3;
+  /**
+   * Attaches or detaches the week-number column and re-places every
+   * explicitly-positioned grid child for the resulting column offset.
+   */
+  private syncWeekNumberColumn(days: Date[]) {
+    const show = this.showWeekNumbers;
+    this.container.classList.toggle('calendar--week-numbers', show);
+
+    if (show) {
+      // Inserted in reading order — the corner cell ahead of the weekday
+      // strip, each row header ahead of its week's day cells.
+      if (!this.weekNumberHeader.isConnected) {
+        this.grid.insertBefore(this.weekNumberHeader, this.grid.firstChild);
+      }
+      this.weekNumberCells.forEach((cell, week) => {
+        if (!cell.isConnected) this.grid.insertBefore(cell, this.dayCells[week * 7]);
+        const weekNumber = this.getWeekNumber(days[week * 7]);
+        cell.textContent = String(weekNumber);
+        cell.setAttribute('aria-label', `Week ${weekNumber}`);
+      });
+    } else {
+      this.weekNumberHeader.remove();
+      this.weekNumberCells.forEach(cell => cell.remove());
+    }
+
+    const offset = this.columnOffset;
+    const weekdays = this.grid.querySelectorAll('.calendar__weekday');
+    weekdays.forEach((el, i) => {
+      (el as HTMLElement).style.gridColumn = String(i + 1 + offset);
+    });
+    this.dayCells.forEach((cell, i) => {
+      cell.style.gridColumn = String((i % 7) + 1 + offset);
+    });
+  }
+
+  /**
+   * Number of the week that starts on `weekStart`.
+   *
+   * Monday-start calendars use ISO-8601 (week 1 is the week holding the year's
+   * first Thursday). Every other start-of-week uses the common civil rule —
+   * the week containing January 1 is week 1 — anchored on the year the week
+   * ends in, so the turn-of-year week is numbered once, not twice.
+   */
+  private getWeekNumber(weekStart: Date): number {
+    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+    const midnight = (y: number, m: number, d: number) => new Date(y, m, d).getTime();
+
+    if (this.firstDayOfWeek === 1) {
+      // The ISO week is named by its Thursday.
+      const thursday = new Date(
+        weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 3);
+      const isoYear = thursday.getFullYear();
+      // January 4 is always in ISO week 1; walk back to that week's Monday.
+      const jan4 = new Date(isoYear, 0, 4);
+      const week1Monday = midnight(isoYear, 0, 4 - ((jan4.getDay() + 6) % 7));
+      return 1 + Math.round((thursday.getTime() - week1Monday) / WEEK_MS);
+    }
+
+    const weekEnd = new Date(
+      weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 6);
+    const year = weekEnd.getFullYear();
+    const jan1 = new Date(year, 0, 1);
+    const week1Start = midnight(
+      year, 0, 1 - ((jan1.getDay() - this.firstDayOfWeek + 7) % 7));
+    return 1 + Math.round((
+      midnight(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate())
+      - week1Start) / WEEK_MS);
+  }
+
+  /** Event-lane geometry in rem — mirrors snice-calendar.css. */
+  private static readonly LANE_HEIGHT_REM = 1.375;
+  /** Day-number strip above the first lane (the constant in the cell's
+   *  min-height reservation). */
+  private static readonly LANE_STACK_TOP_REM = 2.125;
+  /** Strip the "+N more" chip claims when a stack overflows. */
+  private static readonly MORE_CHIP_REM = 1;
+  /** Intrinsic floor of a `cell-sizing="stretch"` cell. */
+  private static readonly STRETCH_FLOOR_REM = 3;
+  /** Lane depth used when there is no layout to measure (headless DOM,
+   *  detached, `display: none`). */
+  private static readonly DEFAULT_EVENT_LANES = 3;
+  /**
+   * Narrowest segment, in rem, that still carries an event avatar.
+   *
+   * A one-day chip in a 400px month grid is ~57px wide; the avatar, its gap,
+   * and the bar padding leave the title three characters ("Des…"). The title
+   * is the payload and the avatar is an adornment, so — like every
+   * professional calendar — a segment that cannot carry both keeps the title
+   * and drops the adornment. 4.5rem is the width at which a default-size
+   * title still reads next to the avatar.
+   */
+  private static readonly AVATAR_MIN_SEGMENT_REM = 4.5;
+
+  /**
+   * How many event lanes fit in a day cell, and how many still fit once the
+   * "+N more" chip claims its strip.
+   *
+   * Measured from the cell's own height with every lane reservation cleared,
+   * so the budget follows whatever sizes the cell — the square baseline
+   * (`100cqw / 7`), a height the host imposes on the calendar, or the stretch
+   * floor — and never feeds back on itself. A `cell-sizing="stretch"` cell the
+   * host does not constrain has no budget at all: its row grows to fit every
+   * lane, which is what "collapse to content" means.
+   */
+  private laneBudget(): { fit: number; withMore: number; height: number; rem: number } {
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const height = this.dayCells[0]?.getBoundingClientRect().height ?? 0;
+    if (!height) {
+      const depth = SniceCalendar.DEFAULT_EVENT_LANES;
+      return { fit: depth, withMore: depth, height: 0, rem };
+    }
+    if (this.cellSizing === 'stretch'
+      && height <= SniceCalendar.STRETCH_FLOOR_REM * rem + 1) {
+      return { fit: Infinity, withMore: Infinity, height, rem };
+    }
+    const lanesIn = (reserve: number) => Math.max(1, Math.floor(
+      (height / rem - SniceCalendar.LANE_STACK_TOP_REM - reserve)
+      / SniceCalendar.LANE_HEIGHT_REM));
+    return {
+      fit: lanesIn(0),
+      withMore: lanesIn(SniceCalendar.MORE_CHIP_REM),
+      height,
+      rem,
+    };
+  }
 
   /**
    * Render events as continuous stripes: one bar per (event × week row),
    * spanning the event's days in that week and chopped at week boundaries
    * with continues-left/right styling. Overlapping events stack into lanes
    * per week — earlier start first, longer event first on ties — like
-   * professional calendars.
+   * professional calendars. How many of those lanes are drawn is the week's
+   * share of the day cell's height (see laneBudget); the rest collapse into
+   * the day's "+N more" chip.
    */
   private renderEventStripes(days: Date[]) {
     this.closeEventPopover({ returnFocus: false }); // anchors are re-created
@@ -516,13 +758,25 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     const hiddenPerDay = new Array(dayTimes.length).fill(0);
     const weekCount = Math.floor(dayTimes.length / 7);
     const weekLaneCounts = new Array(weekCount).fill(0);
+    // Measured before a single bar or reservation goes back in, so the budget
+    // reflects the room the row has of its own.
+    const budget = this.laneBudget();
+    // Segment width comes from the same measured cell the lane budget uses, so
+    // the avatar decision follows the calendar's real box and is re-taken by
+    // the resize observer. No layout to measure → nothing is dropped.
+    const cellWidth = this.dayCells[0]?.getBoundingClientRect().width ?? 0;
+    const avatarMinWidth = SniceCalendar.AVATAR_MIN_SEGMENT_REM * budget.rem;
 
     for (let week = 0; week < weekCount; week++) {
       const weekStart = week * 7;
       const weekEnd = weekStart + 6;
       // lanes[lane] holds the occupied [startCol, endCol] ranges in this week.
       const lanes: Array<Array<[number, number]>> = [];
+      const placed: Array<{ item: Segmentable; lane: number; segStart: number; segEnd: number }> = [];
+      let stackDepth = 0;
 
+      // Lane assignment first: how deep this week stacks decides whether the
+      // "+N more" chip is needed at all, and the chip costs a strip of height.
       for (const item of resolved) {
         if (item.endIdx < weekStart || item.startIdx > weekEnd) continue;
 
@@ -534,23 +788,37 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         let lane = 0;
         while (lanes[lane]?.some(([s, e]) => startCol <= e && endCol >= s)) lane++;
         (lanes[lane] ??= []).push([startCol, endCol]);
-        weekLaneCounts[week] = Math.min(
-          Math.max(weekLaneCounts[week], lane + 1), SniceCalendar.MAX_EVENT_LANES);
+        placed.push({ item, lane, segStart, segEnd });
+        stackDepth = Math.max(stackDepth, lane + 1);
+      }
 
-        if (lane >= SniceCalendar.MAX_EVENT_LANES) {
+      const visibleLanes = stackDepth <= budget.fit ? stackDepth : budget.withMore;
+      weekLaneCounts[week] = Math.min(stackDepth, visibleLanes);
+
+      for (const { item, lane, segStart, segEnd } of placed) {
+        if (lane >= visibleLanes) {
           for (let i = segStart; i <= segEnd; i++) hiddenPerDay[i]++;
           continue;
         }
+
+        const startCol = segStart - weekStart;
+        const endCol = segEnd - weekStart;
 
         const continuesLeft = segStart > item.startIdx
           || (segStart === item.startIdx && item.startsBeforeGrid);
         const continuesRight = segEnd < item.endIdx
           || (segEnd === item.endIdx && item.endsAfterGrid);
 
+        // A segment too narrow for an avatar plus a legible title runs
+        // compact: title only, tighter inline padding.
+        const compact = cellWidth > 0
+          && cellWidth * (endCol - startCol + 1) < avatarMinWidth;
+
         const bar = document.createElement('div');
         bar.className = 'calendar__event-bar';
         if (continuesLeft) bar.classList.add('calendar__event-bar--continues-left');
         if (continuesRight) bar.classList.add('calendar__event-bar--continues-right');
+        if (compact) bar.classList.add('calendar__event-bar--compact');
 
         // A custom className rides along on both the class list and the part
         // attribute, so events are styleable from outside via
@@ -564,11 +832,12 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
         bar.setAttribute('data-event-id', String(item.event.id));
         bar.setAttribute('data-lane', String(lane));
         bar.style.gridRow = String(week + 2); // row 1 is the weekday header
-        bar.style.gridColumn = `${startCol + 1} / ${endCol + 2}`;
+        bar.style.gridColumn =
+          `${startCol + 1 + this.columnOffset} / ${endCol + 2 + this.columnOffset}`;
         bar.style.setProperty('--calendar-event-lane', String(lane));
         if (item.event.color) bar.style.background = item.event.color;
 
-        if (item.event.avatar) {
+        if (item.event.avatar && !compact) {
           const spec = typeof item.event.avatar === 'string'
             ? { src: item.event.avatar }
             : item.event.avatar;
@@ -652,15 +921,27 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     // Reserve row height for the lane stack (and the "+N more" chip) so
     // stripes never spill past their week row — every cell in a week shares
     // the reservation, since the grid row is as tall as its tallest cell.
+    // The reservation is only a floor: when the row already has the room it is
+    // left off, so the busy week's row stays level with the rest. That covers
+    // every cell tall enough for the stack it shows; the floor still bites
+    // below 3.5rem (the one lane always drawn) or 4.5rem once the chip claims
+    // its strip — square cells are that short on calendars under ~500px wide.
     for (let week = 0; week < weekCount; week++) {
       if (weekLaneCounts[week] === 0) continue;
       const weekHasMore = hiddenPerDay
         .slice(week * 7, week * 7 + 7).some(count => count > 0);
+      const needed = (SniceCalendar.LANE_STACK_TOP_REM
+        + weekLaneCounts[week] * SniceCalendar.LANE_HEIGHT_REM
+        + (weekHasMore ? SniceCalendar.MORE_CHIP_REM : 0)) * budget.rem;
+      if (budget.height && needed <= budget.height + 0.5) continue;
       for (let i = week * 7; i < week * 7 + 7; i++) {
         const cell = this.dayCells[i];
         if (!cell) continue;
         cell.style.setProperty('--calendar-week-lanes', String(weekLaneCounts[week]));
-        if (weekHasMore) cell.style.setProperty('--calendar-week-more', '1rem');
+        if (weekHasMore) {
+          cell.style.setProperty('--calendar-week-more',
+            `${SniceCalendar.MORE_CHIP_REM}rem`);
+        }
       }
     }
   }
@@ -752,7 +1033,11 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   }
 
   private isSelected(date: Date): boolean {
+    // No value means no selection at all — and an unparseable one selects
+    // nothing rather than throwing out of the render.
+    if (!this.value) return false;
     const valueDate = typeof this.value === 'string' ? new Date(this.value) : this.value;
+    if (!(valueDate instanceof Date) || isNaN(valueDate.getTime())) return false;
     return this.isSameDay(date, valueDate);
   }
 
@@ -832,10 +1117,30 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
   @watch('eventTooltip')
   @watch('noDaySelect')
   @watch('cellSizing')
+  @watch('showWeekNumbers')
+  @watch('highlightToday')
   handlePropertyChange() {
     if (this.grid) {
       this.updateView();
     }
+  }
+
+  /** Box the stripes were last laid out against, so a resize that changes
+   *  nothing (including the one the render itself causes) is a no-op. */
+  private laidOutFor = '';
+
+  /**
+   * The lane budget comes from the cell's height, and that height follows the
+   * calendar's own box — column width in square mode, the host's height when
+   * it has one. Re-stripe when the box actually changes.
+   */
+  @observe('resize', { throttle: 100 })
+  handleCalendarResize(entry: ResizeObserverEntry) {
+    if (!this.grid) return;
+    const box = `${Math.round(entry.contentRect.width)}x${Math.round(entry.contentRect.height)}`;
+    if (box === this.laidOutFor) return;
+    this.laidOutFor = box;
+    this.updateView();
   }
 
   @watch('locale')
@@ -846,14 +1151,19 @@ export class SniceCalendar extends HTMLElement implements SniceCalendarElement {
     const existing = this.grid.querySelectorAll('.calendar__weekday');
     existing.forEach(el => el.remove());
     const weekdays = this.getWeekdays();
+    // Anchor on the first day cell rather than a child index: the week-number
+    // column adds siblings ahead of it, so a positional index would interleave
+    // the strip with the grid's other children.
+    const firstRow = this.weekNumberCells[0]?.isConnected
+      ? this.weekNumberCells[0] : this.dayCells[0];
+    const anchor = firstRow ?? null;
     weekdays.forEach((day, i) => {
       const weekdayEl = document.createElement('div');
       weekdayEl.className = 'calendar__weekday';
       weekdayEl.textContent = day;
       weekdayEl.style.gridRow = '1';
-      weekdayEl.style.gridColumn = String(i + 1);
-      // Insert before the first day cell so header row stays at the top
-      this.grid.insertBefore(weekdayEl, this.grid.children[i] || null);
+      weekdayEl.style.gridColumn = String(i + 1 + this.columnOffset);
+      this.grid.insertBefore(weekdayEl, anchor);
     });
     this.updateView();
   }

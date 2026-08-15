@@ -8,9 +8,33 @@
   contain: layout style;
 }
 
+/* Layout containment also makes this host a stacking context, so the event
+   overlays cannot paint above whatever follows the calendar on the page (a
+   second calendar right below is itself a contained stacking context later in
+   tree order, and would cover an open popover completely). z-index applies to
+   a contained element even unpositioned; `position: relative` keeps the lift
+   working if a consumer drops the containment. Set only while an overlay is
+   open, so a plain calendar stays out of the page's stacking order. */
+:host([overlay-open]) {
+  position: relative;
+  z-index: var(--snice-z-floating, 1000);
+}
+
 .calendar {
   width: 100%;
   max-width: 37.5rem; /* 600px */
+  /* Containing block for the tooltip/popover overlays. They are absolutely
+     positioned against this box rather than `fixed` against the viewport:
+     `contain: layout` on the host already re-bases fixed descendants onto the
+     host, so "fixed" could never mean the viewport here. */
+  position: relative;
+  /* A host with a definite height hands it down: the grid takes the room left
+     under the header and the week rows share it, which is what grows the
+     event-lane budget. An auto-height host resolves `height: 100%` to auto,
+     so nothing changes for the default sizing. */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar__header {
@@ -61,13 +85,29 @@
 
 .calendar__grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  /* minmax(0, …), not a bare 1fr: a bare fr floors at the column's min-content
+     width, so the weekday labels could widen their columns past the grid and
+     make the seven day columns unequal. */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* Row 1 is the weekday header. Sizing it min-content (not auto) keeps it out
+     of `align-content: stretch`, so surplus height from a definite-height host
+     goes to the six week rows alone. */
+  grid-template-rows: min-content;
+  flex: 1 1 auto;
+  /* Containing block for the event bars: absolutely-positioned grid items
+     still land in their grid area, but stop contributing to row sizing — a
+     busy week must not make its row taller than the rest. */
+  position: relative;
   background: var(--snice-color-surface, rgb(255 255 255));
   /* Lets day cells derive a square min-height from the column width. */
   container-type: inline-size;
 }
 
 .calendar__weekday {
+  box-sizing: border-box;
+  /* The label follows its column, never the other way round. */
+  min-width: 0;
+  overflow: hidden;
   padding: var(--snice-spacing-sm, 0.75rem);
   text-align: center;
   font-size: var(--snice-font-size-xs, 0.75rem);
@@ -82,10 +122,13 @@
   /* Cells stretch to their grid row, and the row is as tall as the largest
      cell min-height — so every cell in a week row is identical and rows
      tile without gaps. 100cqw/7 (the column width) keeps cells square by
-     default; the reservation grows past square with the week's event-lane
-     stack (day-number strip + lanes + optional "+N more" chip). Never size
-     cells with aspect-ratio: it transfers heights into min-widths and
-     desynchronizes cell heights within a row. */
+     default. The lane reservation (day-number strip + lanes + optional
+     "+N more" chip) is only a floor: the visible lane count is derived from
+     the height the cell already has, so this term bites only when the cell is
+     shorter than the one lane that is always drawn — 3.5rem, or 4.5rem once
+     the chip claims its strip. Never size cells with aspect-ratio: it
+     transfers heights into min-widths and desynchronizes cell heights within
+     a row. */
   box-sizing: border-box;
   min-width: 0;
   min-height: max(calc(100cqw / 7), 3rem, calc(2.125rem
@@ -112,8 +155,16 @@
   box-shadow: inset 0 0 0 2px var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
-.calendar__day:nth-child(7n + 1) {
+/* The week's first cell closes the grid's left edge. Keyed off a class, not
+   :nth-child — the week-number column inserts siblings that would shift any
+   positional selector off its cells. */
+.calendar__day--week-start {
   border-left: 1px solid var(--snice-color-border, rgb(226 226 226));
+}
+
+/* With week numbers shown, that edge belongs to the number column instead. */
+.calendar--week-numbers .calendar__day--week-start {
+  border-left: none;
 }
 
 /* cell-sizing="stretch": rows collapse to content + event-lane reservation
@@ -191,7 +242,9 @@
   display: flex;
   align-items: center;
   gap: var(--snice-spacing-3xs, 0.125rem);
-  align-self: start;
+  /* Placed by grid-row/grid-column, sized to that area by the insets. */
+  position: absolute;
+  inset: 0 0 auto 0;
   margin-top: calc(1.875rem + var(--calendar-event-lane, 0) * 1.375rem);
   margin-inline: var(--snice-spacing-3xs, 0.125rem);
   height: 1.125rem;
@@ -206,6 +259,13 @@
   cursor: pointer;
   z-index: 1;
   transition: opacity var(--snice-transition-fast, 150ms) ease;
+}
+
+/* A segment too narrow to carry an avatar and a legible title (see
+   AVATAR_MIN_SEGMENT_REM): the avatar is not rendered at all, and the inline
+   padding halves so every remaining pixel goes to the title. */
+.calendar__event-bar--compact {
+  padding-inline: var(--snice-spacing-3xs, 0.125rem);
 }
 
 .calendar__event-title {
@@ -225,7 +285,8 @@
 }
 
 .calendar__popover {
-  position: fixed;
+  /* Anchored inside `.calendar` — see the note on that rule. */
+  position: absolute;
   z-index: var(--snice-z-floating, 1000);
   min-width: 14rem;
   max-width: 22rem;
@@ -252,13 +313,18 @@
 }
 
 .calendar__tooltip {
-  position: fixed;
+  /* Anchored inside `.calendar` — see the note on that rule. */
+  position: absolute;
   z-index: var(--snice-z-floating, 1000);
   max-width: 18rem;
   padding: var(--snice-spacing-2xs, 0.25rem) var(--snice-spacing-xs, 0.5rem);
   border-radius: var(--snice-border-radius-md, 0.25rem);
+  /* The tooltip paints its own dark surface in every theme, so its foreground
+     is the shared tooltip pair (<snice-tooltip> uses the same tokens) — NOT
+     --snice-color-text-inverse, which flips to near-black in the dark theme
+     and left the tooltip's secondary lines unreadable on this surface. */
   background: var(--snice-tooltip-bg, rgb(51 51 51));
-  color: var(--snice-color-text-inverse, rgb(250 250 250));
+  color: var(--snice-tooltip-color, rgb(255 255 255));
   font-size: var(--snice-font-size-xs, 0.75rem);
   line-height: 1.4;
   box-shadow: var(--snice-shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.1));
@@ -302,13 +368,51 @@
   box-shadow: 0 0 0 var(--snice-focus-ring-width, 2px) var(--snice-focus-ring-color, rgb(59 130 246 / 0.5));
 }
 
+/* show-week-numbers: a reserved leading column. The day grid keeps its seven
+   equal columns; only the week-number strip is added, and the square-cell
+   baseline discounts it so cells stay square. */
+.calendar--week-numbers .calendar__grid {
+  grid-template-columns:
+    var(--calendar-week-number-width, 2.25rem) repeat(7, minmax(0, 1fr));
+}
+
+/* The number column takes its width out of the day columns, so the weekday
+   labels give back their generous side padding to stay uncropped. */
+.calendar--week-numbers .calendar__weekday {
+  padding-inline: var(--snice-spacing-2xs, 0.25rem);
+}
+
+.calendar--week-numbers .calendar__day {
+  min-height: max(
+    calc((100cqw - var(--calendar-week-number-width, 2.25rem)) / 7), 3rem,
+    calc(2.125rem
+      + var(--calendar-week-lanes, 0) * 1.375rem
+      + var(--calendar-week-more, 0rem)));
+}
+
 .calendar__week-number {
-  padding: var(--snice-spacing-sm, 0.75rem) var(--snice-spacing-xs, 0.5rem);
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--snice-spacing-xs, 0.5rem) var(--snice-spacing-2xs, 0.25rem);
   text-align: center;
   font-size: var(--snice-font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
   color: var(--snice-color-text-tertiary, rgb(115 115 115));
   background: var(--snice-color-surface-container-low, rgb(250 250 250));
-  border-right: 1px solid var(--snice-color-border, rgb(226 226 226));
+  /* Matches the day cells: each draws its right and bottom rules, and the
+     column draws the grid's left edge. */
+  border: 1px solid var(--snice-color-border, rgb(226 226 226));
+  border-top: none;
+}
+
+/* The corner cell sits in the weekday header row, which carries only an
+   underline — no side rules. */
+.calendar__week-number--header {
+  background: var(--snice-color-surface, rgb(255 255 255));
+  border: none;
+  border-bottom: 1px solid var(--snice-color-border, rgb(226 226 226));
 }
 
 /* Week view */

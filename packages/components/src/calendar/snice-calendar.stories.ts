@@ -218,8 +218,12 @@ export const LocaleEnUSVsDeDEVsJaJP: Story = {
     de.style.cssText = 'max-width:400px;';
     de.setAttribute('locale', 'de-DE');
     de.setAttribute('first-day-of-week', '1');
+    const ja = document.createElement('snice-calendar');
+    ja.style.cssText = 'max-width:400px;';
+    ja.setAttribute('locale', 'ja-JP');
     wrap.appendChild(en);
     wrap.appendChild(de);
+    wrap.appendChild(ja);
     return wrap;
   },
 };
@@ -243,7 +247,9 @@ export const MultipleColoredEventsOnSameDate: Story = {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     const el = document.createElement('snice-calendar');
-    el.style.cssText = 'max-width:400px;';
+    // A height of its own, so the day cell has room for all three lanes and
+    // none of them collapse into a "+N more" chip.
+    el.style.cssText = 'max-width:30rem;height:46rem;';
     const d = addDays(today, 2);
     (el as any).events = [
       { id: 1, title: 'Event A', start: d, color: '#dc2626' },
@@ -262,6 +268,28 @@ export const ManyEventsOverflowWithNMore: Story = {
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
     const el = document.createElement('snice-calendar');
     el.style.cssText = 'max-width:400px;';
+    const od = addDays(today, 4);
+    (el as any).events = [
+      { id: 1, title: 'Alpha', start: od, color: '#dc2626' },
+      { id: 2, title: 'Beta', start: od, color: '#2563eb' },
+      { id: 3, title: 'Gamma', start: od, color: '#16a34a' },
+      { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
+      { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
+    ];
+    wrap.appendChild(el);
+    return wrap;
+  },
+};
+
+// h2: Adaptive lanes: the same five events in a tall calendar
+export const AdaptiveLanesInATallCalendar: Story = {
+  render: () => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem;';
+    const el = document.createElement('snice-calendar');
+    // A height of its own: the week rows share it, so the derived lane budget
+    // grows and the stack that collapses into "+4 more" is shown in full.
+    el.style.cssText = 'height:64rem;max-width:34rem;';
     const od = addDays(today, 4);
     (el as any).events = [
       { id: 1, title: 'Alpha', start: od, color: '#dc2626' },

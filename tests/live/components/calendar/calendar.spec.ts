@@ -61,15 +61,36 @@ test.describe('Snice Calendar grid geometry', () => {
           }
         });
 
-        // Rows without an event-lane reservation must be square: cell height
-        // equals the column width (within a border-rounding tolerance).
-        // cell-sizing="stretch" calendars opt out of the square minimum.
+        // Rows must be square: cell height equals the column width (within a
+        // border-rounding tolerance). Event lanes are budgeted against that
+        // height instead of growing past it, so a week carrying stripes is
+        // square too — only a cell too short for even one lane keeps the
+        // reservation that makes its row grow. cell-sizing="stretch" and
+        // calendars the page gives a height of their own opt out.
         rows.forEach((row, w) => {
-          if (cal.cellSizing === 'stretch') return;
+          if (cal.cellSizing === 'stretch' || cal.style.height) return;
           if (row.some(c => c.style.getPropertyValue('--calendar-week-lanes'))) return;
           const r = row[0].getBoundingClientRect();
           if (Math.abs(r.height - r.width) > 2) {
             problems.push(`cal[${calIdx}] week ${w}: not square (${Math.round(r.width)}x${Math.round(r.height)})`);
+          }
+        });
+
+        // The lane budget must be spent: no day collapses events into a
+        // "+N more" chip while its row still has room for another lane.
+        // Lane geometry mirrors snice-calendar.css (rem values × 16).
+        const laneStack = (lanes: number, chip: boolean) =>
+          (2.125 + lanes * 1.375 + (chip ? 1 : 0)) * 16;
+        rows.forEach((row, w) => {
+          const chips = row.filter(c => c.querySelector('.calendar__more'));
+          if (chips.length === 0) return;
+          const shown = new Set([...grid.querySelectorAll('.calendar__event-bar')]
+            .filter((b: any) => parseInt(b.style.gridRow, 10) - 2 === w)
+            .map((b: any) => b.getAttribute('data-lane'))).size;
+          const rowHeight = row[0].getBoundingClientRect().height;
+          if (shown > 0 && laneStack(shown + 1, true) <= rowHeight + 1) {
+            problems.push(`cal[${calIdx}] week ${w}: ${shown} lanes shown but `
+              + `${Math.round(rowHeight)}px of row fits another`);
           }
         });
 

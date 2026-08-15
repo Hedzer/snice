@@ -58,7 +58,8 @@ export interface CalendarEvent {
 }
 
 export interface SniceCalendarElement extends HTMLElement {
-  value: Date | string;
+  /** Selected day, or `null` when nothing is selected (the initial state). */
+  value: Date | string | null;
   view: CalendarView;
   events: CalendarEvent[];
   /** Lazy/rich tooltip provider for event bars; wins over `event.tooltip`. */

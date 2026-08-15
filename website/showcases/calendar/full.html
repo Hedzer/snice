@@ -38,6 +38,9 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
     }
+    .side-by-side--three {
+      grid-template-columns: repeat(3, 1fr);
+    }
     snice-calendar {
       max-width: 400px;
     }
@@ -130,7 +133,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <section>
     <h2>Locale: en-US vs de-DE vs ja-JP</h2>
-    <div class="side-by-side">
+    <div class="side-by-side side-by-side--three">
       <div>
         <h2>en-US</h2>
         <snice-calendar locale="en-US"></snice-calendar>
@@ -138,6 +141,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       <div>
         <h2>de-DE</h2>
         <snice-calendar locale="de-DE" first-day-of-week="1"></snice-calendar>
+      </div>
+      <div>
+        <h2>ja-JP</h2>
+        <snice-calendar locale="ja-JP"></snice-calendar>
       </div>
     </div>
   </section>
@@ -149,13 +156,20 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
 
   <section>
     <h2>Multiple colored events on same date</h2>
-    <snice-calendar id="cal-multi-events"></snice-calendar>
+    <snice-calendar id="cal-multi-events" style="height: 46rem; max-width: 30rem"></snice-calendar>
+    <div class="demo-status">Three same-day events, each with its own <code>color</code>. The calendar is given a height, so the day cell has room for all three lanes and none collapse into a "+N more" chip.</div>
   </section>
 
   <section>
     <h2>Many events (overflow with +N more)</h2>
     <snice-calendar id="cal-overflow"></snice-calendar>
     <div id="overflow-status" class="demo-status" role="status" aria-live="polite">Click the "+N more" chip — it reports its day and hidden count.</div>
+  </section>
+
+  <section>
+    <h2>Adaptive lanes: the same five events in a tall calendar</h2>
+    <snice-calendar id="cal-tall" style="height: 64rem; max-width: 34rem"></snice-calendar>
+    <div class="demo-status">Give the calendar a height and its week rows share it — the visible lane count is derived from the room a day cell has, so the stack that collapses into "+4 more" above is shown in full here.</div>
   </section>
 
   <script type="module">
@@ -169,10 +183,10 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
     // (rendered with <snice-avatar>), and lazy rich tooltips.
     const calDefault = document.getElementById('cal-default');
     calDefault.events = [
-      { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: 'assets/avatars/pravatar-40-alice.jpg?v=80938d7', name: 'Dana Ives' } },
+      { id: 'd1', title: 'Design sync', start: addDays(today, 1), color: '#2563eb', avatar: { src: '/assets/avatars/pravatar-40-alice.jpg?v=80938d7', name: 'Dana Ives' } },
       { id: 'd2', title: 'Offsite', start: addDays(today, 2), end: addDays(today, 9), color: '#0891b2', tooltip: 'Team offsite — Lisbon', popover: true },
       { id: 'd3', title: 'Release', start: addDays(today, 6), color: '#16a34a', popover: 'Ships v7.6 — changelog in #releases' },
-      { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: 'assets/avatars/pravatar-40-bob.jpg?v=80938d7', name: 'Sam Reyes' } },
+      { id: 'd4', title: 'On call', start: addDays(today, 12), end: addDays(today, 15), color: '#7c3aed', avatar: { src: '/assets/avatars/pravatar-40-bob.jpg?v=80938d7', name: 'Sam Reyes' } },
     ];
     // Click-to-open popover, loaded lazily (popover: true events only).
     calDefault.eventPopover = async (event) => {
@@ -262,6 +276,11 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('snice-
       { id: 4, title: 'Delta', start: od, color: '#7c3aed' },
       { id: 5, title: 'Epsilon', start: od, color: '#f59e0b' },
     ];
+    // Adaptive lanes: identical events, but the host hands this calendar a
+    // height — the week rows share it and the derived lane budget grows, so
+    // the same stack that collapses above is shown in full here.
+    document.getElementById('cal-tall').events = calOverflow.events.map(e => ({ ...e }));
+
     calOverflow.addEventListener('calendar-more-click', (e) => {
       const { date, count } = e.detail;
       document.getElementById('overflow-status').textContent =
