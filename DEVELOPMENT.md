@@ -607,6 +607,7 @@ testComponent({
 npm test                       # Complete required gate (source+built+browser+site)
 npm run test:source            # Test package source files
 npm run test:matrix            # Table feature-combination matrix (opt-in fuzz tier)
+npm run test:matrix:visual     # Same matrix in a real browser (on demand, chromium)
 npm run test:distribution      # Fresh build, then test dist/ output
 npm run test:cdn               # Fresh CDN build + artifact/runtime tests
 npm run test:react             # Fresh adapters + React tests
@@ -639,6 +640,7 @@ three tiers, and the difference between them is who asks for them.
 | Everyday | `vitest run`, `npm run test:source` | ~26s for `tests/components` | Every change |
 | Matrix (fuzz) | `npm run test:matrix` | ~100s across 52 files | Any change to table rendering — and once inside `npm test` |
 | Visual | Playwright (`tests/live`, `npm run test:browser`) | Slowest | When asked for, and in the full gate |
+| Visual matrix (true-visual) | `npm run test:matrix:visual` | ~57s, 1164 tests in chromium | On demand, when the table's *appearance* is in question. Never in the gate |
 
 **The everyday tier is deliberately screenshot-free and matrix-free.** The table
 feature-combination matrix in `tests/components/table-matrix/` crosses every
@@ -682,6 +684,113 @@ asserts through the matrix's own oracles.
 In the full gate, the matrix runs as its own `table matrix suite` stage exactly
 once, next to the source suite rather than per artifact flavour; see the comment
 in `tooling/testing/run-full-tests.js` for why.
+
+### The True-Visual Table Matrix
+
+The fuzz matrix above runs in happy-dom, which performs no layout. It owns
+*value* truth — which string belongs in which cell, for every pipeline and
+delivery pattern — and it cannot own *visual* truth, because in happy-dom every
+box measures zero, nothing is painted, and nothing can occlude anything.
+
+`tests/live/matrix/` is the real-browser twin. It mirrors the DOM matrix's
+dimensions exactly — `{local, remote}` x six pipelines x three delivery
+patterns x all 32 vectors of `{virtualize, height, squish, striped,
+selectable}`, the full 1152-combo product — and drives each combination in
+Chromium against its own fixture page, `tests/live/fixtures/table/matrix.html`.
+That page is a fixture, not a showcase: it demonstrates nothing to a reader and
+exists only so that a measurement means something.
+
+**It is an on-demand tier.** It is not part of `npm test`, and
+`tests/playwright.config.ts` explicitly ignores `live/matrix/**` so that
+`npm run test:browser:framework` — which targets all of `tests/live` — cannot
+sweep it in. Run it when you have changed how the table looks:
+
+```bash
+npm run test:matrix:visual                     # chromium only (default)
+npm run test:matrix:visual -- --all-engines    # chromium + firefox + webkit
+npm run test:matrix:visual -- --project=webkit # any explicit engine wins
+npm run test:matrix:visual -- --grep squish    # every other flag passes through
+```
+
+The runner (`tooling/testing/run-visual-matrix-tests.js`) manages the dev
+server on `:5566` the same way the other browser runners do: it reuses one that
+is already listening (probing both `127.0.0.1` and `[::1]`, since the server
+binds the v6 loopback) and only stops a server it started itself.
+
+It then asks for the fixture page and requires a 200 before it starts
+Playwright. A listener is not a server: this repo's vite config rebuilds
+components synchronously when a source file changes, so a dev server left open
+across an edit can hold the port while answering nothing. Without that check the
+symptom is hundreds of `net::ERR_ABORTED` specs and a "1144 did not run" tail,
+which reads like a broken suite rather than a broken server.
+
+**Two layers, deliberately different.** The obvious way to test appearance is
+to screenshot each cell and read its pixels. At ~100-300ms per element capture
+that is unaffordable a thousand times over, so the tier splits:
+
+*Layer 1 — geometry, computed style, and hit-testing — runs for every combo.*
+Each combo is mounted onto a page that is already open and measured in a single
+`page.evaluate`, which is why 1152 of them cost tens of milliseconds each. It
+asserts that rows are vertically disjoint and ascending, that cells are
+horizontally disjoint and sit inside their row, that a squished table's
+rightmost column edge lands on the frame's inner edge and its content ellipsises
+rather than clipping mid-glyph, that a sized host is filled to its bottom edge,
+that a virtualized body renders a contiguous window between two spacers, that
+`striped` resolves to two distinct row backgrounds and its absence to exactly
+one, and that a selection checkbox is painted at a visible size in every row.
+Its sharpest tool is `elementFromPoint`: three probes across every visible cell
+must land inside *that* cell, which is how a column whose text paints over its
+neighbour, a header that covers its first row, or an overlay that swallows the
+body gets caught. There is no unit-test equivalent of a hit-test.
+
+*Layer 2 — real screenshots — runs for six pinned marquee combos only*:
+striping, the loading spinner, the empty state, the squished right edge, the
+fill row, and density, each in both colour schemes. Layer 1 measures the model
+the browser built; it cannot tell you whether a colour that *differs* differs
+**visibly**. That distinction is not hypothetical — `striped` once applied
+correctly the whole time while painting a stripe two luminance points from the
+dark surface, which no computed-style assertion can fail on. So these six are
+captured for real, decoded inside the browser under test, and judged on WCAG
+contrast between painted samples. The PNGs are written to
+`test-results/matrix-visual/` so the frames can be opened and looked at.
+
+The marquee set is small on purpose. Screenshots are the expensive layer, and
+growing them is how this tier would stop finishing in a minute. New feature
+combinations belong in the layer-1 generator (`generateCombos()` in
+`tests/live/matrix/matrix-harness.ts`), which pays layer-1 prices.
+
+The measured cost of the full product is 1164 tests (1152 combos plus the twelve
+marquee captures) in 56.7 seconds in Chromium on four workers. All three engines
+pass; `--all-engines` roughly triples the wall time.
+
+**Known component defects are pinned, not softened.** The matrix policy in
+`.ai/fuzzing.md` says a combo that diverges from the docs is a finding: keep the
+correct assertion, pin it against a finding id, and report it. The DOM matrix
+uses `it.fails` for that. This tier uses the `WAIVERS` table in
+`matrix-harness.ts`, which is deliberately stricter than Playwright's
+`test.fail()` — that would mark the whole test expected-to-fail and quietly
+absorb an unrelated regression in the same combo. A waiver instead names the
+exact message it excuses; every other problem the combo reports still fails the
+test, and a waiver whose message stops appearing fails *itself*, so a fixed
+component cannot leave a stale excuse behind.
+
+One waiver is currently active. `VISUAL-MATRIX-fill-1` covers 96 combos: a
+local, sized, non-virtualized `<snice-table>` that renders its body a second
+time appends an inert filler row even though its content already overflows the
+frame — 487px of rows in a 318px frame, plus a 48-72px filler, leaving the frame
+scrolling about 73px past the last row into dead space. It reproduces without
+the harness:
+
+```js
+table.style.height = '320px';
+table.columns = columns;
+table.data = [];         await settle();   // empty body render
+table.data = twelveRows; await settle();   // filler appears — and stays
+```
+
+`initial` delivery never trips it (there is no prior empty render), remote
+delivery never trips it, and it does not self-correct after two seconds. The fix
+belongs in `updateFillRow()` in `packages/components/src/table/snice-table.ts`.
 
 ### Dumb-Agent Checker Gauntlet
 
@@ -924,6 +1033,7 @@ npm run build:website:full     # Build CDN assets and website
 npm test                       # Complete source+built+coverage+browser+site gate
 npm run test:source            # Test package source files
 npm run test:matrix            # Table feature-combination matrix (opt-in fuzz tier)
+npm run test:matrix:visual     # Same matrix in a real browser (on demand, chromium)
 npm run test:distribution      # Build and test dist/ output
 npm run test:cdn               # Test CDN bundles
 npm run test:react             # Test React wrappers

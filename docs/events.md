@@ -908,6 +908,55 @@ Manual dispatch remains valid when code needs direct access to the Event
 object, a dynamic event name, the cancellation boolean returned by
 `dispatchEvent()`, or a target other than the Snice host.
 
+### Cancelable Events (Suppressible Default Actions)
+
+`cancelable` is an `EventInit` field, so `@dispatch('my-event', { cancelable:
+true })` really does produce a cancelable event and a listener really can call
+`preventDefault()` on it.
+
+What the decorator cannot give you is the answer. `@dispatch` returns the
+method's own return value — the event `detail` — not the boolean
+`dispatchEvent()` produces, so the component has no way to find out that a
+listener cancelled the event. A component whose event carries a **default
+action it must be able to suppress** therefore dispatches by hand:
+
+```typescript
+@element('day-chip')
+class DayChip extends HTMLElement {
+  // Returns false when a listener called preventDefault().
+  private emitMoreClick(date: Date, count: number): boolean {
+    return this.dispatchEvent(new CustomEvent('more-click', {
+      detail: { date, count },
+      bubbles: true,
+      composed: true,
+      cancelable: true
+    }));
+  }
+
+  private handleChipClick(date: Date, count: number) {
+    // The application gets first refusal on the day.
+    if (!this.emitMoreClick(date, count)) return;
+    this.openBuiltInPanel(date);
+  }
+}
+```
+
+An application then chooses between the two behaviors with one line:
+
+```typescript
+// Keep the built-in behavior, just observe it
+chip.addEventListener('more-click', (e) => log(e.detail));
+
+// Replace the built-in behavior entirely
+chip.addEventListener('more-click', (e) => {
+  e.preventDefault();
+  openMyOwnDayView(e.detail.date);
+});
+```
+
+Components in the library that use this pattern: `snice-link`'s `navigate`,
+`snice-stepper`'s `step-change`, and `snice-calendar`'s `calendar-more-click`.
+
 ### Manual Escape Hatch
 
 ```typescript

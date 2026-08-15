@@ -7,6 +7,8 @@ npm test                   # Complete required gate (source, built, CDN, React,
 npm run test:source        # Source tests
 npm run test:matrix        # Table feature-combination matrix — opt-in fuzz tier,
                            # excluded from the default vitest include (.ai/fuzzing.md)
+npm run test:matrix:visual # Same matrix in a real browser — on-demand visual tier,
+                           # chromium by default, --all-engines for all three
 npm run test:distribution  # Fresh dist build + built tests
 npm run test:cdn           # CDN tests
 npm run test:react         # React tests
@@ -38,6 +40,11 @@ Permanent browser tests use the shared Chromium, Firefox, and WebKit project
 matrix in `tests/playwright.config.ts`. Wait for the exact custom element or DOM
 state under test; do not use `networkidle` as a proxy for application readiness.
 
+The one exception to the shared config is the on-demand true-visual table
+matrix, `tests/live/matrix/` — it has its own `tests/playwright.matrix.config.ts`
+and is excluded from the shared one (`testIgnore: ['live/matrix/**']`) so the
+required browser gate cannot pull it in. Run it with `npm run test:matrix:visual`.
+
 **Debug pattern:**
 ```javascript
 page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -58,7 +65,12 @@ page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
 
 #### 🚫 Never Do:
 - Create testing files in root directory
-- Use screenshots (`--screenshot`, `page.screenshot()`)
+- Use screenshots (`--screenshot`, `page.screenshot()`) as a DEBUGGING crutch.
+  The single sanctioned use is a *paint-level assertion*: capture, decode the
+  PNG inside the browser under test, and assert on the pixel values (see
+  `tests/live/components/table/table-stripes-and-loading.spec.ts` and the
+  marquee layer of `tests/live/matrix/`). A screenshot nobody asserts on is
+  still forbidden.
 - Run in headed mode (`--headed`)
 - Keep test files in `.debug/` permanently
 - Put real/permanent tests in `.debug/`

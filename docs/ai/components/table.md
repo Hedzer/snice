@@ -143,10 +143,7 @@ table.data = employees;
 table.setToolbar({showSearch:true,showSort:true,showFilter:true,showExport:true});
 ```
 
-## Keyboard Navigation
+## Keyboard & Accessibility
 
 - Grid: arrows, Home/End, Page Up/Down; Enter edits; Space/Shift+Space toggles selection; Ctrl/Cmd+A selects filtered selectable rows. Group/tree/detail buttons: Tab then Enter/Space.
-
-## Accessibility
-
 - Native table uses ARIA grid roles, live counts, roving focus, `aria-sort`, and `aria-selected`; group/tree/detail controls expose labels/`aria-expanded`, and group selection supports mixed state. `aria-selected="true"` is written with `data-selected` on every selection path, including click/checkbox/select-all deltas — not only on a full body render.

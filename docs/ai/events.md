@@ -317,6 +317,36 @@ cancels an older timer and dispatches the new result immediately. Throttle
 trailing detail is latest-wins; its deadline is last actual dispatch + the
 newly resolved interval.
 
+### cancelable — suppressible default actions
+
+`cancelable` is an `EventInit` field, so `@dispatch('x', { cancelable: true })`
+DOES produce a cancelable event and listeners can call `preventDefault()`.
+
+But the decorated method returns the **detail**, not `dispatchEvent`'s boolean,
+so the component cannot see whether the event was cancelled. A component with a
+default action to suppress must dispatch by hand and read the result:
+
+```typescript
+// ❌ Cancelable, but the component can never act on the cancellation
+@dispatch('more-click', { cancelable: true })
+private emitMore(date: Date) { return { date }; }
+
+// ✅ Default action the app can cancel
+private emitMore(date: Date): boolean {
+  return this.dispatchEvent(new CustomEvent('more-click', {
+    detail: { date }, bubbles: true, composed: true, cancelable: true,
+  }));
+}
+
+private onChipClick(date: Date) {
+  if (!this.emitMore(date)) return;   // preventDefault() -> app owns it
+  this.openBuiltInPanel(date);
+}
+```
+
+In the library: `snice-link`'s `navigate`, `snice-stepper`'s `step-change`,
+`snice-calendar`'s `calendar-more-click`.
+
 ### scope — dispatch target
 
 Default: `this.dispatchEvent(event)` — event originates from the host element. `scope` redirects the dispatch to another target so the event behaves as if it originated there. Use with `@on({ scope })` to express cross-cutting events without bubbling.
