@@ -660,7 +660,7 @@ export class SniceTable extends HTMLElement implements SniceTableElement {
        * across the boundary, the cells read it with the same 100px as the
        * fallback, and nothing outside a squished td sees any change. */
       :host([column-fit="squish"]) td {
-        --snice-cell-min-width: 0;
+        --snice-table-cell-min-width: 0;
       }
 
       /* The header label is the table's own markup and needs the same promise:

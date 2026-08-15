@@ -94,7 +94,7 @@ test.describe('Snice Table column-fit', () => {
    * squished column routinely is. Left alone the cell refuses to shrink, the
    * td's overflow clips it, and the label is chopped mid-glyph: no ellipsis,
    * because the element that owns the ellipsis never got narrow enough to
-   * trigger one. Squish relaxes that floor through --snice-cell-min-width.
+   * trigger one. Squish relaxes that floor through --snice-table-cell-min-width.
    */
   test('squish ellipsises a typed cell, not just a text cell', async ({ page }) => {
     const cell = await page.evaluate(() => {

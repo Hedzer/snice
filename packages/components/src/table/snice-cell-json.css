@@ -9,7 +9,7 @@
   align-items: center;
   min-height: 2.5rem; /* 40px */
   height: auto;
-  min-width: var(--snice-cell-min-width, 6.25rem); /* 100px */
+  min-width: var(--snice-table-cell-min-width, 6.25rem); /* 100px */
   flex: 1;
   font-size: 0.875rem; /* 14px */
   line-height: 1.25rem; /* 20px */
@@ -17,7 +17,7 @@
 
 .cell-content {
   width: 100%;
-  min-width: var(--snice-cell-min-width, 6.25rem); /* 100px */
+  min-width: var(--snice-table-cell-min-width, 6.25rem); /* 100px */
   min-height: 1.25rem; /* 20px */
   display: flex;
   align-items: flex-start;

@@ -838,6 +838,7 @@ When a sized host is taller than its rows, the table appends an inert filler row
 | `--snice-table-cell-padding` | Body/header cell padding | `--snice-spacing-xs` `--snice-spacing-sm` |
 | `--snice-table-cell-border` | Vertical (right) cell border; set to `none` to drop grid lines | `1px solid --snice-color-border` |
 | `--snice-table-row-border` | Horizontal (bottom) row border | `1px solid --snice-color-border` |
+| `--snice-table-cell-min-width` | Width floor of the typed cells (`email`, `status`, `link`, `phone`, `location`, `json`, `color`, `image`, `actions`); `column-fit="squish"` sets it to `0` on a squished cell so the content ellipsises | `6.25rem` |
 
 The component also consumes global Snice color, spacing, typography, radius, focus-ring, shadow, and transition tokens.
 
@@ -1341,7 +1342,7 @@ In squish mode:
   taller or spilling past the column boundary. This covers the typed cells too
   (`email`, `status`, `link`, `phone`, `location`, `json`, `color`, `image`,
   `actions`), whose 100px default width floor squish relaxes through the
-  `--snice-cell-min-width` custom property — without that they refuse to shrink
+  `--snice-table-cell-min-width` custom property — without that they refuse to shrink
   and the column clips them mid-glyph instead of ellipsising.
 - **The table never scrolls horizontally.** The rightmost column edge sits on
   the frame's inner edge at any width, and `.table-frame` sets
