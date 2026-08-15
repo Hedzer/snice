@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-table visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Nothing here demonstrates the component to a
+         reader; every rule exists so a measurement means something:
+
+           - the page sits on the theme's own surface, so a stripe/spinner is
+             judged against the surface the component was designed for rather
+             than the browser's default white;
+           - #stage is a fixed, known box, so "the frame's right edge" and "the
+             host is `width` wide" are facts about the table and not about the
+             viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding itself, never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 720px;
+      }
+      #stage > snice-table { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/table/snice-table.ts';
+
+      // ── Pipeline dimension ────────────────────────────────────────────────
+      // Mirrors tests/components/table-matrix/height-fill-support.ts `pipelines`
+      // one-for-one. Column definitions carry FUNCTIONS, which cannot cross the
+      // Playwright boundary, so the page owns them and a spec passes only a
+      // pipeline NAME. Keeping the two lists identical is what makes this tier
+      // "the DOM matrix, in a real browser" rather than a second, weaker matrix.
+      const PIPELINES = {
+        'none': { key: 'a', label: 'A', type: 'text', sortable: true },
+        'valueGetter': {
+          key: 'gk', label: 'A', type: 'text', sortable: true,
+          valueGetter: (_v, row) => row.src,
+        },
+        'valueFormatter': {
+          key: 'a', label: 'A', type: 'text', sortable: true,
+          valueFormatter: (v) => `vf<${v}>`,
+        },
+        'valueGetter+valueFormatter': {
+          key: 'gk', label: 'A', type: 'text', sortable: true,
+          valueGetter: (_v, row) => row.src,
+          valueFormatter: (v) => `vf<${v}>`,
+        },
+        'formatter': {
+          key: 'a', label: 'A', type: 'text', sortable: true,
+          formatter: (v) => `f<${v}>`,
+        },
+        'valueGetter+formatter': {
+          key: 'gk', label: 'A', type: 'text', sortable: true,
+          valueGetter: (_v, row) => row.src,
+          formatter: (v) => `f<${v}>`,
+        },
+      };
+
+      /** The trailing columns, constant across pipelines, so a row spans >1 cell
+       *  and squish has something to redistribute. */
+      const TAIL_COLUMNS = [
+        { key: 'n', label: 'Number', type: 'text', sortable: true },
+        { key: 'g', label: 'Group', type: 'text', sortable: true },
+      ];
+
+      function columnsFor(pipeline) {
+        const column = PIPELINES[pipeline];
+        if (!column) throw new Error(`unknown pipeline "${pipeline}"`);
+        return [{ ...column }, ...TAIL_COLUMNS.map(c => ({ ...c }))];
+      }
+
+      /** Row text is long enough that squish has to ellipsise it. */
+      function makeRows(count, tag = 'r') {
+        return Array.from({ length: count }, (_, i) => ({
+          id: i,
+          a: `Alpha ${tag}${i} of the ${i % 3 ? 'platform' : 'growth'} organisation`,
+          src: `Source ${tag}${i} of the ${i % 3 ? 'platform' : 'growth'} organisation`,
+          n: `n-${tag}${i}`,
+          g: i % 2 ? 'G1' : 'G2',
+        }));
+      }
+
+      /** Mutate rows IN PLACE so a re-delivery keeps object identity and the
+       *  component's recycled DOM has to notice the change. */
+      function mutateInPlace(rows, tag) {
+        rows.forEach((r, i) => {
+          r.a = `Alpha ${tag}${i} rewritten in place`;
+          r.src = `Source ${tag}${i} rewritten in place`;
+          r.n = `n-${tag}${i}`;
+        });
+        return rows;
+      }
+
+      const stage = document.getElementById('stage');
+      let current = null;
+      /** Rows the next remote `@request/table/data` will resolve with. */
+      let staged = [];
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      /** Settle: two frames, then a macrotask, then two more frames. The table
+       *  measures itself in a rAF (fill row, squish fit, virtual window), and
+       *  those measurements can schedule another pass. */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      function setLocalData(table, rows) {
+        table.data = rows;
+        table.unsortedData = [...rows];
+        table.rebuildRowIndex?.();
+        table.renderBody();
+      }
+
+      async function deliverRemote(table, rows) {
+        staged = rows;
+        table.getTableData();
+        await settle();
+      }
+
+      const api = {
+        /**
+         * Mount one combo and leave it settled and measurable.
+         * Returns the facts the spec needs but cannot re-derive cheaply.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const table = document.createElement('snice-table');
+          table.id = 'subject';
+          if (combo.striped) table.setAttribute('striped', '');
+          if (combo.selectable) table.setAttribute('selectable', '');
+          if (combo.virtualize) table.setAttribute('virtualize', '');
+          if (combo.squish) table.setAttribute('column-fit', 'squish');
+          if (combo.density) table.setAttribute('density', combo.density);
+          if (combo.loading) table.setAttribute('loading', '');
+          if (combo.height) table.style.height = `${combo.height}px`;
+          if (combo.width) stage.style.width = `${combo.width}px`;
+          else stage.style.width = '720px';
+
+          // A remote table must be in remote mode BEFORE it is connected, or its
+          // first render takes the local path and the delivery pattern under
+          // test never happens.
+          if (combo.delivery === 'remote') table.mode = 'remote';
+
+          const columns = columnsFor(combo.pipeline);
+          const rows = makeRows(combo.rows ?? 12);
+
+          table.addEventListener('@request/table/data', (e) => {
+            e.detail.discovery.resolve();
+            e.detail.data.resolve({ data: staged, totalItems: staged.length });
+          });
+
+          stage.appendChild(table);
+          await table.ready;
+          table.columns = columns;
+
+          if (combo.delivery === 'local') {
+            // `late` mounts empty and fills afterwards; the others start full.
+            if (combo.pattern === 'late') {
+              setLocalData(table, []);
+              await settle();
+              setLocalData(table, rows);
+            } else {
+              setLocalData(table, rows);
+            }
+            await settle();
+            if (combo.pattern === 'redeliver') {
+              setLocalData(table, mutateInPlace(rows, 'm'));
+              await settle();
+            }
+          } else {
+            if (combo.pattern === 'late') {
+              await deliverRemote(table, []);
+              await deliverRemote(table, rows);
+            } else {
+              await deliverRemote(table, rows);
+            }
+            if (combo.pattern === 'redeliver') {
+              await deliverRemote(table, mutateInPlace(rows, 'm'));
+            }
+          }
+
+          await settle();
+          current = { table, columns, rows };
+
+          return {
+            rowCount: rows.length,
+            columnKeys: columns.map(c => c.key),
+            expected: rows.map(row => columns.map(col => api.expectedText(col, row))),
+          };
+        },
+
+        /**
+         * The matrix oracle, verbatim from
+         * tests/components/table-matrix/matrix-utils.ts `expectedCellText`:
+         * valueGetter derives the working value, then formatter (row-aware) or
+         * valueFormatter produce display text; otherwise the value itself.
+         */
+        expectedText(column, row) {
+          const raw = row[column.key];
+          const value = column.valueGetter ? column.valueGetter(raw, row) : raw;
+          if (column.formatter) return String(column.formatter(value, row));
+          if (column.valueFormatter) return String(column.valueFormatter(value, row));
+          return value == null ? '' : String(value);
+        },
+
+        unmount() {
+          if (current) current.table.remove();
+          current = null;
+          staged = [];
+          stage.innerHTML = '';
+        },
+
+        get table() { return current?.table ?? null; },
+        get expected() {
+          if (!current) return [];
+          return current.rows.map(row => current.columns.map(col => api.expectedText(col, row)));
+        },
+        get columnKeys() { return current ? current.columns.map(c => c.key) : []; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

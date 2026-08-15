@@ -44,6 +44,17 @@ export default defineConfig({
       'dist',
       'examples',
       'tests/live',
+      // The table feature-combination matrix is a deliberate fuzz tier: 52
+      // files that take ~100s on their own, which is most of the everyday
+      // `vitest run` wall clock. Excluded here the same way `tests/live` is, so
+      // it only runs when it is asked for — `npm run test:matrix`, and the
+      // "table matrix suite" stage of `npm test`. The everyday loop still pays
+      // for a representative slice: `tests/components/table-matrix-smoke.test.ts`
+      // is deliberately OUTSIDE this directory so it stays in the default
+      // include. Helper modules under table-matrix/ (matrix-utils and the
+      // per-slice `*-support.ts`) are still importable from here — this pattern
+      // only removes files from test COLLECTION, not from module resolution.
+      'tests/components/table-matrix',
       'tests/website-render.test.ts',
       'rollup.config.test.js',
       '.debug',

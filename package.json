@@ -138,6 +138,8 @@
     "test:coverage": "vitest run --coverage",
     "test:coverage:core": "vitest run --config vitest.core-coverage.config.ts --coverage",
     "test:source": "npm run build:testing && vitest run",
+    "test:matrix": "vitest run --config vitest.matrix.config.ts",
+    "test:matrix:visual": "node tooling/testing/run-visual-matrix-tests.js",
     "test:distribution": "npm run build:distribution && npm run build:testing && npm run test:distribution:prepared",
     "test:distribution:prepared": "TEST_BUILT=true vitest run",
     "test:cdn": "npm run build:cdn && npm run test:cdn:prepared",
