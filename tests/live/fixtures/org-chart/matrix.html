@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-org-chart visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so a node card's background and border are
+             judged against the page they were designed for;
+           - #stage is a wide, FIXED box so the tree has room to lay itself out
+             and "siblings sit side by side" is a fact about the component
+             rather than about a cramped viewport;
+           - nothing overlaps the stage and it has no background of its own, so
+             a failed elementFromPoint probe is the chart occluding itself;
+           - the stage scrolls rather than clipping, because a deep chart is
+             legitimately taller than the window and a clipped card would look
+             like a missing one. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 1180px;
+        min-height: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/org-chart/snice-org-chart.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 20));
+        await nextFrame();
+      }
+
+      const TREES = {
+        none: null,
+        lone: { id: 'solo', name: 'Solo Founder', title: 'CEO' },
+        doc: {
+          id: 'ceo', name: 'Jane Smith', title: 'CEO',
+          children: [
+            {
+              id: 'cto', name: 'Bob Jones', title: 'CTO',
+              children: [{ id: 'dev1', name: 'Alice Ada', title: 'Engineer' }],
+            },
+            { id: 'cfo', name: 'Carol White', title: 'CFO' },
+          ],
+        },
+        wide: {
+          id: 'root', name: 'Root Person', title: 'Head',
+          children: Array.from({ length: 5 }, (_, i) => ({
+            id: `c${i}`, name: `Child ${i}`, title: `Role ${i}`,
+          })),
+        },
+        deep: {
+          id: 'l0', name: 'Level Zero',
+          children: [{
+            id: 'l1', name: 'Level One',
+            children: [{
+              id: 'l2', name: 'Level Two',
+              children: [{ id: 'l3', name: 'Level Three' }],
+            }],
+          }],
+        },
+        avatars: {
+          id: 'root', name: 'Root Person',
+          // A data: URI, so the image is real paint with no network at all.
+          avatar: 'data:image/svg+xml;utf8,'
+            + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">'
+              + '<rect width="64" height="64" fill="rgb(20,120,220)"/></svg>'),
+          children: [
+            { id: 'no-image', name: 'Placeholder Person', title: 'No image' },
+          ],
+        },
+      };
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-org-chart');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          el.direction = combo.direction ?? 'top-down';
+          el.compact = !!combo.compact;
+          el.data = TREES[combo.tree] ?? null;
+          await settle();
+          for (const id of combo.collapsed ?? []) el.collapseNode(id);
+          if ((combo.collapsed ?? []).length) await settle();
+          current = { el, combo };
+          return { cards: el.shadowRoot.querySelectorAll('.org-node').length };
+        },
+
+        async toggle(label) {
+          const el = current?.el;
+          if (!el) return false;
+          const button = [...el.shadowRoot.querySelectorAll('.org-toggle')]
+            .find(node => (node.getAttribute('aria-label') ?? '').includes(label));
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        unmount() { stage.innerHTML = ''; current = null; },
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

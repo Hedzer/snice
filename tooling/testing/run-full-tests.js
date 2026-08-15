@@ -6,8 +6,9 @@
  * The coverage run is also the source-suite run: it executes the same Vitest
  * files against source while collecting the core-engine coverage gate. The
  * built suite still runs separately against a freshly generated testing
- * bundle. The table feature-combination matrix is excluded from the default
- * Vitest include, so it runs as its own source-flavoured stage exactly once.
+ * bundle. The component feature-combination matrices are excluded from the
+ * default Vitest include, so they run as their own source-flavoured stage
+ * exactly once.
  * Once every artifact is prepared, each validation gate runs in sequence so its
  * output, resource usage, and exit status cannot be obscured by another gate.
  */
@@ -132,16 +133,17 @@ try {
   // interleaved reporters hide which assertion actually failed.
   await npmRun('source suite + core coverage', 'test:coverage:core', vitestWorkerArgs());
 
-  // The table feature-combination matrix is excluded from the default Vitest
-  // include (vitest.config.ts), so it needs its own stage — and it gets exactly
-  // ONE, not one per artifact flavour. It runs SOURCE-flavoured, next to the
-  // source suite above, because the matrix asserts the table component's
-  // rendering pipeline against packages/components/src: every divergence it
-  // pins is a source-level contract, and a source failure is the one a
-  // developer can act on directly. Running it a second time against dist/ would
-  // roughly double the slowest gate in this command to re-prove the same
-  // component logic through a bundler that the built suite already exercises.
-  await npmRun('table matrix suite', 'test:matrix', vitestWorkerArgs());
+  // The component feature-combination matrices (tests/matrix/) are excluded
+  // from the default Vitest include (vitest.config.ts) apart from their smoke
+  // slices, so they need their own stage — and they get exactly ONE, not one
+  // per artifact flavour. It runs SOURCE-flavoured, next to the source suite
+  // above, because the matrix asserts each component's rendering pipeline
+  // against packages/components/src: every divergence it pins is a
+  // source-level contract, and a source failure is the one a developer can act
+  // on directly. Running it a second time against dist/ would roughly double
+  // the slowest gate in this command to re-prove the same component logic
+  // through a bundler that the built suite already exercises.
+  await npmRun('matrix suite', 'test:matrix', vitestWorkerArgs());
 
   await npmRun('built suite', 'test:distribution:prepared', vitestWorkerArgs());
   await npmRun('CDN artifact + runtime suites', 'test:cdn:prepared');

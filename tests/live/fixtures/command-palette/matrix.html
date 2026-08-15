@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-command-palette visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the palette's own
+             surface, its backdrop and its text are judged against the ground
+             the component was designed for rather than the browser's white;
+           - #under is a full-viewport block of text UNDER the overlay. The
+             palette is an overlay, and "the overlay is actually above the page"
+             is the single claim this tier exists to prove: elementFromPoint over
+             the container must find the palette, never this block;
+           - nothing else is positioned, so a failed hit-test is the palette
+             occluding itself and never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        /* Everything on this page is absolutely positioned, so without an
+           explicit height the body has no box at all and an element screenshot
+           of the page is refused as "not visible". */
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #under {
+        position: absolute;
+        inset: 0;
+        padding: 24px;
+        font-size: 18px;
+        line-height: 1.6;
+        background: var(--snice-color-surface);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="under">
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+      Page content that the palette overlay must cover.
+    </div>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/command-palette/snice-command-palette.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      /**
+       * The recent-command list is persisted in localStorage under a fixed key.
+       * The visual matrix must measure the combo it asked for, so every mount
+       * resets it — otherwise combo N's execution silently rewrites combo N+1's
+       * result list.
+       */
+      const RECENT_KEY = 'snice-command-palette-recent';
+
+      const api = {
+        /**
+         * Mount one combo through the documented channels: `commands` as a
+         * property (it has no attribute form), everything else as a property
+         * too, matching the doc's own example. `open` is set LAST so the
+         * documented open transition — which is what focuses the input and
+         * rebuilds the list — really runs.
+         */
+        async mount(combo) {
+          api.unmount();
+          try {
+            if (combo.recent) localStorage.setItem(RECENT_KEY, JSON.stringify(combo.recent));
+            else localStorage.removeItem(RECENT_KEY);
+          } catch {}
+
+          const el = document.createElement('snice-command-palette');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of [
+            'commands', 'placeholder', 'noResultsText', 'maxResults',
+            'showRecentCommands', 'recentCommandsLimit', 'caseSensitive',
+          ]) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+
+          if (combo.open !== false) {
+            el.open = true;
+            await settle();
+          }
+          if (combo.query) {
+            const input = el.shadowRoot.querySelector('[part="input"]');
+            input.value = combo.query;
+            input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+            await settle();
+          }
+          if (combo.arrowDown) {
+            for (let i = 0; i < combo.arrowDown; i++) {
+              el.dispatchEvent(new KeyboardEvent('keydown', {
+                key: 'ArrowDown', bubbles: true, composed: true, cancelable: true,
+              }));
+            }
+            await settle();
+          }
+
+          current = { el, combo };
+          const items = [...el.shadowRoot.querySelectorAll('[part]')]
+            .filter(n => (n.getAttribute('part') || '').split(/\s+/).includes('item'));
+          return { open: el.open, items: items.length };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

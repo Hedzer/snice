@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-avatar visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the auto-generated
+             fallback background is judged against the surface the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known offset, so "the avatar is
+             exactly its documented size" is a fact about the component and not
+             about the viewport;
+           - #stage has no padding, background or overlapping content, so a
+             failed elementFromPoint probe is the avatar occluding itself, never
+             the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/avatar/snice-avatar.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /* A 2x2 PNG served as a data URI. Real bytes, so `load` really fires and
+         the image layer really paints — a network fixture would make every
+         geometry assertion depend on the dev server's file serving. The two
+         colours are deliberately saturated so a pixel probe can tell the image
+         apart from any fallback colour the palette might pick. */
+      const OK_IMAGE =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF'
+        + 'klEQVR4nGO4o6ammvyaQWyx16vNHAAj8AVE95m2kwAAAABJRU5ErkJggg==';
+      /* A data URI that is NOT decodable: the browser fires `error`, which is
+         the documented "broken image falls back to initials" path, without a
+         network round trip or a console 404 storm. */
+      const BROKEN_IMAGE = 'data:image/png;base64,definitely-not-a-png';
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        OK_IMAGE, BROKEN_IMAGE,
+
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does (tests/matrix/avatar/avatar-matrix-utils.ts).
+         * The stylesheet keys off host attributes, so mounting by property is
+         * what makes this tier prove documented reflection reaches the paint.
+         *
+         * `image` selects which of the two data URIs is used: 'ok', 'broken',
+         * or absent for no image at all. Mount RESOLVES only once the image has
+         * settled (load or error), so no geometry assertion can race the decode.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-avatar');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          const src = combo.image === 'ok' ? OK_IMAGE
+            : combo.image === 'broken' ? BROKEN_IMAGE
+              : '';
+          /* Only NON-DEFAULT values are assigned, exactly as the DOM matrix
+             does. The documented rule (docs/ai/properties.md) is that untouched
+             defaults are NOT reflected, so assigning `shape = 'circle'` on an
+             element whose shape is already 'circle' is a no-op — writing the
+             attribute here would fabricate a styling hook the framework never
+             produces and hide whatever the default actually paints. */
+          const DEFAULTS = {
+            size: 'medium', shape: 'circle', name: '', alt: '',
+            loading: 'lazy', fallbackColor: '#ffffff', fallbackBackground: '',
+          };
+          const props = {
+            size: combo.size, shape: combo.shape, name: combo.name,
+            alt: combo.alt, loading: combo.loading,
+            fallbackColor: combo.fallbackColor,
+            fallbackBackground: combo.fallbackBackground,
+          };
+          for (const [key, value] of Object.entries(props)) {
+            if (value === undefined || value === DEFAULTS[key]) continue;
+            el[key] = value;
+          }
+          if (src) el.src = src;
+          await settle();
+
+          if (src) {
+            const img = el.shadowRoot.querySelector('img');
+            if (img && !img.complete) {
+              await new Promise(resolve => {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true });
+              });
+              await settle();
+            }
+            // The error handler re-renders; give that render a frame too.
+            await settle();
+          }
+
+          current = { el, combo };
+          return { mounted: true, hasImage: !!src };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

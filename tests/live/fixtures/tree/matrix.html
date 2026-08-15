@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-tree visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known box, so "a child row is indented past its
+             parent" is a fact about the component and not about the viewport;
+           - #stage has NO padding, border or background of its own and nothing
+             overlaps it, so a failed elementFromPoint probe is the tree
+             occluding itself, never the fixture occluding it;
+           - the stage is wide enough that no label wraps, because a wrapped
+             label changes a row's height and would make the indentation
+             measurements ambiguous;
+           - nothing here styles the tree. Indentation, row height, the
+             collapsed group and the selected background are all the
+             component's own CSS, which is the entire point of this tier. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/tree/snice-tree.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      const SHAPES = {
+        nested: () => ([
+          {
+            id: 'src', label: 'src', icon: 'F', expanded: true,
+            children: [
+              { id: 'index', label: 'index.ts', icon: 'D' },
+              { id: 'main', label: 'main.ts', icon: 'D' },
+            ],
+          },
+          {
+            id: 'docs', label: 'docs', icon: 'F',
+            children: [{ id: 'readme', label: 'README.md', icon: 'D' }],
+          },
+        ]),
+        deep: () => ([{
+          id: 'l1', label: 'Level 1', icon: 'F', expanded: true,
+          children: [{
+            id: 'l2', label: 'Level 2', icon: 'F', expanded: true,
+            children: [
+              { id: 'l3a', label: 'Level 3 A', icon: 'D' },
+              { id: 'l3b', label: 'Level 3 B', icon: 'D' },
+            ],
+          }],
+        }]),
+        mixed: () => ([
+          { id: 'ok', label: 'Enabled', icon: 'E' },
+          { id: 'no', label: 'Disabled', icon: 'X', disabled: true },
+          {
+            id: 'group', label: 'Group', icon: 'F', expanded: true,
+            children: [
+              { id: 'g1', label: 'Group child 1', icon: 'D' },
+              { id: 'g2', label: 'Group child 2', icon: 'D', disabled: true },
+            ],
+          },
+        ]),
+      };
+
+      /**
+       * Walk the shadow chain: root items live in the tree's shadow root, and
+       * each item's children live in that item's own shadow root. Selectors are
+       * anchored on the container that owns each level rather than on `:scope`,
+       * so this helper reads identically to the DOM tier's `allItems`.
+       */
+      function allItems(tree) {
+        const out = [];
+        const walk = (root, selector) => {
+          if (!root) return;
+          for (const item of root.querySelectorAll(selector)) {
+            if (out.includes(item)) continue;
+            out.push(item);
+            walk(item.shadowRoot, '.tree-item__children > snice-tree-item');
+          }
+        };
+        walk(tree.shadowRoot, '.tree__content > snice-tree-item');
+        return out;
+      }
+
+      const api = {
+        unmount() { stage.innerHTML = ''; },
+
+        async mount(combo) {
+          api.unmount();
+          const tree = document.createElement('snice-tree');
+          tree.id = 'subject';
+          tree.setAttribute('selection-mode', combo.selectionMode ?? 'single');
+          if (combo.showCheckboxes) tree.setAttribute('show-checkboxes', '');
+          if (combo.showIcons === false) tree.setAttribute('show-icons', 'false');
+          stage.appendChild(tree);
+          await tree.ready;
+          tree.nodes = SHAPES[combo.shape]();
+          await settle();
+          return { rows: allItems(tree).length };
+        },
+
+        async clickRow(id) {
+          const tree = document.getElementById('subject');
+          const item = allItems(tree).find(node => node.node?.id === id);
+          item?.shadowRoot?.querySelector('[part~="content"]')
+            ?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+        },
+
+        async clickExpander(id) {
+          const tree = document.getElementById('subject');
+          const item = allItems(tree).find(node => node.node?.id === id);
+          item?.shadowRoot?.querySelector('[part~="expander"]')
+            ?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+          await settle();
+        },
+      };
+
+      window.matrix = api;
+      window.treeItems = allItems;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

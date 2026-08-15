@@ -3,13 +3,25 @@
 ## Matrix (fuzz) testing is standard
 
 Components get combinatorial matrix suites that cross their features against
-each other and assert exact rendered output. Two tiers:
+each other and assert exact rendered output.
 
-- **DOM tier** (happy-dom/jsdom, `tests/components/table-matrix/`-style):
-  the full matrix runs intentionally via `npm run test:matrix` (and once in
-  the full gate) — never in the default vitest loop. A small smoke slice
-  (one combo per feature family plus marquee regressions, <10s) lives in the
-  default loop.
+Canonical layout — one pattern, no exceptions:
+
+```
+tests/matrix/<component>/*.test.ts        DOM matrix (intentional tier)
+tests/matrix/<component>/smoke.test.ts    fast slice (default vitest loop)
+tests/matrix/*.ts                          shared oracles (matrix-utils, matrix-kit, …)
+tests/live/matrix/<component>/<component>-visual.spec.ts   visual tier
+tests/live/fixtures/<component>/           fixtures for the visual tier
+```
+
+Two tiers:
+
+- **DOM tier** (happy-dom, `tests/matrix/<component>/`): the full matrix runs
+  intentionally via `npm run test:matrix` (`vitest.matrix.config.ts`, and once
+  in the full gate) — never in the default vitest loop. Each directory's
+  `smoke.test.ts` (one combo per feature family plus marquee regressions,
+  <10s) is the one file the default loop still collects.
 - **Visual tier** (Playwright, `tests/live/matrix/`): on demand via
   `npm run test:matrix:visual`. Dedicated fixtures — never showcase pages.
   Asserts what DOM tests cannot see: paint, occlusion, computed style, plus
@@ -25,5 +37,5 @@ Rules that make the matrix worth anything:
 - Size the matrix to the component: the table is the ceiling, not the
   template. A divider gets a handful of combos.
 
-See `tests/components/table-matrix/matrix-utils.ts` for the oracle pattern
-and `.ai/testing.md` for browser-tier mechanics.
+See `tests/matrix/table/matrix-utils.ts` for the oracle pattern and
+`.ai/testing.md` for browser-tier mechanics.

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-list visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the list's own
+             container background and a selected row's tint are judged against
+             the surface the component was designed for;
+           - #stage is a fixed, known box, so "the row spans the list" and "the
+             icon sits left of the text" are facts about the component and not
+             about the viewport;
+           - #stage has NO padding, background or overlapping content of its
+             own, so a failed elementFromPoint probe is the list occluding
+             itself, never the fixture occluding it;
+           - #scroller is a REAL scroll container, because infinite scroll is
+             documented as "needs scrollable parent" and the sentinel has no
+             meaning without one. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #stage.scrollable {
+        height: 300px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/list/snice-list.ts';
+      import '/packages/components/src/list/snice-list-item.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The items the DOM matrix uses, plus the doc's own "With icons" row, so
+       * the two tiers measure the same list rather than two different ones.
+       */
+      function itemsMarkup(withSlots) {
+        const rows = [
+          { heading: 'Inbox', description: '3 unread' },
+          { heading: 'Sent', description: 'Last 2h ago' },
+          { heading: 'Drafts', description: '' },
+        ];
+        return rows.map((row, i) => {
+          const inner = withSlots
+            ? '<span slot="before">📥</span><span slot="after">12</span>'
+            : '';
+          const description = row.description ? ` description="${row.description}"` : '';
+          return `<snice-list-item id="row-${i}" heading="${row.heading}"${description}>${inner}</snice-list-item>`;
+        }).join('');
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. `dividers` paints through `:host([dividers])
+         * ::slotted(…)`, so a property-mounted list is what proves the
+         * documented reflection reaches a rule that crosses the shadow
+         * boundary — an attribute-built fixture could not.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('scrollable', !!combo.scrollable);
+
+          const el = document.createElement('snice-list');
+          el.id = 'subject';
+          el.innerHTML = itemsMarkup(!!combo.itemSlots)
+            + (combo.before ? '<div slot="before" id="slot-before">Pinned</div>' : '')
+            + (combo.after ? '<div slot="after" id="slot-after">Footer</div>' : '');
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of ['dividers', 'searchable', 'search', 'loading', 'noResults', 'infinite', 'skeletonCount']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          if (combo.selected !== undefined) {
+            const row = el.querySelector(`#row-${combo.selected}`);
+            if (row) row.selected = true;
+          }
+          if (combo.disabled !== undefined) {
+            const row = el.querySelector(`#row-${combo.disabled}`);
+            if (row) row.disabled = true;
+          }
+          await settle();
+
+          return {
+            rows: el.querySelectorAll('snice-list-item').length,
+            dividers: el.hasAttribute('dividers'),
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('scrollable');
+        },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

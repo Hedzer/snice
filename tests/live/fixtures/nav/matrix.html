@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-nav visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so an active link's fill
+             is judged against the surface the component was designed for
+             rather than the browser's default white;
+           - #stage is a fixed, known box, so "the vertical nav's links fill
+             their column" and "the horizontal nav lays out in a row" are facts
+             about the component and not about the viewport;
+           - #stage has NO padding, background or overlapping content of its
+             own, so a failed elementFromPoint probe is the nav occluding
+             itself, never the fixture occluding it;
+           - the stage is deliberately WIDE for horizontal and NARROW for
+             vertical, because :host has `overflow: hidden` and a row that does
+             not fit is clipped — the clipping is a real finding, and it must be
+             the component's decision to clip, not the fixture's. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+      }
+      #stage.vertical { width: 260px; }
+      /* The default slot is documented as "additional content after
+         navigation"; the marker is how the geometry tier sees where the nav
+         ended and the slotted content began. */
+      #stage .slotted {
+        display: block;
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/nav/snice-nav.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The placard sets, mirrored from the DOM matrix's own datasets
+       * (tests/matrix/nav/nav-utils.ts) so the two tiers measure the
+       * same navigation rather than two different ones.
+       */
+      const DATASETS = {
+        flat: [
+          { name: 'home', title: 'Home', href: '#/', icon: '🏠', order: 0 },
+          { name: 'products', title: 'Products', href: '#/products', order: 1 },
+          { name: 'about', title: 'About', href: '#/about', order: 2 },
+        ],
+        nested: [
+          { name: 'products', title: 'Products', href: '#/products', order: 0 },
+          { name: 'electronics', title: 'Electronics', href: '#/products/electronics', parent: 'products', order: 0 },
+          { name: 'books', title: 'Books', href: '#/products/books', parent: 'products', order: 1 },
+          { name: 'support', title: 'Support', href: '#/support', order: 1 },
+        ],
+        grouped: [
+          { name: 'home', title: 'Home', href: '#/', group: 'Main', order: 0 },
+          { name: 'search', title: 'Search', href: '#/search', group: 'Main', order: 1 },
+          { name: 'profile', title: 'Profile', href: '#/profile', group: 'Account', order: 0 },
+          { name: 'loose', title: 'Loose', href: '#/loose', order: 0 },
+        ],
+      };
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel and feed it the
+         * documented `update()` entry point. The property channel is
+         * load-bearing here: `orientation` and `active-style` paint through
+         * `:host([…])` rules, so an attribute-built fixture would prove the CSS
+         * works without proving the component's reflection ever reaches it.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('vertical', combo.orientation === 'vertical');
+
+          const el = document.createElement('snice-nav');
+          el.id = 'subject';
+          if (combo.slotted) {
+            const extra = document.createElement('button');
+            extra.className = 'slotted';
+            extra.id = 'slotted';
+            extra.textContent = 'Sign out';
+            el.appendChild(extra);
+          }
+          stage.appendChild(el);
+          await el.ready;
+
+          el.variant = combo.variant ?? 'flat';
+          el.orientation = combo.orientation ?? 'horizontal';
+          el.activeStyle = combo.activeStyle ?? 'fill';
+          el.update(DATASETS[combo.dataset ?? 'flat'], undefined, combo.route ?? '');
+          await settle();
+
+          const links = el.shadowRoot.querySelectorAll('[part~="link"]');
+          return { links: links.length, orientation: el.orientation };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('vertical');
+        },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

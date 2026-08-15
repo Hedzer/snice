@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-masonry visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known width, so "N columns of width W" is a fact
+             about the component and not about the viewport;
+           - #stage has NO padding, border or background of its own and nothing
+             overlaps it, so a failed elementFromPoint probe is the masonry
+             occluding itself, never the fixture occluding it;
+           - the items carry EXPLICIT, UNEQUAL heights. A masonry with uniform
+             items looks correct under any column algorithm; unequal heights are
+             what make "items flow top-to-bottom within a column" observable;
+           - the items declare NO margin of their own. The component's vertical
+             gap is `::slotted(*) { margin-bottom: var(--masonry-gap) }`, and a
+             fixture-side `.card { margin: 0 }` would beat that selector on
+             specificity and silently zero the gap this tier exists to measure. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+      }
+      .card {
+        padding: 0;
+        box-sizing: border-box;
+        background: rgb(37 99 235);
+        color: rgb(255 255 255);
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/masonry/snice-masonry.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** Deterministic, unequal card heights — the same list for every combo. */
+      const HEIGHTS = [120, 60, 180, 90, 140, 70, 200, 110, 50, 160, 100, 130];
+
+      const api = {
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        /**
+         * Mount one combo through the PROPERTY channel.
+         *
+         * The stylesheet reads `--masonry-columns` / `--masonry-gap` /
+         * `--masonry-column-width`, and the auto mode keys off the reflected
+         * `columns` attribute. Mounting by property is therefore what makes
+         * this tier prove that the documented properties actually reach the
+         * paint — an attribute-built fixture could not, and the documented
+         * `min-column-width` attribute is a standing finding
+         * (MATRIX-masonry-1) that would poison every combo.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.width = `${combo.stageWidth ?? 900}px`;
+
+          const el = document.createElement('snice-masonry');
+          el.id = 'subject';
+          for (let i = 0; i < combo.items; i++) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.height = `${HEIGHTS[i % HEIGHTS.length]}px`;
+            card.textContent = `Card ${i + 1}`;
+            el.appendChild(card);
+          }
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.columns !== undefined) el.columns = combo.columns;
+          if (combo.gap !== undefined) el.gap = combo.gap;
+          if (combo.minColumnWidth !== undefined) el.minColumnWidth = combo.minColumnWidth;
+
+          await settle();
+          return {
+            columns: el.columns,
+            gap: el.gap,
+            minColumnWidth: el.minColumnWidth,
+            items: el.children.length,
+          };
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

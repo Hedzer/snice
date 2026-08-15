@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-qr-reader visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Nothing here demonstrates the component to a
+         reader; every rule exists so a measurement means something:
+
+           - the page sits on the theme's own surface, so the reader's dark
+             viewport is judged against the surface it was designed for;
+           - #stage is a fixed, known box, so "the viewport fills its host" is
+             a fact about the reader and not about the viewport size;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             reader occluding its own control, never the fixture doing it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 480px;
+        height: 640px;
+      }
+      #stage > snice-qr-reader { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/qr-reader/snice-qr-reader.ts';
+
+      /* ── Substituted capture stack ──────────────────────────────────────
+         A headless browser has no camera, and a permission prompt is not what
+         this tier measures. `getUserMedia` is replaced with a real
+         MediaStream produced by `canvas.captureStream()`, so the <video>
+         element under test receives GENUINE frames at a genuine resolution —
+         the layout, the object-fit and the corner markers are all real. Only
+         the light entering the lens is synthetic.
+
+         The QR decoder is replaced for the same reason: decoding is a WASM
+         question, not a paint one, and the visual tier needs to hold the
+         reader in a chosen state (scanning / just-hit) rather than race a
+         decoder. */
+      const source = document.createElement('canvas');
+      source.width = 640;
+      source.height = 480;
+      (function paint() {
+        const ctx = source.getContext('2d');
+        ctx.fillStyle = '#204060';
+        ctx.fillRect(0, 0, source.width, source.height);
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(40, 40, 120, 120);
+        requestAnimationFrame(paint);
+      })();
+
+      /* `navigator.mediaDevices` is an accessor on the prototype in Chromium
+         and read-only in a secure-context check on the others, so it is
+         REDEFINED rather than assigned. */
+      const devices = {
+        getUserMedia: async () => source.captureStream(30),
+        enumerateDevices: async () => ([
+          { kind: 'videoinput', deviceId: 'a', label: 'A', groupId: 'g' },
+          { kind: 'videoinput', deviceId: 'b', label: 'B', groupId: 'g' },
+        ]),
+      };
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true, value: devices,
+      });
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-qr-reader');
+          el.id = 'subject';
+          if (combo.camera) el.setAttribute('camera', combo.camera);
+          if (combo.pickFirst) el.setAttribute('pick-first', '');
+          if (combo.manualSnap) el.setAttribute('manual-snap', '');
+          if (combo.tapStart) el.setAttribute('tap-start', '');
+          if (combo.scanSpeed !== undefined) el.setAttribute('scan-speed', String(combo.scanSpeed));
+
+          stage.appendChild(el);
+          await el.ready;
+
+          // A decoder that never finds anything holds the reader in the
+          // scanning state; `decodes` makes it find one thing, which is how
+          // the result banner's paint is reached.
+          el.qrDecoder = {
+            decode: async () => {
+              if (!combo.decodes) throw new Error('no code in frame');
+              return { text: combo.decodes };
+            },
+          };
+
+          if (combo.deny) {
+            devices.getUserMedia = async () => {
+              throw new Error('Permission denied');
+            };
+          } else {
+            devices.getUserMedia = async () => source.captureStream(30);
+          }
+
+          if (combo.start) {
+            await el.start();
+            // Give the rAF scan loop room to reach the decoder at least once.
+            await new Promise(r => setTimeout(r, 120));
+          }
+          await settle();
+
+          current = { el, combo };
+          return {
+            scanning: !!el.scanning,
+            camera: el.camera,
+          };
+        },
+
+        /** Tap the viewport, the documented `tap-start` gesture. */
+        async tapViewport() {
+          const el = current?.el;
+          if (!el) return false;
+          const node = el.shadowRoot.querySelector('[part~="viewport"]');
+          if (!node) return false;
+          node.click();
+          await new Promise(r => setTimeout(r, 120));
+          await settle();
+          return true;
+        },
+
+        /** The four corner markers' boxes, for the "framed viewport" check. */
+        cornerBoxes() {
+          const el = current?.el;
+          if (!el) return [];
+          return [...el.shadowRoot.querySelectorAll('.corner')].map(node => {
+            const b = node.getBoundingClientRect();
+            return {
+              className: node.className,
+              left: b.left, top: b.top, right: b.right, bottom: b.bottom,
+              width: b.width, height: b.height,
+            };
+          });
+        },
+
+        unmount() {
+          if (current) { try { current.el.stop(); } catch {} current.el.remove(); }
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

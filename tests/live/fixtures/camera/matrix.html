@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-camera visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+
+           - #stage fixes the WIDTH only, so "the host adopts the documented
+             aspect ratio" is a fact about the camera and not about the stage;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             camera occluding its own control, never the fixture doing it;
+           - the stage keeps a visible outline colour behind the component so a
+             letterboxed preview is measurable as a gap rather than guessed at. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      /* The stage fixes only the WIDTH. The documented `aspect-ratio` values
+         are what decide the height, so forcing one here would measure the
+         fixture rather than the component. */
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 480px;
+        background: #ff00ff; /* a colour the component never paints */
+      }
+      #stage > snice-camera { display: block; width: 100%; }
+      /* The slotted overlay used by the custom-controls combos. */
+      .custom-shutter {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        padding: 8px 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/camera/snice-camera.ts';
+
+      /* ── Substituted capture stack ──────────────────────────────────────
+         A headless browser has no camera. `getUserMedia` is replaced with a
+         real MediaStream produced by `canvas.captureStream()`, so the <video>
+         under test receives GENUINE frames at a genuine resolution: the
+         layout, the object-fit, the mirroring and the controls overlay are all
+         real. Only the light entering the lens is synthetic.
+
+         The synthetic frame is deliberately ASYMMETRIC left-to-right, which is
+         what makes the documented `mirror` property measurable in pixels. */
+      const source = document.createElement('canvas');
+      source.width = 1280;
+      source.height = 720;
+      (function paint() {
+        const ctx = source.getContext('2d');
+        ctx.fillStyle = '#101820';
+        ctx.fillRect(0, 0, source.width, source.height);
+        ctx.fillStyle = '#ff3b30';           // left third: red
+        ctx.fillRect(0, 0, source.width / 3, source.height);
+        ctx.fillStyle = '#34c759';           // right third: green
+        ctx.fillRect((source.width / 3) * 2, 0, source.width / 3, source.height);
+        requestAnimationFrame(paint);
+      })();
+
+      const devices = {
+        getUserMedia: async () => source.captureStream(30),
+        enumerateDevices: async () => ([
+          { kind: 'videoinput', deviceId: 'a', label: 'A', groupId: 'g' },
+          { kind: 'videoinput', deviceId: 'b', label: 'B', groupId: 'g' },
+        ]),
+      };
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true, value: devices,
+      });
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-camera');
+          el.id = 'subject';
+          if (combo.facingMode) el.setAttribute('facing-mode', combo.facingMode);
+          if (combo.controlsPosition) el.setAttribute('controls-position', combo.controlsPosition);
+          if (combo.aspectRatio) el.setAttribute('aspect-ratio', combo.aspectRatio);
+          if (combo.objectFit) el.setAttribute('object-fit', combo.objectFit);
+          if (combo.slotted) {
+            el.innerHTML = '<button slot="controls" class="custom-shutter" id="mine">Shoot</button>';
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.showControls === false) el.showControls = false;
+          if (combo.mirror === false) el.mirror = false;
+          await settle();
+
+          if (combo.start !== false) {
+            await el.start();
+            // Wait for the first real frame; a preview measured before one
+            // arrives is measuring nothing.
+            const video = el.shadowRoot.querySelector('video');
+            for (let i = 0; i < 60 && !(video.videoWidth > 0); i++) await nextFrame();
+          }
+          await settle();
+
+          current = { el, combo };
+          return { active: el.isActive(), facingMode: el.facingMode };
+        },
+
+        /** Capture a frame through the documented API. */
+        async capture() {
+          const el = current?.el;
+          if (!el) return null;
+          const image = await el.capture();
+          return { width: image.width, height: image.height, dataURL: image.dataURL.slice(0, 32) };
+        },
+
+        unmount() {
+          if (current) { try { current.el.stop(); } catch {} current.el.remove(); }
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

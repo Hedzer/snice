@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-textarea visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the control's border
+             and fill are judged against the surface it was designed for;
+           - #stage is a fixed, known box, so "the control fills its container"
+             and "the label sits above the field" are facts about the component
+             and not about the viewport;
+           - #stage has NO padding, background, or overlapping siblings, so a
+             failed elementFromPoint probe is the control occluding itself;
+           - transitions are off, because a mid-flight focus ring or a growing
+             textarea would make every geometry reading a race. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+      }
+      #stage *, #stage *::before, #stage *::after {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/textarea/snice-textarea.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const ATTR_NAMES = {
+        helperText: 'helper-text',
+        errorText: 'error-text',
+        autoGrow: 'auto-grow',
+        defaultValue: 'value',
+      };
+
+      function applyAttrs(el, combo) {
+        for (const [key, value] of Object.entries(combo)) {
+          if (key === 'id' || value === undefined || value === null || value === false) continue;
+          const name = ATTR_NAMES[key] ?? key;
+          el.setAttribute(name, value === true ? '' : String(value));
+        }
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the ATTRIBUTE channel, exactly as the docs
+         * author one (`<snice-textarea variant="filled" auto-grow>`). The
+         * stylesheet keys off the classes the render pass derives from those
+         * attributes, so an attribute-authored mount is what proves the
+         * documented markup reaches the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-textarea');
+          el.id = 'subject';
+          applyAttrs(el, combo);
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return { variant: el.getAttribute('variant'), mounted: true };
+        },
+
+        /** Type into the real control, so the browser runs the real input path. */
+        async type(text) {
+          const native = current.el.shadowRoot.querySelector('textarea');
+          native.focus();
+          native.value = text;
+          native.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+          await settle();
+          return native.getBoundingClientRect().height;
+        },
+
+        /** Mount inside a real <form>, for the platform-contract assertions. */
+        async mountInForm(combo, options = {}) {
+          api.unmount();
+          const form = document.createElement('form');
+          form.id = 'the-form';
+          stage.appendChild(form);
+
+          let host = form;
+          if (options.fieldset) {
+            const fieldset = document.createElement('fieldset');
+            fieldset.id = 'the-fieldset';
+            form.appendChild(fieldset);
+            host = fieldset;
+          }
+          if (options.wrappingLabel) {
+            const label = document.createElement('label');
+            label.id = 'the-label';
+            label.textContent = options.wrappingLabel;
+            host.appendChild(label);
+            host = label;
+          }
+
+          const el = document.createElement('snice-textarea');
+          el.id = 'subject';
+          applyAttrs(el, combo);
+          host.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo, form };
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

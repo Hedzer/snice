@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-message-strip visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the strip's whole identity is "inline, IN the content flow"
+             (the doc contrasts it with alert/banner/toast), so the stage holds
+             a block BEFORE and a block AFTER it. "The strip is in flow" then
+             becomes a measurement — the follower's top moves with the strip's
+             height — instead of an opinion;
+           - #stage is a fixed 640px so a strip that fails to fill its container
+             is visible as a number, not as whitespace;
+           - the page uses the theme's plain surface: each variant tints its own
+             background, and a tint is only measurable against a known ground;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             strip occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      .flow-block {
+        height: 24px;
+        background: var(--snice-color-surface-secondary, #eee);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="flow-block" id="before"></div>
+      <div id="slot"></div>
+      <div class="flow-block" id="after"></div>
+    </div>
+
+    <script type="module">
+      import '/packages/components/src/message-strip/snice-message-strip.ts';
+
+      const slot = document.getElementById('slot');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * `variant`, `icon` and `dismissible` cross the ATTRIBUTE channel: the
+         * stylesheet keys off `:host([variant=...])`, so an attribute is the
+         * only channel that can prove the documented variant reaches the paint.
+         * The message and the optional custom icon are light-DOM children, as
+         * the doc's slots require.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-message-strip');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.icon) el.setAttribute('icon', combo.icon);
+          if (combo.dismissible) el.setAttribute('dismissible', '');
+          el.innerHTML = combo.html ?? 'Your changes have been saved.';
+          slot.appendChild(el);
+          await el.ready;
+          await settle();
+          return { mounted: true };
+        },
+
+        /** Drive the documented slide-out and wait for the animation to end. */
+        async hideAndSettle() {
+          const el = document.getElementById('subject');
+          const root = el.shadowRoot.querySelector('[part~="content"]').parentElement;
+          const done = new Promise(resolve => {
+            root.addEventListener('animationend', resolve, { once: true });
+            // A browser with animations disabled never fires the event; the
+            // timeout keeps the probe honest rather than hanging the suite.
+            setTimeout(resolve, 1500);
+          });
+          el.hide();
+          await done;
+          await settle();
+          return true;
+        },
+
+        async show() {
+          document.getElementById('subject').show();
+          await settle();
+          return true;
+        },
+
+        unmount() { slot.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

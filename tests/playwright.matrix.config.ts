@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * The TRUE-VISUAL table matrix — an ON-DEMAND tier.
+ * The TRUE-VISUAL component matrices — an ON-DEMAND tier.
+ *
+ * One directory per component under `live/matrix/`, each spec driving that
+ * component's own fixture page.
  *
  * Run it with `npm run test:matrix:visual`. It is deliberately NOT part of
  * `npm test`, not part of `npm run test:browser:framework`, and not reachable

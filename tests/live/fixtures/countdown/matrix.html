@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-countdown visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the page sits on the theme's own surface, so the flip card's
+             background and the complete-state colour are judged against the
+             surface the component was designed for;
+           - #stage is a fixed, known box with NO background, padding or
+             overlapping siblings, so a failed elementFromPoint probe is the
+             countdown occluding itself, never the fixture occluding it;
+           - body has a real height so there is a painted page surface behind
+             the component to compare a flip card against;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb(). */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 900px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/countdown/snice-countdown.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. `remainingMs` is turned into an ISO target here so the
+         * spec never has to think about the page's clock; a value <= 0 is the
+         * documented finished state.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-countdown');
+          el.id = 'subject';
+          // Assigned BEFORE the element connects, the way a page author writes
+          // the markup. A countdown that connects with no target has already
+          // "reached zero" by the time a later assignment arrives, so mounting
+          // first and configuring afterwards would measure a countdown that
+          // finished before it started.
+          el.format = combo.format;
+          el.variant = combo.variant;
+          el.target = new Date(Date.now() + combo.remainingMs).toISOString();
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return {
+            variant: el.variant,
+            // Defaults are not reflected, so `simple` legitimately has no
+            // attribute; the stylesheet's variant rules are all additive.
+            reflected: el.getAttribute('variant'),
+            complete: el.classList.contains('complete'),
+            segments: el.shadowRoot.querySelectorAll('[part~="segment"]').length,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

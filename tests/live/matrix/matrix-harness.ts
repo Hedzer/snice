@@ -3,7 +3,7 @@
  *  snice-table TRUE-VISUAL matrix — shared harness
  * ════════════════════════════════════════════════════════════════════════════
  *
- * This tier is the real-browser twin of `tests/components/table-matrix`. The
+ * This tier is the real-browser twin of `tests/matrix/table`. The
  * DOM matrix (happy-dom, `npm run test:matrix`) already owns *value* truth:
  * which string belongs in which cell, for every pipeline and delivery pattern.
  * It cannot own *visual* truth, because happy-dom performs no layout — every
@@ -79,7 +79,7 @@ export const MATRIX_FIXTURE = '/tests/live/fixtures/table/matrix.html';
 
 // ── Dimensions ──────────────────────────────────────────────────────────────
 // These mirror the DOM matrix one-for-one. `PIPELINE_NAMES` is the same list as
-// `tests/components/table-matrix/height-fill-support.ts` `pipelines`; the
+// `tests/matrix/table/height-fill-support.ts` `pipelines`; the
 // fixture page owns the matching column definitions (they carry functions,
 // which cannot cross the Playwright boundary).
 

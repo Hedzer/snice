@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-alert visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the alert's tint and
+             its text are judged against the surface the component was designed
+             for rather than the browser's default white;
+           - #stage is a fixed, known box, so "the alert fills its container"
+             and "the dismiss button sits at the trailing edge" are facts about
+             the component and not about the viewport;
+           - #stage has NO padding, background, or overlapping siblings, so a
+             failed elementFromPoint probe is the alert occluding itself, never
+             the fixture occluding it;
+           - animations are disabled, because a mid-flight slide would make
+             every geometry reading a race. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      /* The hide path is a separate, opt-in stage state: layer 1 measures a
+         SHOWN alert, and an entrance animation still running would shift every
+         box under it. */
+      #stage.animated snice-alert { animation: none !important; }
+      #stage:not(.animated) *, #stage:not(.animated) *::before, #stage:not(.animated) *::after {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/alert/snice-alert.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const MESSAGE = 'Your changes were saved to the workspace.';
+      const SLOT_ICON = '★';
+
+      const api = {
+        /**
+         * Mount one combo the way the docs author one: light-DOM message and
+         * icon slot in place BEFORE connection, appearance axes through
+         * ATTRIBUTES — the stylesheet selects on `:host([variant])`,
+         * `:host([size])` and `:host([appearance="accent"])`, so an
+         * attribute-authored mount is the only one that proves the documented
+         * markup reaches the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-alert');
+          el.id = 'subject';
+          el.setAttribute('variant', combo.variant ?? 'info');
+          el.setAttribute('size', combo.size ?? 'medium');
+          el.setAttribute('appearance', combo.appearance ?? 'filled');
+          if (combo.title) el.setAttribute('title', combo.title);
+          if (combo.dismissible) el.setAttribute('dismissible', '');
+          if (combo.icon) el.setAttribute('icon', combo.icon);
+
+          el.appendChild(document.createTextNode(combo.message ?? MESSAGE));
+          if (combo.iconSlot) {
+            const span = document.createElement('span');
+            span.setAttribute('slot', 'icon');
+            span.textContent = SLOT_ICON;
+            el.appendChild(span);
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return { variant: el.getAttribute('variant'), dismissible: !!combo.dismissible };
+        },
+
+        /** Two alerts stacked, for the marquee "variants really differ" probe. */
+        async mountPair(a, b) {
+          api.unmount();
+          for (const [index, combo] of [a, b].entries()) {
+            const el = document.createElement('snice-alert');
+            el.id = `subject-${index}`;
+            for (const [key, value] of Object.entries(combo)) {
+              if (value === true) el.setAttribute(key, '');
+              else if (value != null && value !== false) el.setAttribute(key, String(value));
+            }
+            el.appendChild(document.createTextNode(MESSAGE));
+            stage.appendChild(el);
+            await el.ready;
+          }
+          await settle();
+          current = { el: stage.firstElementChild, combo: a };
+          return true;
+        },
+
+        /** Start the documented hide animation and let it run to completion. */
+        async hide() {
+          stage.classList.add('animated');
+          current?.el?.hide();
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('animated');
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

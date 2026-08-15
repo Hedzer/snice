@@ -638,36 +638,37 @@ three tiers, and the difference between them is who asks for them.
 | Tier | Command | Cost | When to run it |
 |------|---------|------|----------------|
 | Everyday | `vitest run`, `npm run test:source` | ~26s for `tests/components` | Every change |
-| Matrix (fuzz) | `npm run test:matrix` | ~100s across 52 files | Any change to table rendering — and once inside `npm test` |
+| Matrix (fuzz) | `npm run test:matrix` | Minutes, across every component's matrix | Any change to component rendering — and once inside `npm test` |
 | Visual | Playwright (`tests/live`, `npm run test:browser`) | Slowest | When asked for, and in the full gate |
-| Visual matrix (true-visual) | `npm run test:matrix:visual` | ~57s, 1164 tests in chromium | On demand, when the table's *appearance* is in question. Never in the gate |
+| Visual matrix (true-visual) | `npm run test:matrix:visual` | Minutes across every component's specs (the table's own slice: ~57s, 1164 tests in chromium) | On demand, when a component's *appearance* is in question. Never in the gate |
 
-**The everyday tier is deliberately screenshot-free and matrix-free.** The table
-feature-combination matrix in `tests/components/table-matrix/` crosses every
-table feature against every other one and asserts exact rendered output. It is
-worth its ~102s when you have touched the table, and it is pure tax when you
-have not — so `vitest.config.ts` excludes the directory from the default
-include, exactly the way `tests/live` is excluded. Plain `vitest run` and
-`npm run test:source` no longer pay for it.
+**The everyday tier is deliberately screenshot-free and matrix-free.** Every
+component's feature-combination matrix lives at `tests/matrix/<component>/`,
+crosses each of its features against the others, and asserts exact rendered
+output. That is worth its minutes when you have touched the component and pure
+tax when you have not — so `vitest.config.ts` excludes
+`tests/matrix/**/!(smoke).test.ts` from the default include, much the way
+`tests/live` is excluded. Plain `vitest run` and `npm run test:source` pay for
+the smoke slices only.
 
 **Running the matrix is an explicit act:**
 
 ```bash
-npm run test:matrix     # all 52 matrix files
+npm run test:matrix     # every component's matrix, all of tests/matrix/
 ```
 
 That script points Vitest at `vitest.matrix.config.ts`, which inherits
 everything from `vitest.config.ts` and then replaces the `exclude` list with the
-base list minus the matrix directory. (Replaces, not merges: Vitest's
+base list minus the matrix pattern. (Replaces, not merges: Vitest's
 `mergeConfig` concatenates arrays, so an inherited `exclude` would still contain
-the entry that hides the suite.) The config fails loudly if the base config ever
-stops excluding the directory, so the matrix cannot silently end up running
-twice.
+the entry that hides the suites.) The config fails loudly if the base config
+ever stops excluding the pattern. The smoke slices run in both tiers, which is
+intended: they are seconds, and they are the same assertions either way.
 
-**The everyday loop still gets a taste.**
-`tests/components/table-matrix-smoke.test.ts` lives outside the excluded
-directory, so it stays in the default include. It runs one combo per slice
-family — columns, delivery, editing, filtering, grouping, height-fill,
+**The everyday loop still gets a taste.** Each matrix directory carries a
+`smoke.test.ts`, and the exclusion pattern is written to keep exactly that file
+collected. The table's, `tests/matrix/table/smoke.test.ts`, runs one combo per
+slice family — columns, delivery, editing, filtering, grouping, height-fill,
 pagination, selection, sorting, tree-detail, typed-cells, virtualization —
 rotated across `{local, remote} x {valueGetter, formatter}` so all four cells
 are covered, plus the marquee regressions the matrix exists to pin (in-place
@@ -676,34 +677,39 @@ loading states, and the virtualizer's paint commit). Its budget is roughly four
 seconds. It is a smoke test, not a substitute: new combinations belong in the
 matrix, not in the smoke file.
 
-Excluding the directory removes its files from test *collection* only, not from
-module resolution — the smoke file imports `matrix-utils` and the per-slice
-`*-support.ts` helpers straight out of `tests/components/table-matrix/` and
-asserts through the matrix's own oracles.
+The exclusion removes files from test *collection* only, not from module
+resolution — each smoke file imports `matrix-utils` and the per-slice
+`*-support.ts` helpers straight out of its matrix directory (and the shared
+oracles at `tests/matrix/`) and asserts through the matrix's own oracles.
 
-In the full gate, the matrix runs as its own `table matrix suite` stage exactly
+In the full gate, the matrices run as their own `matrix suite` stage exactly
 once, next to the source suite rather than per artifact flavour; see the comment
 in `tooling/testing/run-full-tests.js` for why.
 
-### The True-Visual Table Matrix
+### The True-Visual Matrix
 
 The fuzz matrix above runs in happy-dom, which performs no layout. It owns
 *value* truth — which string belongs in which cell, for every pipeline and
 delivery pattern — and it cannot own *visual* truth, because in happy-dom every
 box measures zero, nothing is painted, and nothing can occlude anything.
 
-`tests/live/matrix/` is the real-browser twin. It mirrors the DOM matrix's
-dimensions exactly — `{local, remote}` x six pipelines x three delivery
+`tests/live/matrix/` is the real-browser twin, one directory per component:
+`tests/live/matrix/<component>/<component>-visual.spec.ts`, each driving its own
+fixture page at `tests/live/fixtures/<component>/matrix.html`. Those pages are
+fixtures, not showcases: they demonstrate nothing to a reader and exist only so
+that a measurement means something.
+
+The table is the tier's ceiling and its worked example. Its specs mirror the DOM
+matrix's dimensions exactly — `{local, remote}` x six pipelines x three delivery
 patterns x all 32 vectors of `{virtualize, height, squish, striped,
-selectable}`, the full 1152-combo product — and drives each combination in
-Chromium against its own fixture page, `tests/live/fixtures/table/matrix.html`.
-That page is a fixture, not a showcase: it demonstrates nothing to a reader and
-exists only so that a measurement means something.
+selectable}`, the full 1152-combo product — driven in Chromium against
+`tests/live/fixtures/table/matrix.html`. A divider's specs are a handful of
+combos against the same machinery; size the specs to the component.
 
 **It is an on-demand tier.** It is not part of `npm test`, and
 `tests/playwright.config.ts` explicitly ignores `live/matrix/**` so that
 `npm run test:browser:framework` — which targets all of `tests/live` — cannot
-sweep it in. Run it when you have changed how the table looks:
+sweep it in. Run it when you have changed how a component looks:
 
 ```bash
 npm run test:matrix:visual                     # chromium only (default)

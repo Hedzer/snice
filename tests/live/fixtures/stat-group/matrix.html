@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-stat-group visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the page sits on the theme's SECONDARY surface, so the `card`
+             variant's own surface and border are judged against a ground they
+             actually differ from (card-on-card would make "the card has a
+             background" unmeasurable);
+           - #stage is a fixed 900px, wider than the grid's 10rem minimum times
+             four, so "columns=4 put four cards on one row" is a fact about the
+             component and not about the viewport;
+           - the viewport is kept above the component's own 640px responsive
+             breakpoint by the Playwright config (1280x900); a narrower window
+             would silently switch the grid to auto-fit;
+           - #stage has no padding, background, or overlapping chrome, so a
+             failed elementFromPoint probe is the group occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface-secondary, #f5f5f5);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/stat-group/snice-stat-group.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `variant` and `columns` cross the ATTRIBUTE channel
+         * (the stylesheet keys off `:host([variant=...])`, so an attribute is
+         * the only channel that can prove the documented variant reaches the
+         * paint), `stats` crosses the property channel as the doc requires.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-stat-group');
+          el.id = 'subject';
+          if (combo.variant !== undefined) el.setAttribute('variant', combo.variant);
+          if (combo.columns !== undefined) el.setAttribute('columns', String(combo.columns));
+          stage.appendChild(el);
+          await el.ready;
+          el.stats = combo.stats ?? [];
+          await settle();
+          return { cards: (combo.stats ?? []).length };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

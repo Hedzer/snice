@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-chip visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a chip's fill is
+             judged against the surface it was designed for rather than the
+             browser's default white;
+           - #stage is a fixed, known box at a known origin, so "the chip is
+             N px tall" is a fact about the chip and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding itself, never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+        /* Chips are inline-ish; a plain block stage lets each chip size to its
+           own content, which is what the size/shape axes are measured on. */
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/chip/snice-chip.ts';
+
+      const LABEL = 'Design';
+      const ICON_TEXT = '★';
+      /* A 2x2 opaque PNG. An inline data URI keeps the avatar path off the
+         network: a 404 would silently swap the <img> for a fallback and the
+         "avatar has a real box" assertion would measure the wrong thing. */
+      const AVATAR_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF0lEQVQI12P8z8DAwMDAxMDAwMDAAAANHQEDlmZ8ogAAAABJRU5ErkJggg==';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo and leave it settled and measurable. Returns the
+         * facts the spec needs but cannot re-derive cheaply.
+         *
+         * A combo is { variant, size, shape, state, affordance }, mirroring
+         * the DOM matrix's dimensions in tests/matrix/chip.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const chip = document.createElement('snice-chip');
+          chip.id = 'subject';
+          chip.setAttribute('variant', combo.variant);
+          chip.setAttribute('size', combo.size);
+          chip.setAttribute('shape', combo.shape);
+          chip.setAttribute('label', LABEL);
+          if (combo.affordance === 'icon') chip.setAttribute('icon', ICON_TEXT);
+          if (combo.affordance === 'avatar') chip.setAttribute('avatar', AVATAR_URL);
+          if (combo.state === 'selected') { chip.setAttribute('selectable', ''); chip.setAttribute('selected', ''); }
+          if (combo.state === 'removable') chip.setAttribute('removable', '');
+          if (combo.state === 'disabled') chip.setAttribute('disabled', '');
+
+          stage.appendChild(chip);
+          await chip.ready;
+          await settle();
+          current = chip;
+
+          return { label: LABEL, hasAvatar: combo.affordance === 'avatar' };
+        },
+
+        /**
+         * Mount a whole ROW of chips at once. The axis comparisons (six
+         * variants must not collide, three sizes must differ, three shapes
+         * must differ) need every value on screen under identical conditions —
+         * mounting them one at a time and comparing across page states would
+         * compare measurements taken under different layouts.
+         */
+        async mountRow(combos) {
+          api.unmount();
+          const chips = [];
+          for (const combo of combos) {
+            const chip = document.createElement('snice-chip');
+            chip.setAttribute('variant', combo.variant);
+            chip.setAttribute('size', combo.size);
+            chip.setAttribute('shape', combo.shape);
+            chip.setAttribute('label', LABEL);
+            if (combo.state === 'selected') { chip.setAttribute('selectable', ''); chip.setAttribute('selected', ''); }
+            stage.appendChild(chip);
+            chips.push(chip);
+          }
+          await Promise.all(chips.map(c => c.ready));
+          await settle();
+          current = chips[0] ?? null;
+          return chips.length;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get chip() { return current; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

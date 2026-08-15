@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-virtual-scroller visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known box at a known page position, so "the row
+             for index N is at the top of the visible band" is a fact about the
+             component and not about the viewport or the scroll position of the
+             page;
+           - the host is given an EXPLICIT height, because virtualisation is
+             defined against a viewport and the component's own fallback
+             (`this.offsetHeight || 400`) would otherwise decide the answer;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             scroller occluding itself, never the fixture occluding it;
+           - the rendered rows carry a flat, saturated background so a pixel
+             probe can tell "a row is painted here" from "the surface is". */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #stage snice-virtual-scroller {
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/virtual-scroller/snice-virtual-scroller.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 16));
+        await nextFrame();
+      }
+
+      /**
+       * The scroll port is whichever element actually overflows. The component's
+       * stylesheet puts `overflow: auto` on `:host` while its script drives
+       * `.scroller`, so the fixture must not assume either — it reports what
+       * the browser built and lets the spec judge it.
+       */
+      function scrollPort(el) {
+        const base = el.shadowRoot.querySelector('.scroller');
+        const candidates = [
+          { name: 'host', node: el },
+          { name: 'base', node: base },
+        ];
+        for (const candidate of candidates) {
+          if (!candidate.node) continue;
+          const cs = getComputedStyle(candidate.node);
+          const scrolls = cs.overflowY === 'auto' || cs.overflowY === 'scroll';
+          if (scrolls && candidate.node.scrollHeight > candidate.node.clientHeight + 1) {
+            return candidate;
+          }
+        }
+        return { name: 'none', node: null };
+      }
+
+      const api = {
+        unmount() { stage.innerHTML = ''; },
+
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-virtual-scroller');
+          el.id = 'subject';
+          el.style.height = `${combo.viewportHeight}px`;
+          el.setAttribute('item-height', String(combo.itemHeight));
+          el.setAttribute('buffer-size', String(combo.bufferSize));
+          stage.appendChild(el);
+          await el.ready;
+
+          el.renderItem = (item, index) => {
+            const row = document.createElement('div');
+            row.className = 'row';
+            row.dataset.index = String(index);
+            row.style.height = '100%';
+            row.style.boxSizing = 'border-box';
+            row.style.background = index % 2 === 0 ? 'rgb(37 99 235)' : 'rgb(21 128 61)';
+            row.style.color = 'rgb(255 255 255)';
+            row.style.fontSize = '12px';
+            row.textContent = `Row ${index}`;
+            return row;
+          };
+          el.items = Array.from({ length: combo.total }, (_, i) => ({ id: i, data: `Item ${i + 1}` }));
+          el.refresh();
+          await settle();
+
+          const port = scrollPort(el);
+          return { port: port.name, total: el.items.length };
+        },
+
+        /** The documented programmatic move. */
+        async scrollToIndex(index) {
+          const el = document.getElementById('subject');
+          el.scrollToIndex(index);
+          await settle();
+        },
+
+        /**
+         * A real user scroll: move the element the browser actually scrolls and
+         * let the platform emit its own scroll event. Nothing here calls the
+         * component's handler directly — that would prove only that the handler
+         * works when something calls it.
+         */
+        async userScrollTo(offset) {
+          const el = document.getElementById('subject');
+          const port = scrollPort(el).node ?? el;
+          port.scrollTop = offset;
+          await settle();
+          await settle();
+          return port.scrollTop;
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

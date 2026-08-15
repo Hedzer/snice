@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-podcast-player visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Nothing here demonstrates the component to a
+         reader; every rule exists so a measurement means something:
+
+           - the page sits on the theme's own surface, so a control's contrast
+             is judged against the surface the component was designed for
+             rather than the browser's default white;
+           - #stage is a fixed, known box, so "the control bar fits its host"
+             is a fact about the player and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding its own control, never the fixture doing it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 720px;
+        height: 800px;
+      }
+      #stage > snice-podcast-player { display: block; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/podcast-player/snice-podcast-player.ts';
+
+      /* Episode lists, mirroring tests/matrix/podcast-player. */
+      const EPISODE_SETS = {
+        none: [],
+        flat: [
+          { title: 'Ep 1', src: '/audio/ep1.mp3', duration: 1800 },
+          { title: 'Ep 2', src: '/audio/ep2.mp3', duration: 2400 },
+          { title: 'Ep 3', src: '/audio/ep3.mp3', duration: 3600 },
+        ],
+        chaptered: [
+          {
+            title: 'Chaptered episode', src: '/audio/ch.mp3', duration: 3600,
+            description: 'An episode with chapters',
+            chapters: [
+              { title: 'Cold open', startTime: 0 },
+              { title: 'Interview', startTime: 300 },
+              { title: 'Outro', startTime: 3300 },
+            ],
+          },
+        ],
+        // A long title with no spaces is the classic overflow case: it either
+        // wraps, ellipsises, or bursts the control bar out of the host.
+        overflow: [
+          {
+            title: 'Supercalifragilisticexpialidocious-episode-title-that-never-ends-and-keeps-going',
+            src: '/audio/long.mp3', duration: 5400,
+          },
+        ],
+      };
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-podcast-player');
+          el.id = 'subject';
+          el.setAttribute('src', combo.src ?? '/audio/episode.mp3');
+          el.setAttribute('episode-title', combo.title ?? 'Episode 1: Getting Started');
+          if (combo.show) el.setAttribute('show', combo.show);
+          if (combo.artwork) el.setAttribute('artwork', combo.artwork);
+          if (combo.description) el.setAttribute('description', combo.description);
+          if (combo.playbackRate) el.setAttribute('playback-rate', String(combo.playbackRate));
+
+          stage.appendChild(el);
+          await el.ready;
+
+          const episodes = EPISODE_SETS[combo.episodes ?? 'none'];
+          if (episodes.length) el.episodes = episodes;
+          if (combo.episodeIndex !== undefined && combo.episodeIndex >= 0) {
+            el.loadEpisode(combo.episodeIndex);
+          }
+          // `duration` normally arrives from the media element's metadata,
+          // which never loads for a fake URL; setting it directly is how the
+          // fixture reaches the laid-out states the geometry checks are about.
+          if (combo.duration !== undefined) el.duration = combo.duration;
+          if (combo.currentTime !== undefined) el.seekTo(combo.currentTime);
+          await settle();
+
+          current = { el, episodes };
+          return {
+            episodeCount: episodes.length,
+            duration: el.duration,
+            currentTime: el.currentTime,
+          };
+        },
+
+        /** Open the volume control so its slider can be measured. */
+        async openVolume() {
+          const el = current?.el;
+          if (!el) return false;
+          const button = [...el.shadowRoot.querySelectorAll('.podcast-volume button')][0];
+          if (!button) return false;
+          button.click();
+          await settle();
+          return true;
+        },
+
+        /** The painted progress fill as a fraction of the whole track. */
+        progressRatio() {
+          const el = current?.el;
+          if (!el) return null;
+          const track = el.shadowRoot.querySelector('.podcast-progress');
+          const fill = el.shadowRoot.querySelector('.podcast-progress-bar');
+          if (!track || !fill) return null;
+          const t = track.getBoundingClientRect();
+          const f = fill.getBoundingClientRect();
+          return t.width === 0 ? null : f.width / t.width;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

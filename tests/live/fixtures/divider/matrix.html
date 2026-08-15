@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-divider visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the line's colour and
+             the label's background are judged against the surface the component
+             was designed for rather than the browser's default white;
+           - #stage is a fixed, known box, so "the line spans its container" and
+             "the label sits between two segments" are facts about the component
+             and not about the viewport;
+           - #stage has NO padding or background of its own and nothing overlaps
+             it, so a failed elementFromPoint probe is the divider occluding
+             itself, never the fixture occluding it;
+           - the vertical stage is explicitly sized, because a vertical divider
+             is `height: 100%` and has no intrinsic height to measure. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      /* A vertical divider fills its parent's height, so the parent must have
+         one. `display: flex` is the documented layout for it (docs/components/
+         divider.md "Vertical Orientation"). */
+      #stage.vertical {
+        display: flex;
+        align-items: stretch;
+        height: 120px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/divider/snice-divider.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does (tests/matrix/divider/divider-matrix-utils.ts).
+         * The stylesheet keys off attributes, so mounting by property is what
+         * makes this tier prove that documented reflection actually reaches the
+         * paint — an attribute-built fixture could not.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('vertical', combo.orientation === 'vertical');
+
+          const el = document.createElement('snice-divider');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of ['orientation', 'variant', 'spacing', 'align', 'capped', 'text', 'textBackground', 'color']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            hasText: !!combo.text,
+            orientation: combo.orientation ?? 'horizontal',
+          };
+        },
+
+        /** Two dividers side by side, for the marquee contrast capture. */
+        async mountPair(a, b) {
+          api.unmount();
+          stage.classList.remove('vertical');
+          for (const [index, combo] of [a, b].entries()) {
+            const el = document.createElement('snice-divider');
+            el.id = `subject-${index}`;
+            stage.appendChild(el);
+            await el.ready;
+            for (const key of Object.keys(combo)) el[key] = combo[key];
+          }
+          await settle();
+          current = { el: stage.firstElementChild, combo: a };
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('vertical');
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

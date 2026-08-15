@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-tooltip visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the popup's colour is
+             judged against the surface it was designed for;
+           - #stage is ABSOLUTELY POSITIONED at a known point, and the test
+             moves it, because "the tooltip flips when it will not fit" is a
+             claim about the trigger's position in the viewport — a fixture that
+             could not place the trigger could not test the flip at all;
+           - nothing overlaps the stage, so a failed elementFromPoint probe is
+             the tooltip occluding something, never the fixture;
+           - transitions are ZEROED, because the popup fades in over 200ms and a
+             mid-flight opacity would make every paint reading a race. */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 300px;
+        left: 500px;
+      }
+      #stage button {
+        font: inherit;
+        padding: 8px 14px;
+      }
+      /* The popup is portalled into <body>, outside the stage, so the override
+         has to be global. */
+      .snice-tooltip { transition: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/tooltip/snice-tooltip.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const ATTR_NAMES = {
+        hideDelay: 'hide-delay',
+        maxWidth: 'max-width',
+        zIndex: 'z-index',
+        strictPositioning: 'strict-positioning',
+      };
+
+      const api = {
+        /**
+         * Mount one combo, with the trigger placed where the combo asks. The
+         * placement is the point: a tooltip anchored in the middle of the
+         * viewport must keep its requested side, and one anchored against an
+         * edge must move — neither claim exists without a controllable anchor.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.style.top = `${combo.anchorTop ?? 300}px`;
+          stage.style.left = `${combo.anchorLeft ?? 500}px`;
+
+          const el = document.createElement('snice-tooltip');
+          el.id = 'subject';
+          for (const [key, value] of Object.entries(combo)) {
+            if (key.startsWith('anchor') || value === undefined || value === false) continue;
+            const name = ATTR_NAMES[key] ?? key;
+            el.setAttribute(name, value === true ? '' : String(value));
+          }
+          el.innerHTML = '<button type="button" id="trigger">Save</button>';
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+          current = { el, combo };
+          return { mounted: true, position: el.getAttribute('position') };
+        },
+
+        /** Open through the real interaction path the combo's trigger uses. */
+        async open() {
+          const el = current.el;
+          const trigger = el.getAttribute('trigger') ?? 'hover';
+          if (trigger === 'hover') el.dispatchEvent(new MouseEvent('mouseenter'));
+          else if (trigger === 'click') el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          else if (trigger === 'focus') el.querySelector('button').focus();
+          else el.show();
+          await settle();
+          await new Promise(resolve => setTimeout(resolve, 60));
+          await settle();
+          return !!document.querySelector('.snice-tooltip--visible');
+        },
+
+        async close() {
+          current?.el?.hide();
+          await settle();
+          await new Promise(resolve => setTimeout(resolve, 260));
+          return true;
+        },
+
+        /** An element with a bare `tooltip` attribute — the wrapper-free API. */
+        async mountAttribute(text, style = '') {
+          api.unmount();
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.id = 'trigger';
+          button.textContent = 'Save';
+          button.setAttribute('tooltip', text);
+          if (style) button.setAttribute('style', style);
+          stage.appendChild(button);
+          await settle();
+          await new Promise(resolve => setTimeout(resolve, 60));
+          current = { el: button, combo: { attribute: true } };
+          return true;
+        },
+
+        async openAttribute() {
+          current.el.dispatchEvent(new MouseEvent('mouseenter'));
+          await settle();
+          await new Promise(resolve => setTimeout(resolve, 60));
+          await settle();
+          return !!document.querySelector('.snice-tooltip--visible');
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          for (const portal of [...document.querySelectorAll('.snice-tooltip')]) portal.remove();
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

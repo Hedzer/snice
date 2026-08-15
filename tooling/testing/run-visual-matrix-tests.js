@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Runs the ON-DEMAND true-visual table matrix (tests/live/matrix) against the
- * framework dev server on http://localhost:5566.
+ * Runs the ON-DEMAND true-visual component matrices (tests/live/matrix, one
+ * directory per component) against the framework dev server on
+ * http://localhost:5566.
  *
  * This tier is NOT part of `npm test`. It exists for the moments when the
- * question is "does the table still LOOK right in a real browser" — a table
+ * question is "does the component still LOOK right in a real browser" — a
  * rendering change, a theme change, a CSS refactor — and it is asked for
  * explicitly with `npm run test:matrix:visual`.
  *
@@ -31,7 +32,11 @@ const PORT = 5566;
 const HOST = '127.0.0.1';
 const STARTUP_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 300;
-/** The one page this tier drives. If it does not load, nothing below matters. */
+/**
+ * The readiness probe: the table fixture, this tier's largest page and the one
+ * that exercises the most of the module graph. Every component's fixture is
+ * served the same way, so if this one does not load, nothing below matters.
+ */
 const FIXTURE_PATH = '/tests/live/fixtures/table/matrix.html';
 const FIXTURE_TIMEOUT_MS = 60_000;
 

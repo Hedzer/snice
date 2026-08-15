@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-date-time-picker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the panel's own
+             background is judged against the surface it will really appear on;
+           - #stage is positioned at a KNOWN offset so "the popup is clamped to
+             the viewport" is a fact about the component, and the stage can be
+             moved to the far edges to force the clamp;
+           - #rival is a high-z-index block that overlaps where the popup opens.
+             A top-layer popup paints OVER it; a plainly-positioned one does
+             not. That is the whole point of the "top-layer when available"
+             clause, and it is invisible to a DOM test;
+           - #stage itself has no background, so an occlusion probe that fails
+             is the component covering itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        min-height: 200vh; /* so the page can be scrolled under an open popup */
+      }
+      #stage {
+        position: absolute;
+        top: 120px;
+        left: 80px;
+        width: 320px;
+      }
+      #stage.bottom-right { top: auto; left: auto; right: 8px; bottom: 8px; }
+      #stage.top-right { top: 8px; left: auto; right: 8px; }
+      #rival {
+        position: absolute;
+        top: 170px;
+        left: 60px;
+        width: 420px;
+        height: 320px;
+        background: var(--snice-color-danger, rgb(220 38 38));
+        z-index: 9999;
+        display: none;
+      }
+      #rival.on { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="rival"></div>
+    <form id="host-form">
+      <div id="stage"></div>
+    </form>
+
+    <script type="module">
+      import '/packages/components/src/date-time-picker/snice-date-time-picker.ts';
+
+      const stage = document.getElementById('stage');
+      const rival = document.getElementById('rival');
+      const form = document.getElementById('host-form');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const ATTRS = {
+        variant: 'variant', size: 'size', dateFormat: 'date-format',
+        timeFormat: 'time-format', label: 'label', helperText: 'helper-text',
+        errorText: 'error-text', min: 'min', max: 'max', name: 'name',
+        placeholder: 'placeholder',
+      };
+      const FLAGS = {
+        showSeconds: 'show-seconds', loading: 'loading', clearable: 'clearable',
+        disabled: 'disabled', readonly: 'readonly', required: 'required',
+        invalid: 'invalid',
+      };
+
+      const api = {
+        /**
+         * Mount one combo. Attributes are the documented authored form, so this
+         * tier proves the converters really reach the paint; `value` is written
+         * as the `value` ATTRIBUTE, which is the documented reset default and
+         * seeds the live value while pristine.
+         */
+        async mount(combo = {}) {
+          api.unmount();
+          stage.className = combo.corner ?? '';
+          rival.classList.toggle('on', !!combo.rival);
+
+          const el = document.createElement('snice-date-time-picker');
+          el.id = 'subject';
+          for (const [key, attr] of Object.entries(ATTRS)) {
+            if (combo[key] === undefined || combo[key] === '') continue;
+            el.setAttribute(attr, String(combo[key]));
+          }
+          for (const [key, attr] of Object.entries(FLAGS)) {
+            if (combo[key]) el.setAttribute(attr, '');
+          }
+          if (combo.value) el.setAttribute('value', combo.value);
+
+          stage.appendChild(el);
+          await el.ready;
+          await settle();
+
+          current = { el, combo };
+          return { mounted: true, variant: combo.variant ?? 'dropdown' };
+        },
+
+        /** Open the dropdown and let it position itself. */
+        async open() {
+          current?.el.open();
+          await settle();
+          return !!current?.el.shadowRoot.querySelector('[part~="panel"]:not([hidden])');
+        },
+
+        async close() {
+          current?.el.close();
+          await settle();
+        },
+
+        /** Scroll the page, which the docs say the popup must respond to. */
+        async scrollPage(y) {
+          window.scrollTo(0, y);
+          await settle();
+          return window.scrollY;
+        },
+
+        /** The real submission, run by the real engine. */
+        formEntries() {
+          return [...new FormData(form).entries()];
+        },
+
+        /** Real constraint validation, run by the real engine. */
+        validity() {
+          const el = current.el;
+          const validity = el.validity ?? {};
+          return {
+            valid: validity.valid,
+            valueMissing: validity.valueMissing,
+            badInput: validity.badInput,
+            rangeUnderflow: validity.rangeUnderflow,
+            rangeOverflow: validity.rangeOverflow,
+            customError: validity.customError,
+            willValidate: el.willValidate,
+            inFormElements: [...form.elements].includes(el),
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.className = '';
+          rival.classList.remove('on');
+          window.scrollTo(0, 0);
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

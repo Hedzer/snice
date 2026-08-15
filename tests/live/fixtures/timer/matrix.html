@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-timer visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the page sits on the theme's own surface, so the timer's card and
+             its buttons are judged against the surface they were designed for;
+           - #stage is a fixed, known box with NO background, padding or
+             overlapping siblings, so a failed elementFromPoint probe means the
+             timer occludes its own control, never that the fixture does;
+           - body has a real height so there is a painted page surface behind
+             the card to compare against;
+           - the stage is narrow enough that the card cannot stretch to the
+             viewport, which is what makes "the controls sit under the display"
+             a fact about the component. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 320px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/timer/snice-timer.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo and drive it into the requested phase with the
+         * DOCUMENTED methods. `reset()` first, because "Reset to initial state"
+         * is the documented way to reach the state a countdown is meant to
+         * stand at before anything else is asserted.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-timer');
+          el.id = 'subject';
+          el.mode = combo.mode;
+          el.initialTime = combo.initialTime ?? 0;
+          stage.appendChild(el);
+          await el.ready;
+          el.reset();
+          await settle();
+
+          if (combo.phase === 'running' || combo.phase === 'paused') {
+            el.start();
+            await new Promise(resolve => setTimeout(resolve, 120));
+            await settle();
+          }
+          if (combo.phase === 'paused') {
+            el.stop();
+            await settle();
+          }
+
+          current = { el, combo };
+          return {
+            mode: el.mode,
+            running: el.running,
+            time: el.getTime(),
+            buttons: [...el.shadowRoot.querySelectorAll('[part~="controls"] button')]
+              .map(b => b.getAttribute('title')),
+          };
+        },
+
+        /** Stop whatever is running, so a capture is not racing the rAF loop. */
+        freeze() {
+          current?.el?.stop();
+        },
+
+        unmount() {
+          current?.el?.stop();
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

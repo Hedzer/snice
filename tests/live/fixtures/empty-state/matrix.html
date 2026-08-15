@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-empty-state visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme surface is the background, so text contrast is measured
+             against the surface the component was designed for;
+           - #stage is a fixed, known box, so "the content is centred" and "the
+             icon sits above the title" are facts about the component rather
+             than about the viewport;
+           - #stage has no padding, background, or overlapping content, so a
+             failed elementFromPoint probe is the empty state occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 720px;
+      }
+      /* The slotted-icon probe needs a glyph with a KNOWN box, so the fixture
+         supplies a plain sized square rather than an icon font it would have to
+         download (and whose absence would silently change every measurement). */
+      .slotted-icon {
+        display: block;
+        width: 40px;
+        height: 40px;
+        background: rgb(220, 38, 38);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/empty-state/snice-empty-state.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /* A 2x2 PNG data URI: real bytes, so an image icon really decodes and
+         really paints without depending on the dev server serving a file. */
+      const ICON_URL =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF'
+        + 'klEQVR4nGO4o6ammvyaQWyx16vNHAAj8AVE95m2kwAAAABJRU5ErkJggg==';
+
+      const DEFAULTS = {
+        size: 'medium', icon: '📭', title: 'No data',
+        description: '', actionText: '', actionHref: '',
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        ICON_URL,
+
+        /**
+         * Mount one combo. Light DOM goes in BEFORE the element connects —
+         * a slot filled after the first render is a different, un-authored
+         * first paint — and only NON-DEFAULT properties are assigned, exactly
+         * as the DOM matrix does, so nothing here fabricates a styling hook the
+         * framework would not have produced.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-empty-state');
+          el.id = 'subject';
+          const light = [];
+          if (combo.iconMode === 'slot') {
+            light.push('<span slot="icon" class="slotted-icon"></span>');
+          }
+          if (combo.extra) light.push('<span class="extra">extra content</span>');
+          if (light.length) el.innerHTML = light.join('');
+          stage.appendChild(el);
+          await el.ready;
+
+          const icon = combo.iconMode === 'image' ? ICON_URL
+            : combo.iconMode === 'emoji' ? '🔍'
+              : DEFAULTS.icon;
+          const props = {
+            size: combo.size,
+            icon,
+            title: combo.title ?? DEFAULTS.title,
+            description: combo.description ?? '',
+            actionText: combo.actionText ?? '',
+            actionHref: combo.actionHref ?? '',
+          };
+          for (const [key, value] of Object.entries(props)) {
+            if (value === DEFAULTS[key]) continue;
+            el[key] = value;
+          }
+          await settle();
+
+          // An image icon must have decoded before anything is measured.
+          const img = el.shadowRoot.querySelector('img');
+          if (img && !img.complete) {
+            await new Promise(resolve => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+            });
+            await settle();
+          }
+
+          current = { el, combo };
+          return { mounted: true };
+        },
+
+        /**
+         * Click the action and report what the COMPONENT did with the event.
+         *
+         * The probe listener is attached to the action AFTER the component's
+         * own (which the template registered during render), so it runs second
+         * in the same phase and sees exactly the cancellation state the
+         * component left behind. It then calls preventDefault() itself: a link
+         * action is documented as a real link, and letting a real browser
+         * follow it would navigate the fixture away mid-suite.
+         */
+        clickAction() {
+          const el = current?.el;
+          const action = el?.shadowRoot.querySelector('[part~="action"]');
+          if (!action) return { clicked: false };
+          const events = [];
+          const handler = e => events.push({ detail: e.detail, target: e.target === el });
+          el.addEventListener('empty-state-action', handler);
+          let cancelledByComponent = null;
+          const probe = e => {
+            cancelledByComponent = e.defaultPrevented;
+            e.preventDefault();
+          };
+          action.addEventListener('click', probe);
+          action.dispatchEvent(
+            new MouseEvent('click', { bubbles: true, composed: true, cancelable: true }));
+          action.removeEventListener('click', probe);
+          el.removeEventListener('empty-state-action', handler);
+          return {
+            clicked: true,
+            cancelledByComponent,
+            events: events.length,
+            detailIsHost: events[0]?.detail?.emptyState === el,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

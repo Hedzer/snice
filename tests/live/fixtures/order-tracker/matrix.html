@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-order-tracker visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the completed/active/pending indicator
+             colours are judged against the intended background;
+           - #stage is a fixed 720px box — wide enough for a horizontal timeline
+             to lay three steps side by side — so "the steps run left to right"
+             is a fact about the component, not about the viewport;
+           - no padding, no background, nothing overlapping, so a failed
+             elementFromPoint probe is the tracker occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/order-tracker/snice-order-tracker.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `variant`, `carrier` and `tracking-number` cross the
+         * ATTRIBUTE channel (the documented markup form); `steps` is documented
+         * as JS-only and crosses the property channel.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-order-tracker');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.carrier) el.setAttribute('carrier', combo.carrier);
+          if (combo.trackingNumber) el.setAttribute('tracking-number', combo.trackingNumber);
+          stage.appendChild(el);
+          await el.ready;
+          el.steps = combo.steps ?? [];
+          await settle();
+          return {
+            steps: el.shadowRoot.querySelectorAll('.tracker__step').length,
+            hasInfo: !!el.shadowRoot.querySelector('.tracker__info'),
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

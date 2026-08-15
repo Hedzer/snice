@@ -395,7 +395,7 @@ describe.each(PATHS)('snice-table zero-row states (%s render path)', (_label, vi
 // ── fill-row interaction (explicit host height) ─────────────────────────────
 //
 // happy-dom performs no layout, so the two boxes `updateFillRow()` compares
-// are pinned exactly the way tests/components/table-matrix/height-fill-support
+// are pinned exactly the way tests/matrix/table/height-fill-support
 // does. This pins the RULE, not the browser's box arithmetic.
 
 function stubLayout(table: any, frameHeight: number, tableHeight: number) {

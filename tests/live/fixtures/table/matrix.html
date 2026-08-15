@@ -38,7 +38,7 @@
       import '/packages/components/src/table/snice-table.ts';
 
       // ── Pipeline dimension ────────────────────────────────────────────────
-      // Mirrors tests/components/table-matrix/height-fill-support.ts `pipelines`
+      // Mirrors tests/matrix/table/height-fill-support.ts `pipelines`
       // one-for-one. Column definitions carry FUNCTIONS, which cannot cross the
       // Playwright boundary, so the page owns them and a spec passes only a
       // pipeline NAME. Keeping the two lists identical is what makes this tier
@@ -210,7 +210,7 @@
 
         /**
          * The matrix oracle, verbatim from
-         * tests/components/table-matrix/matrix-utils.ts `expectedCellText`:
+         * tests/matrix/table/matrix-utils.ts `expectedCellText`:
          * valueGetter derives the working value, then formatter (row-aware) or
          * valueFormatter produce display text; otherwise the value itself.
          */

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-data-card visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a badge's fill and a
+             link's colour are judged against the ground the component was
+             designed for rather than the browser's default white;
+           - #stage is a fixed, known width, so "the value column did not
+             collapse" and "the row did not wrap" are facts about the component
+             and not about the viewport;
+           - #stage has NO padding, background, or overlapping chrome, so a
+             failed elementFromPoint probe is the card occluding itself, never
+             the fixture occluding it;
+           - two stages exist because the density comparison (compact vs
+             default) has to measure two cards built from the SAME fields in the
+             same layout at the same time. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface-secondary, #f5f5f5);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage, #stage-b {
+        position: absolute;
+        left: 40px;
+        width: 520px;
+      }
+      #stage { top: 40px; }
+      #stage-b { top: 40px; left: 620px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="stage-b"></div>
+
+    <script type="module">
+      import '/packages/components/src/data-card/snice-data-card.ts';
+
+      const stage = document.getElementById('stage');
+      const stageB = document.getElementById('stage-b');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      async function build(host, id, combo) {
+        const el = document.createElement('snice-data-card');
+        el.id = id;
+        host.appendChild(el);
+        await el.ready;
+        // The PROPERTY channel for `fields` (documented `attribute: false`) and
+        // for the rest too, so this tier proves the documented property API
+        // reaches the paint — an attribute-only fixture could not.
+        if (combo.variant !== undefined) el.variant = combo.variant;
+        if (combo.editable !== undefined) el.editable = combo.editable;
+        el.fields = combo.fields ?? [];
+        await settle();
+        return el;
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+          await build(stage, 'subject', combo);
+          await settle();
+          return { fields: (combo.fields ?? []).length };
+        },
+
+        /** Two cards, same fields, different variant — the density comparison. */
+        async mountPair(comboA, comboB) {
+          api.unmount();
+          await build(stage, 'subject', comboA);
+          await build(stageB, 'subject-b', comboB);
+          await settle();
+          return true;
+        },
+
+        /** Open the editor on the field with this label. */
+        async startEdit(label) {
+          const el = document.getElementById('subject');
+          const rows = [...el.shadowRoot.querySelectorAll('[part]')]
+            .filter(node => (node.getAttribute('part') ?? '').split(/\s+/).includes('field'));
+          for (const row of rows) {
+            const rowLabel = [...row.querySelectorAll('[part]')]
+              .find(node => (node.getAttribute('part') ?? '').split(/\s+/).includes('field-label'));
+            if ((rowLabel?.textContent ?? '').trim() !== label) continue;
+            const button = [...row.querySelectorAll('[part]')]
+              .find(node => (node.getAttribute('part') ?? '').split(/\s+/).includes('field-edit'));
+            if (!button) return false;
+            button.click();
+            await settle();
+            return true;
+          }
+          return false;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stageB.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

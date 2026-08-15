@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-leaderboard visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the highlight tint and
+             the change-indicator colours are judged against the surface the
+             component was designed for, not the browser's default white;
+           - #stage is a fixed, known box, so "the podium puts 2nd left of 1st"
+             and "a large row is taller than a small one" are facts about the
+             component and not about the viewport;
+           - #stage has NO padding, background or overlapping siblings, so a
+             failed elementFromPoint probe is the leaderboard occluding itself,
+             never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 480px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/leaderboard/snice-leaderboard.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** The documented declarative child form. */
+      function slotMarkup(entries) {
+        return entries.map(entry => {
+          const attrs = [
+            `rank="${entry.rank}"`,
+            `name="${entry.name}"`,
+            `score="${entry.score}"`,
+            entry.avatar ? `avatar="${entry.avatar}"` : '',
+            entry.change === undefined ? '' : `change="${entry.change}"`,
+            entry.highlighted ? 'highlighted' : '',
+          ].filter(Boolean).join(' ');
+          return `<snice-leaderboard-entry ${attrs}></snice-leaderboard-entry>`;
+        }).join('');
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `variant`/`size` cross the ATTRIBUTE channel (the
+         * stylesheet keys off `:host([variant=…])`), `title` the PROPERTY
+         * channel (the docs say the attribute of that name is the native
+         * tooltip), and the entries arrive through whichever half of the
+         * documented dual API the combo names.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-leaderboard');
+          el.id = 'subject';
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          if (combo.size) el.setAttribute('size', combo.size);
+          if (combo.source === 'slot') el.innerHTML = slotMarkup(combo.entries ?? []);
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.title !== undefined) el.title = combo.title;
+          if (combo.source !== 'slot' && combo.entries) el.setEntries(combo.entries);
+          await settle();
+          return {
+            rows: el.shadowRoot.querySelectorAll('.leaderboard__entry').length,
+            tiles: el.shadowRoot.querySelectorAll('.leaderboard__podium-entry').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

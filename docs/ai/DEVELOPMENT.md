@@ -35,8 +35,8 @@ npm run generate:react-tests     # Generate test files
 ```bash
 npm test                        # Required complete gate (source+built+browser+site)
 npm run test:source             # Tests importing package sources
-npm run test:matrix             # Table feature-combination matrix (fuzz tier, opt-in)
-npm run test:matrix:visual      # Same matrix in a real browser (on demand, chromium)
+npm run test:matrix             # Component feature-combination matrices (fuzz tier, opt-in)
+npm run test:matrix:visual      # Same matrices in a real browser (on demand, chromium)
 npm run test:distribution       # Fresh build, then same tests against dist/
 npm run test:cdn                # Fresh CDN build + artifact/runtime tests
 npm run test:react              # Fresh adapters + React tests
@@ -59,31 +59,35 @@ be strictly greater than 90%. Browser commands manage their own local servers.
 | Tier | Command | Cost | When |
 |------|---------|------|------|
 | Everyday | `vitest run` / `npm run test:source` | ~26s for `tests/components` | Every change |
-| Matrix (fuzz) | `npm run test:matrix` | ~100s, 52 files | Any table rendering change; once inside `npm test` |
+| Matrix (fuzz) | `npm run test:matrix` | Minutes; all components | Any component rendering change; once inside `npm test` |
 | Visual | Playwright (`tests/live`) | Slowest | On request |
-| Visual matrix | `npm run test:matrix:visual` | ~57s, 1164 tests (chromium) | On demand only; never in the gate |
+| Visual matrix | `npm run test:matrix:visual` | Minutes; all components (table slice: ~57s, 1164 tests, chromium) | On demand only; never in the gate |
 
-- `vitest.config.ts` `test.exclude` drops `tests/components/table-matrix` from
-  the default include, the same way `tests/live` is dropped. Plain `vitest run`
-  no longer pays its ~102s.
+- Canonical layout: `tests/matrix/<component>/*.test.ts` (matrix),
+  `tests/matrix/<component>/smoke.test.ts` (default-loop slice),
+  `tests/matrix/*.ts` (shared oracles),
+  `tests/live/matrix/<component>/<component>-visual.spec.ts` (visual tier),
+  `tests/live/fixtures/<component>/` (fixtures).
+- `vitest.config.ts` `test.exclude` drops `tests/matrix/**/!(smoke).test.ts`
+  from the default include, the same way `tests/live` is dropped. Plain
+  `vitest run` pays for the smoke slices only.
 - `npm run test:matrix` = `vitest run --config vitest.matrix.config.ts`. That
   config inherits `vitest.config.ts` and replaces `exclude` with the base list
-  minus the matrix directory (mergeConfig concatenates arrays, so inheriting it
-  would keep the entry that hides the suite). It throws if the base config stops
-  excluding the directory, so the matrix can never silently run twice.
-- `tests/components/table-matrix-smoke.test.ts` stays IN the default include:
-  one combo per slice family rotated across {local, remote} x
-  {valueGetter, formatter}, plus the marquee regressions. Budget ~4s — add new
-  combos to the matrix, not to the smoke file.
-- Helper modules under `tests/components/table-matrix/` (`matrix-utils.ts`, the
-  per-slice `*-support.ts`) stay importable from outside the directory; the
-  exclusion removes files from test COLLECTION, not from module resolution.
-- `npm test` runs the matrix as its own `table matrix suite` stage, exactly
+  minus the matrix pattern (mergeConfig concatenates arrays, so inheriting it
+  would keep the entry that hides the suites). It throws if the base config
+  stops excluding the pattern. Smoke slices run in both tiers — intended.
+- Each `smoke.test.ts` stays IN the default include: one combo per feature
+  family, plus the marquee regressions. Budget a few seconds per component —
+  add new combos to the matrix, not to the smoke file.
+- Helper modules under `tests/matrix/` (`matrix-utils.ts`, the per-slice
+  `*-support.ts`) stay importable from outside; the exclusion removes files
+  from test COLLECTION, not from module resolution.
+- `npm test` runs the matrices as their own `matrix suite` stage, exactly
   once, source-flavoured (see `tooling/testing/run-full-tests.js`).
 
-## True-Visual Table Matrix (on demand)
+## True-Visual Matrix (on demand)
 
-`tests/live/matrix/` — the real-browser twin of `tests/components/table-matrix`.
+`tests/live/matrix/` — the real-browser twin of `tests/matrix/`.
 happy-dom does no layout, so the DOM matrix owns VALUE truth only; this tier
 owns VISUAL truth.
 
@@ -103,13 +107,17 @@ npm run test:matrix:visual -- --grep squish     # all other flags pass through
   before starting Playwright: a listener is not a server, and a wedged :5566
   (vite rebuilds components synchronously on source change) otherwise surfaces
   as hundreds of `net::ERR_ABORTED` specs instead of one clear message.
-- Fixture (NOT a showcase): `tests/live/fixtures/table/matrix.html`. Exposes
-  `window.matrix.mount(combo)`; owns the pipeline column definitions (they carry
-  functions, which cannot cross the Playwright boundary).
-- Combos: FULL product `{local,remote}` x 6 pipelines x 3 delivery patterns x
-  2^5 `{virtualize,height,squish,striped,selectable}` = 1152, generated by
-  `generateCombos()` in `tests/live/matrix/matrix-harness.ts`.
-- Measured: 1164 tests (1152 layer-1 + 12 marquee), 56.7s, chromium, 4 workers.
+- Layout: `tests/live/matrix/<component>/<component>-visual.spec.ts`, each
+  driving `tests/live/fixtures/<component>/matrix.html` (fixtures, NOT
+  showcases). A fixture exposes `window.matrix.mount(combo)` and owns anything
+  carrying functions — column definitions, callbacks — which cannot cross the
+  Playwright boundary.
+- The table is the ceiling, not the template. Its combos are the FULL product
+  `{local,remote}` x 6 pipelines x 3 delivery patterns x 2^5
+  `{virtualize,height,squish,striped,selectable}` = 1152, generated by
+  `generateCombos()` in `tests/live/matrix/matrix-harness.ts`; measured at 1164
+  tests (1152 layer-1 + 12 marquee), 56.7s, chromium, 4 workers. Smaller
+  components get a handful of combos against the same harness.
   All three engines pass; `--all-engines` triples the wall time.
 
 **Two layers** (documented in the harness header):

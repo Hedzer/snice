@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-candlestick visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a candle's colour is
+             judged against the background the component was designed for;
+           - #stage is a FIXED, KNOWN box (720x420), so "the plot fills its
+             container", "the volume band is the bottom fifth", and "no candle
+             escapes the plot area" are facts about the component and not about
+             the viewport;
+           - nothing overlaps #stage and it has no background of its own, so a
+             failed elementFromPoint probe is the chart occluding itself;
+           - the chart measures itself with a ResizeObserver, so the stage is
+             sized BEFORE the element is created and never resized after. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+        height: 420px;
+      }
+      #stage > snice-candlestick { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/candlestick/snice-candlestick.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      /** Deterministic OHLC series — no randomness, so a failure is repeatable. */
+      function walk(count, withVolume = true) {
+        const out = [];
+        let price = 100;
+        for (let i = 0; i < count; i++) {
+          const up = i % 2 === 0;
+          const open = price;
+          const close = up ? price + 4 + (i % 3) : price - 3 - (i % 3);
+          const high = Math.max(open, close) + 2 + (i % 2);
+          const low = Math.min(open, close) - 2 - (i % 4);
+          const row = { date: new Date(2024, 0, 1 + i, 12, 30), open, high, low, close };
+          if (withVolume) row.volume = 100000 + i * 7000;
+          out.push(row);
+          price = close;
+        }
+        return out;
+      }
+
+      const DATASETS = {
+        empty: [],
+        single: [{ date: new Date(2024, 0, 1, 12, 30), open: 100, high: 110, low: 95, close: 105, volume: 500000 }],
+        mixed: walk(8),
+        allBullish: [0, 1, 2, 3].map(i => ({
+          date: new Date(2024, 0, 1 + i, 12, 30),
+          open: 100 + i, high: 108 + i, low: 99 + i, close: 105 + i, volume: 10000 * (i + 1),
+        })),
+        allBearish: [0, 1, 2, 3].map(i => ({
+          date: new Date(2024, 0, 1 + i, 12, 30),
+          open: 110 - i, high: 112 - i, low: 100 - i, close: 102 - i, volume: 10000 * (4 - i),
+        })),
+        wide: walk(60),
+      };
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. `data` has `attribute: false`, so the property channel is
+         * the only channel it HAS; the booleans follow it so the two tiers mount
+         * the same way and a divergence is the browser's, not the harness's.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-candlestick');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          // One macrotask, so the element finishes its own first pass before the
+          // page configures it — the same ordering the DOM matrix uses.
+          await new Promise(resolve => setTimeout(resolve, 0));
+
+          for (const key of [
+            'showVolume', 'showGrid', 'showCrosshair', 'bullishColor', 'bearishColor',
+            'timeFormat', 'yAxisFormat', 'zoomEnabled', 'animation',
+          ]) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          el.data = DATASETS[combo.dataset] ?? [];
+          await settle();
+          current = { el, combo };
+          return { candles: el.shadowRoot.querySelectorAll('.candlestick__body').length };
+        },
+
+        /** A real pointer move in PAGE coordinates — the browser owns the CTM. */
+        async hover(clientX, clientY) {
+          const el = current?.el;
+          if (!el) return false;
+          const surface = el.shadowRoot.querySelector('[part="base"]');
+          surface.dispatchEvent(new MouseEvent('mousemove', {
+            bubbles: true, composed: true, clientX, clientY,
+          }));
+          await settle();
+          return true;
+        },
+
+        async leave() {
+          const el = current?.el;
+          if (!el) return false;
+          el.shadowRoot.querySelector('[part="base"]')
+            .dispatchEvent(new MouseEvent('mouseleave', { bubbles: true, composed: true }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

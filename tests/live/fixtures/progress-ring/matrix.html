@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-progress-ring visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the ring is `display: inline-block` and sized in rem, so the stage
+             fixes the font size at the root default and gives the ring a plain,
+             known ground: "the ring is hollow" is a claim about the pixels in
+             its middle, and only a known background makes it measurable;
+           - #stage has no padding, background or transform of its own. The
+             ring's centre text is absolutely positioned against the ring, so a
+             containing block here would move it and the test would be measuring
+             the fixture;
+           - `prefers-reduced-motion` is NOT forced: the fill carries a 900ms
+             sweep animation, and the marquee captures pass
+             `animations: 'disabled'`, which fast-forwards it to its end state.
+             Layer 1 reads geometry, which the sweep does not change. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface, #fff);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+        font-size: 16px;
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/progress-ring/snice-progress-ring.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * `size` crosses the ATTRIBUTE channel because the stylesheet keys off
+         * `:host([size=...])` — an attribute is the only channel that can prove
+         * the documented size reaches the paint. Everything else crosses the
+         * property channel, including the kebab-cased `show-value`, so both
+         * documented channels are exercised.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-progress-ring');
+          el.id = 'subject';
+          if (combo.size) el.setAttribute('size', combo.size);
+          stage.appendChild(el);
+          await el.ready;
+          for (const key of ['value', 'max', 'thickness', 'showValue', 'label', 'color']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          // The fill's mount sweep runs for 900ms; wait it out so a geometry
+          // reading is of the settled ring, not of a frame mid-animation.
+          await Promise.all(el.shadowRoot.querySelectorAll('[part~="fill"]').length
+            ? el.shadowRoot.querySelector('[part~="fill"]').getAnimations().map(a => a.finished.catch(() => {}))
+            : []);
+          await settle();
+          return { value: el.value, max: el.max };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

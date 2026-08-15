@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-testimonial visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the card background,
+             the star colour and the featured text colour are judged against the
+             surface the component was designed for;
+           - #stage is a fixed, known box so "the quote wraps inside the card"
+             and "the author row sits below the quote" are facts about the
+             component, not about the viewport;
+           - #stage has NO background, padding, or overlapping siblings, so a
+             failed elementFromPoint probe is the testimonial occluding itself,
+             never the fixture occluding it;
+           - #probe resolves a theme token to the colour a browser actually
+             computes for it, so a token assertion compares rgb() to rgb()
+             instead of comparing a var() name to a paint. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        /* A real, full-viewport page surface. #stage is absolutely positioned,
+           so without this the body collapses to zero height and there is no
+           painted surface to judge the card's own background against. */
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 520px;
+      }
+      #probe {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        width: 1px;
+        height: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <span id="probe"></span>
+
+    <script type="module">
+      import '/packages/components/src/testimonial/snice-testimonial.ts';
+
+      const stage = document.getElementById('stage');
+      const probe = document.getElementById('probe');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix's `prop` channel does. The stylesheet keys off attributes
+         * (`:host([variant="featured"])`), so mounting by property is what makes
+         * this tier prove that documented reflection actually reaches the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-testimonial');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          for (const key of ['quote', 'author', 'avatar', 'role', 'company', 'rating', 'variant']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          await settle();
+          current = { el, combo };
+          return {
+            variant: el.variant,
+            // The framework does not reflect a property assignment that equals
+            // the documented default, so `card` legitimately has no attribute;
+            // the stylesheet covers that with `:host(:not([variant]))`.
+            reflected: el.getAttribute('variant'),
+            rating: el.rating,
+          };
+        },
+
+        /** The colour a browser computes for a documented theme token. */
+        token(name) {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

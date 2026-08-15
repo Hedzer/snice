@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-activity-feed visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the filter bar's active tint and the
+             timeline connector are judged against the intended background;
+           - #stage is a fixed 560px box, so "the icons share one vertical axis"
+             and "the connector reaches the next entry" are facts about the
+             component, not about the viewport;
+           - no padding, no background, nothing overlapping, so a failed
+             elementFromPoint probe is the feed occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 560px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/activity-feed/snice-activity-feed.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** The documented declarative child form. */
+      function slotMarkup(activities) {
+        return activities.map(activity => [
+          `<snice-activity-item item-id="${activity.id}"`,
+          `actor-name="${activity.actor.name}"`,
+          activity.actor.avatar ? `actor-avatar="${activity.actor.avatar}"` : '',
+          `action="${activity.action}"`,
+          activity.target ? `target="${activity.target}"` : '',
+          `timestamp="${activity.timestamp}"`,
+          activity.type ? `type="${activity.type}"` : '',
+          '></snice-activity-item>',
+        ].filter(Boolean).join(' ')).join('');
+      }
+
+      const api = {
+        /**
+         * Mount one combo. `group-by`, `has-more` and `filter` cross the
+         * ATTRIBUTE channel (the form the docs write); `activities` has no
+         * attribute form and crosses the property channel. `refresh-interval`
+         * is pinned to 0 so no timer re-renders the page mid-measurement.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-activity-feed');
+          el.id = 'subject';
+          el.setAttribute('refresh-interval', '0');
+          if (combo.groupBy) el.setAttribute('group-by', combo.groupBy);
+          if (combo.hasMore) el.setAttribute('has-more', '');
+          if (combo.filter) el.setAttribute('filter', combo.filter);
+          if (combo.source === 'slot') el.innerHTML = slotMarkup(combo.activities ?? []);
+          stage.appendChild(el);
+          await el.ready;
+          if (combo.source !== 'slot') el.activities = combo.activities ?? [];
+          await settle();
+          const root = el.shadowRoot;
+          return {
+            entries: root.querySelectorAll('.feed__entry').length,
+            headers: root.querySelectorAll('.feed__group-header').length,
+          };
+        },
+
+        /** Click a filter button by its label, then settle — the active-state probe. */
+        async clickFilter(label) {
+          const el = document.getElementById('subject');
+          const button = [...el.shadowRoot.querySelectorAll('.feed__filter')]
+            .find(node => node.textContent.trim() === label);
+          button.click();
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

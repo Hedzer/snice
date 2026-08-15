@@ -5,9 +5,10 @@
 npm test                   # Complete required gate (source, built, CDN, React,
                            # core coverage, browser, generated website)
 npm run test:source        # Source tests
-npm run test:matrix        # Table feature-combination matrix — opt-in fuzz tier,
-                           # excluded from the default vitest include (.ai/fuzzing.md)
-npm run test:matrix:visual # Same matrix in a real browser — on-demand visual tier,
+npm run test:matrix        # Component feature-combination matrices (tests/matrix/) —
+                           # opt-in fuzz tier; the default vitest include keeps only
+                           # each directory's smoke.test.ts (.ai/fuzzing.md)
+npm run test:matrix:visual # Same matrices in a real browser — on-demand visual tier,
                            # chromium by default, --all-engines for all three
 npm run test:distribution  # Fresh dist build + built tests
 npm run test:cdn           # CDN tests
@@ -40,8 +41,8 @@ Permanent browser tests use the shared Chromium, Firefox, and WebKit project
 matrix in `tests/playwright.config.ts`. Wait for the exact custom element or DOM
 state under test; do not use `networkidle` as a proxy for application readiness.
 
-The one exception to the shared config is the on-demand true-visual table
-matrix, `tests/live/matrix/` — it has its own `tests/playwright.matrix.config.ts`
+The one exception to the shared config is the on-demand true-visual matrix
+tier, `tests/live/matrix/` — it has its own `tests/playwright.matrix.config.ts`
 and is excluded from the shared one (`testIgnore: ['live/matrix/**']`) so the
 required browser gate cannot pull it in. Run it with `npm run test:matrix:visual`.
 
@@ -59,6 +60,7 @@ page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
 
 - `.debug/` = Temporary debugging files (delete after use)
 - `tests/components/` = Permanent component unit tests
+- `tests/matrix/<component>/` = Permanent feature-combination matrices (fuzz tier)
 - `tests/live/` = Permanent Playwright e2e tests
 
 ### Core Rules

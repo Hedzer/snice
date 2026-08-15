@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-user-card visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the page sits on the theme's SECONDARY surface so the card's own
+             container surface is measurably different from the ground behind
+             it (card-on-card would make "the card paints a surface" untestable);
+           - #stage is a fixed 420px — wide enough for the horizontal variant's
+             avatar+info row, narrow enough that a broken flex would visibly
+             overflow rather than hide in whitespace;
+           - the status dot is absolutely positioned over the avatar, so the
+             stage must not introduce any transform or filter of its own: a
+             containing block here would move the dot and the test would be
+             measuring the fixture;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             card occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface-secondary, #f5f5f5);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/user-card/snice-user-card.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const SCALARS = ['name', 'avatar', 'role', 'company', 'email', 'phone', 'location', 'status', 'variant'];
+
+      const api = {
+        /**
+         * `variant` and `status` cross the ATTRIBUTE channel because the whole
+         * stylesheet keys off `:host([variant=...])` / `:host([status=...])` —
+         * an attribute is the only channel that can prove the documented value
+         * reaches the paint. `social` and the slotted actions cross their own
+         * documented channels.
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-user-card');
+          el.id = 'subject';
+          for (const key of SCALARS) {
+            if (combo[key] === undefined) continue;
+            el.setAttribute(key, String(combo[key]));
+          }
+          if (combo.actions) el.innerHTML = combo.actions;
+          stage.appendChild(el);
+          await el.ready;
+          el.social = combo.social ?? [];
+          await settle();
+          return { social: (combo.social ?? []).length };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

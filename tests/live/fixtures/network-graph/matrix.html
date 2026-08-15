@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-network-graph visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so a node's accent colour is judged
+             against the background it was designed for;
+           - #stage is a FIXED 700x440 box, so "the circular layout really is a
+             circle" and "no node is painted outside the canvas" are facts about
+             the component rather than the viewport;
+           - the stage is sized BEFORE the element exists, because the component
+             measures itself with a ResizeObserver and its layout maths is a
+             function of that measurement;
+           - nothing overlaps the stage, so a failed hit-test is the graph
+             occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 700px;
+        height: 440px;
+      }
+      #stage > snice-network-graph { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/network-graph/snice-network-graph.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 30));
+        await nextFrame();
+      }
+
+      const node = (id, extra = {}) => ({ id, ...extra });
+
+      const GRAPHS = {
+        empty: { nodes: [], edges: [] },
+        pair: {
+          nodes: [node('a', { label: 'Node A' }), node('b', { label: 'Node B' })],
+          edges: [{ source: 'a', target: 'b', label: 'connects' }],
+        },
+        star: {
+          nodes: ['hub', 'p1', 'p2', 'p3', 'p4'].map(id => node(id, { label: id.toUpperCase() })),
+          edges: ['p1', 'p2', 'p3', 'p4'].map(target => ({ source: 'hub', target })),
+        },
+        groups: {
+          nodes: [
+            node('a1', { group: 'alpha' }), node('a2', { group: 'alpha' }),
+            node('b1', { group: 'beta' }), node('c1', { group: 'gamma' }), node('u1'),
+          ],
+          edges: [
+            { source: 'a1', target: 'a2' }, { source: 'a2', target: 'b1' },
+            { source: 'b1', target: 'c1' },
+          ],
+        },
+        multiEdge: {
+          nodes: [node('a', { x: 180, y: 220 }), node('b', { x: 520, y: 220 })],
+          edges: [
+            { source: 'a', target: 'b', label: 'first' },
+            { source: 'a', target: 'b', label: 'second' },
+          ],
+        },
+        styled: {
+          nodes: [
+            node('a', { color: 'rgb(220, 30, 30)', size: 26, label: 'Red', x: 160, y: 150 }),
+            node('b', { color: 'rgb(30, 90, 220)', label: 'Blue', x: 440, y: 150 }),
+            node('c', { size: 10, label: 'Small', x: 300, y: 340 }),
+          ],
+          edges: [
+            { source: 'a', target: 'b', color: 'rgb(0, 160, 60)', weight: 6 },
+            { source: 'b', target: 'c', weight: 1 },
+          ],
+        },
+        twelve: {
+          nodes: Array.from({ length: 12 }, (_, i) => node(`n${i}`, { label: `N${i}` })),
+          edges: Array.from({ length: 11 }, (_, i) => ({ source: `n${i}`, target: `n${i + 1}` })),
+        },
+      };
+
+      const api = {
+        /** Resolve once the canvas viewBox reflects the stage's real box. */
+        async measured(el) {
+          const want = `0 0 ${stage.clientWidth} ${stage.clientHeight}`;
+          for (let attempt = 0; attempt < 50; attempt++) {
+            const svg = el.shadowRoot?.querySelector('[part="canvas"]');
+            if (svg && svg.getAttribute('viewBox') === want) return true;
+            await nextFrame();
+          }
+          return false;
+        },
+
+        /** Resize the stage — the input the component's ResizeObserver exists for. */
+        async resizeStage(width, height) {
+          stage.style.width = `${width}px`;
+          stage.style.height = `${height}px`;
+          await settle();
+          await settle();
+          return { width: stage.clientWidth, height: stage.clientHeight };
+        },
+
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-network-graph');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+          await new Promise(resolve => setTimeout(resolve, 0));
+          // The component derives every static layout from the container size
+          // it has MEASURED, and it measures asynchronously through a
+          // ResizeObserver. Handing it data before that measurement lands would
+          // lay the graph out for the component's 600x400 fallback and make
+          // every geometric assertion a race. Wait for the measurement to reach
+          // the canvas first; whether a LATER resize is honoured is a separate
+          // question, and the spec asks it explicitly.
+          await api.measured(el);
+
+          for (const key of [
+            'layout', 'showLabels', 'zoomEnabled', 'dragEnabled', 'animation',
+            'chargeStrength', 'linkDistance',
+          ]) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          el.data = GRAPHS[combo.graph] ?? { nodes: [], edges: [] };
+          await settle();
+          current = { el, combo };
+          return {
+            nodes: el.shadowRoot.querySelectorAll('.network-graph__node').length,
+            edges: el.shadowRoot.querySelectorAll('.network-graph__edge').length,
+          };
+        },
+
+        /** A real pointer entering a node — the browser owns the hit-testing. */
+        async hoverNode(id, clientX, clientY) {
+          const el = current?.el;
+          if (!el) return false;
+          const group = el.shadowRoot.querySelector(`[data-node-id="${id}"]`);
+          if (!group) return false;
+          group.dispatchEvent(new MouseEvent('mouseenter', {
+            composed: true, clientX, clientY,
+          }));
+          await settle();
+          return true;
+        },
+
+        async leaveNode(id) {
+          const group = current?.el?.shadowRoot.querySelector(`[data-node-id="${id}"]`);
+          if (!group) return false;
+          group.dispatchEvent(new MouseEvent('mouseleave', { composed: true }));
+          await settle();
+          return true;
+        },
+
+        /** A real wheel over the canvas — the browser owns the transform. */
+        async wheel(deltaY, clientX, clientY) {
+          const svg = current?.el?.shadowRoot.querySelector('[part="canvas"]');
+          if (!svg) return false;
+          svg.dispatchEvent(new WheelEvent('wheel', {
+            bubbles: true, composed: true, cancelable: true, deltaY, clientX, clientY,
+          }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.style.width = '700px';
+          stage.style.height = '440px';
+          current = null;
+        },
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

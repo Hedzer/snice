@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-binpack visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - #stage is a fixed, known box, so "packed inside the container
+             width" is a fact about the component and not about the viewport;
+           - the host gets an explicit width (and, in horizontal mode, an
+             explicit height), because the packer's constrained axis is measured
+             from the container and a container with no size packs nothing;
+           - items carry EXPLICIT width/height, which the docs require
+             ("Items must have explicit width/height (not auto-sized)");
+           - items have no margin, so any space measured between two boxes is
+             the component's `gap`;
+           - transitions are NOT disabled: the docs make transition-duration and
+             stagger part of the API, and the specs settle before measuring so a
+             mid-flight transform is never read as a final position. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+      }
+      .tile {
+        margin: 0;
+        box-sizing: border-box;
+        background: rgb(37 99 235);
+        color: rgb(255 255 255);
+        font-size: 12px;
+        line-height: 1;
+      }
+      .stamped {
+        background: rgb(220 38 38);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/binpack/snice-binpack.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /** Long enough for the documented default 0.4s transition to finish. */
+      async function settle(ms = 600) {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, ms));
+        await nextFrame();
+      }
+
+      const SETS = {
+        UNIFORM: [
+          ['a', 100, 100], ['b', 100, 100], ['c', 100, 100], ['d', 100, 100],
+          ['e', 100, 100], ['f', 100, 100],
+        ],
+        MIXED: [
+          ['a', 100, 100], ['b', 150, 80], ['c', 80, 120],
+          ['d', 100, 60], ['e', 60, 60], ['f', 120, 90],
+        ],
+        WIDE: [
+          ['a', 300, 90], ['b', 200, 90], ['c', 180, 50], ['d', 260, 70],
+        ],
+      };
+
+      const api = {
+        unmount() { stage.innerHTML = ''; },
+
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-binpack');
+          el.id = 'subject';
+          el.style.width = `${combo.containerWidth}px`;
+          if (combo.horizontal) el.style.height = `${combo.containerHeight}px`;
+
+          for (const [name, w, h] of SETS[combo.set]) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.setAttribute('name', name);
+            tile.style.width = `${w}px`;
+            tile.style.height = `${h}px`;
+            tile.textContent = name;
+            el.appendChild(tile);
+          }
+
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.gap !== undefined) el.gap = combo.gap;
+          if (combo.columnWidth !== undefined) el.columnWidth = combo.columnWidth;
+          if (combo.rowHeight !== undefined) el.rowHeight = combo.rowHeight;
+          if (combo.horizontal !== undefined) el.horizontal = combo.horizontal;
+          if (combo.originLeft !== undefined) el.originLeft = combo.originLeft;
+          if (combo.originTop !== undefined) el.originTop = combo.originTop;
+          if (combo.transitionDuration !== undefined) el.transitionDuration = combo.transitionDuration;
+
+          el.layout();
+          await settle();
+          return { items: el.children.length, gap: el.gap, horizontal: el.horizontal };
+        },
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

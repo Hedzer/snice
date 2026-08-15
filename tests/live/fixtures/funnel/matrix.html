@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-funnel visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Nothing here demonstrates the component to a
+         reader; every rule exists so a measurement means something:
+
+           - the page sits on the theme's own surface, so a stage fill is judged
+             against the surface the component was designed for rather than the
+             browser's default white;
+           - #stage is a fixed, known box, so "the svg fills its host" is a fact
+             about the funnel and not about the viewport;
+           - nothing overlaps #stage, so a failed elementFromPoint probe is the
+             component occluding itself, never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        width: 640px;
+        height: 420px;
+      }
+      #stage > snice-funnel { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/funnel/snice-funnel.ts';
+
+      /** Datasets, mirroring tests/matrix/funnel/data-shapes.test.ts. */
+      const DATASETS = {
+        canonical: [
+          { label: 'Visitors', value: 10000 },
+          { label: 'Leads', value: 5000 },
+          { label: 'Opportunities', value: 2000 },
+          { label: 'Customers', value: 500 },
+        ],
+        // A single stage has no `data[i-1]`; its shape is the whole funnel.
+        single: [{ label: 'Only', value: 42 }],
+        // Two stages of equal value must still paint two disjoint bands.
+        equal: [
+          { label: 'A', value: 100 },
+          { label: 'B', value: 100 },
+        ],
+        // A steep drop squeezes the last band toward the minimum width, which
+        // is where a band can collapse to zero height/width and disappear.
+        steep: [
+          { label: 'Sessions', value: 1000000 },
+          { label: 'Purchases', value: 900 },
+        ],
+        colored: [
+          { label: 'Red', value: 90, color: '#e74c3c' },
+          { label: 'Green', value: 45, color: '#2e7d32' },
+          { label: 'Blue', value: 20, color: '#1565c0' },
+        ],
+      };
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      async function settle() {
+        await nextFrame();
+        await new Promise(r => setTimeout(r, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-funnel');
+          el.id = 'subject';
+          if (combo.orientation) el.setAttribute('orientation', combo.orientation);
+          if (combo.variant) el.setAttribute('variant', combo.variant);
+          el.setAttribute('show-labels', String(combo.showLabels ?? true));
+          el.setAttribute('show-values', String(combo.showValues ?? true));
+          el.setAttribute('show-percentages', String(combo.showPercentages ?? true));
+          if (combo.animation) el.setAttribute('animation', '');
+
+          stage.appendChild(el);
+          await el.ready;
+
+          const data = DATASETS[combo.dataset ?? 'canonical'];
+          el.data = data;
+          await settle();
+
+          current = { el, data };
+          return {
+            stageCount: data.length,
+            labels: data.map(s => s.label),
+          };
+        },
+
+        /** Drive a hover so the tooltip's painted state can be measured. */
+        async hoverStage(index) {
+          const el = current?.el;
+          if (!el) return false;
+          const g = el.shadowRoot.querySelectorAll('.funnel__stage')[index];
+          if (!g) return false;
+          g.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, composed: true }));
+          await settle();
+          return true;
+        },
+
+        unmount() {
+          if (current) current.el.remove();
+          current = null;
+          stage.innerHTML = '';
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

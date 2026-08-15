@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-sparkline visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a stroke colour is
+             judged against the surface the component was designed for;
+           - #stage is a fixed, known box at a known origin, so "the chart is
+             its declared width" is a fact about the component and not about
+             the viewport;
+           - #stage has NO padding, background or overlapping content, so a
+             failed elementFromPoint probe is the chart occluding itself;
+           - `--sparkline-probe-*` gives the marquee captures two known,
+             saturated colours to compare against, so a paint assertion is
+             about the component's plumbing rather than about the theme's
+             current palette;
+           - ANIMATIONS ARE DISABLED. The line unrolls over 900ms, the area
+             fades in at 500ms and every dot pops on its own delay; a
+             screenshot taken mid-animation reads a colour nobody ever ships.
+             `animation: none` freezes each mark at its final state, which is
+             the state the docs describe. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+      }
+      snice-sparkline::part(line),
+      snice-sparkline::part(area),
+      snice-sparkline::part(dot),
+      snice-sparkline::part(bar) {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+        stroke-dashoffset: 0;
+      }
+      snice-sparkline::part(area) { opacity: 0.2; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/sparkline/snice-sparkline.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /** The series the DOM matrix uses, so the two tiers measure one chart. */
+      const DATASETS = {
+        empty: [],
+        single: [42],
+        pair: [10, 30],
+        rising: [10, 20, 15, 25, 30],
+        falling: [30, 25, 15, 20, 10],
+        flat: [7, 7, 7, 7],
+        negative: [-10, 5, -3, 12, 0],
+        long: [3, 9, 4, 12, 6, 15, 8, 18, 11, 21, 14, 24],
+      };
+
+      const api = {
+        /**
+         * Mount one combo. `data` has no attribute form, so it crosses the
+         * PROPERTY channel; everything else is set as a property too, which is
+         * what proves the documented reflection reaches the class the CSS
+         * paints from (`.sparkline--success .sparkline__line { stroke: … }`).
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-sparkline');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          for (const key of ['type', 'color', 'customColor', 'width', 'height',
+                             'strokeWidth', 'showDots', 'showArea', 'smooth', 'min', 'max']) {
+            if (combo[key] === undefined) continue;
+            el[key] = combo[key];
+          }
+          el.data = DATASETS[combo.dataset ?? 'rising'];
+          await settle();
+
+          const sr = el.shadowRoot;
+          return {
+            bars: sr.querySelectorAll('[part~="bar"]').length,
+            dots: sr.querySelectorAll('[part~="dot"]').length,
+            hasLine: !!sr.querySelector('[part~="line"]'),
+            hasArea: !!sr.querySelector('[part~="area"]'),
+          };
+        },
+
+        unmount() { stage.innerHTML = ''; },
+
+        get el() { return document.getElementById('subject'); },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

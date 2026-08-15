@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-switch visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so the track colour and
+             the state-label text are judged against the surface the component
+             was designed for rather than the browser's default white;
+           - #stage is a fixed, known box at a known origin, so "the thumb rests
+             at the far end of the track" is a fact about the component and not
+             about the viewport;
+           - #stage has no padding, no background and nothing overlaps it, so a
+             failed elementFromPoint probe is the switch occluding itself, never
+             the fixture occluding it;
+           - the stage is WIDE, because a state-labelled track auto-sizes and a
+             cramped stage would silently cap the very growth under test. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 640px;
+      }
+      /* The `::part(track)` override combo. Declared here rather than inline so
+         the spec proves the DOCUMENTED customisation path (a part selector in
+         customer CSS), not a style attribute the component never sees. */
+      #stage.part-override > snice-switch::part(track) { width: 120px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/switch/snice-switch.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      /**
+       * The state labels the matrix uses. Deliberately ASYMMETRIC and longer
+       * than the default track: the documented promise is "track auto-sizes to
+       * the WIDEST label", which two three-letter words could never prove.
+       */
+      const LABEL_ON = 'ENABLED';
+      const LABEL_OFF = 'OFF';
+
+      const api = {
+        LABEL_ON,
+        LABEL_OFF,
+
+        /**
+         * Mount one combo through the PROPERTY channel, exactly as the DOM
+         * matrix does. The stylesheet keys off the track's size class, which the
+         * component derives from the `size` property, so mounting by property is
+         * what makes this tier prove that a property change actually reaches the
+         * paint.
+         */
+        async mount(combo) {
+          api.unmount();
+          stage.classList.toggle('part-override', !!combo.partOverride);
+
+          const el = document.createElement('snice-switch');
+          el.id = 'subject';
+          stage.appendChild(el);
+          await el.ready;
+
+          el.size = combo.size ?? 'medium';
+          el.label = combo.label ?? 'Notify';
+          if (combo.stateLabels) { el.labelOn = LABEL_ON; el.labelOff = LABEL_OFF; }
+          if (combo.loading) el.loading = true;
+          if (combo.disabled) el.disabled = true;
+          if (combo.invalid) el.invalid = true;
+          if (combo.checked) el.checked = true;
+
+          await settle();
+          current = { el, combo };
+          return {
+            checked: el.checked,
+            size: el.size,
+            labelOn: el.labelOn,
+            labelOff: el.labelOff,
+          };
+        },
+
+        /** Flip the live switch without re-mounting — the travel assertion. */
+        async setChecked(checked) {
+          if (!current) return false;
+          current.el.checked = checked;
+          await settle();
+          return current.el.checked;
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          stage.classList.remove('part-override');
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

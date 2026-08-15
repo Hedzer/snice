@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-waterfall visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so a bar's fill is judged
+             against the background the component was designed for rather than
+             the browser's default white;
+           - #stage is a fixed, known box, so "the chart fills its container" and
+             "the bars do not overlap" are facts about the component and not
+             about the viewport;
+           - #stage has NO padding, NO background and nothing overlapping it, so
+             a failed elementFromPoint probe is the chart occluding itself,
+             never the fixture occluding it;
+           - the waterfall's SVG is `height: 100%`, so the stage must have an
+             explicit height for the chart to have one to fill. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+        height: 360px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/waterfall/snice-waterfall.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      /**
+       * The same datasets the DOM matrix mounts
+       * (tests/matrix/waterfall/waterfall-support.ts), so a combo id
+       * means the same thing in both tiers.
+       */
+      const DATASETS = {
+        empty: [],
+        doc: [
+          { label: 'Start', value: 1000, type: 'total' },
+          { label: 'Revenue', value: 500 },
+          { label: 'Costs', value: -200 },
+          { label: 'Tax', value: -100 },
+          { label: 'End', value: 1200, type: 'total' },
+        ],
+        auto: [
+          { label: 'Alpha', value: 40 },
+          { label: 'Beta', value: -15 },
+          { label: 'Gamma', value: 25 },
+          { label: 'Delta', value: -5 },
+        ],
+        mixed: [
+          { label: 'Base', value: 200, type: 'total' },
+          { label: 'Rebate', value: -60, type: 'increase' },
+          { label: 'Bonus', value: 45, type: 'decrease' },
+          { label: 'Net', value: 185, type: 'total' },
+        ],
+        single: [{ label: 'Only', value: 750, type: 'total' }],
+        descending: [
+          { label: 'Open', value: 100, type: 'total' },
+          { label: 'Writedown', value: -160 },
+          { label: 'Recovery', value: 30 },
+          { label: 'Close', value: -30, type: 'total' },
+        ],
+        magnitudes: [
+          { label: 'Seed', value: 2400000, type: 'total' },
+          { label: 'Grant', value: 750000 },
+          { label: 'Burn', value: -1250000 },
+          { label: 'Change', value: -900 },
+        ],
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        datasets: DATASETS,
+
+        /**
+         * Mount one combo. `data` goes through the property channel (it is
+         * declared `attribute: false`), the rest through the documented
+         * attribute channel — `<snice-waterfall show-values show-connectors>` —
+         * so this tier proves the attribute converters really reach the paint.
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-waterfall');
+          el.id = 'subject';
+          el.setAttribute('orientation', combo.orientation ?? 'vertical');
+          if (combo.showValues === false) el.setAttribute('show-values', 'false');
+          if (combo.showConnectors === false) el.setAttribute('show-connectors', 'false');
+          if (combo.animated) el.setAttribute('animated', '');
+          if (combo.color) el.style.setProperty('--snice-color-success', combo.color);
+
+          stage.appendChild(el);
+          await el.ready;
+          el.data = DATASETS[combo.dataset ?? 'doc'];
+          await settle();
+
+          current = { el, combo };
+          return {
+            bars: el.shadowRoot.querySelectorAll('rect').length,
+            dataset: combo.dataset ?? 'doc',
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

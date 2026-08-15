@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-chart visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase. Every rule exists so a measurement means
+         something:
+           - the page sits on the theme's own surface, so "the chart painted
+             something" is judged against the ground the component was designed
+             for rather than the browser's default white;
+           - #stage is a fixed, known box, so canvas sizing and legend placement
+             are facts about the component and not about the viewport;
+           - #stage has no background, padding or overlapping siblings, so a
+             failed elementFromPoint probe is the chart occluding itself and
+             never the fixture occluding it. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 720px;
+        height: 460px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      import '/packages/components/src/chart/snice-chart.ts';
+
+      const stage = document.getElementById('stage');
+      let current = null;
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      /**
+       * The chart draws from inside a `requestAnimationFrame` scheduled by its
+       * own render, so a settle has to outlast TWO frames plus the animation
+       * the default options enable. Combos that need a finished animation pass
+       * `animation: { enabled: false }`.
+       */
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 60));
+        await nextFrame();
+      }
+
+      const api = {
+        /**
+         * Mount one combo through the documented channels: `type`, `width` and
+         * `height` as attributes (the doc's own markup form), and `datasets`,
+         * `labels`, `options` as properties (documented "property only").
+         */
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-chart');
+          el.id = 'subject';
+          if (combo.type) el.setAttribute('type', combo.type);
+          if (combo.width !== undefined) el.setAttribute('width', String(combo.width));
+          if (combo.height !== undefined) el.setAttribute('height', String(combo.height));
+          stage.appendChild(el);
+          await el.ready;
+
+          if (combo.labels) el.labels = combo.labels;
+          if (combo.options) el.options = combo.options;
+          if (combo.datasets) el.datasets = combo.datasets;
+          await settle();
+
+          for (const index of combo.toggle ?? []) {
+            el.toggleDataset(index);
+          }
+          if (combo.toggle?.length) await settle();
+
+          current = { el, combo };
+          return {
+            type: el.type,
+            datasets: el.datasets.length,
+            legendItems: el.shadowRoot.querySelectorAll('.legend-item').length,
+          };
+        },
+
+        /**
+         * The share of the canvas's own backing store that is not the page
+         * ground — read from the canvas the component drew into, by the engine
+         * that drew it. This is the one measurement that proves a chart PAINTED
+         * rather than merely laid out, and it needs no screenshot.
+         */
+        inkRatio() {
+          const canvas = current?.el?.shadowRoot?.querySelector('.chart-render-canvas');
+          if (!canvas || !canvas.width || !canvas.height) return null;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return null;
+          const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          let inked = 0;
+          for (let i = 3; i < data.length; i += 4) if (data[i] > 8) inked++;
+          return inked / (canvas.width * canvas.height);
+        },
+
+        /** A cheap signature of the painted pixels, for "this changed" checks. */
+        inkSignature() {
+          const canvas = current?.el?.shadowRoot?.querySelector('.chart-render-canvas');
+          if (!canvas || !canvas.width || !canvas.height) return null;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return null;
+          const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          let hash = 0;
+          for (let i = 0; i < data.length; i += 401) {
+            hash = (hash * 31 + data[i]) | 0;
+          }
+          return hash;
+        },
+
+        toggle(index) {
+          current?.el?.toggleDataset(index);
+          return settle();
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

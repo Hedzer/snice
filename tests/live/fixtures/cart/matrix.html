@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-cart visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase:
+           - the theme's own surface, so the summary rules and the checkout
+             button are judged against the intended background;
+           - #stage is a fixed 420px column — a real cart's width — so "the
+             checkout button spans the cart" and "the value sits at the right
+             edge of its row" are facts about the component;
+           - no padding, no background, nothing overlapping, so a failed
+             elementFromPoint probe is the cart occluding itself. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #stage {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <script type="module">
+      /* THE DOCUMENTED IMPORT, and only it: docs/ai/components/cart.md tells a
+         consumer to `import 'snice/components/cart/snice-cart'` and nothing
+         else. The child components the cart renders are loaded ONLY when a test
+         asks for them through `loadDeps()`, so this page can measure both
+         claims: what the cart lays out once its children exist, and what a
+         consumer following the documented import actually sees. */
+      import '/packages/components/src/cart/snice-cart.ts';
+
+      const stage = document.getElementById('stage');
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+
+      const api = {
+        /** Register the child components the cart's template renders. */
+        async loadDeps() {
+          await Promise.all([
+            import('/packages/components/src/button/snice-button.ts'),
+            import('/packages/components/src/input/snice-input.ts'),
+            import('/packages/components/src/step-input/snice-step-input.ts'),
+            import('/packages/components/src/divider/snice-divider.ts'),
+          ]);
+          await settle();
+          return ['snice-button', 'snice-input', 'snice-step-input', 'snice-divider']
+            .every(tag => !!customElements.get(tag));
+        },
+
+        /**
+         * Mount one combo. `tax-rate`, `discount` and `coupon-code` cross the
+         * ATTRIBUTE channel (the form the docs write); `items` is documented as
+         * "property only".
+         */
+        async mount(combo) {
+          api.unmount();
+          const el = document.createElement('snice-cart');
+          el.id = 'subject';
+          if (combo.currency !== undefined) el.setAttribute('currency', combo.currency);
+          if (combo.taxRate !== undefined) el.setAttribute('tax-rate', String(combo.taxRate));
+          if (combo.discount !== undefined) el.setAttribute('discount', String(combo.discount));
+          if (combo.couponCode) el.setAttribute('coupon-code', combo.couponCode);
+          stage.appendChild(el);
+          await el.ready;
+          el.items = combo.items ?? [];
+          await settle();
+          return {
+            lines: el.shadowRoot.querySelectorAll('.cart__item').length,
+            rows: el.shadowRoot.querySelectorAll('.cart__summary-row').length,
+          };
+        },
+
+        unmount() {
+          stage.innerHTML = '';
+        },
+
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>snice-banner visual matrix fixture</title>
+    <link rel="stylesheet" href="/packages/components/src/theme/theme.css">
+    <style>
+      /* FIXTURE, not a showcase.
+         A banner is `position: fixed`, so its box is the VIEWPORT's, not a
+         stage's. That is exactly what this tier has to measure, so the fixture
+         deliberately provides no container for it:
+           - #page is tall enough to scroll, which is how "fixed stays put" is
+             checked;
+           - #under is a full-width strip parked at the very top and bottom of
+             the viewport, directly beneath where a banner lands. It is the
+             occlusion probe's target: if the banner is open it must cover the
+             strip, and if it is closed the strip must be reachable;
+           - nothing else paints in those bands, so a hit test that finds
+             neither the banner nor the strip is a real defect. */
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--snice-color-surface);
+        color: var(--snice-color-text);
+        font-family: var(--snice-font-family, system-ui, sans-serif);
+      }
+      #page { height: 250vh; }
+      .under {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 72px;
+        background: rgb(9, 121, 105);
+        z-index: 0;
+      }
+      #under-top { top: 0; }
+      #under-bottom { bottom: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="page"></div>
+    <div class="under" id="under-top"></div>
+    <div class="under" id="under-bottom"></div>
+
+    <script type="module">
+      import '/packages/components/src/banner/snice-banner.ts';
+
+      let current = null;
+
+      const ICON_URL =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAF'
+        + 'klEQVR4nGO4o6ammvyaQWyx16vNHAAj8AVE95m2kwAAAABJRU5ErkJggg==';
+
+      const DEFAULTS = {
+        variant: 'info', position: 'top', message: '', dismissible: true,
+        icon: '', actionText: '', open: false, label: '', duration: 0,
+      };
+
+      function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
+      async function settle() {
+        await nextFrame();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        await nextFrame();
+      }
+      /* The banner slides in and out on a `transform` transition. Every
+         geometry assertion here is about where it ENDS UP, so the fixture waits
+         for the transition to finish rather than sampling it mid-flight. */
+      async function settleTransition(el) {
+        const duration = parseFloat(getComputedStyle(el).transitionDuration) || 0;
+        await new Promise(resolve => setTimeout(resolve, duration * 1000 + 60));
+        await nextFrame();
+      }
+
+      const api = {
+        ICON_URL,
+
+        async mount(combo) {
+          api.unmount();
+
+          const el = document.createElement('snice-banner');
+          el.id = 'subject';
+          if (combo.iconMode === 'slot') {
+            el.innerHTML = '<span slot="icon" class="slotted-icon">SLOT</span>';
+          }
+          document.body.appendChild(el);
+          await el.ready;
+
+          const icon = combo.iconMode === 'image' ? ICON_URL
+            : combo.iconMode === 'emoji' ? '🎉'
+              : '';
+          const props = {
+            variant: combo.variant,
+            position: combo.position,
+            message: combo.message ?? '',
+            dismissible: combo.dismissible ?? true,
+            icon,
+            actionText: combo.actionText ?? '',
+            label: combo.label ?? '',
+            duration: combo.duration ?? 0,
+            open: combo.open ?? false,
+          };
+          for (const [key, value] of Object.entries(props)) {
+            if (value === undefined || value === DEFAULTS[key]) continue;
+            el[key] = value;
+          }
+          await settle();
+          await settleTransition(el);
+
+          const img = el.shadowRoot.querySelector('img');
+          if (img && !img.complete) {
+            await new Promise(resolve => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+            });
+            await settle();
+          }
+
+          current = { el, combo };
+          return { mounted: true };
+        },
+
+        /** Open (or close) the mounted banner and wait out its transition. */
+        async setOpen(open) {
+          const el = current?.el;
+          if (!el) return false;
+          el.open = open;
+          await settle();
+          await settleTransition(el);
+          return el.open === open;
+        },
+
+        /** Click a part and report what the component did. */
+        clickPart(name) {
+          const el = current?.el;
+          const node = el?.shadowRoot.querySelector(`[part~="${name}"]`);
+          if (!node) return { clicked: false };
+          const events = [];
+          const types = ['banner-open', 'banner-close', 'banner-action'];
+          const handler = e => events.push(e.type);
+          for (const type of types) el.addEventListener(type, handler);
+          node.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, composed: true, cancelable: true,
+          }));
+          for (const type of types) el.removeEventListener(type, handler);
+          return { clicked: true, events, open: el.open };
+        },
+
+        async scrollTo(y) {
+          window.scrollTo(0, y);
+          await nextFrame();
+          return window.scrollY;
+        },
+
+        unmount() {
+          document.getElementById('subject')?.remove();
+          window.scrollTo(0, 0);
+          current = null;
+        },
+
+        get el() { return current?.el ?? null; },
+        settle,
+      };
+
+      window.matrix = api;
+      document.documentElement.dataset.matrixReady = 'true';
+    </script>
+  </body>
+</html>
